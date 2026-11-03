@@ -55,6 +55,8 @@ export interface CastAndMachineInputs {
   hipCostPerKg?: number;
   /** Gate / riser removal and grinding, bench minutes per casting (foundry labour). */
   fettlingMinutes?: number;
+  /** Fettling on a robotic grinding cell — see CastingInputs.fettlingCell. */
+  fettlingCell?: CastingInputs['fettlingCell'];
   /** Melt shop overrides — see CastingInputs.melt. */
   melt?: CastingInputs['melt'];
   leakTestSec?: number;
@@ -86,6 +88,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     gravity: inputs.gravity,
     investment: inputs.investment,
     ...(inputs.fettlingMinutes ? { fettlingMinutes: inputs.fettlingMinutes } : {}),
+    ...(inputs.fettlingCell ? { fettlingCell: inputs.fettlingCell } : {}),
     ...(inputs.melt ? { melt: inputs.melt } : {}),
     ...(inputs.leakTestSec ? { leakTestSec: inputs.leakTestSec } : {}),
     ...(inputs.surfaceFinishing ? { surfaceFinishing: inputs.surfaceFinishing } : {}),

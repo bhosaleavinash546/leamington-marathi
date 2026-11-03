@@ -82,7 +82,8 @@ describe('3. the grade is a question, advisory, defaulting to the representative
     expect(q.severity).toBe('advisory');
     expect(q.options.find(o => o.leaning)?.value).toBe('mat-steel-c45');
     expect(q.why).toMatch(/costed at 38MnVS6/);
-    expect((await headless(FLANGE, FORGE_ANS)).total).toBeCloseTo(baseline.find(b => b.part === FLANGE)!.outcome.total!, 2);
+    // the baseline records the total to the penny (11.715 → 11.72): compare like for like
+    expect(Math.round((await headless(FLANGE, FORGE_ANS)).total! * 100) / 100).toBe(baseline.find(b => b.part === FLANGE)!.outcome.total!);
   });
   it('an answered grade is priced, weighed at its own density, and forged as its own alloy', async () => {
     const plain = await headless(FLANGE, FORGE_ANS);

@@ -119,10 +119,12 @@ describe('7. baseline', () => {
     // Arithmetic audit (30 Oct 2026): prepreg bought at the whole laminate mass (roof +), NDI as a station (hat −£25).
     // Rate round (30 Oct 2026): the autoclave (Bristol award £333,765) and RTM press (UK awards £120,745–230,000) moved
     // from held build-ups to sourced capex — roof £479.83 → £438.05, lid £84.02 → £79.81, hat £73.55 → £69.38.
-    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(438.05);
+    // Report-standard round (3 Nov 2026): published hand-layup rate (2 lb/h), HexPly M21 cure, tool material by cycles —
+    // roof £438.05 → £708.77, hat £69.37 → £83.47 (one-year amortisation in the baseline); lid unchanged.
+    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(708.77);
     expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(79.81);
     // 7-country review (3 Nov 2026): the NDI station carries £ to 4 dp, not the UK penny — hat £69.38 → £69.37.
-    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(69.37);
+    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(83.47);
   });
 });
 

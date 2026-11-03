@@ -7,6 +7,9 @@ The UK book is the BASE book: every other country is derived from it (× its fac
 countries too. Every figure here is a research item (key, value, URL, date copied from research/*.json) or arithmetic
 on research items written out in `basis`. Methods as the India book (scripts/rate-refresh/india-2026-10/build-config.py):
 direct / ladder (anchor × the book's own grade premium over its base) / floor (raised to metal or mill content) / held.
+
+Machines ADDED after the frozen snapshot (3 Nov 2026): `machines.added` — the automatic green-sand moulding line and the
+robotic fettling cell, from scripts/research/2026-11-report-standard/foundry-capex/data.json (see the block below).
 """
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -199,6 +202,45 @@ machines = {
     ],
     'notRebuilt': 'capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff',
 }
+
+# ── MACHINES ADDED (foundry at volume, 3 Nov 2026) ───────────────────────────
+# Two machines the book did not have, from scripts/research/2026-11-report-standard/foundry-capex/data.json (each row:
+# value, currency, year, scope, URL, quote). Built by scripts/uk-book.ts with the SAME capital method as the groups
+# above (life, maintenance, indirect, finance); their running load and floor are another book machine's, said so.
+# Hours: the UK book's convention for a three-shift production line — 6,000 h × 0.80 (mach-hmc-400 and the EV lines;
+# CONTINUOUS_UK_HOURS = 6,000 in src/engine/country-books.ts marks such a line for the country books). Not a foundry
+# source: the only published running pattern is one DISAMATIC C3-350 run 24/7 at ≈ 6,400 rated-speed h/yr (foundry-capex
+# row H1). The research shows the hours move a line rate about 2× (3,500 h × 0.75 v 6,066 h × 0.83), so the note prints
+# the rate at the book's semi-automatic sand line's 3,500 h × 0.75 beside it.
+FC = {r['id']: r for r in json.load(open(os.path.join(HERE, '..', '..', 'research', '2026-11-report-standard', 'foundry-capex', 'data.json')))}
+BOOK_FX = {'EUR': 1.1965, 'PLN': 5.096}   # REGIONAL_DATA.fxToGBP (2026-10 display FX) — the research's own conversion
+
+def capex_gbp(row_id):
+    r = FC[row_id]
+    gbp = round(r['value_num'] / BOOK_FX[r['currency']])
+    assert abs(gbp - r['gbp_at_book_fx']) <= 1, (row_id, gbp, r['gbp_at_book_fx'])
+    return gbp
+
+THREE_SHIFT = {'hours': 6000, 'utilisation': 0.80,
+               'hoursBasis': 'the UK book\'s convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022)',
+               'altHours': 3500, 'altUtilisation': 0.75, 'altBasis': 'the book\'s semi-automatic sand line\'s hours'}
+L2 = FC['L2']; F1 = FC['F1']
+machines['added'] = [
+    {'id': 'sand-auto-vertical-line', 'class': 'Automatic vertical green-sand moulding line (DISAMATIC 270 class, moulding equipment only)',
+     'after': 'sand-cast-line', 'added': '2026-11-03',
+     'capexGbp': capex_gbp('L2'),
+     'capexBasis': f"Dovre (BE) investment in DISA moulding equipment, a DISAMATIC 270-A replacing a DISAMATIC 2070, €{L2['value_num']:,} ({L2['year']} money, NOT escalated — the library has no escalation rule) ÷ €{BOOK_FX['EUR']}/£ (book FX); scope: the moulding equipment only — the foundry kept its DISA sand plant, and melting, pouring automation and the building are not in it; a maker's press release quoting the buyer, one data point (Medium–Low confidence)",
+     'kwFromMachine': 'sand-cast-line', 'kwBasis': 'no sourced draw — the running load of the book\'s semi-automatic sand moulding line, not measured for this line',
+     'floorFromMachine': 'sand-cast-line', 'floorBasis': 'the floor of the book\'s semi-automatic sand moulding line, held — not sourced for this line',
+     **THREE_SHIFT, 'confidence': 'Low', 'source': f"{L2['source']} — {L2['url']} (read {L2['date']})", 'research': 'foundry-capex L2'},
+    {'id': 'fettle-robot-cell', 'class': 'Robotic fettling / grinding cell (7-axis, iron castings)',
+     'after': 'sand-auto-vertical-line', 'added': '2026-11-03',
+     'capexGbp': capex_gbp('F1'),
+     'capexBasis': f"KAW-MET iron foundry (PL) declared budget for a 7-axis robotic grinding-cleaning centre (Ø800 × 500 mm envelope, castings ≥ 40 kg), zł{F1['value_num']:,} net ({F1['year']}, a resolved EU-funds procedure, 3 bids; the winning price was not published) ÷ zł{BOOK_FX['PLN']}/£ (book FX); scope: the cell, three tool sets, installation, start-up, training and a 24-month warranty with service — part fixtures excluded; cross-check Sinto America US$300–500k (2019) (Low–Medium confidence)",
+     'kwFixed': 30.0, 'kwBasis': 'the tender\'s ≤ 30 kW power limit — an upper bound on the draw, not a measured load',
+     'floorFromMachine': 'robot-mig-cell', 'floorBasis': 'the floor of the book\'s single-robot welding cell, held — not sourced for this cell',
+     **THREE_SHIFT, 'confidence': 'Low', 'source': f"{F1['source']} — {F1['url']} (read {F1['date']})", 'research': 'foundry-capex F1'},
+]
 
 cfg = {'asOf': '2026-10-10', 'label': 'UK rate book — automotive tier-1/2 (W Midlands / NE / NW), 2-shift', 'labour': labour, 'energy': energy,
        'machines': machines, 'materialFamilies': families, 'held': held}

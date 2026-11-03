@@ -23,11 +23,12 @@ import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCount
 const CORE_BASIS: CountryBasis = { globalShare: 0.3, rest: 'process' };
 /** Investment wax pattern and ceramic shell: ~35% wax and slurry materials (traded), the rest dipping / injection labour. ESTIMATE split. */
 const INVEST_BASIS: CountryBasis = { globalShare: 0.35, rest: 'process' };
-import { activeLabourRate } from '../../rate-context.js';
+import { activeLabourRate, activeRates } from '../../rate-context.js';
 import {
-  adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
-  FETTLING_MINUTES, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
-  type AlloyFamily, type CastingProcess, type ComplexityLevel, ndtStationCostPerPart,
+  adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY, SAND_YIELD_BASIS,
+  FETTLING_MINUTES, FETTLING_MINUTES_BASIS, FETTLING_CELL, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
+  SAND_LINE_CLASSES, AUTO_LINE_MIN_MOULDS_PER_YEAR, SAND_LINE_MAX_LOADING, SAND_PATTERN_LIFE_MOULDS,
+  type AlloyFamily, type CastingProcess, type ComplexityLevel, type SandLineClass, ndtStationCostPerPart,
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
@@ -232,20 +233,102 @@ export function mouldFootprintMm(ctx: RuleContext): [number, number] | null {
 }
 
 /**
- * The sand moulding line, stated: the library's `sand-cast-line` is costed as a
- * semi-automatic flask line making MOULDS_PER_HR moulds an hour in a flask with
- * FLASK_MM usable, each impression taking the part plus IMPRESSION_MARGIN_MM
- * all round for gating and sand. Engineering-typical (jolt-squeeze / matchplate
- * lines run 30–120 moulds/h, high-pressure automatic lines 100–300) — the low
- * end, because the line's rate is a modest one. Replace with the foundry's line.
+ * Each impression takes the part plus IMPRESSION_MARGIN_MM all round for gating and sand (engineering-typical, not
+ * sourced). The line's mould face comes from the line class chosen (`sandLinePlan`).
  */
-export const SAND_LINE = { MOULDS_PER_HR: 30, FLASK_MM: [500, 400] as const, IMPRESSION_MARGIN_MM: 50 };
+export const IMPRESSION_MARGIN_MM = 50;
 
-export function sandImpressions(footprint: [number, number]): number {
-  const [L, W] = footprint.map(x => x + SAND_LINE.IMPRESSION_MARGIN_MM);
-  const [FL, FW] = SAND_LINE.FLASK_MM;
+/** Impressions of a footprint on a mould face (either orientation). The default face is the semi-automatic line's. */
+export function sandImpressions(footprint: [number, number], face: readonly [number, number] = SAND_LINE_CLASSES['semi-auto'].faceMm): number {
+  const [L, W] = footprint.map(x => x + IMPRESSION_MARGIN_MM);
+  const [FL, FW] = face;
   const fit = (a: number, b: number) => Math.floor(FL / a) * Math.floor(FW / b);
   return Math.max(fit(L, W), fit(W, L));
+}
+
+/** A line time, hours: 6 dp below 0.01 h (what the screen writes into the field), 4 dp above. */
+const lineHrRounded = (h: number) => h < 0.01 ? Math.round(h * 1e6) / 1e6 : Math.round(h * 10_000) / 10_000;
+
+/** A sand casting has a core when the core rule charges one: an undercut along the pull, a sealed cavity, or no draft read. */
+function sandCored(ctx: RuleContext): boolean {
+  const under = ctx.geo.draftAnalysis?.undercutFaceCount ?? null;
+  const sealed = ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === true;
+  return sealed || under === null || under >= 1;
+}
+
+export interface SandLinePlan {
+  line: SandLineClass;
+  /** Impressions a mould on the chosen line (0 = floor-moulded: does not fit the face). */
+  impressions: number;
+  cored: boolean;
+  mouldsPerHr: number;
+  /** Castings a year ÷ impressions on the chosen line (rejects not included). */
+  mouldsPerYear: number;
+  /** The part's moulds a year on the SEMI-AUTOMATIC line — what the line choice reads. */
+  semiMouldsPerYear: number;
+  /** Rated hours the part takes ÷ the line's available hours × utilisation (its rate-book entry), or null. */
+  loading: number | null;
+  availableHr: number | null;
+  /** One sentence: which line and why, the threshold, the loading. */
+  why: string;
+}
+
+/**
+ * The moulding line (foundry at volume, P1 — 3 Nov 2026): the semi-automatic flask line (`sand-cast-line`) until the
+ * part's moulds on it reach AUTO_LINE_MIN_MOULDS_PER_YEAR (CostVision engineering judgement — no source gives a
+ * threshold), then the automatic vertical line, when an impression fits its mould face. The rate is the class's rated
+ * cored / uncored output; the loading (rated hours ÷ the line's book hours × utilisation) is printed, and a part that
+ * would load one line beyond SAND_LINE_MAX_LOADING (the case studies' realised 83–97 %) is said to need more than one.
+ * Null with no footprint measured.
+ */
+export function sandLinePlan(ctx: RuleContext): SandLinePlan | null {
+  const fp = mouldFootprintMm(ctx);
+  if (!fp) return null;
+  const semi = SAND_LINE_CLASSES['semi-auto'];
+  const auto = SAND_LINE_CLASSES['auto-vertical'];
+  const castings = Math.max(0, ctx.annualVolume || 0);
+  const impsSemi = sandImpressions(fp, semi.faceMm);
+  const impsAuto = sandImpressions(fp, auto.faceMm);
+  const semiMoulds = castings / Math.max(1, impsSemi);
+  const onAuto = impsAuto >= 1 && semiMoulds >= AUTO_LINE_MIN_MOULDS_PER_YEAR;
+  const line = onAuto ? auto : semi;
+  const impressions = onAuto ? impsAuto : impsSemi;
+  const cored = sandCored(ctx);
+  const mouldsPerHr = cored ? line.mouldsPerHr.cored : line.mouldsPerHr.uncored;
+  const mouldsPerYear = castings / Math.max(1, impressions);
+  const m = (ctx.rates ?? activeRates()).machines.find(x => x.id === line.machineId);
+  const availableHr = m?.buildup ? m.buildup.annualAvailableHours * m.buildup.machineUtilization : null;
+  const ratedHr = impressions >= 1 ? mouldsPerYear / mouldsPerHr : null;
+  const loading = availableHr && ratedHr != null ? ratedHr / availableHr : null;
+  const n = (x: number) => Math.round(x).toLocaleString('en-GB');
+  const choice = castings <= 0
+    ? `no annual volume given — the ${semi.label}`
+    : onAuto
+      ? `${n(castings)} castings a year = ${n(semiMoulds)} moulds a year on the ${semi.label} (${impsSemi || 1} a mould) ≥ ${n(AUTO_LINE_MIN_MOULDS_PER_YEAR)} → the ${auto.label}`
+      : `${n(castings)} castings a year = ${n(semiMoulds)} moulds a year on the ${semi.label} (${impsSemi || 1} a mould)`
+        + (impsAuto < 1 ? ` — too big for the automatic line's ${auto.faceMm[0]} × ${auto.faceMm[1]} mm mould` : ` < ${n(AUTO_LINE_MIN_MOULDS_PER_YEAR)}`);
+  const load = loading == null ? '' : `; loading ${n(mouldsPerYear)} moulds ÷ ${mouldsPerHr} moulds/h = ${n(ratedHr!)} h of the line's ${n(availableHr!)} h a year `
+    + `(book hours × utilisation) = ${(loading * 100).toFixed(1)} %`
+    + (loading > SAND_LINE_MAX_LOADING ? ` — beyond one line's planned ${Math.round(SAND_LINE_MAX_LOADING * 100)} % (realised 83–97 % in the case studies): about ${Math.ceil(loading / SAND_LINE_MAX_LOADING)} lines` : '');
+  const why = `${choice} (the line threshold is CostVision engineering judgement, not sourced — no published source gives one; `
+    + `${n(AUTO_LINE_MIN_MOULDS_PER_YEAR)} follows AFS: metal pattern equipment over ~5,000 castings a year)${load}`;
+  return { line, impressions, cored, mouldsPerHr, mouldsPerYear, semiMouldsPerYear: semiMoulds, loading, availableHr, why };
+}
+
+/**
+ * Whether the casting is fettled on the robotic cell (P4), and why — or null for bench minutes. A ferrous casting
+ * ≤ FETTLING_CELL.maxKg off the AUTOMATIC line; a steel casting over 10 kg keeps the bench (its risers are cut by disc
+ * or torch, which the sourced iron time study does not cover). Line class from `sandLinePlan`; no source sets a volume
+ * of its own for the cell, so it follows the line.
+ */
+function fettlingOnCell(ctx: RuleContext, a: Pick<Advice, 'subtype' | 'alloy' | 'massKg'>): string | null {
+  if (a.subtype !== 'sand') return null;
+  const plan = sandLinePlan(ctx);
+  if (!plan || plan.line.id !== 'auto-vertical') return null;
+  const iron = a.alloy === 'grey-iron' || a.alloy === 'ductile-iron';
+  const steel = a.alloy === 'carbon-steel' || a.alloy === 'stainless-steel';
+  if (!(iron || steel) || a.massKg > FETTLING_CELL.maxKg || (steel && a.massKg > 10)) return null;
+  return `a ${a.massKg.toFixed(1)} kg ${a.alloy.replace('-', ' ')} casting off the ${plan.line.label} is fettled on a robotic grinding cell`;
 }
 
 /** Minimum wall, guarding the known ray-cast artefact on sparse shells. */
@@ -383,7 +466,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const y = bandMid(band);
         return decided('casting.yieldFraction', y, 'library',
           byAlloy
-            ? `${r.advice.process} ${r.advice.alloy} yield band ${band[0]}–${band[1]}, midpoint (feeding scales with the alloy's shrinkage; engineering-typical band, not sourced — the foundry's method yield replaces it)`
+            ? `${r.advice.process} ${r.advice.alloy} yield band ${band[0]}–${band[1]}, midpoint (feeding scales with the alloy's shrinkage; `
+              + (SAND_YIELD_BASIS[r.advice.alloy] ?? 'engineering-typical band, not sourced — the foundry\'s method yield replaces it') + ')'
             : `${r.advice.process} yield band ${band[0]}–${band[1]}, midpoint (engineering-typical band, not sourced)`, 0.8);
       },
     },
@@ -491,8 +575,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
           const slides = Math.ceil(under / 6);
           const complexity: ToolComplexity = slides >= 3 ? 'complex' : slides >= 1 ? 'moderate' : 'simple';
           const cores = ctx.geo.topology?.enclosesSealedVoid ? 2 : under >= 20 ? 2 : under >= 1 ? 1 : 0;
-          // A sand pattern plate carries every impression the flask holds.
-          const imps = r.advice.subtype === 'sand' ? Math.max(1, sandImpressions(mouldFootprintMm(ctx) ?? [1e9, 1e9])) : 1;
+          // A sand pattern plate carries every impression the chosen line's mould face holds.
+          const imps = r.advice.subtype === 'sand' ? Math.max(1, sandLinePlan(ctx)?.impressions ?? 0) : 1;
           const est = r.advice.subtype === 'hpdc' ? estimateHPDCDieCost({ projectedAreaCm2: area, complexity })
             : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area, complexity })
             : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area * imps, coreCount: cores })
@@ -537,11 +621,16 @@ export const CASTING_RULES: CommodityRuleSpec = {
         // A pattern wears per MOULD rammed on it; each mould yields every
         // impression on the plate. The module counts life in castings.
         if (r.advice.subtype === 'sand') {
-          const imps = Math.max(1, sandImpressions(mouldFootprintMm(ctx) ?? [1e9, 1e9]));
-          return decided('casting.dieMouldLife', life.sand * imps, 'library',
-            `sand pattern life band ${life.sand.toLocaleString()} moulds × ${imps} impression(s) a mould = ${(life.sand * imps).toLocaleString()} castings `
-            + '(engineering-typical, not sourced — the wood-pattern band; the pattern priced is an aluminium match plate, which '
-            + 'usually lasts longer, so the pattern sets and tooling per part may be overstated: a foundry\'s pattern life replaces it)', 0.55);
+          // P3 (foundry research, 3 Nov 2026): the life follows the pattern material PRICED — the toolmaker build-up
+          // prices an aluminium match plate (casting-tooling.ts), so it lasts as aluminium does, not as wood.
+          const plan = sandLinePlan(ctx);
+          const imps = Math.max(1, plan?.impressions ?? 0);
+          const pl = SAND_PATTERN_LIFE_MOULDS.aluminium;
+          return decided('casting.dieMouldLife', pl.moulds * imps, 'library',
+            `aluminium match-plate life ${pl.moulds.toLocaleString('en-GB')} moulds × ${imps} impression(s) a mould`
+            + `${plan ? ` on the ${plan.line.label}` : ''} = ${(pl.moulds * imps).toLocaleString('en-GB')} castings — `
+            + `the pattern priced is an aluminium plate, so its life is ${pl.basis}. A steel plate lasts up to 500,000 moulds `
+            + '(DISA, said of an aluminium-casting foundry) but none is priced; a foundry\'s pattern life replaces this', 0.5);
         }
         return decided('casting.dieMouldLife', life[r.advice.subtype], 'library',
           `${r.advice.subtype} tool life band ${life[r.advice.subtype].toLocaleString()} ${r.advice.subtype === 'hpdc' ? 'shots' : 'castings'} (engineering-typical, not sourced)`, 0.6);
@@ -582,23 +671,30 @@ export const CASTING_RULES: CommodityRuleSpec = {
           // knockout as line time — castings cool on the conveyor while the
           // line keeps moulding — at aluminium density for every alloy: 11 min a
           // part, £13 of moulding on a 2.5 kg steel bracket.
+          // P1 (foundry at volume, 3 Nov 2026): the line is chosen by the part's moulds a year and its mould size.
+          const plan = sandLinePlan(ctx);
           const fp = mouldFootprintMm(ctx);
-          if (fp) {
-            const n = sandImpressions(fp);
-            const [FL, FW] = SAND_LINE.FLASK_MM;
-            const m = SAND_LINE.IMPRESSION_MARGIN_MM;
-            const hrPerMould = 1 / SAND_LINE.MOULDS_PER_HR;
+          if (plan && fp) {
+            const L = plan.line;
+            const n = plan.impressions;
+            const m = IMPRESSION_MARGIN_MM;
+            const hrPerMould = 1 / plan.mouldsPerHr;
+            const rate = `${plan.mouldsPerHr} ${plan.cored ? 'cored' : 'uncored'} moulds/h (${L.rateBasis})`;
             if (n >= 1) {
-              return decided('casting.cycleTimeSandGravHr', Math.round(hrPerMould / n * 10_000) / 10_000, 'geometry',
-                `${n} impression(s) of ${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm (+${m} mm gating) in a ${FL} × ${FW} mm flask, `
-                + `${SAND_LINE.MOULDS_PER_HR} moulds/h semi-automatic line — the line's time per casting, not the cooling time`, 0.55);
+              // 6 dp below 0.01 h, as the screen writes the field (formatRuleValue): on the automatic line a casting
+              // takes ~1.6 s, and 4 dp (0.0004 for 0.000444 h) cut the moulding 10 % (shadow model, 3 Nov 2026).
+              const h = lineHrRounded(hrPerMould / n);
+              return decided('casting.cycleTimeSandGravHr', h, 'geometry',
+                `${L.label}: ${n} impression(s) of ${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm (+${m} mm gating) on a ${L.faceMm[0]} × ${L.faceMm[1]} mm mould, `
+                + `${rate} — 1 ÷ ${plan.mouldsPerHr} ÷ ${n} = ${h} h, the line's time per casting, not the cooling time. Line: ${plan.why}`, 0.55);
             }
             // Too big for the flask: floor-moulded, one per mould, time scaling
             // with the mould area against the flask's.
+            const [FL, FW] = L.faceMm;
             const ratio = ((fp[0] + m) * (fp[1] + m)) / (FL * FW);
-            return decided('casting.cycleTimeSandGravHr', Math.round(hrPerMould * ratio * 10_000) / 10_000, 'geometry',
+            return decided('casting.cycleTimeSandGravHr', lineHrRounded(hrPerMould * ratio), 'geometry',
               `${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm does not fit a ${FL} × ${FW} mm flask — floor-moulded, `
-              + `${ratio.toFixed(1)}× a flask's moulding time at ${SAND_LINE.MOULDS_PER_HR} moulds/h`, 0.4);
+              + `${ratio.toFixed(1)}× a flask's moulding time at ${rate}. Line: ${plan.why}`, 0.4);
           }
         }
         if (r.advice.subtype === 'investment') {
@@ -613,6 +709,26 @@ export const CASTING_RULES: CommodityRuleSpec = {
         };
         return decided('casting.cycleTimeSandGravHr', band[r.advice.subtype], 'library',
           `${r.advice.subtype} cycle band`, 0.4);
+      },
+    },
+    {
+      // P1 (foundry at volume, 3 Nov 2026): the moulding line the plan chose — it was always the semi-automatic line
+      // (the screen pinned it, headless hard-coded it).
+      id: 'casting.sandLineId',
+      path: 'casting.sandLineId',
+      fieldId: 'cast-sand-line',
+      label: 'sandLineId',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'sand';
+      },
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const plan = sandLinePlan(ctx);
+        const L = plan?.line ?? SAND_LINE_CLASSES['semi-auto'];
+        return decided('casting.sandLineId', L.machineId, 'rule',
+          plan ? `${L.label}: ${plan.why}` : `${L.label} — no footprint measured to size the mould`, plan ? 0.6 : 0.4);
       },
     },
     {
@@ -665,6 +781,11 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        const cell = fettlingOnCell(ctx, r.advice);
+        if (cell) {
+          return decided('casting.fettlingMinutes', 0, 'rule',
+            `none at the bench — ${cell} (see the robotic fettling cell)`, 0.55);
+        }
         const ferrousSteel = r.advice.alloy === 'carbon-steel' || r.advice.alloy === 'stainless-steel';
         const levels = ['light', 'medium', 'heavy'] as const;
         // Trimmed die castings are light; sand and investment are medium; one
@@ -678,7 +799,27 @@ export const CASTING_RULES: CommodityRuleSpec = {
         return decided('casting.fettlingMinutes', FETTLING_MINUTES[level], 'rule',
           `${level} fettling — ${r.advice.subtype} ${r.advice.alloy}, ${r.advice.massKg.toFixed(1)} kg`
           + `${heavySteel ? ' (steel risers cut by disc / torch)' : big ? ' (large casting)' : ''}: `
-          + 'gate / riser removal and grind at the foundry rate (engineering-typical minutes)', 0.5);
+          + `gate / riser removal and grind at the foundry rate, ${FETTLING_MINUTES[level]} min (${FETTLING_MINUTES_BASIS})`, 0.5);
+      },
+    },
+    {
+      // P4 (foundry at volume, 3 Nov 2026): a ferrous casting ≤ 30 kg off the AUTOMATIC line is fettled on a robotic
+      // grinding cell — 40 s a casting, one operator to two cells (sourced); the semi-automatic line keeps bench minutes.
+      id: 'casting.fettlingCellSec',
+      path: 'casting.fettlingCellSec',
+      fieldId: 'cast-fettle-cell-sec',
+      label: 'fettlingCellSec',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'sand';
+      },
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const cell = fettlingOnCell(ctx, r.advice);
+        return cell
+          ? decided('casting.fettlingCellSec', FETTLING_CELL.secPerCasting, 'rule', `${cell}: ${FETTLING_CELL.basis}`, 0.55)
+          : decided('casting.fettlingCellSec', 0, 'rule', 'bench fettling (not on the automatic line, or outside the cell\'s ferrous ≤ 30 kg range)', 0.55);
       },
     },
     {
@@ -867,9 +1008,10 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         if (r.advice.subtype === 'sand') {
-          // The crew is the line's, cored or not: on a coreless part the fourth hand closes and handles moulds.
-          return decided('casting.manning', 4, 'rule',
-            'semi-automatic sand line crew of 4: moulder, core setter / mould closer, pourer, knockout (engineering-typical, not sourced — enter the line\'s own)', 0.5);
+          // P2 (foundry at volume, 3 Nov 2026): the crew of the line class chosen. Cored or not: on a coreless part the
+          // semi-automatic line's fourth hand closes and handles moulds.
+          const L = sandLinePlan(ctx)?.line ?? SAND_LINE_CLASSES['semi-auto'];
+          return decided('casting.manning', L.crew, 'rule', `${L.label} crew of ${L.crew}: ${L.crewBasis}`, L.id === 'semi-auto' ? 0.5 : 0.6);
         }
         return decided('casting.manning', 1, 'rule',
           `one operator to a ${r.advice.subtype} cell`, 0.6);

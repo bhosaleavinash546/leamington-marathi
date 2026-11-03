@@ -109,8 +109,10 @@ for (const name of PARTS) {
   const axi = bb[1] > 0 && bb[0] / bb[1] <= 1.05;
   const shape = raw === 'complex' && (axi || revShare >= 0.55) ? 'moderate' : raw;
   check(name, 'shape complexity', shape, String(prov['forge-shape'].value));
-  has(name, 'shape basis prints the score that gives it', prov['forge-shape'].basis,
-    new RegExp(`= ${score} → ${raw}${raw !== shape ? `[\\s\\S]*so ${shape}` : ''}`));
+  // The score is printed; a demotion is stated as "<shape>, demoted from <raw>: …" ahead of it (core report fresh review,
+  // 3 Nov 2026 — it was "… → complex … so moderate" after it).
+  has(name, 'shape basis prints the score that gives it', prov['forge-shape'].basis, new RegExp(`= ${score} → ${raw}`));
+  if (raw !== shape) has(name, 'shape basis states the demotion', prov['forge-shape'].basis, new RegExp(`^${shape}, demoted from ${raw}`));
   const sq = Math.sqrt(A * 100);
   const perim = 4.4 * sq, thick = Math.max(1, 0.015 * sq), landCm2 = perim * 3 * thick / 100;
   const tonnes = Math.round(KT[shape] * FLOW_MICROALLOYED * (A + landCm2) * 100 / TN);

@@ -110,6 +110,22 @@ export const SAND_GRAVITY_YIELD_BY_ALLOY: Partial<Record<AlloyFamily, [number, n
   copper: [0.50, 0.70],
 };
 
+/**
+ * The basis of a sand / gravity yield band, where one was read (foundry research, 3 Nov 2026 —
+ * scripts/research/2026-11-report-standard/foundry/data.json rows 57–64, re-read in verify.md). An alloy with no
+ * entry prints "engineering-typical band, not sourced". The yield here is the CASTING ÷ POUR weight (the module charges
+ * the melt loss and the rejected castings separately), so it sits above a published METAL yield (good castings ÷
+ * metal melted) on the same process.
+ */
+export const SAND_YIELD_BASIS: Partial<Record<AlloyFamily, string>> = {
+  'ductile-iron': 'consistent with the published casting ÷ pour yields of ductile iron on automatic green-sand lines — '
+    + 'Döktaş EN-GJS-500, a 26.8 kg casting from 53 kg poured, 50.6 % (Foseco case study, 2023); a differential case housing '
+    + '62 → 67 % (EU BREF 2024 §3.2.1.4.2.2); Fundimig 68 % scrap-adjusted (MAGMA) — and above the published METAL yields, '
+    + 'which also lose the scrap castings and the melt (EU BREF 2024 Table 3.13: mechanised small nodular 40–50 %, medium '
+    + 'nodular jobbing 50–60 %; Table 3.12: iron-foundry OME median 58 %, n = 73). Casting ÷ pour; melt loss and rejects '
+    + 'are charged separately. The band itself is CostVision\'s, inside those figures — the foundry\'s method yield replaces it',
+};
+
 // ─── Process advisor ──────────────────────────────────────────────────────────
 
 export interface CastingAdvisorInputs {
@@ -519,6 +535,99 @@ export function ndtStepFor(alloy: AlloyFamily): string {
 export const FETTLING_MINUTES: Record<'light' | 'medium' | 'heavy', number> = {
   light: 2, medium: 6, heavy: 15,
 };
+/** What the manual minutes rest on (foundry research, 3 Nov 2026): no source — the published manual times run from 45 s
+ *  (small high-volume ductile iron) to 15–20 min (a cylinder block), so the bands can be neither sourced nor refuted. */
+export const FETTLING_MINUTES_BASIS = 'engineering-typical, not sourced — published manual times run from 45 s a small '
+  + 'high-volume ductile casting (Malleable Castings time study) to 15–20 min a cylinder block (Mahindra, 2011)';
+
+// ─── Foundry practice at volume (foundry research, 3 Nov 2026) ────────────────
+// scripts/research/2026-11-report-standard/foundry/{notes.md, data.json} (66 rows, all CONFIRMED on a re-read —
+// verify.md) and foundry-capex/data.json for the two machines' capital. Every figure below names its row.
+
+/**
+ * A green-sand moulding line class: the machine it runs on (a rate-book machine), the usable mould face, the rated
+ * output (moulds/h, uncored / cored) and the crew. Ratings are the makers' published maxima at 200 mm mould thickness.
+ */
+export interface SandLineClass {
+  id: 'semi-auto' | 'auto-vertical';
+  label: string;
+  machineId: string;
+  /** Usable mould / flask face, mm (the larger side first). */
+  faceMm: readonly [number, number];
+  mouldsPerHr: { uncored: number; cored: number };
+  crew: number;
+  /** Where each figure comes from, printed on the rules' basis lines. */
+  rateBasis: string;
+  crewBasis: string;
+}
+
+export const SAND_LINE_CLASSES: Record<SandLineClass['id'], SandLineClass> = {
+  // foundry data.json row 15: Heinrich Wagner Sinto HSP lifting moulding machines, max flask interior / max output
+  'semi-auto': {
+    id: 'semi-auto', label: 'semi-automatic flask line (HWS HSP-2D class)', machineId: 'sand-cast-line',
+    faceMm: [800, 650], mouldsPerHr: { uncored: 60, cored: 60 }, crew: 4,
+    rateBasis: 'HWS HSP-2D lifting moulding machine, 800 × 650 mm max flask interior, max approx. 60 complete moulds/h '
+      + '(Heinrich Wagner Sinto table) — the cored rate taken equal to the uncored (CostVision engineering judgement)',
+    crewBasis: 'moulder, core setter / mould closer, pourer, knockout — engineering-typical, not sourced (enter the line\'s own)',
+  },
+  // foundry data.json row 6 (DISA General Specifications, 04/23): DISA 270-280, 700–800 × 950–1000 mm, 280 / 250 moulds/h.
+  // The capital is the Dovre DISAMATIC 270-A (foundry-capex L2) — the same machine family, so the rate, the mould and
+  // the capex describe one line. The smallest 270 mould (950 × 700) and the slower 270-280 rating are taken.
+  'auto-vertical': {
+    id: 'auto-vertical', label: 'automatic vertical flaskless line (DISAMATIC 270 class)', machineId: 'sand-auto-vertical-line',
+    faceMm: [950, 700], mouldsPerHr: { uncored: 280, cored: 250 }, crew: 3,
+    rateBasis: 'DISA 270-280, 950 × 700 mm mould (the smallest 270 size), 280 uncored / 250 cored moulds/h at 200 mm '
+      + 'mould thickness (DISA General Specifications, 04/23) — the rated maximum; the 270 mould thickness is not in the '
+      + 'specification read, so a casting\'s depth is not checked against it',
+    crewBasis: '3 operators a DISAMATIC line with manual pouring (Trakya Döküm: 3 → 2 with automatic pouring, DISA, c. 2025) — '
+      + 'the line\'s capital excludes an automatic pourer, so the manual-pouring crew is taken',
+  },
+};
+
+/**
+ * The automatic line takes the part when its moulds on the semi-automatic line would reach this many a year.
+ * CostVision engineering judgement — NO source gives a moulds-a-year threshold between line classes (foundry notes §1).
+ * The figure follows AFS Casting Source (2021): castings over ~5,000 a year are made on metal pattern equipment, the
+ * kind automated moulding runs; ≥ 1 casting a mould, so the line never changes below 5,000 castings a year.
+ */
+export const AUTO_LINE_MIN_MOULDS_PER_YEAR = 5_000;
+/** The loading a line class is planned to (foundry data rows 21, 22, 24: realised 83 %, 94–97 %, > 90 % of rating). */
+export const SAND_LINE_MAX_LOADING = 0.85;
+
+/**
+ * Pattern life in MOULDS by the pattern material that is PRICED (P3). The toolmaker build-up
+ * (`estimateSandPatternCost`) prices an aluminium match plate, so its life is aluminium's — the wood band it carried
+ * (8,000) charged ~12× the pattern sets on the stub axle. Steel plates last up to 500,000 moulds on an automatic line
+ * (DISA via FMT, 2024 — said of an ALUMINIUM-casting foundry, so an extrapolation to iron) but no steel plate is priced.
+ */
+export const SAND_PATTERN_LIFE_MOULDS: Record<'wood' | 'aluminium', { moulds: number; basis: string }> = {
+  wood: { moulds: 8_000,
+    basis: 'a wood pattern\'s band (published 2k–8k pulls to first refurbishment, 10k–20k total — YB Metal; 500–3,000 — Supro MFG)' },
+  aluminium: { moulds: 100_000,
+    basis: 'an aluminium match plate: published 10,000–50,000 moulds (Supro MFG), 25k–100k to first refurbishment and '
+      + '80k–150k total (YB Metal), 100k–500k for a metal pattern (Bowmanville) — supplier pages that disagree ×10; '
+      + '100,000 total is CostVision engineering judgement, and the refurbishments between are not costed' },
+};
+
+/**
+ * Robotic fettling / grinding cell (P4) for ferrous castings off the automatic line. Cycle 40 s a casting and one
+ * operator to two cells: Malleable Castings (SA) time study on five high-volume ductile-iron castings, foundry range
+ * 0.1–30 kg — manual 45 s, CNC cell 40 s (foundry data row 41; Sinto: "1 person … several machines", row 47).
+ * The published range runs to 260 s on a 22 kg iron casting with 6–8 mm flash (Grindmaster, row 42).
+ */
+export const FETTLING_CELL = {
+  machineId: 'fettle-robot-cell',
+  secPerCasting: 40,
+  crew: 0.5,
+  maxKg: 30,
+  basis: 'robotic grinding cell 40 s a casting, one operator to two cells (Malleable Castings time study, high-volume '
+    + 'ductile iron 0.1–30 kg: manual 45 s, cell 40 s; published range to 260 s on a 22 kg heavy-flash casting)',
+} as const;
+
+/** The module input for a fettling-cell time — one shape for the screen and headless. */
+export function fettlingCellInput(secPerCasting: number): { machineId: string; secPerCasting: number; manning: number } | undefined {
+  return secPerCasting > 0 ? { machineId: FETTLING_CELL.machineId, secPerCasting, manning: FETTLING_CELL.crew } : undefined;
+}
 // The costed country's foundry rate (rate-context.ts) — it was the UK's in every country.
 const foundryRatePerHr = (): number => activeLabourRate('lab-uk-foundry');
 const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>

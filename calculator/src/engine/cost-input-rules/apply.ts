@@ -227,6 +227,9 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   // investment consumables, each read by toCostParams.
   'casting.hpdcMachineId': { to: 'casting.hpdcMachineId' },
   'casting.fettlingMinutes': { to: 'casting.fettlingMinutes' },
+  // Foundry at volume (3 Nov 2026): the moulding line chosen and the robotic fettling cell's seconds.
+  'casting.sandLineId': { to: 'casting.sandLineId' },
+  'casting.fettlingCellSec': { to: 'casting.fettlingCellSec' },
   'casting.heatTreatCostPerKg': { to: 'casting.heatTreatCostPerKg' },
   'casting.shotBlastCostPerPart': { to: 'casting.shotBlastCostPerPart' },
   'casting.impregnationCostPerPart': { to: 'casting.impregnationCostPerPart' },

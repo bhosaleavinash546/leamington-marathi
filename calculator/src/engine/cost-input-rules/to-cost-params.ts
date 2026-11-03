@@ -43,7 +43,7 @@ import { inMaterialScope } from '../material-scope.js';
 import { buildAlExtrusionInputs, type AlTemper } from '../modules/aluminium-extrusion.js';
 import type { AlAlloy, AlExtrusionRoute, AlFinish } from '../al-extrusion-data.js';
 import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
-import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../machining-time.js';
+import { CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../machining-time.js';
 import { CUTTING_MANNING } from './commodities/machining.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
@@ -59,6 +59,7 @@ const MACHINABILITY_FOR_CEILING: Partial<Record<MaterialFamily, number>> = {
 };
 import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
 import { rubberProcFromSuggestion } from '../modules/rubber-advisor.js';
+import { fettlingCellInput } from '../modules/casting-advisor.js';
 import { estimateClampingTonnage, pickIMMPressId } from '../modules/injection-moulding.js';
 import type { MaterialFamily } from '../material-family.js';
 
@@ -197,10 +198,9 @@ function secondaryMachining(
     // machining routes use (load / unload in the cell op takes a whole one).
     oee: SHOP_DEFAULTS.oee, manning: CUTTING_MANNING,
     labourEfficiency: SHOP_DEFAULTS.labourEfficiency,
-    // The per-feature minutes are an aluminium baseline: a steel part's holes
-    // take twice as long. Cored (cast) or pierced (forged) bores are finish-bored,
-    // not cut from solid (machining review, Oct 2026).
-    materialFactor: cuttingDataFor(fam).timeFactor,
+    // Every feature is timed on the metal's own catalogue row (report standard, Nov 2026 — it was an aluminium baseline ×
+    // a time factor). Cored (cast) or pierced (forged) bores are finish-bored, not cut from solid (machining review, Oct 2026).
+    family: fam,
     ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
   };
   // Cutting first, then the cell around it — load / unload, change-over,
@@ -399,10 +399,10 @@ export function toCostParams(
       };
     }
     if (c.subtype === 'sand') {
-      assumed.push('sand.mouldLineId', ...(c.coreCostPerPart === undefined ? ['sand.coreCostPerPart (0 — no rule decided it)'] : []));
+      assumed.push(...(c.sandLineId ? [] : ['sand.mouldLineId']), ...(c.coreCostPerPart === undefined ? ['sand.coreCostPerPart (0 — no rule decided it)'] : []));
       return {
         sand: {
-          mouldLineId: 'sand-cast-line',
+          mouldLineId: c.sandLineId || 'sand-cast-line',
           cycleTimeHr: num(c.cycleTimeSandGravHr, 0.25),
           patternCost: num(c.dieMouldCostGBP),
           patternLife: num(c.dieMouldLife, 50_000),
@@ -434,9 +434,12 @@ export function toCostParams(
   }
 
   /** The post-cast route the rules decided, as `casting` module inputs. */
-  function postCast(c: NonNullable<CostInputs['casting']>): Record<string, number> {
-    const out: Record<string, number> = {};
+  function postCast(c: NonNullable<CostInputs['casting']>): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
     if (num(c.fettlingMinutes) > 0) out.fettlingMinutes = num(c.fettlingMinutes);
+    // Foundry at volume (3 Nov 2026): the robotic fettling cell — the screen builds the same input (fettlingCellInput).
+    const cell = fettlingCellInput(num(c.fettlingCellSec));
+    if (cell) out.fettlingCell = cell;
     if (num(c.heatTreatCostPerKg) > 0) out.heatTreatCostPerKg = num(c.heatTreatCostPerKg);
     if (num(c.shotBlastCostPerPart) > 0) out.shotBlastCostPerPart = num(c.shotBlastCostPerPart);
     if (num(c.impregnationCostPerPart) > 0) out.impregnationCostPerPart = num(c.impregnationCostPerPart);
@@ -517,6 +520,7 @@ export function toCostParams(
           castingLabourEfficiency: D.labourEfficiency,
           ...castingSubtypeBlock(c, finished),
           ...(num(c.fettlingMinutes) > 0 ? { fettlingMinutes: num(c.fettlingMinutes) } : {}),
+          ...(fettlingCellInput(num(c.fettlingCellSec)) ? { fettlingCell: fettlingCellInput(num(c.fettlingCellSec)) } : {}),
           ...(num(c.heatTreatCostPerKg) > 0 ? { heatTreatmentCostPerKg: num(c.heatTreatCostPerKg) } : {}),
           ...(num(c.shotBlastCostPerPart) > 0 ? { shotBlastCostPerPart: num(c.shotBlastCostPerPart) } : {}),
           ...(num(c.impregnationCostPerPart) > 0 ? { impregnationCostPerPart: num(c.impregnationCostPerPart) } : {}),
@@ -679,9 +683,10 @@ export function toCostParams(
         const stockCm3 = geo.boundingBox.xMm * geo.boundingBox.yMm * geo.boundingBox.zMm / 1000;
         const mf = MACHINABILITY_FOR_CEILING[mat.family ?? 'steel'] ?? 1.2;
         const holeRows = ((geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
-        const drillMin = holeRows.reduce((sum, r) => sum + featureMinutesEach(r) * r.count, 0);
+        // the holes at the metal's own catalogue row (no machinability multiplier on top — it is in the row)
+        const drillMin = holeRows.reduce((sum, r) => sum + featureMinutesEach(r, mat.family ?? 'steel') * r.count, 0);
         const ceilingHr = (physicalRemovalCeilingMin(
-          geo.volume.cm3, stockCm3, geo.surfaceArea?.cm2 ?? 0, mf) + drillMin * mf) / 60;
+          geo.volume.cm3, stockCm3, geo.surfaceArea?.cm2 ?? 0, mf) + drillMin) / 60;
         const supplied = ops.reduce((sum, o) => sum + num(o.cycleTimeHr), 0) || cycleHr;
         if (supplied > ceilingHr * 1.05 && supplied > 0) {
           opsScale = ceilingHr / supplied;

@@ -59,6 +59,8 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-leak-sec': 'cam-leak-sec',
   'cast-lab': 'cam-cast-lab',
   'cast-fettle-min': 'cam-fettle-min',
+  'cast-fettle-cell-sec': 'cam-fettle-cell-sec',
+  'cast-sand-line': 'cam-sand-line',
   'cast-ht-cost': 'cam-ht-cost',
   'cast-shot-blast': 'cam-shot-blast',
   'cast-impreg': 'cam-impreg',

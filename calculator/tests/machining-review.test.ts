@@ -46,15 +46,22 @@ const mach = (part: string, family: string, vol = 50_000) =>
 describe('1. cutting time is built up from the metal removed and the surface finished', () => {
   it('Part1: 1,773 cm³ of aluminium to rough out — the kernel gave the whole part 13 min', () => {
     const c = solidCut(ctx('Part1.stp', 'aluminium'), 'aluminium')!;
-    expect(c.detail.roughMin).toBeGreaterThan(10);           // removed ÷ 120 cm³/min
+    // removed ÷ the catalogue's in-cut rate (TungAlu-Mill Ø100 z6, vc 1000, fz 0.2, ap 2: 0.7 × 100 × 2 × 3,820 mm/min =
+    // 535 cm³/min) × 1.25 for air moves — it was ÷ 120 cm³/min, an unsourced "practical average" (report standard, Nov 2026)
+    expect(c.detail.roughMin).toBeGreaterThan(3);
     expect(c.kernelHr! * 60).toBeLessThan(15);                // the kernel's area-rate figure, not used
-    expect(c.detail.basis).toContain('cm³ ÷ 120 cm³/min');
+    expect(c.detail.basis).toContain('cm³ ÷ 535 cm³/min in-cut');
+    expect(c.detail.basis).toContain('25% air moves and step-downs (engineering-typical, not sourced)');
   });
   it('steel takes longer than aluminium — the kernel rate was the same for both', () => {
     const al = solidCut(ctx('MACH_Hydraulic_Manifold.stp', 'aluminium'), 'aluminium')!;
     const st = solidCut(ctx('MACH_Hydraulic_Manifold.stp', 'steel'), 'steel')!;
-    expect(st.detail.totalMin / al.detail.totalMin).toBeGreaterThan(2);
-    expect(CUTTING_DATA.steel.timeFactor).toBe(2);
+    // Each metal on its own catalogue row (it was aluminium × 2). The manifold is mostly finishing and holes; the
+    // aluminium side pass is held to the TungAlu insert's 2 mm ap, so its walls finish no faster than steel's 10 mm pass
+    // at APX4000's 160 m/min — the drilling and roughing differ.
+    expect(st.detail.totalMin).toBeGreaterThan(al.detail.totalMin);
+    expect(st.detail.roughMin).toBeGreaterThan(al.detail.roughMin);
+    expect(CUTTING_DATA.steel.timeFactor).toBe(2);           // kept only where no catalogue row was read (surfacing)
   });
   it('free-form area is surfaced, flats and walls are finished at the wall rate (measured per type)', () => {
     expect(geoOf('Part1.stp').faces?.areaByTypeMm2?.BSPLINE).toBeGreaterThan(0);
@@ -63,14 +70,17 @@ describe('1. cutting time is built up from the metal removed and the surface fin
 });
 
 describe('2. drilling runs at a drilling feed', () => {
-  it('Ø11 × 60 through in aluminium: 0.375 min (60 mm > 5 Ø pecks), not 1.35 min (50 mm/min was 10–20× slow)', () => {
-    expect(featureMinutesEach({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeCloseTo(0.15 + 60 / 400 * 1.5, 6);
+  it('Ø11 × 60 through in aluminium: n·f at the MVE Ø12 row, 60 mm > 5 Ø pecks', () => {
+    // MVE aluminium Ø12: n 2600 × f 0.31 = 806 mm/min; at Ø11 f scales with Ø, so n·f stays 806 mm/min (data.json #25)
+    expect(featureMinutesEach({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeCloseTo(0.15 + 60 / 806 * 1.5, 6);
   });
   it('a hole at a tapping-drill size is tapped — the manifold\'s four Ø5 × 12 are M6', () => {
     const row = { kind: 'hole' as const, diaMm: 5, depthMm: 12, through: false, count: 4 };
     expect(tappedThread(row)).toBe('M6');
     expect(featureToOperation(row)).toBe('Drill + tap M6');
-    expect(featureMinutesEach(row)).toBeCloseTo(0.06 + 12 / 250 + 0.10 + 0.10 + 24 / 500, 6);
+    // drill 0.06 + 12 ÷ 806 mm/min; blind 0.10; tap 0.10 + 2 × 12 ÷ (n × pitch), n = 1000 × 15 / (π × 6) = 795.8 rev/min,
+    // ISO 261 M6 pitch 1.0 → 795.8 mm/min (OSG 15 m/min, data.json #60)
+    expect(featureMinutesEach(row)).toBeCloseTo(0.06 + 12 / 806 + 0.10 + 0.10 + 24 / (1000 * 15 / (Math.PI * 6) * 1.0), 6);
     // a Ø14 × 1 land is not a tapped hole (too shallow), nor is a Ø11 clearance hole
     expect(tappedThread({ kind: 'hole', diaMm: 14, depthMm: 1, through: false, count: 1 })).toBeNull();
     expect(tappedThread({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeNull();
@@ -138,7 +148,7 @@ describe('6–8. handling, crew and change-over are charged as the routing was r
     expect(routing.chosen.setups * handlingMinPerFixturing(1.9)).toBeLessThan(0.5 * cuttingMinutesOf(ops));
     expect(ops.some(o => o.name.startsWith('Load / unload on the pallet'))).toBe(false);
     const pallet = ops.find(o => o.name.startsWith('Pallet change'))!;
-    expect(pallet.cycleTimeHr * 3600).toBeCloseTo(routing.chosen.setups * 10, 0);   // hours are kept to 4 dp
+    expect(pallet.cycleTimeHr * 3600).toBeCloseTo(routing.chosen.setups * 7.1, 0);   // Okuma 7.1 s ISO 10791-9; hours kept to 4 dp
   });
   it('one operator tends two machines while they cut', () => {
     const ops = machiningOperationPlan(ctx('MACH_Hydraulic_Manifold.stp', 'aluminium'), 'aluminium');
@@ -159,7 +169,9 @@ describe('9–14. fixtures, programming, tool wear, deburr, scrap, batch and gra
   });
   it('cutting tools wear: steel at £0.12 a cutting minute', () => {
     const m = mach('MACH_Stepped_Shaft.stp', 'steel');
-    expect(Number(m.toolWearCostPerPart)).toBeGreaterThan(0.7);
+    const cutMin = cuttingMinutesOf(machiningOperationPlan(ctx('MACH_Stepped_Shaft.stp', 'steel'), 'steel'));
+    expect(cutMin).toBeGreaterThan(1);
+    expect(Number(m.toolWearCostPerPart)).toBeCloseTo(cutMin * 0.12, 3);
   });
   it('deburr and gauge check is a bench task: labour, no machine time', () => {
     const d = computeMachiningDrivers({
@@ -204,7 +216,9 @@ describe('15–18. cast + machine', () => {
   it('PRCR002 costs the same machining as cast-and-machine and as a casting with secondary machining', () => {
     // Before: £50.10 against £80.84 for the same part (a weight ceiling v the feature table).
     const cam = baseline.find(b => b.part === 'PRCR002.stp')!.outcome.total!;
-    expect(cam).toBeGreaterThan(40);   // £42.81 since the pilot rule pack (one clamping on the twin-pallet cell, iron as-cast, MPI not X-ray)
+    // £42.81 since the pilot rule pack (one clamping on the twin-pallet cell, iron as-cast, MPI not X-ray); £25.92 since the
+    // report standard round (3 Nov 2026: machining on published cutting data, the foundry at volume — automatic line, cell fettling)
+    expect(cam).toBeGreaterThan(20);
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctx('PRCR002.stp', 'aluminium', 50_000, 'cast_and_machine'));
     const ops = (r.suggestions.machining as Record<string, unknown>).operations as Array<{ name: string }>;
     expect(ops.some(o => o.name.startsWith('Finish machining'))).toBe(true);
@@ -230,8 +244,13 @@ describe('15–18. cast + machine', () => {
     const opts = { machineId: 'mach-vmc3', labourId: 'lab-uk-skilled' };
     const al = computeFeatureMachining(rows, opts).totalCycleHr;
     const st = computeFeatureMachining(rows, { ...opts, materialFactor: CUTTING_DATA.steel.timeFactor }).totalCycleHr;
+    const stFam = computeFeatureMachining(rows, { ...opts, family: 'steel' }).totalCycleHr;
     const cored = computeFeatureMachining(rows, { ...opts, coredAboveMm: 20 }).totalCycleHr;
-    expect(st / al).toBeCloseTo(2, 6);
+    // A Ø40 hole from solid is helically milled (no catalogue row: 0.050 min/mm × the machinability ratio); the 0.50
+    // approach and 0.10 blind allowances are NOT scaled by the metal (report standard, Nov 2026 — they were × 2).
+    expect(st * 60).toBeCloseTo(0.50 + 45 * 0.050 * 2 + 0.10, 6);
+    expect(al * 60).toBeCloseTo(0.50 + 45 * 0.050 + 0.10, 6);
+    expect(stFam).toBe(st);                                   // the legacy factor reads as the family it stands for
     expect(cored).toBeLessThan(al / 3);                       // one boring pass, not a helical mill from solid
   });
 });

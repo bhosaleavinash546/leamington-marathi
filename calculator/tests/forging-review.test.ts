@@ -143,10 +143,20 @@ describe('9. holes: through means open at both ends; clearance holes are not rea
     const holes = (geoOf('FORGE_Hub_Flange.stp').featureTable ?? []).filter(r => r.kind === 'hole' && r.diaMm === 14);
     expect(holes[0].through).toBe(true);
   });
-  it('a shallow through hole is drilled; a blind or deep one is drilled and reamed', () => {
+  it('a through hole is drilled, however deep; a blind one is drilled and bored (report standard, Nov 2026)', () => {
     const clear = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: true, count: 1 });
     const bore = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: false, count: 1 });
-    expect(bore - clear).toBeCloseTo(0.25 + 18 / 400 + 0.10, 6);
+    // the boring pass at the bore's own n·f: aluminium vc 400 m/min (SVJD), f 0.2 → n = 1000 × 400 / (π × 14) = 9,095,
+    // vf = 1,819 mm/min; + 0.25 bore-pass allowance + 0.10 blind
+    expect(bore - clear).toBeCloseTo(0.25 + 18 / (1000 * 400 / (Math.PI * 14) * 0.2) + 0.10, 6);
+    // a 4.2×D through hole (the stub axle's Ø14 × 59) is standard reach (DIN 338) and a clearance hole: drilled only
+    const deepThrough = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 59, through: true, count: 1 });
+    const shallowThrough = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: true, count: 1 });
+    // MVE aluminium Ø12 (n 2600, f 0.31) and Ø16 (n 1900, f 0.33) interpolated at Ø14: vc 96.76 m/min, f 0.32 →
+    // n 2,200 × 0.32 = 704 mm/min; the extra 41 mm is drilling only — no ream pass, no peck (4.2×D < 5×D)
+    const vcA = Math.PI * 12 * 2600 / 1000, vcB = Math.PI * 16 * 1900 / 1000;
+    const vf = 1000 * ((vcA + vcB) / 2) / (Math.PI * 14) * 0.32;
+    expect(deepThrough - shallowThrough).toBeCloseTo(41 / vf, 6);
   });
 });
 
@@ -161,7 +171,9 @@ describe('10. the hub flange reconciles by hand', () => {
   // one fixturing (was 10.5 min of face milling on a VMC in two fixturings): £17.45 → £17.40.
   // Arithmetic audit (30 Oct 2026): descale per kg of FORGING, not billet (the flash is trimmed first); the scrap
   // uplift on heating, descale and NDT; the lathe chuckings are soft jaws, not £2,500 fixtures: £17.40 → £17.11.
-  it('£17.11 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(17.11);
+  // Report standard round (3 Nov 2026): the lathe and drill times on published cutting data (lathe 7.8 → 1.5 min; the six
+  // Ø14 clearance holes at the MVE n·f, no material factor on the allowances): £17.11 → £11.72.
+  it('£11.72 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(11.72);
   });
 });

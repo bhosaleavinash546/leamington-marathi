@@ -24,7 +24,8 @@ import { amortisationParts } from './injection-moulding.js';
 import { AL_ALLOYS, AL_ALLOY_LIST, AL_DOWNSTREAM, type AlAlloy, type AlExtrusionRoute, type AlFinish } from '../../al-extrusion-data.js';
 import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
 import { buildAlExtrusionInputs, temperNeeds, type AlExtrusionSpec, type AlTemper, type AlExtrusionBuild } from '../../modules/aluminium-extrusion.js';
-import { featureMinutesEach } from '../../feature-machining.js';
+import { featureMinutesEach, ALLOWANCE_STATUS } from '../../feature-machining.js';
+import { sourcesLine, ROUGH_AIR_SHARE } from '../../cutting-catalogue.js';
 import { CUTTING_DATA } from '../../machining-time.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
 import { serviceQuestionRules } from '../derive/service-questions.js';
@@ -150,7 +151,7 @@ export function fabrication(ctx: RuleContext, sec: MeasuredSection): { minutes: 
     // a pocket really milled across the profile removes metal, and that is
     // costed below from the measured volume, not from the feature table.
     if (r.kind !== 'hole') continue;
-    const each = featureMinutesEach(r) * CUTTING_DATA.aluminium.timeFactor;
+    const each = featureMinutesEach(r, 'aluminium');   // the aluminium catalogue row at the hole's own Ø
     if (r.kind === 'hole') holeMm3 += Math.PI / 4 * r.diaMm ** 2 * r.depthMm * (r.count ?? 1);
     minutes += each * (r.count ?? 1); rows += 1;
     notes.push(`${r.count ?? 1} × ${r.kind} Ø${fmt(r.diaMm, 1)} × ${fmt(r.depthMm, 1)} mm`);
@@ -160,10 +161,13 @@ export function fabrication(ctx: RuleContext, sec: MeasuredSection): { minutes: 
   if (sec.volumeShare < 0.98 && removedCm3 > 0.5) {
     const m = removedCm3 / CUTTING_DATA.aluminium.millRoughCm3PerMin;
     minutes += m + 0.5; rows += 1;
-    notes.push(`${fmt(removedCm3, 1)} cm³ machined away (volume ${(sec.volumeShare * 100).toFixed(1)}% of section × length) at ${CUTTING_DATA.aluminium.millRoughCm3PerMin} cm³/min`);
+    notes.push(`${fmt(removedCm3, 1)} cm³ machined away (volume ${(sec.volumeShare * 100).toFixed(1)}% of section × length) at ${CUTTING_DATA.aluminium.millRoughCm3PerMin} cm³/min `
+      + `(the catalogue's in-cut rate ÷ (1 + ${ROUGH_AIR_SHARE} air moves, engineering-typical, not sourced)) + 0.5 min set-on (engineering-typical, not sourced)`);
   }
   return { minutes: Math.round(minutes * 100) / 100, rows, fixturings: minutes > 0 ? 1 : 0,
-    basis: notes.length ? notes.join('; ') : 'nothing machined across the profile — cut to length on the press saw' };
+    basis: notes.length
+      ? `${notes.join('; ')} (holes drilled / tapped at each Ø, n·f; ${ALLOWANCE_STATUS}; sources — ${sourcesLine('aluminium', ['drill', 'tap', 'rough'])})`
+      : 'nothing machined across the profile — cut to length on the press saw' };
 }
 
 function isCup(ctx: RuleContext): { od: number } | null {

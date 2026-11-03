@@ -189,8 +189,11 @@ describe('casting cost-input rules', () => {
       const sand = runCostInputRules(CASTING_RULES, ctx(
         { ...ALL_ANSWERED, 'material.family': 'cast iron' }, { annualVolume: 1_000 },
       ));
+      // Foundry at volume (3 Nov 2026): the plate carries every impression of the chosen line's mould face — the
+      // semi-automatic HSP-2D class 800 × 650 mm (sourced) holds 4 of this 370 × 290 mm impression (it was 1 in the
+      // unsourced 500 × 400 flask).
       expect((sand.suggestions.casting as Record<string, number>).dieMouldCostGBP)
-        .toBe(estimateSandPatternCost({ projectedAreaCm2: area, coreCount: 1 }).total);
+        .toBe(estimateSandPatternCost({ projectedAreaCm2: area * 4, coreCount: 1 }).total);
     });
 
     it('only offers HPDC-specific fields when HPDC is chosen', () => {
@@ -215,11 +218,13 @@ describe('casting cost-input rules', () => {
       const r = runCostInputRules(CASTING_RULES, ctx(
         { ...ALL_ANSWERED, 'material.family': 'cast iron' }, { annualVolume: 1_000 },
       ));
-      // 320 x 240 mm + 50 mm gating = 370 x 290 → one impression in a
-      // 500 x 400 flask, 30 moulds/h → 1/30 h. The kernel said 0.262 h.
-      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.0333);
+      // 320 x 240 mm + 50 mm gating = 370 x 290 → four impressions on the semi-automatic line's 800 x 650 mm flask
+      // (HWS HSP-2D class, 60 moulds/h — foundry research, 3 Nov 2026; it was one in an unsourced 500 x 400 flask at
+      // 30 moulds/h, 1/30 h) → 1/60/4 h. 1,000 a year stays on the semi-automatic line. The kernel said 0.262 h.
+      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.004167);   // 6 dp below 0.01 h, as the screen writes it
       expect(r.provenance['cast-sand-ct'].source).toBe('geometry');
-      expect(r.provenance['cast-sand-ct'].basis).toContain('1 impression');
+      expect(r.provenance['cast-sand-ct'].basis).toContain('4 impression');
+      expect(r.provenance['cast-sand-ct'].basis).toContain('semi-automatic flask line');
     });
 
     it('rejects the ray-cast wall artefact on a sparse shell', () => {

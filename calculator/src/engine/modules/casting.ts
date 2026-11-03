@@ -68,6 +68,11 @@ export interface CastingInputs {
   // alloys, heat treatment — and none of it was costed. Absent = none.
   /** Gate / riser removal and grinding, bench minutes per casting (foundry labour). */
   fettlingMinutes?: number;
+  /**
+   * Fettling on a robotic grinding cell instead (foundry at volume, 3 Nov 2026): machine time on the cell plus its
+   * crew share, seconds a casting. Absent = the bench minutes above (or none).
+   */
+  fettlingCell?: { machineId: string; secPerCasting: number; manning: number };
   /** Heat treatment £/kg of casting (normalise, T5, T6 …). */
   heatTreatCostPerKg?: number;
   shotBlastCostPerPart?: number;
@@ -331,6 +336,23 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       labourTimeHr: hr,
       labourEfficiency: inputs.labourEfficiency,
       benchOperation: true,
+    });
+  }
+  if (inputs.fettlingCell && inputs.fettlingCell.secPerCasting > 0) {
+    // Every casting poured is fettled before inspection finds the rejects: the time carries the reject uplift, as the
+    // bench minutes do. The cell's operator tends more than one cell (manning < 1).
+    const hr = inputs.fettlingCell.secPerCasting / 3600 * rejectUplift;
+    const fc = inputs.fettlingCell;
+    operations.push({
+      operationName: `Fettling — robotic grinding cell (${fc.secPerCasting} s a casting, ${fc.manning} operator)`,
+      machineId: fc.machineId,
+      labourId: inputs.labourId,
+      cycleTimeHr: hr,
+      partsPerCycle: 1,
+      oee: inputs.oee,
+      manning: fc.manning,
+      labourTimeHr: hr,
+      labourEfficiency: inputs.labourEfficiency,
     });
   }
   if (inputs.subtype === 'sand' && lossFraction < 1) {

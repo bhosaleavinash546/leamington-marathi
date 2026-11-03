@@ -269,9 +269,63 @@ for (const s of SNAP.machines.filter(x => x.region !== 'UK')) {
     decision: 'held (a country benchmark; energy line restated on the new UK basis, kWh unchanged)', basis: s.source, source: '' });
 }
 
+// Machines the config ADDS (foundry at volume, 3 Nov 2026: the automatic green-sand moulding line and the robotic
+// fettling cell): built from their sourced capex by the SAME capital method as the groups (life, maintenance, indirect,
+// finance from M); running load and floor are a named book machine's (snapshot figures) or a stated fixed draw; hours
+// and utilisation as the config states them. Written as a `makeMachine` call after the `after` machine — replaced in
+// place on a re-run, so the book stays idempotent. Never hand-edit these calls: change the config.
+type Added = {
+  id: string; class: string; after: string; added: string; capexGbp: number; capexBasis: string;
+  kwFromMachine?: string; kwFixed?: number; kwBasis: string; floorFromMachine: string; floorBasis: string;
+  hours: number; utilisation: number; hoursBasis: string; altHours: number; altUtilisation: number; altBasis: string;
+  confidence: string; source: string; research: string;
+};
+const ADDED = (M.added ?? []) as Added[];
+for (const a of ADDED) {
+  const kwSrc = a.kwFromMachine ? snapMach.get(a.kwFromMachine)?.buildup : undefined;
+  if (a.kwFromMachine && !kwSrc) throw new Error(`${a.id}: kwFromMachine ${a.kwFromMachine} is not in the snapshot`);
+  const kw = a.kwFixed ?? impliedKw(kwSrc!);
+  const floor = snapMach.get(a.floorFromMachine)?.buildup?.floorSpace;
+  if (floor == null) throw new Error(`${a.id}: floorFromMachine ${a.floorFromMachine} is not in the snapshot`);
+  const build = (hours: number, util: number): MachineRateBuildup => ({
+    annualDepreciation: Math.round(a.capexGbp / M.lifeYears),
+    maintenance: Math.round(a.capexGbp * M.maintenancePctOfCapex),
+    energy: Math.round(kw * hours * util * ELEC),
+    floorSpace: floor,
+    indirectSupport: Math.round(a.capexGbp * M.indirectPctOfCapex),
+    financeCost: Math.round(a.capexGbp / 2 * M.financeRate),
+    annualAvailableHours: hours,
+    machineUtilization: util,
+  });
+  const nb = build(a.hours, a.utilisation);
+  const rate = r2(computeMachineRateFromBuildup(nb));
+  const alt = r2(computeMachineRateFromBuildup(build(a.altHours, a.altUtilisation)));
+  const note = `${TAG} method (machine added ${a.added}): machine only (the operator, overhead and margin are added by the costing). `
+    + `Capex £${a.capexGbp.toLocaleString('en-GB')} = ${a.capexBasis}; ${kw.toFixed(1)} kW (${a.kwBasis}); `
+    + `${M.lifeYears}-yr life (${M.lifeBasis}); maintenance ${M.maintenancePctOfCapex * 100}%; indirect ${M.indirectPctOfCapex * 100}%; `
+    + `finance ${M.financeRate * 100}% on half; floor £${floor.toLocaleString('en-GB')}/yr (${a.floorBasis}); £${ELEC}/kWh. `
+    + `At ${a.hours.toLocaleString('en-GB')} h a year × ${a.utilisation.toFixed(2)} utilisation the rate is £${rate}/h — ${a.hoursBasis}; the hours move this rate: `
+    + `at ${a.altHours.toLocaleString('en-GB')} h × ${a.altUtilisation.toFixed(2)} (${a.altBasis}) it would be £${alt}/h.`;
+  const lit = `{ annualDepreciation: ${nb.annualDepreciation}, maintenance: ${nb.maintenance}, energy: ${nb.energy}, floorSpace: ${nb.floorSpace}, `
+    + `indirectSupport: ${nb.indirectSupport}, financeCost: ${nb.financeCost}, annualAvailableHours: ${nb.annualAvailableHours}, machineUtilization: ${nb.machineUtilization.toFixed(2)} }`;
+  const call = `makeMachine('${a.id}', '${q(a.class)}',\n      ${lit},\n      'UK', '${q(note)}')`;
+  const calls = machineCalls(lib);
+  const own = calls.get(a.id);
+  if (own) lib = lib.slice(0, own[0]) + call + lib.slice(own[1]);
+  else {
+    const prev = calls.get(a.after);
+    if (!prev) throw new Error(`${a.id}: anchor machine ${a.after} not found`);
+    // after the anchor call and its trailing comma
+    const at = lib.indexOf(',', prev[1]) + 1;
+    lib = lib.slice(0, at) + `\n    ${call},` + lib.slice(at);
+  }
+  register.push({ kind: 'machine', id: a.id, name: a.class, current: null, next: rate, unit: '£/h machine only',
+    decision: `added (capex from research: ${a.research})`, basis: q(note), source: a.source });
+}
+
 // Machines added to the library AFTER the frozen snapshot (the pilot's twin-pallet HMC, 30 Oct 2026): their own
 // build-up stands as written (it already follows this book's method); the register lists them so every machine is in it.
-const inSnap = new Set(SNAP.machines.map(m => m.id));
+const inSnap = new Set([...SNAP.machines.map(m => m.id), ...ADDED.map(a => a.id)]);
 for (const m of DEFAULT_RATE_LIBRARY.machines) {
   if (inSnap.has(m.id) || !m.buildup) continue;
   register.push({ kind: 'machine', id: m.id, name: m.machineClass, current: null, next: r2(computeMachineRateFromBuildup(m.buildup)), unit: '£/h machine only',

@@ -224,11 +224,12 @@ const book: CountryBook = {
 const ratios: number[] = [];
 const elec = elecGbp;
 for (const m of UK.machines) {
-  const cur = SNAP.machines.find(x => x.id === m.id)!;
+  // A machine added to the library after the snapshot has no "current" figure (null in the register).
+  const cur = SNAP.machines.find(x => x.id === m.id);
   const nw = m.buildup ? countryMachine(book, m, UK.machines, elec, NAME) : null;
   if (nw && m.computedRatePerHr > 0) ratios.push(nw.computedRatePerHr / m.computedRatePerHr);
   const grouped = !!nw && !!machineGroupOf(book, m.id);
-  register.push({ kind: 'machine', id: m.id, name: m.machineClass, currentInr: cur.inrPerHr, newInr: nw ? r2(nw.computedRatePerHr * FX) : cur.inrPerHr,
+  register.push({ kind: 'machine', id: m.id, name: m.machineClass, currentInr: cur?.inrPerHr ?? null, newInr: nw ? r2(nw.computedRatePerHr * FX) : (cur?.inrPerHr ?? null),
     unit: `${SYM}/h machine only`, decision: !nw ? 'held (no build-up)' : grouped ? `updated (${NAME} capex + operating model)` : `updated (${NAME} operating model; capital held — capex not sourced)`,
     basis: nw ? nw.sourceNote : 'no build-up: regional scaling', source: grouped ? (book.machines.groups.find(g => new RegExp(g.match).test(m.id))?.source ?? '') : '' });
 }

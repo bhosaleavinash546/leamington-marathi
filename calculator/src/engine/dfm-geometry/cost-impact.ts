@@ -40,7 +40,8 @@
  * measurement layer follows: modelled or silent, never invented.
  */
 import type { GeometricFinding, PartContext } from './types.js';
-import { featureMinutesEach, DEEP_HOLE_PECK, DRILL_FEED_MM_PER_MIN, MICRO_DRILL_FEED_MM_PER_MIN } from '../feature-machining.js';
+import { featureMinutesEach, deepHolePeckPremiumMin, DEEP_HOLE_PECK } from '../feature-machining.js';
+import { drillFeed, familyForTimeFactor, catalogueFor } from '../cutting-catalogue.js';
 import { CUTTING_DATA } from '../machining-time.js';
 import { estimateMouldCost } from '../modules/injection-moulding.js';
 import { castingUndercutInPrice } from './commodities/casting.js';
@@ -71,7 +72,7 @@ export interface FindingCostImpact {
   nreGBP?: number;
   /**
    * Time findings: the machine minutes per part the feature costs IN THE COSTING'S OWN TIME MODEL
-   * (`featureMinutesEach` × the metal's time factor). Design to Cost removes these minutes from the costed operation,
+   * (`featureMinutesEach` at the metal's catalogue row). Design to Cost removes these minutes from the costed operation,
    * so the saving is priced at that operation's own machine, labour, crew and OEE — never at the reference rates
    * `perPartGBP` uses for the job's stand-alone line (arithmetic audit, Oct 2026).
    */
@@ -97,7 +98,8 @@ export interface CostContext {
   engineerRatePerHr?: number;
   /** Part mass, kg — handling per fixturing follows it (handlingMinPerFixturing), as in the costing. */
   partWeightKg?: number;
-  /** Cutting-time factor of the confirmed metal against aluminium (CUTTING_DATA) — 1 when no family is confirmed. */
+  /** Cutting-time factor of the confirmed metal against aluminium (CUTTING_DATA) — 1 when no family is confirmed. It is
+   *  read as the metal it stands for (`familyForTimeFactor`): the hole times are that metal's catalogue rows. */
   timeFactor?: number;
   /** The kernel's silhouette along the draw, cm² — the area the costing sizes a mould on. */
   projectedAreaCm2?: number;
@@ -217,9 +219,11 @@ function holeFeatureCost(
   const dia = feat?.diaMm, depth = feat?.depthMm;
   if (!(dia && dia > 0) || !(depth && depth > 0)) return null;
   const through = feat?.openEnds === 2 ? true : feat?.openEnds === 1 ? false : null;
-  const tf = ctx.timeFactor ?? 1;
+  // The costing's own time for the hole: the confirmed metal's catalogue row at this Ø (report standard round, Nov 2026 —
+  // it was the aluminium baseline × a time factor). The legacy factor reads as the metal it stands for.
+  const fam = familyForTimeFactor(ctx.timeFactor ?? 1);
   const row = { kind: 'hole' as const, diaMm: dia, depthMm: depth, through, count: 1 };
-  const minutes = featureMinutesEach(row) * tf;
+  const minutes = featureMinutesEach(row, fam);
   const gbp = (minutes / 60) * (mr + lr);
   return {
     perPartGBP: round4(gbp),
@@ -227,7 +231,7 @@ function holeFeatureCost(
     kind: 'feature_cost',
     basis: `${minutes.toFixed(2)} min to drill the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm`
          + `${through === null ? '' : through ? ' through' : ' blind'} hole after the press (the costing\u2019s drilling time`
-         + `${tf !== 1 ? `, × ${tf} for the metal` : ''}) × £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}.`,
+         + ` for ${fam}, at the drill maker\u2019s feed for this Ø) × £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}.`,
     confidence: 'modelled',
   };
 }
@@ -247,16 +251,18 @@ export function deepHolePremium(
   const dia = feat?.diaMm, depth = feat?.depthMm;
   if (!(dia && dia > 0) || !(depth && depth > 0)) return null;
   if (!(depth > 5 * Math.max(dia, 1))) return null;           // within 5×D: no premium in the costing
-  const feed = dia > 6 ? DRILL_FEED_MM_PER_MIN : MICRO_DRILL_FEED_MM_PER_MIN;
-  const tf = ctx.timeFactor ?? 1;
-  const minutes = (DEEP_HOLE_PECK - 1) * (depth / feed) * tf;
+  const fam = familyForTimeFactor(ctx.timeFactor ?? 1);
+  const feed = Math.round(drillFeed(fam, dia).vf);
+  const scale = catalogueFor(fam).scale;
+  const minutes = deepHolePeckPremiumMin({ kind: 'hole', diaMm: dia, depthMm: depth, through: null, count: 1 }, fam);
   const gbp = (minutes / 60) * (mr + lr);
   return {
     perPartGBP: round4(gbp),
     minutes: round4(minutes),
     kind: 'feature_cost',
     basis: `the costing\u2019s deep-hole premium on the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm hole: ${depth.toFixed(0)} mm ÷ `
-      + `${feed} mm/min × (${DEEP_HOLE_PECK} − 1) peck${tf !== 1 ? ` × ${tf} for the metal` : ''} = ${minutes.toFixed(2)} min × `
+      + `${feed} mm/min (the drill maker\u2019s n·f at Ø${dia.toFixed(1)} in ${fam}) × (${DEEP_HOLE_PECK} − 1) peck`
+      + `${scale !== 1 ? ` × ${+scale.toFixed(3)} for the metal` : ''} = ${minutes.toFixed(2)} min × `
       + `£${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}. A hole within 5×D (shorter, or `
       + 'a larger diameter) does not pay it; the drilling itself stays.',
     confidence: 'modelled',

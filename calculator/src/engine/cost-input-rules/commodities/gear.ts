@@ -24,6 +24,7 @@
  */
 import { activeRates } from '../../rate-context.js';
 import { CUTTING_DATA, stockSize, fromBarTurningTime } from '../../machining-time.js';
+import { sourcesLine, TURN_ROUGH_AP_MM, ROUGH_AIR_SHARE } from '../../cutting-catalogue.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MaterialFamily } from '../../material-family.js';
 import { analyseGear, GEAR_OEE, GEAR_LABOUR_EFFICIENCY, GEAR_MACHINE_CREW } from '../../modules/gear.js';
@@ -496,7 +497,9 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
     prepBasis: `face/turn/bore: bar ${fmt(stockCm3, 1)} cm³ − turned blank ${fmt(blankCm3, 1)} cm³ `
       + `(Ø${fmt(od.od, 1)}${bore > 0 ? ` bored Ø${fmt(bore, 1)}` : ''} × ${fmt(face, 1)} mm) = ${fmt(removalCm3, 1)} cm³ `
       + `@ ${MRR} cm³/min = ${fmt(removalCm3 / MRR, 2)} min + ${GEAR_BLANK.loadDatumMin} min load/datum `
-      + `(engineering-typical, not sourced) = ${fmt(prepMin, 2)} min = ${prepCycleSec} s on the CNC lathe — costed `
+      + `(engineering-typical, not sourced) = ${fmt(prepMin, 2)} min = ${prepCycleSec} s on the CNC lathe (rough-turning rate `
+      + `vc × fn × ${TURN_ROUGH_AP_MM} mm ap ÷ (1 + ${ROUGH_AIR_SHARE} air moves), ap and air share engineering-typical, not sourced; `
+      + `sources — ${sourcesLine(GEAR_CLASS_FAMILY[matClass], ['turn'])}) — costed `
       + 'as a process operation with machine rate, labour and OEE, not folded into material. Soft turning only: '
       + 'hard turning or grinding of the bore and faces after heat treat is not costed.',
   };

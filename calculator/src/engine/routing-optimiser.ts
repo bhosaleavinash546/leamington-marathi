@@ -41,8 +41,13 @@ export type MachiningCapability = 'turn' | 'mill3' | 'mill5' | 'hmc' | 'drill' |
  */
 /** Annual volume from which a dedicated fixture and a pallet cell are the routing a supplier quotes (engineering-typical). */
 export const VOLUME_CELL_MIN_ANNUAL = 25_000;
-/** Pallet change on a twin-pallet HMC, seconds a part per fixturing (maker figures 7–12 s; engineering-typical). */
-export const PALLET_CHANGE_SEC = 10;
+/**
+ * Pallet change on a twin-pallet HMC, seconds a part per fixturing: Okuma MA-4000H 7.1 s measured to ISO 10791-9 (the
+ * standard its 2.15 s chip-to-chip is quoted to; the 6.6 s beside it is the MAS figure) — Okuma MA-4000H brochure
+ * (Jul 2025), data.json #64 (as corrected on re-read, 3 Nov 2026). The only maker figure read.
+ */
+export const PALLET_CHANGE_SEC = 7.1;
+export const PALLET_CHANGE_SOURCE = 'Okuma MA-4000H 7.1 s, ISO 10791-9 — Okuma MA-4000H brochure (Jul 2025), data.json #64';
 /** Approach directions a 4th-axis tombstone reaches in one clamping. */
 export const HMC_SIDES_PER_CLAMPING = 4;
 export const HMC_MACHINE_ID = 'mach-hmc-400';
@@ -235,7 +240,7 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
         + (drill && drill.id !== primary.id ? ` + ${machineName(drill.id)} £${drill.ratePerHr.toFixed(2)}/hr` : '')
         + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
         + (masked
-          ? ` + ${PALLET_CHANGE_SEC} s pallet change per part per fixturing, ${(handlingHrEach * 60).toFixed(1)} min load / unload masked by the cut`
+          ? ` + ${PALLET_CHANGE_SEC} s pallet change per part per fixturing (${PALLET_CHANGE_SOURCE}), ${(handlingHrEach * 60).toFixed(1)} min load / unload masked by the cut`
           : ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`)
         + (primary.oversize ? ' (part exceeds catalogue envelopes — largest machine of class)' : ''),
     });

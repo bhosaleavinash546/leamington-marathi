@@ -14,6 +14,7 @@ import type { GeometricRule, PartContext, ManufacturingFeature } from '../types.
 import { finding, plausibleWall, isBlend, undercutEvidence, onMachinedFace } from '../types.js';
 import { coredAbove } from './machining.js';
 import { featureMinutesEach, nearNetHoleMinutes } from '../../feature-machining.js';
+import { familyForTimeFactor } from '../../cutting-catalogue.js';
 
 /**
  * Minimum draft by casting route, degrees per side, on an external wall.
@@ -357,10 +358,11 @@ export const CORED_HOLE_RULE: GeometricRule = {
     // Both times in the costing's own model, so the note is arithmetic, not a claim: the sheet prices this hole as cored
     // + finish-bored; it will be drilled from solid. The difference is a routing correction, not a design saving — and
     // it can go either way (a short cored-and-bored hole costs MORE than drilling it).
-    const tf = part.cost?.timeFactor ?? 1;
+    // The metal's own catalogue row (report standard round, Nov 2026) — the legacy factor reads as the metal it stands for.
+    const fam = familyForTimeFactor(part.cost?.timeFactor ?? 1);
     const row = { kind: 'hole' as const, diaMm: f.diaMm, depthMm: f.depthMm, through: false, count: 1 };
-    const asCosted = nearNetHoleMinutes(row, coredAbove(route)) * tf;
-    const drilled = featureMinutesEach(row) * tf;
+    const asCosted = nearNetHoleMinutes(row, coredAbove(route), fam);
+    const drilled = featureMinutesEach(row, fam);
     return finding(this, f, part, {
       severity: 'info',
       detail: `Blind ⌀${f.diaMm.toFixed(1)} mm hole ${f.depthMm.toFixed(1)} mm deep — a die-cast core of that diameter forms `

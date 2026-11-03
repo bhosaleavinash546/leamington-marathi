@@ -33,7 +33,9 @@ describe('M1 — the metal in the holes is cut once (by the hole time), not roug
     const t = fromSolidMillingTime({ family: 'aluminium', partCm3: 500, stockCm3: 1000, totalAreaCm2: 0, planarAreaCm2: 0,
       areaByTypeCm2: {}, rows });
     expect(holeVolumeCm3(rows)).toBeCloseTo(31.416, 2);
-    expect(t.roughMin).toBeCloseTo((500 - 31.416) / 120, 2);         // was 500 / 120
+    // ÷ the catalogue in-cut rate (TungAlu Ø100 z6: 0.7 × 100 × 2 mm × 3,819.7 mm/min = 534.8 cm³/min) × 1.25 air moves
+    const alQ = 0.7 * 100 * 2 * (1000 * 1000 / (Math.PI * 100) * 6 * 0.2) / 1000;
+    expect(t.roughMin).toBeCloseTo((500 - 31.416) / alQ * 1.25, 2);  // was 500 / 120
     expect(t.basis).toContain('cm³ in the holes (cut by the hole time)');
   });
   it('a land (Ø ≥ 30, shallower than ¼ Ø) is skimmed, so its metal stays in the roughing', () => {
@@ -42,12 +44,14 @@ describe('M1 — the metal in the holes is cut once (by the hole time), not roug
   it('the turned route does the same', () => {
     const r = fromBarTurningTime({ family: 'steel', partCm3: 100, stockCm3: 300, totalAreaCm2: 200, turnedFraction: 0.9,
       rows: [hole(10, 100)] });                                      // 7.85 cm³ in the hole
-    expect(r.lathe.roughMin).toBeCloseTo((200 - 7.854) / 80, 2);
+    // steel rough turning: Sandvik GC4015 vc 350 @ fn 0.4 × 3 mm ap = 420 cm³/min ÷ 1.25 = 336 cm³/min (was 80)
+    expect(r.lathe.roughMin).toBeCloseTo((200 - 7.854) / 336, 2);
   });
   it('Part1: 209 cm³ of its 1,649 cm³ removed are in the holes', () => {
     const c = solidCut(ctx('Part1.stp', 'aluminium'), 'aluminium')!;
-    expect(c.detail.roughMin).toBeCloseTo((2078.1 - 429.434 - holeVolumeCm3(geoOf('Part1.stp').featureTable as FeatureRow[])) / 120, 1);
-    expect(c.detail.roughMin).toBeLessThan(12.1);                     // was 13.7
+    const alQ = 0.7 * 100 * 2 * (1000 * 1000 / (Math.PI * 100) * 6 * 0.2) / 1000;
+    expect(c.detail.roughMin).toBeCloseTo((2078.1 - 429.434 - holeVolumeCm3(geoOf('Part1.stp').featureTable as FeatureRow[])) / alQ * 1.25, 1);
+    expect(c.detail.roughMin).toBeLessThan(3.5);                      // was 13.7, then 12.1 at an unsourced 120 cm³/min
   });
 });
 
@@ -123,9 +127,13 @@ describe('T — every printed basis states what its constants are and itemises i
     const drill = ops.find(o => o.type === 'drilling')!;
     expect(drill.basis).toContain('4×Ø5.0×12 drill + tap M6 (inferred from the tapping-drill size)');
     // the per-row minutes add up to the op's time
-    const rowsText = drill.basis.split(' min: ')[1].split(' (drill feed')[0].split('; ');
-    const sum = rowsText.reduce((s, t) => s + Number(/^(\d+)×/.exec(t)![1]) * Number(/ ([0-9.]+) min$/.exec(t)![1]), 0);
+    const rowsText = drill.basis.split(' min: ').slice(1).join(' min: ').split(' (drilled at each hole')[0].split('; ');
+    const sum = rowsText.reduce((s, t) => s + Number(/^(\d+)×/.exec(t)![1]) * Number(/= ([0-9.]+) min$/.exec(t)![1]), 0);
     expect(rowsText).toHaveLength(4);
+    // each row prints its feed and the catalogue it came from (report standard, Nov 2026)
+    expect(drill.basis).toMatch(/Ø5\.0×12 drill \+ tap M6 \(inferred from the tapping-drill size\): 0\.06 \+ 12 ÷ 806 mm\/min/);
+    expect(drill.basis).toContain('Mitsubishi Materials MVE solid carbide drill, recommended cutting conditions (2023), data.json #19–26');
+    expect(drill.basis).toContain('OSG A-Tap flier n_102');
     expect(Math.abs(sum - drill.cycleTimeHr * 60)).toBeLessThan(0.05);   // 2-dp rows v the 4-dp hour
   });
   it('a hydraulic fixture does not print the modular / dedicated volume rule', () => {

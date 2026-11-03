@@ -9,8 +9,8 @@ describe('featureToOperation', () => {
     expect(featureToOperation(row({ diaMm: 6 }))).toBe('Drilling');
     expect(featureToOperation(row({ diaMm: 13 }))).toBe('Drilling');
   });
-  it('maps a deep mid through-hole to drill + ream/bore, a shallow one to clearance drilling', () => {
-    expect(featureToOperation(row({ diaMm: 16, depthMm: 40 }))).toBe('Drill + ream/bore');
+  it('a deep mid through-hole is a clearance hole drilled, not reamed (report standard, Nov 2026); a shallow one clearance drilling', () => {
+    expect(featureToOperation(row({ diaMm: 16, depthMm: 40 }))).toBe('Drilling (through — clearance, not reamed)');
     expect(featureToOperation(row({ diaMm: 16, depthMm: 20 }))).toBe('Drilling (clearance)');
   });
   it('maps large through-holes to helical mill / bore', () => {

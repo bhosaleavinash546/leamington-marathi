@@ -28,7 +28,8 @@ const baseline = JSON.parse(readFileSync(new URL('./fixtures/real-parts-baseline
   Array<{ part: string; geometry: OCCTGeometry }>;
 const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 
-interface Costed { input: UniversalStackInput; result: PartCostResult; lib: RateLibrary; commodity: CommodityType }
+interface Costed { input: UniversalStackInput; result: PartCostResult; lib: RateLibrary; commodity: CommodityType;
+  provenance: Record<string, { value: unknown; basis: string }> }
 
 /** A real part costed headless as the reports were: UK, 200k / yr, 5-year programme, ex-works. */
 async function costed(part: string): Promise<Costed> {
@@ -38,9 +39,11 @@ async function costed(part: string): Promise<Costed> {
     { partNumber: part, file: part, annualVolume: 200_000, ...(spec.commodity ? { commodity: spec.commodity } : {}) } as never,
     { ...spec.answers }, 'UK', { annualVolume: 200_000, programmeYears: 5, deliveryTerms: 'EXW' } as never, book,
     { partNumber: part, file: part, status: 'error' } as never) as unknown as {
-      status: string; commodity: CommodityType; trace: { stackInput: UniversalStackInput; result: PartCostResult } };
+      status: string; commodity: CommodityType; trace: { stackInput: UniversalStackInput; result: PartCostResult };
+      provenance: Record<string, { value: unknown; basis: string }> };
   expect(r.status).toBe('costed');
-  return { input: r.trace.stackInput, result: r.trace.result, lib: regionalBook(book, 'UK', new Map()), commodity: r.commodity };
+  return { input: r.trace.stackInput, result: r.trace.result, lib: regionalBook(book, 'UK', new Map()), commodity: r.commodity,
+    provenance: r.provenance };
 }
 
 const ctxOf = (c: Costed, over: Partial<SuggestionContext> = {}): SuggestionContext =>
@@ -75,33 +78,50 @@ describe('1 — multi-cavity acts on the forming operation only, by the rules\' 
     }
   });
 
-  it('given a further impression by the rules, only the moulding line divides: ≤ £0.5 — not the £5.9 of halving every op', () => {
+  it('given a further impression by the rules, only the moulding line divides — never machining, fettling or melt', () => {
+    // Re-derived on the foundry-at-volume state (3 Nov 2026): at 200k / yr the bracket runs N impressions on the automatic
+    // flaskless line (the rules' own count — read from the costing, not typed here); the step tested is N → N + 1 with
+    // the rules' pattern build-up held, to isolate the operation.
     const c = parts['Casting_Braket.stp'];
-    const tool = 8012;   // the bracket's pattern build-up (provenance cam-hpdc-die-cost); the step keeps it, to isolate the op
-    const cavitation: FormingCavityStep = { current: 4, next: 5, unit: 'impressions', formingToolGBP: { current: tool, next: tool },
-      basis: 'a hypothetical 5th impression, for this test' };
-    const lever = levers(c, 'casting', { cavitation }).all.find(o => /Multi-Cavity/.test(o.action))!;
-    expect(lever).toBeDefined();
     const k = formingOperationIndex(c.input);
-    const ops = c.input.operations.map((o, i) => (i === k ? { ...o, partsPerCycle: o.partsPerCycle * 5 / 4 } : o));
+    // the impressions the rules put on the plate (the moulding op is timed per mould ÷ impressions, parts per cycle 1)
+    const cur = Number(/× (\d+) impressions on the plate/.exec(c.provenance['cam-hpdc-die-cost'].basis)![1]);
+    expect(cur).toBeGreaterThan(4);                                     // the pattern is already multi-up
+    const tool = Number(c.provenance['cam-hpdc-die-cost'].value);       // the bracket's pattern build-up
+    const cavitation: FormingCavityStep = { current: cur, next: cur + 1, unit: 'impressions', formingToolGBP: { current: tool, next: tool },
+      basis: 'a hypothetical further impression, for this test' };
+    const ops = c.input.operations.map((o, i) => (i === k ? { ...o, partsPerCycle: o.partsPerCycle * (cur + 1) / cur } : o));
     const base = computeUniversalStack(c.input, c.lib).total;
     const mine = base - computeUniversalStack({ ...c.input, operations: ops }, c.lib).total;
-    expect(lever.savingPerPart).toBeCloseTo(mine, 3);
-    expect(lever.savingPerPart).toBeLessThanOrEqual(0.5);
-    // the withdrawn transform: every operation ×2, tooling ×1.7
+    // bound: the whole moulding line ÷ (N + 1) — one more impression can never save more than the forming op's own share
+    const formingOp = c.result.operationDetails[k];
+    expect(mine).toBeLessThanOrEqual((formingOp.processCost + formingOp.labourCost) / (cur + 1) * (1 + c.input.overheadPct) * (1 + c.input.marginPct) + 1e-9);
+    expect(mine).toBeLessThanOrEqual(0.5);
+    const lever = levers(c, 'casting', { cavitation }).all.find(o => /Multi-Cavity/.test(o.action));
+    if (mine >= MIN_LEVER_SAVING_GBP) {
+      expect(lever!.savingPerPart).toBeCloseTo(mine, 3);
+      expect(lever!.recostBasis).toMatch(new RegExp(`Sand Casting — Moulding only: ${cur} → ${cur + 1} impressions`));
+      expect(lever!.recostBasis).toMatch(/no other operation changed/);
+    } else {
+      expect(lever).toBeUndefined();                                     // under a penny: not listed
+    }
+    // the withdrawn transform halved every operation (machining, fettling, melt) and was worth pounds, not pence
     const old = base - computeUniversalStack({ ...c.input,
       operations: c.input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, o.partsPerCycle * 2) })),
       tooling: { ...c.input.tooling, totalToolingCost: c.input.tooling.totalToolingCost * 1.7 } }, c.lib).total;
-    expect(old).toBeGreaterThan(5);
-    expect(lever.recostBasis).toMatch(/Sand Casting — Moulding only: 4 → 5 impressions/);
-    expect(lever.recostBasis).toMatch(/no other operation changed/);
+    expect(old).toBeGreaterThan(10 * Math.max(mine, MIN_LEVER_SAVING_GBP));
+    expect(old).toBeGreaterThan(2);
   });
 
   it('the forming tooling is the rules\' figure for the next step — a dearer pattern takes its amortised £ off the saving', () => {
+    // A hypothetical 4 → 5 step on the moulding line (bigger than the rules' own next step, so the lever is priced), with
+    // a £20,000 dearer pattern: the saving falls by exactly that pattern's amortised £ with its overhead and margin.
     const c = parts['Casting_Braket.stp'];
-    const step = (next: number): FormingCavityStep => ({ current: 4, next: 5, formingToolGBP: { current: 8012, next }, basis: 't' });
-    const same = levers(c, 'casting', { cavitation: step(8012) }).all.find(o => /Multi-Cavity/.test(o.action))!;
-    const dearer = levers(c, 'casting', { cavitation: step(8012 + 20_000) }).all.find(o => /Multi-Cavity/.test(o.action));
+    const tool = Number(c.provenance['cam-hpdc-die-cost'].value);
+    const step = (next: number): FormingCavityStep => ({ current: 1, next: 2, formingToolGBP: { current: tool, next }, basis: 't' });
+    const same = levers(c, 'casting', { cavitation: step(tool) }).all.find(o => /Multi-Cavity/.test(o.action))!;
+    expect(same).toBeDefined();
+    const dearer = levers(c, 'casting', { cavitation: step(tool + 20_000) }).all.find(o => /Multi-Cavity/.test(o.action));
     const extraPerPart = 20_000 / c.input.tooling.amortizationVolume * (1 + c.input.overheadPct) * (1 + c.input.marginPct);
     expect((dearer?.savingPerPart ?? 0)).toBeCloseTo(Math.max(0, same.savingPerPart - extraPerPart), 2);
   });

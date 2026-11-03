@@ -121,9 +121,9 @@ describe('G4 — printed bases re-add to their values and state their constants'
 
   it('blank turning basis prints bar − blank = removal and the seconds', () => {
     const b = r.byRule['gear.blankPrepCycleSec'];
-    expect(b.value).toBe(190);
+    expect(b.value).toBe(114);   // 133.1 cm³ ÷ 336 cm³/min (catalogue steel rough turning, Nov 2026; was 80 → 190 s) + 1.5 min
     expect(b.basis).toContain('bar 434.7 cm³ − turned blank 301.6 cm³');
-    expect(b.basis).toContain('= 3.16 min = 190 s');
+    expect(b.basis).toContain('= 1.90 min = 114 s');
   });
 
   it('set-up basis names every operation it is charged on and the OEE / crew / efficiency', () => {

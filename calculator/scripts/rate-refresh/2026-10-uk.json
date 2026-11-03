@@ -245,7 +245,51 @@
     "confidence": "Low"
    }
   ],
-  "notRebuilt": "capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff"
+  "notRebuilt": "capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff",
+  "added": [
+   {
+    "id": "sand-auto-vertical-line",
+    "class": "Automatic vertical green-sand moulding line (DISAMATIC 270 class, moulding equipment only)",
+    "after": "sand-cast-line",
+    "added": "2026-11-03",
+    "capexGbp": 2507313,
+    "capexBasis": "Dovre (BE) investment in DISA moulding equipment, a DISAMATIC 270-A replacing a DISAMATIC 2070, €3,000,000 (2015 money, NOT escalated — the library has no escalation rule) ÷ €1.1965/£ (book FX); scope: the moulding equipment only — the foundry kept its DISA sand plant, and melting, pouring automation and the building are not in it; a maker's press release quoting the buyer, one data point (Medium–Low confidence)",
+    "kwFromMachine": "sand-cast-line",
+    "kwBasis": "no sourced draw — the running load of the book's semi-automatic sand moulding line, not measured for this line",
+    "floorFromMachine": "sand-cast-line",
+    "floorBasis": "the floor of the book's semi-automatic sand moulding line, held — not sourced for this line",
+    "hours": 6000,
+    "utilisation": 0.8,
+    "hoursBasis": "the UK book's convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022)",
+    "altHours": 3500,
+    "altUtilisation": 0.75,
+    "altBasis": "the book's semi-automatic sand line's hours",
+    "confidence": "Low",
+    "source": "Foundry-Planet, DISA press release (signalkommunikation ApS for DISA Industries A/S), 17 Mar 2015 — https://www.foundry-planet.com/d/disa-belgian-stove-manufacturer-dovre-invests-3-million-euros-in-new-moulding-lines-from-disa/ (read 2015-03-17; read 2026-11-03)",
+    "research": "foundry-capex L2"
+   },
+   {
+    "id": "fettle-robot-cell",
+    "class": "Robotic fettling / grinding cell (7-axis, iron castings)",
+    "after": "sand-auto-vertical-line",
+    "added": "2026-11-03",
+    "capexGbp": 320720,
+    "capexBasis": "KAW-MET iron foundry (PL) declared budget for a 7-axis robotic grinding-cleaning centre (Ø800 × 500 mm envelope, castings ≥ 40 kg), zł1,634,390 net (2025, a resolved EU-funds procedure, 3 bids; the winning price was not published) ÷ zł5.096/£ (book FX); scope: the cell, three tool sets, installation, start-up, training and a 24-month warranty with service — part fixtures excluded; cross-check Sinto America US$300–500k (2019) (Low–Medium confidence)",
+    "kwFixed": 30.0,
+    "kwBasis": "the tender's ≤ 30 kW power limit — an upper bound on the draw, not a measured load",
+    "floorFromMachine": "robot-mig-cell",
+    "floorBasis": "the floor of the book's single-robot welding cell, held — not sourced for this cell",
+    "hours": 6000,
+    "utilisation": 0.8,
+    "hoursBasis": "the UK book's convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022)",
+    "altHours": 3500,
+    "altUtilisation": 0.75,
+    "altBasis": "the book's semi-automatic sand line's hours",
+    "confidence": "Low",
+    "source": "Odlewnia KAW-MET Marek Kawiński Sp. z o.o. (iron foundry), Baza Konkurencyjności 214998, Zapytanie ofertowe nr 4/2025/FENG/KAWMET + settlement — https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/ogloszenia/214998 (read published 2025-02-12; resolved (3 offers; Eurocast Industries chosen); read 2026-11-03)",
+    "research": "foundry-capex F1"
+   }
+  ]
  },
  "materialFamilies": [
   {

@@ -84,11 +84,16 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     expect(nearNetTurnedAreaCm2(b.turning, b.surfaceArea!.cm2)).toBe(0);
   });
 
-  it('turning time by hand: rough 67.7 cm³ ÷ 100 + finish 225.75 cm² ÷ 75 + 3 tools × 6 s = 3.99 min (cast iron)', () => {
+  it('turning time by hand on the published cutting data: 1.72 min (cast iron) — it was 3.99 on unsourced rates', () => {
+    // Sandvik GC3005, nodular iron 09.2 pearlitic (data.json #52): rough vc 215 m/min at fn 0.3, ap 3 mm (assumed) →
+    // 215 × 0.3 × 3 = 193.5 cm³/min in-cut ÷ 1.25 air moves = 154.8 cm³/min; 67.7 cm³ ÷ 154.8 = 0.44 min.
+    // Finish vc 260 at fn 0.1 → 0.1 × 260 × 10 = 260 cm²/min; 225.75 ÷ 260 = 0.87 min.
+    // 3 tools × (0.10 min approach / retract + 2.2 s chip-to-chip) = 0.30 + 0.11 = 0.41 min. Total 1.72 min.
     const t = nearNetTurningTime(225.75, 'cast iron', 3, 114);
-    expect(t.roughMin).toBeCloseTo(0.68, 2);
-    expect(t.finishMin).toBeCloseTo(3.01, 2);
-    expect(t.totalMin).toBeCloseTo(3.99, 2);
+    expect(t.roughMin).toBeCloseTo(67.725 / 154.8, 2);
+    expect(t.finishMin).toBeCloseTo(225.75 / 260, 2);
+    expect(t.totalMin).toBeCloseTo(67.725 / 154.8 + 225.75 / 260 + 3 * 0.10 + 3 * 2.2 / 60, 2);
+    expect(t.basis).toMatch(/Sandvik Coromant Small Part Machining catalogue, turning cutting data/);
     expect(t.basis).toMatch(/ground bearing seats, if the drawing calls them, are extra/);
   });
 
@@ -98,7 +103,7 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     const turn = m.operations.find(o => /Turning — spindle/.test(o.name))!;
     expect(turn.machineId).toBe('mach-lathe-cnc');
     expect(turn.type).toBe('turning');
-    expect(turn.cycleTimeHr * 60).toBeCloseTo(3.99, 1);
+    expect(turn.cycleTimeHr * 60).toBeCloseTo(1.72, 1);
     // the 1.2 min load is its own operation at a whole operator (it rode in the turning op at crew 0.5 — arithmetic audit M3)
     const load = m.operations.find(o => /Load \/ clamp \/ unload — lathe fixture/.test(o.name))!;
     expect(load.machineId).toBe('mach-lathe-cnc');
@@ -124,8 +129,9 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     const rec = baseline.find(b => b.part === 'PRCR002.stp')!;
     // £87.38 on the 2026-09 book; £53.39 on the UK rate book (Oct 2026: ductile iron at its charge, machining
     // machine-only); £42.81 after the pilot rule pack (30 Oct 2026: one clamping on the twin-pallet cell, iron
-    // as-cast, 100% MPI with a sample X-ray) — still the ductile, safety-critical route
-    expect(rec.outcome.total).toBeGreaterThan(40);
+    // as-cast, 100% MPI with a sample X-ray); £25.92 after the report standard round (3 Nov 2026: machining on published
+    // cutting data, the foundry at volume) — still the ductile, safety-critical route
+    expect(rec.outcome.total).toBeGreaterThan(20);
   });
 });
 

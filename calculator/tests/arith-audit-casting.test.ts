@@ -117,7 +117,10 @@ describe('A5 — every constant that moves a real part says what it is', () => {
   it('Casting Bracket: pattern life, heat treat, blast, yield and crew are labelled unsourced', async () => {
     const r = await cost('Casting_Braket.stp');
     const b = (id: string) => String(r.provenance[id].basis);
-    expect(b('cam-hpdc-die-life')).toMatch(/engineering-typical, not sourced/);
+    // Foundry at volume (3 Nov 2026, P3): the pattern life is the PRICED material's (aluminium), a judgement inside a
+    // published range — it says both (it was the wood band, "engineering-typical, not sourced").
+    expect(b('cam-hpdc-die-life')).toMatch(/CostVision engineering judgement/);
+    expect(b('cam-hpdc-die-life')).toMatch(/10,000–50,000 moulds \(Supro MFG\)/);
     expect(b('cam-ht-cost')).toMatch(/stress-relieve \/ normalise rate.*not sourced/);
     expect(b('cam-shot-blast')).toMatch(/engineering-typical, not sourced/);
     expect(b('cam-cast-yield')).toMatch(/not sourced/);

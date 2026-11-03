@@ -93,17 +93,23 @@ describe('2. melting is charged on every kg poured', () => {
 });
 
 describe('3. the sand line is timed per mould, shared by its impressions', () => {
-  it('fits four Casting Brackets in a 500 × 400 flask and charges ~30 s of line time each', () => {
+  it('fits twelve Casting Brackets on the semi-automatic line\'s 800 × 650 flask and charges ~5 s of line time each', () => {
+    // Foundry at volume (3 Nov 2026): the semi-automatic line is the HWS HSP-2D class (800 × 650 mm, 60 moulds/h —
+    // sourced) where it was an unsourced 500 × 400 flask at 30 moulds/h (4 a mould, 0.0083 h). 1/60/12 h, to 6 dp.
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.subtype).toBe('sand');
-    expect(c.cycleTimeSandGravHr).toBe(0.0083);  // was 0.1846 h — 11 minutes of line time a part
+    expect(c.cycleTimeSandGravHr).toBe(0.001389);  // 6 dp below 0.01 h, as the screen writes it; was 0.1846 h — 11 minutes of line time a part
   });
 
   it('packs impressions either way round and never fewer than one fit', () => {
-    expect(sandImpressions([133, 120])).toBe(4);
-    expect(sandImpressions([400, 300])).toBe(1);
-    expect(sandImpressions([600, 500])).toBe(0);  // floor-moulded
+    // on a stated face (the old 500 × 400 flask), and on the default semi-automatic 800 × 650 face
+    expect(sandImpressions([133, 120], [500, 400])).toBe(4);
+    expect(sandImpressions([400, 300], [500, 400])).toBe(1);
+    expect(sandImpressions([600, 500], [500, 400])).toBe(0);  // floor-moulded
+    expect(sandImpressions([133, 120])).toBe(12);
+    expect(sandImpressions([400, 300])).toBe(2);               // 350 × 450 fits twice turned
+    expect(sandImpressions([800, 600])).toBe(0);
   });
 });
 

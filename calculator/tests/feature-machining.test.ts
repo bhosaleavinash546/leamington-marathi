@@ -110,16 +110,22 @@ describe('Phase 2 — compound machining features (facing, pockets)', () => {
   const FACE: FeatureRow = { kind: 'face', diaMm: 0, depthMm: 0, through: null, count: 1, areaMm2: 8000 };
   const POCKET: FeatureRow = { kind: 'pocket', diaMm: 0, depthMm: 12, through: null, count: 1, areaMm2: 3000 };
 
-  it('face is costed by area (facing pass), not diameter', () => {
+  it('face is costed by passes of the catalogue face mill over its length, not by diameter', () => {
     const m = featureMinutesEach(FACE);
-    // 0.20 setup + 8000/8000 = ~1.2 min
-    expect(m).toBeCloseTo(0.20 + 8000 / 8000, 3);
+    // Aluminium (TungAlu-Mill, data.json #13): vc 1000, fz 0.2; √8000 = 89.4 mm wide > 0.7 × Ø100 = 70 → the Ø100 z6
+    // body, 2 passes; n = 1000 × 1000 / (π × 100) = 3,183 rev/min, vf = 3,183 × 6 × 0.2 = 3,820 mm/min;
+    // 0.20 positioning + 2 × (89.4 + 100 + 2 × 5) / 3,820 = 0.20 + 0.104 = 0.304 min (it was 0.20 + 8000/8000 = 1.2).
+    const vf = 1000 * 1000 / (Math.PI * 100) * 6 * 0.2;
+    expect(m).toBeCloseTo(0.20 + 2 * (Math.sqrt(8000) + 100 + 10) / vf, 6);
   });
 
-  it('pocket is costed by removed volume + wall finish', () => {
+  it('pocket is costed by removed volume at the roughing rate + walls at the side-pass rate', () => {
     const m = featureMinutesEach(POCKET);
-    expect(m).toBeGreaterThan((3000 * 12) / 6000 / 60 * 60); // > pure roughing part
-    expect(m).toBeGreaterThan(0.3);
+    // 36 cm³ ÷ (534.8 in-cut ÷ 1.25 air = 427.8 cm³/min) + 4 × √3000 × 12 / 100 = 26.3 cm² of wall ÷ (2 mm ap (the
+    // TungAlu max) × Ø50 z4 at vc 1000, fz 0.2 = 5,093 mm/min → 101.9 cm²/min) + 0.30 allowance
+    const rough = 36 / 427.8;
+    const wall = 4 * Math.sqrt(3000) * 12 / 100 / (2 * (1000 * 1000 / (Math.PI * 50)) * 4 * 0.2 / 100);
+    expect(m).toBeCloseTo(0.30 + rough + wall, 4);
   });
 
   it('faces are ON by default; pockets stay off (engineer confirms recesses)', () => {

@@ -96,12 +96,16 @@ describe('1. the volume machining cell', () => {
     expect(m.toolingCost).toBe(FIXTURE_GBP.hydraulic + FIXTURE_GBP.dedicated);   // 1 hydraulic tombstone fixture + the lathe's dedicated fixture
   });
 
-  it('the stub axle at 10,000/yr keeps the job-shop split routing', () => {
+  it('the stub axle at 10,000/yr stays off the volume cell — a job-shop routing, ranked in £', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctx('PRCR002.stp', 'cast_and_machine', 10_000,
       { 'material.family': 'cast iron', 'service.pressureTight': 'no', 'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes' }));
     const m = r.suggestions.machining as { machineId: string; setupCount: number };
     expect(m.machineId).not.toBe(HMC_MACHINE_ID);
-    expect(m.setupCount).toBe(5);
+    // On the catalogue cutting data (report standard, Nov 2026) the cut is short enough that the split routing's four
+    // 1.2-min loads cost more than one 5-axis clamping: consolidated 5-axis (1 clamping) + the lathe = 2 set-ups (the
+    // split routing, 4 + the lathe = 5, was cheaper while the cut was twice as long).
+    expect(r.provenance['cam-mach-setup-mach'].basis).toMatch(/→ consolidated-5axis/);
+    expect(m.setupCount).toBe(2);
   });
 
   it('the manifold from solid at 50,000/yr: two clampings (four sides + the clamped face), the drilling in the clamping', () => {

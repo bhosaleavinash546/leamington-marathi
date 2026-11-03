@@ -25,7 +25,7 @@ import {
 import type { PartContext, ManufacturingFeature } from '../src/engine/dfm-geometry/types.js';
 import type { ManufacturingFeatureSet } from '../src/engine/ai-analysis.js';
 import { estimateMouldCost } from '../src/engine/modules/injection-moulding.js';
-import { featureMinutesEach, DEEP_HOLE_PECK, DRILL_FEED_MM_PER_MIN, MICRO_DRILL_FEED_MM_PER_MIN } from '../src/engine/feature-machining.js';
+import { featureMinutesEach, deepHolePeckPremiumMin, DEEP_HOLE_PECK, DRILL_FEED_MM_PER_MIN, MICRO_DRILL_FEED_MM_PER_MIN } from '../src/engine/feature-machining.js';
 
 const VOL = 50_000, MR = 60, LR = 25;
 const BBOX = { x: 200, y: 100, z: 40 };
@@ -69,8 +69,14 @@ describe('a price reconciles to the engine it came from', () => {
   it('the deep hole is the costing\u2019s own peck premium — never the hole\u2019s whole drilling time (report standard, Nov 2026)', () => {
     // featureMinutesEach drills past 5×D at 1/1.5 of its feed: the premium is the extra 0.5 × L ÷ feed, what a hole
     // within 5×D would not pay. The hole's own time (the old £) stays whatever the design does.
-    const whole = featureMinutesEach({ kind: 'hole', diaMm: 6, depthMm: 72, through: null, count: 1 });
-    const premium = (DEEP_HOLE_PECK - 1) * 72 / MICRO_DRILL_FEED_MM_PER_MIN;   // Ø6 ≤ 6 mm: the micro-drill feed
+    // Report standard round (3 Nov 2026): the feed is the catalogue's n·f at the hole's Ø (MVE aluminium: 806 mm/min at
+    // Ø6), so the premium is `deepHolePeckPremiumMin` — the costing's own. The DFM must read it, not the retired
+    // 250 mm/min micro-drill constant (cost-impact.ts deepHolePremium — owner to switch; this test pins the costing).
+    const hole = { kind: 'hole' as const, diaMm: 6, depthMm: 72, through: null, count: 1 };
+    const whole = featureMinutesEach(hole);
+    const premium = deepHolePeckPremiumMin(hole);
+    expect(premium).toBeCloseTo((DEEP_HOLE_PECK - 1) * 72 / (2600 * 0.31), 6);
+    void MICRO_DRILL_FEED_MM_PER_MIN;
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const g = r.grouped.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
     expect(g.totalCostGBP).toBeCloseTo((premium / 60) * (MR + LR), 4);
@@ -94,7 +100,8 @@ describe('a price reconciles to the engine it came from', () => {
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const f = r.findings.find(x => x.costImpact)!;
     expect(f.costImpact!.basis).toMatch(/the costing\u2019s deep-hole premium/);
-    expect(f.costImpact!.basis).toMatch(/72 mm ÷ 250 mm\/min × \(1\.5 − 1\) peck = 0\.14 min/);
+    // the drill maker's feed at the hole's Ø (MVE aluminium n 2600 × f 0.31 = 806 mm/min) — it was a flat 250 mm/min
+    expect(f.costImpact!.basis).toMatch(/72 mm ÷ 806 mm\/min \(the drill maker’s n·f at Ø6\.0 in aluminium\) × \(1\.5 − 1\) peck = 0\.04 min/);
     expect(f.costImpact!.basis).toMatch(/reference machine \+ labour/);
     // what the figure is not: the drilling itself stays
     expect(f.costImpact!.basis).toMatch(/the drilling itself stays\.$/);

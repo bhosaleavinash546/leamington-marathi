@@ -16,6 +16,9 @@
  * dump-context.ts): every £/h is the region's own book, fixtures take the book's toolroom factor, overhead the
  * country's shop default; ex-works carries no freight.
  * Write-up: docs/review/arith-audit/machining.md.
+ * Report standard round (3 Nov 2026): cutting time re-based on PUBLISHED catalogue cutting data (cutting-catalogue.ts) —
+ * restated here independently from data.json (`CAT`), with the labelled assumptions; allowances are no longer scaled by
+ * the metal; tool change 2.2 s, pallet change 7.1 s.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -41,13 +44,45 @@ interface Row { kind: string; diaMm: number; depthMm: number; through: boolean |
 // ── Auditor's restatement of the stated constants ─────────────────────────────────────────────────────────────────
 const ANNUAL = C.annual, YEARS = C.years;                          // the dump's own (dump.ts)
 const DENSITY: Record<string, number> = { aluminium: 0.0027, steel: 0.00785, 'cast iron': 0.00715 };   // derive/material.ts:23
-const CUT: Record<string, { tf: number; mill: number; turn: number; wear: number }> = {               // machining-time.ts CUTTING_DATA
-  aluminium: { tf: 1.0, mill: 120, turn: 250, wear: 0.04 },
-  steel: { tf: 2.0, mill: 35, turn: 80, wear: 0.12 },
-  'cast iron': { tf: 1.6, mill: 50, turn: 100, wear: 0.10 },
+// Machinability ratio (only for ball-nose surfacing and helical milling — no catalogue row) and tool £/min (machining-time.ts)
+const CUT: Record<string, { tf: number; wear: number }> = {
+  aluminium: { tf: 1.0, wear: 0.04 }, steel: { tf: 2.0, wear: 0.12 }, 'cast iron': { tf: 1.6, wear: 0.10 },
 };
-const FIN = { wall: 40, surf: 10, turn: 120 };                     // FINISH_RATE_CM2_PER_MIN
-const TOOL_CHANGE_S = 6, SETUP_MIN = 45, PALLET_S = 10, CUT_MANNING = 0.5, OEE = 0.8, LAB_EFF = 0.92, REJECT = 0.02;
+/**
+ * The published cutting data (report standard round, 3 Nov 2026), restated by the auditor from
+ * scripts/research/2026-11-report-standard/machining/data.json (row numbers in the comments; the 3 CORRECTED rows as
+ * corrected) — NOT read from cutting-catalogue.ts. face: vc, fz (WSX445 #0/#2/#3 MC5020, TungAlu #13); bodies [Ø, z]
+ * (steel / iron ASSUMED, Al TungAlu worked table); rough fz, ap (WSX445 #4 medium, TungAlu max ap); side: APX4000 #7/#9
+ * (fz 0.25 corrected) / TungAlu; drill [Ø, n, f] MVE #19–26; bore vc, f 0.2 (T515 #55); turn finish vc @ fn (Sandvik
+ * #47/#52, SVJD #57); turn rough vc @ fn (Sandvik #47/#52, SVJD #57); tap 15 m/min (OSG #58–61).
+ */
+const CAT: Record<string, { face: [number, number]; bodies: Array<[number, number]>; rough: [number, number];
+  side: { vc: number; fz: number; dc: number; z: number; apLim: number }; drill: Array<[number, number, number]>;
+  bore: [number, number]; tFin: [number, number]; tRough: [number, number]; tap: number }> = {
+  steel: { face: [220, 0.15], bodies: [[63, 5], [80, 6], [100, 7], [125, 8]], rough: [0.2, 3.0],
+    side: { vc: 160, fz: 0.25, dc: 50, z: 4, apLim: 20 }, drill: [[12, 2300, 0.31], [16, 1700, 0.33]],
+    bore: [350, 0.2], tFin: [485, 0.1], tRough: [350, 0.4], tap: 15 },
+  'cast iron': { face: [200, 0.15], bodies: [[63, 5], [80, 6], [100, 7], [125, 8]], rough: [0.2, 3.0],
+    side: { vc: 190, fz: 0.25, dc: 50, z: 4, apLim: 20 }, drill: [[12, 1900, 0.31], [16, 1400, 0.33]],
+    bore: [201, 0.2], tFin: [260, 0.1], tRough: [215, 0.3], tap: 15 },
+  aluminium: { face: [1000, 0.2], bodies: [[50, 4], [63, 5], [100, 6]], rough: [0.2, 2.0],
+    side: { vc: 1000, fz: 0.2, dc: 50, z: 4, apLim: 2.0 }, drill: [[12, 2600, 0.31], [16, 1900, 0.33]],
+    bore: [400, 0.2], tFin: [400, 0.15], tRough: [400, 0.3], tap: 15 },
+};
+// Labelled assumptions (cutting-catalogue.ts): step-over 0.7·Dc, 5 mm clearance a side, 10 mm side pass, +25 % air moves,
+// 3 mm rough-turning ap, 0.10 min approach a lathe tool; ISO 261 coarse pitches by tapping drill.
+const STEP = 0.7, CLEAR = 5, SIDE_AP = 10, AIR = 0.25, TURN_AP = 3, TURN_ALLOW = 0.10;
+const TAP: Array<[number, number, number]> = [[2.5, 3, 0.5], [3.3, 4, 0.7], [4.2, 5, 0.8], [5.0, 6, 1.0], [6.8, 8, 1.25], [8.5, 10, 1.5], [10.2, 12, 1.75]];
+const n = (vc: number, d: number) => 1000 * vc / (Math.PI * d);
+const r1 = (x: number) => Math.round(x * 10) / 10;
+/** In-cut milling roughing cm³/min on the Ø100 body: ae × ap × n·z·fz. */
+const millQ = (fam: string) => { const c = CAT[fam]; const [dc, z] = c.bodies.find(b => b[0] === 100)!; return STEP * dc * c.rough[1] * n(c.face[0], dc) * z * c.rough[0] / 1000; };
+/** Effective rough-turning cm³/min: vc × fn × ap ÷ (1 + air), to 0.1. */
+const turnQ = (fam: string) => r1(CAT[fam].tRough[0] * CAT[fam].tRough[1] * TURN_AP / (1 + AIR));
+const sideRate = (fam: string) => { const s = CAT[fam].side; return Math.min(SIDE_AP, s.apLim) * n(s.vc, s.dc) * s.z * s.fz / 100; };
+const turnFin = (fam: string) => CAT[fam].tFin[0] * CAT[fam].tFin[1] * 10;
+const FIN = { surf: 10 };                                           // ball-nose surfacing, aluminium (no catalogue row)
+const TOOL_CHANGE_S = 2.2, SETUP_MIN = 45, PALLET_S = 7.1, CUT_MANNING = 0.5, OEE = 0.8, LAB_EFF = 0.92, REJECT = 0.02;
 const PLATE = [3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120, 130, 140,
   150, 160, 180, 200, 225, 250, 275, 300];
 const BAR = [6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 30, 32, 35, 38, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120,
@@ -57,8 +92,8 @@ const FIXTURE = { modular: 500, dedicated: 2500, softJaws: 300, hydraulic: 12_00
 /** machining-time.ts fixtureCostGBP: the UK-basis £ × the book's toolroom factor, rounded once per call. */
 const fixtureGBP = (ukGbp: number) => Math.round(ukGbp * C.toolroomFactor);
 const PROG = { perFix: 1.5, perRow: 0.25, surf: 2 };
-const DRILL_FEED = 400, MICRO_FEED = 250, PECK = 1.5, TAP_FEED = 500, TAP_APPROACH = 0.10, BORE_FEED = 150;
-const TAP_DRILLS = [2.5, 3.3, 4.2, 5.0, 6.8, 8.5, 10.2];
+const PECK = 1.5, TAP_APPROACH = 0.10;
+const TAP_DRILLS = TAP.map(t => t[0]);
 const CORED: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6, forging: 25 };
 const CAST_STOCK_MM: Record<string, number> = { sand_ferrous: 3.0, sand: 2.0, gravity: 1.5, investment: 1.0, hpdc: 0.5 };
 const NEAR_NET_TURN_STOCK = 2;
@@ -93,23 +128,41 @@ function tapped(r: Row): boolean {
   return r.kind === 'hole' && r.depthMm >= 1.5 * r.diaMm && TAP_DRILLS.some(d => Math.abs(d - r.diaMm) <= 0.1);
 }
 const isLand = (r: Row) => r.diaMm >= 30 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
-/** One hole, minutes, aluminium baseline (feature-machining.ts featureMinutesEach). */
-function holeMin(r: Row): number {
-  if (r.kind === 'face') return 0.20 + Math.max(r.areaMm2 ?? 0, 1) / 8000;
+/** Drill feed along the hole at Ø (n·f): vc and f at Ø12 / Ø16 interpolated; f ∝ Ø below Ø12; held above Ø16. */
+function drillVf(fam: string, d: number): number {
+  const [[da, na, fa], [db, nb, fb]] = CAT[fam].drill;
+  const vca = Math.PI * da * na / 1000, vcb = Math.PI * db * nb / 1000;
+  const D = Math.max(d, 0.5);
+  const [vc, f] = D <= da ? [vca, fa * D / da] : D >= db ? [vcb, fb] : [vca + (D - da) / (db - da) * (vcb - vca), fa + (D - da) / (db - da) * (fb - fa)];
+  return n(vc, D) * f;
+}
+const boreVf = (fam: string, d: number) => n(CAT[fam].bore[0], Math.max(d, 1)) * CAT[fam].bore[1];
+/** One face: 0.2 + passes × (√A + Dc + 2c) ÷ n·z·fz, the smallest body whose 0.7·Dc covers √A. */
+function faceMin(fam: string, area: number): number {
+  const c = CAT[fam]; const side = Math.sqrt(Math.max(area, 1));
+  const [dc, z] = c.bodies.find(b => STEP * b[0] >= side) ?? c.bodies[c.bodies.length - 1];
+  const passes = Math.max(1, Math.ceil(side / (STEP * dc) - 1e-9));
+  return 0.20 + passes * (side + dc + 2 * CLEAR) / (n(c.face[0], dc) * z * c.face[1]);
+}
+/** One feature, minutes, at the metal's catalogue row (feature-machining.ts featureTime); allowances not scaled. */
+function holeMin(r: Row, fam: string, cored?: number): number {
+  if (r.kind === 'face') return faceMin(fam, r.areaMm2 ?? 0);
   const d = r.diaMm, L = Math.max(r.depthMm, 1);
   if (isLand(r)) return 0.20 + d * 0.004;
+  if (cored !== undefined && d > cored) return 0.25 + L / boreVf(fam, d);
   const deep = L > 5 * Math.max(d, 1) ? PECK : 1;
   let t: number;
-  if (d > 26) t = 0.50 + L * 0.050;
-  else if (d > 13) { const bore = r.through === false || L > 2 * d; t = 0.15 + L / DRILL_FEED * deep + (bore ? 0.25 + L / DRILL_FEED : 0); }
-  else if (d > 6) t = 0.15 + L / DRILL_FEED * deep;
-  else t = 0.06 + L / MICRO_FEED * deep;
+  if (d > 26) t = 0.50 + L * 0.050 * CUT[fam].tf;
+  else {
+    t = (d > 6 ? 0.15 : 0.06) + L / drillVf(fam, d) * deep;
+    if (d > 13 && r.through === false) t += 0.25 + L / boreVf(fam, d);     // blind 13–26: a boring pass; through: drilled only
+  }
   if (r.through === false) t += 0.10;
-  if (tapped(r)) t += TAP_APPROACH + 2 * L / TAP_FEED;
+  const tp = TAP.find(x => r.depthMm >= 1.5 * d && Math.abs(x[0] - d) <= 0.1);
+  if (tp) t += TAP_APPROACH + 2 * L / (n(CAT[fam].tap, tp[1]) * tp[2]);
   return t;
 }
-const nearNetHoleMin = (r: Row, cored?: number) =>
-  cored !== undefined && r.kind === 'hole' && r.diaMm > cored && !isLand(r) ? 0.25 + Math.max(r.depthMm, 1) / BORE_FEED : holeMin(r);
+const nearNetHoleMin = (r: Row, fam: string, cored?: number) => holeMin(r, fam, r.kind === 'hole' ? cored : undefined);
 /** Metal inside the drilled / bored holes, cm³ — cut by the hole time, so not roughed again (finding M1). */
 const holeVolCm3 = (rows: Row[]) => PRE ? 0 : rows.filter(r => r.kind === 'hole' && !isLand(r))
   .reduce((s, r) => s + Math.PI * r.diaMm * r.diaMm / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
@@ -195,8 +248,8 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   const WALL = new Set(['PLANE', 'CYLINDER', 'CONE', 'TORUS']);
   const wall = Math.max(0, Object.entries(by).filter(([k]) => WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100 - holeWallCm2(rows));
   const free = Object.entries(by).filter(([k]) => !WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100;
-  const roughMin = removed / cd.mill, finishMin = wall / FIN.wall * cd.tf, surfMin = free / FIN.surf * cd.tf;
-  const holesMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + holeMin(r) * r.count, 0) * cd.tf;
+  const roughMin = removed / millQ(family) * (1 + AIR), finishMin = wall / sideRate(family), surfMin = free / (FIN.surf / cd.tf);
+  const holesMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + holeMin(r, family) * r.count, 0);
   const tools = 3 + (free > 0.5 ? 1 : 0) + holeSizes(rows);
   const toolMin = tools * TOOL_CHANGE_S / 60;
   // machining-time.ts: totalMin = r2(all); the mill content is totalMin − r2(holes)
@@ -209,10 +262,10 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   if (turned) {
     const removedT = Math.max(0, stockCm3 - vol - holeVolCm3(rows));
     const turnedCm2 = area * turned.fraction;
-    const rough = removedT / cd.turn, fin = turnedCm2 / FIN.turn * cd.tf;
-    lathe = { total: r2(rough + fin + 3 * TOOL_CHANGE_S / 60), basisRough: rough };
+    const rough = removedT / turnQ(family), fin = turnedCm2 / turnFin(family);
+    lathe = { total: r2(rough + fin + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60), basisRough: rough };
     const other = Math.max(0, area - turnedCm2 - holeWallCm2(rows));
-    const mf = other / FIN.wall * cd.tf, hm = holesMin;
+    const mf = other / sideRate(family), hm = holesMin;
     const mt = (other > 0.5 || hm > 0) ? 1 + holeSizes(rows) : 0;
     sec = { finish: r2(mf), tc: r2(mt * TOOL_CHANGE_S / 60), hole: r2(hm), total: r2(mf + hm + mt * TOOL_CHANGE_S / 60) };
   }
@@ -333,17 +386,17 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   const cd = CUT[family];
   const cored = CORED[subtype] ?? 20;
   const faces = rows.filter(r => r.kind === 'face');
-  const faceMin = faces.reduce((s, r) => s + holeMin(r) * r.count, 0) * cd.tf;
-  const allHoleMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + nearNetHoleMin(r, cored) * r.count, 0) * cd.tf;
+  const facesMin = faces.reduce((s, r) => s + holeMin(r, family) * r.count, 0);
+  const allHoleMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0);
   const tools = (faces.length ? 1 : 0) + 1 + holeSizes(rows);
-  const nn = { finish: r2(faceMin), tc: r2(tools * TOOL_CHANGE_S / 60), hole: r2(allHoleMin) };
-  const boreMin = r2(rows.filter(r => r.kind === 'hole' && r.diaMm > cored).reduce((s, r) => s + nearNetHoleMin(r, cored) * r.count, 0) * cd.tf);
+  const nn = { finish: r2(facesMin), tc: r2(tools * TOOL_CHANGE_S / 60), hole: r2(allHoleMin) };
+  const boreMin = r2(rows.filter(r => r.kind === 'hole' && r.diaMm > cored).reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0));
   const drillMin = Math.max(0, r2(nn.hole - boreMin));
   const millMin = nn.finish + nn.tc;
   const ext = (geo.turning?.externalAreaMm2 ?? 0) / 100;
   const spindleCm2 = ext >= 20 && ext / geo.surfaceArea.cm2 >= 0.08 ? ext : 0;
   const stockMm = subtype === 'sand' && (family === 'steel' || family === 'cast iron') ? CAST_STOCK_MM.sand_ferrous : CAST_STOCK_MM[subtype] ?? 1.5;
-  const sp = spindleCm2 * stockMm / 10 / cd.turn + spindleCm2 / (FIN.turn / cd.tf) + 3 * TOOL_CHANGE_S / 60;
+  const sp = spindleCm2 * stockMm / 10 / turnQ(family) + spindleCm2 / turnFin(family) + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60;
   const spindleMin = r2(sp);
   const hMin = handlingMin(geo.volume.cm3 * DENSITY[family]);
   const dirsList = geo.setupAnalysis.principalDirections as Array<{ directionLabel: string; faceCount: number }>;
@@ -378,10 +431,11 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(routeBasis)?.[1]);
   const expected: Array<[string, number, string, number]> = [];
   for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
-  expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
-  expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
+  if (drillMin > 0) expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
+  if (boreMin > 0) expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
   // The lathe op is the cut; loading the casting into the lathe fixture is a whole operator's (finding M3).
-  if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
+  if (!spindleCm2) { /* no turned axis (a bracket): no lathe op */ }
+  else if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
   else {
     expected.push(['Turning — spindle', hr4(spindleMin), 'mach-lathe-cnc', 0.5]);
     expected.push(['Load / clamp / unload — lathe', hr4(hMin), 'mach-lathe-cnc', 1]);
@@ -409,11 +463,12 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   // the cell's fixture(s) — a hydraulic tombstone fixture on the HMC, dedicated fixtures on a split / 5-axis routing — and
   // the lathe's own dedicated fixture, each a toolroom build (× the book's toolroom factor, rounded per fixture set)
   const millFx = fixtureGBP(ch.setups * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
-  const latheFx = fixtureGBP(ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular);
+  const lathe = spindleCm2 ? 1 : 0;
+  const latheFx = lathe ? fixtureGBP(ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular) : 0;
   check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx, P.machiningToolingCost, 0.5);
-  const prog = Math.round(Math.round((PROG.perFix * (ch.setups + 1) + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
+  const prog = Math.round(Math.round((PROG.perFix * (ch.setups + lathe) + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
   check(part, 'programming £', prog, P.machiningProgrammingNRE, 0.5);
-  check(part, `setup hr (${ch.setups} + lathe) × 45 min`, (ch.setups + 1) * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
+  check(part, `setup hr (${ch.setups}${lathe ? ' + lathe' : ''}) × 45 min`, (ch.setups + lathe) * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
 }
 
 // ── Near-net: the feature path (forgings, castings — secondaryMachining in to-cost-params) ───────────────────────────
@@ -433,13 +488,13 @@ function featurePath(partFile: string, family: string, weightKg: number, coredAb
     const perp = dims.filter((_, k) => k !== i); const dia = t.externalMaxDiaMm ?? t.maxDiaMm ?? 0;
     if (dia >= 0.9 * Math.max(...perp) && (t.externalAreaMm2 ?? 0) / 100 >= 20) tp = { ext: t.externalAreaMm2 / 100, dia };
   }
-  const minEach = (r: Row) => (tp && r.kind === 'face') ? 0 : (coredAbove !== undefined ? nearNetHoleMin(r, coredAbove) : holeMin(r)) * cd.tf;
+  const minEach = (r: Row) => (tp && r.kind === 'face') ? 0 : (coredAbove !== undefined ? nearNetHoleMin(r, family, coredAbove) : holeMin(r, family));
   const millMin = included.reduce((s, r) => s + Math.round(minEach(r) * r.count * 1000) / 1000, 0);
   let latheMin = 0;
   if (tp) {
     const faced = included.filter(r => r.kind === 'face').reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
     const a = tp.ext + faced;
-    latheMin = r2(a * NEAR_NET_TURN_STOCK / 10 / cd.turn + a / (FIN.turn / cd.tf) + 3 * TOOL_CHANGE_S / 60);
+    latheMin = r2(a * NEAR_NET_TURN_STOCK / 10 / turnQ(family) + a / turnFin(family) + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60);
   }
   const milled = !tp && included.some(r => r.kind !== 'hole');
   const volumeCell = milled && ANNUAL >= 25_000;
@@ -454,12 +509,12 @@ function featurePath(partFile: string, family: string, weightKg: number, coredAb
     check(part, 'lathe op min (outside + faces, 2 mm stock)', latheMin, ops[i].cycleTimeHr * 60, 0.006);
     check(part, 'lathe op machine', 'mach-lathe-cnc', ops[i].machineId); i++;
   }
-  check(part, 'cut op min (holes, faces × metal factor)', millMin, ops[i].cycleTimeHr * 60, 0.006);
+  check(part, 'cut op min (holes, faces at the metal\'s catalogue row)', millMin, ops[i].cycleTimeHr * 60, 0.006);
   check(part, 'cut op machine', machine, ops[i].machineId);
   check(part, 'cut op crew 0.5', CUT_MANNING, ops[i].manning, 0); i++;
   const changeMin = fixturings * SETUP_MIN / batch;
   if (volumeCell) {
-    check(part, 'pallet change hr = fixturings × 10 s (machine)', fixturings * PALLET_S / 3600, ops[i].cycleTimeHr, 0.00001); i++;
+    check(part, 'pallet change hr = fixturings × 7.1 s (machine)', fixturings * PALLET_S / 3600, ops[i].cycleTimeHr, 0.00001); i++;
     // Change-over stops the machine (finding L4): machine time, its own op — the pallet only masks the load.
     // Lead's merge (M4): only the load the cut's crew share does not already cover is charged; absent when covered.
     const extraLoad = PRE ? fixturings * hMin + changeMin : Math.max(0, fixturings * hMin - CUT_MANNING * millMin);
@@ -488,6 +543,9 @@ fromSolid('MACH_Stepped_Shaft.stp', 'steel', 'mat-en8');
 castAndMachine('PRCR002.stp', 'cast iron', 'sand');
 featurePath('FORGE_Hub_Flange.stp', 'steel', 2.842, 25);
 featurePath('steering_knuckle_RH.stp', 'steel', 3.255, 25);
+// Added with the catalogue time base (3 Nov 2026): the cast-steel bracket's machining half and the yoke's feature path.
+castAndMachine('Casting_Braket.stp', 'steel', 'sand');
+featurePath('FORGE_Control_Arm_Yoke.stp', 'steel', 2.124, 25);
 
 console.log(`\n${pass} PASS, ${fail} FAIL`);
 if (fail) { console.log('\nFAILS:\n' + fails.join('\n')); process.exit(1); }

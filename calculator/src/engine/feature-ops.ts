@@ -43,7 +43,9 @@ export function featureToOperation(row: FeatureRow): string {
   if (thread) return `Drill + tap ${thread}`;
   if (row.through === false) return row.diaMm <= 13 ? 'Drilling (blind)' : 'Drill + bore (blind)';
   if (row.diaMm <= 13) return 'Drilling';
-  if (row.diaMm <= 26) return row.depthMm > 2 * row.diaMm ? 'Drill + ream/bore' : 'Drilling (clearance)';
+  // A through hole is a clearance hole, drilled only however deep (report standard round, Nov 2026: a 4.2×D through hole
+  // is standard drill reach and was costed with a ream pass); only a blind Ø13–26 hole is bored (above).
+  if (row.diaMm <= 26) return row.depthMm > 2 * row.diaMm ? 'Drilling (through — clearance, not reamed)' : 'Drilling (clearance)';
   return 'Helical mill / bore';
 }
 

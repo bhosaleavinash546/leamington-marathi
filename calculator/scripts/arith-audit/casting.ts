@@ -14,8 +14,19 @@
  *
  * The machining half's operation TIMES (machining-time.ts / rules/machining.ts) belong to the machining auditor: they
  * are taken from the costing as inputs here, and only their £ and the cast + machine plumbing are recomputed.
+ *
+ *   npx tsx scripts/arith-audit/casting.ts <dumpDir>  # check the parts a dump.ts dump costed, at the dump's own volume,
+ *                                                     # years and terms (dump-context.ts) — UK dumps only: the country
+ *                                                     # factors on the core / NDT / blast constants are not restated here
+ *
+ * Foundry at volume (3 Nov 2026): the moulding line is chosen by the part's moulds a year on the semi-automatic line
+ * (≥ 5,000 → the automatic vertical line, when an impression fits its mould), each line with its own face, rated
+ * output and crew; a ferrous casting ≤ 30 kg off the automatic line is fettled on the robotic cell (40 s, ½ operator);
+ * the aluminium pattern lasts 100,000 moulds. Written out again below from the stated bases.
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { dumpContext, contextLine } from './dump-context.js';
 import { costMeasuredPart } from '../../server/services/bulk-run.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import { TOOLROOM_RATES_UK, TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
@@ -24,26 +35,40 @@ import type { OCCTGeometry } from '../../server/utils/geometry-bridge.js';
 
 process.env.AIR_GAPPED = '1';
 const verbose = process.argv.includes('--verbose');
+const DUMP = process.argv.slice(2).find(a => !a.startsWith('--'));
+const DC = DUMP ? dumpContext(DUMP) : null;
+if (DC) console.log(contextLine(DC));
+if (DC && DC.region !== 'UK') {
+  console.log(`SKIP: the casting model checks UK dumps only (this dump is ${DC.region}) — 0 checks: 0 PASS, 0 FAIL`);
+  process.exit(0);
+}
 
-const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+const book = DC ? DC.book : recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const machineRate = (id: string) => (book.machines.find(m => m.id === id) as { computedRatePerHr: number }).computedRatePerHr;
 const labourRate = (id: string) => book.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
 const material = (id: string) => book.materials.find(m => m.id === id)!;
 const tariff = book.energy[0];
 
 // ── The stated constants, as each basis line prints them (the register in casting.md says where each lives) ──
-const ANNUAL = 50_000, YEARS = 5, AMORT = ANNUAL * YEARS;
+const ANNUAL = DC?.annual ?? 50_000, YEARS = DC?.years ?? 5, AMORT = ANNUAL * YEARS;
 const REJECT = 0.03, OEE = 0.8, LAB_EFF = 0.92;               // SHOP_DEFAULTS (to-cost-params.ts)
 const OVERHEAD = 0.12, MARGIN = 0.08;
 const YIELD_BAND: Record<string, [number, number]> = { steel: [0.45, 0.60], 'ductile-iron': [0.55, 0.70] };
 const MELT: Record<string, { loss: number; kwh: number }> = { steel: { loss: 0.03, kwh: 0.70 }, 'ductile-iron': { loss: 0.03, kwh: 0.62 } };
 const MELT_LABOUR_H_PER_T = 1.5, GREEN_SAND_GBP_PER_KG = 0.01;
-const MOULDS_PER_HR = 30, FLASK = [500, 400], MARGIN_MM = 50, LINE_CREW = 4;
+const MARGIN_MM = 50;
+// The two line classes (rated output at 200 mm mould thickness; crew) and the line threshold — as the bases print them.
+const LINES = {
+  semi: { machine: 'sand-cast-line', face: [800, 650], uncored: 60, cored: 60, crew: 4 },             // HWS HSP-2D class
+  auto: { machine: 'sand-auto-vertical-line', face: [950, 700], uncored: 280, cored: 250, crew: 3 },   // DISA 270-280
+} as const;
+const AUTO_MIN_MOULDS = 5_000;
 const FETTLE_MEDIUM_MIN = 6;
+const CELL = { machine: 'fettle-robot-cell', sec: 40, crew: 0.5, maxKg: 30 };
 const HT_GBP_PER_KG: Record<string, number> = { steel: 0.35, 'ductile-iron': 0 };   // steel normalise; iron as-cast
 const BLAST_KG_PER_HR = 600, BLAST_MIN = 0.10;
 const NDT_MPI = { sec: 75, manning: 1, bench: 4, sampleXray: 0.02, xray: 5 };
-const PATTERN_LIFE_MOULDS = 8_000;
+const PATTERN_LIFE_MOULDS = 100_000;   // aluminium match plate (the material priced)
 const STOCK_MM = 3, DRILLED_FROM_SOLID_MM = 20;                // sand, ferrous: ISO 8062-3 RMA typical (stated)
 const TURNED_MIN_CM2 = 20, TURNED_MIN_SHARE = 0.08;
 
@@ -52,7 +77,7 @@ const CASES: Case[] = [
   { part: 'Casting_Braket.stp', commodity: 'cast_and_machine', alloy: 'steel', safety: false },
   { part: 'Casting_Braket.stp', commodity: 'casting', alloy: 'steel', safety: false },
   { part: 'PRCR002.stp', commodity: 'cast_and_machine', alloy: 'ductile-iron', safety: true },
-];
+].filter(c => !DC || c.commodity === 'cast_and_machine') as Case[];   // a dump costs each part on its baseline route
 
 let pass = 0, fail = 0;
 const failures: string[] = [];
@@ -71,10 +96,12 @@ for (const c of CASES) {
   const rec = base.find(p => p.part === c.part)!;
   const geo = rec.geometry as OCCTGeometry & Record<string, any>;
   const spec = ANSWERS[c.part];
-  const res = await costMeasuredPart(geo, c.part,
+  const dumped = DC ? join(DUMP!, `${c.part.replace(/\.(stp|step)$/i, '')}.json`) : null;
+  if (dumped && !existsSync(dumped)) { console.log(`  (no dump for ${c.part})`); continue; }
+  const res = (dumped ? JSON.parse(readFileSync(dumped, 'utf8')) : await costMeasuredPart(geo, c.part,
     { partNumber: c.part, file: c.part, annualVolume: ANNUAL, commodity: c.commodity } as never,
     spec.answers, 'UK', { annualVolume: ANNUAL, programmeYears: YEARS } as never, book,
-    { partNumber: c.part, file: c.part, status: 'error' } as never) as any;
+    { partNumber: c.part, file: c.part, status: 'error' } as never)) as any;
   console.log(`\n${c.part} as ${c.commodity}: product total £${res.total?.toFixed(4)}`);
   const P = res.params, T = res.trace, prov = res.provenance as Record<string, { value: unknown; basis: string }>;
   const cam = c.commodity === 'cast_and_machine';
@@ -139,19 +166,38 @@ for (const c of CASES) {
   const ax = (geo.draftAnalysis?.drawDirectionXYZ ?? []).findIndex((v: number) => Math.abs(v) > 0.99);
   const across = ax >= 0 ? dims.filter((_, i) => i !== ax) : [...dims].sort((p, q) => q - p).slice(0, 2);
   const L = Math.max(...across) + MARGIN_MM, W = Math.min(...across) + MARGIN_MM;
-  const imps = Math.max(Math.floor(FLASK[0] / L) * Math.floor(FLASK[1] / W), Math.floor(FLASK[0] / W) * Math.floor(FLASK[1] / L));
-  const lineHr = 1 / MOULDS_PER_HR / imps;
-  check('sand line h / casting (1 ÷ 30 moulds/h ÷ impressions)', pv(pre + 'sand-ct'), lineHr, { rel: 0.005 });
+  const fitOn = (F: readonly number[]) => Math.max(Math.floor(F[0] / L) * Math.floor(F[1] / W), Math.floor(F[0] / W) * Math.floor(F[1] / L));
+  const impsSemi = fitOn(LINES.semi.face), impsAuto = fitOn(LINES.auto.face);
+  const onAuto = impsAuto >= 1 && ANNUAL / Math.max(1, impsSemi) >= AUTO_MIN_MOULDS;
+  const line = onAuto ? LINES.auto : LINES.semi;
+  const imps = onAuto ? impsAuto : impsSemi;
+  const cored = sealed || geo.draftAnalysis?.undercutFaceCount == null || under >= 1;
+  const perHr = cored ? line.cored : line.uncored;
+  const lineHr = 1 / perHr / imps;
+  check(`sand line h / casting (1 ÷ ${perHr} moulds/h ÷ ${imps} impressions, ${onAuto ? 'automatic' : 'semi-automatic'})`, pv(pre + 'sand-ct'), lineHr, { rel: 0.005 });
+  check(`moulding line chosen (${line.machine})`, String(prov[pre + 'sand-line']?.value) === line.machine ? 1 : 0, 1);
+  check('line crew', pv(cam ? 'cam-cast-manning' : 'cast-manning'), line.crew, { abs: 0 });
   const ops = T.operations as Array<any>;
   const op = (re: RegExp) => ops.find(o => re.test(o.operationName));
   const mould = op(/^Sand Casting — Moulding/);
   const cyc = Number(P.sand.cycleTimeHr) * uplift;
-  check('moulding machine £', mould.processCost, cyc * machineRate('sand-cast-line') / OEE);
-  check('moulding labour £ (crew of 4)', mould.labourCost, cyc * LINE_CREW * labourRate('lab-uk-foundry') / LAB_EFF);
+  check('moulding machine £', mould.processCost, cyc * machineRate(line.machine) / OEE);
+  check(`moulding labour £ (crew of ${line.crew})`, mould.labourCost, cyc * line.crew * labourRate('lab-uk-foundry') / LAB_EFF);
   check('moulding £ at the unrounded line time', mould.processCost + mould.labourCost,
-    lineHr * uplift * (machineRate('sand-cast-line') / OEE + LINE_CREW * labourRate('lab-uk-foundry') / LAB_EFF));
-  const fettle = op(/^Fettling/);
-  check('fettling labour £ (6 min × reject uplift)', fettle.labourCost, FETTLE_MEDIUM_MIN / 60 * uplift * labourRate('lab-uk-foundry') / LAB_EFF);
+    lineHr * uplift * (machineRate(line.machine) / OEE + line.crew * labourRate('lab-uk-foundry') / LAB_EFF));
+  // Fettling: the robotic cell for a ferrous casting ≤ 30 kg off the automatic line (steel > 10 kg keeps the bench).
+  const massKg = finished;
+  const onCell = onAuto && massKg <= CELL.maxKg && !(c.alloy === 'steel' && massKg > 10);
+  const fettle = onCell ? op(/^Fettling — robotic grinding cell/) : op(/^Fettling \(gate/);
+  if (onCell) {
+    const h = CELL.sec / 3600 * uplift;
+    check('fettling cell h (40 s × reject uplift)', fettle.cycleTimeHr, h, { abs: 1e-12 });
+    check('fettling cell machine £', fettle.processCost, h * machineRate(CELL.machine) / OEE);
+    check('fettling cell labour £ (½ operator)', fettle.labourCost, h * CELL.crew * labourRate('lab-uk-foundry') / LAB_EFF);
+    check('no bench fettling beside the cell', op(/^Fettling \(gate/) ? 1 : 0, 0);
+  } else {
+    check('fettling labour £ (6 min × reject uplift)', fettle.labourCost, FETTLE_MEDIUM_MIN / 60 * uplift * labourRate('lab-uk-foundry') / LAB_EFF);
+  }
   const meltOp = op(/^Melt shop/);
   check('melt-shop labour £ (1.5 h/t poured)', meltOp.labourCost, pour / 1000 * MELT_LABOUR_H_PER_T * labourRate('lab-uk-furnace') / LAB_EFF);
   // Process order: melt before fettling (melt → mould / pour → knock-out → fettle).
@@ -191,7 +237,7 @@ for (const c of CASES) {
   const pattern = Math.min(50_000, Math.max(1_500, r0(sub + r0(sub * SHOP_OVERHEAD_PROFIT))));
   check('pattern £ (toolmaker build-up)', pv(pre + 'hpdc-die-cost'), pattern, { abs: 1 });
   const life = PATTERN_LIFE_MOULDS * imps;
-  check('pattern life, castings (8,000 moulds × impressions)', pv(pre + 'hpdc-die-life'), life, { abs: 0 });
+  check('pattern life, castings (100,000 moulds × impressions)', pv(pre + 'hpdc-die-life'), life, { abs: 0 });
   // A pattern wears per mould rammed — rejected castings included.
   const sets = Math.ceil(AMORT * uplift / life);
   // Report standard #9: the pattern is the first set (up front) and the replacement sets as it wears out.
@@ -206,7 +252,7 @@ for (const c of CASES) {
   const consumables = (items.get('cores') ?? 0) + (items.get('green-sand additions') ?? 0) + (items.get('heat treatment') ?? 0)
     + (items.get('shot blast') ?? 0) + (items.get('NDT') ?? 0) + (items.get('cutting-tool wear') ?? 0) + (items.get('machining consumables') ?? 0);
   const matB = metalGbp + energyGbp + consumables;
-  const procB = mould.processCost + machProc;
+  const procB = mould.processCost + (onCell ? fettle.processCost : 0) + machProc;
   const labB = mould.labourCost + fettle.labourCost + meltOp.labourCost + machLab;
   const toolB = toolingTotal / AMORT;
   const pack = Number(T.stackInput.packagingPerPart), logi = Number(T.stackInput.logisticsPerPart);

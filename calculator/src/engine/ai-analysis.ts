@@ -477,6 +477,9 @@ export interface CADAnalysisResult {
       /** Rule-written (casting review): press, post-cast route, investment consumables. */
       hpdcMachineId?: string;
       fettlingMinutes?: number;
+      /** Foundry at volume (3 Nov 2026): the moulding line chosen, and the robotic fettling cell's seconds a casting. */
+      sandLineId?: string;
+      fettlingCellSec?: number;
       heatTreatCostPerKg?: number;
       shotBlastCostPerPart?: number;
       impregnationCostPerPart?: number;

@@ -143,9 +143,27 @@ describe('3. The arithmetic on a row', () => {
     expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
     // A precision STEEL forging is MPI-tested like a closed-die one (report standard review, 3 Nov 2026 — it carried
     // £32 of CT a part, £34.52 of consumables): with less steel bought it is the cheaper process at every volume.
+    // Foundry at volume + catalogue machining (3 Nov 2026): sand cast + machine crosses BELOW closed-die forging inside
+    // the ladder (~40,000 / yr, with overlapping P10–P90 bands — "indistinguishable"). A crossing is allowed only where it
+    // is interpolated between the two real re-costs either side of the sign change; every other row is cheaper / dearer
+    // at every volume.
     for (const c of cmp.crossovers) {
-      expect(c.atVolume).toBeNull();
-      expect(c.text).toMatch(c.process === 'precision' ? /cheaper than the costed route at every volume/ : /dearer than the costed route at every volume/);
+      const row = cmp.rows.find(r => r.route === c.route && r.process === c.process)!;
+      if (c.atVolume === null) {
+        expect(c.text).toMatch(c.process === 'precision' ? /cheaper than the costed route at every volume/ : /dearer than the costed route at every volume/);
+        continue;
+      }
+      expect(`${c.route}/${c.process}`).toBe('cast_and_machine/sand');
+      const d = row.byVolume.map((v, i) => v.total! - ref.byVolume[i].total!);
+      const i = d.findIndex((x, j) => j > 0 && Math.sign(x) !== Math.sign(d[j - 1]));
+      expect(i).toBeGreaterThan(0);
+      const [v1, v2] = [row.byVolume[i - 1].volume, row.byVolume[i].volume];
+      expect(c.atVolume).toBeCloseTo(v1 + (v2 - v1) * d[i - 1] / (d[i - 1] - d[i]), -1);
+      expect(c.text).toMatch(new RegExp(`interpolated between re-costs at ${v1.toLocaleString('en-GB')} and ${v2.toLocaleString('en-GB')}`));
+      expect(c.indistinguishable).not.toBeNull();
+      expect(c.indistinguishable!.from).toBeLessThanOrEqual(v1);
+      expect(c.indistinguishable!.to).toBeGreaterThanOrEqual(v2);
+      expect(c.text).toMatch(/indistinguishable/);
     }
     // the machining row (50.5 kg of plate for a 2.85 kg part) is costed, itemised and marked not credible
     expect(mach.credible).toBe(false);

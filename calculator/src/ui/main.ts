@@ -49,6 +49,7 @@ import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
+import { fettlingCellInput } from '../engine/modules/casting-advisor.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
   computeGearDrivers, analyseGear, validateGearInputs, effectiveHardeningRoute, type GearInputs,
@@ -211,7 +212,7 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
+import { CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
@@ -4640,6 +4641,7 @@ function renderCastingForm(): string {
     <div style="font-size:0.7rem;color:#888;margin-bottom:4px">Fettling is foundry labour; the rest are added to the material line. Filled from the CAD rules; 0 = not done. If you also cost a blast in Surface Finishing below, leave Shot Blast at 0.</div>
     <div class="field-row">
       <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, foundry labour. Light 2, medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cast-fettle-min" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Fettling on a robotic grinding cell instead of the bench, seconds per casting (the cell's machine time plus half an operator). Set by the CAD rules for a ferrous casting up to 30 kg off the automatic moulding line: 40 s (published time study). 0 = bench fettling.">Fettling cell (s/part) ⓘ</label><input type="number" id="cast-fettle-cell-sec" step="1" min="0" value="0"/></div>
       <div class="field-group"><label title="Normalise / T5 / T6 £ per kg of casting. Engine defaults: normalise £0.35/kg, T5 £0.55/kg, T6 £1.10/kg.">Heat Treat (£/kg) ⓘ</label><input type="number" id="cast-ht-cost" step="0.05" min="0" value="0"/></div>
       <div class="field-group"><label title="Shot blast to remove sand, scale or flash. Engine default £0.35/part.">Shot Blast (£/part) ⓘ</label><input type="number" id="cast-shot-blast" step="0.05" min="0" value="0"/></div>
     </div>
@@ -5545,6 +5547,7 @@ function renderCastAndMachineForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, costed as foundry LABOUR (not material). Engine defaults: light 2 min (trimmed HPDC / gravity), medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cam-fettle-min" step="0.5" min="0" value="0" title="Bench minutes per casting at the foundry labour rate. 0 = none."/></div>
+      <div class="field-group"><label title="Fettling on a robotic grinding cell instead of the bench, seconds per casting (the cell's machine time plus half an operator). Set by the CAD rules for a ferrous casting up to 30 kg off the automatic moulding line: 40 s (published time study). 0 = bench fettling.">Fettling cell (s/part) ⓘ</label><input type="number" id="cam-fettle-cell-sec" step="1" min="0" value="0" title="Robotic grinding cell seconds per casting. 0 = bench fettling."/></div>
       <div class="field-group"><label title="Radiography for safety-critical castings. Engine defaults: 2D X-ray £5/part, industrial CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cam-ndt" step="0.5" min="0" value="0" title="X-ray / CT per casting. 0 = none."/></div>
       <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cam-leak-sec" step="5" min="0" value="0"/></div>
     </div>
@@ -10887,7 +10890,8 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
     // Near-net secondary machining: one operator tends two machines while they
     // cut, as headless (forging review).
     ...(stockCondition === 'near_net' ? { manning: 0.5 } : {}),
-    materialFactor: cuttingDataFor(family).timeFactor,
+    // The metal: every feature is timed on its own catalogue row — the same input headless passes (report standard, Nov 2026).
+    family,
     ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
   };
   // A turned near-net part (a hub flange): outside and faces on the CNC lathe, holes on the drill centre — as
@@ -13243,6 +13247,7 @@ function collectCastingInput(): UniversalStackInput {
     melt: {},   // melt kWh are priced by the engine at the selected country's tariff (module-energy.ts)
     leakTestSec: num('cast-leak-sec') || undefined,
     fettlingMinutes: num('cast-fettle-min') || undefined,
+    fettlingCell: fettlingCellInput(num('cast-fettle-cell-sec')),
     heatTreatCostPerKg: num('cast-ht-cost') || undefined,
     shotBlastCostPerPart: num('cast-shot-blast') || undefined,
     impregnationCostPerPart: num('cast-impreg') || undefined,
@@ -14223,6 +14228,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     impregnationCostPerPart: num('cam-impreg') || undefined,
     deburringCostPerPart: num('cam-fettle') || undefined,
     fettlingMinutes: num('cam-fettle-min') || undefined,
+    fettlingCell: fettlingCellInput(num('cam-fettle-cell-sec')),
     melt: {},   // melt kWh are priced by the engine at the selected country's tariff (module-energy.ts)
     leakTestSec: num('cam-leak-sec') || undefined,
     ndtCostPerPart: num('cam-ndt') || undefined,

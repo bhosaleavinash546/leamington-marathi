@@ -17,76 +17,74 @@
  * | Element | How |
  * |---|---|
  * | Stock | plate or bar bought in standard sizes, with facing allowance and saw kerf |
- * | Roughing | metal removed (stock − part) ÷ the metal's practical removal rate |
- * | Finishing | measured area per surface type ÷ a pass rate: flats, walls, fillets and chamfers at the wall rate; free-form at a ball-nose surfacing rate |
- * | Holes | diameter × depth per hole (`featureMinutesEach`), × the metal's cutting-time factor |
- * | Non-cutting | load / clamp / unload per fixturing, tool changes |
+ * | Roughing | metal removed (stock − part) ÷ the catalogue's medium-duty removal rate, + a stated air-move share |
+ * | Finishing | measured area per surface type: flats, walls, fillets and chamfers by side-milling passes at the catalogue's shoulder-mill feed; free-form at a ball-nose surfacing rate (no catalogue row — labelled) |
+ * | Facing (near-net) | passes × (face length + cutter Ø + clearances) ÷ the catalogue table feed n·z·fz |
+ * | Turning | area ÷ (fn × vc), stock ÷ (vc × fn × ap) |
+ * | Holes | drilled, bored and tapped at each hole's own Ø (n·f; tapping n × pitch) — `featureTime` |
+ * | Non-cutting | fixed approach allowances (not scaled by the metal), load / clamp / unload per fixturing, 2.2 s tool changes |
  * | Cutting tools | tool wear per minute of cutting, by metal |
  *
- * Every rate is in `CUTTING_DATA` and printed on the basis. They are
- * engineering-typical values for a mid-size (15–20 kW) machining centre and a
- * CNC lathe with carbide tooling — stated, not measured, and the first thing a
- * supplier's actual cycle should replace. AI never sets any of them.
+ * Since the report standard round (3 Nov 2026) every cutting speed and feed is a maker's published recommendation for
+ * the metal and operation (cutting-catalogue.ts — each basis names the catalogue and its data.json row); the cutter
+ * bodies, side-pass depth, clearances, allowances and air-move share no catalogue gives are labelled assumptions. Still
+ * not a measured cycle: a supplier's cycle sheet replaces it. AI never sets any of them.
  */
 import { activeToolroomFactor } from './rate-context.js';
 import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
-import { featureMinutesEach, nearNetHoleMinutes } from './feature-machining.js';
-export { nearNetHoleMinutes, BORE_FINISH_MM_PER_MIN } from './feature-machining.js';
+import { featureTime, ALLOWANCE_STATUS } from './feature-machining.js';
+import {
+  millRoughEffective, turnRoughEffective, millRoughInCut, turnRoughInCut, sidePassCm2PerMin, turnFinishCm2PerMin,
+  sourcesLine, sourceName, MACHINABILITY_RATIO, ROUGH_AIR_SHARE, TURN_ROUGH_AP_MM, SIDE_PASS_AP_MM, ASSUMED,
+} from './cutting-catalogue.js';
+export { nearNetHoleMinutes } from './feature-machining.js';
 
 export interface CuttingData {
-  /** Cutting-time multiplier against aluminium for finishing passes and holes. */
+  /** CostVision's machinability ratio against aluminium — used ONLY where no catalogue row was read (ball-nose surfacing,
+   *  helical milling, and metals outside the catalogue). Engineering-typical, not sourced. */
   timeFactor: number;
-  /** Practical average roughing removal rate on a machining centre, cm³/min. */
+  /** Roughing removal rate on a machining centre, cm³/min: the catalogue's in-cut rate ÷ (1 + the air-move share). */
   millRoughCm3PerMin: number;
-  /** Practical average roughing removal rate turning, cm³/min. */
+  /** Roughing removal rate turning, cm³/min: vc × fn × ap ÷ (1 + the air-move share). */
   turnRoughCm3PerMin: number;
   /** Perishable cutting tools (inserts, end mills, drills) per minute of cutting, £. */
   toolCostPerCutMin: number;
 }
 
 /**
- * Cutting data by metal family.
- *
- * `timeFactor` follows relative machinability (aluminium alloys cut ~2× faster
- * than carbon steel and ~4× faster than titanium at like tool life); the
- * removal rates are practical shop averages — power, rigidity and tool life
- * limited, including step-downs and air moves — not the catalogue peak. Steel
- * is carbon / low-alloy; a stainless or hardened grade is slower and should be
- * entered on the form.
+ * Cutting data by metal family. The removal rates are derived from the catalogue (cutting-catalogue.ts) — never typed
+ * here; tool wear £/min is engineering-typical, not sourced.
  */
-export const CUTTING_DATA: Record<MaterialFamily, CuttingData> = {
-  aluminium:      { timeFactor: 1.0, millRoughCm3PerMin: 120, turnRoughCm3PerMin: 250, toolCostPerCutMin: 0.04 },
-  magnesium:      { timeFactor: 0.8, millRoughCm3PerMin: 150, turnRoughCm3PerMin: 300, toolCostPerCutMin: 0.04 },
-  plastic:        { timeFactor: 0.8, millRoughCm3PerMin: 80,  turnRoughCm3PerMin: 150, toolCostPerCutMin: 0.02 },
-  'copper alloy': { timeFactor: 1.2, millRoughCm3PerMin: 60,  turnRoughCm3PerMin: 150, toolCostPerCutMin: 0.06 },
-  'cast iron':    { timeFactor: 1.6, millRoughCm3PerMin: 50,  turnRoughCm3PerMin: 100, toolCostPerCutMin: 0.10 },
-  steel:          { timeFactor: 2.0, millRoughCm3PerMin: 35,  turnRoughCm3PerMin: 80,  toolCostPerCutMin: 0.12 },
-  titanium:       { timeFactor: 4.0, millRoughCm3PerMin: 10,  turnRoughCm3PerMin: 20,  toolCostPerCutMin: 0.35 },
-  // Zinc die castings machine like brass; nickel superalloys slower than titanium
-  // (Inconel 718 ~6x carbon-steel cutting time at like tool life) — engineering-typical.
-  zinc:           { timeFactor: 1.0, millRoughCm3PerMin: 80,  turnRoughCm3PerMin: 180, toolCostPerCutMin: 0.04 },
-  'nickel alloy': { timeFactor: 6.0, millRoughCm3PerMin: 6,   turnRoughCm3PerMin: 12,  toolCostPerCutMin: 0.50 },
+const TOOL_COST_PER_CUT_MIN: Record<MaterialFamily, number> = {
+  aluminium: 0.04, magnesium: 0.04, plastic: 0.02, 'copper alloy': 0.06, 'cast iron': 0.10, steel: 0.12, titanium: 0.35,
+  zinc: 0.04, 'nickel alloy': 0.50,
 };
+export const CUTTING_DATA: Record<MaterialFamily, CuttingData> = Object.fromEntries(
+  (Object.keys(MACHINABILITY_RATIO) as MaterialFamily[]).map(f => [f, {
+    timeFactor: MACHINABILITY_RATIO[f],
+    millRoughCm3PerMin: millRoughEffective(f),
+    turnRoughCm3PerMin: turnRoughEffective(f),
+    toolCostPerCutMin: TOOL_COST_PER_CUT_MIN[f],
+  }]),
+) as Record<MaterialFamily, CuttingData>;
 
 /**
- * Finishing pass rates in aluminium, cm²/min (÷ `timeFactor` for other metals).
- * Wall: an end-mill side pass or a face-mill pass — flats, walls, external
- * cylinders, fillets and chamfers cut by the profile tool. Surfacing: a ball
- * nose on a step-over (Ø10, 0.5 mm step, 3 m/min). Turning: a finishing
- * insert (0.15 mm/rev at ~250 m/min) covers fn × vc = 0.15 mm × 250 m/min =
- * 375 cm²/min at the insert (Sandvik Coromant's turning time Tc = lm ÷ (fn × n),
- * n = vc × 1000 ÷ πD); 120 is that derated ~3× for approach, retract and
- * spring passes — engineering-typical, NOT sourced and conservative (arith audit,
- * Oct 2026: an open item, printed on every turning basis as such).
+ * Ball-nose surfacing of free-form area in aluminium, cm²/min (Ø10, 0.5 mm step, 3 m/min) — no catalogue row was read,
+ * so it alone keeps the machinability ratio. `wall` and `turning` are kept for older callers only; the costing reads the
+ * catalogue's side-pass and fn × vc rates.
  */
 export const FINISH_RATE_CM2_PER_MIN = { wall: 40, surfacing: 10, turning: 120 } as const;
 
-/** The status every cutting basis prints for the rates above (arith audit, Oct 2026: they were printed without it). */
-export const CUTTING_DATA_STATUS = 'cutting rates engineering-typical for a 15–20 kW machining centre / CNC lathe with carbide, not sourced';
-/** What the turning basis prints for the finish-turning rate. */
-export const TURN_FINISH_STATUS = 'finish-turning rate = 0.15 mm/rev × 250 m/min (375 cm²/min in aluminium) derated to 120 for approach / retract — engineering-typical, not sourced, conservative';
+/** The status every cutting basis prints (arith audit, Oct 2026: rates were printed without one). */
+export const CUTTING_DATA_STATUS = 'cutting speeds and feeds from the makers\' published recommendations (sources named); cutter bodies, '
+  + 'side-pass depth, clearances, allowances and the air-move share are labelled assumptions — not a measured cycle';
+/** What the turning basis prints for the finish-turning rate (the old 3× derate is gone; approach is its own allowance). */
+export const TURN_FINISH_STATUS = 'finish-turning area ÷ (fn × vc) from the catalogue; approach / retract a stated allowance per tool, '
+  + `${ASSUMED}`;
+/** Approach / retract a lathe tool pays, minutes — engineering-typical, not sourced, not scaled by the metal. */
+export const TURN_TOOL_ALLOWANCE_MIN = 0.10;
 
 /** Load, clamp, unclamp and unload — every part, every fixturing, minutes (the default). */
 export const HANDLING_MIN_PER_FIXTURING = 0.8;
@@ -107,8 +105,13 @@ export function handlingMinPerFixturing(kg: number): number {
 }
 /** What the bases print for the handling, change-over, programming, tool-wear and deburr constants (arith audit, Oct 2026). */
 export const HOURS_STATUS = 'handling, change-over, programming hours and tool £/min engineering-typical, not sourced';
-/** Chip-to-chip tool change on a machining centre or turret, seconds. */
-export const TOOL_CHANGE_SEC = 6;
+/**
+ * Chip-to-chip tool change, seconds: Okuma MA-4000H 2.15 s (ISO 10791-9, tool ≤ 4 kg; data.json #63), DMG MORI NHX 4000
+ * 2.2 s (#69), Okuma MB-5000HII 2.1 s (#67); GROB G350 2.7 s to VDI 2852 (#68). No VMC or lathe figure was read — the
+ * HMC figure is used for every machine and says so.
+ */
+export const TOOL_CHANGE_SEC = 2.2;
+export const TOOL_CHANGE_STATUS = `${TOOL_CHANGE_SEC} s chip-to-chip (Okuma MA-4000H 2.15 s ISO 10791-9 / DMG MORI NHX 4000 2.2 s — ${sourceName('OKUMA-MA4000H')}; ${sourceName('DMG-NHX4000')}; an HMC figure, no VMC / lathe figure read)`;
 /** Fixture change-over, tool offsets and first-off inspection per fixturing, minutes a batch. */
 export const SETUP_MIN_PER_FIXTURING = 45;
 
@@ -222,6 +225,23 @@ function toolCount(rows: FeatureRow[], surfaced: boolean): number {
   return 3 + (surfaced ? 1 : 0) + holeSizes.size;
 }
 
+/** Rough-milling minutes for a volume, and its basis: in-cut at the catalogue rate, + the air-move share. */
+function roughMilling(family: MaterialFamily, cm3: number): { min: number; text: string } {
+  const rc = millRoughInCut(family);
+  const inCut = cm3 / rc.q;
+  const min = inCut * (1 + ROUGH_AIR_SHARE);
+  return { min, text: `rough ${cm3.toFixed(0)} cm³ ÷ ${rc.q.toFixed(0)} cm³/min in-cut (0.7 × Ø${rc.body.dc} × ap × ${rc.vf.toFixed(0)} mm/min; `
+    + `Pc ≈ ${rc.kw.toFixed(1)} kW by Sandvik's K — ${sourceName('SANDVIK-K')}; no spindle rating in the rate book, so no power cap) = ${inCut.toFixed(2)} min `
+    + `+ ${ROUGH_AIR_SHARE * 100}% air moves and step-downs (${ASSUMED}) = ${min.toFixed(2)} min` };
+}
+
+/** Holes, with each row's arithmetic. */
+export function holeTimes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): { min: number; text: string } {
+  const hs = rows.filter(r => r.kind === 'hole');
+  const min = hs.reduce((s, r) => s + featureTime(r, family, coredAboveMm).min * r.count, 0);
+  return { min, text: hs.map(r => `${r.count}× ${featureTime(r, family, coredAboveMm).text}`).join('; ') };
+}
+
 /**
  * From-solid cutting time on a machining centre.
  *
@@ -242,7 +262,8 @@ export function fromSolidMillingTime(p: {
   const cd = cuttingDataFor(p.family);
   const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
   const removed = Math.max(0, p.stockCm3 - p.partCm3 - inHoles);
-  const roughMin = removed / cd.millRoughCm3PerMin;
+  const rough = roughMilling(p.family, removed);
+  const roughMin = rough.min;
   const holeWall = holeWallCm2(p.rows);
   let wallCm2: number; let freeCm2: number;
   if (p.areaByTypeCm2) {
@@ -258,23 +279,33 @@ export function fromSolidMillingTime(p: {
     freeCm2 = Math.min(rest - Math.min(rest, p.planarAreaCm2), rest * share);
     wallCm2 = rest - freeCm2;
   }
-  const finishMin = wallCm2 / FINISH_RATE_CM2_PER_MIN.wall * cd.timeFactor;
-  const surfacingMin = freeCm2 / FINISH_RATE_CM2_PER_MIN.surfacing * cd.timeFactor;
-  const holeMin = holeMinutes(p.rows, p.family);
+  const side = sidePassCm2PerMin(p.family);
+  const finishMin = wallCm2 / side;
+  const surfRate = FINISH_RATE_CM2_PER_MIN.surfacing / cd.timeFactor;
+  const surfacingMin = freeCm2 / surfRate;
+  const holes = holeTimes(p.rows, p.family);
+  const holeMin = holes.min;
   const tools = toolCount(p.rows, freeCm2 > 0.5);
   const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
   const totalMin = roughMin + finishMin + surfacingMin + holeMin + toolChangeMin;
   return {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: r2(surfacingMin), holeMin: r2(holeMin),
     tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(totalMin),
-    basis: `rough ${(p.stockCm3 - p.partCm3).toFixed(0)} cm³ stock − part`
+    basis: `stock − part ${(p.stockCm3 - p.partCm3).toFixed(0)} cm³`
       + (inHoles > 0.05 ? ` − ${inHoles.toFixed(0)} cm³ in the holes (cut by the hole time)` : '')
-      + ` = ${removed.toFixed(0)} cm³ ÷ ${cd.millRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
-      + `finish ${wallCm2.toFixed(0)} cm² of flats/walls/fillets ÷ ${(FINISH_RATE_CM2_PER_MIN.wall / cd.timeFactor).toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; `
-      + `surface ${freeCm2.toFixed(0)} cm² free-form ÷ ${(FINISH_RATE_CM2_PER_MIN.surfacing / cd.timeFactor).toFixed(1)} cm²/min = ${surfacingMin.toFixed(1)} min; `
-      + `holes ${holeMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s = ${toolChangeMin.toFixed(1)} min (${p.family}, ×${cd.timeFactor} on aluminium; `
-      + `${CUTTING_DATA_STATUS})`,
+      + `: ${rough.text}; `
+      + `finish ${wallCm2.toFixed(0)} cm² of flats/walls/fillets by side passes ÷ ${side.toFixed(0)} cm²/min `
+      + `(${SIDE_PASS_AP_MM} mm a pass, ${ASSUMED}) = ${finishMin.toFixed(1)} min; `
+      + `surface ${freeCm2.toFixed(0)} cm² free-form ÷ ${surfRate.toFixed(1)} cm²/min (ball nose ${FINISH_RATE_CM2_PER_MIN.surfacing} cm²/min in aluminium ÷ machinability ratio ${cd.timeFactor} — no catalogue row read, ${ASSUMED}) = ${surfacingMin.toFixed(1)} min; `
+      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text})` : ''}; ${tools} tools × ${TOOL_CHANGE_SEC} s = ${toolChangeMin.toFixed(2)} min `
+      + `(${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(p.family, ['rough', 'side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
   };
+}
+
+/** Lathe finishing: area ÷ (fn × vc), stated. */
+function turnFinish(family: MaterialFamily, cm2: number): { min: number; rate: number } {
+  const rate = turnFinishCm2PerMin(family);
+  return { min: cm2 / rate, rate };
 }
 
 /**
@@ -291,43 +322,48 @@ export function fromBarTurningTime(p: {
   turnedFraction: number;
   rows: FeatureRow[];
 }): { lathe: CuttingTime; mill: CuttingTime } {
-  const cd = cuttingDataFor(p.family);
   // the holes' metal is cut by the hole time on the mill / drill, not turned away (arith audit, Oct 2026)
   const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
   const removed = Math.max(0, p.stockCm3 - p.partCm3 - inHoles);
   const turnedCm2 = p.totalAreaCm2 * p.turnedFraction;
-  const roughMin = removed / cd.turnRoughCm3PerMin;
-  const finishMin = turnedCm2 / FINISH_RATE_CM2_PER_MIN.turning * cd.timeFactor;
+  const qTurn = turnRoughEffective(p.family);
+  const roughMin = removed / qTurn;
+  const fin = turnFinish(p.family, turnedCm2);
+  const finishMin = fin.min;
   const latheTools = 3;   // rough, finish, groove / part-off
+  const allowMin = latheTools * TURN_TOOL_ALLOWANCE_MIN;
   const lathe: CuttingTime = {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
     tools: latheTools, toolChangeMin: r2(latheTools * TOOL_CHANGE_SEC / 60),
-    totalMin: r2(roughMin + finishMin + latheTools * TOOL_CHANGE_SEC / 60),
-    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min`
+    totalMin: r2(roughMin + finishMin + allowMin + latheTools * TOOL_CHANGE_SEC / 60),
+    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${qTurn} cm³/min (vc × fn × ${TURN_ROUGH_AP_MM} mm ap = ${turnRoughInCut(p.family).toFixed(0)} in-cut `
+      + `÷ (1 + ${ROUGH_AIR_SHARE} air moves); ap and air share ${ASSUMED}) = ${roughMin.toFixed(1)} min`
       + (inHoles > 0.05 ? ` (stock − part − ${inHoles.toFixed(1)} cm³ in the holes)` : '') + '; '
-      + `finish-turn ${turnedCm2.toFixed(0)} cm² ÷ ${(FINISH_RATE_CM2_PER_MIN.turning / cd.timeFactor).toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; `
-      + `${latheTools} tools × ${TOOL_CHANGE_SEC} s (${p.family}, ×${cd.timeFactor} on aluminium; ${TURN_FINISH_STATUS})`,
+      + `finish-turn ${turnedCm2.toFixed(0)} cm² ÷ ${fin.rate.toFixed(0)} cm²/min (fn × vc) = ${finishMin.toFixed(1)} min; `
+      + `${latheTools} tools × (${TURN_TOOL_ALLOWANCE_MIN} min approach / retract + ${TOOL_CHANGE_SEC} s change) `
+      + `(${p.family}; sources — ${sourcesLine(p.family, ['turn'])}; ${TURN_FINISH_STATUS})`,
   };
   const otherCm2 = Math.max(0, p.totalAreaCm2 - turnedCm2 - holeWallCm2(p.rows));
-  const millFinish = otherCm2 / FINISH_RATE_CM2_PER_MIN.wall * cd.timeFactor;
-  const holeMin = holeMinutes(p.rows, p.family);
+  const side = sidePassCm2PerMin(p.family);
+  const millFinish = otherCm2 / side;
+  const holes = holeTimes(p.rows, p.family);
+  const holeMin = holes.min;
   const hasMill = otherCm2 > 0.5 || holeMin > 0;
   const millTools = hasMill ? 1 + new Set(p.rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size : 0;
   const mill: CuttingTime = {
     roughMin: 0, finishMin: r2(millFinish), surfacingMin: 0, holeMin: r2(holeMin),
     tools: millTools, toolChangeMin: r2(millTools * TOOL_CHANGE_SEC / 60),
     totalMin: r2(millFinish + holeMin + millTools * TOOL_CHANGE_SEC / 60),
-    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) ÷ ${(FINISH_RATE_CM2_PER_MIN.wall / cd.timeFactor).toFixed(0)} cm²/min = ${millFinish.toFixed(1)} min; `
-      + `holes ${holeMin.toFixed(1)} min; ${millTools} tools × ${TOOL_CHANGE_SEC} s (${CUTTING_DATA_STATUS})`,
+    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) by side passes ÷ ${side.toFixed(0)} cm²/min = ${millFinish.toFixed(1)} min; `
+      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text})` : ''}; ${millTools} tools × ${TOOL_CHANGE_SEC} s `
+      + `(${ALLOWANCE_STATUS}; sources — ${sourcesLine(p.family, ['side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
   };
   return { lathe, mill };
 }
 
-/** Hole minutes (aluminium baseline per hole × the metal's factor). */
+/** Hole minutes at the metal's own catalogue rows (cored bores above `coredAboveMm` finish-bored). */
 export function holeMinutes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): number {
-  const f = cuttingDataFor(family).timeFactor;
-  return rows.filter(r => r.kind === 'hole')
-    .reduce((s, r) => s + nearNetHoleMinutes(r, coredAboveMm) * r.count, 0) * f;
+  return holeTimes(rows, family, coredAboveMm).min;
 }
 
 // ── Near-net (casting / forging) finish machining ───────────────────────────
@@ -357,21 +393,25 @@ export function castMachiningStockMm(subtype: string | null, family: MaterialFam
  * drilled or finish-bored. Pockets and bosses are cast in.
  */
 export function nearNetMachiningTime(rows: FeatureRow[], family: MaterialFamily, subtype: string | null): CuttingTime {
-  const cd = cuttingDataFor(family);
   const cored = CORED_ABOVE_MM[subtype ?? ''] ?? 20;
   const faces = rows.filter(r => r.kind === 'face');
-  const faceMin = faces.reduce((s, r) => s + featureMinutesEach(r) * r.count, 0) * cd.timeFactor;
-  const holeMin = holeMinutes(rows, family, cored);
+  const faceTimes = faces.map(r => featureTime(r, family));
+  const faceMin = faces.reduce((s, r, i) => s + faceTimes[i].min * r.count, 0);
+  const holes = holeTimes(rows, family, cored);
+  const holeMin = holes.min;
   // A face mill if any face is machined, a chamfer tool, one tool per hole size.
   const tools = (faces.length ? 1 : 0) + 1 + new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size;
   const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
   const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
+  const ops: Array<'face' | 'drill' | 'bore' | 'tap'> = ['face', 'drill', 'bore', 'tap'];
   return {
     roughMin: 0, finishMin: r2(faceMin), surfacingMin: 0, holeMin: r2(holeMin),
     tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(faceMin + holeMin + toolChangeMin),
-    basis: `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(1)} min; `
+    basis: `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(1)} min `
+      + `(each: 0.2 min positioning + passes × (√area + cutter Ø + 2 × 5 mm clearance) ÷ the table feed n·z·fz — the face taken as √area square, `
+      + `clearance ${ASSUMED}${faceTimes.length ? `; e.g. ${faceTimes[0].text}` : ''}); `
       + `holes ${holeMin.toFixed(1)} min (≤ Ø${cored} drilled from solid, larger cored and finish-bored); `
-      + `${tools} tools × ${TOOL_CHANGE_SEC} s (${family}, ×${cd.timeFactor} on aluminium; facing 0.2 min + area ÷ 8,000 mm²/min a face; `
+      + `${tools} tools × ${TOOL_CHANGE_SEC} s (${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(family, ops)}; `
       + `${CUTTING_DATA_STATUS})`,
   };
 }
@@ -397,20 +437,23 @@ export const MIN_NEAR_NET_TURNED_SHARE = 0.08;
  * drawing calls them, are not included — that is stated, not assumed away.
  */
 export function nearNetTurningTime(externalAreaCm2: number, family: MaterialFamily, stockMm: number, maxDiaMm: number): CuttingTime {
-  const cd = cuttingDataFor(family);
   const stockCm3 = externalAreaCm2 * stockMm / 10;
-  const roughMin = stockCm3 / cd.turnRoughCm3PerMin;
-  const finishRate = FINISH_RATE_CM2_PER_MIN.turning / cd.timeFactor;
-  const finishMin = externalAreaCm2 / finishRate;
+  const qTurn = turnRoughEffective(family);
+  const roughMin = stockCm3 / qTurn;
+  const fin = turnFinish(family, externalAreaCm2);
+  const finishMin = fin.min;
   const tools = 3;   // rough, finish, groove / thread
+  const allowMin = tools * TURN_TOOL_ALLOWANCE_MIN;
   const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
   return {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
-    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(roughMin + finishMin + toolChangeMin),
+    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(roughMin + finishMin + allowMin + toolChangeMin),
     basis: `outside of the turned axis ${externalAreaCm2.toFixed(0)} cm² (journals, taper, fillets; up to Ø${maxDiaMm.toFixed(0)} mm): `
-      + `rough ${stockCm3.toFixed(0)} cm³ of ${stockMm} mm-a-side stock at ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
-      + `finish at ${finishRate.toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s `
-      + `(${family}; ground bearing seats, if the drawing calls them, are extra; ${TURN_FINISH_STATUS})`,
+      + `rough ${stockCm3.toFixed(0)} cm³ of ${stockMm} mm-a-side stock ÷ ${qTurn} cm³/min (vc × fn × ${TURN_ROUGH_AP_MM} mm ap = `
+      + `${turnRoughInCut(family).toFixed(0)} in-cut ÷ (1 + ${ROUGH_AIR_SHARE} air moves); ap and air share ${ASSUMED}) = ${roughMin.toFixed(2)} min; `
+      + `finish ${externalAreaCm2.toFixed(0)} cm² ÷ ${fin.rate.toFixed(0)} cm²/min (fn × vc) = ${finishMin.toFixed(2)} min; `
+      + `${tools} tools × (${TURN_TOOL_ALLOWANCE_MIN} min approach / retract + ${TOOL_CHANGE_SEC} s change) = ${(allowMin + toolChangeMin).toFixed(2)} min `
+      + `(${family}; ground bearing seats, if the drawing calls them, are extra; sources — ${sourcesLine(family, ['turn'])}; ${TURN_FINISH_STATUS})`,
   };
 }
 
@@ -529,7 +572,10 @@ export function secondaryMachiningCell(p: {
       + `× £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
       + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}; `
       + `handling ${handlingMinPerFixturing(p.weightKg)} min a fixturing by weight, ${SETUP_MIN_PER_FIXTURING} min change-over a fixturing a batch of ${batchSize} `
-      + `(${HOURS_STATUS})`,
+      + `(${HOURS_STATUS})`
+      + (volumeCell ? `; pallet change ${PALLET_CHANGE_SEC} s (Okuma MA-4000H, ISO 10791-9, data.json #64)` : '')
+      + `; cutting minutes on the published cutting data — ${sourcesLine(p.family, p.turned ? ['turn', 'drill', 'tap'] : ['face', 'drill', 'bore', 'tap'])}; `
+      + `${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}`,
   };
 }
 

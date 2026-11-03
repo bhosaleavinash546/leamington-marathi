@@ -14,6 +14,12 @@
 import type { OperationInput } from './types.js';
 import type { FeatureRow } from './feature-ops.js';
 import { featureToOperation, tappedThread } from './feature-ops.js';
+import type { MaterialFamily } from './material-family.js';
+import {
+  catalogueFor, drillFeed, boreFeed, tapFeed, faceMillCutMinutes, sidePassCm2PerMin, turnFinishCm2PerMin, millRoughEffective,
+  familyForTimeFactor, MACHINABILITY_RATIO, ASSUMED,
+} from './cutting-catalogue.js';
+import { PALLET_CHANGE_SEC } from './routing-optimiser.js';
 export { tappedThread, TAPPING_DRILL_MM } from './feature-ops.js';
 
 /**
@@ -42,9 +48,10 @@ export interface FeatureMachiningOptions {
   /** Tolerance/finish multiplier on machining time (tight bores cost more).
    *  1.0 = general; 1.3 = reamed/precision; 1.6 = ground. Default 1.0. */
   finishFactor?: number;
-  /** The metal's cutting-time factor against aluminium (`CUTTING_DATA[family].timeFactor`).
-   *  The per-feature minutes are an aluminium baseline; a steel knuckle's holes
-   *  were timed as if they were aluminium (machining review, Oct 2026). Default 1. */
+  /** The metal cut: every feature is timed on its own catalogue row (cutting-catalogue.ts). */
+  family?: MaterialFamily;
+  /** @deprecated The old cutting-time factor (`CUTTING_DATA[family].timeFactor`). Read only when `family` is absent, as
+   *  the family it stands for (`familyForTimeFactor`) — it no longer multiplies anything. Pass `family`. */
   materialFactor?: number;
   /** Near-net only: holes above this diameter are cored in, and finish-bored
    *  rather than drilled from solid. Omit to drill every hole from solid. */
@@ -86,10 +93,7 @@ export interface FeatureMachiningResult {
   summary: string;                   // e.g. "50×Ø6.0×10, 2×Ø16.0×20"
 }
 
-// Shop-rate constants for the area/volume-based compound features (Phase 2).
-const FACE_MILL_FEED_MM2_PER_MIN = 8000;   // face-mill area coverage rate
-const POCKET_MRR_MM3_PER_MIN = 6000;       // pocket roughing material-removal rate
-
+// Pocket floor roughing and wall finishing ride the catalogue's roughing and side-pass rates (cutting-catalogue.ts).
 /** Short human label for a feature, kind-aware (holes have Ø, faces have area). */
 export function featureLabel(l: { kind: FeatureRow['kind']; count: number; diaMm: number; depthMm: number; areaMm2?: number }): string {
   if (l.kind === 'face') return `${l.count}× face ${Math.round(l.areaMm2 ?? 0)}mm²`;
@@ -133,89 +137,143 @@ export function secondaryMachiningMachineId(
   return milled ? 'mach-vmc3' : 'mach-drill';
 }
 
-/** Geometry-measured machining minutes for ONE instance of a feature.
- *  Transparent shop heuristic (approach + depth/area-driven cut + finishing). */
-export function featureMinutesEach(row: FeatureRow): number {
+/**
+ * Fixed per-feature allowances, minutes: positioning, approach and retract around the cut. Their values are the
+ * long-standing ones; since the report standard round (3 Nov 2026) they are NOT multiplied by the metal (non-cutting
+ * time does not depend on it — the reviewers' point) and every basis prints them as engineering-typical, not sourced.
+ */
+export const ALLOWANCE_MIN = {
+  drill: 0.15, microDrill: 0.06, borePass: 0.25, face: 0.20, blind: 0.10, tap: 0.10, feature: 0.30, helical: 0.50, land: 0.20,
+} as const;
+export const ALLOWANCE_STATUS = 'positioning / approach / retract allowances engineering-typical, not sourced, not scaled by the metal';
+
+/** Rigid tapping approach / reversal allowance (kept under its old name). */
+export const TAP_APPROACH_MIN = ALLOWANCE_MIN.tap;
+/** Extra pecking on a hole deeper than 5 diameters (time × 1.5 on the drilling feed) — engineering-typical, not sourced.
+ *  Within 5×D a hole is standard reach (DIN 338 jobber Ø14.5 reaches 92 mm = 6.4×D, data.json #43) and is not pecked. */
+export const DEEP_HOLE_PECK = 1.5;
+/** @deprecated The aluminium-baseline drilling feed the costing used before the catalogue (3 Nov 2026). No costing reads
+ *  it; the feed is now `drillFeed(family, Ø)`. Kept so older callers compile — use `deepHolePeckPremiumMin`. */
+export const DRILL_FEED_MM_PER_MIN = 400;
+/** @deprecated as `DRILL_FEED_MM_PER_MIN` (Ø ≤ 6). */
+export const MICRO_DRILL_FEED_MM_PER_MIN = 250;
+/** @deprecated The aluminium-baseline tapping feed before the catalogue; tapping is now n × pitch (`tapFeed`). */
+export const TAP_FEED_MM_PER_MIN = 500;
+/** Holes above this are helically milled from solid (no catalogue row: the old aluminium rate × the machinability ratio). */
+export const HELICAL_ABOVE_MM = 26;
+/** Helical milling feed along the hole in aluminium, mm/min (0.050 min/mm) — engineering-typical, not sourced. */
+export const HELICAL_MIN_PER_MM = 0.050;
+
+const isLandRow = (row: FeatureRow) => row.kind === 'hole' && row.diaMm >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * row.diaMm;
+const f2 = (n: number) => n.toFixed(2);
+
+/**
+ * Minutes for ONE instance of a feature, with the arithmetic as text. Cutting terms come from the published catalogue
+ * for the metal at the feature's own size (cutting-catalogue.ts); the allowances are fixed. `coredAboveMm` (near-net):
+ * a hole above it is cast / pierced in and finish-bored in one pass rather than drilled from solid.
+ */
+export function featureTime(row: FeatureRow, family: MaterialFamily = 'aluminium', coredAboveMm?: number): { min: number; text: string; calc: string } {
+  const r = featureTimeInner(row, family, coredAboveMm);
+  return { ...r, text: r.label ? `${r.label} ${r.calc}` : r.calc };
+}
+
+function featureTimeInner(row: FeatureRow, family: MaterialFamily, coredAboveMm?: number): { min: number; label: string; calc: string } {
+  const { scale, row: cat } = catalogueFor(family);
+  const ratio = MACHINABILITY_RATIO[family] ?? MACHINABILITY_RATIO.steel;
+  const A = ALLOWANCE_MIN;
   if (row.kind === 'face') {
-    const area = Math.max(row.areaMm2 ?? 0, 1);
-    return 0.20 + area / FACE_MILL_FEED_MM2_PER_MIN;        // facing pass
+    const cut = faceMillCutMinutes(family, row.areaMm2 ?? 0);
+    return { min: A.face + cut.min, label: `face ${Math.round(row.areaMm2 ?? 0)} mm²:`, calc: `${A.face} + ${cut.text}` };
   }
   if (row.kind === 'pocket' || row.kind === 'slot') {
     const area = Math.max(row.areaMm2 ?? 0, 1);
     const depth = Math.max(row.depthMm, 1);
-    const rough = (area * depth) / POCKET_MRR_MM3_PER_MIN;   // volume roughing
-    const finishPerimeterMm = 4 * Math.sqrt(area);           // ≈ square perimeter
-    const finish = (finishPerimeterMm * depth) / 12000;      // wall finish pass
-    return 0.30 + rough + finish;
+    const rough = area * depth / 1000 / millRoughEffective(family);         // floor volume at the roughing rate
+    const wallCm2 = 4 * Math.sqrt(area) * depth / 100;                       // ≈ square perimeter × depth
+    const finish = wallCm2 / sidePassCm2PerMin(family);
+    return { min: A.feature + rough + finish, label: `${row.kind}:`,
+      calc: `${A.feature} + ${(area * depth / 1000).toFixed(1)} cm³ ÷ ${millRoughEffective(family)} cm³/min + ${wallCm2.toFixed(1)} cm² walls ÷ ${sidePassCm2PerMin(family).toFixed(0)} cm²/min = ${f2(A.feature + rough + finish)} min` };
   }
   const d = row.diaMm;
   const L = Math.max(row.depthMm, 1);
   if (row.kind === 'boss') {
-    return 0.30 + L * 0.020;                     // external turning
+    const areaCm2 = Math.PI * Math.max(d, 1) * L / 100;
+    const t = A.feature + areaCm2 / turnFinishCm2PerMin(family);
+    return { min: t, label: `boss Ø${d.toFixed(1)}:`, calc: `${A.feature} + ${areaCm2.toFixed(1)} cm² ÷ ${turnFinishCm2PerMin(family).toFixed(0)} cm²/min = ${f2(t)} min` };
   }
-  // A wide, shallow "hole" is not a bore — it is a spot-face, counterbore land
-  // or seat face. The kernel reports every cylindrical land of a stepped bore
-  // separately, so a real stub axle carried eight Ø40–46 lands 2–7 mm deep,
-  // each billed as a full helical-milled bore (~0.6 min each). One facing pass
-  // is what the land actually costs.
-  if (d >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * d) {
-    return 0.20 + d * 0.004;                      // spot-face / seat skim
+  // A wide, shallow "hole" is a spot-face, counterbore land or seat face: the kernel reports every cylindrical land of
+  // a stepped bore separately (a real stub axle carried eight Ø40–46 lands 2–7 mm deep). One skim is what it costs.
+  if (isLandRow(row)) {
+    const t = A.land + d * 0.004;
+    return { min: t, label: `Ø${d.toFixed(1)} land spot-faced`, calc: `${A.land} + 0.004 min/mm Ø (${ASSUMED}) = ${f2(t)} min` };
   }
-  // Drilling feed along the hole, mm/min, in aluminium. It was 50 mm/min
-  // (L × 0.020) — 10–20× slower than a drill in aluminium runs: feed per rev ≈
-  // 0.02 × Ø at Vc ≈ 80–150 m/min gives ~500–950 mm/min whatever the diameter.
-  // DRILL_FEED is set at the conservative end with peck and retract allowed for;
-  // a deep hole (L > 5 Ø) pecks harder. Other metals scale by their cutting-time
-  // factor (machining review, Oct 2026).
+  if (coredAboveMm !== undefined && d > coredAboveMm) {
+    // Cored / pierced: one finish-boring pass down its depth at the boring row's n·f.
+    const b = boreFeed(family, d);
+    const t = A.borePass + L / b.vf * scale;
+    return { min: t, label: `Ø${d.toFixed(1)}×${L.toFixed(0)} cored, bored`, calc: `${A.borePass} + ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min (n ${b.n.toFixed(0)} × f ${cat.bore.f})${scale !== 1 ? ` × ${+scale.toFixed(3)}` : ''} = ${f2(t)} min` };
+  }
+  // Pecking only beyond 5×D: a 4–5×D hole is standard catalogue reach (DIN 338; MVS runs 3–8×D at one feed).
   const deep = L > 5 * Math.max(d, 1) ? DEEP_HOLE_PECK : 1;
-  let t: number;
-  if (d > 26) {
-    t = 0.50 + L * 0.050;                         // helical mill / large bore (~20 mm/min axial)
-  } else if (d > 13) {
-    // A shallow through hole is a clearance hole (bolts pass through it) and is
-    // drilled only; a blind hole or one deeper than 2 Ø is a locating or bearing
-    // bore and takes a ream / bore pass. Every 13–26 mm hole was reamed, the bolt
-    // holes of a flange included (forging review). Tolerances would settle it.
-    const bore = row.through === false || L > 2 * d;
-    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep + (bore ? 0.25 + L / DRILL_FEED_MM_PER_MIN : 0);
-  } else if (d > 6) {
-    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep;  // drill
+  let t: number; let text: string;
+  const label = `Ø${d.toFixed(1)}×${L.toFixed(0)}`;
+  if (d > HELICAL_ABOVE_MM) {
+    t = A.helical + L * HELICAL_MIN_PER_MM * ratio;
+    text = `helical-milled ${A.helical} + ${L.toFixed(0)} × ${HELICAL_MIN_PER_MM} min/mm × ${ratio} (no catalogue row read: aluminium rate × machinability ratio, ${ASSUMED})`;
   } else {
-    // Micro-drilling: a small drill feeds slower and pecks more.
-    t = 0.06 + L / MICRO_DRILL_FEED_MM_PER_MIN * deep;
+    const dr = drillFeed(family, d);
+    const allow = d > 6 ? A.drill : A.microDrill;
+    const cut = L / dr.vf * deep * scale;
+    t = allow + cut;
+    text = `${allow} + ${L.toFixed(0)} ÷ ${dr.vf.toFixed(0)} mm/min (n ${dr.n.toFixed(0)} × f ${dr.f.toFixed(3)})`
+      + (deep !== 1 ? ` × ${DEEP_HOLE_PECK} peck (> 5×D)` : '') + (scale !== 1 ? ` × ${+scale.toFixed(3)}` : '');
+    // A blind 13–26 mm hole is a locating or bearing bore: drilled, then one boring pass. A through hole is a clearance
+    // hole and is drilled only, whatever its depth (report standard round: a 4.2×D through hole was reamed).
+    if (d > 13 && row.through === false) {
+      const b = boreFeed(family, d);
+      const bt = A.borePass + L / b.vf * scale;
+      t += bt;
+      text += ` + bore ${A.borePass} + ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min`;
+    }
   }
-  if (row.through === false) t += 0.10;           // blind: bottom finishing
-  if (isTappingDrillHole(row)) t += TAP_APPROACH_MIN + 2 * L / TAP_FEED_MM_PER_MIN;   // tap in and out
-  return t;
+  if (row.through === false) { t += A.blind; text += ` + ${A.blind} blind`; }
+  const thread = tappedThread(row);
+  if (thread) {
+    const tp = tapFeed(family, thread);
+    const tt = A.tap + 2 * L / tp.vf * scale;
+    t += tt;
+    text += ` + tap ${thread} ${A.tap} + 2 × ${L.toFixed(0)} ÷ ${tp.vf.toFixed(0)} mm/min (n ${tp.n.toFixed(0)} × ${tp.pitch} pitch)`;
+  }
+  return { min: t, label, calc: `${text} = ${f2(t)} min` };
 }
 
-const isTappingDrillHole = (row: FeatureRow) => tappedThread(row) !== null;
-/** Rigid tapping in aluminium, mm/min along the hole, and the approach / reversal allowance. */
-export const TAP_FEED_MM_PER_MIN = 500;
-export const TAP_APPROACH_MIN = 0.10;
-
-/** Drilling feed along the hole in aluminium, mm/min, including peck and retract. */
-export const DRILL_FEED_MM_PER_MIN = 400;
-/** Ø ≤ 6 mm drills, mm/min. */
-export const MICRO_DRILL_FEED_MM_PER_MIN = 250;
-/** Extra pecking on a hole deeper than 5 diameters. */
-export const DEEP_HOLE_PECK = 1.5;
+/** Geometry-measured machining minutes for ONE instance of a feature (aluminium unless the metal is given). */
+export function featureMinutesEach(row: FeatureRow, family: MaterialFamily = 'aluminium'): number {
+  return featureTime(row, family).min;
+}
 
 /**
- * Minutes for one hole. A hole above `coredAboveMm` in a casting is cast in and
- * only finish-bored (one pass down its depth); everything else is drilled,
- * reamed or helically milled from solid by `featureMinutesEach`.
+ * Minutes for one hole. A hole above `coredAboveMm` in a casting is cast in and only finish-bored (one pass down its
+ * depth); everything else is drilled or helically milled from solid by `featureTime`.
  */
-export function nearNetHoleMinutes(row: FeatureRow, coredAboveMm?: number): number {
-  if (coredAboveMm !== undefined && row.kind === 'hole' && row.diaMm > coredAboveMm
-      && !(row.diaMm >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * row.diaMm)) {
-    return 0.25 + Math.max(row.depthMm, 1) / BORE_FINISH_MM_PER_MIN;
-  }
-  return featureMinutesEach(row);
+export function nearNetHoleMinutes(row: FeatureRow, coredAboveMm?: number, family: MaterialFamily = 'aluminium'): number {
+  return featureTime(row, family, row.kind === 'hole' ? coredAboveMm : undefined).min;
 }
 
-/** Finish boring feed along the bore, mm/min (aluminium): ~0.15 mm/rev at ~1,000 rpm. */
-export const BORE_FINISH_MM_PER_MIN = 150;
+/**
+ * The costing's peck premium on a hole deeper than 5×D — the extra time `featureTime` charges for it, the
+ * design-addressable part of a deep hole (the drilling itself stays). 0 within 5×D.
+ */
+export function deepHolePeckPremiumMin(row: FeatureRow, family: MaterialFamily = 'aluminium'): number {
+  const d = row.diaMm, L = Math.max(row.depthMm, 1);
+  if (!(L > 5 * Math.max(d, 1)) || d > HELICAL_ABOVE_MM || isLandRow(row)) return 0;
+  return (DEEP_HOLE_PECK - 1) * L / drillFeed(family, d).vf * catalogueFor(family).scale;
+}
+
+/** The operation a costed feature row is, as the costing times it (a through hole is drilled only — never reamed). */
+export function costedOperation(row: FeatureRow): string {
+  return featureToOperation(row);
+}
 
 /** Metal volume removed (cm³) for ONE instance — cylinders for hole/boss,
  *  floor-area×depth for pockets/slots, ~0 (skim) for facing. */
@@ -235,7 +293,10 @@ export function computeFeatureMachining(
 ): FeatureMachiningResult {
   const stock = opts.stockCondition ?? 'near_net';
   const density = opts.densityKgPerCm3 ?? 0.0027;
-  const finish = (opts.finishFactor ?? 1.0) * (opts.materialFactor ?? 1.0);
+  // The metal: its catalogue row sets the cutting; the tolerance / finish factor alone multiplies the minutes.
+  const family: MaterialFamily = opts.family
+    ?? (opts.materialFactor !== undefined ? familyForTimeFactor(opts.materialFactor) : 'aluminium');
+  const finish = opts.finishFactor ?? 1.0;
   const flags = opts.includeFlags;
 
   const lines: FeatureMachiningLine[] = (rows ?? []).map((row, i) => {
@@ -244,7 +305,7 @@ export function computeFeatureMachining(
     // A turned part's faces are faced on the lathe (in `turned.latheMin`), not milled.
     const minutesEach = opts.turned && row.kind === 'face' ? 0
       : (stock === 'near_net' && opts.coredAboveMm !== undefined
-        ? nearNetHoleMinutes(row, opts.coredAboveMm) : featureMinutesEach(row)) * finish;
+        ? nearNetHoleMinutes(row, opts.coredAboveMm, family) : featureMinutesEach(row, family)) * finish;
     return {
       faceIds: row.faceIds,
       kind: row.kind,
@@ -253,7 +314,7 @@ export function computeFeatureMachining(
       through: row.through,
       count: row.count,
       areaMm2: row.areaMm2,
-      operation: opts.turned && row.kind === 'face' ? 'Faced on the lathe' : featureToOperation(row),
+      operation: opts.turned && row.kind === 'face' ? 'Faced on the lathe' : costedOperation(row),
       minutesEach: Math.round(minutesEach * 1000) / 1000,
       totalMinutes: Math.round(minutesEach * row.count * 1000) / 1000,
       volumeCm3: Math.round(featureVolumeCm3(row) * row.count * 1000) / 1000,
@@ -305,9 +366,9 @@ export function computeFeatureMachining(
     ...(cell && cell.masked ? [{
       // The twin-pallet cell: the spindle pays a pallet change; the operator loads the other pallet while it cuts.
       ...common,
-      operationName: `Pallet change (${cell.fixturings} fixturing(s) × ${cell.palletChangeSec ?? 10} s)`,
+      operationName: `Pallet change (${cell.fixturings} fixturing(s) × ${cell.palletChangeSec ?? PALLET_CHANGE_SEC} s)`,
       machineId: opts.machineId,
-      cycleTimeHr: cell.fixturings * (cell.palletChangeSec ?? 10) / 3600,
+      cycleTimeHr: cell.fixturings * (cell.palletChangeSec ?? PALLET_CHANGE_SEC) / 3600,
       manning: 1,
       labourTimeHr: 0,
       untended: true,

@@ -157,26 +157,30 @@ describe('cutting time — the measured build-up, not the kernel\'s area rate', 
   it('times a small part by the metal it removes and the area it finishes', () => {
     const c = cuttingHours(ctx(), 'aluminium');
     // The kernel billed 0.836 hr (50 min) on a 3 g part; the old cap 0.095 hr.
-    // Built up: rough 13 cm³ at 120 cm³/min, finish 40 cm² at 40 cm²/min,
-    // surface 10 cm² at 10 cm²/min, 12 micro-holes, 5 tools.
+    // Built up on the published cutting data (report standard, Nov 2026): rough 12 cm³ ÷ 535 cm³/min in-cut × 1.25 air
+    // moves, walls at the TungAlu side pass (101.9 cm²/min), free-form at the ball-nose rate, 12 micro-holes at n·f
+    // (0.06 + 6 ÷ 806 mm/min each), tool changes 2.2 s. It was 0.0605 h on unsourced aluminium rates.
     expect(c.rawHours).toBeCloseTo(0.836, 3);
-    expect(c.hours).toBe(0.0605);
+    expect(c.hours).toBe(0.0405);
     // the metal in the holes is drilled, not roughed (arithmetic audit M1)
-    expect(c.cut!.detail.basis).toContain('= 12 cm³ ÷ 120 cm³/min');
+    expect(c.cut!.detail.basis).toContain('rough 12 cm³ ÷ 535 cm³/min in-cut');
   });
 
   it('a large part removes a lot of metal, and that takes time', () => {
     // The 220 × 180 × 140 mm knuckle cut from solid: 5.3 dm³ of aluminium to
     // rough out. The kernel's 0.9 hr never looked at it.
     const c = cuttingHours({ ...ctx(KNUCKLE), commodity: 'machining' }, 'aluminium');
-    expect(c.hours).toBeCloseTo(1.41, 2);
-    expect(c.cut!.detail.roughMin).toBeCloseTo(43.8, 1);   // 10.5 cm³ in its holes is drilled, not roughed (M1)
+    // 0.63 h on the catalogue's 535 cm³/min in-cut (+ 25 % air moves) — it was 1.41 h at an unsourced 120 cm³/min
+    expect(c.hours).toBeCloseTo(0.6347, 3);
+    expect(c.cut!.detail.roughMin).toBeCloseTo(43.8 * 120 / 534.76 * 1.25, 1);   // the same 5.26 dm³ (holes drilled, M1)
   });
 
   it('a harder metal cuts slower', () => {
     const al = cuttingHours(ctx(), 'aluminium');
     const ti = cuttingHours(ctx(), 'titanium');
-    expect(ti.hours / al.hours).toBeGreaterThan(3);
+    // titanium has no catalogue row: the steel row × 2 (machinability ratio, labelled); the fixed allowances are not
+    // scaled, so on a hole-heavy 3 g part the ratio is 2.5, not the old 4 × aluminium
+    expect(ti.hours / al.hours).toBeGreaterThan(2);
   });
 });
 
@@ -197,10 +201,10 @@ describe('the routing', () => {
 
   it('apportions milling by face count; each op states its crew', () => {
     const ops = machiningOperationPlan(ctx(), 'aluminium');
-    expect(ops[0].cycleTimeHr).toBe(0.0182);
-    expect(ops[1].cycleTimeHr).toBe(0.0136);
-    expect(ops[2].cycleTimeHr).toBe(0.0118);
-    expect(ops[3].cycleTimeHr).toBe(0.0168);
+    expect(ops[0].cycleTimeHr).toBe(0.0113);
+    expect(ops[1].cycleTimeHr).toBe(0.0084);
+    expect(ops[2].cycleTimeHr).toBe(0.0073);
+    expect(ops[3].cycleTimeHr).toBe(0.0135);              // 12 × (0.06 + 6 ÷ 806 mm/min) = 0.809 min
     expect(ops[0].basis).toContain('40 of 96 faces');
     // One operator tends two machines while they cut; loading takes a whole one.
     expect(ops[0].manning).toBe(0.5);
@@ -249,7 +253,7 @@ describe('machining end to end', () => {
     expect(m.netWeightKg).toBe(0.003);
     expect(m.stockWeightKg).toBe(0.037);
     expect(m.materialUtilization).toBe(0.0817);
-    expect(m.estimatedCycleTimeHr).toBe(0.0804);          // cutting + handling, machine time
+    expect(m.estimatedCycleTimeHr).toBe(0.0605);          // cutting + handling, machine time (0.0804 before the catalogue)
     // Setups follow the chosen split routing: 3 milling fixturings (one per
     // approach direction) + 1 drill-press fixturing for the drilling op.
     expect(m.setupCount).toBe(4);
@@ -259,7 +263,7 @@ describe('machining end to end', () => {
     expect(m.rejectRate).toBe(0.02);
     expect(m.toolingCost).toBe(10_000);                  // 4 dedicated fixtures (100k parts over 5 years)
     expect(m.programmingNRE).toBe(274);                  // the engineer at £33.27/h (UK rate book, Oct 2026; £353 at £42.80)
-    expect(m.toolWearCostPerPart).toBe(0.145);
+    expect(m.toolWearCostPerPart).toBe(0.0972);          // 2.43 cutting min × £0.04
     expect(r.provenance['mach-net-wt'].source).toBe('geometry');
   });
 
@@ -309,9 +313,10 @@ describe('cast_and_machine — the composition', () => {
     const machining = r.suggestions.machining as Record<string, unknown>;
     expect(casting.netWeightKg).toBe(2.8);
     // Near-net: the holes (no face table on this fixture), nothing roughed —
-    // 10 × Ø12 × 30 drilled from solid, 2.3 min, not a capped from-solid cycle.
+    // 10 × Ø12 × 30 drilled from solid, 10 × (0.15 + 30 ÷ 806 mm/min) = 1.87 min (MVE aluminium Ø12 n 2600 × f 0.31),
+    // not a capped from-solid cycle (2.25 min at the old unsourced 400 mm/min).
     const ops = machining.operations as Array<{ name: string; cycleTimeHr: number }>;
-    expect(ops.find(o => o.name.startsWith('Drilling'))!.cycleTimeHr).toBe(0.0375);
+    expect(ops.find(o => o.name.startsWith('Drilling'))!.cycleTimeHr).toBe(0.0312);
     // 100,000/yr: the twin-pallet cell — 2 datum directions in one clamping, the drilling in the same clamping
     // (pilot rule pack; it was the 3-fixturing split routing).
     expect(machining.setupCount).toBe(1);
