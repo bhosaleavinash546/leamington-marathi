@@ -132,3 +132,105 @@ moves by 2.6 p (CN) to 11.9 p (DE) a part, and its tooling investment by £26k (
   part in these runs.
 - **The cast + machine routing in CN and IN depends on how the HMC is priced.** It follows from the HMC's book rate
   against the locally priced VMCs. If the HMC is re-priced on local capex, PRCR002 may go back to the cell.
+
+## Fifth model: features-reports (3 Nov 2026)
+
+`scripts/arith-audit/features-reports.ts` (the cross-commodity checks: buckets, auditRow, country table, band,
+sensitivity, carbon, Design-to-Cost, quote teardown, causal model, route comparison, PDF / Excel) had the same hard-coded
+UK / 50,000 / 5 years / DAP. It now reads them through `dump-context.ts`, as the four models above do.
+
+**What changed**
+- The model's own stack, sensitivity re-costs, Design-to-Cost, causal £ per 1 % and the band run in the dump region's
+  book (`C.book`), not the UK book.
+- The country comparison is **sourced in the dump's region**. The rows are that region plus UK, IN and PL; `vs-base %` is
+  against the source row. The model moves tools, packaging and logistics by the row country's factor **÷ the source's**,
+  and moves the overhead default from the source's default (12 % × its multiplier) to the row's default.
+- The chain re-costs (`costMeasuredPart`), `compareRoutes`, `printPDF`, the summary teardown's annual volume and carbon all
+  take the dump's region, annual volume, programme years and terms. The product's chain still gets the UK base book, which
+  it regionalises itself. The PDF and the comparison get `C.ukBook` as their base book.
+- New checks on every part: overhead % = the country default, margin % = 8 %, and logistics = £0 on EXW.
+- **Band ± %.** P10 and P90 come back rounded to the penny, and ± % is worked from the unrounded values. On a £1 part,
+  the penny alone moves ± % by 0.48 points (UK seat bracket at 200k: 12.1 v 12.3). The model now runs the same seeded band
+  on the stack with every £ × 1,000. The stack is linear in £, and the draws do not depend on the money, so this gives
+  P10 and P90 to 1/1,000 p. The ± % check and its 0.11 tolerance are unchanged. New checks:
+  - the × 1,000 stack ÷ 1,000 = the headline (to 1e-9);
+  - the × 1,000 band ÷ 1,000 rounds to the printed P10 and P90.
+
+  Verified by hand: the exact ± is 12.302 (UK seat), 21.456 (IN ECU cover, printed 21.5) and 19.915 (HU ECU cover,
+  printed 19.9). Each one rounds to the product's figure.
+- **auditRow overhead and margin are compared on auditRow's own basis.** auditRow works these from the reported 4-dp
+  buckets (route-compare.ts: "the base from the buckets themselves"). The model used its unrounded stack. That put two
+  margins on opposite sides of a 4th-dp boundary:
+  - PL seat bracket: 0.068353 unrounded v 0.068344 on the reported buckets, so 0.0684 v 0.0683;
+  - DE battery rail: 2.515748 v 2.515752, so 2.5157 v 2.5158.
+
+  The tolerance is unchanged (0.0001).
+- **One new OPEN item (P-TD1).** It is printed and counted apart, not as a FAIL. With an identical detailed quote, every
+  line gap must be 0, not only the margin gap.
+
+No check was removed and no tolerance was widened.
+
+**Results (PASS / FAIL / OPEN)**
+
+| | UK 50k DAP | UK 200k | CN | IN | PL | HU | DE | SK |
+|---|---|---|---|---|---|---|---|---|
+| before (unmodified model) | 760 / 0 / 0 | 755 / 1 / 0 | 608 / 148 | 611 / 147 | 612 / 144 | 614 / 142 | 621 / 135 | 614 / 142 |
+| after | 793 / 0 / 3 | 795 / 0 / 3 | 821 / 0 / 3 | 797 / 0 / 3 | 794 / **1** / 3 | 821 / 0 / 3 | 821 / 0 / 3 | 821 / 0 / 3 |
+
+The 3 OPEN items in every column are P-TD1 (below). They are product items, and they were already in the UK 50k data
+before this change; the model just did not check them. Every "before" FAIL was the model's fault:
+- UK rates in a foreign stack (every operation's process and labour £);
+- a UK-sourced comparison;
+- the routes and chain re-costed at 50k, DAP;
+- the penny-rounded band.
+
+Logs are in the scratchpad as `fr-<CC>.log`, `fr-UK50.log` and `fr-orig-<CC>.log`.
+
+**Remaining disagreements**
+
+1. **PL · PRCR002 · "detailed teardown our total = headline": £28.09 v £28.12 (tolerance £0.03). Verdict: the product
+   is wrong, a small rounding fault.**
+   - `src/engine/quote-teardown-detailed.ts:272`, `ourTotal = r2(lines.reduce((s, l) => s + l.our, 0) + shop)`, adds
+     30 lines (material, 13 operations × 2, tooling, overhead, margin). Each line has already been rounded to the penny
+     (`r2` at :176–259).
+   - The unrounded sum is £28.1182, which is the headline. The rounded lines add to £28.09, 2.8 p (0.10 %) low.
+   - The other countries pass only because their rounding happens to stay inside 3 p. CN seat bracket is 0.50 v 0.52,
+     which is 3.8 % of a 52 p part.
+   - Today nothing in `src/ui` reads `ourTotal`, so the screen does not show it. The fix is
+     `r2(Σ unrounded lines + shop)`.
+2. **P-TD1 (OPEN, every country, also the UK 50k control) · detailed teardown, identical quote, material gap ≠ 0.
+   Verdict: the product is wrong.**
+   - The supplier side's material comes from `matCost` (`quote-teardown-detailed.ts:135-138`, used at :163):
+     gross × £/kg − scrap credit + consumables. That has no energy line, and it credits scrap even when the costing
+     credits none (`lossIsNotScrap`).
+   - Our side (`base = om.materialCost`, :164) is the costing's whole material bucket.
+   - So a quote that is identical driver for driver shows a material "gap" equal to minus the energy line:
+
+     | Part | Gap by country | Costing's energy line |
+     |---|---|---|
+     | PRCR002 | UK −£1.72, CN −0.69, IN −0.67, PL −1.33, HU −1.20, DE −1.42, SK −1.41 | e.g. UK £1.69; the extra ~3 p is the melt loss credited |
+     | FORGE_Hub_Flange | −£0.10 to −0.27 | |
+     | AL_Battery_Rail | −£0.09 to −0.20 | |
+
+   - On the negotiation screen (`main.ts::applyDetailedTeardown`, `negotiation-model.ts::detailedToSupplierBuckets`),
+     PL PRCR002 at 200k shows an identical detailed quote of £26.76 against a should-cost of £28.12. That is a price
+     variance of −£1.36 a part, −£272,000 a year. The screen headline reads "within 4.8 % — competitive; hold". In the
+     UK it is −£1.72 a part, −£344,000 a year.
+   - Each unchanged material driver is listed with a −£1.33 delta.
+   - Fix: add the energy line to `matCost` (or carry it as its own supplier line), and skip the credit when the costing
+     sets `lossIsNotScrap`.
+
+## Fixed in the product (3 Nov 2026)
+
+- **Roto moulds in service** — `rotoMoulds` divides by the costed carousel's hours in the costing's own book
+  (`rotoHoursIn`); hollow-forming 208 / 0 in every country (was 5–7 FAIL outside the UK).
+- **Detailed quote teardown, material (P-TD1)** — the supplier's material is built on the same basis as ours: the
+  material lines that do not depend on weight (process energy at the country tariff) carry over unchanged, and no scrap
+  credit is taken where the costing says the loss is not scrap (`lossIsNotScrap`, passed by the screen's
+  `buildPartDetail`). An identical quote now shows a £0 material gap and £0 driver deltas (stub axle UK was −£1.72 a
+  part, −£344,000 a year at 200k).
+- **Detailed quote teardown, our total** — the headline, rounded once (the sum of 30 penny-rounded lines missed it by
+  2.8p on PL PRCR002).
+
+features-reports on PL after the fixes: 798 PASS · 0 FAIL · 0 OPEN. Tests: `tests/quote-teardown-detailed.test.ts`,
+`tests/rotational-moulding-review.test.ts`.

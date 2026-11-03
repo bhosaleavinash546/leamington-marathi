@@ -660,6 +660,7 @@ function buildPartDetail(result: PartCostResult, input: UniversalStackInput): Pa
       scrapRecoveryPerKg: trace('material.scrapRecoveryPricePerKg'),
       consumablesPerPart: rm.consumablesCostPerPart ?? 0,
       materialCost: result.breakdown.rawMaterial,
+      ...(rm.lossIsNotScrap ? { lossIsNotScrap: true } : {}),
     },
     operations: result.operationDetails.map(o => ({
       name: o.operationName,

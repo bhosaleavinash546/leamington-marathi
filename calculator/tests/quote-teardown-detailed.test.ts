@@ -69,3 +69,24 @@ describe('detailed quote teardown', () => {
     expect(Array.isArray(dt.unmatchedSupplierOps)).toBe(true);
   });
 });
+
+describe('an identical quote has no material gap (7-country review, 3 Nov 2026)', () => {
+  it('process energy booked in the material bucket carries over to the supplier', () => {
+    const p = samplePart();
+    p.material.materialCost = 6.25 + 1.72;               // + the costing's energy line at the country tariff
+    const dt = analyzeDetailedQuote(p, { material: { netWeightKg: 1, utilization: 0.8, pricePerKg: 5 } });
+    expect(dt.material.gapGBP).toBeCloseTo(0, 6);
+    for (const d of dt.material.drivers) expect(d.deltaGBP).toBeCloseTo(0, 6);
+  });
+  it('melt loss that is not scrap takes no credit on either side', () => {
+    const p = samplePart();
+    p.material = { ...p.material, scrapRecoveryPerKg: 0.2, lossIsNotScrap: true, materialCost: 6.25 };
+    const dt = analyzeDetailedQuote(p, { material: { netWeightKg: 1, utilization: 0.8, pricePerKg: 5.5 } });
+    expect(dt.material.theirGBP).toBeCloseTo(6.875, 2);   // 1.25 kg × 5.5, no credit on the 0.25 kg lost
+  });
+  it('our total is the headline, rounded once', () => {
+    const p = samplePart();
+    p.total = 28.1182;
+    expect(analyzeDetailedQuote(p, {}).ourTotal).toBe(28.12);
+  });
+});

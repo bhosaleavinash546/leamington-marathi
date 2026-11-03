@@ -52,6 +52,8 @@ export interface MaterialDetail {
   scrapRecoveryPerKg: number;
   consumablesPerPart: number;
   materialCost: number;     // £/part (what the engine booked)
+  /** The costing's metal loss is not sold as scrap (casting melt loss) — no credit (core.ts). */
+  lossIsNotScrap?: boolean;
 }
 
 export interface PartDetail {
@@ -131,11 +133,11 @@ const HRS_TO_S = 3600;
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const pct = (their: number, our: number) => (our === 0 ? 0 : Math.round(((their - our) / our) * 1000) / 10);
 
-/** Weight-mode material cost, mirroring the engine. */
-function matCost(net: number, util: number, price: number, scrap: number, consumables: number): number {
+/** Weight-mode material cost, mirroring the engine (core.ts): no scrap credit where the loss is not scrap. */
+function matCost(net: number, util: number, price: number, scrap: number, consumables: number, lossIsNotScrap = false): number {
   if (!(util > 0)) return consumables;
   const gross = net / util;
-  return gross * price - (gross - net) * scrap + consumables;
+  return gross * price - (lossIsNotScrap ? 0 : (gross - net) * scrap) + consumables;
 }
 const procCost = (rate: number, cycHr: number, ppc: number, oee: number) =>
   (ppc > 0 && oee > 0 ? rate * cycHr / ppc / oee : 0);
@@ -160,15 +162,21 @@ export function analyzeDetailedQuote(our: PartDetail, sup: SupplierDetail): Deta
     const tUtil = sm.utilization ?? om.utilization;
     const tPrice = sm.pricePerKg ?? om.pricePerKg;
     const tCons = sm.consumablesPerPart ?? om.consumablesPerPart;
-    const theirGBP = r2(matCost(tNet, tUtil, tPrice, om.scrapRecoveryPerKg, tCons));
+    // What the costing booked beyond weight × price − scrap + consumables (process energy priced at the country tariff)
+    // carries over to the supplier unchanged: an identical quote showed −£1.72 a part of "material gap" on the stub axle
+    // — its energy line — and every unchanged driver a −£1.33 delta (7-country review, 3 Nov 2026).
+    const loss = om.lossIsNotScrap ?? false;
+    const fixed = om.materialCost - matCost(om.netWeightKg, om.utilization, om.pricePerKg, om.scrapRecoveryPerKg, om.consumablesPerPart, loss);
+    const mc = (n: number, u: number, p: number, c: number) => matCost(n, u, p, om.scrapRecoveryPerKg, c, loss) + fixed;
+    const theirGBP = r2(mc(tNet, tUtil, tPrice, tCons));
     const base = om.materialCost;
     const drivers: Driver[] = [
       { label: 'Material price', unit: '£/kg', ourValue: om.pricePerKg, theirValue: tPrice,
-        deltaGBP: r2(matCost(om.netWeightKg, om.utilization, tPrice, om.scrapRecoveryPerKg, om.consumablesPerPart) - base), deltaPct: pct(tPrice, om.pricePerKg) },
+        deltaGBP: r2(mc(om.netWeightKg, om.utilization, tPrice, om.consumablesPerPart) - base), deltaPct: pct(tPrice, om.pricePerKg) },
       { label: 'Net weight', unit: 'kg', ourValue: om.netWeightKg, theirValue: tNet,
-        deltaGBP: r2(matCost(tNet, om.utilization, om.pricePerKg, om.scrapRecoveryPerKg, om.consumablesPerPart) - base), deltaPct: pct(tNet, om.netWeightKg) },
+        deltaGBP: r2(mc(tNet, om.utilization, om.pricePerKg, om.consumablesPerPart) - base), deltaPct: pct(tNet, om.netWeightKg) },
       { label: 'Material utilisation', unit: '%', ourValue: r2(om.utilization * 100), theirValue: r2(tUtil * 100),
-        deltaGBP: r2(matCost(om.netWeightKg, tUtil, om.pricePerKg, om.scrapRecoveryPerKg, om.consumablesPerPart) - base), deltaPct: pct(tUtil, om.utilization) },
+        deltaGBP: r2(mc(om.netWeightKg, tUtil, om.pricePerKg, om.consumablesPerPart) - base), deltaPct: pct(tUtil, om.utilization) },
     ];
     if (Math.abs(tCons - om.consumablesPerPart) > 0.001) {
       drivers.push({ label: 'Consumables', unit: '£', ourValue: om.consumablesPerPart, theirValue: tCons, deltaGBP: r2(tCons - om.consumablesPerPart), deltaPct: pct(tCons, om.consumablesPerPart) });
@@ -269,7 +277,8 @@ export function analyzeDetailedQuote(our: PartDetail, sup: SupplierDetail): Deta
   ];
   const provided = lines.filter(l => l.their != null);
   const theirTotalModelled = r2(provided.reduce((s, l) => s + (l.their as number), 0));
-  const ourTotal = r2(lines.reduce((s, l) => s + l.our, 0) + shop);
+  // Rounded ONCE: the sum of 30 penny-rounded lines missed the headline by 2.8p on PL PRCR002 (7-country review).
+  const ourTotal = our.total != null ? r2(our.total) : r2(lines.reduce((s, l) => s + l.our, 0) + shop);
   const coverage = lines.length ? provided.length / lines.length : 0;
 
   // Top drivers across every block, ranked by £ impact.
