@@ -44,6 +44,20 @@ These are scheduled as their own round: research with sources → rule change �
 re-cost. Until then the core report labels the machining minutes "engineering-typical, conservative — confirm with a
 supplier cycle sheet" and lists the unsourced figures with their £.
 
+**Outcome of that round (3 Nov 2026, commits 926bf527, 56a18442; research and the independent re-check in
+`scripts/research/2026-11-report-standard/`):**
+
+| Finding | Done | Effect at 200k / 5 yr, UK, ex-works |
+|---|---|---|
+| Machining time base | cutting time from makers' published data (`cutting-catalogue.ts`); allowances no longer scaled by the metal; through holes not reamed; 2.2 s tool change, 7.1 s pallet change | manifold £21.17 → £15.07, knuckle £19.60 → £14.78, hub flange £16.69 → £11.29, yoke £19.94 → £12.63 |
+| Foundry practice by volume | automatic line + robotic fettling cell (sourced capex, book hours convention stated), line by moulds a year, crew by line, 100k aluminium pattern life; core build-up NOT done (binder quote needed) | with machining: stub axle £41.24 → £24.18, casting bracket £19.42 → £9.18 |
+| Composites tool life | tool material by cycles a tool, published hand-layup rate and M21 cure, PCM comparison row | hat £69.30 → £62.05 (PCM £47.49); roof £437.49 → £624.81 (PCM £435.90) — hand layup at 200k is not credible and the report says so |
+| HMC depreciation / shift / lathe capex | not done | next rate-book round |
+
+The stub axle now sits BELOW the cost engineer's £30–35 judgement. Both changes are sourced and the shadow models close,
+but the automatic line's hours (book convention) and the unsourced core cost carry the moulding figure — confirm against
+a supplier quote before it is used in a negotiation. Accuracy remains unmeasured (0 actuals).
+
 ## 3. The report standard
 
 **Core report (target 7 pages):**

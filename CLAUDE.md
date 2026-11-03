@@ -941,6 +941,32 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`renderExecutiveSummaryPage`) and workbook sheet `0-Executive` (first; read `1-Summary` by NAME); it adds no arithmetic and
   must fit one page (`scripts/country-trace/exec-page-check.ts`). Levers: `rankOpportunities` lists ONLY re-costed levers
   (`notRecostedCount` counts the rest) — screen, PDF and the AI commentary; no generic roadmap (`tests/levers-recosted-only.test.ts`).
+- Report standard (3 Nov 2026, `calculator/docs/review/report-standard-2026-11/README.md`, five-role review): the PDF button
+  prints the CORE report (`src/export/core-report-pdf.ts` from `buildCoreReport` in executive-summary.ts, 6–8 pages,
+  `exec-page-check.ts`); the full report is the AUDIT PACK (`printAuditPackPDF`, More menu); the workbook keeps everything
+  (`0-Executive` = the core, `9-DFM`). Per-commodity content is DATA in `src/export/report-standard.ts` (drivers + supplier
+  questions, "Not included until answered" — never invented as a cost, quote-breakdown request, DFM families that apply /
+  must not). Page 1 re-adds: piece price as quoted (running tooling in) + up-front tooling ÷ volume × (overhead, margin) =
+  headline. Tooling carries `kind` (initial / replacement / perishable / nre; `tooling-split.ts`). Money in report TEXT is
+  converted from exact £ (`paramDisplay`); unsourced £ is attributed by kind; a BLOCKING DFM is a page-1 alert; geometric
+  DFM form rules run only on as-formed faces (`machinedFaceSet`); feasibility refuses sheet for a chambered section and
+  open tools for a near-enclosed blow / roto body. Rule notes for the report ride on the CAD response (`reportNotes`,
+  `report-notes.ts`); tool bases print "UK £X × … × <country> toolroom f = £Y" (`factorText`); unanswered advisory
+  questions print what was costed (`decision-used.ts`). Tests: core-report*, report-standard-*, dfm-report-standard,
+  report-notes-tool-basis.
+- Cost-model round from published data (3 Nov 2026, research in `calculator/scripts/research/2026-11-report-standard/`,
+  `verify.json` = independent re-check, 3 values corrected): MACHINING time is `src/engine/cutting-catalogue.ts` (makers'
+  vc / fz / fn by metal and operation, each with its data.json row) — drilling at the hole's Ø, boring, tapping at ISO 261
+  pitch, face / side passes, turning, roughing; fixed allowances are NOT scaled by the metal and are labelled; through
+  Ø13–26 is drilled, not reamed; tool change 2.2 s, pallet change 7.1 s. Pass the metal FAMILY (`featureMinutesEach(row,
+  fam)`), never a time factor. FOUNDRY: `sand-auto-vertical-line` (DISA 270, €3.0 M 2015, moulding equipment only) and
+  `fettle-robot-cell` are UK-book machines from the generator (6,000 h × 0.80 book convention, stated); the line is chosen
+  by moulds a year (≥ 5,000 → automatic, judgement), crew by line class, ferrous ≤ 30 kg fettled on the cell, pattern life
+  follows the priced aluminium plate (100k, judgement); core cost is NOT built up (needs a binder quote). COMPOSITES: hand
+  layup 2 lb/h, cure by resin system (M21 4.7 h), tool material chosen by cycles per tool, PCM comparison row, > 25k/yr
+  autoclave alert. `reference-part.test.ts` keeps its TYPED cycle times (it pins stack arithmetic). `country-book.ts`
+  accepts a machine added after its register snapshot. Effect at 200k / 5 yr UK EXW: stub axle £41.24 → £24.18, casting
+  bracket £19.42 → £9.18, other machined parts −25 to −37 % — still to be confirmed against a supplier cycle sheet / PO.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
