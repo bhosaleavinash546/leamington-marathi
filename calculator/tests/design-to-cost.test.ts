@@ -129,9 +129,12 @@ describe('a real part: the hydraulic manifold\'s measured findings become levers
   const feats: ManufacturingFeature[] = fx.manufacturingFeatures.features;
   const mr = lib.machines.find(m => m.id === 'mach-vmc3')!.computedRatePerHr;
   const lr = lib.labour.find(l => l.id === 'lab-uk-skilled')!.fullyLoadedRatePerHr;
+  // Nov 2026: a DIN 338 jobber drill reaches every real manifold hole (Ø8 × 70 within its 75 mm flute), so no finding is
+  // priced; one gallery lengthened to 90 mm (beyond the flute) carries the costing's own peck premium as the lever.
+  const deeper = { ...feats.find(f => f.kind === 'hole' && f.diaMm === 8)!, id: 'HX', faceIds: [999], depthMm: 90, ldRatio: 11.25 };
   const dfm = analyseGeometricDFM({
     commodity: 'machining',
-    featureSet: fx.manufacturingFeatures,
+    featureSet: { ...fx.manufacturingFeatures, features: [...feats, deeper] },
     cost: { annualVolume: 50_000, machineRatePerHr: mr, labourRatePerHr: lr, engineerRatePerHr: 55 },
   });
   void feats;
@@ -243,10 +246,10 @@ describe('independent review fixes (Oct 2026)', () => {
     expect(html).toContain('Not in the should-cost yet');
   });
 
-  it('a whole-feature price is labelled an upper bound on the lever', () => {
+  it('a deep-hole finding is priced as its peck premium, a redesign figure — no longer "the features\' whole cost" (report standard, Nov 2026)', () => {
     const [l] = dfmLevers([holeFinding], input, lib);
-    expect(l.kind).toBe('upper-bound');
-    expect(l.steps.some(x => /^Upper bound: /.test(x))).toBe(true);
+    expect(l.kind).toBe('redesign');
+    expect(l.steps.some(x => /^Upper bound: /.test(x))).toBe(false);
     // the screen line is one plain sentence; the calculation sits behind "How is this calculated?"
     expect(l.summary).toMatch(/^\d+\.\d{2} min of \w+ off each part/);
     expect(l.summary.length).toBeLessThan(120);

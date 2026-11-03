@@ -50,11 +50,11 @@ export interface DtcFindingLike {
  * would remove money that was never in it; the tab lists them as costs to add.
  */
 export type LeverKind = 'redesign' | 'upper-bound';
-const UPPER_BOUND_RULES = /\.hole\.depth-beyond-standard-drill|\.hole\.many-sizes/;
+// Since the report-standard round (Nov 2026) the deep-hole £ is only the peck premium past 5×D and hole sizes are unpriced —
+// neither is a feature's whole cost any more.
+const UPPER_BOUND_RULES = /(?!)/;
 /** What each upper-bound finding's £ assumes — printed with the re-costed figure wherever it is shown. */
 const UPPER_BOUND_NOTE: Array<[RegExp, string]> = [
-  [/\.hole\.many-sizes/, ' — an upper bound: every size merged onto one tool, which the part\u2019s fits may not allow'],
-  [/\.hole\.depth-beyond-standard-drill/, ' — an upper bound: the features\u2019 whole cost'],
 ];
 const gbpText = (gbp: number) => `£${gbp.toFixed(2)}`;
 /** Priced on work the cost sheet does not carry (a hole the sheet prices as pierced but must be drilled). */

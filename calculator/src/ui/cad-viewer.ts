@@ -2545,7 +2545,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     return { items: meta ? geometryChecks(faceList) : [], source: 'Geometry checks — process-independent rules of thumb' };
   }
   /** Severity as a word, beside the dot — never colour alone (WCAG 1.4.1); the DFM panel's names. */
-  const SEV_WORD = { high: 'Critical', medium: 'Major', low: 'Minor', info: 'Advisory' } as const;
+  const SEV_WORD = { high: 'Blocking', medium: 'Risk', low: 'Risk', info: 'Info' } as const;   // the DFM grades (Nov 2026)
   /** The manufacturability list: the host's costed DFM findings, else the viewer's own geometry checks. */
   function issuesSection(): string {
     const { items: issues, source } = issueList();

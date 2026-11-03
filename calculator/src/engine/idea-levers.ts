@@ -313,8 +313,8 @@ export function generateIdeaLevers(
   if (MOULD_FAMILY.includes(commodity) && matUtil < 0.92) {
     out.push({
       category: 'material', lever: 'supplier',
-      title: 'Closed-Loop Regrind of Runners and Trim',
-      description: `${((1 - matUtil) * 100).toFixed(0)}% of the resin bought does not ship in the part. Reprocessing runners, sprues and trim as a controlled regrind blend recovers most of that value.`,
+      title: commodity === 'injection_moulding' ? 'Closed-Loop Regrind of Runners and Trim' : 'Closed-Loop Regrind of Trim',
+      description: `${((1 - matUtil) * 100).toFixed(0)}% of the resin bought does not ship in the part. Reprocessing ${commodity === 'thermoforming' ? 'the sheet skeleton and trim' : commodity === 'blow_moulding' ? 'the flash, tails and trim' : commodity === 'rotational_moulding' ? 'the trimmed openings' : 'runners, sprues and trim'} as a controlled regrind blend recovers most of that value.`,
       expectedSavingPct: Math.min(5, (0.95 - matUtil) * 40),
       technicalJustification: 'A 10–20% regrind blend is standard practice for non-optical, non-safety mouldings and is invisible in the part when dried and dosed correctly. The saving is the resin price times the recovered fraction.',
       risk: 'Low', timeframe: 'Quick Win',

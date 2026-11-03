@@ -527,12 +527,20 @@ export function generateInsights(
       finding: `Process cost at ${pcts.proc.toFixed(1)}% of total is above the ${bm.processPct[0]}–${bm.processPct[1]}% reference band (engineering estimate). Look at the longest cycles and the machine rates.`,
       impact: 'High',
       potentialSavingPct: Math.min(15, (pcts.proc - bm.processPct[1]) * 0.5),
+      // Advice for the process the part is made by — machining advice (feeds / speeds, VMC v HMC) was given to roto,
+      // moulding and forming parts, and an unsourced "China / India 3–5× lower" stood beside the re-costed country table
+      // (report-standard review, Nov 2026).
       actions: [
-        'Reduce cycle time via feeds/speeds optimisation and toolpath strategy review',
-        'Combine multiple operations into one setup to eliminate re-fixture time',
-        'Evaluate lower-rate machine types for non-critical features (VMC vs HMC)',
-        `Increase batch size — amortise setup cost over more parts`,
-        'Offshore high-volume machining to lower-cost region (China/India rates 3–5× lower)',
+        ...(['machining', 'cast_and_machine', 'gear'].includes(commodity) ? [
+          'Check the longest machining cycles against the supplier\'s cycle sheet (toolpath, feeds and speeds)',
+          'Combine operations into fewer clampings where the routing allows',
+        ] : ['injection_moulding', 'blow_moulding', 'thermoforming', 'rotational_moulding', 'rubber', 'extrusion'].includes(commodity) ? [
+          'Check the cycle split (fill / heat, cool, eject / demould) against the supplier\'s process sheet — cooling usually governs',
+        ] : [
+          'Check the longest operation cycles against the supplier\'s process sheet',
+        ]),
+        'Compare the machine class and size costed with the supplier\'s (operations table)',
+        'For a country comparison use the regional table — each country is re-costed in its own rate book',
       ],
       benchmark: {
         label: 'Process %', yourValue: pcts.proc, unit: '%',
