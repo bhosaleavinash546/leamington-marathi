@@ -109,7 +109,7 @@ function composites(part: string, geo: OCCTGeometry, answers: Record<string, str
   const tool = TOOL[sys.process];
   const toolCost = Math.round(tool.base + planM2 * tool.perM2);
   const ndi = sys.fibre === 'mat-cfrp-prepreg-t700'
-    ? r((NDI.loadUnloadSec / 3600 + area / NDI.scanM2PerHr) * (labour('lab-uk-inspector') + NDI.cellGbpPerHrUk), 2) : 0;
+    ? r((NDI.loadUnloadSec / 3600 + area / NDI.scanM2PerHr) * (labour('lab-uk-inspector') + NDI.cellGbpPerHrUk), 4) : 0;   // 4 dp, as the product (7-country review)
   const fp = material(sys.fibre).pricePerKg, rp = sys.resin ? material(sys.resin).pricePerKg : 0;
 
   check(part, 'rule plies', plies, P('comp-plies'), 'exact');

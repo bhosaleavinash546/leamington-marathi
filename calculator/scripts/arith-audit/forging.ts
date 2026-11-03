@@ -39,7 +39,7 @@ const CREW = 2, TRIM_CREW = 1, REJECT = 0.02, OEE = 0.8, EFF = 0.92;
 const HEAT_KWH_PER_KG = 0.35, DESCALE_GBP_KG = 0.12;
 // MPI as a station (lead's merge, arithmetic audit F14): 75 s a part × (the book's inspector £/h × 1 + a UK £4/h bench
 // × the country's inspection factor), the casting route's NDT_STATION.mpi — written out here from the rate book, not imported.
-const MPI_GBP = Math.round(75 / 3600 * (C.labourRate('lab-uk-inspector') * 1 + 4 * C.factor('inspection')) * 100) / 100;
+const MPI_GBP = Math.round(75 / 3600 * (C.labourRate('lab-uk-inspector') * 1 + 4 * C.factor('inspection')) * 10_000) / 10_000;   // 4 dp, as the product (7-country review)
 const DIE_LIFE_BASE = 38_000;                                 // microalloyed steel
 const OVERHEAD = C.overheadPct, MARGIN = C.marginPct;
 const TN = 9806.65;

@@ -195,3 +195,18 @@ describe('5. headless costs every part, and matches the rules', () => {
     expect((await headless('AL_Crash_Box.stp', a, 50_000, 'US')).total).toBeGreaterThan((await headless('AL_Crash_Box.stp', a, 50_000, 'CN')).total);
   });
 });
+
+describe('aluminium process scrap is never credited above the billet (7-country review, 3 Nov 2026)', () => {
+  it('China: billet under LME, scrap capped at the billet price and says so', async () => {
+    const { buildRegionalLibrary } = await import('../src/engine/regional-rates.js');
+    const { DEFAULT_RATE_LIBRARY } = await import('../src/engine/rate-library.js');
+    for (const cc of ['CN', 'UK', 'DE', 'IN'] as const) {
+      const lib = cc === 'UK' ? DEFAULT_RATE_LIBRARY : buildRegionalLibrary(DEFAULT_RATE_LIBRARY, cc);
+      for (const m of lib.materials.filter(x => x.id.startsWith('mat-al-billet-'))) {
+        expect(m.scrapRecoveryPricePerKg, `${cc} ${m.id}`).toBeLessThanOrEqual(m.pricePerKg + 1e-9);
+      }
+    }
+    const cn = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, 'CN').materials.find(m => m.id === 'mat-al-billet-6063')!;
+    expect(cn.sourceNote).toMatch(/capped at this billet price/);
+  });
+});

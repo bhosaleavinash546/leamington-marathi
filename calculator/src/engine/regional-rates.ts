@@ -1170,12 +1170,18 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         ? (Object.keys(AL_ALLOYS) as AlAlloy[]).find(a => `mat-al-billet-${a.toLowerCase()}` === m.id) : undefined;
       if (alAlloy) {
         const p = billetPriceGbpPerKg(alAlloy, region);
-        return { ...m, pricePerKg: p, region: rd.name, confidence: 'Medium' as const,
+        // Process scrap is remelted into billet, so it is never credited above the billet it becomes: China's billet
+        // sits UNDER LME (−$21/t) while the European scrap differential (+$56/t) put the credit above it — ¥22.03/kg of
+        // scrap against ¥21.52/kg of billet (7-country review, 3 Nov 2026).
+        const scrapCapped = m.scrapRecoveryPricePerKg > p;
+        const scrap = scrapCapped ? p : m.scrapRecoveryPricePerKg;
+        return { ...m, pricePerKg: p, scrapRecoveryPricePerKg: scrap, region: rd.name, confidence: 'Medium' as const,
           // The region's OWN build-up — the UK note ("UK all-in billet premium $1100/t … UK imports billet") was kept and
           // this appended, so a German report printed two premiums (Germany live review, Oct 2026).
           sourceNote: `${rd.name}: LME $${AL_MARKET.lmeUsdPerT}/t + ${rd.name} billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t `
             + `(${BILLET_PREMIUM_USD_PER_T[region].basis}) + ${alAlloy} alloy adder $${AL_ALLOYS[alAlloy].billetAdderUsdPerT}/t (engineering estimate) `
-            + `at $${AL_MARKET.usdPerGbp}/£ = £${p.toFixed(3)}/kg. Scrap at LME ${AL_ALLOYS[alAlloy].scrapDiffUsdPerT >= 0 ? '+' : '−'} $${Math.abs(AL_ALLOYS[alAlloy].scrapDiffUsdPerT)}/t, the same in every region (scrap trades on LME terms).` };
+            + `at $${AL_MARKET.usdPerGbp}/£ = £${p.toFixed(3)}/kg. Scrap at LME ${AL_ALLOYS[alAlloy].scrapDiffUsdPerT >= 0 ? '+' : '−'} $${Math.abs(AL_ALLOYS[alAlloy].scrapDiffUsdPerT)}/t, the same in every region (scrap trades on LME terms)`
+            + (scrapCapped ? ` — capped at this billet price, £${p.toFixed(3)}/kg: scrap remelted into billet is not worth more than the billet.` : '.') };
       }
       const own = book ? countryMaterial(book, m, rd.name) : null;
       if (own) return own;

@@ -470,7 +470,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
     // radiograph sample on a forging (its internal soundness is the forging's; UT where the drawing asks for it).
     const st = NDT_STATION.mpi;
     const mpiStation = Math.round(st.secPerPart / 3600 * (activeLabourRate('lab-uk-inspector') * st.manning
-      + st.equipmentGbpPerHrUk * countryFactor('inspection')) * 100) / 100;
+      + st.equipmentGbpPerHrUk * countryFactor('inspection')) * 10_000) / 10_000;   // 4 dp, as casting's station
     const unit = inputs.ndt === 'mpi' ? mpiStation
       : Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
     adders.push({

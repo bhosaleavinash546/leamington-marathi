@@ -102,6 +102,8 @@ export interface AluminiumExtrusionInputs {
   // ── tooling ──
   dieCostGbp: number;
   dieLifeKg: number;
+  /** How the die price and life were set — printed on the tooling line (7-country review: £10,003 × 40 t had no basis). */
+  dieBasis?: string;
   nitrideGbp?: number;
   nitrideEveryKg?: number;
   /** Fabrication fixtures and programming, £ (one-off). */
@@ -238,7 +240,8 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   const dieLabel = i.route === 'impact' ? 'Impact tool set (punch, die, ejector)' : i.route === 'conform' ? 'Conform die (tooling)' : 'Extrusion die';
   const items: Array<{ label: string; gbp: number }> = [{
     label: `${dieLabel}: £${Math.round(i.dieCostGbp).toLocaleString('en-GB')} a set (the up-front investment) × ${sets.toFixed(2)} set${sets === 1 ? '' : 's'} worn out over the programme`
-      + (i.dieLifeKg > 0 ? ` (${(programmeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t extruded ÷ ${(i.dieLifeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t life a set)` : ''),
+      + (i.dieLifeKg > 0 ? ` (${(programmeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t extruded ÷ ${(i.dieLifeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t life a set)` : '')
+      + (i.dieBasis ? `. Die: ${i.dieBasis}` : ''),
     gbp: i.dieCostGbp * sets,
   }];
   if (i.fabToolingGbp) items.push({ label: 'Fabrication fixtures and CNC programming (one-off)', gbp: i.fabToolingGbp });
@@ -327,7 +330,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   const extrudedKg = s.areaMm2 * s.partLengthMm * 1e-9 * a.densityKgPerM3;
   let plan: AlPressPlan | null = null;
   let pressId: string; let crew: number; let cycleSec: number; let perPush: number;
-  let billetKgPerPart: number; let dieGbp: number; let dieLifeKg: number; let runs: number;
+  let billetKgPerPart: number; let dieGbp: number; let dieLifeKg: number; let runs: number; let dieBasis = '';
   let heatKwh = AL_DOWNSTREAM.billetHeatGasKwhPerKg; let feedAdder = 0; let dieChangeHr = AL_LINE.dieChangeHr;
 
   if (spec.route === 'impact') {
@@ -336,6 +339,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     // One part a hit: the tool's life in kg is its hits × the PART (the section-based extruded kg is 0 on a cup — it
     // left the tool never wearing out: 250,000 cans on a 150,000-hit tool; arithmetic audit X1).
     billetKgPerPart = ip.slugKg; dieGbp = ip.toolGbp; dieLifeKg = ip.toolLifeHits * spec.partWeightKg;
+    dieBasis = `impact tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits — ${ip.basis}`;
     heatKwh = 0; feedAdder = inCountry(AL_IMPACT.slugPrepGbpPerKg, 'process'); runs = 12; dieChangeHr = 1;   // slug prep: a process service
     notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits; `
       + `12 runs a year with a 1 h tool change each — ESTIMATE (engineering-typical, not sourced)`);
@@ -348,6 +352,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     heatKwh = 0; feedAdder = AL_CONFORM.rodAdderUsdPerT / AL_MARKET.usdPerGbp / 1000;
     const d = AL_DIES[s.voids > 0 ? 'hollow-porthole' : 'solid'];
     dieGbp = Math.round((d.baseGbp + d.perMmGbp * s.ccdMm) * 0.6 * countryFactor(AL_TOOL_BASIS)); dieLifeKg = 30_000; runs = 12;
+    dieBasis = `0.6 × the ${d.label} price, life 30 t — ESTIMATE (engineering-typical, not sourced)`;
     notes.push(`${cp.basis}; 3% start and cut-off scrap; rod premium $${AL_CONFORM.rodAdderUsdPerT}/t over billet; `
       + `die £${dieGbp.toLocaleString('en-GB')} = 0.6 × the ${d.label} price, life 30 t; 12 runs a year, ${AL_LINE.dieChangeHr} h a change — ESTIMATES (engineering-typical, not sourced)`);
   } else {
@@ -355,6 +360,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     warnings.push(...plan.warnings); notes.push(...plan.basis);
     pressId = plan.pressId; crew = plan.crew; cycleSec = plan.cycleSecPerPush; perPush = plan.partsPerPush;
     billetKgPerPart = plan.billetKgPerPart; dieGbp = plan.dieCostGbp; dieLifeKg = plan.dieLifeKg; runs = plan.runsPerYear;
+    dieBasis = plan.dieBasis;
     notes.push(`die: ${plan.dieBasis}`);
   }
   // The finished part can only weigh less than the extruded length (machining).
@@ -418,7 +424,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     ...(finishLine ? { finishLineId: finishLine.id, finishAreaM2: finishArea, finishM2PerHr: finishLine.m2PerHr, finishCrew: finishLine.crew,
       finishConsumablesGbpPerM2: finishLine.consumablesGbpPerM2 } : {}),
     packSecPerPart: Math.round((6 + 4 * s.partLengthMm / 1000) * 10) / 10, inspectLabourId: 'lab-uk-semiskilled',
-    dieCostGbp: dieGbp, dieLifeKg, nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
+    dieCostGbp: dieGbp, dieLifeKg, ...(dieBasis ? { dieBasis } : {}), nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
     amortizationVolume: spec.amortizationVolume && spec.amortizationVolume > 0 ? spec.amortizationVolume : spec.annualVolume,
     annualVolume: spec.annualVolume,
   };

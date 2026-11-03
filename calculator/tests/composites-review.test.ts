@@ -123,3 +123,11 @@ describe('7. baseline', () => {
     expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(69.38);
   });
 });
+
+describe('an answered laminate confirms the material (7-country review, 3 Nov 2026)', () => {
+  it('no "0% confident" suggestion once the laminate system is answered', async () => {
+    const src = (await import('node:fs')).readFileSync('src/engine/cost-input-rules/deterministic.ts', 'utf8');
+    expect(src).toMatch(/ctx\.answers\['material\.laminate'\]/);
+    expect(src).toMatch(/ctx\.answers\['material\.elastomer'\]/);
+  });
+});

@@ -20,6 +20,7 @@
  *     run needed a drawing callout the kernel cannot read, `analysisLimitations`
  *     says so — an empty list must never read as a clean bill of health.
  */
+import { LAMINATE_SYSTEMS } from './derive/laminate.js';
 import { materialFacts } from './derive/material.js';
 import type {
   CADAnalysisResult, CADGeometry, DetectedFeature, OCCTGeometry,
@@ -163,7 +164,11 @@ export function buildDeterministicAnalysis(
       // An answered GRADE confirms the material too (a forging answered C45 still printed "only 0% confident" — Germany review).
       // The answered extrusion alloy too (a crash box answered 6082 read "only 0% confident" — Germany review).
       const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'] ?? ctx.answers['material.resin']
-        ?? ctx.answers['material.grade'] ?? (ctx.answers['material.alAlloy'] ? `EN AW-${ctx.answers['material.alAlloy']}` : undefined);
+        ?? ctx.answers['material.grade'] ?? (ctx.answers['material.alAlloy'] ? `EN AW-${ctx.answers['material.alAlloy']}` : undefined)
+        // The laminate and elastomer answers confirm a composite / rubber part's material: an answered "carbon prepreg"
+        // printed "Material suggestion is only 0% confident" (7-country review, 3 Nov 2026).
+        ?? (ctx.answers['material.laminate'] ? (LAMINATE_SYSTEMS.find(l => l.value === ctx.answers['material.laminate'])?.label ?? ctx.answers['material.laminate']) : undefined)
+        ?? ctx.answers['material.elastomer'];
       // Unanswered: a family the rules read from the file (a STEP name "… C45 …", a declared material) is a stated
       // leaning, not a coin toss — 0% made the sanity layer demand a photo of a forging whose name gives its steel.
       const named = answered ? null : (() => {

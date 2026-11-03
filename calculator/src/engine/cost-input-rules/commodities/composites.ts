@@ -116,13 +116,15 @@ export function ndiStationCost(areaM2: number): { gbp: number; basis: string } {
   const loadHr = st.loadUnloadSec / 3600, scanHr = areaM2 / st.scanM2PerHr;
   const hr = loadHr + scanHr;
   const perHr = inspector * st.manning + cell;
-  const gbp = Math.round(hr * perHr * 100) / 100;
+  // To 4 dp, not the UK penny: a value rounded to £0.01 broke its own printed arithmetic once converted (¥7.67 printed,
+  // ¥7.64 costed — 7-country review, 3 Nov 2026).
+  const gbp = Math.round(hr * perHr * 10_000) / 10_000;
   return {
     gbp,
     basis: `structural carbon: ultrasonic C-scan station — ${st.loadUnloadSec} s load and unload (${loadHr.toFixed(4)} h) `
       + `+ ${fmt(areaM2, 3)} m² scanned at ${st.scanM2PerHr} m²/h (${scanHr.toFixed(4)} h) = ${hr.toFixed(4)} h, at `
       + `£${perHr.toFixed(2)}/h (inspector £${inspector.toFixed(2)}/h × ${st.manning} + cell £${cell.toFixed(2)}/h) `
-      + `= £${gbp.toFixed(2)} (engineering-typical station figures, not sourced; `
+      + `= £${gbp.toFixed(4)} (engineering-typical station figures, not sourced; `
       + `charged in the material bucket as a per-part service, as casting NDT is)${countryNote('inspection')}`,
   };
 }
