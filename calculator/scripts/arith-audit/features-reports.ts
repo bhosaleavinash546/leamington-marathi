@@ -19,6 +19,11 @@
  *
  *   npx tsx scripts/arith-audit/features-reports.ts [dumpDir] [--no-routes] [--no-reports]
  *
+ * Country, volume, programme and delivery terms are the dump's own (7-country review, 3 Nov 2026, dump-context.ts): every
+ * stack is recomputed in that region's book, the country comparison is sourced in the dump's region (the source row is
+ * the headline), the chain re-costs, the route comparison and the reports run at the dump's region / volume / years /
+ * terms, and ex-works means logistics £0.
+ *
  * Exit 1 on any FAIL.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -26,6 +31,7 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import { buildRegionalLibrary, toolroomFactorFor, REGIONAL_DATA, computeRegionalComparison, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { dumpContext, contextLine } from './dump-context.js';
 import { computeRegionalComparisonExact } from '../../src/engine/regional-comparison.js';
 import { computeCostUncertainty, UNCERTAINTY_BASIS } from '../../src/engine/uncertainty.js';
 import { runSensitivity } from '../../src/engine/sensitivity.js';
@@ -51,7 +57,15 @@ mkdirSync(OUT, { recursive: true });
 
 export const PARTS = ['FORGE_Hub_Flange', 'PRCR002', 'IM_ECU_Cover', 'Seat_Locking_Bracket', 'AL_Battery_Rail', 'COMP_Hat_Stiffener'];
 const REPORT_PARTS = ['FORGE_Hub_Flange', 'IM_ECU_Cover'];
-const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+const C = dumpContext(DUMP);
+/** The region's book (dump-context.ts) — every £/h, £/kg and tariff this model prices with. */
+const book = C.book;
+/** The UK base book the product's chain takes and regionalises itself (dump.ts / bulk-run.ts::regionalBook). */
+const BASE_BOOK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+/** The country comparison is sourced in the dump's region; UK, India and Poland stay in it as before. */
+const SRC = C.region;
+const REGIONS: ManufacturingRegion[] = [...new Set<ManufacturingRegion>([SRC, 'UK', 'IN', 'PL'])];
+console.log(`features-reports shadow model — ${contextLine(C)}`);
 
 let pass = 0, fail = 0;
 const failures: string[] = [];
@@ -126,8 +140,9 @@ const geoOf = (part: string) => baseline.find(p => p.part.replace(/\.(stp|step)$
 async function costIn(part: string, d: Dump, region: ManufacturingRegion): Promise<BulkPartResult> {
   const spec = ANSWERS[d.part];
   return costMeasuredPart(geoOf(part)!, d.part,
-    { partNumber: d.part, file: d.part, annualVolume: 50_000, ...(spec?.commodity ? { commodity: spec.commodity } : {}) },
-    { ...(spec?.answers ?? d.answers) }, region, { annualVolume: 50_000, programmeYears: 5 }, book, { partNumber: d.part, file: d.part, status: 'error' });
+    { partNumber: d.part, file: d.part, annualVolume: C.annual, ...(spec?.commodity ? { commodity: spec.commodity } : {}) },
+    { ...(spec?.answers ?? d.answers) }, region, { annualVolume: C.annual, programmeYears: C.years, deliveryTerms: C.terms }, BASE_BOOK,
+    { partNumber: d.part, file: d.part, status: 'error' });
 }
 
 /** What main.ts::buildPartDetail hands the negotiation tab (copied, with the packaging / logistics / bought-in it now carries). */
@@ -175,49 +190,66 @@ for (const part of PARTS) {
   check(part, 'overhead base (material + process + labour + tooling − bought-in)', mine.base, res.overheadBase ?? NaN);
   check(part, 'TOTAL', mine.total, res.total);
   check(part, 'dump total (4 dp) = trace total', d.total!, res.total, 0.0001);
+  check(part, `overhead % = the ${C.region} shop default (12 % × its multiplier, whole %)`, si.overheadPct, C.overheadPct, 1e-9);
+  check(part, 'margin % = the shop default 8 %', si.marginPct, C.marginPct, 1e-9);
+  if (C.terms === 'EXW') check(part, 'ex-works: logistics £ = 0', si.logisticsPerPart, 0, 0);
   row.mine = mine.total;
 
   // ── B ──
   console.log(' B  route comparison\'s independent re-add (auditRow)');
   const a = auditRow(d);
   truth(part, 'auditRow closes', !!a?.closes, a?.lines.filter(l => !l.closes).map(l => l.line).join(', '));
+  // auditRow's overhead and margin are taken on the REPORTED buckets (the dump's breakdown, 4 dp — route-compare.ts
+  // "the base from the buckets themselves"), so this model takes them on the same basis: margin on the unrounded stack
+  // can sit on the other side of a 4th-dp boundary (PL seat bracket 0.068353 v 0.068344 on the reported buckets).
+  const rb = d.breakdown as Breakdown8Bucket;
+  const handlingPct = Math.max(0, si.rawMaterial.boughtIn?.handlingPct ?? 0);
+  const onReported: Partial<Record<keyof Breakdown8Bucket, number>> = {
+    overhead: si.overheadPct * (rb.rawMaterial + rb.process + rb.labour + rb.tooling - mine.boughtIn) + mine.boughtIn * handlingPct,
+    margin: si.marginPct * (rb.rawMaterial + rb.process + rb.labour + rb.tooling + rb.packaging + rb.logistics + rb.overhead - mine.boughtIn),
+  };
   for (const ln of a?.lines ?? []) {
     const k = ({ 'Process (machines)': 'process', Labour: 'labour', Material: 'rawMaterial', Tooling: 'tooling', Packaging: 'packaging',
       Logistics: 'logistics', Overhead: 'overhead', Margin: 'margin' } as Record<string, keyof Breakdown8Bucket>)[ln.line];
-    if (k) check(part, `auditRow ${ln.line} v this script`, ln.recomputed, Math.round(mineBucket(mine, k) * 10_000) / 10_000, 0.0001);
+    if (k) check(part, `auditRow ${ln.line} v this script${onReported[k] !== undefined ? ' (on the reported buckets)' : ''}`, ln.recomputed,
+      Math.round((onReported[k] ?? mineBucket(mine, k)) * 10_000) / 10_000, 0.0001);
   }
 
   // ── C ──
-  console.log(' C  country comparison — UK, India, Poland');
-  const regions: ManufacturingRegion[] = ['UK', 'IN', 'PL'];
-  const exact = computeRegionalComparisonExact(si, book, { regions, sourceRegion: 'UK', sourceResult: res });
-  const linear = computeRegionalComparison(res.breakdown, { regions, sourceRegion: 'UK' });
-  // The fallback's gap to the whole chain is measured on the part costed NOW in the UK (the dump may be stale).
-  const ukNow = await costIn(part, d, 'UK');
-  const exactNow = ukNow.trace ? computeRegionalComparisonExact(ukNow.trace.stackInput as UniversalStackInput, book,
-    { regions, sourceRegion: 'UK', sourceResult: ukNow.trace.result as PartCostResult }) : [];
-  for (const code of regions) {
+  console.log(` C  country comparison — ${REGIONS.join(', ')} (sourced in ${SRC}, the dump's region)`);
+  const exact = computeRegionalComparisonExact(si, C.ukBook, { regions: REGIONS, sourceRegion: SRC, sourceResult: res });
+  const linear = computeRegionalComparison(res.breakdown, { regions: REGIONS, sourceRegion: SRC });
+  // The fallback's gap to the whole chain is measured on the part costed NOW in the source region (the dump may be stale).
+  const srcNow = await costIn(part, d, SRC);
+  const exactNow = srcNow.trace ? computeRegionalComparisonExact(srcNow.trace.stackInput as UniversalStackInput, C.ukBook,
+    { regions: REGIONS, sourceRegion: SRC, sourceResult: srcNow.trace.result as PartCostResult }) : [];
+  const src = REGIONAL_DATA[SRC];
+  // The source country's overhead DEFAULT (12 % × its multiplier, whole %): a stack at that default goes to the row
+  // country's default; a typed rate moves by the ratio of the multipliers. Tools, packaging and logistics move by the
+  // ratio of the row country's factor to the SOURCE's (a UK £ is not what the source stack carries).
+  const srcOhDefault = Math.round(12 * src.overheadMultiplier) / 100;
+  const baseTotal = exact.find(r => r.code === SRC)!.total;
+  for (const code of REGIONS) {
     const rd = REGIONAL_DATA[code];
-    const lib = code === 'UK' ? book : buildRegionalLibrary(book, code);
+    const lib = code === SRC ? book : code === 'UK' ? C.ukBook : buildRegionalLibrary(C.ukBook, code);
     const inR: UniversalStackInput = { ...si,
-      tooling: { ...si.tooling, totalToolingCost: si.tooling.totalToolingCost * toolroomFactorFor(code) },
-      // the overhead DEFAULT (12 %) goes to the country's default, 12 % × its multiplier rounded to a whole per cent
-      overheadPct: Math.abs(si.overheadPct - 0.12) < 1e-9 ? Math.round(12 * rd.overheadMultiplier) / 100 : si.overheadPct * rd.overheadMultiplier, packagingPerPart: si.packagingPerPart * rd.packagingMultiplier,
-      logisticsPerPart: si.logisticsPerPart * rd.logisticsMultiplier };
-    const m = code === 'UK' ? mine : myStack(inR, lib);
+      tooling: { ...si.tooling, totalToolingCost: si.tooling.totalToolingCost * toolroomFactorFor(code) / toolroomFactorFor(SRC) },
+      overheadPct: Math.abs(si.overheadPct - srcOhDefault) < 1e-9 ? Math.round(12 * rd.overheadMultiplier) / 100 : si.overheadPct * rd.overheadMultiplier / src.overheadMultiplier,
+      packagingPerPart: si.packagingPerPart * rd.packagingMultiplier / src.packagingMultiplier,
+      logisticsPerPart: si.logisticsPerPart * rd.logisticsMultiplier / src.logisticsMultiplier };
+    const m = code === SRC ? mine : myStack(inR, lib);
     const er = exact.find(r => r.code === code)!;
     check(part, `${code} row total (stack re-priced in the ${code} book)`, m.total, er.total);
     check(part, `${code} row ex-works = material+process+labour+tooling+overhead`, er.material + er.process + er.labour + er.tooling + er.overhead, er.exWorks, 1e-9);
     check(part, `${code} row adds up (ex-works + packaging + logistics + margin)`, er.exWorks + er.packaging + er.logistics + er.margin, er.total, 1e-9);
-    const ukTotal = exact.find(r => r.code === 'UK')!.total;
-    check(part, `${code} vs-base %`, (ukTotal - er.total) / ukTotal * 100, er.vsBasePct, 1e-9);
+    check(part, `${code} vs-base % (base ${SRC})`, (baseTotal - er.total) / baseTotal * 100, er.vsBasePct, 1e-9);
     const lr = linear.find(r => r.code === code)!;
-    if (code !== 'UK') {
+    if (code !== SRC) {
       const full = await costIn(part, d, code);
       const fb = exactNow.find(r => r.code === code)?.total ?? NaN;
       const gap = full.total != null ? (fb / full.total - 1) * 100 : NaN;
-      const lin = ukNow.breakdown ? computeRegionalComparison(ukNow.trace!.result!.breakdown as Breakdown8Bucket, { regions, sourceRegion: 'UK' }).find(r => r.code === code)!.total : lr.total;
-      info(`${code} (UK costed now £${ukNow.total?.toFixed(4)}): stack re-price fallback £${fb.toFixed(4)} · whole chain in ${code} (what the screen prints) £${full.total?.toFixed(4) ?? full.status} · fallback off by ${gap.toFixed(1)} % · legacy linear scaling £${lin.toFixed(4)} (${((lin / (full.total ?? NaN) - 1) * 100).toFixed(1)} %)`);
+      const lin = srcNow.breakdown ? computeRegionalComparison(srcNow.trace!.result!.breakdown as Breakdown8Bucket, { regions: REGIONS, sourceRegion: SRC }).find(r => r.code === code)!.total : lr.total;
+      info(`${code} (${SRC} costed now £${srcNow.total?.toFixed(4)}): stack re-price fallback £${fb.toFixed(4)} · whole chain in ${code} (what the screen prints) £${full.total?.toFixed(4) ?? full.status} · fallback off by ${gap.toFixed(1)} % · legacy linear scaling £${lin.toFixed(4)} (${((lin / (full.total ?? NaN) - 1) * 100).toFixed(1)} %)`);
       row[`${code}_fallback`] = fb; row[`${code}_chain`] = full.total; row[`${code}_linear`] = lin;
       const ohChain = (full.trace?.stackInput as UniversalStackInput | undefined)?.overheadPct;
       if (ohChain !== undefined) info(`${code}: overhead % — comparison fallback ${(inR.overheadPct * 100).toFixed(2)} % v the country costing ${(ohChain * 100).toFixed(2)} %`);
@@ -231,7 +263,32 @@ for (const part of PARTS) {
   const prov = { netWeightKg: 'geometry_exact', materialUtilization: 'rule', cycleTimeHr: si.operations.map(() => 'rule'), toolingCost: 'rule', packaging: 'default', logistics: 'default' } as const;
   const u = computeCostUncertainty(res, si, { library: book, provenance: { ...prov, cycleTimeHr: [...prov.cycleTimeHr] } });
   truth(part, `band brackets the headline (P10 £${u.p10} ≤ £${res.total.toFixed(2)} ≤ P90 £${u.p90})`, u.p10 <= res.total && res.total <= u.p90);
-  check(part, '± % = (P90 − P10) / 2 ÷ headline', Math.round((u.p90 - u.p10) / 2 / res.total * 1000) / 10, u.plusMinusPct, 0.11);
+  // ± % is worked from the UNROUNDED P10 / P90 (uncertainty.ts computeCostUncertainty) but P10 / P90 come back rounded
+  // to the penny — ± £0.005 on the half-range, ± 0.48 points on a £1 part (UK seat bracket at 200k: 12.1 v 12.3). So the
+  // half-range is read off the SAME seeded band run on the stack with every £ × 1,000 (the stack is linear in £ and the
+  // draws do not depend on the money), which gives P10 / P90 to 1/1,000 p; the check and its tolerance are unchanged.
+  const K = 1000;
+  const bookK: RateLibrary = { ...book,
+    materials: book.materials.map(x => ({ ...x, pricePerKg: x.pricePerKg * K, scrapRecoveryPricePerKg: x.scrapRecoveryPricePerKg * K })),
+    machines: book.machines.map(x => ({ ...x, computedRatePerHr: x.computedRatePerHr * K })),
+    labour: book.labour.map(x => ({ ...x, fullyLoadedRatePerHr: x.fullyLoadedRatePerHr * K })),
+    energy: book.energy.map(x => ({ ...x, electricityPerKwh: x.electricityPerKwh * K, gasPerKwh: x.gasPerKwh * K })) };
+  const rmK = si.rawMaterial;
+  const siK: UniversalStackInput = { ...si,
+    rawMaterial: { ...rmK,
+      ...(rmK.directCost !== undefined ? { directCost: rmK.directCost * K } : {}),
+      ...(rmK.consumablesCostPerPart ? { consumablesCostPerPart: rmK.consumablesCostPerPart * K } : {}),
+      ...(rmK.scrapRecoveryPricePerKgOverride !== undefined ? { scrapRecoveryPricePerKgOverride: rmK.scrapRecoveryPricePerKgOverride * K } : {}),
+      ...(rmK.boughtIn ? { boughtIn: { ...rmK.boughtIn, cost: rmK.boughtIn.cost * K } } : {}) },
+    tooling: { ...si.tooling, totalToolingCost: si.tooling.totalToolingCost * K },
+    packagingPerPart: si.packagingPerPart * K, logisticsPerPart: si.logisticsPerPart * K };
+  const totK = myStack(siK, bookK).total;
+  check(part, 'the stack with every £ × 1,000 = headline × 1,000 (linear in £)', totK / K, res.total, 1e-9);
+  const uK = computeCostUncertainty({ ...res, total: totK, breakdown: Object.fromEntries(BUCKETS.map(k => [k, res.breakdown[k] * K])) as unknown as Breakdown8Bucket },
+    siK, { library: bookK, provenance: { ...prov, cycleTimeHr: [...prov.cycleTimeHr] } });
+  check(part, 'that band ÷ 1,000 is the printed band (P10, to the penny)', Math.round(uK.p10 / K * 100) / 100, u.p10, 1e-9);
+  check(part, 'that band ÷ 1,000 is the printed band (P90, to the penny)', Math.round(uK.p90 / K * 100) / 100, u.p90, 1e-9);
+  check(part, '± % = (P90 − P10) / 2 ÷ headline', Math.round((uK.p90 - uK.p10) / 2 / totK * 1000) / 10, u.plusMinusPct, 0.11);
   truth(part, 'the band\'s spreads are printed with it (UNCERTAINTY_BASIS names every CV and says not sourced)',
     /0\.01/.test(UNCERTAINTY_BASIS) && /0\.25/.test(UNCERTAINTY_BASIS) && /not sourced/i.test(UNCERTAINTY_BASIS));
   row.band = `${u.p10}–${u.p90} (±${u.plusMinusPct}%)`;
@@ -269,12 +326,12 @@ for (const part of PARTS) {
   // ── F ──
   console.log(' F  embodied carbon');
   if (si.rawMaterial.netWeightKg > 0) {
-    const cb = computeCarbon({ result: res, input: si, library: book, commodity, region: 'UK' });
+    const cb = computeCarbon({ result: res, input: si, library: book, commodity, region: C.region });
     const net = si.rawMaterial.netWeightKg, gross = net / (si.rawMaterial.materialUtilization || 1);
     const mat = book.materials.find(x => x.id === si.rawMaterial.materialId);
     const credit = mat && mat.scrapRecoveryPricePerKg > 0 ? 0.85 : 0;
     check(part, 'carbon material = factor × (gross − 85 % of scrap)', Math.round(cb.materialFactorKgPerKg * (gross - (gross - net) * credit) * 100) / 100, cb.materialKgCO2e, 0.0051);
-    check(part, 'carbon process = kWh/kg × gross × grid', Math.round(cb.processKwh / gross * 100) / 100 * gross * gridCarbon('UK'), cb.processKgCO2e, 0.02);
+    check(part, 'carbon process = kWh/kg × gross × grid', Math.round(cb.processKwh / gross * 100) / 100 * gross * gridCarbon(C.region), cb.processKgCO2e, 0.02);
     check(part, 'carbon total = material + process + logistics', cb.materialKgCO2e + cb.processKgCO2e + cb.logisticsKgCO2e, cb.totalKgCO2e, 0.0151);
     truth(part, 'carbon notes state the scrap credit share when one is applied', !(credit > 0 && gross > net) || cb.notes.some(n => /85\s?%/.test(n)));
     const costingKwh = (si.rawMaterial.energyKwh?.electricity ?? 0) + (si.rawMaterial.energyKwh?.gas ?? 0);
@@ -312,6 +369,16 @@ for (const part of PARTS) {
       check(part, `detailed teardown our total = headline (${tag})`, dt.ourTotal, Math.round(res.total * 100) / 100, 0.03);
       check(part, `detailed teardown our margin = costing margin (${tag})`, dt.margin.ourGBP, Math.round(res.breakdown.margin * 100) / 100, 0.011);
       check(part, `detailed teardown margin gap on an identical quote (${tag})`, dt.margin.gapGBP, 0, 0.011);
+      // Every other line of an identical quote must close too (7-country review, 3 Nov 2026): the supplier side's material
+      // is gross × £/kg − scrap credit + consumables (quote-teardown-detailed.ts matCost) — no energy line, and a credit
+      // even where the costing credits none (lossIsNotScrap) — while our side is the costing's material bucket.
+      const lineGaps: Array<[string, number]> = [['material', dt.material.gapGBP],
+        ...dt.operations.flatMap((o, k): Array<[string, number]> => [[`op ${k + 1} process`, o.process.gapGBP], [`op ${k + 1} labour`, o.labour.gapGBP]]),
+        ['tooling', dt.tooling.gapGBP], ['overhead', dt.overhead.gapGBP]];
+      const off = lineGaps.filter(([, g]) => !(Math.abs(g) <= 0.011));
+      const energyGBP = (si.rawMaterial.energyKwh?.electricity ?? 0) * (book.energy[0]?.electricityPerKwh ?? 0) + (si.rawMaterial.energyKwh?.gas ?? 0) * (book.energy[0]?.gasPerKwh ?? 0);
+      proposed(part, `detailed teardown: every line gap is 0 on an identical quote (${tag})`, !off.length,
+        `${off.map(([l, g]) => `${l} £${g.toFixed(2)}`).join(', ')} (the costing's energy line £${energyGBP.toFixed(4)}, ${si.rawMaterial.lossIsNotScrap ? 'melt loss not credited' : 'scrap credited'})`, 'P-TD1 quote-teardown-detailed.ts matCost: add energy, honour lossIsNotScrap');
     } else {
       truth(part, 'a detail without packaging / logistics says so (shopBasis "missing")', dt.shopBasis === 'missing');
       // P1 applied by the lead: main.ts::buildPartDetail now passes the costing's packaging, logistics and bought-in.
@@ -321,15 +388,15 @@ for (const part of PARTS) {
         /packagingPerPart: input\.packagingPerPart/.test(body) && /logisticsPerPart: input\.logisticsPerPart/.test(body) && /boughtInGBP/.test(body));
     }
   }
-  const q = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total, supplierBreakdown: { ...res.breakdown }, annualVolume: 50_000 });
+  const q = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total, supplierBreakdown: { ...res.breakdown }, annualVolume: C.annual });
   check(part, 'summary teardown: identical quote → price variance 0', q.verdict.ppvGBP, 0, 0.005);
   truth(part, 'summary teardown: identical quote → no lever claims money', q.levers.every(l => l.expectedRecoveryGBP === 0), q.levers.map(l => `${l.area} £${l.expectedRecoveryGBP}`).join(', '));
-  const low = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total * 0.7, annualVolume: 50_000 });
+  const low = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total * 0.7, annualVolume: C.annual });
   truth(part, 'a quote 30 % BELOW should-cost is not called "competitive; hold"', !/competitive; hold/.test(low.headline), low.headline);
   const flags = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total * 1.2,
-    supplierBreakdown: { ...res.breakdown, overhead: res.breakdown.overhead + res.total * 0.2 }, annualVolume: 50_000 });
+    supplierBreakdown: { ...res.breakdown, overhead: res.breakdown.overhead + res.total * 0.2 }, annualVolume: C.annual });
   truth(part, 'a benchmark flag says its range is a heuristic, not a sourced norm', flags.benchmarkFlags.every(f => /heuristic/i.test(f) && !/\bnorm\b/.test(f)), flags.benchmarkFlags.join(' | '));
-  const attr = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total * 1.2, annualVolume: 50_000 });
+  const attr = analyzeQuote({ commodity, shouldCost: res.total, shouldBreakdown: res.breakdown, supplierQuoteGBP: res.total * 1.2, annualVolume: C.annual });
   truth(part, 'an attributed recovery says it is apportioned, not measured', attr.levers.every(l => l.expectedRecoveryGBP === 0 || /apportioned/i.test(l.lever)), attr.levers.map(l => l.lever.slice(-80)).join(' | '));
 
   // ── I ──
@@ -358,12 +425,12 @@ if (!NO_ROUTES) {
     console.log(`\n═══ J  route comparison — ${part}`);
     const t0 = Date.now();
     const cmp = await compareRoutes({ geo, filename: d.part, current: String(d.commodity), answers: { ...(ANSWERS[d.part]?.answers ?? d.answers) },
-      region: 'UK', annualVolume: 50_000, programmeYears: 5, baseBook: book });
+      region: C.region, annualVolume: C.annual, programmeYears: C.years, deliveryTerms: C.terms, baseBook: BASE_BOOK });
     info(`${cmp.rows.length} rows, ${cmp.excluded.length} excluded, ${((Date.now() - t0) / 1000).toFixed(0)} s`);
     writeFileSync(join(OUT, `${part}.routes.json`), JSON.stringify(cmp, null, 1));
     const ref = cmp.rows[0];
     // against the part costed NOW (another auditor's fix may have moved it since the dump was written)
-    const now = await costIn(part, d, 'UK');
+    const now = await costIn(part, d, C.region);
     if (Math.abs((now.total ?? 0) - d.total!) > 0.0001) info(`the dump is stale for this part: dump £${d.total} v costed now £${now.total}`);
     check(part, 'reference row = the headline (costed now)', ref.total ?? NaN, Math.round((now.total ?? NaN) * 10_000) / 10_000, 0.0001);
     for (const r of cmp.rows) {
@@ -416,7 +483,7 @@ if (!NO_REPORTS) {
     const orig = api.save;
     api.save = function (this: InstanceType<typeof jsPDF>) { pdfBytes = this.output('arraybuffer'); return this; };
     try {
-      printPDF(res, si, book, 'GBP', 1, d.commodity as never, null, 'UK', [], { geometrySource: 'occt', annualVolume: 50_000, uncertainty: u, uncertaintyBasis: UNCERTAINTY_BASIS }, book);
+      printPDF(res, si, book, 'GBP', 1, d.commodity as never, null, C.region, [], { geometrySource: 'occt', annualVolume: C.annual, uncertainty: u, uncertaintyBasis: UNCERTAINTY_BASIS }, C.ukBook);
     } finally { api.save = orig; }
     const pdfFile = join(OUT, `${part}.pdf`);
     writeFileSync(pdfFile, Buffer.from(pdfBytes!));
@@ -427,8 +494,8 @@ if (!NO_REPORTS) {
     for (const k of BUCKETS) truth(part, `PDF prints bucket ${k} ${money(res.breakdown[k])}`, text.includes(money(res.breakdown[k])));
     truth(part, `PDF prints the band P10 ${money(u.p10)} / P90 ${money(u.p90)}`, text.includes(money(u.p10)) && text.includes(money(u.p90)));
     truth(part, 'PDF §7 states the band\'s spreads (engineering-typical, not sourced)', /not sourced/i.test(text.slice(text.indexOf('§7'), text.indexOf('§7') + 1500)));
-    const rc = computeRegionalComparisonExact(si, book, { sourceRegion: 'UK', sourceResult: res });
-    for (const r of rc.filter(x => ['UK', 'IN', 'PL'].includes(x.code))) truth(part, `PDF §9 prints ${r.code} ${money(r.total)}`, text.includes(money(r.total)));
+    const rc = computeRegionalComparisonExact(si, C.ukBook, { sourceRegion: SRC, sourceResult: res });
+    for (const r of rc.filter(x => REGIONS.includes(x.code))) truth(part, `PDF §9 prints ${r.code} ${money(r.total)}`, text.includes(money(r.total)));
     for (const w of ['typical', 'industry', 'benchmark', 'norm ', 'average', 'saves', 'world-class', 'best practice']) {
       const hits = [...text.matchAll(new RegExp(`.{0,70}${w}.{0,70}`, 'gi'))].map(m => m[0]);
       if (hits.length) info(`PDF "${w}" ×${hits.length}: ${hits.slice(0, 3).map(h => `«${h.trim()}»`).join(' ')}`);
