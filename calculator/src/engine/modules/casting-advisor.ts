@@ -163,7 +163,7 @@ export function castingProcessRefusal(process: CastingProcess, alloy: AlloyFamil
     return `${ALLOY_LABEL[alloy]} is not die cast — pressure and gravity dies take aluminium, magnesium and zinc`;
   }
   if ((process === 'hpdc' || process === 'megacasting') && sectionMm != null && sectionMm > HPDC_SECTION_MAX_MM) {
-    return `a ${sectionMm.toFixed(1)} mm section is above the ${HPDC_SECTION_MAX_MM} mm a pressure die fills before it freezes (HPDC_SECTION_MAX_MM)`;
+    return `a ${sectionMm.toFixed(1)} mm section is above the ${HPDC_SECTION_MAX_MM} mm a pressure die fills before it freezes (CostVision engineering rule, not a published standard)`;
   }
   return null;
 }

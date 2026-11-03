@@ -34,6 +34,9 @@ import { MIN_UTILISATION } from './cost-input-rules/commodities/machining.js';
 import { estimateForgingTonnage } from './modules/forging-advisor.js';
 import { FORGE_PRESS_TIERS } from './machine-sizing.js';
 import { stockSize } from './machining-time.js';
+import { HPDC_SECTION_MAX_MM } from './modules/casting-advisor.js';
+import { COLD_FORMER_MAX_SLUG_MM } from './modules/forging-advisor.js';
+import { INVESTMENT_TREE } from './cost-input-rules/commodities/casting.js';
 
 /** The material families a route is compared within. Rubber and composites buy a compound or a laminate, not a metal. */
 export type RouteFamily = MaterialFamily | 'rubber' | 'composite';
@@ -78,23 +81,23 @@ export interface RouteScreen {
 // ─── Sources ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const SRC = {
-  families: 'CostVision material scope — the grades each route buys (src/engine/material-scope.ts, COMMODITY_FAMILIES)',
+  families: 'CostVision material scope: the grades each route buys, by material family (the costing\'s own material table)',
   closedTool: 'a one-piece tool or die cannot form a closed cavity; a cored casting needs a core print through an opening '
     + '(Boothroyd, Dewhurst & Knight, Product Design for Manufacture and Assembly, shape-capability tables)',
-  hollow: 'blow and rotational moulding form a hollow body by construction (CostVision route table, derive/commodity.ts)',
+  hollow: 'blow and rotational moulding form a hollow body by construction (CostVision engineering rule, the costing\'s own route table)',
   profile: 'CostVision constant-section test: volume = silhouette × length within 10%, length ≥ 8 × the section '
-    + '(derive/profile.ts, shared with the extrusion and rubber routes)',
+    + '(CostVision engineering rule, shared with the extrusion and rubber routes)',
   gauge: 'cold pressings are made from sheet up to ~6 mm; one gauge throughout, the mean wall within 2× the gauge '
-    + '(CostVision routing rule, derive/commodity.ts GAUGE_WALL_TOLERANCE; 6 mm engineering-typical)',
+    + '(CostVision engineering rule, the costing\'s own routing test; 6 mm engineering-typical, not sourced)',
   forgeWeb: 'closed-die forging minimum section ~3 mm (Roymech manufacturing process comparison table; engineering-typical)',
   forgePress: 'die-fill force = shape factor × hot flow stress × (plan + flash land) × 1.2 safety, against the largest '
-    + 'forge press in the rate book (forging-advisor.ts estimateForgingTonnage, machine-sizing.ts FORGE_PRESS_TIERS)',
+    + 'forge press in the rate book (CostVision engineering rule, the costing\'s own press sizing and forge-press ladder)',
   castWall: 'minimum castable wall ~1.5 mm (aluminium HPDC design guides: thin walls 1.5–2.5 mm; sand and gravity need '
     + '3 mm or more — the lowest floor across the processes the casting rules choose from; engineering-typical)',
   asCast: 'an as-cast part with holes or bores is not the finished part; the finished scope is cast + machine '
     + '(CostVision like-for-like rule)',
   stock: `machining from solid buys the next stocked plate or bar; below ${(MIN_UTILISATION * 100).toFixed(0)}% utilisation `
-    + 'the rules clamp the stock and the cost would be understated (machining.ts MIN_UTILISATION, machining-time.ts stockSize)',
+    + 'the rules clamp the stock and the cost would be understated (CostVision engineering rule, the costing\'s own stock sizing)',
   mouldWall: 'injection moulding wall 0.5–6 mm (design guides: typical 1–5 mm, thin-wall to 0.5 mm; above ~6 mm sink '
     + 'marks and a cooling time that grows with the square of the wall; engineering-typical)',
   tfSheet: 'thermoforming sheet 0.25–12 mm (thin-gauge roll stock to ~2.5 mm, heavy-gauge cut sheet to ~12 mm; '
@@ -107,17 +110,29 @@ const SRC = {
   impactCup: 'a revolved cup up to Ø200 mm may be impact-extruded (CostVision route table, aluminium-extrusion build)',
   drawnCup: 'a revolved cup is deep-drawn from sheet (CostVision route table: pressed sheet metal is offered on a closed shell)',
   constantSection: 'a constant section many times longer than it is wide is extruded or cut from bar; a die, mould or '
-    + 'pattern the length of the part is not how it is made (CostVision constant-section test, derive/profile.ts)',
+    + 'pattern the length of the part is not how it is made (CostVision engineering rule, the costing\'s own constant-section test)',
   gearScope: 'teeth are cut on the gear route only; a forged, cast or machined blank costs no gear cutting '
     + '(CostVision like-for-like rule)',
   tfBosses: 'a formed sheet has no bosses, ribs or local thickness — a feature that stands off the wall needs a mould '
     + '(thermoforming design limits; engineering-typical)',
   thinShell: 'a thin shell (wall ≤ 4 mm at < 25% fill, ≥ 200 mm across) misruns as a sand or gravity casting and is '
-    + 'not machined from solid; a near-solid part (> 60% fill) is not a sheet or moulded process (CostVision sanity '
-    + 'checks 7 and 9, server/utils/cad-sanity.ts — the costing chain would refuse the route)',
+    + 'not machined from solid; a near-solid part (> 60% fill) is not a sheet or moulded process (CostVision engineering '
+    + 'rule, the costing\'s own plausibility checks; the costing chain would refuse the route)',
   castWallFerrous: 'minimum castable wall ~3 mm for iron, steel, copper and nickel alloys (investment and shell '
     + 'castings reach ~3 mm; sand 5 mm or more; engineering-typical)',
 };
+
+/**
+ * The reader-facing source of the casting and forging PROCESS rows (each feasible process its own row in the route
+ * comparison). Printed in the reports as the row's source: the limits in words, never a file or constant name.
+ */
+export const CASTING_PROCESS_LADDER_SOURCE = 'CostVision casting process ladder: pressure and gravity dies take aluminium, '
+  + `magnesium and zinc only; a pressure die fills a section up to ${HPDC_SECTION_MAX_MM} mm (2·V/S; CostVision engineering `
+  + `rule, not a published standard); an investment foundry pours a ${INVESTMENT_TREE.POUR_KG} kg tree (engineering-typical `
+  + '10–30 kg for steel shell work, not sourced)';
+export const FORGING_PROCESS_LADDER_SOURCE = 'CostVision forging process ladder: ring rolling needs an axisymmetric ring; a '
+  + `multi-station cold former takes up to 5 kg and a Ø${COLD_FORMER_MAX_SLUG_MM} mm slug; precision / isothermal forging `
+  + 'up to 100 kg (engineering-typical, not sourced)';
 
 // ─── Measured facts the checks read ─────────────────────────────────────────────────────────────────────────────────
 

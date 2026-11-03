@@ -230,20 +230,22 @@ export function computeHeatTreatRate(
     }
   }
 
-  const g = (n: number): string => n.toFixed(4);
+  // Every money figure carries "£" (per kg) so a report in another currency converts it — the bare "… = buy 0.4272
+  // GBP/kg" printed GBP figures in a ¥ report (President review, Nov 2026).
+  const g = (n: number): string => `£${n.toFixed(4)}`;
   const basis =
-    `${proc.label} @ ${region}: ${netLoad} kg/load / ${g(cycleH)} h`
+    `${proc.label} @ ${region}: ${netLoad} kg/load / ${cycleH.toFixed(4)} h`
     + (cdFactor !== 1 ? ` (cycle x${cdFactor.toFixed(3)} for ECD ${opts.effectiveCaseDepthMm} mm)` : '')
     + ` x ${shop.operatingHoursPerYear.value} h x ${shop.oee.value} OEE = `
-    + `${Math.round(throughput).toLocaleString()} kg/yr. `
+    + `${Math.round(throughput).toLocaleString()} kg/yr. Per kg: `
     + `energy ${g(energy)} + labour ${g(labour)} + capital ${g(capital)} + maint ${g(maintenance)} `
     + `+ consumables ${g(consumables)} + fixtures ${g(fixtures)} + overhead ${g(overhead)} `
     + `+ QC ${g(qc)} = conversion ${g(conversion)} + scrap ${g(scrap)} = in-house ${g(inHouse)}`
     + (subcontracted
-      ? ` + SG&A ${g(sga)} + margin ${g(margin)} + freight ${g(logistics)} = buy ${g(ratePerKg)} GBP/kg`
-      : ` GBP/kg (captive — no SG&A, margin or freight)`)
+      ? ` + SG&A ${g(sga)} + margin ${g(margin)} + freight ${g(logistics)} = buy ${g(ratePerKg)}/kg`
+      : `/kg (captive — no SG&A, margin or freight)`)
     + (minimumChargeUpliftPerKg > 0
-      ? `; lifted ${g(minimumChargeUpliftPerKg)} by the GBP ${opts.minimumLotChargeGBP} lot minimum`
+      ? `; lifted ${g(minimumChargeUpliftPerKg)}/kg by the £${opts.minimumLotChargeGBP} lot minimum`
       : '');
 
   return {

@@ -299,14 +299,14 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (mat.gradeId) {
           // Honoured as chosen — but grey / malleable / white iron on a part answered safety-critical is said.
           const brittle = BRITTLE_IRON.test(mat.gradeId) && answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID) === true;
-          return decided('casting.materialId', mat.gradeId, 'engineer', `${mat.gradeId}: ${mat.basis}`
+          return decided('casting.materialId', mat.gradeId, 'engineer', `${materialGradeName(mat.gradeId, ctx.rates)}: ${mat.basis}`
             + (brittle ? ' — CHECK: a brittle iron on a part answered safety-critical; ductile EN-GJS-500-7 is the norm for steering / suspension parts' : ''),
             brittle ? 0.6 : 1);
         }
         // Cast iron: grey unless the part is safety-critical, then ductile (stub axle live run, Oct 2026).
         if (mat.family === 'cast iron') {
           const g = castIronDefaultGrade(ctx);
-          return decided('casting.materialId', g.id, 'geometry', `cast iron → ${g.id} (${g.why})`, 0.85);
+          return decided('casting.materialId', g.id, 'geometry', `cast iron → ${materialGradeName(g.id, ctx.rates)} (${g.why})`, 0.85);
         }
         // The aluminium grade follows the process: ADC12 is a die-casting alloy
         // and is not solution-treatable, so a gravity or sand casting — which is

@@ -36,6 +36,14 @@ import { FORM_EFFICIENCY_DEFAULTS } from '../to-cost-params.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { projectedAreaCm2, projectedAreaBasis, governingWallMm } from '../derive/envelope.js';
 import { standardBatchSize } from '../../routing-optimiser.js';
+import { activeRates } from '../../rate-context.js';
+import type { RateLibrary } from '../../types.js';
+
+/** A press as a reader knows it — the library's machine class ("400T Injection Moulding Machine"), never its id. */
+export function pressName(pressId: string, rates?: RateLibrary): string {
+  return (rates ?? activeRates()).machines.find(m => m.id === pressId)?.machineClass
+    ?? activeRates().machines.find(m => m.id === pressId)?.machineClass ?? pressId;
+}
 
 /** Largest press in the rate library, tonnes — the hard cavitation ceiling. */
 const MAX_CLAMP_TONNES = 3500;
@@ -271,8 +279,8 @@ export function runnerChoice(ctx: RuleContext, resin: ResinFacts, areaCm2: numbe
 export function mouldManning(pressId: string): { n: number; basis: string } {
   const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
   return t > 500
-    ? { n: 1, basis: `${pressId}: large parts taken off, trimmed and packed by hand — one operator a press` }
-    : { n: 0.5, basis: `${pressId}: automatic press with picker / robot — one operator tends two presses` };
+    ? { n: 1, basis: `${pressName(pressId)}: large parts taken off, trimmed and packed by hand — one operator a press` }
+    : { n: 0.5, basis: `${pressName(pressId)}: automatic press with picker / robot — one operator tends two presses` };
 }
 
 /**
@@ -512,7 +520,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const v = fillSeconds(cm3, r.advice.pressId);
         return decided('injectionMoulding.fillTimeSec', v, 'rule',
           `${cm3.toFixed(0)} cm³ shot ÷ ${injectionRateCm3PerSec(r.advice.pressId)} cm³/s injection rate on the `
-          + `${r.advice.pressId} (engineering-typical), floored at 1.5 s`, 0.55);
+          + `${pressName(r.advice.pressId, ctx.rates)} (engineering-typical), floored at 1.5 s`, 0.55);
       },
     },
     {
@@ -539,8 +547,8 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('injectionMoulding.ejectTimeSec', ejectSeconds(r.advice.pressId), 'rule',
-          `${r.advice.pressId} dry cycle (open, close, clamp build) ${dryCycleSeconds(r.advice.pressId)} s + `
-          + `${TAKE_OUT_S} s take-out — engineering-typical, was a flat 2 s on every press`, 0.55);
+          `${pressName(r.advice.pressId, ctx.rates)} dry cycle (open, close, clamp build) ${dryCycleSeconds(r.advice.pressId)} s + `
+          + `${TAKE_OUT_S} s take-out — engineering-typical, by press size`, 0.55);
       },
     },
     {
@@ -633,7 +641,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           `toolmaker build-up: ${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
           + `${r.advice.slides} slide(s), ${rc.system} runner`
           + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''} — ${lines}; `
-          + 'toolroom rates, steel and bought-outs are UK benchmarks (Jun 2026, toolmaking.ts) and the hour laws are anchored to one '
+          + 'toolroom rates, steel and bought-outs are UK benchmarks (Jun 2026, CostVision toolmaking rates) and the hour laws are anchored to one '
           + 'quotation (a £420k bumper mould): an engineering estimate at this size, replace with a toolmaker\'s quote'
           + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : ''),
           0.65);
@@ -705,7 +713,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const h = mouldChangeHours(r.advice.pressId);
         return decided('injectionMoulding.setupHoursPerChange', h, 'rule',
-          `mould change on a ${r.advice.pressId}: ${h} h of press and setter (engineering-typical, no quick-change)`, 0.5);
+          `mould change on a ${pressName(r.advice.pressId, ctx.rates)}: ${h} h of press and setter (engineering-typical, no quick-change)`, 0.5);
       },
     },
     {
@@ -732,7 +740,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const kg = purgeKgPerChange(r.advice.pressId);
         return decided('injectionMoulding.purgeKg', kg, 'rule',
-          `purge and start-up shots on a ${r.advice.pressId}: ${kg} kg a change (engineering-typical)`, 0.5);
+          `purge and start-up shots on a ${pressName(r.advice.pressId, ctx.rates)}: ${kg} kg a change (engineering-typical)`, 0.5);
       },
     },
     {

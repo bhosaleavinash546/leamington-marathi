@@ -24,7 +24,8 @@
  */
 import { finishRules } from '../derive/finish.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
-import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
+import { activeMachineRate, activeLabourRate, activeRates } from '../../rate-context.js';
+import type { RateLibrary } from '../../types.js';
 import {
   adviseSheetMetalProcess, classifyVolume,
   estimateStampingDieCost, estimateStampingDieLife, stampingDieBuildUp, stampingDieLifeBasis,
@@ -33,7 +34,7 @@ import {
 import { blankingPressFor } from '../../modules/sheet-metal.js';
 import { FORM_EFFICIENCY_DEFAULTS, SHOP_DEFAULTS } from '../to-cost-params.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { materialFacts, representativeMaterialId } from '../derive/material.js';
+import { materialFacts, representativeMaterialId, materialGradeName } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
@@ -541,6 +542,12 @@ export interface StampingPlan {
  * part could be a "transfer" die fed from coil, a "single-stage" die with 12
  * stations, or a tandem line priced as a progressive die.
  */
+/** A press as a reader knows it — the library's machine class ("400T Mechanical Press (general press shop)"), never its id. */
+function pressName(pressId: string, rates?: RateLibrary): string {
+  return (rates ?? activeRates()).machines.find(m => m.id === pressId)?.machineClass
+    ?? DEFAULT_RATE_LIBRARY.machines.find(m => m.id === pressId)?.machineClass ?? pressId;
+}
+
 export function stampingPlan(ctx: RuleContext): StampingPlan | null {
   const r = advise(ctx);
   if ('blocked' in r) return null;
@@ -628,7 +635,7 @@ export function stampingPlan(ctx: RuleContext): StampingPlan | null {
     const steps = [4, 8, 14].filter(n => bends >= n).length;
     const v = Math.min(feedSpm, pf.maxSpm) * Math.pow(BEND_DERATE, steps);
     spm = Math.max(5, Math.round(v));
-    spmBasis = `min(feed ${COIL_FEED_MM_PER_MIN.toLocaleString('en-GB')} mm/min ÷ ${Math.round(pitch)} mm pitch = ${feedSpm.toFixed(0)}, ${pressId} max ${pf.maxSpm} SPM, typical)`
+    spmBasis = `min(feed ${COIL_FEED_MM_PER_MIN.toLocaleString('en-GB')} mm/min ÷ ${Math.round(pitch)} mm pitch = ${feedSpm.toFixed(0)}, ${pressName(pressId, ctx.rates)} max ${pf.maxSpm} SPM, typical)`
       + (steps > 0 ? ` × ${BEND_DERATE}${steps > 1 ? `^${steps}` : ''} for ${bends} bends (one step at ≥ 4, ≥ 8, ≥ 14)` : '')
       + ` = ${v.toFixed(1)} → ${spm} SPM — feed rate and de-rate engineering-typical, not sourced`;
   }
@@ -821,8 +828,8 @@ export const DIE_MAINTENANCE_FRACTION = 0.05;
 export function pressManning(plan: StampingPlan): { n: number; basis: string } {
   const t = Number(/(\d+)t/.exec(plan.pressId)?.[1] ?? 0);
   return plan.pressLine === 'coil-fed' && t <= 400
-    ? { n: 0.5, basis: `coil-fed ${plan.pressId}: one operator tends two automatic presses (engineering-typical)` }
-    : { n: 1, basis: `${plan.pressLine} line on a ${plan.pressId}: one operator per press (engineering-typical)` };
+    ? { n: 0.5, basis: `coil-fed ${pressName(plan.pressId)}: one operator tends two automatic presses (engineering-typical)` }
+    : { n: 1, basis: `${plan.pressLine} line on a ${pressName(plan.pressId)}: one operator per press (engineering-typical)` };
 }
 /** Press-shop scrap (start-up, coil ends, splits): 1–2% typical; 1.5% is used. */
 export const PRESS_REJECT = 0.015;
@@ -961,7 +968,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         const pf = stampingPressFacts(plan.pressId);
         return decided('sheetMetal.pressId', plan.pressId, 'rule',
           `${plan.forceBasis} = ${plan.tonnes} t, × 1.25 safety; die ${plan.bolsterMm} mm long (${plan.bolsterBasis}) — `
-          + `the smallest press over ${Math.round(plan.tonnes * 1.25)} t with a bolster that takes it (${plan.pressId}: ${pf.bolsterMm} mm, typical)`, 0.7);
+          + `the smallest press over ${Math.round(plan.tonnes * 1.25)} t with a bolster that takes it (${pressName(plan.pressId, ctx.rates)}: ${pf.bolsterMm} mm, typical)`, 0.7);
       },
     },
     {
@@ -1189,7 +1196,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         const heavySteel = mat.family === 'steel' && g != null && g.mm > SHEET_COLD_ROLLED_MAX_MM;
         const id = heavySteel ? 'mat-hrpo' : representativeMaterialId(ctx.commodity, mat.family!);
         return decided('sheetMetal.materialId', id ?? mat.family!, 'geometry',
-          `${mat.family} → ${id ?? mat.family} (representative ${heavySteel ? `hot-rolled grade for a ${g!.mm.toFixed(1)} mm gauge — cold-rolled coil stops at ~${SHEET_COLD_ROLLED_MAX_MM} mm` : 'coil grade'} — not a drawing callout)`, 0.85);
+          `${mat.family} → ${id ? materialGradeName(id, ctx.rates) : mat.family} (representative ${heavySteel ? `hot-rolled grade for a ${g!.mm.toFixed(1)} mm gauge — cold-rolled coil stops at ~${SHEET_COLD_ROLLED_MAX_MM} mm` : 'coil grade'} — not a drawing callout)`, 0.85);
       },
     },
     {
@@ -1386,7 +1393,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         const h = setupHoursFor(plan);
         return decided('sheetMetal.setupHoursPerChange', h, 'rule',
           plan.pressLine === 'tandem' ? `${h} h a die change on each press of a quick-die-change tandem line (engineering-typical)`
-            : `${h} h to change a ${plan.pressLine} die on a ${plan.pressId} (engineering-typical)`, 0.5);
+            : `${h} h to change a ${plan.pressLine} die on a ${pressName(plan.pressId, ctx.rates)} (engineering-typical)`, 0.5);
       },
     },
     {

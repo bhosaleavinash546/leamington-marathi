@@ -156,7 +156,8 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
       ...(p.shotCm3For ? { shotCm3: p.shotCm3For(n) } : {}),
       ...(p.mouldShortSideFor ? { mouldShortSideMm: p.mouldShortSideFor(n) } : {}),
     });
-    const rate = library.machines.find(m => m.id === pressId)?.computedRatePerHr ?? 0;
+    const press = library.machines.find(m => m.id === pressId);
+    const rate = press?.computedRatePerHr ?? 0;
     const steel = steelClassFor((p.annualVolume * years) / n);
     const tool = mould(n, steel.cls);
     const mouldCostGBP = Math.round(tool.total);
@@ -174,7 +175,8 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
       machineLabourPerPart: Math.round(machineLabourPerPart * 10_000) / 10_000,
       toolingPerPart: Math.round(toolingPerPart * 10_000) / 10_000,
       costPerPart,
-      detail: `${pressId} £${rate.toFixed(2)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
+      // the press by its class ("400T Injection Moulding Machine"), never its library id (President review, Nov 2026)
+      detail: `${press?.machineClass ?? pressId} £${rate.toFixed(2)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
         + `£${mouldCostGBP.toLocaleString()}${numMoulds > 1 ? ` × ${numMoulds} moulds` : ''}${toolingFactor > 1 ? ` × ${toolingFactor.toFixed(4).replace(/\.?0+$/, '')} with maintenance` : ''} ÷ ${Math.round(amortVol).toLocaleString()} parts → ${fmtGBP(toolingPerPart, 4)}/part NRE`
         + (clampTonnes > maxClamp ? ` (${clampTonnes} t exceeds the largest press — costed on it regardless)` : ''),
     });
