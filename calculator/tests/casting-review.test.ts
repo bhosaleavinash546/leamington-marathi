@@ -113,7 +113,7 @@ describe('4. the route the screen printed is now the route that is costed', () =
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.fettlingMinutes).toBe(6);
     expect(c.heatTreatCostPerKg).toBe(0.35);
-    expect(c.shotBlastCostPerPart).toBe(0.25);   // blasted AS CAST, 3.04 kg (arithmetic audit C2; it was sized on the 2.5 kg finished part) ÷ 600 kg/h × (blast + operator)
+    expect(c.shotBlastCostPerPart).toBe(0.2516);   // 4 dp, not the UK penny (7-country review)   // blasted AS CAST, 3.04 kg (arithmetic audit C2; it was sized on the 2.5 kg finished part) ÷ 600 kg/h × (blast + operator)
     expect(c.ndtCostPerPart).toBe(0);
   });
 

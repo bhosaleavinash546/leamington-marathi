@@ -64,8 +64,7 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
       note: 'The boss WALL should be "between 40 and 60 per cent of the thickness of the wall". Reported above 60 %. '
         + 'The boss wall is (outer \u2300 \u2212 core-hole \u2300) / 2, from the boss and the hole on its axis; the nominal wall is the '
         + 'part\u2019s median measured wall. A boss with no core hole is not judged here (its outer diameter alone does not say '
-        + 'how thick it is). Quoted from the search engine\u2019s extract of the publisher\u2019s page \u2014 verify against the live URL. '
-        + 'It used to compare the outer diameter with the wall, a test no source makes, and flagged correctly cored bosses.',
+        + 'how thick it is). Quoted from the search engine\u2019s extract of the publisher\u2019s page \u2014 verify against the live URL.',
     },
     evaluate(f, part) {
       if (part.featureSet.wallAnalysisValid === false) return null;

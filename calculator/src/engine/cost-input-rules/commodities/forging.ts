@@ -487,7 +487,7 @@ function adderUnit(a: ForgeAdvice, match: RegExp): number {
 }
 
 function adderPerPart(a: ForgeAdvice, match: RegExp): number {
-  return Math.round((secondaries(a).adders.find(x => match.test(x.label))?.costPerPartGbp ?? 0) * 100) / 100;
+  return Math.round((secondaries(a).adders.find(x => match.test(x.label))?.costPerPartGbp ?? 0) * 10_000) / 10_000;   // 4 dp, as the station it reads (7-country review)
 }
 
 export const FORGING_RULES: CommodityRuleSpec = {

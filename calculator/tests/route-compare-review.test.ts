@@ -119,7 +119,7 @@ describe('3. The arithmetic on a row', () => {
     const ref = cmp.rows[0];
     // arithmetic audit (30 Oct 2026): forging MPI as the casting station (£2.50 → £0.67), descale per kg of forging, the
     // cell's masked load inside the operator's share of the cut: 22.7563 → 19.9838 (24.0215 before the pilot rule pack)
-    expect(ref.total).toBe(19.9838);
+    expect(ref.total).toBe(19.9805);   // MPI £0.6673, no longer rounded up to £0.67 (7-country review)
     expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
@@ -270,4 +270,11 @@ describe('6. Second round — processes, the independent re-add, the specificati
     expect(html).toContain('data-cost-process="sand"');
     expect(html).not.toMatch(/mat-[a-z0-9-]+</);
   }, 120_000);
+});
+
+describe('the forge-press feasibility sizes the grade the costing uses (7-country review, 3 Nov 2026)', () => {
+  it('a family named by the file (not answered) reaches the press check', async () => {
+    const src = (await import('node:fs')).readFileSync('src/engine/route-feasibility.ts', 'utf8');
+    expect(src).toMatch(/i\.family \?\? materialFromFile\(i\.filename, i\.geo\)\?\.family/);
+  });
 });

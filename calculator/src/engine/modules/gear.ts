@@ -566,7 +566,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     if (r.logistics > 0 && carriesFreight) freightCharged = true;
     const ratePerKg = dropFreight ? r.ratePerKg - r.logistics : r.ratePerKg;
     const basis = dropFreight
-      ? `${r.basis}; less freight ${r.logistics.toFixed(4)} = ${ratePerKg.toFixed(4)} GBP/kg — one round trip `
+      ? `${r.basis}; less freight £${r.logistics.toFixed(4)} = £${ratePerKg.toFixed(4)}/kg — one round trip `
         + 'to the heat-treater per package, charged on the furnace step'
       : r.basis;
     const cost = ratePerKg * inputs.netWeightKg;

@@ -212,7 +212,7 @@ import { computeCarbon } from '../engine/carbon.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
-import { localiseGbpText } from '../export/money-text.js';
+import { localiseGbpText, reportNoteText } from '../export/money-text.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
 import type { RankedOpportunity } from '../engine/opportunity-ranking.js';
@@ -18166,7 +18166,7 @@ function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
     detail: `${measureLabel(g.worst?.measured?.field ?? '')} ${measureAgainstLimit(g.range, g.count, g.threshold)}.`.trim(),
     faceIds: g.faceIds ?? [],
     amount: amounts.get(g.ruleId)?.text,
-    source: [g.source.standard, g.source.clause, g.source.note].filter(Boolean).join(' · '),
+    source: [g.source.standard, g.source.clause, g.source.note ? reportNoteText(g.source.note) : null].filter(Boolean).join(' · '),
   }));
 }
 

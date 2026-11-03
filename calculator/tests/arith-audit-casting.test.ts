@@ -45,7 +45,7 @@ describe('A2 — cast + machine blasts the CASTING, so the blast is sized on the
   it('PRCR002: 9.084 kg as cast ÷ 600 kg/h × (blast + operator), not the 7.364 kg finished', async () => {
     const r = await cost('PRCR002.stp');
     const castKg = Number(r.provenance['cam-cast-wt'].value);
-    const want = Math.round(castKg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 100) / 100;
+    const want = Math.round(castKg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000;   // 4 dp (7-country review)
     expect(r.provenance['cam-shot-blast'].value).toBe(want);
     expect(r.provenance['cam-shot-blast'].basis).toContain(`${castKg.toFixed(2)} kg as cast`);
     expect(r.params.shotBlastCostPerPart).toBe(want);
@@ -53,7 +53,7 @@ describe('A2 — cast + machine blasts the CASTING, so the blast is sized on the
   it('the casting route (no machining stock) still blasts the part as cast = its own weight', async () => {
     const r = await cost('Casting_Braket.stp', 'casting');
     const kg = Number(r.provenance['cast-part-wt'].value);
-    expect(r.provenance['cast-shot-blast'].value).toBe(Math.max(0.1, Math.round(kg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 100) / 100));
+    expect(r.provenance['cast-shot-blast'].value).toBe(Math.max(0.1, Math.round(kg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000));
   });
 });
 

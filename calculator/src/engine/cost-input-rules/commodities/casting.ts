@@ -254,13 +254,16 @@ export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLa
   // The minimum charge is a UK £ figure: it follows the country like any bought-in process service (casting 360
   // review X40 — the UK £0.10 bound in India, where the blast itself costs less).
   const floor = Math.round(BLAST_MIN_CHARGE_UK * processServiceFactor() * 10_000) / 10_000;
-  const v = Math.max(floor, Math.round(massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
+  // £ to 4 dp, not the UK penny: a penny-rounded value broke its own printed arithmetic once converted (CN ¥2.34 shown,
+  // ¥2.31 costed — 7-country review, 3 Nov 2026). The result is printed so the line can be re-done.
+  const blast = massKg / BLAST_KG_PER_HR * (rate + lab);
+  const v = Math.max(floor, Math.round(blast * 10_000) / 10_000);
   return decided('casting.shotBlastCostPerPart', v, 'library',
     `${subtype} castings are blasted to remove sand / scale / flash — ${massKg.toFixed(2)} ${massLabel} ÷ `
     + `${BLAST_KG_PER_HR} kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × `
     + `(blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
     + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`
-    + ' (CostVision engineering heuristic)', 0.5);
+    + ` = £${v.toFixed(4)}${v === floor && blast < floor ? ' (the minimum)' : ''} (CostVision engineering heuristic)`, 0.5);
 }
 
 export function minWallMm(ctx: RuleContext): number {
@@ -732,7 +735,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
         const sf = processServiceFactor();   // a bought-in process service: labour + equipment, in the costed country
-        return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 100) / 100 : 0, 'rule',
+        return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 10_000) / 10_000 : 0, 'rule',
           needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`
             : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
           [PRESSURE_TIGHT_DECISION_ID]);
@@ -753,7 +756,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const a = r.advice.alloy;
         if (a === 'superalloy') {
           const nf = ndtServiceFactor();   // inspector + CT cell, in the costed country
-          return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART.ct * nf * 100) / 100, 'library',
+          return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART.ct * nf * 10_000) / 10_000, 'library',
             `safety-critical — industrial CT at £${NDT_COST_PER_PART.ct} a part (advisor rate, UK; engineering-typical, not sourced)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
             [SAFETY_CRITICAL_DECISION_ID]);
         }

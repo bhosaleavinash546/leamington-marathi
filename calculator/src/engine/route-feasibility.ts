@@ -23,6 +23,7 @@
 import type { OCCTGeometry } from '../../server/utils/geometry-bridge.js';
 import type { RateLibrary } from './types.js';
 import type { MaterialFamily } from './material-family.js';
+import { materialFromFile } from './cost-input-rules/derive/part-evidence.js';
 import type { RuleContext } from './cost-input-rules/types.js';
 import { COMMODITY_FAMILIES, DENSITY_KG_PER_CM3, representativeMaterialId } from './cost-input-rules/derive/material.js';
 import { enclosedShell, cavityShell } from './cost-input-rules/derive/hollow.js';
@@ -325,8 +326,12 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
   if (route === 'forging') {
     checks.push(check('forge_web', 'Minimum section', `${mm(f.shellWallMm)} (2·V/S)`, '≥ 3 mm',
       f.shellWallMm == null || f.shellWallMm >= 3, SRC.forgeWeb));
-    const repId = i.family && i.family !== 'rubber' && i.family !== 'composite'
-      ? representativeMaterialId('forging', i.family as MaterialFamily) : null;
+    // The press is sized on the grade the COSTING uses: an answered family, else the family the file names (as the
+    // costing reads it) — the hub flange, named "… C45 …", was sized here as carbon steel (765 t) while the costing
+    // pressed 38MnVS6 at 535 t (7-country review, 3 Nov 2026).
+    const fam = i.family ?? materialFromFile(i.filename, i.geo)?.family ?? null;
+    const repId = fam && fam !== 'rubber' && fam !== 'composite'
+      ? representativeMaterialId('forging', fam as MaterialFamily) : null;
     const alloy = forgingAlloyForGrade(repId ?? null) ?? 'carbon-steel';
     if (f.planCm2 != null) {
       const tonnes = estimateForgingTonnage({

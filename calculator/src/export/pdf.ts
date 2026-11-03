@@ -736,7 +736,7 @@ function renderGeometricDFM(
       doc.text(ln, MG + 2, y); y += 3.1;
     }
     if (gr.source.note) {
-      for (const ln of doc.splitTextToSize(gr.source.note, CW - 6) as string[]) {
+      for (const ln of doc.splitTextToSize(reportNoteText(gr.source.note), CW - 6) as string[]) {
         doc.text(ln, MG + 4, y); y += 3.1;
       }
     }

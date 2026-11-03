@@ -489,14 +489,14 @@ export function ndtStationCostPerPart(kind: NdtStationKind): { gbp: number; basi
   const hr = st.secPerPart / 3600;
   const station = hr * (inspector * st.manning + equipment);
   const sample = st.sampleXrayFraction * NDT_COST_PER_PART.xray * ndtServiceFactor();
-  const gbp = Math.round((station + sample) * 100) / 100;
+  const gbp = Math.round((station + sample) * 10_000) / 10_000;   // 4 dp (7-country review)
   const what = kind === 'mpi' ? '100% magnetic-particle inspection (wet fluorescent bench, demagnetised)' : '100% in-line real-time X-ray';
   return {
     gbp,
     basis: `${what}: ${st.secPerPart} s a part × (inspector £${inspector.toFixed(2)}/h × ${st.manning}`
       + ` + ${kind === 'mpi' ? 'bench' : 'cabinet'} £${equipment.toFixed(2)}/h) = £${station.toFixed(3)}`
       + (sample > 0 ? ` + 1 in ${Math.round(1 / st.sampleXrayFraction)} radiographed × £${(NDT_COST_PER_PART.xray * ndtServiceFactor()).toFixed(2)} = £${sample.toFixed(3)}` : '')
-      + ' (engineering-typical station figures; CostVision heuristic)',
+      + ` = £${gbp.toFixed(4)} (engineering-typical station figures; CostVision heuristic)`,
   };
 }
 
@@ -524,7 +524,7 @@ const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>
 
 export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): CastingSecondaryResult {
   // UK £ service prices × the costed country's service factor (regional-services.ts).
-  const svc = (gbpUk: number) => Math.round(gbpUk * processServiceFactor() * 100) / 100;   // blast, impregnation: bought-in process services
+  const svc = (gbpUk: number) => Math.round(gbpUk * processServiceFactor() * 10_000) / 10_000;   // blast, impregnation: bought-in process services
   const adders: CastingSecondaryAdder[] = [];
   const wt = Math.max(inputs.partWeightKg, 0);
 
@@ -575,7 +575,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   }
 
   if (inputs.ndt && inputs.ndt !== 'none') {
-    const unit = Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
+    const unit = Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
     adders.push({
       label: `NDT (${inputs.ndt.toUpperCase()})`,
       basis: 'per-part', unitCostGbp: unit, costPerPartGbp: unit,

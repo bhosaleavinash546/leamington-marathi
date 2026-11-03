@@ -127,10 +127,10 @@ for (const c of CASES) {
   check('green-sand additions £ (pour × £0.01/kg)', items.get('green-sand additions') ?? 0, pour * GREEN_SAND_GBP_PER_KG);
   check('heat treatment £ (rate × as-cast kg)', items.get('heat treatment') ?? 0, HT_GBP_PER_KG[c.alloy] * castUsed);
   // Shot blast: the CASTING is blasted (before machining) — its as-cast mass.
-  const blast = Math.max(BLAST_MIN, Math.round(castKg / BLAST_KG_PER_HR * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 100) / 100);
+  const blast = Math.max(BLAST_MIN, Math.round(castKg / BLAST_KG_PER_HR * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000);
   check('shot blast £ (as-cast kg ÷ 600 kg/h × (blast + operator))', items.get('shot blast') ?? 0, blast);
   const ndt = c.safety
-    ? Math.round((NDT_MPI.sec / 3600 * (labourRate('lab-uk-inspector') * NDT_MPI.manning + NDT_MPI.bench) + NDT_MPI.sampleXray * NDT_MPI.xray) * 100) / 100
+    ? Math.round((NDT_MPI.sec / 3600 * (labourRate('lab-uk-inspector') * NDT_MPI.manning + NDT_MPI.bench) + NDT_MPI.sampleXray * NDT_MPI.xray) * 10_000) / 10_000
     : 0;
   check('NDT £ (MPI station + 1-in-50 X-ray)', items.get('NDT') ?? 0, ndt);
 

@@ -120,7 +120,8 @@ describe('7. baseline', () => {
     // from held build-ups to sourced capex — roof £479.83 → £438.05, lid £84.02 → £79.81, hat £73.55 → £69.38.
     expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(438.05);
     expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(79.81);
-    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(69.38);
+    // 7-country review (3 Nov 2026): the NDI station carries £ to 4 dp, not the UK penny — hat £69.38 → £69.37.
+    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(69.37);
   });
 });
 

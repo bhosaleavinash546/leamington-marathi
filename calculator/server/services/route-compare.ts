@@ -39,8 +39,7 @@ import { computeCostUncertainty, type DriverProvenance, type DriverSource } from
 import { shortOperationName } from '../../src/engine/operation-names.js';
 import { FINISH_PREFIX_BY_COMMODITY } from '../../src/engine/surface-finish-routes.js';
 import {
-  screenRoutes, materialFamilyOf, familyOfCategory, COMPARISON_PRINCIPLE, type FeasibilityCheck, type RouteScreen,
-} from '../../src/engine/route-feasibility.js';
+  screenRoutes, materialFamilyOf, familyOfCategory, COMPARISON_PRINCIPLE, type FeasibilityCheck, type RouteScreen, CASTING_PROCESS_LADDER_SOURCE, FORGING_PROCESS_LADDER_SOURCE } from '../../src/engine/route-feasibility.js';
 import { DENSITY_KG_PER_CM3, representativeMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import type { MaterialFamily } from '../../src/engine/material-family.js';
 import { castingProcessRefusal, type CastingProcess, type AlloyFamily } from '../../src/engine/modules/casting-advisor.js';
@@ -262,7 +261,7 @@ export function processVariants(route: string, i: ScreenArgs): ProcessVariant[] 
     const alloy: AlloyFamily | null = castingAlloyForGrade(grade ?? representativeMaterialId('casting', fam as MaterialFamily) ?? null);
     if (!alloy) return [];
     const section = castingSectionMm(ctx);
-    const src = 'casting advisor ladder (casting-advisor.ts: DIE_CASTABLE alloys, HPDC_SECTION_MAX_MM; INVESTMENT_TREE.POUR_KG for the tree)';
+    const src = CASTING_PROCESS_LADDER_SOURCE;
     return (['sand', 'gravity', 'hpdc', 'investment'] as CastingProcess[]).map(p => {
       let refusal = castingProcessRefusal(p, alloy, section);
       if (!refusal && p === 'investment' && massKg > INVESTMENT_TREE.POUR_KG) {
@@ -276,7 +275,7 @@ export function processVariants(route: string, i: ScreenArgs): ProcessVariant[] 
     if (!alloy) return [];
     const complexity = advisorComplexity(shapeComplexity(ctx));
     const ring = isRingShape(ctx);
-    const src = 'forging advisor ladder (forging-advisor.ts: ring shape, COLD_FORMER_MAX_SLUG_MM, 5 kg cold / 100 kg precision)';
+    const src = FORGING_PROCESS_LADDER_SOURCE;
     return (['closed-die', 'precision', 'cold-forming', 'ring-rolling'] as ForgingProcess[]).map(p => ({
       process: p, label: FORGING_PROCESS_LABEL[p],
       refusal: forgingProcessRefusal(p, { partWeightKg: massKg, alloyFamily: alloy, complexity, isRingShape: ring }), source: src,

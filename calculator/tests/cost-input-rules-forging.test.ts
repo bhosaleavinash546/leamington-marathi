@@ -287,8 +287,8 @@ describe('press, die and secondary ops', () => {
 
   it('prices NDT only on a safety-critical part', () => {
     const critical = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
-    // MPI as a station (arithmetic audit F14): 75 s × (UK inspector £28.03/h + bench £4/h) = £0.67, as on a casting
-    expect((critical.suggestions.forging as Record<string, number>).ndtCostPerPart).toBe(0.67);   // MPI
+    // MPI as a station (arithmetic audit F14): 75 s × (UK inspector £28.03/h + bench £4/h) = £0.6673 (4 dp, 7-country review), as on a casting
+    expect((critical.suggestions.forging as Record<string, number>).ndtCostPerPart).toBe(0.6673);   // MPI
 
     const notCritical = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, {
       ...STEEL_ANSWERED, [SAFETY_CRITICAL_DECISION_ID]: 'no',

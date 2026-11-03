@@ -61,10 +61,10 @@ describe('C2 (H): NDI is a scan station (time × rates), not a flat £25', () =>
     const area = r.provenance['comp-area'].value as number;
     const inspector = book.labour.find(l => l.id === 'lab-uk-inspector')!.fullyLoadedRatePerHr;
     const hr = NDI_STATION.loadUnloadSec / 3600 + area / NDI_STATION.scanM2PerHr;
-    expect(ndi.value).toBeCloseTo(Math.round(hr * (inspector + NDI_STATION.cellGbpPerHrUk) * 100) / 100, 2);
+    expect(ndi.value).toBeCloseTo(Math.round(hr * (inspector + NDI_STATION.cellGbpPerHrUk) * 10_000) / 10_000, 4);
     expect(ndi.value).not.toBe(25);
     expect(ndi.basis).toMatch(/engineering-typical/);
-    expect(ndi.basis).toContain(`£${(ndi.value as number).toFixed(2)}`);
+    expect(ndi.basis).toContain(`£${(ndi.value as number).toFixed(4)}`);
   });
   it('a glass laminate states that no scan is costed (it claimed a "visual and tap test" it did not cost)', () => {
     const r = compRun('COMP_Battery_Lid.stp', 'rtm-gf');
