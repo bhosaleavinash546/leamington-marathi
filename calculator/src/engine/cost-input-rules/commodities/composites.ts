@@ -26,6 +26,7 @@
  * obediently answered "infusion" was returning a value nothing downstream could
  * use. See `derive/laminate.ts`.
  */
+import { materialGradeName } from '../derive/material.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
 import { activeToolroomFactor, activeLabourRate } from '../../rate-context.js';
 import { CURE_ATTENDANCE, type CompositeProcess } from '../../modules/composites.js';
@@ -271,7 +272,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('composites.fibrePricePerKg', r.advice.fibrePrice, 'library',
-          `${r.advice.system.fibreId} list price`, 0.9);
+          `${materialGradeName(r.advice.system.fibreId, ctx.rates)} list price`, 0.9);
       },
     },
     {
@@ -284,7 +285,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         return decided('composites.resinPricePerKg', r.advice.resinPrice, 'library',
           r.advice.system.resinId
-            ? `${r.advice.system.resinId} list price`
+            ? `${materialGradeName(r.advice.system.resinId, ctx.rates)} list price`
             : 'prepreg arrives impregnated — there is no separate resin buy', 0.9);
       },
     },

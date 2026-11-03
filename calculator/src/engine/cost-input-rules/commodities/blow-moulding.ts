@@ -23,6 +23,7 @@
  * 2. **Mould life follows the mould material** rather than being one of two
  *    constants attached to a process name.
  */
+import { materialGradeName } from '../derive/material.js';
 import {
   estimateBlowMouldCost, type BlowProcess, type BlowMouldMaterial,
 } from '../../modules/blow-advisor.js';
@@ -150,7 +151,7 @@ export function barrierDecision(ctx: RuleContext, resinId: string): Decision {
       + (likely ? ' The part name suggests a fuel or fluid tank.' : ''),
     options: [
       { value: 'barrier', label: 'Co-extruded barrier (EVOH)', consequence: 'coex grade at £1.55/kg', leaning: likely },
-      { value: 'mono', label: 'Mono-layer', consequence: `${resinId} at its list price`, leaning: !likely },
+      { value: 'mono', label: 'Mono-layer', consequence: `${materialGradeName(resinId, ctx.rates)} at its list price`, leaning: !likely },
     ],
     blockedFieldIds: [],
     blockedRuleIds: [],

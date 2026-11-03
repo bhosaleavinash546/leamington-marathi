@@ -37,3 +37,10 @@ describe('library ids become names in report text', () => {
     expect(readFileSync('src/engine/cost-input-rules/commodities/blow-moulding.ts', 'utf8')).not.toContain('no material £');
   });
 });
+
+describe('the routing basis names the machine', () => {
+  it('no machine id in a routing detail', async () => {
+    const src = (await import('node:fs')).readFileSync('src/engine/routing-optimiser.ts', 'utf8');
+    expect(src).not.toMatch(/\$\{(primary|drill|lathe|second\??)\.id\} £/);
+  });
+});

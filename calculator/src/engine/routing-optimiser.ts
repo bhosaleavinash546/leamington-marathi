@@ -28,6 +28,9 @@
 import { activeRates, activeLabourRate } from './rate-context.js';
 import type { RateLibrary } from './types.js';
 
+/** A machine as a reader knows it — its class, never the library id (7-country review, 3 Nov 2026). */
+const machineName = (id: string | undefined): string => (id && activeRates().machines.find(m => m.id === id)?.machineClass) || id || '';
+
 export type MachiningCapability = 'turn' | 'mill3' | 'mill5' | 'hmc' | 'drill' | 'grind';
 
 /**
@@ -227,8 +230,8 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
         ? Math.max(0, setups * handlingHrEach - (p.millingHr + p.drillHr) * CUTTING_MANNING)
         : setups * handlingHrEach),
       ...(masked ? { masked: true } : {}),
-      detail: `${detailPrefix}: ${primary.id} £${primary.ratePerHr.toFixed(2)}/hr`
-        + (drill && drill.id !== primary.id ? ` + ${drill.id} £${drill.ratePerHr.toFixed(2)}/hr` : '')
+      detail: `${detailPrefix}: ${machineName(primary.id)} £${primary.ratePerHr.toFixed(2)}/hr`
+        + (drill && drill.id !== primary.id ? ` + ${machineName(drill.id)} £${drill.ratePerHr.toFixed(2)}/hr` : '')
         + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
         + (masked
           ? ` + ${PALLET_CHANGE_SEC} s pallet change per part per fixturing, ${(handlingHrEach * 60).toFixed(1)} min load / unload masked by the cut`
@@ -257,8 +260,8 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
         envelopeMm: MACHINE_CATALOGUE.find(m => m.id === lathe.id)?.envelopeMm ?? null,
         costPerPart: Math.round(cost * 10_000) / 10_000,
         labourPerPart: labourOf(p.turned.latheHr + secHr, setups * handlingHrEach),
-        detail: `turned from bar: ${lathe.id} £${lathe.ratePerHr.toFixed(2)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
-          + (secHr > 0 ? ` + ${second?.id} £${(second?.ratePerHr ?? 0).toFixed(2)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
+        detail: `turned from bar: ${machineName(lathe.id)} £${lathe.ratePerHr.toFixed(2)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
+          + (secHr > 0 ? ` + ${machineName(second?.id)} £${(second?.ratePerHr ?? 0).toFixed(2)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
           + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
           + ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`,
       });
