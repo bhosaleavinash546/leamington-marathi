@@ -937,6 +937,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   arithmetic once converted); report text names machines / grades — never a library id, file, constant or research note
   (`reportNoteText`); levers print only what a stack re-run shows; no country carries a UK overhead / packaging /
   material / capital multiplier (at par, `tests/country-rates.test.ts`).
+  Follow-up (same day, doc §8): an EXECUTIVE SUMMARY page — ONE model `src/export/executive-summary.ts` drawn as PDF page 2
+  (`renderExecutiveSummaryPage`) and workbook sheet `0-Executive` (first; read `1-Summary` by NAME); it adds no arithmetic and
+  must fit one page (`scripts/country-trace/exec-page-check.ts`). Levers: `rankOpportunities` lists ONLY re-costed levers
+  (`notRecostedCount` counts the rest) — screen, PDF and the AI commentary; no generic roadmap (`tests/levers-recosted-only.test.ts`).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

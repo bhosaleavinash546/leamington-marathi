@@ -60,12 +60,22 @@ const RICH = () => rank(
     { rawMaterial: { materialUtilization: 0.7, consumablesCostPerPart: 12 } }),
   'casting', { region: 'UK', volumeProvided: true });
 
+const RECOSTED = () => {
+  const inp = input([op('Milling', { oee: 0.6 }), op('Drilling'), op('Deburr')], {
+    annualVolume: 50_000, partName: 'block', packagingPerPart: 0.15, logisticsPerPart: 0.25, marginPct: 0.08,
+    rawMaterial: { materialId: 'mat-al6061', netWeightKg: 0.5, materialUtilization: 0.45 },
+    tooling: { amortizationVolume: 50_000, totalToolingCost: 40_000, mode: 'amortized' } });
+  const res = computeUniversalStack(inp, DEFAULT_RATE_LIBRARY);
+  return rankOpportunities(generateDFMDFA(res, inp, 'machining', { library: DEFAULT_RATE_LIBRARY } as never), res.total);
+};
+
 describe('ranking — money per part, biggest first', () => {
-  it('ranks every opportunity by saving per part, descending', () => {
-    const r = RICH();
+  it('ranks every opportunity by saving per part, descending — and every listed one is re-costed', () => {
+    const r = RECOSTED();
     const savings = r.all.map(o => o.savingPerPart);
     expect(savings).toEqual([...savings].sort((a, b) => b - a));
-    expect(r.all.length).toBeGreaterThan(4);
+    expect(r.all.length).toBeGreaterThan(0);
+    expect(r.all.every(o => o.priced && o.savingPerPart > 0)).toBe(true);
   });
 
   it('saving per part is the part total times the percentage', () => {
@@ -87,8 +97,11 @@ describe('ranking — money per part, biggest first', () => {
     }
   });
 
-  it('covers several categories on a rich part', () => {
-    expect(RICH().groups.length).toBeGreaterThanOrEqual(4);
+  it('only re-costed levers are listed (Nov 2026): with no rate library nothing is re-costed, so nothing is listed — the rules of thumb are counted', () => {
+    const r = RICH();
+    expect(r.all).toEqual([]);
+    expect(r.groups).toEqual([]);
+    expect(r.notRecostedCount).toBeGreaterThan(4);
   });
 
   it('every group opportunity also appears exactly once in the flat list', () => {
@@ -100,31 +113,16 @@ describe('ranking — money per part, biggest first', () => {
 });
 
 describe('no double counting', () => {
-  it('a rule finding folds into the lever that already covers its cost signal', () => {
-    // Utilisation at 55% fires BOTH the "Low material utilisation" DFM rule and
-    // the near-net-shape lever. Only the lever — the action — may survive.
+  it('a rule finding is never listed — its percentage is a rule of thumb, not a re-costed figure', () => {
     const r = rank(result({ rawMaterial: 45 }),
       input([op('Milling')], { rawMaterial: { materialUtilization: 0.55 } }), 'machining');
-    const matUtil = r.all.filter(o => o.signal === 'mat-util');
-    expect(matUtil.length).toBeGreaterThan(0);
-    // Every surviving row on this signal is lever-sourced (levers carry detail).
-    expect(matUtil.every(o => Boolean(o.detail))).toBe(true);
-    expect(matUtil.some(o => /near-net-shape/i.test(o.action))).toBe(true);
-    // …and the rule's own observation text is nowhere in the ranked list.
     expect(r.all.some(o => /^Improve nesting\/billet size/.test(o.action))).toBe(false);
+    expect(r.notRecostedCount).toBeGreaterThan(0);
   });
 
-  it('distinct levers on one signal both survive — four tooling actions are four rows', () => {
-    // Deduplication exists to stop a finding echoing a lever, never to collapse
-    // separately-authored levers into one.
-    const r = rank(result({ tooling: 35, process: 15 }),
-      input([op('Injection Moulding')], { tooling: { amortizationVolume: 8_000, totalToolingCost: 60_000 } }),
-      'injection_moulding');
-    const tooling = r.groups.find(g => g.category === 'tooling');
-    expect(tooling).toBeDefined();
-    const titles = tooling!.opportunities.map(o => o.action);
+  it('each listed lever is a distinct action', () => {
+    const titles = RECOSTED().all.map(o => o.action);
     expect(new Set(titles).size).toBe(titles.length);
-    expect(titles.length).toBeGreaterThanOrEqual(2);
   });
 });
 
@@ -163,14 +161,11 @@ describe('nothing grades the design', () => {
     }
   });
 
-  it('the action is imperative — it says what to do, not what is wrong', () => {
-    // Rule-sourced rows take their action from the recommendation, never from
-    // the observation title (the title becomes the supporting basis instead).
+  it('a rule-sourced observation with no re-costed figure is not listed, only counted', () => {
     const r = rank(result({ labour: 20 }),
       input([op('Moulding + hand-finish', { cycleTimeHr: 0.03, labourTimeHr: 0.06 })]), 'injection_moulding');
-    const fromRule = r.all.find(o => /offline|parallel/i.test(o.action));
-    expect(fromRule).toBeDefined();
-    expect(fromRule!.basis).toContain('Labour time exceeds the machine cycle');
+    expect(r.all.find(o => /offline|parallel/i.test(o.action))).toBeUndefined();
+    expect(r.notRecostedCount).toBeGreaterThan(0);
   });
 });
 
@@ -179,7 +174,7 @@ describe('headline maths is unchanged', () => {
     // Regression: the headline used to come from the engine's issue-based
     // totalPotentialSavingPct while the list showed levers, so a real part
     // reported 12.8% combined above an 18% top row.
-    const r = RICH();
+    const r = RECOSTED();
     expect(r.headlineSavingPct).toBeGreaterThanOrEqual(r.all[0].savingPct);
     expect(r.headlineSavingPerPart).toBeGreaterThanOrEqual(r.all[0].savingPerPart - 1e-9);
   });

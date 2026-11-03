@@ -7,7 +7,8 @@ import { decisionAnswerLabel } from './decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import { reportNoteText } from './money-text.js';
 import type { ChecksAppliedMeta } from './pdf.js';
-import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
+import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
+import { buildExecutiveSummary } from './executive-summary.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
@@ -65,6 +66,8 @@ export async function exportToExcelBlob(
   routeComparison: RouteComparisonExport | null = null,
   /** Two isometric renders of the CAD model, placed beside the summary (the Director's request, 30 Oct 2026). */
   cadViews: Array<{ label: string; dataUrl: string }> | null = null,
+  /** The commodity — lets the executive summary list the re-costed levers (Nov 2026). */
+  commodity: CommodityType | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -148,6 +151,53 @@ export async function exportToExcelBlob(
   }
 
   sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });
+
+  // ── Sheet 0: Executive summary — the same model as page 2 of the PDF (executive-summary.ts), placed FIRST ──
+  try {
+    const ex = buildExecutiveSummary({ result, input, library, commodity, region: library.regional?.code ?? 'UK', band, stamp,
+      decisions: checks?.decisions ?? null });
+    const exec: unknown[][] = [
+      ['EXECUTIVE SUMMARY'],
+      ['Part', ex.part],
+      ...(ex.commodity ? [['Commodity', ex.commodity]] : []),
+      ['Country', ex.country],
+      [],
+      ['Should-cost a part', m(ex.total), currency],
+      ...(ex.band ? [['  P10 – P90', money(Math.round(ex.band.p10 * fxRate * 100) / 100, sym), money(Math.round(ex.band.p90 * fxRate * 100) / 100, sym)],
+        ['  Band', `± ${ex.band.plusMinusPct}% — the spread of the input ranges, not the model's error`]] : []),
+      ['Confidence', ex.confidence.grade, ex.confidence.reason],
+      ...(ex.annualSpend != null ? [['A year at this volume', m(ex.annualSpend)]] : []),
+      ...(ex.tooling ? [['Tooling over the programme (in the cost)', m(ex.tooling.investmentGbp), `over ${ex.tooling.amortisedOver.toLocaleString('en-GB')} parts`]] : []),
+      [],
+      ['── WHAT THE FIGURE ASSUMES ──'],
+      ...ex.basis.map(b => [b]),
+      [],
+      ['── WHERE THE MONEY GOES (by kind of cost; the lines add to the total) ──'],
+      ['Cost line', `A part (${currency})`, 'Share'],
+      ...ex.lines.map(l => [l.label, m(l.gbp), pc(l.sharePct)]),
+      ['Should-cost', m(ex.total), pc(100)],
+      ...(ex.largestOperation ? [[`Largest single operation: ${ex.largestOperation.label} (machine + labour)`, m(ex.largestOperation.gbp), pc(ex.largestOperation.sharePct)]] : []),
+      [],
+      [`── WHAT WOULD CHANGE IT (each input ± ${ex.moverPct}%, the cost re-run) ──`],
+      ['Input', `−${ex.moverPct}% (${currency} a part)`, `+${ex.moverPct}% (${currency} a part)`],
+      ...ex.movers.map(mv => [mv.label, m(mv.minusGbp), m(mv.plusGbp)]),
+      [],
+      ['── TO CONFIRM ──'],
+      ...ex.toConfirm.map(t => [t]),
+      [],
+      ['── RE-COSTED LEVERS (levers overlap, so they are not added) ──'],
+      ...(ex.levers.length
+        ? [['Lever', `Saves a part (${currency})`, 'Re-costed on'], ...ex.levers.map(l => [l.action, m(l.savingGbp), l.basis])]
+        : [['No lever could be re-costed for this part.']]),
+      ...(ex.leversNotRecosted > 0 ? [[`${ex.leversNotRecosted} other suggestion${ex.leversNotRecosted === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ex.leversNotRecosted === 1 ? 'is' : 'are'} not shown.`]] : []),
+      [],
+      ['── NOT INCLUDED ──'],
+      ...ex.notIncluded.map(t => [t]),
+      [],
+      [ex.sources],
+    ];
+    sheets.unshift({ name: '0-Executive', rows: exec, cols: [62, 20, 60] });
+  } catch (e) { console.warn('[excel] executive summary not built:', e); /* the workbook is unaffected */ }
 
   // ── Sheet 2: Material Detail — every row of the material line, adding up to bucket 1 ──
   const trace = result.traceability ?? [];

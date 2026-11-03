@@ -72,8 +72,14 @@ export interface RankedOpportunities {
   /** The largest single RE-COSTED saving (0 when nothing was re-costed) — never a combination of rules of thumb. */
   headlineSavingPct: number;
   headlineSavingPerPart: number;
-  /** How many rows carry a re-costed £; the rest are checks with no figure. */
+  /** How many rows carry a re-costed £ — since Nov 2026 every listed row does. */
   pricedCount: number;
+  /**
+   * Levers and findings that had no re-costed figure (a rule of thumb from the cost shares) and are therefore NOT
+   * listed (Nov 2026: a lever is shown only when a re-run of the cost stack gives its £). Counted so a report can say
+   * how many were left out; their text is never printed.
+   */
+  notRecostedCount: number;
   partTotal: number;
 }
 
@@ -234,8 +240,12 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
     opportunities.push(o);
   }
 
-  // Priced (re-costed) first, by money; then the unpriced checks in the order the engine authored them.
-  opportunities.sort((a, b) => Number(b.priced) - Number(a.priced) || b.savingPerPart - a.savingPerPart);
+  // ONLY levers a re-run of the cost stack priced (Nov 2026). A rule-of-thumb lever ("automation of repetitive tasks
+  // can reduce this significantly") is advice no arithmetic stands behind; in the seven-country review ~8 in 10 listed
+  // levers were of that kind, and they were what an executive read first. They are counted, never listed.
+  const notRecostedCount = opportunities.filter(o => !o.priced).length;
+  for (let i = opportunities.length - 1; i >= 0; i--) if (!opportunities[i].priced) opportunities.splice(i, 1);
+  opportunities.sort((a, b) => b.savingPerPart - a.savingPerPart);
 
   // 3 · Group by category; within a group biggest first, groups by their best.
   const groups: OpportunityGroup[] = [];
@@ -265,7 +275,8 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
     verificationChecks,
     headlineSavingPct,
     headlineSavingPerPart,
-    pricedCount: opportunities.filter(o => o.priced).length,
+    pricedCount: opportunities.length,
+    notRecostedCount,
     partTotal: total,
   };
 }

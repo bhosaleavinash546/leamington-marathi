@@ -164,3 +164,25 @@ python3 -I scripts/country-trace/review-pack.py out pack.xlsx   # parts × count
 CV_DUMP_REGION=CN CV_DUMP_ANNUAL=200000 CV_DUMP_TERMS=EXW npx tsx scripts/arith-audit/dump.ts dump/CN
 npx tsx scripts/arith-audit/<group>.ts dump/CN                  # shadow models
 ```
+
+## 8. After the review — executive summary and re-costed levers only (3 Nov 2026)
+
+**Executive summary** (`src/export/executive-summary.ts`, one model): page 2 of the PDF (after the cover; page 3 when the
+cover spills) and the first sheet of the workbook (`0-Executive`; `1-Summary` is unchanged). One page:
+- the should-cost a part, the screen's band, the confidence grade and the data behind it, the year's spend at the volume,
+  the tooling over the programme;
+- what the figure assumes (country book + stamp, volume, programme, terms) and what is not included;
+- where the money goes by kind of cost (material, machine time, labour, tooling, overhead + margin, packaging — the
+  costing's own buckets, adding to the total) and the largest single operation;
+- what would change it: the three inputs whose ± 10 % moves the cost most (`runSensitivity`, the stack re-run);
+- what to confirm: unanswered questions, Low-graded rates, and that accuracy is not yet measured;
+- the three largest re-costed levers.
+Nothing on it is new arithmetic. `scripts/country-trace/exec-page-check.ts <dumpDir>` renders every real part headless and
+checks the page fits: 40 / 40 in UK, China and Hungary; live (3 parts × UK, CN) 206 / 206 checks pass in each.
+`tests/executive-summary.test.ts`.
+
+**Levers** (`rankOpportunities`): only a lever re-costed through the cost stack is listed — on the screen, in the PDF
+(§12, §13) and in what the AI commentary is told. A rule-of-thumb lever or finding is counted ("7 other suggestions had only
+a rule-of-thumb percentage and are not shown"), never printed. The generic §15 "Implementation Roadmap" (quick-win /
+long-term strings with no arithmetic) is gone; Saved Scenarios is §15. `tests/levers-recosted-only.test.ts` fails if a
+screen, report or server file reads an insight / lever / issue percentage.

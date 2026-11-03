@@ -23,9 +23,8 @@ router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
       dfmResult: {
         dfm: { score: number; issues: Array<{ severity: string; title: string; recommendation: string }>; summary: string };
         dfa: { score: number; issues: Array<{ severity: string; title: string; recommendation: string }>; summary: string };
-        costOptimisations: Array<{ title: string; expectedSavingPct: number; technicalJustification: string; timeframe: string;
+        costOptimisations: Array<{ title: string; technicalJustification: string; timeframe: string;
           savingBasis?: 'recosted' | 'heuristic'; savingGBP?: number }>;
-        totalPotentialSavingPct?: number;
       };
     };
 
@@ -44,9 +43,10 @@ router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
 
     // Only a lever re-costed through the rate library carries a figure; a rule-of-thumb percentage is never handed to
     // the model, or it is repeated back as a saving (review, Oct 2026).
+    // Since Nov 2026 a lever with no re-costed figure is not shown anywhere — the model is not told about it either.
     const optimSummary = dfmResult.costOptimisations
-      .map(o => `• ${o.title} (${o.savingBasis === 'recosted' && (o.savingGBP ?? 0) > 0
-        ? `re-costed: £${(o.savingGBP as number).toFixed(2)}/part` : 'not priced'}, ${o.timeframe})`)
+      .filter(o => o.savingBasis === 'recosted' && (o.savingGBP ?? 0) > 0)
+      .map(o => `• ${o.title} (re-costed: £${(o.savingGBP as number).toFixed(2)}/part, ${o.timeframe})`)
       .join('\n');
 
     const prompt = `You are a world-class manufacturing cost engineer specialising in DFM (Design for Manufacture) and DFA (Design for Assembly) analysis.
@@ -77,7 +77,7 @@ Provide a deep engineering analysis covering:
 
 Be specific, engineering-literate, and concise. Target 400–500 words. Do not repeat verbatim what the rule-based engine already said — provide expert commentary and depth.
 
-HARD RULE — numbers: do not state ANY figure (money, percentage, time, rate, quantity, saving) that does not appear above. Never estimate a saving or a cost. Where a lever is "not priced", say it is not priced; where you would want a number, say which measurement or quote would provide it.`;
+HARD RULE — numbers: do not state ANY figure (money, percentage, time, rate, quantity, saving) that does not appear above. Never estimate a saving or a cost. Where you would want a number, say which measurement or quote would provide it.`;
 
     const client = createAnthropic();
     const message = await client.messages.create({

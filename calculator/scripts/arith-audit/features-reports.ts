@@ -507,7 +507,7 @@ if (!NO_REPORTS) {
     writeFileSync(xlsxFile, xlsx);
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(xlsx);
-    const s1 = wb.worksheets[0];
+    const s1 = wb.getWorksheet('1-Summary') ?? wb.worksheets[0];   // sheet 0 is the executive summary since Nov 2026
     const cells: Array<[string, number]> = [];
     s1.eachRow(r => { const lab = String(r.getCell(1).value ?? ''); const v = r.getCell(2).value; if (typeof v === 'number') cells.push([lab, v]); });
     const byLabel = (re: RegExp) => cells.find(([l]) => re.test(l))?.[1];

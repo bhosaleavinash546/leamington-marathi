@@ -11,6 +11,7 @@ import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { generateInsights, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
+import { buildExecutiveSummary, type ExecutiveSummary } from './executive-summary.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
@@ -477,7 +478,103 @@ function utilisationBenchmarkNote(commodity?: string, lossIsNotScrap = false): s
   return '';
 }
 
-/** Shared should-cost report body — §1 through §16 (breakdown, ops, machine
+
+/**
+ * Page 2 of a should-cost report: the executive summary (Nov 2026). Formats `buildExecutiveSummary` — every figure is
+ * the costing's own (buckets / operations, the screen's band, stack re-runs for the movers and the levers).
+ */
+function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gbp: number) => string): void {
+  let y = 16;
+  // A light heading (the full report's section bars took ~13 mm each and pushed the page onto two).
+  const head = (title: string, right?: string): void => {
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY); doc.text(title, MG, y + 3);
+    if (right) { doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY); doc.text(right, W - MG, y + 3, { align: 'right' }); }
+    doc.setDrawColor(...ORANGE); doc.setLineWidth(0.3); doc.line(MG, y + 4.6, W - MG, y + 4.6);
+    y += 6.5;
+  };
+  doc.setFontSize(15); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text('Executive Summary', MG, y + 2);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+  doc.text(winAnsiSafe(`${ex.part}${ex.commodity ? `  ·  ${ex.commodity}` : ''}  ·  ${ex.country}`), MG, y + 8);
+  y += 14;
+
+  // Headline: the cost, the band, the confidence
+  const confCol: RGB = ex.confidence.grade === 'High' ? GN : ex.confidence.grade === 'Medium' ? AM : RD;
+  doc.setFillColor(...HDR); doc.roundedRect(MG, y, CW, 23, 2, 2, 'F');
+  doc.setFontSize(7); doc.setTextColor(...GREY); doc.text('SHOULD-COST A PART', MG + 5, y + 6);
+  doc.setFontSize(20); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text(money(ex.total), MG + 5, y + 14.5);
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+  if (ex.band) doc.text(`P10 ${money(ex.band.p10)} – P90 ${money(ex.band.p90)}  (± ${ex.band.plusMinusPct}% — the spread of the input ranges, not the model's error)`, MG + 5, y + 20);
+  const cx = MG + 112;
+  doc.setFontSize(7); doc.setTextColor(...GREY); doc.text('CONFIDENCE', cx, y + 6);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(...confCol); doc.text(ex.confidence.grade, cx, y + 12);
+  doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+  const whole = (gbp: number) => money(gbp).replace(/\.\d{2}$/, '');
+  if (ex.annualSpend != null) doc.text(`${whole(ex.annualSpend)} a year at the volume below`, cx, y + 16.5);
+  if (ex.tooling) doc.text(`Tooling ${whole(ex.tooling.investmentGbp)} over ${ex.tooling.amortisedOver.toLocaleString('en-GB')} parts (in the cost)`, cx, y + 20.5);
+  y += 27;
+  y = calloutBox(doc, y, 'What the figure assumes', [...ex.basis, `Not included: ${ex.notIncluded.map(t => t.replace(/^./, c => c.toLowerCase())).join('; ')}.`, `Confidence: ${ex.confidence.reason}.`], NAVY, LIGHT);
+
+  // Where the money goes
+  head('Where the money goes', 'by kind of cost  ·  the lines add to the total');
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG }, theme: 'plain',
+    head: [['Cost line', 'A part', 'Share']],
+    body: [...ex.lines.map(l => [l.label, money(l.gbp), `${l.sharePct.toFixed(1)}%`]), ['Should-cost', money(ex.total), '100.0%']],
+    headStyles: { ...TH.headStyles, fontSize: 6.5, cellPadding: 1.5 },
+    bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 1.3 },
+    columnStyles: { 0: { cellWidth: 122 }, 1: { cellWidth: 34, halign: 'right' }, 2: { cellWidth: 26, halign: 'right' } },
+    didParseCell: (d) => { if (d.section === 'head' && d.column.index > 0) d.cell.styles.halign = 'right'; if (d.section === 'body' && d.row.index === ex.lines.length) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = HDR; } },
+  });
+  y = lastFinalY(doc) + 1;
+  if (ex.largestOperation) {
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    doc.text(winAnsiSafe(`Largest single operation: ${ex.largestOperation.label} — ${money(ex.largestOperation.gbp)} a part (machine + labour, ${ex.largestOperation.sharePct.toFixed(1)}%).`), MG, y + 2);
+    y += 5;
+  }
+  y += 2;
+
+  // What would change it
+  head('What would change it', `each input moved ± ${ex.moverPct}% and the cost re-run`);
+  if (ex.movers.length) {
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'plain',
+      head: [['Input', `-${ex.moverPct}%`, `+${ex.moverPct}%`]],
+      body: ex.movers.map(m => [m.label, `${m.minusGbp < 0 ? '-' : '+'}${money(Math.abs(m.minusGbp))}`, `${m.plusGbp < 0 ? '-' : '+'}${money(Math.abs(m.plusGbp))}`]),
+      headStyles: { ...TH.headStyles, fontSize: 6.5, cellPadding: 1.5 },
+      bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 1.3 },
+      columnStyles: { 0: { cellWidth: 122 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 30, halign: 'right' } },
+      didParseCell: (d) => { if (d.section === 'head' && d.column.index > 0) d.cell.styles.halign = 'right'; },
+    });
+    y = lastFinalY(doc) + 3;
+  }
+  y = calloutBox(doc, y, 'To confirm', ex.toConfirm, AM, [254, 249, 231]);
+
+  // What can be done
+  head('Re-costed levers', ex.levers.length ? 'the largest; levers overlap, so they are not added' : 'none could be re-costed');
+  if (ex.levers.length) {
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'plain',
+      head: [['Lever', 'Re-costed on', 'Saves a part']],
+      body: ex.levers.map(l => [l.action, l.basis, `${money(l.savingGbp)} (${l.savingPct.toFixed(1)}%)`]),
+      headStyles: { ...TH.headStyles, fontSize: 6.5, cellPadding: 1.5 },
+      bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 1.3, overflow: 'linebreak' },
+      columnStyles: { 0: { cellWidth: 58, fontStyle: 'bold' }, 1: { cellWidth: 90, textColor: GREY }, 2: { cellWidth: 34, halign: 'right', textColor: GN, fontStyle: 'bold' } },
+      didParseCell: (d) => { if (d.section === 'head' && d.column.index === 2) d.cell.styles.halign = 'right'; },
+    });
+    y = lastFinalY(doc) + 4;
+  }
+  if (ex.leversNotRecosted > 0) {
+    doc.setFontSize(7); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
+    doc.text(`${ex.leversNotRecosted} other suggestion${ex.leversNotRecosted === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ex.leversNotRecosted === 1 ? 'is' : 'are'} not shown.`, MG, y + 2);
+    y += 7;
+  }
+  doc.setFontSize(6.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
+  doc.text(doc.splitTextToSize(ex.sources, CW) as string[], MG, Math.min(y, 278));
+}
+
+/** Shared should-cost report body — §1 through §15 (breakdown, ops, machine
  *  buildup, traceability, uncertainty, sensitivity, regional 10-country
  *  comparison, carbon, insights, DFM/DFA, optimisation, roadmap, scenarios).
  *  Drawn into any jsPDF doc at cursor `y`; returns the new `y`. Used by both
@@ -1995,12 +2092,15 @@ export function renderShouldCostSections(
     y = chk(doc, y, 22);
     y = secBar(doc, y, '§12 — Cost-Reduction Opportunities',
       ranked.pricedCount
-        ? `${ranked.pricedCount} of ${ranked.all.length} re-costed  ·  largest ${c(ranked.headlineSavingPerPart)}/part`
-        : `${ranked.all.length} checks  ·  none re-costed, no saving claimed`);
+        ? `${ranked.pricedCount} lever${ranked.pricedCount === 1 ? '' : 's'} re-costed  ·  largest ${c(ranked.headlineSavingPerPart)}/part`
+        : 'no lever re-costed  ·  no saving claimed');
 
     doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
     {
-      const note = 'Only a lever re-costed through the rate library carries a figure; the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so the column is not summed.';
+      // Only re-costed levers are listed (Nov 2026): a rule-of-thumb lever is counted here, never printed.
+      const note = 'Each lever below was re-costed: its figure is the change in this part\'s total when the lever\'s driver is '
+        + 'changed and the cost stack re-run through the rate book. Levers overlap, so the column is not summed.'
+        + (ranked.notRecostedCount > 0 ? ` ${ranked.notRecostedCount} other suggestion${ranked.notRecostedCount === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ranked.notRecostedCount === 1 ? 'is' : 'are'} not shown.` : '');
       const ls = doc.splitTextToSize(note, CW) as string[];
       doc.text(ls, MG, y); y += ls.length * 4.2 + 5;
     }
@@ -2011,7 +2111,7 @@ export function renderShouldCostSections(
       const rows = ranked.groups.flatMap(g => g.opportunities.map(o => [
         // A priced lever states the assumption it was re-costed on (the "−20%" behind a figure was not printed — Germany review).
         String(++rankNo), g.label, o.action, o.basis + (o.priced && o.recostBasis ? ` Re-costed on: ${o.recostBasis.split(' \u2192 ')[0]}.` : ''),
-        o.priced ? `${c(o.savingPerPart)}` : 'not priced', o.priced ? `${o.savingPct.toFixed(1)}%` : '—', o.timeframe, o.risk,
+        c(o.savingPerPart), `${o.savingPct.toFixed(1)}%`, o.timeframe, o.risk,
       ]));
       const flat = ranked.groups.flatMap(g => g.opportunities);
       autoTable(doc, {
@@ -2048,7 +2148,7 @@ export function renderShouldCostSections(
       y = lastFinalY(doc) + 8;
     } else {
       doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GN);
-      doc.text('No cost-reduction opportunities were triggered by this costing.', MG, y); y += 10;
+      doc.text('No lever could be re-costed for this part, so none is listed.', MG, y); y += 10;
     }
 
     // §13 — where the opportunity sits, by category
@@ -2060,21 +2160,19 @@ export function renderShouldCostSections(
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
         // No category total: levers overlap, and a sum of them is not a saving anyone can bank.
-        head: [['Category', 'Opportunities', 'First action', 'Best re-costed save/part', 'Re-costed']],
+        head: [['Category', 'Levers', 'Largest lever', 'Its save/part']],
         body: ranked.groups.map(g => [
-          g.label, String(g.opportunities.length), g.opportunities[0].action,
-          g.topSavingPerPart > 0 ? c(g.topSavingPerPart) : 'not priced', String(g.opportunities.filter(o => o.priced).length),
+          g.label, String(g.opportunities.length), g.opportunities[0].action, c(g.topSavingPerPart),
         ]),
         theme: 'plain',
         headStyles: { ...TH.headStyles, fontSize: 7 },
         bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
         alternateRowStyles: { fillColor: LIGHT },
         columnStyles: {
-          0: { cellWidth: 38, fontStyle: 'bold' },
-          1: { cellWidth: 22, halign: 'right' },
-          2: { cellWidth: 66, textColor: GREY },
-          3: { cellWidth: 26, halign: 'right', fontStyle: 'bold', textColor: GN },
-          4: { cellWidth: 30, halign: 'right', textColor: GREY },
+          0: { cellWidth: 40, fontStyle: 'bold' },
+          1: { cellWidth: 20, halign: 'right' },
+          2: { cellWidth: 92, textColor: GREY },
+          3: { cellWidth: 30, halign: 'right', fontStyle: 'bold', textColor: GN },
         },
       });
       y = lastFinalY(doc) + 8;
@@ -2119,44 +2217,18 @@ export function renderShouldCostSections(
       y += 2;
     }
 
-    // §15 Roadmap
-    if (dfm.quickWins.length > 0 || dfm.longTermChanges.length > 0) {
-      y = chk(doc, y, 22);
-      y = secBar(doc, y, '§15 — Implementation Roadmap');
-
-      if (dfm.quickWins.length > 0) {
-        doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GN);
-        doc.text('Quick Wins — Implement Immediately', MG, y); y += 6;
-        dfm.quickWins.forEach(w => {
-          y = chk(doc, y, 8);
-          const ls = doc.splitTextToSize(`•  ${w}`, CW - 8) as string[];
-          doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
-          doc.text(ls, MG + 6, y); y += ls.length * 4.5;
-        });
-        y += 4;
-      }
-      if (dfm.longTermChanges.length > 0) {
-        y = chk(doc, y, 16);
-        doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GREY);
-        doc.text('Long-Term Changes — Strategic Investment', MG, y); y += 6;
-        dfm.longTermChanges.forEach(w => {
-          y = chk(doc, y, 8);
-          const ls = doc.splitTextToSize(`•  ${w}`, CW - 8) as string[];
-          doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
-          doc.text(ls, MG + 6, y); y += ls.length * 4.5;
-        });
-      }
-    }
+    // §15 "Implementation Roadmap" (generic quick-win / long-term strings with no arithmetic behind them) was removed
+    // in Nov 2026: §12 already gives each re-costed lever its timeframe and risk.
   } catch {
     // DFM/DFA not available for this commodity — silently skip
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // §16 — Saved Scenarios (only when the user has saved any)
+  // §15 — Saved Scenarios (only when the user has saved any)
   // ════════════════════════════════════════════════════════════════════════
   if (scenarios.length > 0) {
     y = chk(doc, y, 40);
-    y = secBar(doc, y, '§16 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
+    y = secBar(doc, y, '§15 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
       head: [['Scenario', 'Country', 'Total', 'vs this costing', 'Saved']],
@@ -2726,6 +2798,17 @@ export function printPDF(
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of material + process + labour + tooling${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' (bought-in content excluded — it carries a handling charge only)' : ''}   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of the subtotal${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' excl. bought-in' : ''}   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);
 
+
+  // Page 2: the executive summary (Nov 2026) — then the full report from a fresh page.
+  try {
+    const ex = buildExecutiveSummary({
+      result, input, library, commodity: commodityType, region, band: cadMeta.uncertainty ?? null, stamp: cadMeta.stamp ?? null,
+      decisions: cadMeta.checks?.decisions ?? null, volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated,
+    });
+    doc.addPage();
+    renderExecutiveSummaryPage(doc, ex, money);
+    doc.addPage(); y = 18;
+  } catch (e) { console.warn('[report] executive summary not drawn:', e); /* the full report is unaffected */ }
 
   y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary, regionalRows });
 

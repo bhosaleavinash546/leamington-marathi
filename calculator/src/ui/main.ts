@@ -17076,7 +17076,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
               <strong>${ranked.all.length}</strong> ranked ${ranked.all.length === 1 ? 'opportunity' : 'opportunities'} across
               <strong>${ranked.groups.length}</strong> ${ranked.groups.length === 1 ? 'category' : 'categories'} ·
               commodity <strong>${activeCommodity.replace(/_/g, ' ')}</strong><br>
-              <span style="color:var(--text-muted)">Only a lever re-costed through the rate library carries a £ (${ranked.pricedCount} of ${ranked.all.length}); the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so they are not added — the Design to Cost tab re-costs the ones you choose together.</span>
+              <span style="color:var(--text-muted)">Every lever listed was re-costed: its £ is the change in this part's total when its driver is changed and the cost stack re-run.${ranked.notRecostedCount ? ` ${ranked.notRecostedCount} other suggestion${ranked.notRecostedCount === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ranked.notRecostedCount === 1 ? 'is' : 'are'} not shown.` : ''} Levers overlap, so they are not added — the Design to Cost tab re-costs the ones you choose together.</span>
             </div>
           </div>
 
@@ -17094,7 +17094,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
 
           <!-- Ranked opportunities by category -->
           <div style="margin-bottom:8px">
-            <div class="detail-section-title" style="margin-bottom:8px">Cost-reduction opportunities — re-costed ones first, by saving; checks after</div>
+            <div class="detail-section-title" style="margin-bottom:8px">Cost-reduction levers — each re-costed through the stack, by saving; inputs to confirm after</div>
             ${groupsHtml}
           </div>
 
@@ -17346,7 +17346,7 @@ async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews());
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews(), activeCommodity);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
