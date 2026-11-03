@@ -121,7 +121,8 @@ describe('Germany live review (Oct 2026): what the reports print', () => {
   });
   it('the overhead / packaging defaults say they are the UK basis at par, no country factor (3 Nov 2026)', async () => {
     const { shopDefaultsBasis } = await import('../src/engine/regional-rates.js');
-    expect(shopDefaultsBasis('DE')).toMatch(/UK basis at par \(×1, no Germany factor\)/);
+    expect(shopDefaultsBasis('DE')).toMatch(/UK basis at par \(×1\): no Germany overhead share/);
+    expect(shopDefaultsBasis('CN', 'EXW')).not.toMatch(/search results|AT PAR/);
     expect(shopDefaultsBasis('DE', 'EXW')).not.toMatch(/logistics ×/);
     expect(shopDefaultsBasis('UK')).not.toMatch(/multipliers/);
   });

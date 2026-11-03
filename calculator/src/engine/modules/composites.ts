@@ -120,16 +120,16 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   const basisNote = `net ÷ (1 − waste ${(waste * 100).toFixed(0)} %)${rejectUplift > 1 ? ` × reject uplift ${rejectUplift.toFixed(3)}` : ''}`;
   const lines: MaterialLineItem[] = [
     { ref: prepreg ? 'Prepreg' : 'Fibre', description: prepreg ? 'Prepreg (fibre + resin)' : 'Dry fibre fabric',
-      qty: Math.round(boughtNet * grossFactor * 1e4) / 1e4, unitCost: inputs.fibrePricePerKg, pkg: 'kg bought',
+      qty: Math.round(boughtNet * grossFactor * 1e6) / 1e6, unitCost: inputs.fibrePricePerKg, pkg: 'kg bought',
       note: prepreg
         ? `${boughtNet.toFixed(4)} kg net — the cured laminate, fibre + resin (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}`
         : `${fibreMassNet.toFixed(4)} kg net (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}` },
   ];
   if (!prepreg && inputs.resinPricePerKg > 0) {
-    lines.push({ ref: 'Resin', description: 'Infusion / RTM resin', qty: Math.round(resinMassNet * grossFactor * 1e4) / 1e4,
+    lines.push({ ref: 'Resin', description: 'Infusion / RTM resin', qty: Math.round(resinMassNet * grossFactor * 1e6) / 1e6,
       unitCost: inputs.resinPricePerKg, pkg: 'kg bought', note: `${resinMassNet.toFixed(4)} kg net; ${basisNote}` });
   }
-  if (ndiCost > 0) lines.push({ ref: 'NDI', description: 'Non-destructive inspection (C-scan / UT) per part', qty: Math.round(rejectUplift * 1e4) / 1e4, unitCost: ndiCost, note: 'per part × reject uplift' });
+  if (ndiCost > 0) lines.push({ ref: 'NDI', description: 'Non-destructive inspection (C-scan / UT) per part', qty: Math.round(rejectUplift * 1e6) / 1e6, unitCost: ndiCost, note: 'per part × reject uplift' });
 
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',

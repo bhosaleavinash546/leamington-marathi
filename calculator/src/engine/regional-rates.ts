@@ -1062,9 +1062,12 @@ export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms
   const atPar = rd.overheadMultiplier === 1 && rd.packagingMultiplier === 1;
   return (region && region !== 'UK' && atPar
     // no country factor (3 Nov 2026): the held multipliers had no source, so the UK basis stands at par and says so
-    ? `Defaults: overhead 12% and ${sized} — the UK basis at par (×1, no ${rd.name} factor)`
-      + (exw ? '' : `; logistics × ${rd.logisticsMultiplier.toFixed(2)} (delivery to the UK, a held multiplier)`)
-      + `. ${rd.shopMultipliersBasis ?? `No ${rd.name} overhead share or packaging comparator was sourced`}; a typed figure is used as given.`
+    // One statement, said once (7-country review): the config's long basis repeated "at par" and carried a research
+    // aside ("read in search results only") into every report — it stays in the rate book, not on the cost page.
+    ? `Defaults: overhead 12% and ${sized} — the UK basis at par (×1): no ${rd.name} overhead share or packaging`
+      + ` comparator has been sourced, so no country factor is applied`
+      + (exw ? '' : `; logistics × ${rd.logisticsMultiplier.toFixed(2)} (delivery to the UK — a held multiplier, freight lanes not yet researched)`)
+      + `. A typed figure is used as given.`
     : region && region !== 'UK'
     ? `Defaults: the UK basis (overhead 12%, ${sized}) × ${rd.name}'s multipliers — overhead ${f(rd.overheadMultiplier)}, packaging ${f(rd.packagingMultiplier)}`
       + (exw ? '' : `, logistics ${f(rd.logisticsMultiplier)} (delivery to the UK)`)

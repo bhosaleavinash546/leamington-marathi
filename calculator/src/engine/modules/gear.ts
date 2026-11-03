@@ -872,6 +872,12 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
     netWeightKg: inputs.netWeightKg,
     materialUtilization: 1,
     directCost: inputs.blankCostPerPart * rejectUplift,
+    // The blank's arithmetic on the material sheet (7-country review, 3 Nov 2026): the sheet printed "priced by the
+    // commodity module (not weight × £/kg)" over the largest line; the bar × £/kg − chips build-up sat only in the
+    // rule basis. Display only — the line equals directCost.
+    lines: [{ ref: 'Blank', description: 'Blank material per part (bar × £/kg − chips: the blank rule\'s basis)',
+      qty: Math.round(rejectUplift * 1e6) / 1e6, unitCost: inputs.blankCostPerPart,
+      pkg: rejectUplift !== 1 ? `per part${rejectNote}` : 'per part' }],
     ...(a.heatTreatCostPerPart > 0
       ? {
           consumablesCostPerPart: a.heatTreatCostPerPart * rejectUplift,
