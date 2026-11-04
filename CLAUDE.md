@@ -980,6 +980,16 @@ what is true** — nothing here has been compared with a price JLR paid.
   that are the same costing to the penny into one row (`foldSameScopeRows`, `alsoRoutes`); page 1's machining half counts
   only machining / lathe machines (`isMachiningOp` — fettling and blast stay in the casting half).
   `tests/secondary-machining-parity.test.ts`, `tests/secondary-machining-followups.test.ts`.
+- CAD to COST second review (4 Nov 2026, live walk of 15 routes UK / CN / 5k + an independent review; evidence in the session
+  review page). Phase A: no inline event handlers anywhere (the CSP blocks them — `page-actions.ts` / `auth-page.ts`,
+  `tests/no-inline-handlers.test.ts`); casting / forging service questions are asked together (`upFrontServiceRules`); the
+  once-only New stop is visible and never a dead press, untouched pre-ticks are never sent unseen; a country switch shows a
+  labelled placeholder until the new compute is drawn (`recost-pending.ts`); one weight set (`form-weights.ts`, £/kg on the
+  as-cast / as-forged weight); compare routes describes every crossing. Phase B (research `scripts/research/2026-11-phase-b/`):
+  cast-steel / ductile-iron charges on the consumer scrap price; per-region Al scrap differential (`AL_SCRAP_6XXX_BY_REGION`);
+  HSLA = base CR + the published extra, advisory sheet grade question (`sheetGrade`, unanswered = Assumed); forge saw +
+  induction heater (ESTIMATE capex) and draft metal from the kernel's zero-draft faces (IS 3469). Still open from that review:
+  Phase C (£ beside each option, cost card led by piece price, PDF page-1 alerts on screen, DFM on the answered route).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
