@@ -53,10 +53,11 @@ describe('rate book — two machines added through the UK book generator', () =>
   it('the generator config carries both, each with its research row, scope and hours basis', () => {
     const cfg = JSON.parse(readFileSync(new URL('../scripts/rate-refresh/2026-10-uk.json', import.meta.url), 'utf8'));
     const added = cfg.machines.added as Array<{ id: string; capexGbp: number; hours: number; utilisation: number; research: string; hoursBasis: string }>;
-    expect(added.map(a => a.id)).toEqual(['sand-auto-vertical-line', 'fettle-robot-cell']);
+    // the twin-pallet HMC joined them in the review round (4 Nov 2026) — tests/review-round-2026-11-04.test.ts
+    expect(added.map(a => a.id)).toEqual(['sand-auto-vertical-line', 'fettle-robot-cell', 'mach-hmc-400']);
     expect(added[0].capexGbp).toBe(Math.round(3_000_000 / 1.1965));   // Dovre €3.0 M at the book's €1.1965
     expect(added[1].capexGbp).toBe(Math.round(1_634_390 / 5.096));    // KAW-MET zł1,634,390 at zł5.096
-    for (const a of added) {
+    for (const a of added.slice(0, 2)) {
       expect([a.hours, a.utilisation]).toEqual([6000, 0.8]);
       expect(a.hoursBasis).toMatch(/NOT a foundry-specific source/);
     }
@@ -103,30 +104,33 @@ describe('rate book — two machines added through the UK book generator', () =>
 });
 
 describe('P1 / P2 — the line is chosen by moulds a year and mould size; the crew is the line\'s', () => {
-  it('stub axle at 200,000 a year: the automatic vertical line, 9 cored impressions, 250 moulds/h, crew of 3', () => {
+  it('stub axle at 200,000 a year: the automatic vertical line, 4 cored impressions (sand : iron binds), 250 moulds/h, crew of 3', () => {
     const r = rulesFor('PRCR002.stp', 200_000);
     expect(prov(r, 'cam-sand-line').value).toBe('sand-auto-vertical-line');
     expect(prov(r, 'cam-cast-manning').value).toBe(3);
     expect(prov(r, 'cam-cast-manning').basis).toMatch(/Trakya Döküm/);
-    expect(prov(r, 'cam-sand-ct').value).toBe(Math.round(1 / 250 / 9 * 1e6) / 1e6);   // 6 dp below 0.01 h (4 dp cut it 10 %)
+    // review round (4 Nov 2026): 9 fit, the 60 % plate rule allows 6, sand : iron ≥ 5 : 1 allows 4
+    expect(prov(r, 'cam-sand-ct').value).toBe(Math.round(1 / 250 / 4 * 1e6) / 1e6);   // 6 dp below 0.01 h (4 dp cut it 10 %)
     expect(prov(r, 'cam-sand-ct').basis).toMatch(/250 cored moulds\/h \(DISA 270-280/);
     // the threshold is a labelled judgement and the loading is printed
     expect(prov(r, 'cam-sand-line').basis).toMatch(/CostVision engineering judgement, not sourced/);
-    expect(prov(r, 'cam-sand-line').basis).toMatch(/loading 22,222 moulds ÷ 250 moulds\/h = 89 h of the line's 4,800 h/);
+    expect(prov(r, 'cam-sand-line').basis).toMatch(/loading 50,000 moulds ÷ 250 moulds\/h = 200 h of the line's 4,800 h/);
   });
 
-  it('the same part at 1,000 a year stays on the semi-automatic HSP-2D class line, 6 impressions, 60 moulds/h, crew of 4', () => {
+  it('the same part at 1,000 a year stays on the semi-automatic HSP-2D class line, 3 impressions, 60 moulds/h, crew of 4', () => {
     const r = rulesFor('PRCR002.stp', 1_000);
     expect(prov(r, 'cam-sand-line').value).toBe('sand-cast-line');
     expect(prov(r, 'cam-cast-manning').value).toBe(4);
     expect(prov(r, 'cam-cast-manning').basis).toMatch(/not sourced/);
-    expect(prov(r, 'cam-sand-ct').value).toBe(Math.round(1 / 60 / 6 * 1e6) / 1e6);
+    expect(prov(r, 'cam-sand-ct').value).toBe(Math.round(1 / 60 / 3 * 1e6) / 1e6);   // 6 fit, plate 5, sand : iron 3 (review round)
     expect(prov(r, 'cam-sand-ct').basis).toMatch(/HSP-2D/);
   });
 
-  it('the threshold reads moulds on the semi-automatic line: the bracket (12 a mould) changes line between 50k and 200k', () => {
-    expect(prov(rulesFor('Casting_Braket.stp', 50_000), 'cam-sand-line').value).toBe('sand-cast-line');          // 4,167 moulds
-    expect(prov(rulesFor('Casting_Braket.stp', 200_000), 'cam-sand-line').value).toBe('sand-auto-vertical-line'); // 16,667
+  it('the threshold reads moulds on the semi-automatic line: the bracket (10 a mould) changes line between 40k and 50k', () => {
+    // review round (4 Nov 2026): 12 fit the semi-automatic flask, the 60 % plate rule allows 10
+    expect(prov(rulesFor('Casting_Braket.stp', 40_000), 'cam-sand-line').value).toBe('sand-cast-line');          // 4,000 moulds
+    expect(prov(rulesFor('Casting_Braket.stp', 50_000), 'cam-sand-line').value).toBe('sand-auto-vertical-line'); // 5,000
+    expect(prov(rulesFor('Casting_Braket.stp', 200_000), 'cam-sand-line').value).toBe('sand-auto-vertical-line'); // 20,000
   });
 
   it('headless costs the line the rules chose — the moulding op runs on it, with its crew', async () => {
@@ -141,19 +145,19 @@ describe('P1 / P2 — the line is chosen by moulds a year and mould size; the cr
 describe('P3 — pattern life follows the pattern material that is priced', () => {
   it('an aluminium match plate lasts 100,000 moulds (judgement inside the published 10k–150k), × impressions', () => {
     const hi = rulesFor('PRCR002.stp', 200_000);
-    expect(prov(hi, 'cam-hpdc-die-life').value).toBe(100_000 * 9);
-    expect(prov(hi, 'cam-hpdc-die-life').basis).toMatch(/aluminium match-plate life 100,000 moulds × 9/);
+    expect(prov(hi, 'cam-hpdc-die-life').value).toBe(100_000 * 4);   // the review round's impressions
+    expect(prov(hi, 'cam-hpdc-die-life').basis).toMatch(/aluminium match-plate life 100,000 moulds × 4/);
     expect(prov(hi, 'cam-hpdc-die-life').basis).toMatch(/CostVision engineering judgement/);
     expect(prov(hi, 'cam-hpdc-die-life').basis).not.toMatch(/wood-pattern band/);
     const lo = rulesFor('PRCR002.stp', 1_000);
-    expect(prov(lo, 'cam-hpdc-die-life').value).toBe(100_000 * 6);
+    expect(prov(lo, 'cam-hpdc-die-life').value).toBe(100_000 * 3);
   });
 
-  it('the stub axle buys 2 pattern sets over 5 years at 200,000 a year, not 65', async () => {
+  it('the stub axle buys 3 pattern sets over 5 years at 200,000 a year, not 65', async () => {
     const res = await cost('PRCR002.stp', 200_000);
     const items = (res.trace.drivers.tooling.items as Array<{ label: string; sets?: number; gbp: number }>).filter(i => /^Pattern/.test(i.label));
     const sets = items.reduce((s, i) => s + (i.sets ?? 0), 0);
-    expect(sets).toBe(Math.ceil(1_000_000 / 0.97 / 900_000 - 1e-9));
+    expect(sets).toBe(Math.ceil(1_000_000 / 0.97 / 400_000 - 1e-9));   // 4 impressions (review round): 3 sets
   });
 });
 

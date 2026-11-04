@@ -192,8 +192,9 @@ describe('casting cost-input rules', () => {
       // Foundry at volume (3 Nov 2026): the plate carries every impression of the chosen line's mould face — the
       // semi-automatic HSP-2D class 800 × 650 mm (sourced) holds 4 of this 370 × 290 mm impression (it was 1 in the
       // unsourced 500 × 400 flask).
+      // Review round (4 Nov 2026): the 60 % plate rule allows 2 of the 4 that fit (⌊0.6 × 800 × 650 ÷ (370 × 290)⌋).
       expect((sand.suggestions.casting as Record<string, number>).dieMouldCostGBP)
-        .toBe(estimateSandPatternCost({ projectedAreaCm2: area * 4, coreCount: 1 }).total);
+        .toBe(estimateSandPatternCost({ projectedAreaCm2: area * 2, coreCount: 1 }).total);
     });
 
     it('only offers HPDC-specific fields when HPDC is chosen', () => {
@@ -221,9 +222,11 @@ describe('casting cost-input rules', () => {
       // 320 x 240 mm + 50 mm gating = 370 x 290 → four impressions on the semi-automatic line's 800 x 650 mm flask
       // (HWS HSP-2D class, 60 moulds/h — foundry research, 3 Nov 2026; it was one in an unsourced 500 x 400 flask at
       // 30 moulds/h, 1/30 h) → 1/60/4 h. 1,000 a year stays on the semi-automatic line. The kernel said 0.262 h.
-      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.004167);   // 6 dp below 0.01 h, as the screen writes it
+      // Review round (4 Nov 2026): 4 fit, the 60 % plate rule allows ⌊0.6 × 800 × 650 ÷ (370 × 290)⌋ = 2 → 1/60/2 h.
+      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.008333);   // 6 dp below 0.01 h, as the screen writes it
       expect(r.provenance['cast-sand-ct'].source).toBe('geometry');
-      expect(r.provenance['cast-sand-ct'].basis).toContain('4 impression');
+      expect(r.provenance['cast-sand-ct'].basis).toContain('2 impression');
+      expect(r.provenance['cast-sand-ct'].basis).toMatch(/free fit 4 .*60 % plate rule .*→ 2 \(rounded down\).*the 60 % plate rule and sand : iron 5 : 1 bind/);
       expect(r.provenance['cast-sand-ct'].basis).toContain('semi-automatic flask line');
     });
 

@@ -49,7 +49,7 @@ import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
-import { fettlingCellInput } from '../engine/modules/casting-advisor.js';
+import { fettlingCellInput, foundryInput } from '../engine/modules/casting-advisor.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
   computeGearDrivers, analyseGear, validateGearInputs, effectiveHardeningRoute, type GearInputs,
@@ -4657,6 +4657,12 @@ function renderCastingForm(): string {
       <div class="field-group"><label title="Radiography for safety-critical castings. 2D X-ray £5/part, CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cast-ndt" step="0.5" min="0" value="0"/></div>
       <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cast-leak-sec" step="5" min="0" value="0"/></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="New sand bought and the same tonnage of spent sand disposed of, £ per tonne POURED (green-sand route). CAD rules: 15 % of the poured weight (10–20 %, EU JRC SF BREF 2024) × (€45 + €43)/t (DE UBA 2014) ÷ €1.1965/£ = £11.03/t poured in the UK, × the country's factor elsewhere. 0 = none.">New sand + disposal (£/t poured) ⓘ</label><input type="number" id="cast-new-sand" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Ladle preheat, kWh of gas per tonne of liquid metal poured (sand / gravity). CAD rules: iron 100 (50–150), steel 200 (100–300) — EU BAT levels; natural gas assumed. Priced at the country's gas tariff. 0 = none.">Ladle preheat (kWh/t poured) ⓘ</label><input type="number" id="cast-ladle-kwh" step="10" min="0" value="0"/></div>
+      <div class="field-group"><label title="Dust extraction / off-gas cleaning, kWh of electricity per tonne of good casting (iron / steel, sand / gravity). CAD rules: 20 kWh/t (German data in the EU JRC SF BREF 2024). 0 = none.">Dust extraction (kWh/t good) ⓘ</label><input type="number" id="cast-dust-kwh" step="5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Other plant electricity beyond melting and holding (sand plant, moulding, cleaning, air), kWh per tonne of good casting — ferrous green sand. CAD rules: 455 kWh/t, an ESTIMATE inferred from a US DOE 2003 ductile-iron plant (0.45–0.50 kWh/kg less the dust extraction). 0 = none.">Plant electricity (kWh/t good) ⓘ</label><input type="number" id="cast-plant-kwh" step="10" min="0" value="0"/></div>
+    </div>
     <!-- HPDC -->
     <div id="cast-hpdc" class="cast-section">
       <div class="section-title" style="margin-top:8px">HPDC — High Pressure Die Casting</div>
@@ -5557,6 +5563,12 @@ function renderCastAndMachineForm(): string {
       <div class="field-group"><label title="Fettling on a robotic grinding cell instead of the bench, seconds per casting (the cell's machine time plus half an operator). Set by the CAD rules for a ferrous casting up to 30 kg off the automatic moulding line: 40 s (published time study). 0 = bench fettling.">Fettling cell (s/part) ⓘ</label><input type="number" id="cam-fettle-cell-sec" step="1" min="0" value="0" title="Robotic grinding cell seconds per casting. 0 = bench fettling."/></div>
       <div class="field-group"><label title="Radiography for safety-critical castings. Engine defaults: 2D X-ray £5/part, industrial CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cam-ndt" step="0.5" min="0" value="0" title="X-ray / CT per casting. 0 = none."/></div>
       <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cam-leak-sec" step="5" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="New sand bought and the same tonnage of spent sand disposed of, £ per tonne POURED (green-sand route). CAD rules: 15 % of the poured weight (10–20 %, EU JRC SF BREF 2024) × (€45 + €43)/t (DE UBA 2014) ÷ €1.1965/£ = £11.03/t poured in the UK, × the country's factor elsewhere. 0 = none.">New sand + disposal (£/t poured) ⓘ</label><input type="number" id="cam-new-sand" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Ladle preheat, kWh of gas per tonne of liquid metal poured (sand / gravity). CAD rules: iron 100 (50–150), steel 200 (100–300) — EU BAT levels; natural gas assumed. Priced at the country's gas tariff. 0 = none.">Ladle preheat (kWh/t poured) ⓘ</label><input type="number" id="cam-ladle-kwh" step="10" min="0" value="0"/></div>
+      <div class="field-group"><label title="Dust extraction / off-gas cleaning, kWh of electricity per tonne of good casting (iron / steel, sand / gravity). CAD rules: 20 kWh/t (German data in the EU JRC SF BREF 2024). 0 = none.">Dust extraction (kWh/t good) ⓘ</label><input type="number" id="cam-dust-kwh" step="5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Other plant electricity beyond melting and holding (sand plant, moulding, cleaning, air), kWh per tonne of good casting — ferrous green sand. CAD rules: 455 kWh/t, an ESTIMATE inferred from a US DOE 2003 ductile-iron plant (0.45–0.50 kWh/kg less the dust extraction). 0 = none.">Plant electricity (kWh/t good) ⓘ</label><input type="number" id="cam-plant-kwh" step="10" min="0" value="0"/></div>
     </div>
     ${renderSurfaceFinishingSection('cam', 'casting')}`;
 }
@@ -13265,6 +13277,9 @@ function collectCastingInput(): UniversalStackInput {
     leakTestSec: num('cast-leak-sec') || undefined,
     fettlingMinutes: num('cast-fettle-min') || undefined,
     fettlingCell: fettlingCellInput(num('cast-fettle-cell-sec')),
+    // Foundry indirect costs (review round, 4 Nov 2026) — the same input headless builds (foundryInput).
+    foundry: foundryInput({ newSandGbpPerTPoured: num('cast-new-sand'), ladlePreheatKwhPerT: num('cast-ladle-kwh'),
+      dustExtractionKwhPerT: num('cast-dust-kwh'), plantElectricityKwhPerT: num('cast-plant-kwh') }),
     heatTreatCostPerKg: num('cast-ht-cost') || undefined,
     shotBlastCostPerPart: num('cast-shot-blast') || undefined,
     impregnationCostPerPart: num('cast-impreg') || undefined,
@@ -14247,6 +14262,8 @@ function collectCastAndMachineInput(): UniversalStackInput {
     deburringCostPerPart: num('cam-fettle') || undefined,
     fettlingMinutes: num('cam-fettle-min') || undefined,
     fettlingCell: fettlingCellInput(num('cam-fettle-cell-sec')),
+    foundry: foundryInput({ newSandGbpPerTPoured: num('cam-new-sand'), ladlePreheatKwhPerT: num('cam-ladle-kwh'),
+      dustExtractionKwhPerT: num('cam-dust-kwh'), plantElectricityKwhPerT: num('cam-plant-kwh') }),
     melt: {},   // melt kWh are priced by the engine at the selected country's tariff (module-energy.ts)
     leakTestSec: num('cam-leak-sec') || undefined,
     ndtCostPerPart: num('cam-ndt') || undefined,

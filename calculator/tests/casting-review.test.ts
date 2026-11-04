@@ -93,13 +93,15 @@ describe('2. melting is charged on every kg poured', () => {
 });
 
 describe('3. the sand line is timed per mould, shared by its impressions', () => {
-  it('fits twelve Casting Brackets on the semi-automatic line\'s 800 × 650 flask and charges ~5 s of line time each', () => {
+  it('times the Casting Bracket on the line the impressions limits choose (~1 s of line time each)', () => {
     // Foundry at volume (3 Nov 2026): the semi-automatic line is the HWS HSP-2D class (800 × 650 mm, 60 moulds/h —
     // sourced) where it was an unsourced 500 × 400 flask at 30 moulds/h (4 a mould, 0.0083 h). 1/60/12 h, to 6 dp.
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.subtype).toBe('sand');
-    expect(c.cycleTimeSandGravHr).toBe(0.001389);  // 6 dp below 0.01 h, as the screen writes it; was 0.1846 h — 11 minutes of line time a part
+    // Review round (4 Nov 2026): the semi-automatic flask fits 12 but the 60 % plate rule allows 10 — 5,000 moulds a year at
+    // 50,000 castings, the automatic line's threshold: 12 a 950 × 700 mould (plate rule; 20 fit), 280 uncored moulds/h.
+    expect(c.cycleTimeSandGravHr).toBe(Math.round(1 / 280 / 12 * 1e6) / 1e6);  // 6 dp below 0.01 h, as the screen writes it; was 0.1846 h — 11 minutes of line time a part
   });
 
   it('packs impressions either way round and never fewer than one fit', () => {
@@ -117,7 +119,9 @@ describe('4. the route the screen printed is now the route that is costed', () =
   it('a steel sand casting is fettled, normalised and blasted', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
     const c = r.suggestions.casting as Record<string, number>;
-    expect(c.fettlingMinutes).toBe(6);
+    // off the automatic line (review round impressions) a 3 kg steel casting is fettled on the robotic cell, not the bench
+    expect(c.fettlingMinutes).toBe(0);
+    expect(c.fettlingCellSec).toBe(40);
     expect(c.heatTreatCostPerKg).toBe(0.35);
     expect(c.shotBlastCostPerPart).toBe(0.2516);   // 4 dp, not the UK penny (7-country review)   // blasted AS CAST, 3.04 kg (arithmetic audit C2; it was sized on the 2.5 kg finished part) ÷ 600 kg/h × (blast + operator)
     expect(c.ndtCostPerPart).toBe(0);
@@ -236,7 +240,7 @@ describe('B. melt energy is priced at the region the part is costed in', () => {
 describe('C. a sand line is run by a crew', () => {
   it('manning 4 on sand, 1 on a die-casting cell', () => {
     const sand = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
-    expect((sand.suggestions.casting as Record<string, number>).manning).toBe(4);
+    expect((sand.suggestions.casting as Record<string, number>).manning).toBe(3);   // the automatic line's crew (review-round impressions)
     const grav = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('PRCR002.stp', { ...ANSWERS, 'material.family': 'aluminium' }));
     expect((grav.suggestions.casting as Record<string, number>).manning).toBe(1);
   });

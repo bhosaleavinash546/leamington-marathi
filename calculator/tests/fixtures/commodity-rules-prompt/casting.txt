@@ -23,6 +23,9 @@ CASTING COST INPUT RULES:
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
+  ladlePreheatKwhPerT=0  [aluminium — ladle preheat is sourced for iron and steel foundries only (EU JRC SF BREF 2024, BAT-AEPL Tables 4.1 (iron) and 4.2 (steel), kWh per tonne of liquid metal); NOT costed for this metal — deterministic, use verbatim]
+  dustExtractionKwhPerT=0  [aluminium — the dust-extraction figure is an iron / steel foundry's (German data restated in the EU JRC SF BREF 2024 §2.3.8.1 (flue-gas cleaning ~20 kWh per tonne of good casting)); NOT costed for this metal — deterministic, use verbatim]
+  plantElectricityKwhPerT=0  [gravity aluminium — the plant-electricity figure is a green-sand iron plant's; NOT costed for this route / metal. NOT costed (no published price found): furnace and ladle refractory (8–9 kg/t molten on induction, 1994 data — no current price), the metallurgical lab a melt, the pouring and sand-plant crew beyond the moulding-line crew and the melt shop's operator-hours, bentonite and coal-dust additions (bentonite €228/t is published, no consumption a tonne poured), and on steel castings riser cut-off, weld repair and steel refractory wear — deterministic, use verbatim]
   finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | E-coat / KTL (zirconium pre-treat) | Powder coat (iron phosphate pre-treat) | Vibratory mass finish (deburr))
   finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
   finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]

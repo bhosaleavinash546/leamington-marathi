@@ -61,12 +61,14 @@ describe('optimiseMachiningRouting — the cheapest capable routing wins, with t
   it('axisymmetric part: turning-led routing wins on the cheapest capable lathe', () => {
     const r = optimiseMachiningRouting({
       millingHr: 0.20, drillHr: 0.03,
-      principalDirections: 2, axisymmetric: true,
+      // Review round (4 Nov 2026): the CNC lathe's capex is a UK award (£135,041 — £12.16/h, the VF-2 £9.05/h), so with the
+      // milling hours taken equal to the turning hours a 2-direction part now mills cheaper on the VF-2; a 4-direction
+      // axisymmetric part (5 milling + drilling fixturings against the lathe's 2) is still turned.
+      principalDirections: 4, axisymmetric: true,
       bboxSortedMm: [400, 120, 120], batchSize: 1000,
     });
-    // turned: 0.2×40 + 0.03×30 + 2×0.75×40/1000 + 2×(0.8/60)×40 = 8+0.9+0.06+1.067 = 10.027
     expect(r.chosen.label).toBe('turned');
-    expect(r.chosen.primaryMachineId).toBe('mach-lathe-cnc');   // £40 beats the £50 Mazak
+    expect(r.chosen.primaryMachineId).toBe('mach-lathe-cnc');   // £12.16/h beats the Mazak QT200's £16.97/h
     const lathe = R('mach-lathe-cnc');
     expect(r.chosen.costPerPart).toBeCloseTo(0.2 * lathe + 0.03 * R('mach-drill') + 2 * 0.75 * lathe / 1000 + 2 * H * lathe, 2);
   });

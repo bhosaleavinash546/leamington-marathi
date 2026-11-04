@@ -60,6 +60,8 @@ export interface CastAndMachineInputs {
   fettlingCell?: CastingInputs['fettlingCell'];
   /** Melt shop overrides — see CastingInputs.melt. */
   melt?: CastingInputs['melt'];
+  /** Foundry indirect costs (new sand, ladle preheat, dust extraction, plant electricity) — see CastingInputs.foundry. */
+  foundry?: CastingInputs['foundry'];
   leakTestSec?: number;
   /** Non-destructive test (X-ray/CT) cost per part — safety-critical porosity screening */
   ndtCostPerPart?: number;
@@ -129,6 +131,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     ...(inputs.fettlingMinutes ? { fettlingMinutes: inputs.fettlingMinutes } : {}),
     ...(inputs.fettlingCell ? { fettlingCell: inputs.fettlingCell } : {}),
     ...(inputs.melt ? { melt: inputs.melt } : {}),
+    ...(inputs.foundry ? { foundry: inputs.foundry } : {}),
     ...(inputs.leakTestSec ? { leakTestSec: inputs.leakTestSec } : {}),
     ...(inputs.surfaceFinishing ? { surfaceFinishing: inputs.surfaceFinishing } : {}),
   });

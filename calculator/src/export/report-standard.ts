@@ -94,10 +94,21 @@ const CASTING_DRIVERS: KeyDriver[] = [
   { name: 'Machining fixtures', match: /mach[\s-]?tooling|machining fixtures/i, question: 'How many fixtures, and their price?' },
 ];
 
+/**
+ * Foundry costs the research could not price (review round, 4 Nov 2026 — casting-melt.ts FOUNDRY_NOT_COSTED): a gap in
+ * the cost model a foundry WILL charge, never invented. The new sand, ladle preheat, dust extraction and plant electricity
+ * ARE costed (named rules).
+ */
+const FOUNDRY_NOT_MODELLED = 'Foundry costs no published price was found for — furnace and ladle refractory, the metallurgical '
+  + 'lab a melt, the pouring and sand-plant crew, bentonite and coal dust on green sand; on steel castings riser cut-off, weld repair and steel '
+  + 'refractory wear: not in this price — a foundry will charge them (a gap in the cost model, not an item you can exclude; ask '
+  + 'for them on the quotation).';
+
 const STANDARDS: Record<string, CommodityReportStandard> = {
   cast_and_machine: {
     keyDrivers: CASTING_DRIVERS,
     notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), DUCTILE_TEST_BARS, ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
+    notModelled: [FOUNDRY_NOT_MODELLED],
     quoteBreakdown: ['Casting price a part and £/kg as cast, ex-foundry', 'Metal charge £/kg and the index it follows',
       'Poured kg and yield', 'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, blast and NDT cost a casting',
       'Machining cycle by operation and machine class', 'Machine and labour £/h', 'Tooling investment separate from the piece price', 'Overhead and margin %'],
@@ -107,6 +118,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
   casting: {
     keyDrivers: CASTING_DRIVERS,
     notIncluded: [...LAUNCH, ni('Machining of features left as-cast'), DUCTILE_TEST_BARS, ni('Heat treatment certificate'), ni('Heat treatment, if the specification calls for it', HEAT_TREAT_COSTED), ni('X-ray / UT, if specified', /x-?ray|ultrason|\bUT\b/i), ni('Coating', /coat|paint|plat/i, BARE), ni('Rust preventive', /rust|oil|coat|paint/i), ni('Part marking / traceability', /mark/i), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
+    notModelled: [FOUNDRY_NOT_MODELLED],
     quoteBreakdown: ['Casting price a part and £/kg as cast', 'Metal charge £/kg and the index it follows', 'Poured kg and yield',
       'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, heat treatment, blast and NDT cost a casting',
       'Moulding line, moulds an hour, impressions and crew', 'Overhead and margin %'],

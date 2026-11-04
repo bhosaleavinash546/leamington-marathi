@@ -64,7 +64,9 @@ describe('1. the bracket: the casting route = cast + machine, to the penny', () 
       // review, 4 Nov 2026 — on this recorded geometry they stand alone; with the kernel's axis lines they ride their holes)
       // (8.22 once the recorded geometry carries the kernel's axis lines: the 1 mm lands ride their holes as stepped bores)
       const axes = ((rec(BRACKET).geometry as { featureTable?: Array<{ axes?: unknown[] }> }).featureTable ?? []).some(r => r.axes?.length);
-      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 8.22 : 8.80, 2);
+      // Review round (4 Nov 2026): 8.22 → 9.14 — the foundry indirect lines (new sand, ladle preheat, dust extraction, plant
+      // electricity), 12 impressions (the 60 % plate rule) for 20, the HMC at £300,000
+      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 9.14 : 8.80, 2);
     }, 60_000);
   }
 

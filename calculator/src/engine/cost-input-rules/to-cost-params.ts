@@ -58,7 +58,7 @@ const MACHINABILITY_FOR_CEILING: Partial<Record<MaterialFamily, number>> = {
 };
 import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
 import { rubberProcFromSuggestion } from '../modules/rubber-advisor.js';
-import { fettlingCellInput } from '../modules/casting-advisor.js';
+import { fettlingCellInput, foundryInput } from '../modules/casting-advisor.js';
 import { estimateClampingTonnage, pickIMMPressId } from '../modules/injection-moulding.js';
 import type { MaterialFamily } from '../material-family.js';
 
@@ -406,6 +406,12 @@ export function toCostParams(
     };
   }
 
+  /** The foundry indirect lines the rules decided (review round, 4 Nov 2026) — the screen builds the same input. */
+  function foundryIndirectInput(c: NonNullable<CostInputs['casting']>) {
+    return foundryInput({ newSandGbpPerTPoured: num(c.newSandGbpPerTPoured), ladlePreheatKwhPerT: num(c.ladlePreheatKwhPerT),
+      dustExtractionKwhPerT: num(c.dustExtractionKwhPerT), plantElectricityKwhPerT: num(c.plantElectricityKwhPerT) });
+  }
+
   /** The post-cast route the rules decided, as `casting` module inputs. */
   function postCast(c: NonNullable<CostInputs['casting']>): Record<string, unknown> {
     const out: Record<string, unknown> = {};
@@ -413,6 +419,8 @@ export function toCostParams(
     // Foundry at volume (3 Nov 2026): the robotic fettling cell — the screen builds the same input (fettlingCellInput).
     const cell = fettlingCellInput(num(c.fettlingCellSec));
     if (cell) out.fettlingCell = cell;
+    const fi = foundryIndirectInput(c);
+    if (fi) out.foundry = fi;
     if (num(c.heatTreatCostPerKg) > 0) out.heatTreatCostPerKg = num(c.heatTreatCostPerKg);
     if (num(c.shotBlastCostPerPart) > 0) out.shotBlastCostPerPart = num(c.shotBlastCostPerPart);
     if (num(c.impregnationCostPerPart) > 0) out.impregnationCostPerPart = num(c.impregnationCostPerPart);
@@ -506,6 +514,7 @@ export function toCostParams(
           ...castingSubtypeBlock(c, finished),
           ...(num(c.fettlingMinutes) > 0 ? { fettlingMinutes: num(c.fettlingMinutes) } : {}),
           ...(fettlingCellInput(num(c.fettlingCellSec)) ? { fettlingCell: fettlingCellInput(num(c.fettlingCellSec)) } : {}),
+          ...(foundryIndirectInput(c) ? { foundry: foundryIndirectInput(c) } : {}),
           ...(num(c.heatTreatCostPerKg) > 0 ? { heatTreatmentCostPerKg: num(c.heatTreatCostPerKg) } : {}),
           ...(num(c.shotBlastCostPerPart) > 0 ? { shotBlastCostPerPart: num(c.shotBlastCostPerPart) } : {}),
           ...(num(c.impregnationCostPerPart) > 0 ? { impregnationCostPerPart: num(c.impregnationCostPerPart) } : {}),

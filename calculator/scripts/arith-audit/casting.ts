@@ -26,6 +26,10 @@
  * (≥ 5,000 → the automatic vertical line, when an impression fits its mould), each line with its own face, rated
  * output and crew; a ferrous casting ≤ 30 kg off the automatic line is fettled on the robotic cell (40 s, ½ operator);
  * the aluminium pattern lasts 100,000 moulds. Written out again below from the stated bases.
+ *
+ * Review round (4 Nov 2026): impressions are the smallest of the free fit, the 60 % plate rule and (iron) sand : iron ≥ 5 : 1;
+ * the foundry indirect lines — new sand + disposal (£/t poured), ladle preheat (gas kWh/t poured), dust extraction and other
+ * plant electricity (kWh/t good casting) — are written out again below from their bases.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -58,7 +62,16 @@ const REJECT = 0.03, OEE = 0.8, LAB_EFF = 0.92;               // SHOP_DEFAULTS (
 const OVERHEAD = 0.12, MARGIN = 0.08;
 const YIELD_BAND: Record<string, [number, number]> = { steel: [0.45, 0.60], 'ductile-iron': [0.55, 0.70] };
 const MELT: Record<string, { loss: number; kwh: number }> = { steel: { loss: 0.03, kwh: 0.70 }, 'ductile-iron': { loss: 0.03, kwh: 0.62 } };
-const MELT_LABOUR_H_PER_T = 1.5, GREEN_SAND_GBP_PER_KG = 0.01;
+const MELT_LABOUR_H_PER_T = 1.5;
+// Foundry indirect lines (review round, 4 Nov 2026), as the four rules' bases print them: new sand 15 % of the poured
+// weight × (€45 sand + €43 disposal) ÷ €1.1965/£; ladle preheat (gas) a tonne poured; dust extraction 20 and other plant
+// electricity 0.475 − 0.020 kWh/kg a tonne of good casting (plant on SAND castings only).
+const NEW_SAND_GBP_PER_T_POURED = Math.round(0.15 * (45 + 43) / 1.1965 * 10_000) / 10_000;
+const LADLE_KWH_PER_T: Record<string, number> = { steel: 200, 'ductile-iron': 100 };
+const DUST_KWH_PER_T = 20, PLANT_KWH_PER_T = 475 - 20;
+// Impressions (review round): the smallest of the free fit, ⌊0.60 × face ÷ cell⌋ and, on iron, ⌊mould sand ÷ (5 × pour + cavity sand)⌋
+// with the mould T = depth along the draw + 70 mm and green sand at 1,500 kg/m³ (the one unsourced figure, printed as such).
+const PLATE_SHARE = 0.60, SAND_BETWEEN_MM = 70, SAND_TO_IRON = 5, SAND_KG_PER_M3 = 1500;
 const MARGIN_MM = 50;
 // The two line classes (rated output at 200 mm mould thickness; crew) and the line threshold — as the bases print them.
 const LINES = {
@@ -148,9 +161,18 @@ for (const c of CASES) {
   const lost = (pour - castUsed) * melt.loss;
   const rm = T.drivers.rawMaterial;
   check('material utilisation (part ÷ part + melt loss)', rm.materialUtilization, castUsed / (castUsed + lost), { rel: 0.0001 });
-  check('melt energy, kWh (pour × kWh/kg)', rm.energyKwh.electricity, pour * melt.kwh, { rel: 0.0001 });
+  // Electricity: melt on every kg poured + dust extraction and other plant electricity on every kg of good casting;
+  // gas: ladle preheat on every kg poured (review round, 4 Nov 2026).
+  const elecKwh = pour * melt.kwh + castUsed * (DUST_KWH_PER_T + PLANT_KWH_PER_T) / 1000;
+  const gasKwh = pour * LADLE_KWH_PER_T[c.alloy] / 1000;
+  check('electricity, kWh (pour × melt kWh/kg + good casting × (20 + 455) kWh/t)', rm.energyKwh.electricity, elecKwh, { rel: 0.0001 });
+  check('gas, kWh (pour × ladle preheat kWh/t)', rm.energyKwh.gas ?? 0, gasKwh, { rel: 0.0001 });
+  check('rule: new sand £/t poured (0.15 × (€45 + €43) ÷ 1.1965)', pv(pre + 'new-sand'), NEW_SAND_GBP_PER_T_POURED, { abs: 0.00005 });
+  check('rule: ladle preheat kWh/t (iron 100, steel 200)', pv(pre + 'ladle-kwh'), LADLE_KWH_PER_T[c.alloy], { abs: 0 });
+  check('rule: dust extraction kWh/t', pv(pre + 'dust-kwh'), DUST_KWH_PER_T, { abs: 0 });
+  check('rule: other plant electricity kWh/t (0.475 − 0.020 kWh/kg)', pv(pre + 'plant-kwh'), PLANT_KWH_PER_T, { abs: 0 });
   const metalGbp = (castUsed + lost) * mat.pricePerKg;                                   // no scrap credit: loss is gone
-  const energyGbp = pour * melt.kwh * tariff.electricityPerKwh;
+  const energyGbp = elecKwh * tariff.electricityPerKwh + gasKwh * tariff.gasPerKwh;
 
   // ── 3. Per-part consumables and services ──
   const items = new Map<string, number>((rm.consumablesItems ?? []).map((i: { label: string; gbp: number }) => [i.label.replace(/ \(.*$/, ''), i.gbp]));
@@ -158,7 +180,8 @@ for (const c of CASES) {
   const sealed = geo.topology?.available && geo.topology.enclosesSealedVoid === true;
   const corePerPart = sealed ? 6 : under >= 20 ? 3 : under >= 6 ? 1.5 : under >= 1 ? 0.75 : 0;
   check('cores £ (band by undercut faces × reject uplift)', items.get('cores') ?? 0, corePerPart * uplift);
-  check('green-sand additions £ (pour × £0.01/kg)', items.get('green-sand additions') ?? 0, pour * GREEN_SAND_GBP_PER_KG);
+  check('new sand + disposal £ (pour × £/t ÷ 1,000)', items.get('new sand + disposal') ?? 0, pour * NEW_SAND_GBP_PER_T_POURED / 1000);
+  check('no engineering-typical green-sand line beside it', items.has('green-sand additions') ? 1 : 0, 0, { abs: 0 });
   check('heat treatment £ (rate × as-cast kg)', items.get('heat treatment') ?? 0, HT_GBP_PER_KG[c.alloy] * castUsed);
   // Shot blast: the CASTING is blasted (before machining) — its as-cast mass.
   const blast = Math.max(BLAST_MIN, Math.round(castKg / BLAST_KG_PER_HR * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000);
@@ -173,7 +196,21 @@ for (const c of CASES) {
   const ax = (geo.draftAnalysis?.drawDirectionXYZ ?? []).findIndex((v: number) => Math.abs(v) > 0.99);
   const across = ax >= 0 ? dims.filter((_, i) => i !== ax) : [...dims].sort((p, q) => q - p).slice(0, 2);
   const L = Math.max(...across) + MARGIN_MM, W = Math.min(...across) + MARGIN_MM;
-  const fitOn = (F: readonly number[]) => Math.max(Math.floor(F[0] / L) * Math.floor(F[1] / W), Math.floor(F[0] / W) * Math.floor(F[1] / L));
+  const depth = ax >= 0 ? dims[ax] : Math.min(...dims);
+  const freeFit = (F: readonly number[]) => Math.max(Math.floor(F[0] / L) * Math.floor(F[1] / W), Math.floor(F[0] / W) * Math.floor(F[1] / L));
+  // The review round's limits: plate 60 % (gating = the margin), and on iron sand : iron ≥ 5 : 1 at T = depth + 70 mm.
+  const fitOn = (F: readonly number[]) => {
+    const fit = freeFit(F);
+    if (fit < 1) return 0;
+    const plate = Math.floor(PLATE_SHARE * F[0] * F[1] / (L * W) + 1e-9);
+    let sandIron = Infinity;
+    if (c.alloy === 'ductile-iron') {
+      const pourImp = castKg / y;                                                       // as cast ÷ the yield costed
+      const mouldKg = F[0] * F[1] * (depth + SAND_BETWEEN_MM) * 1e-9 * SAND_KG_PER_M3;
+      sandIron = Math.floor(mouldKg / (SAND_TO_IRON * pourImp + pourImp / mat.densityKgPerM3 * SAND_KG_PER_M3) + 1e-9);
+    }
+    return Math.max(1, Math.min(fit, plate, sandIron));
+  };
   const impsSemi = fitOn(LINES.semi.face), impsAuto = fitOn(LINES.auto.face);
   const onAuto = impsAuto >= 1 && ANNUAL / Math.max(1, impsSemi) >= AUTO_MIN_MOULDS;
   const line = onAuto ? LINES.auto : LINES.semi;
@@ -274,7 +311,7 @@ for (const c of CASES) {
   check('tooling £ / part (total ÷ annual × years)', res.breakdown.tooling, toolingTotal / AMORT, { abs: 0.00005 });
 
   // ── 7. The eight buckets ──
-  const consumables = (items.get('cores') ?? 0) + (items.get('green-sand additions') ?? 0) + (items.get('heat treatment') ?? 0)
+  const consumables = (items.get('cores') ?? 0) + (items.get('new sand + disposal') ?? 0) + (items.get('heat treatment') ?? 0)
     + (items.get('shot blast') ?? 0) + (items.get('NDT') ?? 0) + (items.get('cutting-tool wear') ?? 0);
   const matB = metalGbp + energyGbp + consumables;
   const procB = mould.processCost + (onCell ? fettle.processCost : 0) + machProc;

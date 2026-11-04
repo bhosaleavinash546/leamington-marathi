@@ -230,6 +230,12 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   // Foundry at volume (3 Nov 2026): the moulding line chosen and the robotic fettling cell's seconds.
   'casting.sandLineId': { to: 'casting.sandLineId' },
   'casting.fettlingCellSec': { to: 'casting.fettlingCellSec' },
+  // Foundry indirect costs as named lines (review round, 4 Nov 2026): new sand £/t poured; ladle preheat, dust extraction
+  // and plant electricity kWh/t — the module turns them into the material line and kWh for the core.
+  'casting.newSandGbpPerTPoured': { to: 'casting.newSandGbpPerTPoured' },
+  'casting.ladlePreheatKwhPerT': { to: 'casting.ladlePreheatKwhPerT' },
+  'casting.dustExtractionKwhPerT': { to: 'casting.dustExtractionKwhPerT' },
+  'casting.plantElectricityKwhPerT': { to: 'casting.plantElectricityKwhPerT' },
   'casting.heatTreatCostPerKg': { to: 'casting.heatTreatCostPerKg' },
   'casting.shotBlastCostPerPart': { to: 'casting.shotBlastCostPerPart' },
   'casting.impregnationCostPerPart': { to: 'casting.impregnationCostPerPart' },

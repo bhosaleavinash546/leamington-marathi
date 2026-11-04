@@ -19,6 +19,7 @@
  * listed so the table is complete, and left as typed.
  */
 import { countryFactor, type CountryBasis } from '../engine/regional-services.js';
+import { NEW_SAND_BASIS } from '../engine/casting-melt.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 
 /** A form's £ figure that only a supplier can state — not scaled, listed for completeness. */
@@ -53,6 +54,8 @@ export const FIELD_BASIS: Record<string, FieldBasis> = {
   'pcba-rework-cost': 'process', 'rm-powder-adder': 'process', 'paint-colour-cost': 'process',
   // Cores, wax, shell
   'cast-sand-core': CORE, 'cam-sand-core': CORE,
+  // New sand + disposal, £/t poured (review round, 4 Nov 2026): the CAD rule's basis — sand traded, disposal a local service
+  'cast-new-sand': NEW_SAND_BASIS, 'cam-new-sand': NEW_SAND_BASIS,
   'cast-inv-wax': INVEST, 'cast-inv-shell': INVEST, 'cam-inv-wax': INVEST, 'cam-inv-shell': INVEST,
   // Process chemicals
   'pcba-coat-price': 'chemical', 'rub-primer': 'chemical',

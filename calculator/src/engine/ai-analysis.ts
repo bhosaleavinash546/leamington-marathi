@@ -482,6 +482,12 @@ export interface CADAnalysisResult {
       /** Foundry at volume (3 Nov 2026): the moulding line chosen, and the robotic fettling cell's seconds a casting. */
       sandLineId?: string;
       fettlingCellSec?: number;
+      /** Foundry indirect costs (review round, 4 Nov 2026): new sand + disposal £/t poured; ladle preheat kWh/t poured;
+       *  dust extraction and other plant electricity kWh/t of good casting. */
+      newSandGbpPerTPoured?: number;
+      ladlePreheatKwhPerT?: number;
+      dustExtractionKwhPerT?: number;
+      plantElectricityKwhPerT?: number;
       heatTreatCostPerKg?: number;
       shotBlastCostPerPart?: number;
       impregnationCostPerPart?: number;

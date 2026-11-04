@@ -108,8 +108,9 @@ describe('A4 — the melt shop is in the process order and its figures are print
     const pour = 3 / 0.97 / 0.5;
     expect(d.operations.find(o => /^Melt shop/.test(o.operationName))!.operationName)
       .toContain(`${pour.toFixed(2)} kg poured × 1.5 operator-h/t`);
-    expect(d.rawMaterial.consumablesItems!.find(i => /^green-sand/.test(i.label))!.label)
-      .toContain(`${pour.toFixed(2)} kg poured × £0.01/kg`);
+    // the engineering-typical £0.01/kg green-sand line is gone: these hand-built inputs set no `foundry` rates, so there is
+    // no sand line at all (review round, 4 Nov 2026 — the rules' sourced new-sand line replaced it)
+    expect(d.rawMaterial.consumablesItems?.find(i => /green-sand|new sand/.test(i.label))).toBeUndefined();
     const basis = d.rawMaterial.energyKwh!.basis!;
     expect(basis).toContain(`${pour.toFixed(3)} kg poured`);
     expect(basis).toContain('× 0.7 kWh/kg');
@@ -129,7 +130,9 @@ describe('A5 — every constant that moves a real part says what it is', () => {
     expect(b('cam-ht-cost')).toMatch(/stress-relieve \/ normalise rate.*not sourced/);
     expect(b('cam-shot-blast')).toMatch(/engineering-typical, not sourced/);
     expect(b('cam-cast-yield')).toMatch(/not sourced/);
-    expect(b('cam-cast-manning')).toMatch(/not sourced/);
+    // Review round (4 Nov 2026): at 50,000 a year the bracket's 10 impressions on the semi-automatic line (the 60 % plate
+    // rule) make 5,000 moulds — the automatic line, whose crew of 3 is sourced (Trakya Döküm)
+    expect(b('cam-cast-manning')).toMatch(/Trakya Döküm/);
   });
   it('PRCR002: the sand pattern basis claims no slides (a sand pattern has none; the model takes core boxes only)', async () => {
     const r = await cost('PRCR002.stp');

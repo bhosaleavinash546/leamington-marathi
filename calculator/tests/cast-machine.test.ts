@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-machine.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
-import { meltFactsFor, MELT_SHOP } from '../src/engine/casting-melt.js';
+import { meltFactsFor } from '../src/engine/casting-melt.js';
 import { tariffElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CastAndMachineInputs } from '../src/engine/modules/cast-and-machine.js';
 import type { MachiningOperation } from '../src/engine/modules/machining.js';
@@ -140,7 +140,7 @@ describe('Cast + Machine module', () => {
     const pour = SAND_INPUTS.castPartWeightKg * uplift / SAND_INPUTS.castingYield;
     const meltKwh = meltFactsFor(SAND_INPUTS.materialId)!.energyKwhPerKg;
     expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(
-      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * MELT_SHOP.greenSandAdditionsPerKgPoured, 4);
+      SAND_INPUTS.sand!.coreCostPerPart * uplift, 4);   // no `foundry` input → no new-sand line (review round, 4 Nov 2026)
     // the melt energy, as kWh (country-rates review: module energy is handed to the core as kWh — module-energy.ts — and priced at the costing book's tariff)
     expect(drivers.rawMaterial.energyKwh?.electricity).toBeCloseTo(pour * meltKwh, 6);
     expect(tariffElectricityPerKwh()).toBeGreaterThan(0);

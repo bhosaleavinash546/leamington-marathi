@@ -25,7 +25,7 @@ import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-mac
 import { executeCalculateCost } from '../server/services/cost-executor.js';
 import { SHOP_DEFAULTS } from '../src/engine/cost-input-rules/to-cost-params.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
-import { meltFactsFor, MELT_SHOP } from '../src/engine/casting-melt.js';
+import { meltFactsFor } from '../src/engine/casting-melt.js';
 import { tariffElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CADAnalysisResult } from '../src/engine/ai-analysis.js';
 
@@ -116,8 +116,9 @@ describe('the money reconciles by hand', () => {
     const poured = effectiveNet / 0.65;
     const lost = (poured - 2.512) * melt.lossFraction;
     const byHand = (2.512 + lost) * mat.pricePerKg
-      + poured * melt.energyKwhPerKg * tariffElectricityPerKwh()
-      + (params.sand ? poured * MELT_SHOP.greenSandAdditionsPerKgPoured : 0);   // green-sand additions
+      + poured * melt.energyKwhPerKg * tariffElectricityPerKwh();
+    // No green-sand line: the engineering-typical £0.01/kg poured was replaced by the sourced new-sand rule (review round,
+    // 4 Nov 2026), which these hand-built params do not set (casting-melt.ts FOUNDRY_INDIRECT; tests/review-round-2026-11-04).
 
     expect(poured).toBeCloseTo(3.98414, 4);
     expect(melt.lossFraction).toBe(0.03);

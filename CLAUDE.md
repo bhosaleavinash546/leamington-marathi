@@ -400,8 +400,8 @@ what is true** — nothing here has been compared with a price JLR paid.
   section) is turned faces-included on the lathe (`nearNetTurnedPlan`; `nearNetCut` sets `turnedPart`), holes on the
   drill — never the HMC. Casting: iron is as-cast (no stress relief; steel normalised); NDT is a STATION
   (`NDT_STATION` / `ndtStationCostPerPart`: 100 % MPI + 1-in-50 X-ray on ferrous, in-line RTR on light alloys, CT on
-  superalloys); `ndtStepFor` / `safetyConsequence` say what the rule charges. The HMC capex is an ESTIMATE from used
-  listings (research filed; the UK generator skips it — not in the snapshot). Turning finish rate still conservative.
+  superalloys); `ndtStepFor` / `safetyConsequence` say what the rule charges. The HMC capex is £300k, an ESTIMATE (no new-
+  machine price found; used MB-4000H £188k, US award £351k), written by the UK generator (`machines.added`, review round 4 Nov 2026). Turning finish rate still conservative.
 - Forging (`cost-input-rules/commodities/forging.ts`, `modules/forging.ts`): the cycle is the forge-line
   takt (`forgeLine`: load + hits × hit time), never the kernel's `forgeStrokes`; flash-making routes
   trim in line (`trimPress`, stamping ladder); crew, labour, scrap and furnace are rules; die sets are
@@ -965,8 +965,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   follows the priced aluminium plate (100k, judgement); core cost is NOT built up (needs a binder quote). COMPOSITES: hand
   layup 2 lb/h, cure by resin system (M21 4.7 h), tool material chosen by cycles per tool, PCM comparison row, > 25k/yr
   autoclave alert. `reference-part.test.ts` keeps its TYPED cycle times (it pins stack arithmetic). `country-book.ts`
-  accepts a machine added after its register snapshot. Effect at 200k / 5 yr UK EXW: stub axle £41.24 → £24.18, casting
-  bracket £19.42 → £9.18, other machined parts −25 to −37 % — still to be confirmed against a supplier cycle sheet / PO.
+  accepts a machine added after its register snapshot. Effect at 200k / 5 yr UK EXW after the 4 Nov review round: stub axle
+  £41.24 → £24.85, casting bracket £19.42 → £9.14 — still to be confirmed against a supplier quote / cycle sheet / PO.
+  Review round (4 Nov 2026, research `scripts/research/2026-11-review-round/`): foundry indirect costs are named rules
+  (`FOUNDRY_INDIRECT` in casting-melt.ts: new sand + disposal, ladle preheat as gas kWh, dust extraction and other plant
+  electricity as kWh — the last an ESTIMATE; refractory, lab, pouring crew and steel extras listed NOT costed); impressions
+  per mould = min(fit, patterns + gating ≤ 60 % of the plate, iron sand : metal ≥ 5 : 1 with 70 mm between cavities)
+  (`impressionPlan`, the binding limit printed); CNC lathe capex £135k from a UK award (`cnc-lathe` group, the QT200 in it).
+  Stepped bores: coaxial touching cylinders are ONE feature (kernel `axes`), a cylinder shallower than ¼ Ø is a land.
   Secondary machining (4 Nov 2026): casting and forging routes machine through the SAME near-net plan as cast + machine
   (`cost-input-rules/secondary-machining.ts::nearNetSecondaryMachining`, headless and screen) — as-cast / as-forged weight
   carries the machining stock (`asCastWeight`), deburr counts MACHINED faces (`machinedFaceCount`), programming the machined

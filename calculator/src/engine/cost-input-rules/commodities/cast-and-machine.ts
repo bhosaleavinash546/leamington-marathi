@@ -64,6 +64,11 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-ndt': 'cam-ndt',
   'cast-inv-wax': 'cam-inv-wax',
   'cast-inv-shell': 'cam-inv-shell',
+  // foundry indirect costs (review round, 4 Nov 2026)
+  'cast-new-sand': 'cam-new-sand',
+  'cast-ladle-kwh': 'cam-ladle-kwh',
+  'cast-dust-kwh': 'cam-dust-kwh',
+  'cast-plant-kwh': 'cam-plant-kwh',
   // finish (CAD to COST D4)
   'cast-sf-route': 'cam-sf-route',
   'cast-sf-area': 'cam-sf-area',

@@ -179,7 +179,8 @@ describe('10. the hub flange reconciles by hand', () => {
   // Ø14 clearance holes at the MVE n·f, no material factor on the allowances): £17.11 → £11.72.
   // Secondary-machining parity (Nov 2026): the near-net plan of cast + machine — outside and faces turned in a lathe
   // fixture, holes and bore on the 5-axis in one fixturing, deburr, turning stock forged on — £11.72 → £13.00.
-  it('£13.00 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13);
+  // Review round (4 Nov 2026): the spindle is turned on the CNC lathe, whose capex is now a UK award (£56,004 → £135,041)
+  it('£13.23 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13.23);
   });
 });

@@ -289,7 +289,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     energy: { electricityPerKwh: 0.0489, gasPerKwh: 0.0247 },
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
-    machineRateMultiplier: 0.91,
+    machineRateMultiplier: 0.92,
     overheadMultiplier: 1,
     packagingMultiplier: 1,
     logisticsMultiplier: 1.30,

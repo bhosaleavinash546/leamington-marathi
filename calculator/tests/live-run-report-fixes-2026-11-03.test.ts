@@ -272,10 +272,14 @@ describe('8. "Not in the cost model" never takes a page of its own in the core r
 });
 
 describe('9. A rate note prints the true quotient before its rounding', () => {
-  it('US$245,000 / 1.3344 = £183,603, rounded to £185,000', () => {
+  // Review round (4 Nov 2026): the HMC's capex is a £300,000 ESTIMATE between two sourced figures, each converted at the
+  // book FX ($1.3317/£) and printed as its true quotient rounded to the pound (it was US$245,000 / 1.3344 → £185,000).
+  it('US$249,990 = £187,722 and US$467,682 = £351,192 — the quotients at the book FX, to the pound', () => {
     const hmc = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'mach-hmc-400')!;
-    expect(hmc.sourceNote).toMatch(/US\$245,000 \/ 1\.3344 = £183,603, rounded to £185,000/);
-    expect(Math.round(245_000 / 1.3344)).toBe(183_603);
+    expect(hmc.sourceNote).toMatch(/US\$249,990 = £187,722/);
+    expect(hmc.sourceNote).toMatch(/US\$467,682 = £351,192/);
+    expect(Math.round(249_990 / 1.3317)).toBe(187_722);
+    expect(Math.round(467_681.96 / 1.3317)).toBe(351_192);
     expect(failingEquations(reportNoteText(hmc.sourceNote))).toEqual([]);
   });
 });

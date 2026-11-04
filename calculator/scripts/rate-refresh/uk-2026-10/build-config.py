@@ -9,7 +9,9 @@ on research items written out in `basis`. Methods as the India book (scripts/rat
 direct / ladder (anchor × the book's own grade premium over its base) / floor (raised to metal or mill content) / held.
 
 Machines ADDED after the frozen snapshot (3 Nov 2026): `machines.added` — the automatic green-sand moulding line and the
-robotic fettling cell, from scripts/research/2026-11-report-standard/foundry-capex/data.json (see the block below).
+robotic fettling cell, from scripts/research/2026-11-report-standard/foundry-capex/data.json (see the block below); and
+(review round, 4 Nov 2026) the twin-pallet HMC, until then hand-written in rate-library.ts. The CNC lathes have their own
+capex group (`cnc-lathe`, a UK public award) — scripts/research/2026-11-review-round/data.json.
 """
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -154,6 +156,52 @@ energy = {'electricityGbpPerKwh': round(v('energy.electricity.manufacturingAvg')
           'basis': 'DESNZ Quarterly Energy Prices (Sep 2026): manufacturing-sector average Q2 2026 electricity 17.4 p/kWh, gas 3.8 p/kWh, + Climate Change Levy 0.801 p/kWh (from 1 Apr 2026) — CCL added because the release could not be confirmed to include it (if it does, these are 0.8 p high)',
           'sources': [src('energy.electricity.manufacturingAvg'), src('energy.gas.manufacturingAvg'), src('energy.cclMainRate')]}
 
+# ── REVIEW ROUND (4 Nov 2026): the CNC lathe and the twin-pallet HMC ─────────
+# scripts/research/2026-11-review-round/data.json (each row: value, currency, year, scope, URL, quote, grade). The lathe's
+# capex is a UK public award (row T4, grade A, sterling); the HMC has no new price anywhere (rows H1 / H3: a used floor and
+# an unsized award), so its £300,000 is an ESTIMATE between them and says so. Hours are NOT changed: the lathe keeps the
+# book's 4,000 h × 0.80, the HMC its three-shift 6,000 h × 0.80 — the research notes capex and hours are chosen together.
+RV = {r['id']: r for r in json.load(open(os.path.join(HERE, '..', '..', 'research', '2026-11-review-round', 'data.json')))}
+T4, H1, H3 = RV['T4'], RV['H1'], RV['H3']
+assert T4['currency'] == 'GBP' and T4['value_num'] == 135041, T4['value_num']
+assert round(H1['gbp_at_book_fx']) == 187722 and round(H3['gbp_at_book_fx']) == 351192
+_snapm = {m['id']: m for m in cur['machines']}
+def _implied_kw(mid):   # the snapshot's running load, kW (energy ÷ running hours ÷ the snapshot tariff)
+    b = _snapm[mid]['buildup']
+    return b['energy'] / (b['annualAvailableHours'] * b['machineUtilization'] * cur['regional']['energy']['electricityPerKwh'])
+LATHE_GROUP = {
+    'id': 'cnc-lathe', 'match': '^(mach-lathe-cnc|mach-mazak-qt200)$', 'refId': 'mach-lathe-cnc', 'refCapexGbp': T4['value_num'],
+    # the lathe keeps the draw it had in the cnc-3axis group: no lathe draw was sourced
+    'refKw': round(10.0 * _implied_kw('mach-lathe-cnc') / _implied_kw('mach-haas-vf2'), 3),
+    'kwBasis': 'no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book\'s running-load ratio lathe ÷ VF-2, as before',
+    'basis': (f"UK public award: Yamazaki Mazak UK, UKRI-4318 'CNC Lathe machine' £{T4['value_num']:,} (Nov 2024, Contracts Finder; supply — "
+              "no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston 'Quickturn' £113,000 (2020), "
+              "Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre "
+              "with bar feeder US$219,379 = £164,736 (2023). Hours held at the book's convention (the lathe 4,000 h × 0.80): a production "
+              "lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the "
+              "hours were not changed with this capex"),
+    'research': 'review-round T4', 'source': f"{T4['source']} — {T4['url']} (read {T4['date']})", 'confidence': 'Medium',
+}
+HMC_ADDED = {
+    'id': 'mach-hmc-400', 'class': 'Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell)',
+    'after': 'mach-haas-vf2', 'added': '2026-10-30',
+    'capexGbp': 300000,
+    'capexBasis': (f"ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page "
+                   f"returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at "
+                   f"US${H1['value_num']:,} = £{round(H1['gbp_at_book_fx']):,} (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); "
+                   f"a US DLA award for an unsized 'horizontal machining center' was US${H3['value_num']:,.0f} = £{round(H3['gbp_at_book_fx']):,} "
+                   "(2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized "
+                   "award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), "
+                   "below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence)"),
+    'kwFixed': 13.0, 'kwBasis': 'measured machining-centre roughing mean 13 kW (maker study)',
+    'floorFromMachine': 'mach-lathe-cnc', 'floorBasis': 'the floor of the book\'s lathe / 5-axis class, held — not sourced for this cell',
+    'hours': 6000, 'utilisation': 0.80,
+    'hoursBasis': 'a production cell runs three shifts, the economics of a pallet cell (the book\'s convention for a three-shift line, as the EV lines)',
+    'altHours': 4000, 'altUtilisation': 0.50, 'altBasis': 'the book\'s job-shop VMC hours',
+    'confidence': 'Low', 'source': f"{H1['source']} — {H1['url']} (read {H1['date']}); {H3['source']} — {H3['url']} (award {H3['date']})",
+    'research': 'review-round H1 / H3',
+}
+
 # ── MACHINES ──────────────────────────────────────────────────────────────────
 machines = {
     'lifeYears': v('life.cutting-machine-stationary'),
@@ -162,15 +210,16 @@ machines = {
     'indirectPctOfCapex': 0.05, 'indirectBasis': 'the library\'s own line build-up rule (5% of capex)',
     'financeRate': 0.04, 'financeBasis': 'the library\'s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched',
     'groups': [
-        {'id': 'cnc-3axis', 'match': '^(mach-haas-vf2|mach-vmc3|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexGbp': v('capex.mach-haas-vf2'),
+        # The CNC lathes have their own group since the review round (4 Nov 2026) — the VF-2 mill scaled to a lathe gave
+        # £56,004, below every production-lathe award found (scripts/research/2026-11-review-round, rows T1–T4).
+        LATHE_GROUP,
+        {'id': 'cnc-3axis', 'match': '^(mach-haas-vf2|mach-vmc3|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexGbp': v('capex.mach-haas-vf2'),
          'refKw': 10.0, 'kwBasis': 'measured machining-centre mean draw 7.4 kW finishing – 13 kW roughing (maker study) — midpoint 10 kW',
          'basis': 'Haas VF-2 US list $70,995 (2026) = £53,204, base machine (options, tooling and installation not included)', 'research': 'capex.mach-haas-vf2', 'source': R['capex.mach-haas-vf2']['source'], 'confidence': 'Medium'},
         {'id': 'cnc-5axis', 'match': '^(mach-haas-umc500|mach-vmc5|mach-dmg-dmu50)$', 'refId': 'mach-haas-umc500', 'refCapexGbp': v('capex.mach-haas-umc500'),
          'refKw': 13.0, 'kwBasis': 'measured machining-centre roughing mean 13 kW',
          'basis': 'Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older)', 'research': 'capex.mach-haas-umc500', 'source': R['capex.mach-haas-umc500']['source'], 'confidence': 'Low'},
-        {'id': 'cnc-hmc', 'match': '^mach-hmc-400$', 'refId': 'mach-hmc-400', 'refCapexGbp': v('capex.mach-hmc-400'),
-         'refKw': 13.0, 'kwBasis': 'measured machining-centre roughing mean 13 kW',
-         'basis': 'Haas EC-400 class twin-pallet HMC: ESTIMATE £185,000 from 2019–2023 used-market listings + 25% (no new list price published)', 'research': 'capex.mach-hmc-400', 'source': R['capex.mach-hmc-400']['source'], 'confidence': 'Low'},
+        # (the twin-pallet HMC is not in the frozen snapshot, so a group never reached it: it is built under `machines.added`)
         {'id': 'fibre-laser', 'match': '^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$', 'refId': 'laser-trumpf-3030', 'refCapexGbp': v('capex.laser-trumpf-3030'),
          'refKw': v('kw.fibre-laser-6kw'), 'kwBasis': 'maker worked example: 6 kW fibre laser ~22 kW average',
          'basis': 'TruLaser 3030 6 kW fibre: third-party estimate $400–550k = £374,700 midpoint (Trumpf publishes no list price)', 'research': 'capex.laser-trumpf-3030', 'source': R['capex.laser-trumpf-3030']['source'], 'confidence': 'Low'},
@@ -240,6 +289,8 @@ machines['added'] = [
      'kwFixed': 30.0, 'kwBasis': 'the tender\'s ≤ 30 kW power limit — an upper bound on the draw, not a measured load',
      'floorFromMachine': 'robot-mig-cell', 'floorBasis': 'the floor of the book\'s single-robot welding cell, held — not sourced for this cell',
      **THREE_SHIFT, 'confidence': 'Low', 'source': f"{F1['source']} — {F1['url']} (read {F1['date']})", 'research': 'foundry-capex F1'},
+    # review round (4 Nov 2026): the twin-pallet HMC was hand-written in rate-library.ts at £185,000; it is generated now
+    HMC_ADDED,
 ]
 
 cfg = {'asOf': '2026-10-10', 'label': 'UK rate book — automotive tier-1/2 (W Midlands / NE / NW), 2-shift', 'labour': labour, 'energy': energy,

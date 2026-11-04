@@ -125,8 +125,20 @@
   "financeBasis": "the library's own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched",
   "groups": [
    {
+    "id": "cnc-lathe",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexGbp": 135041,
+    "refKw": 11.904,
+    "kwBasis": "no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book's running-load ratio lathe ÷ VF-2, as before",
+    "basis": "UK public award: Yamazaki Mazak UK, UKRI-4318 'CNC Lathe machine' £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston 'Quickturn' £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book's convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex",
+    "research": "review-round T4",
+    "source": "UK Contracts Finder award notices (REST API) — https://www.contractsfinder.service.gov.uk/api/rest/2/get_published_notice/json/20748e74-8249-493e-817b-b8a83854c43b (read read 2026-11-04)",
+    "confidence": "Medium"
+   },
+   {
     "id": "cnc-3axis",
-    "match": "^(mach-haas-vf2|mach-vmc3|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$",
+    "match": "^(mach-haas-vf2|mach-vmc3|mach-drill)$",
     "refId": "mach-haas-vf2",
     "refCapexGbp": 53204,
     "refKw": 10.0,
@@ -146,18 +158,6 @@
     "basis": "Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older)",
     "research": "capex.mach-haas-umc500",
     "source": "https://www.pesmedia.com/haas-umc-500-affordable-and-compact-5-axis-capability",
-    "confidence": "Low"
-   },
-   {
-    "id": "cnc-hmc",
-    "match": "^mach-hmc-400$",
-    "refId": "mach-hmc-400",
-    "refCapexGbp": 185000,
-    "refKw": 13.0,
-    "kwBasis": "measured machining-centre roughing mean 13 kW",
-    "basis": "Haas EC-400 class twin-pallet HMC: ESTIMATE £185,000 from 2019–2023 used-market listings + 25% (no new list price published)",
-    "research": "capex.mach-hmc-400",
-    "source": "https://www.surplusrecord.com/listing/haas-ec-400-horizontal-machining-center-501-side-mount-tool-changer-22-x-25-y-22-z-15000-rpm-300-psi-thru-spindle-coolant-2023-669939/",
     "confidence": "Low"
    },
    {
@@ -288,6 +288,27 @@
     "confidence": "Low",
     "source": "Odlewnia KAW-MET Marek Kawiński Sp. z o.o. (iron foundry), Baza Konkurencyjności 214998, Zapytanie ofertowe nr 4/2025/FENG/KAWMET + settlement — https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/ogloszenia/214998 (read published 2025-02-12; resolved (3 offers; Eurocast Industries chosen); read 2026-11-03)",
     "research": "foundry-capex F1"
+   },
+   {
+    "id": "mach-hmc-400",
+    "class": "Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell)",
+    "after": "mach-haas-vf2",
+    "added": "2026-10-30",
+    "capexGbp": 300000,
+    "capexBasis": "ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized 'horizontal machining center' was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence)",
+    "kwFixed": 13.0,
+    "kwBasis": "measured machining-centre roughing mean 13 kW (maker study)",
+    "floorFromMachine": "mach-lathe-cnc",
+    "floorBasis": "the floor of the book's lathe / 5-axis class, held — not sourced for this cell",
+    "hours": 6000,
+    "utilisation": 0.8,
+    "hoursBasis": "a production cell runs three shifts, the economics of a pallet cell (the book's convention for a three-shift line, as the EV lines)",
+    "altHours": 4000,
+    "altUtilisation": 0.5,
+    "altBasis": "the book's job-shop VMC hours",
+    "confidence": "Low",
+    "source": "The Equipment Hub listing, stock SB-B-230009 — https://theequipmenthub.com/product/okuma-mb-4000h-cnc-4-axis-horizontal-machining-center-2021/ (read read 2026-11-04 (listing marked sold)); USAspending.gov award record (FPDS) — https://api.usaspending.gov/api/v2/awards/CONT_AWD_SPMYM223P2449_9700_-NONE-_-NONE-/ (award award 2023-09-11; read 2026-11-04)",
+    "research": "review-round H1 / H3"
    }
   ]
  },

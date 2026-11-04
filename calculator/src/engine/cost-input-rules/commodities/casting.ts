@@ -27,10 +27,13 @@ import { activeLabourRate, activeRates } from '../../rate-context.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY, SAND_YIELD_BASIS,
   FETTLING_MINUTES, FETTLING_MINUTES_BASIS, FETTLING_CELL, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
-  SAND_LINE_CLASSES, AUTO_LINE_MIN_MOULDS_PER_YEAR, SAND_LINE_MAX_LOADING, SAND_PATTERN_LIFE_MOULDS,
+  SAND_LINE_CLASSES, AUTO_LINE_MIN_MOULDS_PER_YEAR, SAND_LINE_MAX_LOADING, SAND_PATTERN_LIFE_MOULDS, IMPRESSION_LIMITS,
   type AlloyFamily, type CastingProcess, type ComplexityLevel, type SandLineClass, ndtStationCostPerPart,
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
+import {
+  FOUNDRY_INDIRECT, FOUNDRY_NOT_COSTED, NEW_SAND_GBP_PER_T_SAND, NEW_SAND_BASIS, PLANT_OTHER_KWH_PER_T,
+} from '../../casting-melt.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
 import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
@@ -283,6 +286,73 @@ export function sandImpressions(footprint: [number, number], face: readonly [num
   return Math.max(fit(L, W), fit(W, L));
 }
 
+/** The part's depth along the draw, mm — the box side the footprint leaves out (the pattern heights P + Q, both halves). */
+export function mouldDepthMm(ctx: RuleContext): number | null {
+  const b = ctx.geo.boundingBox;
+  if (!b) return null;
+  const dims = [b.xMm, b.yMm, b.zMm];
+  const d = ctx.geo.draftAnalysis?.drawDirectionXYZ;
+  const axis = d ? d.findIndex(c => Math.abs(c) > 0.99) : -1;
+  return axis >= 0 ? dims[axis] : Math.min(...dims);
+}
+
+/** What the sand : iron limit needs: the metal poured an impression and its density. Null for any metal but iron. */
+export interface IronPour { pourKg: number; castKg: number; yieldFraction: number; densityKgPerM3: number; depthMm: number }
+
+export interface ImpressionPlan {
+  /** Impressions costed: the smallest of the limits (≥ 1 when one fits; 0 = floor-moulded). */
+  n: number;
+  /** The free fit on the face. */
+  fit: number;
+  /** Patterns + gating ≤ 60 % of the plate. */
+  plate: number;
+  /** Sand : iron ≥ 5 : 1 (iron only), else null. */
+  sandIron: number | null;
+  /** The limit(s) that bind, by name. */
+  binding: string;
+  /** One sentence with the arithmetic of every limit. */
+  text: string;
+}
+
+/**
+ * The impressions a mould on `face` takes (review round, 4 Nov 2026 — casting-advisor.ts IMPRESSION_LIMITS): the smallest
+ * of the free fit, the 60 % plate rule and, on iron, sand : iron ≥ 5 : 1 at the necessary mould thickness. Prints which
+ * limit binds.
+ */
+export function impressionPlan(fp: [number, number], face: readonly [number, number], iron: IronPour | null): ImpressionPlan {
+  const m = IMPRESSION_MARGIN_MM, Lm = IMPRESSION_LIMITS;
+  const fit = sandImpressions(fp, face);
+  const cell = (fp[0] + m) * (fp[1] + m);
+  const faceArea = face[0] * face[1];
+  const plate = Math.floor(Lm.plateShareMax * faceArea / cell + 1e-9);
+  let sandIron: number | null = null, sandText = '';
+  if (iron) {
+    const T = iron.depthMm + Lm.sandBetweenCavitiesMm;
+    const mouldKg = face[0] * face[1] * T * 1e-9 * Lm.sandDensityKgPerM3;
+    const cavityKg = iron.pourKg / iron.densityKgPerM3 * Lm.sandDensityKgPerM3;
+    sandIron = Math.floor(mouldKg / (Lm.sandToIronMin * iron.pourKg + cavityKg) + 1e-9);
+    const need = Lm.sandToIronMin * iron.pourKg + cavityKg;
+    // Printed so each step can be re-done (basis-check.py): the mould, the iron an impression pours, the sand it needs.
+    sandText = `; sand : iron ≥ ${Lm.sandToIronMin} : 1 (${Lm.sandToIronBasis}) — the mould, ${face[0]} × ${face[1]} mm and ${fmt(T, 1)} mm thick `
+      + `(${fmt(iron.depthMm, 1)} mm deep along the draw + ${Lm.sandBetweenCavitiesMm} mm of sand between cavities, ${Lm.sandBetweenBasis}), `
+      + `holds ${fmt(mouldKg, 1)} kg of sand at ${Lm.sandDensityKgPerM3.toLocaleString('en-GB')} kg/m³ (${Lm.sandDensityBasis}); an impression pours `
+      + `${fmt(iron.castKg, 3)} kg ÷ ${iron.yieldFraction} yield = ${fmt(iron.pourKg, 3)} kg of iron and displaces ${fmt(cavityKg, 2)} kg of sand `
+      + `(at ${iron.densityKgPerM3.toLocaleString('en-GB')} kg/m³), so it needs ${Lm.sandToIronMin} × ${fmt(iron.pourKg, 3)} + ${fmt(cavityKg, 2)} = `
+      + `${fmt(need, 2)} kg of sand: ${fmt(mouldKg, 1)} ÷ ${fmt(need, 2)} = ${fmt(mouldKg / need, 2)} → ${sandIron} (rounded down)`;
+  }
+  const n = fit < 1 ? 0 : Math.max(1, Math.min(fit, plate, sandIron ?? Infinity));
+  const named: Array<[string, number]> = [['the free fit', fit], ['the 60 % plate rule', plate], ...(sandIron != null ? [['sand : iron 5 : 1', sandIron] as [string, number]] : [])];
+  const low = Math.min(...named.map(([, v]) => v));
+  const binding = fit < 1 ? 'the mould face (floor-moulded)'
+    : named.filter(([, v]) => v === low).map(([k]) => k).join(' and ') + (low < 1 ? ' (below one — one impression costed, the limit not met)' : '');
+  const text = `impressions = the smallest of: free fit ${fit} (the footprint + ${m} mm a side for gating, engineering-typical, not sourced); `
+    + `60 % plate rule (${Lm.plateShareBasis}): each impression is the footprint + ${m} mm a side, ${fmt(fp[0] + m, 2)} × ${fmt(fp[1] + m, 2)} mm = `
+    + `${Math.round(cell).toLocaleString('en-GB')} mm², and ${Lm.plateShareMax} × ${face[0]} × ${face[1]} mm² ÷ ${Math.round(cell).toLocaleString('en-GB')} mm² = `
+    + `${fmt(Lm.plateShareMax * faceArea / cell, 2)} → ${plate} (rounded down)${sandText}${iron ? '' : ' (the sand : iron ≥ 5 : 1 limit is stated for iron foundries — not applied to this metal)'} `
+    + `→ ${n} — ${binding} bind${/ and /.test(binding) ? '' : 's'}`;
+  return { n, fit, plate, sandIron, binding, text };
+}
+
 /** A line time, hours: 6 dp below 0.01 h (what the screen writes into the field), 4 dp above. */
 const lineHrRounded = (h: number) => h < 0.01 ? Math.round(h * 1e6) / 1e6 : Math.round(h * 10_000) / 10_000;
 
@@ -295,8 +365,10 @@ function sandCored(ctx: RuleContext): boolean {
 
 export interface SandLinePlan {
   line: SandLineClass;
-  /** Impressions a mould on the chosen line (0 = floor-moulded: does not fit the face). */
+  /** Impressions a mould on the chosen line (0 = floor-moulded: does not fit the face) — the review round's limits. */
   impressions: number;
+  /** The impressions plan on the chosen line: every limit and which binds. */
+  impressionPlan: ImpressionPlan;
   cored: boolean;
   mouldsPerHr: number;
   /** Castings a year ÷ impressions on the chosen line (rejects not included). */
@@ -324,8 +396,11 @@ export function sandLinePlan(ctx: RuleContext): SandLinePlan | null {
   const semi = SAND_LINE_CLASSES['semi-auto'];
   const auto = SAND_LINE_CLASSES['auto-vertical'];
   const castings = Math.max(0, ctx.annualVolume || 0);
-  const impsSemi = sandImpressions(fp, semi.faceMm);
-  const impsAuto = sandImpressions(fp, auto.faceMm);
+  const iron = ironPourFor(ctx);
+  const planSemi = impressionPlan(fp, semi.faceMm, iron);
+  const planAuto = impressionPlan(fp, auto.faceMm, iron);
+  const impsSemi = planSemi.n;
+  const impsAuto = planAuto.n;
   const semiMoulds = castings / Math.max(1, impsSemi);
   const onAuto = impsAuto >= 1 && semiMoulds >= AUTO_LINE_MIN_MOULDS_PER_YEAR;
   const line = onAuto ? auto : semi;
@@ -349,7 +424,23 @@ export function sandLinePlan(ctx: RuleContext): SandLinePlan | null {
     + (loading > SAND_LINE_MAX_LOADING ? ` — beyond one line's planned ${Math.round(SAND_LINE_MAX_LOADING * 100)} % (realised 83–97 % in the case studies): about ${Math.ceil(loading / SAND_LINE_MAX_LOADING)} lines` : '');
   const why = `${choice} (the line threshold is CostVision engineering judgement, not sourced — no published source gives one; `
     + `${n(AUTO_LINE_MIN_MOULDS_PER_YEAR)} follows AFS: metal pattern equipment over ~5,000 castings a year)${load}`;
-  return { line, impressions, cored, mouldsPerHr, mouldsPerYear, semiMouldsPerYear: semiMoulds, loading, availableHr, why };
+  return { line, impressions, impressionPlan: onAuto ? planAuto : planSemi, cored, mouldsPerHr, mouldsPerYear, semiMouldsPerYear: semiMoulds, loading, availableHr, why };
+}
+
+/**
+ * The iron an impression pours, for the sand : iron limit — null for any metal but grey / ductile iron, or while the
+ * material, the process or the geometry is open. The casting poured is the AS-CAST casting (finished + machining stock,
+ * `asCastFacts`) at the yield the yield rule costs (the alloy's sand band midpoint); the density is the costed grade's.
+ */
+function ironPourFor(ctx: RuleContext): IronPour | null {
+  const r = advise(ctx);
+  if ('blocked' in r || (r.advice.alloy !== 'grey-iron' && r.advice.alloy !== 'ductile-iron')) return null;
+  const depth = mouldDepthMm(ctx);
+  const cm3 = ctx.geo.volume?.cm3 ?? 0;
+  if (depth == null || !(cm3 > 0) || !(r.advice.massKg > 0)) return null;
+  const castKg = asCastFacts(ctx)?.kg ?? r.advice.massKg;
+  const y = bandMid(SAND_GRAVITY_YIELD_BY_ALLOY[r.advice.alloy] ?? CASTING_PROCESS_REFERENCE.sand.yieldBand);
+  return { castKg, yieldFraction: y, pourKg: castKg / y, densityKgPerM3: Math.round(r.advice.massKg / cm3 * 1e6), depthMm: depth };
 }
 
 /**
@@ -406,6 +497,106 @@ export function minWallMm(ctx: RuleContext): number {
   }
   return Math.round(measured * 100) / 100;
 }
+
+const FERROUS: ReadonlySet<AlloyFamily> = new Set(['grey-iron', 'ductile-iron', 'carbon-steel', 'stainless-steel']);
+const isIron = (a: AlloyFamily) => a === 'grey-iron' || a === 'ductile-iron';
+const sandOrGravity = (ctx: RuleContext) => {
+  const r = advise(ctx);
+  return !('blocked' in r) && (r.advice.subtype === 'sand' || r.advice.subtype === 'gravity');
+};
+
+/** The four named foundry lines — the casting route and (re-labelled) cast + machine. */
+const FOUNDRY_INDIRECT_RULES: CommodityRuleSpec['rules'] = [
+  {
+    id: 'casting.newSandGbpPerTPoured',
+    path: 'casting.newSandGbpPerTPoured',
+    fieldId: 'cast-new-sand',
+    label: 'newSandGbpPerTPoured',
+    appliesWhen: (ctx) => {
+      const r = advise(ctx);
+      return !('blocked' in r) && r.advice.subtype === 'sand';
+    },
+    evaluate: (ctx) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const N = FOUNDRY_INDIRECT.newSand;
+      const perTSand = Math.round(NEW_SAND_GBP_PER_T_SAND * 10_000) / 10_000;
+      const uk = Math.round(N.shareOfPoured * NEW_SAND_GBP_PER_T_SAND * 10_000) / 10_000;
+      const v = countryGbp(uk, NEW_SAND_BASIS);
+      return decided('casting.newSandGbpPerTPoured', v, 'library',
+        `new silica sand added at ${N.shareOfPoured * 100} % of the poured weight (the midpoint of ${N.shareBand[0] * 100}–${N.shareBand[1] * 100} %) `
+        + `and the same tonnage discarded, in 2014 prices not escalated: new sand €${N.sandEurPerT}/t + disposal €${N.disposalEurPerT}/t = `
+        + `€${N.sandEurPerT + N.disposalEurPerT}/t; €${N.sandEurPerT + N.disposalEurPerT} ÷ €${N.eurPerGbp}/£ = £${perTSand}/t of sand; ${N.shareOfPoured} × £${perTSand} = £${uk}/t poured (UK)`
+        + `${countryNote(NEW_SAND_BASIS)}${v !== uk ? ` = £${v}/t poured` : ''} — ${N.source}, grade B. `
+        + 'It replaces the engineering-typical £0.01/kg poured "green-sand additions"; bentonite and coal dust are NOT costed '
+        + '(bentonite €228/t is published, no consumption a tonne poured)', 0.5);
+    },
+  },
+  {
+    id: 'casting.ladlePreheatKwhPerT',
+    path: 'casting.ladlePreheatKwhPerT',
+    fieldId: 'cast-ladle-kwh',
+    label: 'ladlePreheatKwhPerT',
+    appliesWhen: sandOrGravity,
+    evaluate: (ctx) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const a = r.advice.alloy;
+      const L = FOUNDRY_INDIRECT.ladlePreheatKwhPerT;
+      if (!FERROUS.has(a)) {
+        return decided('casting.ladlePreheatKwhPerT', 0, 'rule',
+          `${a.replace('-', ' ')} — ladle preheat is sourced for iron and steel foundries only (${L.source}); NOT costed for this metal`, 0.4);
+      }
+      const f = isIron(a) ? L.iron : L.steel;
+      return decided('casting.ladlePreheatKwhPerT', f.mid, 'library',
+        `ladle preheat ${f.mid} kWh per tonne of liquid metal poured — the midpoint of ${f.band[0]}–${f.band[1]} kWh/t for `
+        + `${isIron(a) ? 'iron' : 'steel'} foundries (${L.source}, grade B); ${L.fuelBasis}, so the kWh are costed as gas at the `
+        + 'costed country\'s tariff', 0.5);
+    },
+  },
+  {
+    id: 'casting.dustExtractionKwhPerT',
+    path: 'casting.dustExtractionKwhPerT',
+    fieldId: 'cast-dust-kwh',
+    label: 'dustExtractionKwhPerT',
+    appliesWhen: sandOrGravity,
+    evaluate: (ctx) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const D = FOUNDRY_INDIRECT.dustExtractionKwhPerT;
+      if (!FERROUS.has(r.advice.alloy)) {
+        return decided('casting.dustExtractionKwhPerT', 0, 'rule',
+          `${r.advice.alloy.replace('-', ' ')} — the dust-extraction figure is an iron / steel foundry's (${D.source}); NOT costed for this metal`, 0.4);
+      }
+      return decided('casting.dustExtractionKwhPerT', D.value, 'library',
+        `dust extraction / off-gas cleaning ${D.value} kWh of electricity per tonne of good casting (${D.source}, grade B), `
+        + 'at the costed country\'s tariff', 0.5);
+    },
+  },
+  {
+    id: 'casting.plantElectricityKwhPerT',
+    path: 'casting.plantElectricityKwhPerT',
+    fieldId: 'cast-plant-kwh',
+    label: 'plantElectricityKwhPerT',
+    appliesWhen: sandOrGravity,
+    evaluate: (ctx) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const P = FOUNDRY_INDIRECT.plantElectricity;
+      if (r.advice.subtype !== 'sand' || !FERROUS.has(r.advice.alloy)) {
+        return decided('casting.plantElectricityKwhPerT', 0, 'rule',
+          `${r.advice.subtype} ${r.advice.alloy.replace('-', ' ')} — the plant-electricity figure is a green-sand iron plant's; NOT costed `
+          + `for this route / metal. ${FOUNDRY_NOT_COSTED}`, 0.3);
+      }
+      const dust = FOUNDRY_INDIRECT.dustExtractionKwhPerT.value;
+      return decided('casting.plantElectricityKwhPerT', PLANT_OTHER_KWH_PER_T, 'rule',
+        `ESTIMATE (grade D — an inference, not a published figure): other plant electricity beyond melting and holding (sand plant, `
+        + `moulding, cleaning, compressed air, services) ${P.bandKwhPerKg[0]}–${P.bandKwhPerKg[1]} kWh/kg good casting, midpoint `
+        + `${P.midKwhPerKg} (${P.source}) − ${dust / 1000} kWh/kg dust extraction charged on its own line = ${PLANT_OTHER_KWH_PER_T} kWh `
+        + `per tonne of good casting, at the costed country's tariff. ${FOUNDRY_NOT_COSTED}`, 0.3);
+    },
+  },
+];
 
 export const CASTING_RULES: CommodityRuleSpec = {
   commodity: 'casting',
@@ -722,7 +913,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
               // takes ~1.6 s, and 4 dp (0.0004 for 0.000444 h) cut the moulding 10 % (shadow model, 3 Nov 2026).
               const h = lineHrRounded(hrPerMould / n);
               return decided('casting.cycleTimeSandGravHr', h, 'geometry',
-                `${L.label}: ${n} impression(s) of ${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm (+${m} mm gating) on a ${L.faceMm[0]} × ${L.faceMm[1]} mm mould, `
+                `${L.label}: ${n} impression(s) of ${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm (+${m} mm gating) on a ${L.faceMm[0]} × ${L.faceMm[1]} mm mould `
+                + `(${plan.impressionPlan.text}), `
                 + `${rate} — 1 ÷ ${plan.mouldsPerHr} ÷ ${n} = ${h} h, the line's time per casting, not the cooling time. Line: ${plan.why}`, 0.55);
             }
             // Too big for the flask: floor-moulded, one per mould, time scaling
@@ -1075,6 +1267,10 @@ export const CASTING_RULES: CommodityRuleSpec = {
           : decided('casting.leakTestSec', 0, 'rule', 'not pressure-tight — no leak test', 0.6, [PRESSURE_TIGHT_DECISION_ID]);
       },
     },
+    // ── Foundry indirect costs as NAMED lines (review round, 4 Nov 2026 — casting-melt.ts FOUNDRY_INDIRECT; research in
+    // scripts/research/2026-11-review-round). Sand and gravity routes. Energy is a kWh rate: the module turns it into kWh
+    // and the core prices them at the costed country's tariff; the new sand is £ in the costed country.
+    ...FOUNDRY_INDIRECT_RULES,
     // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.
     ...finishRules('casting', 'cast'),
   ],

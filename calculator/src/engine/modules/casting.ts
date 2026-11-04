@@ -1,7 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
-import { moduleEnergy } from '../module-energy.js';
+import { moduleEnergy, addEnergy } from '../module-energy.js';
 import { toolSetItems, machiningNreItems, CUTTING_TOOL_WEAR_LABEL } from '../tooling-split.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
@@ -62,6 +62,22 @@ export interface CastingInputs {
    * (gating sold as scrap, no melt energy) for a buy-in liquid-metal price.
    */
   melt?: { lossFraction?: number; energyKwhPerKg?: number; energyPricePerKwh?: number; labourId?: string };
+  /**
+   * Foundry indirect costs as named lines (review round, 4 Nov 2026 — casting-melt.ts `FOUNDRY_INDIRECT`; the rates are
+   * the casting rules', each with its source on its basis line). Sand and gravity routes only; a rate absent or 0 is no
+   * line. New sand is a material consumable (£, already in the costed country); the energy goes to the core as kWh, so
+   * every country prices it at its own tariff (module-energy.ts).
+   */
+  foundry?: {
+    /** New sand + disposal of the same tonnage, £ a tonne POURED (sand route only). */
+    newSandGbpPerTPoured?: number;
+    /** Ladle preheat, kWh (gas) a tonne of liquid metal poured. */
+    ladlePreheatKwhPerTPoured?: number;
+    /** Dust extraction, kWh (electricity) a tonne of good casting. */
+    dustExtractionKwhPerTGood?: number;
+    /** Other plant electricity beyond melting and holding, kWh a tonne of good casting. */
+    plantElectricityKwhPerTGood?: number;
+  };
   /** 100% air-decay leak test for pressure-tight castings, seconds a part. */
   leakTestSec?: number;
   /** The rig it runs on — the library's pressure & leak test rig by default. */
@@ -164,7 +180,25 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     + (lossFraction < 1 ? `; runners, risers and rejects remelted, ${(lossFraction * 100).toFixed(0)}% of them lost (${metalLostKg.toFixed(3)} kg bought and lost)` : '')
     + (meltDefault && inputs.melt?.energyKwhPerKg == null ? ` — ${meltDefault.basis}` : '');
   const meltEnergy = moduleEnergy(pourKg * kwhPerKg, 'electricity', inputs.melt?.energyPricePerKwh, meltBasis);
-  const meltEnergyCostPerPart = meltEnergy.gbp;
+  // Foundry indirect energy (review round, 4 Nov 2026): ladle preheat on every kg POURED (gas), dust extraction and the
+  // other plant electricity on every kg of GOOD casting (a plant's kWh a tonne good already spreads its rejects). Sand and
+  // gravity only — a die-casting cell and an investment shop are not costed by these figures.
+  const fi = inputs.subtype === 'sand' || inputs.subtype === 'gravity' ? inputs.foundry : undefined;
+  const kwhLine = (rate: number | undefined, kg: number, what: string, per: string) => {
+    const r = Math.max(0, rate ?? 0);
+    // kg to 4 dp so the printed product re-does to the printed kWh (basis-check.py)
+    return r > 0 ? { kwh: kg * r / 1000, basis: `${what}: ${kg.toFixed(4)} kg ${per} × ${r} kWh/t ÷ 1,000 = ${(kg * r / 1000).toFixed(4)} kWh` } : null;
+  };
+  const ladle = kwhLine(fi?.ladlePreheatKwhPerTPoured, pourKg, 'ladle preheat (gas)', 'poured');
+  const dust = kwhLine(fi?.dustExtractionKwhPerTGood, inputs.partWeightKg, 'dust extraction', 'good casting');
+  const plant = kwhLine(fi?.plantElectricityKwhPerTGood, inputs.partWeightKg, 'other plant electricity beyond melt', 'good casting');
+  const ladleEnergy = ladle ? moduleEnergy(ladle.kwh, 'gas', undefined, ladle.basis) : { gbp: 0 };
+  const plantElec = [dust, plant].filter((x): x is NonNullable<typeof x> => !!x);
+  const plantEnergy = plantElec.length
+    ? moduleEnergy(plantElec.reduce((a, x) => a + x.kwh, 0), 'electricity', inputs.melt?.energyPricePerKwh, plantElec.map(x => x.basis).join('; '))
+    : { gbp: 0 };
+  const foundryEnergyKwh = addEnergy(ladleEnergy.kwh, 'kwh' in plantEnergy ? plantEnergy.kwh : undefined);
+  const meltEnergyCostPerPart = meltEnergy.gbp + plantEnergy.gbp;
 
   const operations: OperationInput[] = [];
   let tooling: ToolingInput;
@@ -304,7 +338,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     const effectiveWaxCost = inputs.investment.waxCostPerPart * (1 - waxRecovery);
     item('wax and shell', (effectiveWaxCost + inputs.investment.shellBuildCostPerPart) * rejectUplift);
   }
-  item('melt energy (typed tariff)', meltEnergyCostPerPart);
+  item('melt and plant energy (typed tariff)', meltEnergyCostPerPart);
 
   // The melt shop's labour, on every kg poured — skipped when the melt shop is
   // switched off (a bought-in liquid-metal price carries it). Listed before
@@ -358,8 +392,11 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       labourEfficiency: inputs.labourEfficiency,
     });
   }
-  if (inputs.subtype === 'sand' && lossFraction < 1) {
-    item(`green-sand additions (${pourKg.toFixed(2)} kg poured × £${MELT_SHOP.greenSandAdditionsPerKgPoured}/kg, engineering-typical)`, pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured);
+  // New sand and its disposal (review round, 4 Nov 2026): it replaced the engineering-typical £0.01/kg "green-sand
+  // additions"; bentonite and coal dust are listed as not costed (casting-melt.ts FOUNDRY_NOT_COSTED).
+  if (inputs.subtype === 'sand' && (fi?.newSandGbpPerTPoured ?? 0) > 0) {
+    const r = fi!.newSandGbpPerTPoured!;
+    item(`new sand + disposal (${pourKg.toFixed(3)} kg poured × £${r}/t ÷ 1,000)`, pourKg * r / 1000);
   }
   if (inputs.leakTestSec && inputs.leakTestSec > 0) {
     const hr = inputs.leakTestSec / 3600;
@@ -406,7 +443,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     rawMaterial: {
       ...rawMaterial,
       ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables, consumablesItems: items } : {}),
-      ...(meltEnergy.kwh ? { energyKwh: meltEnergy.kwh } : {}),
+      ...(addEnergy(meltEnergy.kwh, foundryEnergyKwh) ? { energyKwh: addEnergy(meltEnergy.kwh, foundryEnergyKwh) } : {}),
     },
     operations,
     tooling,

@@ -586,6 +586,30 @@ export const SAND_LINE_CLASSES: Record<SandLineClass['id'], SandLineClass> = {
 };
 
 /**
+ * How many impressions a mould takes — the review round's limits (4 Nov 2026; scripts/research/2026-11-review-round/
+ * data.json rows S4–S6, notes.md §1.2). The free fit on the mould face counted the stub axle's 9 impressions covering 84 %
+ * of the plate and the bracket's 20 covering 93 %: both beyond the maker's own 60 % rule, which already includes the
+ * gating. The impressions costed are the smallest of:
+ *  - the free fit on the face (each impression the footprint + IMPRESSION_MARGIN_MM, casting rules);
+ *  - the plate rule: patterns + gating ≤ 60 % of the plate area, the gating taken as that margin;
+ *  - on IRON only, sand : iron ≥ 5 : 1 by weight, the mould at its necessary thickness T = P + Q + S (pattern heights both
+ *    sides = the part's depth along the draw, S = 70 mm of sand between the cavities in the stack).
+ * The sand density is the one figure without a source and says so on every line that uses it.
+ */
+export const IMPRESSION_LIMITS = {
+  plateShareMax: 0.60,
+  plateShareBasis: 'DISA Application Manual §2.1.4: "Plate area covered by the pattern and the gating system should not '
+    + 'exceed 60% of the total plate area" (the maker\'s manual, read from a third-party upload)',
+  sandBetweenCavitiesMm: 70,
+  sandBetweenBasis: 'DISA Application Manual §2.1: minimum sand between mould cavities S = 70 mm (60 mm on the DMM 2110), '
+    + 'necessary mould thickness T = P + Q + S',
+  sandToIronMin: 5,
+  sandToIronBasis: 'DISA MATCH (Foundry-Planet, 7 Mar 2012): "In iron foundries … a ratio of 5:1 or greater should be aimed at"',
+  sandDensityKgPerM3: 1500,
+  sandDensityBasis: 'compacted green sand 1.5 t/m³ — engineering-typical, not sourced (the foundry\'s mould weight replaces it)',
+} as const;
+
+/**
  * The automatic line takes the part when its moulds on the semi-automatic line would reach this many a year.
  * CostVision engineering judgement — NO source gives a moulds-a-year threshold between line classes (foundry notes §1).
  * The figure follows AFS Casting Source (2021): castings over ~5,000 a year are made on metal pattern equipment, the
@@ -628,6 +652,21 @@ export const FETTLING_CELL = {
 /** The module input for a fettling-cell time — one shape for the screen and headless. */
 export function fettlingCellInput(secPerCasting: number): { machineId: string; secPerCasting: number; manning: number } | undefined {
   return secPerCasting > 0 ? { machineId: FETTLING_CELL.machineId, secPerCasting, manning: FETTLING_CELL.crew } : undefined;
+}
+/**
+ * The module input for the foundry indirect lines (review round, 4 Nov 2026) — one shape for the screen and headless.
+ * Each rate is the casting rules' (or a figure typed on the form); 0 = no line. Undefined when every rate is 0.
+ */
+export function foundryInput(f: { newSandGbpPerTPoured: number; ladlePreheatKwhPerT: number; dustExtractionKwhPerT: number; plantElectricityKwhPerT: number }):
+  { newSandGbpPerTPoured?: number; ladlePreheatKwhPerTPoured?: number; dustExtractionKwhPerTGood?: number; plantElectricityKwhPerTGood?: number } | undefined {
+  const pos = (x: number) => (x > 0 ? x : undefined);
+  const out = {
+    ...(pos(f.newSandGbpPerTPoured) ? { newSandGbpPerTPoured: f.newSandGbpPerTPoured } : {}),
+    ...(pos(f.ladlePreheatKwhPerT) ? { ladlePreheatKwhPerTPoured: f.ladlePreheatKwhPerT } : {}),
+    ...(pos(f.dustExtractionKwhPerT) ? { dustExtractionKwhPerTGood: f.dustExtractionKwhPerT } : {}),
+    ...(pos(f.plantElectricityKwhPerT) ? { plantElectricityKwhPerTGood: f.plantElectricityKwhPerT } : {}),
+  };
+  return Object.keys(out).length ? out : undefined;
 }
 // The costed country's foundry rate (rate-context.ts) — it was the UK's in every country.
 const foundryRatePerHr = (): number => activeLabourRate('lab-uk-foundry');

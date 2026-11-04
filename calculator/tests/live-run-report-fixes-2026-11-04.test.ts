@@ -268,7 +268,7 @@ describe('2. Casting and cast + machine rows that are the same costing are one r
     // a null-process casting row never folds into a cast + machine row that names a process
     expect(foldSameScopeRows([ref, row('casting', null, 8.6877), row('cast_and_machine', 'sand', 8.6877)], ref)).toHaveLength(3);
   });
-  it('the hub flange as the live run costed it (no material family): one row at £8.69, not two', async () => {
+  it('the hub flange as the live run costed it (no material family): one row (£9.39 since the review round), not two', async () => {
     const answers = { ...fixtures.find(x => x.part === 'FORGE_Hub_Flange.stp')!.answers };
     delete answers['material.family'];
     const cmp = await compareRoutes(fixtureInput('FORGE_Hub_Flange.stp', answers));
@@ -277,7 +277,9 @@ describe('2. Casting and cast + machine rows that are the same costing are one r
     expect(castLike[0].process).toBeNull();
     expect(castLike[0].label).toBe('Casting + machining');
     expect(castLike[0].alsoRoutes).toEqual(['casting']);
-    expect(castLike[0].total!).toBeCloseTo(8.6877, 3);
+    // Review round (4 Nov 2026): 8.6877 → 9.3923 — the foundry indirect lines, the impressions limits and the CNC lathe's
+    // UK award capex (the spindle is turned)
+    expect(castLike[0].total!).toBeCloseTo(9.3923, 3);
   }, 120_000);
 });
 
