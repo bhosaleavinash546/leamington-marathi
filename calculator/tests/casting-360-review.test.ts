@@ -133,16 +133,22 @@ describe('X16 — cored bores are finish-bored on the machining centre, not dril
     expect(drill.machineId).toBe('mach-hmc-400');   // 100,000/yr: drilled in the same clamping on the twin-pallet cell (pilot rule pack)
   });
   it('the Ø63–75 bearing bores are bored on the machining centre', () => {
-    expect(bore.name).toMatch(/4 cored bore\(s\).*Ø63\.0.*Ø75\.0/);
+    // one stepped bore once the recorded geometry carries the kernel's axis lines (fresh numbers review, 4 Nov 2026)
+    const axes = (k.geometry as { featureTable: FeatureRow[] }).featureTable.some(r => r.axes?.length);
+    expect(bore.name).toMatch(axes ? /1 cored bore\(s\), 1 stepped.*Ø75\.0.*Ø63\.0/ : /4 cored bore\(s\).*Ø63\.0.*Ø75\.0/);
     expect(bore.machineId).not.toBe('mach-drill');
   });
   it('minutes are moved, not added: drilling + boring = every hole timed once (cored above Ø20 bored)', () => {
     // 0.0932 h on the unsourced aluminium rates × 1.6; on the published cutting data (report standard round, Nov 2026)
-    // the same holes take 0.0559 h — each counted once, split between the two operations.
+    // the same holes take 0.0559 h — each counted once, split between the two operations. Since the fresh numbers review
+    // (4 Nov 2026) the Ø12 × 2 cylinder is a land (shallower than ¼ Ø), spot-faced, not drilled: 0.0574 h on this recorded
+    // geometry (no axis lines, so its stepped bores are not grouped — tests/stepped-bores.test.ts covers those).
     const rows = (k.geometry as { featureTable: FeatureRow[] }).featureTable;
     const whole = nearNetMachiningTime(rows, 'cast iron', 'sand').holeMin / 60;
     expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(whole, 3);
-    expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(0.0559, 4);
+    // with the kernel's axis lines the hub bore and the Ø10 / Ø11 pair are stepped bores, one approach each: 0.0449 h
+    const axes = rows.some(r => r.axes?.length);
+    expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(axes ? 0.0449 : 0.0574, 4);
   });
 });
 

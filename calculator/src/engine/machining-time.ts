@@ -34,7 +34,7 @@ import { activeToolroomFactor } from './rate-context.js';
 import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
-import { featureTime, defaultInclude, ALLOWANCE_STATUS } from './feature-machining.js';
+import { featureTime, defaultInclude, holeWork, isLandRow, ALLOWANCE_STATUS } from './feature-machining.js';
 import {
   millRoughEffective, turnRoughEffective, millRoughInCut, turnRoughInCut, sidePassCm2PerMin, turnFinishCm2PerMin,
   sourcesLine, sourceName, MACHINABILITY_RATIO, ROUGH_AIR_SHARE, TURN_ROUGH_AP_MM, SIDE_PASS_AP_MM, ASSUMED,
@@ -122,8 +122,8 @@ export function cuttingDataFor(family: MaterialFamily): CuttingData {
   return CUTTING_DATA[family] ?? CUTTING_DATA.steel;
 }
 
-/** A wide, shallow "hole" (Ø ≥ 30, depth < ¼ Ø) is a land skimmed by one facing pass, not a bore (feature-machining.ts). */
-const isLand = (r: FeatureRow) => r.diaMm >= 30 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
+/** A shallow "hole" (depth < ¼ Ø, any Ø) is a land skimmed by one pass, not a drilled hole (feature-machining.ts). */
+const isLand = (r: FeatureRow) => isLandRow(r);
 
 /**
  * Metal inside the drilled, reamed and bored holes, cm³. The hole time (`holeMinutes`) removes it, so the roughing
@@ -235,11 +235,11 @@ function roughMilling(family: MaterialFamily, cm3: number): { min: number; text:
     + `+ ${ROUGH_AIR_SHARE * 100}% air moves and step-downs (${ASSUMED}) = ${min.toFixed(2)} min` };
 }
 
-/** Holes, with each row's arithmetic. */
+/** Holes, with each piece of work's arithmetic — coaxial steps of one bore timed as ONE stepped bore (`holeWork`). */
 export function holeTimes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): { min: number; text: string } {
-  const hs = rows.filter(r => r.kind === 'hole');
-  const min = hs.reduce((s, r) => s + featureTime(r, family, coredAboveMm).min * r.count, 0);
-  return { min, text: hs.map(r => `${r.count}× ${featureTime(r, family, coredAboveMm).text}`).join('; ') };
+  const work = holeWork(rows, family, coredAboveMm);
+  const min = work.reduce((s, w) => s + w.minEach * w.count, 0);
+  return { min, text: work.map(w => `${w.count}× ${w.label} ${w.calc}`).join('; ') };
 }
 
 /**

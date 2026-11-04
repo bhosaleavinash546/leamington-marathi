@@ -166,8 +166,11 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
       : pr.mode === 'one_time_nre' ? 'the headline: tooling is charged once, outside it' : 'the headline: no tooling in this costing'],
     ['UP-FRONT TOOLING (LUMP SUM)', pr.upfrontGbp > 0.5 ? whole(pr.upfrontGbp) : 'none',
       pr.upfrontGbp <= 0.5 ? 'no up-front tooling in this costing' : pr.unsplitCountedUpfront ? `first sets, fixtures, programming — incl. ${whole(t.unsplitGbp)} not split into sets` : 'first sets, fixtures, programming and masters'],
-    ['OF WHICH TOOL REPLACEMENT & WEAR', pr.mode === 'amortized' ? `${money(pr.runningPerPartGbp)} a part` : 'none',
-      'replacement sets and perishable tools, with their overhead and margin — inside the piece price'],
+    // Two different "wear" figures were printed side by side (fresh review, 4 Nov 2026): this tile is the TOOLING bucket's
+    // running share — replacement die / pattern / tool sets and perishable tooling items; cutting-tool wear (inserts,
+    // drills) is a consumable in material and is said below under its own name.
+    ['OF WHICH TOOL REPLACEMENT SETS', pr.mode === 'amortized' ? `${money(pr.runningPerPartGbp)} a part` : 'none',
+      'replacement tool sets, with overhead and margin — inside the piece price (not cutting-tool wear)'],
   ];
   const tw = (CW - 4) / 3;
   chk(20);
@@ -187,7 +190,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
     para(`Tooling over the programme ${whole(t.totalGbp)} = first sets and NRE ${whole(t.initialGbp)} + replacements ${whole(t.replacementGbp)} + perishables ${whole(t.perishableGbp)}`
       + `${t.unsplitGbp > 0.5 ? ` + not split ${whole(t.unsplitGbp)}` : ''}, ÷ ${Math.round(t.amortisationVolume).toLocaleString('en-GB')} parts = ${money(t.bucketPerPartGbp)} a part (bucket 4, before overhead and margin).`, 6.6, GREY);
   }
-  if (pr.toolWearInMaterialGbp > 0) para(`Cutting-tool wear ${money(pr.toolWearInMaterialGbp)} a part is costed as a consumable in material (bucket 1), where the costing puts it — it is inside the piece price too.`, 6.6, GREY);
+  if (pr.toolWearInMaterialGbp > 0) para(`Cutting-tool wear (inserts, drills and end mills worn in machining — a consumable, not a tool replacement set) ${money(pr.toolWearInMaterialGbp)} a part is costed in material (bucket 1), before overhead and margin — it is inside the piece price too.`, 6.6, GREY);
 
   // Confidence and the unsourced share
   const c = m.confidence;
@@ -273,7 +276,8 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   section(2, 'Cost build-up', 'the 8 buckets add to the price', sec1RanOn ? 60 : undefined);
   if (notModelledDeferred) para(`From section 1 — ${notModelledDeferred}`, 6.9, SLATE);
   table(['Bucket', 'A part', 'Share'],
-    [...m.buckets.map(b => [b.label, money(b.gbp), pct(b.sharePct)]), ['Should-cost', money(m.total), '100.0%']],
+    [...m.buckets.map(b => [b.metalGbp != null ? `${b.label} — of which ${b.metalWord ?? 'metal'} ${money(b.metalGbp)} (${pct(b.metalSharePct ?? 0)} of the price); the rest consumables, services and energy` : b.label,
+      money(b.gbp), pct(b.sharePct)]), ['Should-cost', money(m.total), '100.0%']],
     { 0: { cellWidth: 120 }, 1: { cellWidth: 36, halign: 'right' }, 2: { cellWidth: 26, halign: 'right' } },
     { bold: r => r === m.buckets.length, fill: r => (r === m.buckets.length ? HDR : null) });
   head('Material (bucket 1) split', 'metal follows an index; consumables, services and energy do not');
@@ -284,6 +288,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
       ['Totals', `metal ${money(mat.metalGbp)} · consumables & services ${money(mat.consumablesGbp)} · energy ${money(mat.energyGbp)}${mat.boughtInGbp > 0 ? ` · bought-in ${money(mat.boughtInGbp)}` : ''}`, money(mat.totalGbp)]],
     { 0: { cellWidth: 40, textColor: GREY }, 1: { cellWidth: 112 }, 2: { cellWidth: 30, halign: 'right' } },
     { fontSize: 6.8, bold: r => r === mat.lines.length, fill: r => (r === mat.lines.length ? HDR : null) });
+  if (m.weights) para(m.weights.line, 6.8, GREY);
   const fm = m.formMachine;
   if (fm) {
     para(`${fm.form} ex-${fm.form === 'Casting' ? 'foundry' : 'forge'} ${money(fm.formGbp)} a part — ${money4(fm.formPerKg)}/kg ${fm.kgLabel} (${fm.kg.toFixed(3)} kg) · machining ${money(fm.machiningGbp)} a part · together ${money(m.total)}. `

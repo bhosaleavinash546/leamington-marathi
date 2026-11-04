@@ -127,7 +127,7 @@ describe('N2 — page 1 re-adds as a supplier quotes it', () => {
     expect(p.runningPerPartGbp).toBeCloseTo(running / 1_000_000 * 1.12 * 1.08, 9);
     expect(p.toolWearInMaterialGbp).toBeCloseTo(2.81, 9);                           // said where it sits
     const text = pdfText(() => printPDF(castRes, cast, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], meta as never));
-    expect(text).toMatch(/Cutting-tool wear £2\.81 a part is costed as a consumable in material \(bucket 1\)/);
+    expect(text).toMatch(/Cutting-tool wear \(inserts, drills and end mills worn in machining — a consumable, not a tool replacement set\) £2\.81 a part is costed in material \(bucket 1\)/);
   });
 });
 
@@ -223,7 +223,9 @@ describe('should-fix list', () => {
     const d = core.confidence.distinct;
     expect(core.confidence.grade).toBe(gradeOfCounts(d.high, d.medium, d.low));
     expect(gradeOfCounts(0, 9, 1)).toBe('Medium');                                 // the hub flange: ½ × 9 / 10 = 0.45
-    if (core.confidence.grade !== overallConfidence(castRes)) expect(core.confidence.gradeNote).toMatch(/counts each operation's use of a shared rate separately/);
+    // ONE grade is printed (fresh numbers review, 4 Nov 2026): the screen's grade is never set beside it
+    expect(core.confidence.gradeNote ?? '').not.toMatch(/costing screen grades/);
+    void overallConfidence(castRes);
   });
 
   it('capacity warns past 5 machines and on a line over 100 % loaded, each machine on its own hours', () => {

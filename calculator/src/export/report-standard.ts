@@ -34,7 +34,13 @@ export interface KeyDriver {
  * `unlessAnswered`: dropped when the engineer answered the question that settles it that way — a leak test is never
  * listed after "Does this part have to hold pressure? No" (fresh review N17).
  */
-export interface NotIncludedItem { text: string; costedIf?: RegExp; unlessAnswered?: { id: string; answer: RegExp } }
+export interface NotIncludedItem {
+  text: string; costedIf?: RegExp; unlessAnswered?: { id: string; answer: RegExp };
+  /** Listed only when the costed material's library category matches (EN 1563 test bars are a DUCTILE iron's). */
+  materialIf?: RegExp;
+  /** When this answer is given, the item is REQUIRED, not optional: `requiredText` replaces `text` — still not costed. */
+  requiredIf?: { id: string; answer: RegExp }; requiredText?: string;
+}
 
 export interface CommodityReportStandard {
   keyDrivers: KeyDriver[];
@@ -54,6 +60,19 @@ const ni = (text: string, costedIf?: RegExp, unlessAnswered?: NotIncludedItem['u
   ({ text, ...(costedIf ? { costedIf } : {}), ...(unlessAnswered ? { unlessAnswered } : {}) });
 /** Settled by a "No" to the leak-tight question. */
 const NOT_PRESSURE_TIGHT = { id: 'service.pressureTight', answer: /^no$/ };
+/** A safety-critical part: answered Yes. */
+const SAFETY_YES = { id: 'service.safetyCritical', answer: /^(yes|true)$/i };
+/**
+ * EN 1563 test bars on a DUCTILE casting: every melt is tested for nodularity and hardness by every ductile foundry, and a
+ * safety-critical part cannot ship without the certificate — so on a part answered safety-critical it is REQUIRED, never
+ * "optional" (fresh review, 4 Nov 2026: the stub axle listed it as an item to answer). It is still not in the price.
+ */
+const DUCTILE_TEST_BARS: NotIncludedItem = {
+  text: 'Nodularity / hardness / test-bar certification (EN 1563)', materialIf: /ductile|compacted graphite/i,
+  requiredIf: SAFETY_YES,
+  requiredText: 'REQUIRED on this safety-critical ductile casting, not optional — nodularity / hardness / test-bar certification (EN 1563) '
+    + 'on every melt: not in this price; ask the foundry to quote it',
+};
 /** Settled by "None — bare part" to the finish question. */
 const BARE = { id: 'service.finish', answer: /^none$/ };
 /** Heat treatment the costing prices as an operation or a consumable line. */
@@ -78,7 +97,7 @@ const CASTING_DRIVERS: KeyDriver[] = [
 const STANDARDS: Record<string, CommodityReportStandard> = {
   cast_and_machine: {
     keyDrivers: CASTING_DRIVERS,
-    notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), ni('Nodularity / hardness / test-bar certification (EN 1563)'), ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
+    notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), DUCTILE_TEST_BARS, ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
     quoteBreakdown: ['Casting price a part and £/kg as cast, ex-foundry', 'Metal charge £/kg and the index it follows',
       'Poured kg and yield', 'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, blast and NDT cost a casting',
       'Machining cycle by operation and machine class', 'Machine and labour £/h', 'Tooling investment separate from the piece price', 'Overhead and margin %'],
@@ -87,7 +106,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
   },
   casting: {
     keyDrivers: CASTING_DRIVERS,
-    notIncluded: [...LAUNCH, ni('Machining of features left as-cast'), ni('Heat treatment certificate'), ni('Heat treatment, if the specification calls for it', HEAT_TREAT_COSTED), ni('X-ray / UT, if specified', /x-?ray|ultrason|\bUT\b/i), ni('Coating', /coat|paint|plat/i, BARE), ni('Rust preventive', /rust|oil|coat|paint/i), ni('Part marking / traceability', /mark/i), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
+    notIncluded: [...LAUNCH, ni('Machining of features left as-cast'), DUCTILE_TEST_BARS, ni('Heat treatment certificate'), ni('Heat treatment, if the specification calls for it', HEAT_TREAT_COSTED), ni('X-ray / UT, if specified', /x-?ray|ultrason|\bUT\b/i), ni('Coating', /coat|paint|plat/i, BARE), ni('Rust preventive', /rust|oil|coat|paint/i), ni('Part marking / traceability', /mark/i), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
     quoteBreakdown: ['Casting price a part and £/kg as cast', 'Metal charge £/kg and the index it follows', 'Poured kg and yield',
       'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, heat treatment, blast and NDT cost a casting',
       'Moulding line, moulds an hour, impressions and crew', 'Overhead and margin %'],

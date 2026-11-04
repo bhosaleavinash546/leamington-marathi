@@ -550,7 +550,8 @@ function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gb
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG }, theme: 'plain',
     head: [['Cost line', 'A part', 'Share']],
-    body: [...ex.lines.map(l => [l.label, money(l.gbp), `${l.sharePct.toFixed(1)}%`]), ['Should-cost', money(ex.total), '100.0%']],
+    body: [...ex.lines.map(l => [l.metalGbp != null ? `${l.label} — of which ${l.metalWord ?? 'metal'} ${money(l.metalGbp)} (${(l.metalSharePct ?? 0).toFixed(1)}% of the price)` : l.label,
+      money(l.gbp), `${l.sharePct.toFixed(1)}%`]), ['Should-cost', money(ex.total), '100.0%']],
     headStyles: { ...TH.headStyles, fontSize: 6.5, cellPadding: 1.5 },
     bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 1.3 },
     columnStyles: { 0: { cellWidth: 122 }, 1: { cellWidth: 34, halign: 'right' }, 2: { cellWidth: 26, halign: 'right' } },

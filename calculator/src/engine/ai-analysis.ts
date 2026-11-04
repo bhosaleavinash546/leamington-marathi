@@ -226,6 +226,8 @@ export interface OCCTGeometry {
     areaMm2?: number;
     /** 1-based B-rep face ids (TopTools_IndexedMapOfShape order) — the same ids the viewer's triFace uses. */
     faceIds?: number[];
+    /** Per instance: its axis line (no radius) and axial span — coaxial touching holes are one stepped bore (FeatureRow). */
+    axes?: Array<{ line: string; s0: number; s1: number }>;
   }>;
   /** What the CAD file says about itself — product names, the header path, the authoring
    *  system, declared materials (server/utils/cad-metadata.ts). Evidence for the process

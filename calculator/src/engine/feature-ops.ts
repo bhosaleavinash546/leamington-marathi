@@ -17,6 +17,13 @@ export interface FeatureRow {
   areaMm2?: number;
   /** 1-based B-rep face ids this row was built from. */
   faceIds?: number[];
+  /**
+   * One entry per instance (hole / boss rows, kernel since Nov 2026): the instance's axis LINE without its radius ("foot
+   * x,y,z,direction x,y,z", foot rounded to 0.1 mm) and its axial span s0–s1 on that line, mm. Coaxial holes of
+   * different diameters that touch along the axis are one stepped bore (`steppedBoreGroups`). Absent on older recorded
+   * geometry and on meshes — every hole is then timed on its own.
+   */
+  axes?: Array<{ line: string; s0: number; s1: number }>;
 }
 
 /**

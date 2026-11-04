@@ -35,7 +35,7 @@ import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
   stockSize, fromSolidMillingTime, fromBarTurningTime, nearNetMachiningTime, nearNetTurningTime, nearNetTurnedAreaCm2, castMachiningStockMm, deburrInspectMinutes,
-  holeMinutes, CORED_ABOVE_MM, HOURS_STATUS, CUTTING_DATA_STATUS,
+  CORED_ABOVE_MM, HOURS_STATUS, CUTTING_DATA_STATUS,
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, turnedPartFacts, type CuttingTime,
   costedNearNetRows, machinedFaceCount, TOOL_CHANGE_SEC,
@@ -44,7 +44,7 @@ import {
   optimiseMachiningRouting, standardBatchSize, type RoutingChoice, CUTTING_MANNING, PALLET_CHANGE_SEC, PALLET_CHANGE_SOURCE,
 } from '../../routing-optimiser.js';
 import { tappedThread } from '../../feature-ops.js';
-import { featureTime, costedOperation, ALLOWANCE_STATUS } from '../../feature-machining.js';
+import { costedOperation, holeWork, isLandRow, ALLOWANCE_STATUS, type HoleWork } from '../../feature-machining.js';
 import { sourcesLine } from '../../cutting-catalogue.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef, type RuleOutcome } from '../types.js';
 import { holeRows, bRepFaceCount, MESH_DEBURR_FACE_ALLOWANCE } from '../derive/facts.js';
@@ -244,7 +244,8 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
     : null;
   // Holes up to the cored size are drilled from solid (drill machine); the cored bores above it are finish-bored on the
   // machining centre — the same minutes nearNetMachiningTime counted, split by where they are cut.
-  const boreMin = Math.round(holeMinutes(rows.filter(r => r.kind === 'hole' && r.diaMm > cored), family, cored) * ff * 100) / 100;
+  // A stepped bore goes where its largest step is cut: finish-bored when a step is above the cored size (holeWork).
+  const boreMin = Math.round(holeWork(rows, family, cored).filter(w => w.bored).reduce((s, w) => s + w.minEach * w.count, 0) * ff * 100) / 100;
   return {
     kind: 'near-net', family, handledKg, handlingMin: handlingMinPerFixturing(handledKg),
     // a turned part's faces are in the lathe's time; its tool changes are the lathe's three (a ticked pocket / boss is
@@ -338,7 +339,7 @@ export function machiningRouting(ctx: RuleContext, family: MaterialFamily): Rout
 }
 
 const hr4 = (min: number) => Math.round(min / 60 * 10_000) / 10_000;
-const isLand = (r: FeatureRow) => r.diaMm >= 30 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
+const isLand = (r: FeatureRow) => isLandRow(r);
 
 /**
  * The operations, from the cut and the chosen routing.
@@ -357,7 +358,6 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
   const chosen = routing.chosen;
   const holeRowsAll = (cut.rows ?? (ctx.geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
   const holeIds = holeRowsAll.flatMap(r => r.faceIds ?? []);
-  const holeSummary = holeRowsAll.map(r => `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)}`).join(', ');
   const nHoles = holeRowsAll.reduce((s, r) => s + r.count, 0);
 
   if (chosen.label === 'turned' && cut.turned) {
@@ -392,41 +392,49 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
       ops.push({ ...machine, name: what, type, machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.millMin),
         basis: `no setup analysis — one operation: ${cut.detail.basis}` });
     }
-    // Near-net: holes up to the cored size are drilled; the cored bores are finish-bored on the machining centre.
+    // Near-net: holes up to the cored size are drilled; the cored bores are finish-bored on the machining centre. Coaxial
+    // steps of one bore (counterbores, lands, grooves) are ONE piece of work with one approach (holeWork, fresh review
+    // 4 Nov 2026 — the stub axle's two stepped kingpin bores were "10 cored bores").
     const coredAbove = cut.coredAboveMm ?? Infinity;
-    const boreRows = cut.kind === 'near-net' && (cut.boreMin ?? 0) > 0 ? holeRowsAll.filter(r => r.diaMm > coredAbove) : [];
-    const drillRows = holeRowsAll.filter(r => !boreRows.includes(r));
-    const summary = (rs: FeatureRow[]) => rs.map(r => `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)}`).join(', ');
-    const count = (rs: FeatureRow[]) => rs.reduce((s, r) => s + r.count, 0);
-    // The arithmetic behind the drilling minutes, row by row (arith audit, Oct 2026: the basis printed only the total,
-    // and an inferred tapping — a hole at a tapping-drill size, ≥ 1.5 Ø deep — was charged without being stated).
     const fam = cut.family ?? 'steel';
-    const perRow = (rs: FeatureRow[]) => rs.map(r => {
-      const t = featureTime(r, fam, cut.coredAboveMm);
+    const work = holeWork(holeRowsAll, fam, cut.coredAboveMm);
+    const boreWork = cut.kind === 'near-net' && (cut.boreMin ?? 0) > 0 ? work.filter(w => w.bored) : [];
+    const drillWork = work.filter(w => !boreWork.includes(w));
+    const summary = (ws: HoleWork[]) => ws.map(w => `${w.count}×${w.kind === 'stepped' ? ` ${w.label}` : w.label}`).join(', ');
+    const count = (ws: HoleWork[]) => ws.reduce((s, w) => s + w.count, 0);
+    // The arithmetic behind the drilling minutes, piece by piece (arith audit, Oct 2026: the basis printed only the total,
+    // and an inferred tapping — a hole at a tapping-drill size, ≥ 1.5 Ø deep — was charged without being stated).
+    const perRow = (ws: HoleWork[]) => ws.map(w => {
+      if (w.kind === 'stepped') return `${w.count}× ${w.label}: ${w.calc}`;
+      const r = holeRowsAll[w.rowIndexes[0]];
       const tap = tappedThread(r);
       const what = tap ? `drill + tap ${tap} (inferred from the tapping-drill size)`
-        : cut.coredAboveMm !== undefined && r.diaMm > cut.coredAboveMm ? (isLand(r) ? 'land, spot-faced' : 'cored, finish-bored')
+        : isLand(r) ? 'land, spot-faced (shallower than ¼ Ø — not a drilled hole)'
+        : cut.coredAboveMm !== undefined && r.diaMm > cut.coredAboveMm ? 'cored, finish-bored'
         : costedOperation(r).toLowerCase();
-      return `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)} ${what}: ${t.calc}`;
+      return `${w.count}×${w.label} ${what}: ${w.calc}`;
     }).join('; ');
+    const stepNote = (ws: HoleWork[]) => ws.some(w => w.kind === 'stepped')
+      ? 'a stepped bore — coaxial steps that touch along one axis — is one approach with one tool a step Ø; ' : '';
     if (cut.holeMin > 0) {
-      const rs = boreRows.length ? drillRows : holeRowsAll;
-      ops.push({ ...machine, name: `Drilling — ${count(rs)} holes (${boreRows.length ? summary(rs) : holeSummary}) [geometry-measured]`, type: 'drilling',
+      const ws = boreWork.length ? drillWork : work;
+      ops.push({ ...machine, name: `Drilling — ${count(ws)} holes (${summary(ws)}) [geometry-measured]`, type: 'drilling',
         machineId: chosen.drillMachineId, cycleTimeHr: hr4(cut.holeMin),
-        basis: `${count(rs)} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min: ${perRow(rs)} `
+        basis: `${count(ws)} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min: ${perRow(ws)} `
           + `(drilled at each hole's own Ø, n·f; a boring pass on blind Ø13–26 only — a through hole is a clearance hole, not reamed; `
-          + `peck only beyond 5×D; helical mill above Ø26; tap in and out at n × pitch. ${ALLOWANCE_STATUS}; `
-          + `sources — ${sourcesLine(fam, ['drill', 'bore', 'tap'])}; ${CUTTING_DATA_STATUS})`
+          + `peck only beyond 5×D; helical mill above Ø26; tap in and out at n × pitch; ${stepNote(ws)}a cylinder shallower than ¼ Ø is a land, `
+          + `not a hole. ${ALLOWANCE_STATUS}; sources — ${sourcesLine(fam, ['drill', 'bore', 'tap'])}; ${CUTTING_DATA_STATUS})`
           + (chosen.drillMachineId === chosen.primaryMachineId ? ' — drilled in the same clamping' : ''),
-        faceIds: rs.flatMap(r => r.faceIds ?? []) });
+        faceIds: ws.flatMap(w => w.faceIds) });
     }
     if ((cut.boreMin ?? 0) > 0) {
-      ops.push({ ...machine, name: `Finish boring — ${count(boreRows)} cored bore(s) (${summary(boreRows)}) [geometry-measured]`, type: 'milling_3ax',
+      const nStepped = boreWork.filter(w => w.kind === 'stepped').reduce((s, w) => s + w.count, 0);
+      ops.push({ ...machine, name: `Finish boring — ${count(boreWork)} cored bore(s)${nStepped ? `, ${nStepped} stepped` : ''} (${summary(boreWork)}) [geometry-measured]`, type: 'milling_3ax',
         machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.boreMin!),
-        basis: `${count(boreRows)} bore(s) above Ø${coredAbove} mm are cored in the casting and finish-bored on the machining centre `
-          + `(not drilled), ${fmt(cut.boreMin!, 1)} min: ${perRow(boreRows)} (one boring pass at the bore's own n·f + 0.25 min; `
-          + `a land shallower than ¼ Ø is spot-faced, 0.2 min + 0.004 min/mm Ø; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(fam, ['bore'])}; ${CUTTING_DATA_STATUS})`,
-        faceIds: boreRows.flatMap(r => r.faceIds ?? []) });
+        basis: `${count(boreWork)} bore(s) above Ø${coredAbove} mm are cored in the casting and finish-bored on the machining centre `
+          + `(not drilled), ${fmt(cut.boreMin!, 1)} min: ${perRow(boreWork)} (one boring pass at the bore's own n·f + 0.25 min; `
+          + `${stepNote(boreWork)}a land shallower than ¼ Ø is skimmed at 0.004 min/mm Ø, + 0.2 min when it stands alone; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(fam, ['bore'])}; ${CUTTING_DATA_STATUS})`,
+        faceIds: boreWork.flatMap(w => w.faceIds) });
     }
   }
   // Near-net with a turned axis: the spindle on the CNC lathe, in its own fixture, loaded once.

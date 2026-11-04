@@ -131,8 +131,12 @@ describe('3. The arithmetic on a row', () => {
     // secondary machining on the published cutting data (12.5 → 5.8 HMC min) — 15.1618.
     // Secondary-machining parity (Nov 2026): the forging's secondary machining is the near-net plan of cast + machine —
     // the deburr and gauge check, the tool changes, the crewed pallet change, the spindle turned on the lathe in its own
-    // fixture, and the as-forged weight carrying that spindle's turning stock — 17.2467.
-    expect(ref.total).toBeCloseTo(17.2467, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
+    // fixture, and the as-forged weight carrying that spindle's turning stock — 17.2467. Fresh numbers review (4 Nov 2026):
+    // the Ø12 × 2 cylinder is a land, spot-faced, not drilled — 17.3206 on this recorded geometry (its stepped bores group
+    // once the baseline is re-recorded with the kernel's axis lines).
+    // 16.7767 once the recorded geometry carries the kernel's axis lines (the hub bore and the Ø10 / Ø11 pair stepped)
+    const axes = ((part('steering_knuckle_RH.stp').geometry as unknown as { featureTable?: Array<{ axes?: unknown[] }> }).featureTable ?? []).some(r => r.axes?.length);
+    expect(ref.total).toBeCloseTo(axes ? 16.7767 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
     expect(ref.tooling!.investment).toBe(443582.83);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.434, boughtKg: 5.084 });
@@ -186,7 +190,12 @@ describe('3. The arithmetic on a row', () => {
     // the machining row (50.5 kg of plate for a 2.85 kg part) is costed, itemised and marked not credible
     expect(mach.credible).toBe(false);
     expect(mach.notCredible.join(' ')).toMatch(/5\.7% utilisation/);
-    expect(cmp.rows.filter(r => r !== mach).every(r => r.credible)).toBe(true);
+    // the cast-steel rows rest on GS-C25 bought below the forging's own steel scrap credit: refused with that reason
+    // (route-material-guard.ts, fresh numbers review 4 Nov 2026); every other row is credible
+    const castSteel = cmp.rows.filter(r => r.materialCheck?.status === 'implausible');
+    expect(castSteel.length).toBeGreaterThan(0);
+    for (const r of castSteel) expect(r.material?.materialId).toBe('mat-gs-c25');
+    expect(cmp.rows.filter(r => r !== mach && !castSteel.includes(r)).every(r => r.credible)).toBe(true);
     const precision = cmp.rows.find(r => r.process === 'precision')!;
     // one name for the tool wear on every route (secondary-machining follow-ups, Nov 2026)
     expect(precision.consumables.map(l => l.label)).toEqual(['descale', 'NDT', 'cutting-tool wear']);

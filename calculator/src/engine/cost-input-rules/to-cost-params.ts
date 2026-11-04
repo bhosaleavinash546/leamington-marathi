@@ -48,7 +48,7 @@ import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
 import { physicalRemovalCeilingMin } from '../feature-costing.js';
-import { featureMinutesEach } from '../feature-machining.js';
+import { holeWork } from '../feature-machining.js';
 
 /** Same machinability table the machining rules use — duplicated deliberately
  *  small rather than exporting rules internals into the mapper. */
@@ -671,7 +671,8 @@ export function toCostParams(
         const mf = MACHINABILITY_FOR_CEILING[mat.family ?? 'steel'] ?? 1.2;
         const holeRows = ((geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
         // the holes at the metal's own catalogue row (no machinability multiplier on top — it is in the row)
-        const drillMin = holeRows.reduce((sum, r) => sum + featureMinutesEach(r, mat.family ?? 'steel') * r.count, 0);
+        // (coaxial steps of one bore timed as ONE stepped bore — holeWork, as every costed route times them)
+        const drillMin = holeWork(holeRows, mat.family ?? 'steel').reduce((sum, w) => sum + w.minEach * w.count, 0);
         const ceilingHr = (physicalRemovalCeilingMin(
           geo.volume.cm3, stockCm3, geo.surfaceArea?.cm2 ?? 0, mf) + drillMin) / 60;
         const supplied = ops.reduce((sum, o) => sum + num(o.cycleTimeHr), 0) || cycleHr;

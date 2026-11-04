@@ -294,12 +294,20 @@ def _extract_feature_table(wrapped, extents):
             axis_extent = abs(d[0]) * extents[0] + abs(d[1]) * extents[1] + abs(d[2]) * extents[2]
             through = axis_extent > 0 and f["span"] >= axis_extent - max(0.1, axis_extent * 0.02)
         key = (kind, dia, depth, bool(through))
+        # Each instance's axis LINE without its radius (foot point nearest the origin + sign-normalised direction) and
+        # its axial span on that line: coaxial rows of different diameters that touch along the axis are one STEPPED
+        # bore (the costing times it with one approach — stepped-bore grouping, Nov 2026). The foot is rounded to
+        # 0.1 mm and the direction to 3 dp so the same line read off two faces gives the same key.
+        foot = [f["mid"][k] - f["axis"][k] * sum(f["mid"][j] * f["axis"][j] for j in range(3)) for k in range(3)]
+        line = ",".join([f"{round(c, 1) + 0.0:.1f}" for c in foot] + [f"{round(c, 3) + 0.0:.3f}" for c in f["axis"]])
+        ax = {"line": line, "s0": round(f["s0"], 2), "s1": round(f["s1"], 2)}
         inst = instances.get(key)
         if inst is None:
-            instances[key] = {"count": 1, "faceIds": list(f["faceIds"])}
+            instances[key] = {"count": 1, "faceIds": list(f["faceIds"]), "axes": [ax]}
         else:
             inst["count"] += 1
             inst["faceIds"].extend(f["faceIds"])
+            inst["axes"].append(ax)
 
     rows = []
     for (kind, dia, depth, through), inst in instances.items():
@@ -310,6 +318,7 @@ def _extract_feature_table(wrapped, extents):
             "through": through if kind == "hole" else None,
             "count": inst["count"],
             "faceIds": sorted(inst["faceIds"]),
+            "axes": sorted(inst["axes"], key=lambda a: (a["line"], a["s0"])),
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows

@@ -60,7 +60,11 @@ describe('1. the bracket: the casting route = cast + machine, to the penny', () 
       const machOps = (r: typeof cast) => (r.trace.stackInput.operations as Array<{ operationName: string; cycleTimeHr: number; labourTimeHr: number; manning: number; labourEfficiency: number }>)
         .filter(o => /^(Machining Setup|Finish machining|Drilling|Finish boring|Turning|Load|Pallet|Deburr)/.test(o.operationName));
       expect(machOps(cast)).toEqual(machOps(cam));
-      if (annual === 200_000) expect(cast.total).toBeCloseTo(8.74, 2);   // £7.33 casting / £9.18 cast + machine before
+      // £7.33 casting / £9.18 cast + machine before; £8.74 until its four 1 mm-deep "holes" became lands (fresh numbers
+      // review, 4 Nov 2026 — on this recorded geometry they stand alone; with the kernel's axis lines they ride their holes)
+      // (8.22 once the recorded geometry carries the kernel's axis lines: the 1 mm lands ride their holes as stepped bores)
+      const axes = ((rec(BRACKET).geometry as { featureTable?: Array<{ axes?: unknown[] }> }).featureTable ?? []).some(r => r.axes?.length);
+      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 8.22 : 8.80, 2);
     }, 60_000);
   }
 

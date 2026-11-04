@@ -33,6 +33,8 @@ import { decisionUsedValue, type DecisionForUsed, type DecisionUsedFacts } from 
 import { reportNoteText, directMaterialNames } from './money-text.js';
 import { reportStandardFor, dfmRuleApplies, type NotIncludedItem } from './report-standard.js';
 import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
+import { routeMaterialCheck } from '../engine/route-material-guard.js';
+import { familyOfCategory } from '../engine/route-feasibility.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
 import { compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
@@ -40,7 +42,13 @@ import { ruleReportNotes, type RuleReportNotes } from '../engine/cost-input-rule
 import type { RuleContext } from '../engine/cost-input-rules/types.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 
-export interface ExecutiveLine { label: string; gbp: number; sharePct: number }
+export interface ExecutiveLine {
+  label: string; gbp: number; sharePct: number;
+  /** On the material line: the metal (or resin / compound) itself, net of scrap — the index-linked part — and its share of
+   *  the price, printed beside the bucket's share (fresh review, 4 Nov 2026: the stub axle's "Material 44 %" held £2.71
+   *  of metal; an index clause written on 44 % over-indexes four times). `metalWord` names it. */
+  metalGbp?: number; metalSharePct?: number; metalWord?: string;
+}
 export interface ExecutiveMover { label: string; minusGbp: number; plusGbp: number }
 export interface ExecutiveLever { action: string; savingGbp: number; savingPct: number; basis: string }
 
@@ -110,7 +118,21 @@ function costLines(result: PartCostResult, input: UniversalStackInput, library: 
     { label: input.deliveryTerms === 'EXW' ? 'Packaging' : 'Packaging and logistics', gbp: b.packaging + b.logistics },
   ].filter(l => l.gbp > 0.00005);
   raw.sort((a, c) => c.gbp - a.gbp);
-  return raw.map(l => ({ label: l.label, gbp: r4(l.gbp), sharePct: Math.round(l.gbp / total * 1000) / 10 }));
+  const metal = metalOfMaterial(result, input, library);
+  return raw.map(l => ({ label: l.label, gbp: r4(l.gbp), sharePct: Math.round(l.gbp / total * 1000) / 10,
+    ...(metal && l.gbp === b.rawMaterial ? { metalGbp: r4(metal.gbp), metalSharePct: Math.round(metal.gbp / total * 1000) / 10, metalWord: metal.word } : {}) }));
+}
+
+/**
+ * The metal (resin, compound) inside the material bucket, net of scrap — what an index clause follows — or null when the
+ * bucket is that alone or is priced by itemised lines. `word` is what to call it.
+ */
+export function metalOfMaterial(result: PartCostResult, input: UniversalStackInput, library: RateLibrary): { gbp: number; word: string } | null {
+  if (input.rawMaterial.directCost !== undefined) return null;
+  const split = materialSplit(result, input, library);
+  if (!(split.metalGbp > 0) || Math.abs(split.metalGbp - result.breakdown.rawMaterial) < 0.005) return null;
+  const fam = familyOfCategory(library.materials.find(m => m.id === input.rawMaterial.materialId)?.category ?? '');
+  return { gbp: split.metalGbp, word: fam === 'plastic' ? 'resin' : fam === 'rubber' ? 'compound' : 'metal' };
 }
 
 /** The single largest operation (machine + labour), named as the reports name it. */
@@ -396,7 +418,8 @@ export interface CoreReport {
   confidence: {
     /** Graded on the DISTINCT inputs printed (the same thresholds as `overallConfidence`). */
     grade: string;
-    /** The screen's grade (every traced row) — and why it differs, when it does. */
+    /** The screen's grade (every traced row) — kept for the audit pack, never printed beside `grade`; `gradeNote` says why
+     *  the grade is capped (a BLOCKING DFM finding), null otherwise. */
     screenGrade: string;
     gradeNote: string | null;
     /** Distinct inputs (a rate shared by 9 operations counts once), by grade. */
@@ -418,8 +441,11 @@ export interface CoreReport {
   /** Costs the model does not carry that a supplier will charge (a gap in the cost model, not a scope item). */
   notModelled: string[];
   terms: string;
-  buckets: Array<{ label: string; gbp: number; sharePct: number }>;
+  /** The 8 buckets; the material one carries its metal (net of scrap) £ and share of the price (`metalOfMaterial`). */
+  buckets: Array<{ label: string; gbp: number; sharePct: number; metalGbp?: number; metalSharePct?: number; metalWord?: string }>;
   material: { lines: CoreMaterialLine[]; metalGbp: number; consumablesGbp: number; energyGbp: number; boughtInGbp: number; totalGbp: number };
+  /** ONE weight set for a casting or forging, labelled the same on every page (`formWeights`), or null. */
+  weights: CoreWeights | null;
   perKg: { kg: number; kgLabel: string; pricePerKg: number; metalPerKg: number } | null;
   formMachine: CoreFormMachineSplit | null;
   commercial: Array<{ label: string; value: string; source: string }>;
@@ -504,7 +530,9 @@ function attributeRule(key: string, c: ReturnType<typeof costLinesOf>): CostLine
   const tools = (families: ToolFamily[], kinds?: Array<CostLine['kind']>) =>
     c.tooling.filter(l => families.includes(l.family!) && (!kinds || kinds.includes(l.kind)));
   const casting = /^cam[\s-]|cast/i.test(key);
-  const primary = c.ops.filter(o => !o.bench && (casting ? /cast|mould|pour/i.test(o.name) : !SECONDARY_OP_RE.test(o.name)));
+  // A casting's primary step is the moulding / pouring — never the fettling cell, whose name says "40 s a casting" (fresh
+  // review, 4 Nov 2026: the bracket's "Moulding line rate" drove £0.48 on page 4 = moulding £0.04 + fettling £0.44).
+  const primary = c.ops.filter(o => !o.bench && (casting ? /cast|mould|pour/i.test(o.name) && !SECONDARY_OP_RE.test(o.name) : !SECONDARY_OP_RE.test(o.name)));
   const nonEmpty = (ls: CostLine[]) => (ls.length ? ls : null);
   // A value that moves the whole cost is listed without a figure — "Reject Rate" was given £ because " rate" matched the
   // cycle pattern below (fresh review N3).
@@ -696,8 +724,18 @@ export function gradeOfCounts(high: number, medium: number, low: number): 'High'
 
 const ruleKey = (r: { label: string; fieldId?: string }) => `${r.label} ${r.fieldId ?? ''}`.trim();
 /** A form field's label without its hints: "Mould / Die Cost (£, 0=estimate)" gives "Mould / Die Cost". */
+/**
+ * A form label as the screen's DOM gives it, without its info glyph and the hint after it: "NDT (£/part) ⓘ",
+ * "Blank Material (£/part) ℹ", "Die Life (shots) ⓘ — affects total die cost". The glyph sat after the unit, so the unit
+ * was never read and a China report printed "NDT 0.1341" for £0.1341 (¥1.19) and "Machining fixtures 4,270" for ¥37,918
+ * (fresh review, 4 Nov 2026).
+ */
+export function formLabelCore(label: string): string {
+  return String(label ?? '').replace(/\s*[ⓘℹ][\s\S]*$/u, '').trim();
+}
+
 export function cleanFieldLabel(label: string): string {
-  let s = label.trim();
+  let s = formLabelCore(label);
   for (let k = 0; k < 3 && /\([^()]*(?:\([^()]*\)[^()]*)*\)\s*$/.test(s); k++) s = s.replace(/\s*\([^()]*(?:\([^()]*\)[^()]*)*\)\s*$/, '').trim();
   return s || label.trim();
 }
@@ -719,17 +757,18 @@ export function paramDisplay(label: string, value: string): string {
   if (/^(true|false)$/i.test(raw)) return /^true$/i.test(raw) ? 'Yes' : 'No';
   const n = Number(raw.replace(/,/g, ''));
   if (raw === '' || !Number.isFinite(n)) return reportNoteText(/^[a-z]+(?:_[a-z]+)+$/.test(raw) ? raw.replace(/_/g, ' ') : raw);
-  const unitM = /\(([^()]*)\)\s*\)?\s*$/.exec(label.replace(/\s+$/, ''));
+  const core = formLabelCore(label);
+  const unitM = /\(([^()]*)\)\s*\)?\s*$/.exec(core) ?? /(£\s*\/\s*[A-Za-z]+)\s*$/.exec(core);
   const unit = (unitM?.[1] ?? '').replace(/,?\s*0\s*=.*$/, '').replace(/\bopt\.?$/, '').trim();
   if (/£/.test(unit)) {
     if (n === 0) return 'none costed (£0)';
     const per = unit.replace(/^£\s*/, '');
-    if (/^\/\s*(part|pc)\b/i.test(per) || (!per && /\/\s*part\b|per part|a part/i.test(cleanFieldLabel(label)))) return `${fmtGbp(n)} a part`;
+    if (/^\/\s*(part|pc)\b/i.test(per) || (!per && /\/\s*part\b|per part|a part/i.test(cleanFieldLabel(core)))) return `${fmtGbp(n)} a part`;
     if (/^\/\s*(hr|h|hour)\b/i.test(per)) return `${fmtGbp(n)}/h`;
     if (/^\//.test(per)) return `${fmtGbp(n)}${per.replace(/\s+/g, '')}`;
     return fmtGbp(n);
   }
-  if (/^(hr|h|hours?)$/i.test(unit) || /\(hr\)/.test(label)) {
+  if (/^(hr|h|hours?)$/i.test(unit) || /\(hr\)/.test(core)) {
     return `${(n * 60).toFixed(2)} min${n > 0 && n <= 1 ? ` (${fmtNum(1 / n)} an hour)` : ''}`;
   }
   if (/^0\s*[–-]\s*1$/.test(unit)) return `${+(n * 100).toFixed(1)} %`;
@@ -757,6 +796,83 @@ function isMachiningOp(o: { operationName: string; machineId: string; benchOpera
   if (o.benchOperation) return /deburr|gauge|machin/i.test(o.operationName);
   const m = library.machines.find(x => x.id === o.machineId);
   return /^mach-/.test(o.machineId) || /\bmachining\b|\blathe\b/i.test(m?.machineClass ?? '');
+}
+
+/**
+ * May a page-1 "cheaper route" alert rest on this comparison row? Only when its material price is neither held nor
+ * implausible (`routeMaterialCheck`, read off the costing's book against the costing's own grade) and the comparison did
+ * not mark it so. A withheld row stays in the routes table; it raises no alert.
+ */
+export function routeAlertEligible(r: { material?: { materialId: string | null } | null; materialCheck?: { status: string } | null; credible?: boolean },
+  refMaterialId: string | null | undefined, library: RateLibrary): boolean {
+  if (r.credible === false) return false;
+  if (r.materialCheck && r.materialCheck.status !== 'ok') return false;
+  return routeMaterialCheck(r.material?.materialId ?? null, refMaterialId ?? null, library).status === 'ok';
+}
+
+/** A casting's or forging's weights, each named once: what is made, what is bought, what is sold back as scrap. */
+export interface CoreWeights {
+  form: 'forged' | 'cast';
+  /** The finished (machined) part, kg — when the costing states it. */
+  finishedKg: number | null;
+  /** One forging / casting as it leaves the press or the mould (machining stock and drilled metal on), kg. */
+  asFormedKg: number;
+  /** Flash a forging, kg (forging only). */
+  flashKg: number | null;
+  /** Billet a forging = (as forged + flash) ÷ stock yield, kg (forging only). */
+  billetKg: number | null;
+  yieldFraction: number | null;
+  /** Scrap forgings / castings, 0–1 (the stack buys and makes 1 ÷ (1 - r) a good part). */
+  rejectRate: number;
+  /** Bought a GOOD part (billet / poured charge ÷ (1 - reject)), kg — the material line's kg. */
+  boughtKg: number;
+  /** Sold back as scrap a good part, kg — the scrap-credit line's kg (0 when the loss is not scrap). */
+  scrapKg: number;
+  /** The set as one sentence, printed under the material split. */
+  line: string;
+}
+
+/**
+ * The weight set of a casting or forging read off the values the rules set (as-formed, flash, yield, reject) and the
+ * stack's own net / utilisation — so page 2 (material, £/kg), page 4 (descale on the forging) and page 5 (stock yield,
+ * flash) print the same weights under the same names. Null for other commodities or without the rules' as-formed weight.
+ */
+export function formWeights(rvs: ReadonlyArray<{ label: string; value: unknown; fieldId?: string; ruleValue?: unknown }>,
+  input: UniversalStackInput, commodity: string | null): CoreWeights | null {
+  const c = String(commodity ?? '');
+  const forged = /forg/.test(c);
+  if (!forged && !/cast/.test(c)) return null;
+  const num = (re: RegExp): number | null => {
+    const r = rvs.find(x => re.test(x.fieldId ?? ''));
+    if (!r) return null;
+    const v = Number(String(r.ruleValue ?? r.value ?? '').replace(/,/g, ''));
+    return Number.isFinite(v) ? v : null;
+  };
+  // as-formed: the forging's part weight (as forged, CLAUDE forging notes); cast + machine's as-cast weight, the casting
+  // route's part weight (as cast, machining stock on). Finished: cast + machine's finished weight (the STEP's).
+  const asFormed = forged ? num(/^forge-part-wt$/) : num(/^(cam-cast-wt|cast-part-wt)$/);
+  if (!(asFormed && asFormed > 0)) return null;
+  const finished = forged ? null : num(/^cam-finish-wt$/);
+  // the forging stack buys and makes 1 ÷ (1 − reject) a good part (modules/forging.ts); the casting stack does not fold
+  // its reject into the material weights
+  const reject = forged ? Math.max(0, Math.min(0.9, num(/^forge-reject$/) ?? 0)) : 0;
+  const flash = forged ? Math.max(0, num(/^forge-flash$/) ?? 0) : null;
+  const yieldF = forged ? num(/^forge-yield$/) : null;
+  const billet = forged && yieldF && yieldF > 0 ? (asFormed + (flash ?? 0)) / yieldF : null;
+  const rm = input.rawMaterial;
+  const bought = rm.materialUtilization > 0 ? rm.netWeightKg / rm.materialUtilization : rm.netWeightKg;
+  const scrap = rm.lossIsNotScrap ? 0 : Math.max(0, bought - rm.netWeightKg);
+  const k = (v: number) => `${v.toFixed(3)} kg`;
+  const one = forged ? 'a forging' : 'a casting';
+  const per = reject > 0 ? ` (÷ ${(1 - reject).toFixed(2)} for ${+(reject * 100).toFixed(1)} % scrap ${forged ? 'forgings' : 'castings'})` : '';
+  const line = `Weights: ${finished ? `finished ${k(finished)} · ` : ''}as ${forged ? 'forged' : 'cast'} ${k(asFormed)} ${one}`
+    + (forged && flash ? ` + flash ${k(flash)}` : '')
+    + (billet ? ` · billet ${k(billet)} ${one} = (${k(asFormed)} + ${k(flash ?? 0)} flash) ÷ ${yieldF!.toFixed(3)} stock yield` : '')
+    + ` · bought ${k(bought)} a good part${per}`
+    + (scrap > 0 ? ` · scrap sold ${k(scrap)} a good part (bought - ${k(rm.netWeightKg)} made a good part)` : rm.lossIsNotScrap ? ' · the metal lost is not sold as scrap' : '')
+    + '. The £/kg figures are on the weight of ONE ' + (forged ? 'forging as forged' : 'casting as cast') + '.';
+  return { form: forged ? 'forged' : 'cast', finishedKg: finished, asFormedKg: asFormed, flashKg: flash, billetKg: billet, yieldFraction: yieldF,
+    rejectRate: reject, boughtKg: bought, scrapKg: scrap, line };
 }
 
 export function buildCoreReport(a: CoreReportArgs): CoreReport {
@@ -807,9 +923,14 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const cnt = (c: string) => dl.filter(d => d.conf === c).length;
   const lowInputs = dl.filter(d => d.conf === 'Low').map(d => ({ label: d.label, value: d.value, unit: d.unit, operations: d.ops }));
   const screenGrade = overallConfidence(result);
-  const grade = dl.length ? gradeOfCounts(cnt('High'), cnt('Medium'), cnt('Low')) : screenGrade;
-  const gradeNote = grade !== screenGrade
-    ? `The costing screen grades ${screenGrade}: it counts each operation's use of a shared rate separately (${result.traceability.length} traced rows); this report grades the ${dl.length} inputs once each.`
+  const inputGrade = dl.length ? gradeOfCounts(cnt('High'), cnt('Medium'), cnt('Low')) : screenGrade;
+  // ONE grade (fresh review, 4 Nov 2026: the knuckle printed "Medium" and "the costing screen grades Low" on page 1, beside
+  // a finding that the part cannot be made as drawn). A BLOCKING DFM finding caps it at Low and says so beside it.
+  const blockingDfm = (meta.geometricDFM?.grouped ?? [])
+    .filter(x => dfmRuleApplies(commodity, x.ruleId) && normaliseSeverity(x.severity, (x.totalCostGBP ?? 0) > 0) === 'blocking');
+  const grade: string = blockingDfm.length ? 'Low' : inputGrade;
+  const gradeNote = blockingDfm.length
+    ? `Capped at Low: a BLOCKING DFM finding (${blockingDfm[0].title}${blockingDfm.length > 1 ? ` and ${blockingDfm.length - 1} more` : ''}) says the route as costed cannot be made as drawn — the price assumes it can.`
     : null;
 
   // The £ resting on figures labelled "not sourced / engineering-typical / ESTIMATE / held": each cost line such a value
@@ -890,7 +1011,19 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
         note: x.crossovers.find(k => k.route === r.route && k.process === r.process)?.text ?? null,
       }));
     routes = { reference: routeRowLabel(ref, x.labels), rows, notShown: x.excluded.length + (costed.length - rows.length) + x.rows.filter(r => r !== ref && (r.total == null || r.refusal || r.credible === false)).length, principle: x.principle };
+    // A page-1 alert never rests on a row whose material price is held or implausible (route-material-guard.ts, fresh
+    // review 4 Nov 2026: the knuckle's and hub flange's "casting is cheaper" rested on a cast-steel charge at merchant
+    // scrap) — read again here off the costing's own book, so a comparison made before the guard cannot raise one either.
+    // ONE alert per costing: two rows at the same £ are the same costing (the hub flange printed "Casting" and "Cast and
+    // machine", £8.69 both).
+    const alertRows: CoreRouteRow[] = [];
     for (const row of rows.filter(r => r.deltaPct <= -20)) {
+      const src = costed.find(r => r.total === row.total && routeRowLabel(r, x.labels) === row.name);
+      if (!src || !routeAlertEligible(src, input.rawMaterial.materialId, library)) continue;
+      if (alertRows.some(a => Math.abs(a.total - row.total) < 0.005)) continue;
+      alertRows.push(row);
+    }
+    for (const row of alertRows) {
       alerts.push({ kind: 'route', title: `A feasible route is ${Math.abs(row.deltaPct).toFixed(0)} % cheaper: ${row.name}`,
         lines: [`${row.name} costs ${M(row.total)} a part against ${M(refTotal)} for the costed route at ${x.programme.annualVolume.toLocaleString('en-GB')} a year`
           + (annual ? ` — ${MW(Math.abs(row.deltaGbp * annual))} a year less` : '') + '. Both are re-costs of the same part in the same material (Alternatives; an alert at 20 % or more cheaper).'] });
@@ -941,7 +1074,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     ...(input.deliveryTerms === 'EXW' ? ['Freight to your plant — the price is ex-works (EXW)'] : []),
     'Import duty, customs and cross-border shipping',
     ...(input.tooling.totalToolingCost > 0 && input.tooling.mode === 'one_time_nre' ? ['Tooling — charged once, separately'] : []),
-    ...std.notIncluded.filter(i => !(i.costedIf && i.costedIf.test(costedText)) && !answeredAway(i)).map(i => i.text),
+    ...std.notIncluded.filter(i => !(i.costedIf && i.costedIf.test(costedText)) && !answeredAway(i) && (!i.materialIf || i.materialIf.test(matCat)))
+      .map(i => (i.requiredIf && i.requiredText && i.requiredIf.answer.test(String(answers[i.requiredIf.id] ?? '')) ? i.requiredText : i.text)),
   ];
 
   const answerOf = (d: typeof decisionsAll[number]) => decisionAnswerLabel(d.id, d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials });
@@ -953,10 +1087,15 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const buckets = ([
     ['1. Material', bk.rawMaterial], ['2. Process (machine)', bk.process], ['3. Direct labour', bk.labour], ['4. Tooling (amortised)', bk.tooling],
     ['5. Packaging', bk.packaging], ['6. Logistics', bk.logistics], ['7. Overhead', bk.overhead], ['8. Margin', bk.margin],
-  ] as Array<[string, number]>).map(([label, gbp]) => ({ label, gbp, sharePct: share(gbp) }));
+  ] as Array<[string, number]>).map(([label, gbp]) => ({ label, gbp, sharePct: share(gbp) }) as CoreReport['buckets'][number]);
+  const metalIn = metalOfMaterial(result, input, library);
+  if (metalIn) Object.assign(buckets[0], { metalGbp: metalIn.gbp, metalSharePct: share(metalIn.gbp), metalWord: metalIn.word });
 
   const material = materialSplit(result, input, library);
-  const kgCostedOn = input.rawMaterial.netWeightKg;
+  const weights = formWeights(rvs, input, commodity);
+  // £/kg as cast / as forged is on ONE forging's (casting's) weight — the knuckle printed "as forged (3.434 kg)", its
+  // as-forged 3.365 kg with the 2 % scrap forgings folded in, while page 4 and page 5 read 3.365 (fresh review, 4 Nov 2026).
+  const kgCostedOn = weights?.asFormedKg ?? input.rawMaterial.netWeightKg;
   const castOrForge = /cast|forg/.test(String(commodity ?? ''));
   const perKg = castOrForge && kgCostedOn > 0 ? {
     kg: kgCostedOn, kgLabel: /forg/.test(String(commodity)) ? 'as forged' : 'as cast',
@@ -1017,11 +1156,22 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   // Key process parameters and the negotiation sheet: the commodity's drivers, matched to the values the rules set.
   const used = new Set<number>();
   const keyParams: CoreParam[] = [];
+  // The subtype the casting rules chose: a SAND pattern's life is counted in castings (moulds × impressions), not shots.
+  const subRv = rvs.find(r => /(^|-)cast-subtype$/.test(r.fieldId ?? ''));
+  const castSubtype = String((subRv as { ruleValue?: unknown } | undefined)?.ruleValue ?? subRv?.value ?? '');
+  const isZero = (v: unknown) => String(v ?? '').trim() !== '' && Number(String(v).replace(/,/g, '')) === 0;
   for (const d of std.keyDrivers) {
-    const i = rvs.findIndex((r, k) => !used.has(k) && d.match.test(ruleKey(r)));
-    if (i < 0) continue;
+    const matching = rvs.map((_r, k) => k).filter(k => !used.has(k) && d.match.test(ruleKey(rvs[k])));
+    if (!matching.length) continue;
+    // A driver two fields can carry prints the one the costing USED: fettling on the robotic cell is its seconds, not the
+    // bench minutes' 0 (fresh review, 4 Nov 2026 — "Fettling 0" printed beside a costed 40 s cell).
+    const i = matching.find(k => !isZero(rvs[k].value)) ?? matching[0];
     used.add(i);
-    const shown = paramDisplay(rvs[i].label, String(rvs[i].value));
+    let shown = paramDisplay(rvs[i].label, String(rvs[i].value));
+    if (d.name === 'Pattern life' && /\bsand\b/i.test(castSubtype)) shown = shown.replace(/\b(shots|cycles)\b/, 'castings');
+    // the forging weights under the names page 2 uses (formWeights)
+    if (weights?.billetKg && /^Stock yield/.test(d.name)) shown = `${shown} — billet ${weights.billetKg.toFixed(3)} kg a forging = (as forged ${weights.asFormedKg.toFixed(3)} kg + flash ${(weights.flashKg ?? 0).toFixed(3)} kg) ÷ ${weights.yieldFraction!.toFixed(3)}`;
+    if (weights && d.name === 'Flash' && weights.flashKg != null) shown = `${weights.flashKg.toFixed(3)} kg a forging (as forged ${weights.asFormedKg.toFixed(3)} kg)`;
     const basisHead = reportNoteText(rvs[i].basis).split(/; | \(engineering|\. /)[0].trim();
     keyParams.push({ name: d.name, label: rvs[i].label, value: reportNoteText(String(rvs[i].value)),
       display: d.display === 'basis' && basisHead ? `${shown} — ${basisHead}` : shown,
@@ -1115,7 +1265,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     bandNote: 'the spread of the inputs, not the model\'s error — accuracy not yet measured against a price paid',
     confidence: {
       grade, screenGrade, gradeNote, distinct: { total: dl.length, high: cnt('High'), medium: cnt('Medium'), low: cnt('Low') }, lowInputs,
-      sentence: `${dl.length} distinct inputs: ${cnt('High')} High, ${cnt('Medium')} Medium, ${cnt('Low')} Low (a rate shared by several operations counts once) — graded ${grade} on these`,
+      sentence: `${dl.length} distinct inputs: ${cnt('High')} High, ${cnt('Medium')} Medium, ${cnt('Low')} Low (a rate shared by several operations counts once) — `
+        + (blockingDfm.length ? 'the grade is capped at Low by a BLOCKING DFM finding' : `graded ${grade} on these`),
     },
     unsourced: {
       items: unsourcedItems, totalGbp: unsourcedGbp, sharePct: share(unsourcedGbp), ruleBasis: rvs.length > 0,
@@ -1126,7 +1277,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
         + 'reject rate, OEE, batch, weight) is listed without a figure.',
     },
     alerts, openQuestions, notIncluded, notModelled: std.notModelled ?? [], terms: deliveryTermsLine(input.deliveryTerms),
-    buckets, material, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
+    buckets, material, weights, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
     sensitivity, sensitivityPct, sensitivityDropped, volumeLine, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
     routes, countries, dfm,
   };

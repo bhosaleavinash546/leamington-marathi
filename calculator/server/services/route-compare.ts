@@ -38,6 +38,7 @@ import { inMaterialScope } from '../../src/engine/material-scope.js';
 import { POLYMER_TAXONOMIES } from '../../src/engine/polymer-material-taxonomy.js';
 import { computeCostUncertainty, type DriverProvenance, type DriverSource } from '../../src/engine/uncertainty.js';
 import { shortOperationName } from '../../src/engine/operation-names.js';
+import { routeMaterialCheck, type RouteMaterialCheck } from '../../src/engine/route-material-guard.js';
 import { FINISH_PREFIX_BY_COMMODITY } from '../../src/engine/surface-finish-routes.js';
 import {
   screenRoutes, materialFamilyOf, familyOfCategory, COMPARISON_PRINCIPLE, type FeasibilityCheck, type RouteScreen, CASTING_PROCESS_LADDER_SOURCE, FORGING_PROCESS_LADDER_SOURCE } from '../../src/engine/route-feasibility.js';
@@ -186,6 +187,11 @@ export interface RouteRow {
   credible: boolean;
   /** Why the row is not credible (each reason with its basis), empty when it is. */
   notCredible: string[];
+  /**
+   * Is the row's material price fit to rest a "cheaper route" claim on (route-material-guard.ts)? 'implausible' refuses
+   * the row (in `notCredible`); 'held' keeps it with a caveat but no page-1 alert rests on it. Absent on the reference.
+   */
+  materialCheck?: RouteMaterialCheck;
   /** The feasibility checks this route passed (and, on the costing's own route, failed) with their sources. */
   checks: FeasibilityCheck[];
   caveats: string[];
@@ -810,6 +816,12 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
   for (const row of rows) {
     if (row === ref || row.status !== 'costed') continue;
     row.notCredible = notCredibleReasons(row, i.answers);
+    // The material price the row rests on (fresh review, 4 Nov 2026): a cast-steel charge below the forging's own steel
+    // scrap is refused with its reason; a Low, labelled-unsourced price is kept with a caveat (no page-1 alert on it).
+    const mc = routeMaterialCheck(row.material?.materialId, ref.material?.materialId, book);
+    row.materialCheck = mc;
+    if (mc.status === 'implausible') row.notCredible.push(mc.reason!);
+    else if (mc.status === 'held') row.caveats.push(mc.reason!);
     row.credible = row.notCredible.length === 0;
   }
   if (i.referenceBand && ref.status === 'costed') {

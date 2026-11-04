@@ -39,7 +39,8 @@ const labourRate = C.labourRate;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Geo = any;
-interface Row { kind: string; diaMm: number; depthMm: number; through: boolean | null; count: number; areaMm2?: number }
+interface Row { kind: string; diaMm: number; depthMm: number; through: boolean | null; count: number; areaMm2?: number;
+  axes?: Array<{ line: string; s0: number; s1: number }> }
 
 // ── Auditor's restatement of the stated constants ─────────────────────────────────────────────────────────────────
 const ANNUAL = C.annual, YEARS = C.years;                          // the dump's own (dump.ts)
@@ -127,7 +128,8 @@ const checkRel = (part: string, what: string, e: number, a: unknown) => check(pa
 function tapped(r: Row): boolean {
   return r.kind === 'hole' && r.depthMm >= 1.5 * r.diaMm && TAP_DRILLS.some(d => Math.abs(d - r.diaMm) <= 0.1);
 }
-const isLand = (r: Row) => r.diaMm >= 30 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
+// A land at any Ø since 4 Nov 2026 (a cylinder shallower than ¼ Ø is not a drilled hole — a drill's point is 0.3 Ø long).
+const isLand = (r: Row) => r.kind === 'hole' && r.diaMm > 0 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
 /** Drill feed along the hole at Ø (n·f): vc and f at Ø12 / Ø16 interpolated; f ∝ Ø below Ø12; held above Ø16. */
 function drillVf(fam: string, d: number): number {
   const [[da, na, fa], [db, nb, fb]] = CAT[fam].drill;
@@ -163,6 +165,58 @@ function holeMin(r: Row, fam: string, cored?: number): number {
   return t;
 }
 const nearNetHoleMin = (r: Row, fam: string, cored?: number) => holeMin(r, fam, r.kind === 'hole' ? cored : undefined);
+/**
+ * Hole work with STEPPED BORES (4 Nov 2026), restated: instances on one axis line (kernel `axes`), sorted along it, join
+ * while the next starts within the run's end + half the Ø difference + 0.1 mm and the run has 2+ diameters. A stepped bore
+ * = ONE approach (0.25 bored if any step Ø > cored, else 0.15 / 0.06 by the largest Ø) + 0.10 if no step is through +
+ * each step's cut: a land 0.004 × Ø; above the cored size L ÷ bore n·f; above Ø26 L × 0.050 × tf; else L ÷ drill n·f
+ * (× peck beyond 5×D) + a tap's 0.10 + 2L ÷ tap feed. Every other instance is `holeMin`. Returns all and bored minutes.
+ */
+function holeWorkMin(rows: Row[], fam: string, cored?: number): { all: number; bored: number } {
+  const holes = rows.filter(r => r.kind === 'hole');
+  const left = new Map(holes.map(r => [r, r.count]));
+  const lines = new Map<string, Array<{ r: Row; s0: number; s1: number }>>();
+  for (const r of holes) {
+    if (!r.axes || r.axes.length !== r.count) continue;
+    for (const a of r.axes) (lines.get(a.line) ?? lines.set(a.line, []).get(a.line)!).push({ r, s0: Math.min(a.s0, a.s1), s1: Math.max(a.s0, a.s1) });
+  }
+  let all = 0, bored = 0;
+  const bore = (run: Array<{ r: Row }>) => {
+    if (run.length < 2 || new Set(run.map(h => h.r.diaMm)).size < 2) return;
+    for (const h of run) left.set(h.r, left.get(h.r)! - 1);
+    const isBored = cored !== undefined && run.some(h => h.r.diaMm > cored);
+    const maxD = Math.max(...run.map(h => h.r.diaMm));
+    let t = (isBored ? 0.25 : maxD > 6 ? 0.15 : 0.06) + (run.some(h => h.r.through === true) ? 0 : 0.10);
+    for (const { r } of run) {
+      const d = r.diaMm, L = Math.max(r.depthMm, 1);
+      if (isLand(r)) t += d * 0.004;
+      else if (cored !== undefined && d > cored) t += L / boreVf(fam, d);
+      else if (d > 26) t += L * 0.050 * CUT[fam].tf;
+      else {
+        t += L / drillVf(fam, d) * (L > 5 * Math.max(d, 1) ? PECK : 1);
+        const tp = TAP.find(x => r.depthMm >= 1.5 * d && Math.abs(x[0] - d) <= 0.1);
+        if (tp) t += TAP_APPROACH + 2 * L / (n(CAT[fam].tap, tp[1]) * tp[2]);
+      }
+    }
+    all += t; if (isBored) bored += t;
+  };
+  for (const list of lines.values()) {
+    list.sort((a, b) => a.s0 - b.s0 || a.s1 - b.s1);
+    let run: typeof list = []; let end = -Infinity;
+    for (const h of list) {
+      const prev = run[run.length - 1];
+      if (prev && h.s0 <= end + Math.abs(h.r.diaMm - prev.r.diaMm) / 2 + 0.1) { run.push(h); end = Math.max(end, h.s1); }
+      else { bore(run); run = [h]; end = h.s1; }
+    }
+    bore(run);
+  }
+  for (const r of holes) {
+    const k = left.get(r)!; if (k <= 0) continue;
+    const t = nearNetHoleMin(r, fam, cored) * k;
+    all += t; if (cored !== undefined && r.diaMm > cored) bored += t;
+  }
+  return { all, bored };
+}
 /** Metal inside the drilled / bored holes, cm³ — cut by the hole time, so not roughed again (finding M1). */
 const holeVolCm3 = (rows: Row[]) => PRE ? 0 : rows.filter(r => r.kind === 'hole' && !isLand(r))
   .reduce((s, r) => s + Math.PI * r.diaMm * r.diaMm / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
@@ -249,7 +303,7 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   const wall = Math.max(0, Object.entries(by).filter(([k]) => WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100 - holeWallCm2(rows));
   const free = Object.entries(by).filter(([k]) => !WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100;
   const roughMin = removed / millQ(family) * (1 + AIR), finishMin = wall / sideRate(family), surfMin = free / (FIN.surf / cd.tf);
-  const holesMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + holeMin(r, family) * r.count, 0);
+  const holesMin = holeWorkMin(rows, family).all;
   const tools = 3 + (free > 0.5 ? 1 : 0) + holeSizes(rows);
   const toolMin = tools * TOOL_CHANGE_S / 60;
   // machining-time.ts: totalMin = r2(all); the mill content is totalMin − r2(holes)
@@ -400,10 +454,11 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   }
   const faces = rows.filter(r => r.kind === 'face');
   const facesMin = faces.reduce((s, r) => s + holeMin(r, family) * r.count, 0);
-  const allHoleMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0);
+  const work = holeWorkMin(rows, family, cored);
+  const allHoleMin = work.all;
   const tools = (faces.length ? 1 : 0) + 1 + holeSizes(rows);
   const nn = { finish: r2(facesMin), tc: r2(tools * TOOL_CHANGE_S / 60), hole: r2(allHoleMin) };
-  const boreMin = r2(rows.filter(r => r.kind === 'hole' && r.diaMm > cored).reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0));
+  const boreMin = r2(work.bored);
   const drillMin = Math.max(0, r2(nn.hole - boreMin));
   const millMin = tp ? 0 : nn.finish + nn.tc;
   const ext = (geo.turning?.externalAreaMm2 ?? 0) / 100;
