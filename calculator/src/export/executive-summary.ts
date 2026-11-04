@@ -1133,6 +1133,22 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
 }
 
 /**
+ * Detected features as a reader counts them — grouped by kind and size, "5 pockets, 4 holes Ø10.0" (live run, 4 Nov
+ * 2026: the knuckle printed "1× pocket, 1× pocket, 1× pocket, 1× pocket, 1× pocket", one line of the table each).
+ */
+export function featureCountsText(lines: ReadonlyArray<{ kind: string; count: number; diaMm?: number }>): string {
+  const groups = new Map<string, { kind: string; dia: string; n: number }>();
+  for (const l of lines) {
+    const dia = l.diaMm ? l.diaMm.toFixed(1) : '';
+    const key = `${l.kind}|${dia}`;
+    const g = groups.get(key) ?? { kind: l.kind, dia, n: 0 };
+    g.n += l.count;
+    groups.set(key, g);
+  }
+  const plural = (k: string, n: number) => (n === 1 ? k : /(s|x|sh|ch)$/.test(k) ? `${k}es` : `${k}s`);
+  return [...groups.values()].map(g => `${g.n} ${plural(g.kind, g.n)}${g.dia ? ` Ø${g.dia}` : ''}`).join(', ');
+}
+/**
  * Uncosted scope, ALL-IN (fresh review N6): the features' minutes priced at the costing's own rates for the operation they
  * would join (machine ÷ OEE + crew ÷ labour efficiency), with overhead and margin — and which time model gave the minutes.
  * The knuckle's alert said "£13.05 of machine time … operator, overhead and margin come on top" from a per-feature time
@@ -1182,7 +1198,7 @@ function uncostedScopeAlert(not: FeatureMachiningLine[], meta: CoreReportMeta, r
     ...(differs ? [`The two time models differ on the same features: the ${costedN} feature instance(s) this costing machines take `
       + `${costingMin.toFixed(2)} min in its own machining build-up and ${tableMin.toFixed(2)} min in the feature table (× ${ratio!.toFixed(2)}) — `
       + `at that ratio these would take about ${(min * ratio!).toFixed(1)} min and add about ${M((min * ratio! / 60) * perHr * omFactor)} a part.`] : []),
-    `Features: ${not.map(l => `${l.count}× ${l.kind}${l.diaMm ? ` Ø${l.diaMm.toFixed(1)}` : ''}`).join(', ')}.`,
+    `Features: ${featureCountsText(not)}.`,
   ];
   return { kind: 'scope', title: `Uncosted scope: ${n} machinable feature${n === 1 ? '' : 's'} detected and NOT in this price`, lines };
 }

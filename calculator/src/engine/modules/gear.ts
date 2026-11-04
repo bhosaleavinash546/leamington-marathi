@@ -168,7 +168,7 @@ export interface GearAnalysis {
   totalCycleSec: number;
   toolingCostPerPart: number;
   /** What `toolingCostPerPart` is made of — one line per perishable tool, £ per part cut, with its arithmetic. */
-  toolingLines: Array<{ item: string; perPart: number; basis: string }>;
+  toolingLines: Array<{ item: string; perPart: number; basis: string; perPartExpr?: string }>;
   /** One-time programme cost, £. Amortised over `amortizationVolume`, not per part. */
   nreCostGBP: number;
   /** Itemised, so the report can show what the NRE is made of. */
@@ -360,15 +360,19 @@ export function gearOuterDiameterMm(i: Pick<GearInputs, 'teeth' | 'normalModuleM
 export function toolCostPerPart(p: {
   toolCostGBP: number; partsBetweenRegrinds: number;
   regrindCostGBP: number; regrindsBeforeScrap: number;
-}): { perPart: number; basis: string } {
+}): { perPart: number; basis: string; perPartExpr: string } {
   const lives = 1 + Math.max(0, p.regrindsBeforeScrap);
   const totalParts = Math.max(1, p.partsBetweenRegrinds * lives);
   const totalCost = p.toolCostGBP + p.regrindCostGBP * Math.max(0, p.regrindsBeforeScrap);
+  // The life's £ as costed, not to the pound: China's £2,150.168 printed £2150 converted to ¥19,092 beside the ¥19,093
+  // its own arithmetic gives (live run, 4 Nov 2026). `perPartExpr` is the £ a part as a division that re-adds exactly.
+  const total = String(+totalCost.toFixed(4));
   return {
     perPart: totalCost / totalParts,
-    basis: `£${p.toolCostGBP} tool + ${p.regrindsBeforeScrap} regrinds × £${p.regrindCostGBP} = `
-      + `£${totalCost.toFixed(0)} over ${totalParts.toLocaleString()} parts `
+    basis: `£${+p.toolCostGBP.toFixed(4)} tool + ${p.regrindsBeforeScrap} regrinds × £${+p.regrindCostGBP.toFixed(4)} = `
+      + `£${total} over ${totalParts.toLocaleString()} parts `
       + `(${p.partsBetweenRegrinds.toLocaleString()} × ${lives} lives)`,
+    perPartExpr: `£${total} ÷ ${totalParts.toLocaleString()}`,
   };
 }
 
@@ -584,9 +588,9 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   const nreLines: Array<{ item: string; costGBP: number; reason: string }> = [];
   let toolingPerPart = 0;
   const toolingLines: GearAnalysis['toolingLines'] = [];
-  const addTool = (item: string, t: { perPart: number; basis: string }): void => {
+  const addTool = (item: string, t: { perPart: number; basis: string; perPartExpr?: string }): void => {
     toolingPerPart += t.perPart;
-    toolingLines.push({ item, perPart: t.perPart, basis: t.basis });
+    toolingLines.push({ item, perPart: t.perPart, basis: t.basis, ...(t.perPartExpr ? { perPartExpr: t.perPartExpr } : {}) });
   };
   let heatTreat = 0;
   const A = data.ancillary;
@@ -955,7 +959,10 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   const DEDICATED_TOOL = /^(Broach|Induction coil)$/;
   const items: ToolingItem[] = [
     ...a.toolingLines.map(t => ({
-      label: `${t.item}: ${t.basis} = £${t.perPart.toFixed(4)}/part${rejectNote} × ${amort.toLocaleString()} parts`,
+      // The £ over the programme as one division the reader can re-add to the tooling column ("£3560 ÷ 15,600 ÷ (1 − 2%
+      // reject) × 1,000,000 parts" = £232,862). "= £0.2282/part ÷ (1 − 2%) × 1,000,000" re-added to £232,857 — a per-part
+      // to 4 dp is ±£51 at a million parts (live run, 4 Nov 2026).
+      label: `${t.item}: ${t.basis}${t.perPartExpr ? `; ${t.perPartExpr}` : ''}${rejectNote} × ${amort.toLocaleString()} parts`,
       gbp: t.perPart * rejectUplift * amort,
       kind: 'perishable' as const,
     })),

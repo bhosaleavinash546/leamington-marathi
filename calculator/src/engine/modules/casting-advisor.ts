@@ -5,7 +5,7 @@
  * indicative and override with real quotes via the admin Rate Library.
  */
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor } from '../regional-services.js';
-import { activeLabourRate } from '../rate-context.js';
+import { activeLabourRate, gbpFigure } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
 
@@ -511,9 +511,10 @@ export function ndtStationCostPerPart(kind: NdtStationKind): { gbp: number; basi
   const what = kind === 'mpi' ? '100% magnetic-particle inspection (wet fluorescent bench, demagnetised)' : '100% in-line real-time X-ray';
   return {
     gbp,
-    basis: `${what}: ${st.secPerPart} s a part × (inspector £${inspector.toFixed(2)}/h × ${st.manning}`
-      + ` + ${kind === 'mpi' ? 'bench' : 'cabinet'} £${equipment.toFixed(2)}/h) = £${station.toFixed(3)}`
-      + (sample > 0 ? ` + 1 in ${Math.round(1 / st.sampleXrayFraction)} radiographed × £${(NDT_COST_PER_PART.xray * ndtServiceFactor()).toFixed(2)} = £${sample.toFixed(3)}` : '')
+    // the rates as the book holds them (gbpFigure), so a converted report prints the costed local rates and re-adds
+    basis: `${what}: ${st.secPerPart} s a part × (inspector £${gbpFigure(inspector)}/h × ${st.manning}`
+      + ` + ${kind === 'mpi' ? 'bench' : 'cabinet'} £${gbpFigure(equipment)}/h) = £${station.toFixed(3)}`
+      + (sample > 0 ? ` + 1 in ${Math.round(1 / st.sampleXrayFraction)} radiographed × £${gbpFigure(NDT_COST_PER_PART.xray * ndtServiceFactor())} = £${sample.toFixed(3)}` : '')
       + ` = £${gbp.toFixed(4)} (engineering-typical station figures; CostVision heuristic)`,
   };
 }

@@ -33,7 +33,7 @@
  */
 import { materialGradeName } from '../derive/material.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
-import { activeToolroomFactor, activeLabourRate, activeRates, factorText } from '../../rate-context.js';
+import { activeToolroomFactor, activeLabourRate, activeRates, factorText, gbpFigure } from '../../rate-context.js';
 import { CURE_ATTENDANCE, type CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import {
@@ -282,12 +282,29 @@ export function ndiStationCost(areaM2: number): { gbp: number; basis: string } {
   // To 4 dp, not the UK penny: a value rounded to £0.01 broke its own printed arithmetic once converted (¥7.67 printed,
   // ¥7.64 costed — 7-country review, 3 Nov 2026).
   const gbp = Math.round(hr * perHr * 10_000) / 10_000;
+  // Each step its own equation, every figure as used (live run, 4 Nov 2026): "0.0199 h, at £43.03/h (…) = £0.8566" did not
+  // re-add (0.0199 × 43.03 = 0.8563 — the hours were printed short), and the rates rounded to the penny converted to the
+  // wrong local rates. Rates as the book holds them (gbpFigure); the hours at the fewest decimals (6 to 9) at which every
+  // printed step re-adds — the costing is unchanged, only how many digits it prints.
+  const iTxt = gbpFigure(inspector), cTxt = gbpFigure(cell);
+  const rDp = Math.max(iTxt.split('.')[1].length, cTxt.split('.')[1].length);
+  const perHrShown = Number((Number(iTxt) * st.manning + Number(cTxt)).toFixed(rDp));
+  const half = (dp: number) => 0.5 * 10 ** -dp * 1.0001;
+  let hDp = 6;
+  for (; hDp < 9; hDp++) {
+    const a = Number(areaM2.toFixed(hDp - 1)), l = Number(loadHr.toFixed(hDp)), sc = Number(scanHr.toFixed(hDp));
+    const h = Number((l + sc).toFixed(hDp));
+    if (Math.abs(a / st.scanM2PerHr - sc) <= half(hDp) && Math.abs(h * perHrShown - gbp) <= half(4)) break;
+  }
+  const lTxt = loadHr.toFixed(hDp), sTxt = scanHr.toFixed(hDp);
+  const hTxt = (Number(lTxt) + Number(sTxt)).toFixed(hDp);
+  const perHrTxt = perHrShown.toFixed(rDp);
   return {
     gbp,
-    basis: `structural carbon: ultrasonic C-scan station — ${st.loadUnloadSec} s load and unload (${loadHr.toFixed(4)} h) `
-      + `+ ${fmt(areaM2, 3)} m² scanned at ${st.scanM2PerHr} m²/h (${scanHr.toFixed(4)} h) = ${hr.toFixed(4)} h, at `
-      + `£${perHr.toFixed(2)}/h (inspector £${inspector.toFixed(2)}/h × ${st.manning} + cell £${cell.toFixed(2)}/h) `
-      + `= £${gbp.toFixed(4)} (engineering-typical station figures, not sourced; `
+    basis: `structural carbon: ultrasonic C-scan station — load and unload ${st.loadUnloadSec} s ÷ 3,600 s/h = ${lTxt} h; `
+      + `scan ${+areaM2.toFixed(hDp - 1)} m² ÷ ${st.scanM2PerHr} m²/h = ${sTxt} h; ${lTxt} h + ${sTxt} h = ${hTxt} h; `
+      + `inspector £${iTxt}/h × ${st.manning} + cell £${cTxt}/h = £${perHrTxt}/h; `
+      + `${hTxt} h × £${perHrTxt}/h = £${gbp.toFixed(4)} (engineering-typical station figures, not sourced; `
       + `charged in the material bucket as a per-part service, as casting NDT is)${countryNote('inspection')}`,
   };
 }
@@ -452,8 +469,9 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
   const tools = Math.max(1, Math.ceil(needed));
   const toolsBasis = (pcm
     ? `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${cureHr} h a die is in the press`
-    : `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${toolCycleHr.toFixed(2)} h a tool is tied up `
-      + `(layup ${layupHr.toFixed(2)} + cure ${cureHr} + turnaround ${TOOL_TURNAROUND_HR})`)
+    // the hours as used (layup is held to 3 dp): "5.55 h (layup 0.35 …)" re-added to 346.875, not the 346.63 printed
+    : `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${+toolCycleHr.toFixed(4)} h a tool is tied up `
+      + `(layup ${+layupHr.toFixed(4)} + cure ${cureHr} + turnaround ${TOOL_TURNAROUND_HR})`)
     + ` ÷ (${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE) = ${needed.toFixed(2)} → ${tools} tool${tools === 1 ? '' : 's'}`
     + (pcm ? ` (${Math.round(COMP_TOOL_HOURS * COMP_OEE / cureHr).toLocaleString('en-GB')} parts a die a year; the source reports `
       + `${PCM.annualPerTool[0].toLocaleString('en-GB')}–${PCM.annualPerTool[1].toLocaleString('en-GB')} with 5- and 3-min-cure prepregs [VR-1])` : '');

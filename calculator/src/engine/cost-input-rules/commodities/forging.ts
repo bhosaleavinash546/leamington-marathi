@@ -46,7 +46,7 @@ import {
 } from '../../modules/forging-advisor.js';
 import { pickForgePressId, pickStampingPressId, FORGE_PRESS_TIERS } from '../../machine-sizing.js';
 import { NDT_STATION } from '../../modules/casting-advisor.js';
-import { activeLabourRate } from '../../rate-context.js';
+import { activeLabourRate, gbpFigure } from '../../rate-context.js';
 import { countryFactor } from '../../regional-services.js';
 import { nearNetStockCm3, CORED_ABOVE_MM, costedNearNetRows, nearNetTurnedAreaCm2, NEAR_NET_TURN_STOCK_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
@@ -976,7 +976,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
           ndt === 'none'
             ? 'not safety-critical — no NDT'
             : ndt === 'mpi'
-              ? `100% magnetic-particle inspection on a safety-critical ${r.advice.process} forging, as a station: ${NDT_STATION.mpi.secPerPart} s a part × (inspector £${activeLabourRate('lab-uk-inspector').toFixed(2)}/h × ${NDT_STATION.mpi.manning} + bench £${(NDT_STATION.mpi.equipmentGbpPerHrUk * countryFactor('inspection')).toFixed(2)}/h) = £${adderPerPart(r.advice, /NDT/).toFixed(2)} a part — the casting route's MPI station (75 s and the bench engineering-typical, not sourced)`
+              ? `100% magnetic-particle inspection on a safety-critical ${r.advice.process} forging, as a station: ${NDT_STATION.mpi.secPerPart} s a part × (inspector £${gbpFigure(activeLabourRate('lab-uk-inspector'))}/h × ${NDT_STATION.mpi.manning} + bench £${gbpFigure(NDT_STATION.mpi.equipmentGbpPerHrUk * countryFactor('inspection'))}/h) = £${adderPerPart(r.advice, /NDT/).toFixed(2)} a part — the casting route's MPI station (75 s and the bench engineering-typical, not sourced)`
               : `${ndt.toUpperCase()} on a safety-critical ${r.advice.process} forging: £${adderPerPart(r.advice, /NDT/).toFixed(2)} a part`
                 + ' (UK price × the country\'s inspection factor — CostVision engineering-typical, not sourced)', 0.65);
       },

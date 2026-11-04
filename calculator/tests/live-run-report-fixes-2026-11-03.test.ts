@@ -200,12 +200,15 @@ describe('7. A converted equation re-adds at the figures it prints', () => {
       expect(failingEquations(localiseGbpText(t, CN, '¥')), t).toEqual([]);
     }
   });
-  it('the inputs carry the decimals the arithmetic needs; a rounded £ result is followed by the costed figure', () => {
+  it('the inputs carry the decimals the arithmetic needs; a rounded £ result prints the arithmetic', () => {
     expect(localiseGbpText(LIVE[0], CN, '¥')).toBe('Die: porthole (spider) hollow die: UK ¥19,536 + ¥301.92/mm × 161.6 mm circle = ¥68,326.27; '
       + '¥68,326.27 × 1.3 multi-void × China die factor 0.4733 = ¥42,040.50 → ¥42,037.92 a die');
-    expect(localiseGbpText(LIVE[3], CN, '¥')).toBe('Hob wear: ¥12,432 tool + 12 regrinds × ¥555.124 = ¥19,093 → ¥19,092 over');
-    expect(localiseGbpText(LIVE[4], CN, '¥')).toBe('nitrided every 40 t at UK ¥1,598.40 × China heat-treat 0.4704 = ¥751.89 → ¥751.87');
-    expect(localiseGbpText(LIVE[2], CN, '¥')).toMatch(/^32-cavity transfer mould tool in p20, simple — base: UK ¥53,280 × 1 steel × China toolroom 0\.3416 = ¥18,200 → ¥18,204;/);
+    // The £ result is a display rounding (£2,150.168 printed £2,150): the arithmetic on the printed ¥ inputs rounds to the
+    // same £ figure, so it IS the costed figure at that precision — no "→ ¥19,092" after it (that was £2,150 × 8.88, not
+    // what was costed; 4 Nov 2026 live run).
+    expect(localiseGbpText(LIVE[3], CN, '¥')).toBe('Hob wear: ¥12,432 tool + 12 regrinds × ¥555.124 = ¥19,093 over');
+    expect(localiseGbpText(LIVE[4], CN, '¥')).toBe('nitrided every 40 t at UK ¥1,598.40 × China heat-treat 0.4704 = ¥751.89');
+    expect(localiseGbpText(LIVE[2], CN, '¥')).toMatch(/^32-cavity transfer mould tool in p20, simple — base: UK ¥53,280 × 1 steel × China toolroom 0\.3416 = ¥18,200;/);
     // a stated conversion INTO £ stays in GBP, the report currency beside it
     expect(localiseGbpText(LIVE[8], CN, '¥')).toMatch(/× 0\.7394 = GBP 1\.161\/kg \(¥10\.310\/kg\)\)\. Source/);
     // an arithmetic "→ £x" result is the arithmetic on the printed inputs: ¥77,948.64 × 1.15 ÷ 1,000,000 = ¥0.0896

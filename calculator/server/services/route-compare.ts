@@ -33,7 +33,7 @@ import type { RateLibrary, ToolingKind } from '../../src/engine/types.js';
 import { toolingSplit } from '../../src/engine/tooling-split.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 import { costMeasuredPart, regionalBook, type BulkPartResult } from './bulk-run.js';
-import { specForCommodity, runCostInputRules } from '../../src/engine/cost-input-rules/index.js';
+import { specForCommodity, runCostInputRules, RULE_SPECS } from '../../src/engine/cost-input-rules/index.js';
 import { inMaterialScope } from '../../src/engine/material-scope.js';
 import { POLYMER_TAXONOMIES } from '../../src/engine/polymer-material-taxonomy.js';
 import { computeCostUncertainty, type DriverProvenance, type DriverSource } from '../../src/engine/uncertainty.js';
@@ -617,6 +617,20 @@ function answerOptionLabel(i: CompareRoutesInput, route: string, answers: Record
   return label;
 }
 
+/**
+ * The label of an answer this route does not ask (live run, 4 Nov 2026: a machining row printed "standard (not asked)" and
+ * "no (not asked)", the stored values of the tolerance and safety answers): read off the question that owns the answer in
+ * ANY rule pack — the costing's own route first, then every other — so a row never prints a raw value.
+ */
+function anyRouteOptionLabel(i: CompareRoutesInput, route: string, answers: Record<string, unknown>, id: string, value: string, book: RateLibrary): string | null {
+  for (const other of [...new Set([i.current, ...Object.keys(RULE_SPECS)])]) {
+    if (other === route) continue;
+    const label = answerOptionLabel(i, other, answers, id, value, book);
+    if (label) return label;
+  }
+  return null;
+}
+
 function specOf(answers: Record<string, unknown>, original: Record<string, unknown>, assumedIds: Set<string>, route: string, book: RateLibrary,
   i?: CompareRoutesInput, rulesBook?: RateLibrary): RouteSpecItem[] {
   const out: RouteSpecItem[] = [];
@@ -630,7 +644,7 @@ function specOf(answers: Record<string, unknown>, original: Record<string, unkno
     else if (id === CASTING_PROCESS_CHOICE_ID) value = CASTING_PROCESS_LABEL[value] ?? value;
     else if (id === FORGING_PROCESS_CHOICE_ID) value = FORGING_PROCESS_LABEL[value] ?? value;
     else if (id === COMPOSITES_PROCESS_CHOICE_ID) value = COMPOSITES_PROCESS_LABEL[value as 'layup' | 'pcm'] ?? value;
-    else if (i) value = answerOptionLabel(i, route, answers, id, raw, rulesBook ?? book) ?? value;
+    else if (i) value = answerOptionLabel(i, route, answers, id, raw, rulesBook ?? book) ?? anyRouteOptionLabel(i, route, answers, id, raw, rulesBook ?? book) ?? value;
     const source: RouteSpecItem['source'] = id === CASTING_PROCESS_CHOICE_ID || id === FORGING_PROCESS_CHOICE_ID || id === COMPOSITES_PROCESS_CHOICE_ID ? 'comparison'
       : assumedIds.has(id) ? 'assumed' : original[id] !== undefined ? 'answered' : 'comparison';
     out.push({ id, label, value, source });
@@ -877,23 +891,45 @@ export function sameCosting(a: RouteRow, b: RouteRow): boolean {
  */
 export function foldSameScopeRows(rows: RouteRow[], ref: RouteRow): RouteRow[] {
   const drop = new Set<RouteRow>();
+  // The pair is keyed on the route pair and the process — null included (live run, 4 Nov 2026): the hub flange's casting
+  // and cast + machine rows carried no process, both £8.69 to the penny, and were printed twice.
+  const proc = (r: RouteRow) => r.process ?? null;
+  const name = (ra: string, p: string | null) => {
+    const what = p ? (CASTING_PROCESS_LABEL[p] ?? p) : ra.replace(/_/g, ' ');
+    return `${what.charAt(0).toUpperCase()}${what.slice(1)} + machining`;
+  };
   for (const [ra, rb] of SAME_SCOPE_ROUTES) {
     for (const a of rows) {
-      if (drop.has(a) || a.route !== ra || !a.process) continue;
-      const b = rows.find(o => !drop.has(o) && o.route === rb && o.process === a.process);
-      if (!b || !sameCosting(a, b)) continue;
-      // the costing's own row stays (the reference); else the second route of the pair — cast + machine, whose form
-      // carries the machining half, so "Cost this route" opens the costing that shows it
-      const [keep, gone] = a === ref ? [a, b] : [b, a];
-      const proc = CASTING_PROCESS_LABEL[a.process] ?? a.process;
-      keep.label = `${proc.charAt(0).toUpperCase()}${proc.slice(1)} + machining`;
-      keep.alsoRoutes = [...(keep.alsoRoutes ?? []), gone.route];
-      keep.notes.push(`the ${ra.replace(/_/g, ' ')} and ${rb.replace(/_/g, ' ')} routes cost this process the same to the penny, with the same `
-        + `operations (one near-net machining plan) — printed once`);
-      drop.add(gone);
+      if (drop.has(a) || a.route !== ra) continue;
+      const b = rows.find(o => !drop.has(o) && o.route === rb && proc(o) === proc(a));
+      if (!b) continue;
+      if (sameCosting(a, b)) {
+        // the costing's own row stays (the reference); else the second route of the pair — cast + machine, whose form
+        // carries the machining half, so "Cost this route" opens the costing that shows it
+        const [keep, gone] = a === ref ? [a, b] : [b, a];
+        keep.label = name(ra, proc(a));
+        keep.alsoRoutes = [...(keep.alsoRoutes ?? []), gone.route];
+        keep.notes.push(`the ${ra.replace(/_/g, ' ')} and ${rb.replace(/_/g, ' ')} routes cost this process the same to the penny, with the same `
+          + `operations (one near-net machining plan) — printed once`);
+        drop.add(gone);
+      } else if (sameUncosted(a, b) && a !== ref && b !== ref) {
+        // Not costed on either route for the same reason (the same open question, the same refusal): one row, as the
+        // refused list is folded — the manifold printed "needs an answer: What tolerance class …" for sand casting on
+        // both routes, and again for gravity die.
+        b.label = name(ra, proc(a));
+        b.alsoRoutes = [...(b.alsoRoutes ?? []), a.route];
+        drop.add(a);
+      }
     }
   }
   return rows.filter(r => !drop.has(r));
+}
+
+/** Two rows not costed on either route, for the same reason: the same status, open questions, assumptions and refusal. */
+export function sameUncosted(a: RouteRow, b: RouteRow): boolean {
+  if (a.status === 'costed' || b.status === 'costed' || a.total != null || b.total != null) return false;
+  const why = (r: RouteRow) => JSON.stringify([r.status, r.openQuestions, r.assumed, r.refusal]);
+  return why(a) === why(b);
 }
 
 /**

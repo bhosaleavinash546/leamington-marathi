@@ -218,17 +218,38 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
     head('Open questions', 'costed as stated until answered');
     bullets(m.openQuestions.slice(0, 5));
   }
-  head('Not included until answered', 'not in this price — never costed here');
+  // The heading goes with its list (live run, 4 Nov 2026): it was drawn at the foot of page 1 and the list, checked only
+  // after it, went to page 2 alone — the UK knuckle's core report ran to 8 pages. The heading and the list's first row
+  // are checked together; a list that does not fit whole runs on, row by row, and section 2 then follows it on that page.
+  let sec1RanOn = false;
   {
     const half = Math.ceil(m.notIncluded.length / 2);
     const cols = [m.notIncluded.slice(0, half), m.notIncluded.slice(half)];
-    doc.setFontSize(6.9); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.setFontSize(6.9); doc.setFont('helvetica', 'normal');
     const colW = CW / 2 - 3;
     const wrapped = cols.map(col => col.map(s => doc.splitTextToSize(`•  ${s}`, colW) as string[]));
-    const h = Math.max(...wrapped.map(col => col.reduce((s, l) => s + l.length * 3 + 0.6, 0)));
-    chk(h + 2);
-    wrapped.forEach((col, k) => { let cy = y + 2.5; for (const l of col) { doc.text(l, MG + k * (colW + 6), cy); cy += l.length * 3 + 0.6; } });
-    y += h + 2;
+    const itemH = (l: string[]) => l.length * 3 + 0.6;
+    const h = Math.max(...wrapped.map(col => col.reduce((s, l) => s + itemH(l), 0)));
+    const rowsH = wrapped[0].map((l, k) => Math.max(itemH(l), wrapped[1][k] ? itemH(wrapped[1][k]) : 0));
+    const startPage = doc.getNumberOfPages();
+    chk(6.5 + Math.min(h, rowsH[0] ?? 0) + 2);   // the heading never sits at a page foot without its first row
+    head('Not included until answered', 'not in this price — never costed here');
+    doc.setFontSize(6.9); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    if (y + h + 2 <= BOTTOM) {
+      wrapped.forEach((col, k) => { let cy = y + 2.5; for (const l of col) { doc.text(l, MG + k * (colW + 6), cy); cy += itemH(l); } });
+      y += h + 2;
+    } else {
+      // row by row (the two columns side by side), running on to the next page where a row does not fit
+      rowsH.forEach((rh, k) => {
+        chk(rh + 2);
+        doc.setFontSize(6.9); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+        doc.text(wrapped[0][k], MG, y + 2.5);
+        if (wrapped[1][k]) doc.text(wrapped[1][k], MG + colW + 6, y + 2.5);
+        y += rh;
+      });
+      y += 2;
+    }
+    sec1RanOn = doc.getNumberOfPages() > startPage;
   }
   // Not in the cost model: its own block when it fits on this page; otherwise one compact paragraph under the list;
   // and when not even that fits, at the head of section 2 — never a page of its own (the China knuckle's page 2 held
@@ -248,7 +269,8 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   }
 
   // ════════ 2. COST BUILD-UP ════════
-  section(2, 'Cost build-up', 'the 8 buckets add to the price');
+  // Section 1 ran on to a new page: section 2 follows on that page rather than leaving it nearly empty.
+  section(2, 'Cost build-up', 'the 8 buckets add to the price', sec1RanOn ? 60 : undefined);
   if (notModelledDeferred) para(`From section 1 — ${notModelledDeferred}`, 6.9, SLATE);
   table(['Bucket', 'A part', 'Share'],
     [...m.buckets.map(b => [b.label, money(b.gbp), pct(b.sharePct)]), ['Should-cost', money(m.total), '100.0%']],

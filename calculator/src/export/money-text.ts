@@ -140,33 +140,81 @@ const numOf = (s: string) => Number(s.replace(/[^\d.-]/g, ''));
  * The precision check is basis-check.py's: half the last printed digit of the result.
  */
 const EQ_NUM = String.raw`£?-?\d[\d,]*(?:\.\d+)?%?`;
-const EQ_TOK = new RegExp(String.raw`(${EQ_NUM})|(\s[×x*÷/+−-]\s|[×÷+−])`, 'g');
+/**
+ * The tokens an equation is read from (Nov 2026 live run: "75 s a part × (inspector £x/h × 1 + bench £y/h) = £z",
+ * "1 in 50 radiographed × £a = £b" and "÷ (1 − 2% reject)" were not read, so their converted figures were never
+ * re-checked). A "1 in N" sampling rate is one operand (1 ÷ N) that starts its run; a number followed by " s" is a
+ * time in seconds; brackets are groups; ; | : = → -> end a clause.
+ */
+const EQ_LEX = new RegExp(String.raw`(\b1 in (\d[\d,]*))|(${EQ_NUM})|(\s[×x*÷/+−-]\s|[×÷+−])|(->|[;|:=→])|([()])`, 'g');
 
-/** The trailing "number op number …" run of a left-hand side, as basis-check.py reads it: [kind, text, offset]. */
-function trailingRun(left: string, offset: number): Array<{ kind: 'n' | 'o'; text: string; at: number }> | null {
-  const toks: Array<{ kind: 'n' | 'o'; text: string; at: number }> = [];
-  EQ_TOK.lastIndex = 0;
-  for (let m = EQ_TOK.exec(left); m; m = EQ_TOK.exec(left)) {
-    if (m[1]) toks.push({ kind: 'n', text: m[1], at: offset + m.index });
-    else toks.push({ kind: 'o', text: m[2].trim(), at: offset + m.index });
+interface EqLeaf { kind: 'n'; text: string; at: number; sec: boolean; oneIn: boolean; value?: number }
+interface EqGroup { kind: 'g'; run: EqItem[] }
+interface EqOp { kind: 'o'; text: string }
+type EqItem = EqLeaf | EqGroup | EqOp;
+type EqTok = EqLeaf | EqOp | { kind: '(' | ')' | 'stop' };
+
+function lexEquation(left: string): EqTok[] {
+  const toks: EqTok[] = [];
+  EQ_LEX.lastIndex = 0;
+  for (let m = EQ_LEX.exec(left); m; m = EQ_LEX.exec(left)) {
+    if (m[1]) toks.push({ kind: 'n', text: m[1], at: m.index, sec: false, oneIn: true, value: 1 / Number(m[2].replace(/,/g, '')) });
+    else if (m[3]) toks.push({ kind: 'n', text: m[3], at: m.index, sec: /^\s+s\b/.test(left.slice(m.index + m[3].length)), oneIn: false });
+    else if (m[4]) toks.push({ kind: 'o', text: m[4].trim() });
+    else if (m[5]) toks.push({ kind: 'stop' });
+    else toks.push({ kind: m[6] as '(' | ')' });
   }
-  const seq: typeof toks = [];
-  for (let k = toks.length - 1; k >= 0; k--) {
-    const t = toks[k];
-    if (!seq.length) { if (t.kind === 'n') seq.push(t); continue; }
-    if (seq[seq.length - 1].kind !== t.kind) seq.push(t); else break;
-  }
-  seq.reverse();
-  if (seq.length && seq[0].kind === 'o') seq.shift();
-  return seq.length >= 3 ? seq : null;
+  return toks;
 }
 
-/** Evaluate a run with ×/÷ before +/−; `num` gives each number's value. Null on anything odd. */
-function evalRun(seq: Array<{ kind: 'n' | 'o'; text: string; at: number }>, num: (t: { text: string; at: number }) => number): number | null {
+/**
+ * The trailing "operand op operand …" run that ends at `end` (exclusive), read backwards as basis-check.py reads it —
+ * words skipped — with brackets: a closed group is one operand ("× (a × 1 + b)", "÷ (1 − 2% reject)"), and a group
+ * written straight after a number restates it ("5.55 h (layup 0.35 + cure 4.7 + …)", "£43.03/h (inspector …)"): the
+ * number is the operand. Null when the run is not one.
+ */
+function runBefore(toks: EqTok[], end: number): EqItem[] | null {
+  const out: EqItem[] = [];
+  let k = end - 1;
+  let want: 'operand' | 'op' = 'operand';
+  while (k >= 0) {
+    const t = toks[k];
+    if (want === 'operand') {
+      if (t.kind === 'n') { out.push(t); k--; if (t.oneIn) break; want = 'op'; continue; }
+      if (t.kind === ')') {
+        let depth = 0, j = k;
+        for (; j >= 0; j--) { const c = toks[j].kind; if (c === ')') depth++; else if (c === '(' && --depth === 0) break; }
+        if (j < 0) break;
+        const inner = runBefore(toks.slice(j + 1, k), k - j - 1);
+        if (!inner) break;
+        out.push({ kind: 'g', run: inner });
+        k = j - 1; want = 'op'; continue;
+      }
+      break;
+    }
+    if (t.kind === 'o') { out.push(t); k--; want = 'operand'; continue; }
+    // a number written straight before a group: the group restates it
+    const last = out[out.length - 1];
+    if (t.kind === 'n' && !t.oneIn && last?.kind === 'g') { out[out.length - 1] = t; k--; continue; }
+    break;
+  }
+  if (out.length && out[out.length - 1].kind === 'o') out.pop();
+  if (!out.length) return null;
+  out.reverse();
+  return out;
+}
+
+/** The number leaves of a run, groups included. */
+const leavesOf = (run: EqItem[]): EqLeaf[] => run.flatMap(t => (t.kind === 'n' ? [t] : t.kind === 'g' ? leavesOf(t.run) : []));
+
+/** Evaluate a run with ×/÷ before +/−; `num` gives each number's value, `secToHr` reads "N s" as hours. Null on anything odd. */
+function evalRun(run: EqItem[], num: (t: EqLeaf) => number, secToHr = false): number | null {
   const vals: number[] = [], ops: string[] = [];
-  for (const t of seq) {
-    if (t.kind === 'n') { const v = num(t); if (!Number.isFinite(v)) return null; vals.push(v); }
-    else ops.push(({ x: '*', '×': '*', '÷': '/', '−': '-' } as Record<string, string>)[t.text] ?? t.text);
+  for (const t of run) {
+    if (t.kind === 'o') { ops.push(({ x: '*', '×': '*', '÷': '/', '−': '-' } as Record<string, string>)[t.text] ?? t.text); continue; }
+    const v = t.kind === 'g' ? evalRun(t.run, num, secToHr) : (t.oneIn ? t.value! : num(t)) / (secToHr && t.sec ? 3600 : 1);
+    if (v == null || !Number.isFinite(v)) return null;
+    vals.push(v);
   }
   if (vals.length !== ops.length + 1) return null;
   const terms: number[] = [vals[0]], signs: number[] = [1];
@@ -198,7 +246,7 @@ export function localiseGbpText(text: string, fx: number, sym: string): string {
     toks.push({ start: m.index, end: m.index + m[0].length, a, dash, b, gbp, value: gbp * fx,
       printed: `${conv(a)}${b ? `${dash}${conv(b)}` : ''}` });
   }
-  if (toks.length) fixEquations(src, toks, sym);
+  if (toks.length) fixEquations(src, toks, sym, fx);
   let out = '';
   let at = 0;
   for (const t of toks) { out += src.slice(at, t.start) + (t.whole ?? `${sym}${t.printed}${t.suffix ?? ''}`); at = t.end; }
@@ -211,7 +259,7 @@ export function localiseGbpText(text: string, fx: number, sym: string): string {
 /** The printed figure is the converted figure itself (no decimals lost). */
 const exact = (t: GbpToken) => Math.abs(numOf(t.printed) - t.value) <= 1e-9 * Math.max(1, Math.abs(t.value));
 
-function fixEquations(src: string, toks: GbpToken[], sym: string): void {
+function fixEquations(src: string, toks: GbpToken[], sym: string, fx: number): void {
   const byAt = new Map(toks.map(t => [t.start, t]));
   const single = (t: GbpToken | undefined) => (t && !t.b ? t : undefined);
   const shownVal = (t: GbpToken) => numOf(t.printed);
@@ -223,23 +271,27 @@ function fixEquations(src: string, toks: GbpToken[], sym: string): void {
     if (!eq) continue;
     const eqAt = eq.index;
     const arrowResult = eq[1] !== '=';
-    // the left-hand side starts after the last clause mark, bracket or earlier = / → (basis-check.py's reading)
-    const marks = [';', '|', ':', '(', '=', '→'].map(c => before.lastIndexOf(c, eqAt - 1));
-    const ascii = before.lastIndexOf('->', eqAt - 1);
-    const start = Math.max(...marks, ascii >= 0 ? ascii + 1 : -1) + 1;
-    const left = src.slice(start, eqAt);
-    const seq = trailingRun(left, start);
-    if (!seq) continue;
-    const moneyToks = seq.filter(t => t.kind === 'n' && t.text.startsWith('£'));
+    // the left-hand side: the trailing run before the = / →, brackets read as groups (basis-check.py's reading, which
+    // starts after the last clause mark, bracket or earlier = / →, plus closed brackets)
+    const lex = lexEquation(src.slice(0, eqAt));
+    const seq = runBefore(lex, lex.length);
+    if (!seq || leavesOf(seq).length < 2) continue;
+    const leaves = leavesOf(seq);
+    const moneyToks = leaves.filter(t => t.text.startsWith('£'));
     const money = moneyToks.map(t => byAt.get(t.at));
     if (money.some(t => !single(t))) continue;
-    // the £ arithmetic as printed must hold — anything else is not this converter's to mend
+    // the £ arithmetic as printed must hold — anything else is not this converter's to mend. "75 s a part × (… £/h …)"
+    // holds with the seconds read as hours: that reading is used for the whole equation.
     const gbpVal = (t: { text: string; at: number }) => (byAt.has(t.at) ? byAt.get(t.at)!.gbp : plainVal(t.text));
-    const gbpGot = evalRun(seq, gbpVal);
+    let secToHr = false;
+    let gbpGot = evalRun(seq, gbpVal);
+    if ((gbpGot == null || !holds(gbpGot, res.a)) && leaves.some(t => t.sec)) { secToHr = true; gbpGot = evalRun(seq, gbpVal, true); }
     if (gbpGot == null || !holds(gbpGot, res.a)) continue;
     if (!money.length) {
       // a stated conversion INTO £ ("US$1.57/kg × 0.7394 = £1.161") stays in GBP, the report currency beside it —
       // converted, it read "US$1.57/kg × 0.7394 = ¥10.310"
+      const firstAt = leaves[0].at;
+      const left = src.slice(Math.max(0, src.lastIndexOf(';', firstAt) + 1, src.lastIndexOf(':', firstAt) + 1), eqAt);
       if (!arrowResult && /US\$|[$€₹¥]\s?\d|\b(?:USD|EUR|CNY|INR|PLN|HUF|JPY)\b/.test(left)) {
         const unit = /^\/[A-Za-z²³]+/.exec(src.slice(res.end))?.[0] ?? '';
         res.whole = `GBP ${res.a}${unit} (${sym}${res.printed}${unit})`;
@@ -248,7 +300,8 @@ function fixEquations(src: string, toks: GbpToken[], sym: string): void {
       continue;
     }
     const printedVal = (t: { text: string; at: number }) => (byAt.has(t.at) ? shownVal(byAt.get(t.at)!) : plainVal(t.text));
-    let got = evalRun(seq, printedVal);
+    const evalPrinted = () => evalRun(seq, printedVal, secToHr);
+    let got = evalPrinted();
     if (got == null || holds(got, res.printed)) continue;
     // 1. the inputs printed with more decimals
     const ins = money as GbpToken[];
@@ -256,7 +309,7 @@ function fixEquations(src: string, toks: GbpToken[], sym: string): void {
     let fixed = false;
     for (const dp of [2, 3, 4]) {
       for (const t of ins) if (dpOf(t.printed) < dp && !exact(t)) t.printed = fmtDp(t.value, dp);
-      got = evalRun(seq, printedVal);
+      got = evalPrinted();
       if (got != null && holds(got, res.printed)) { fixed = true; break; }
     }
     if (fixed) {
@@ -264,7 +317,7 @@ function fixEquations(src: string, toks: GbpToken[], sym: string): void {
       for (let k = 0; k < ins.length; k++) {
         const keep = ins[k].printed;
         ins[k].printed = was[k];
-        const g = evalRun(seq, printedVal);
+        const g = evalPrinted();
         if (g == null || !holds(g, res.printed)) ins[k].printed = keep;
       }
       continue;
@@ -272,15 +325,18 @@ function fixEquations(src: string, toks: GbpToken[], sym: string): void {
     // 2. the arithmetic on the printed inputs, then the costed figure. A whole-£ input that is not a whole number in
     //    the report currency keeps its decimals ("UK ¥1,598.40", not "¥1,598"); no input prints more than it had or 2.
     ins.forEach((t, k) => { t.printed = was[k]; if (!exact(t)) t.printed = fmtDp(t.value, Math.max(2, dpOf(was[k]))); });
-    got = evalRun(seq, printedVal);
+    got = evalPrinted();
     if (got == null) { ins.forEach((t, k) => { t.printed = was[k]; }); continue; }
     const costed = res.printed;
     res.printed = fmtDp(got, dpOf(costed));
     res.value = got;
     // after "→" (the result is already the figure costed) or before one, the arithmetic replaces it; otherwise the
-    // costed figure follows it
+    // costed figure follows it — but only when it says something: the converted £ result is known only to its printed
+    // £ precision, and an arithmetic that rounds to that same £ figure IS the costed figure at that precision (the
+    // stub axle's "= ¥0.891 → ¥0.888" claimed a costed ¥0.888 that was £0.100 × 8.88; the costing held ¥0.8914).
     const arrowFollows = /^\s*(?:→|->)/.test(src.slice(res.end));
-    if (!arrowResult && !arrowFollows && res.printed !== costed) res.suffix = ` → ${sym}${costed}`;
+    const sameGbp = Math.abs(got / fx - res.gbp) <= 0.5 * 10 ** -dpOf(res.a) * 1.0001;
+    if (!arrowResult && !arrowFollows && !sameGbp && res.printed !== costed) res.suffix = ` → ${sym}${costed}`;
   }
   // ── a rounding arrow "£A → £B" keeps its direction ──────────────────────────────────────────────────────────────
   for (const a of toks) {

@@ -82,3 +82,13 @@ export function factorText(kind: string, factor: number): string {
   const name = activeCountryName();
   return `${name} ${kind} ${factor === 1 ? '1.00' : String(factor)}`;
 }
+
+/**
+ * A £ figure as a basis line prints it (live run, 4 Nov 2026): to the penny when the penny IS the figure (a UK book rate,
+ * £28.03/h, £4.00/h), else to 4 dp — a country book's rate held in £ (China's inspector £3.4707/h). A report in another
+ * currency converts the printed figure, so a rate rounded to the penny printed the wrong local rate ("bench ¥11.99/h", the
+ * costing held ¥11.97) and a station line that did not re-add.
+ */
+export function gbpFigure(v: number): string {
+  return Math.abs(v * 100 - Math.round(v * 100)) < 1e-6 ? v.toFixed(2) : v.toFixed(4);
+}
