@@ -95,7 +95,15 @@ for (const f of cfg.materialFamilies) {
     const cur = snapMat.get(id);
     if (!cur) throw new Error(`material ${id} is not in the snapshot`);
     let price: number, how: string;
-    if (f.method === 'direct') { price = f.anchorGbpPerKg; how = 'direct'; }
+    // Phase B (4 Nov 2026): a grade with a researched content over its family's anchor (the low-alloy cast steels'
+    // alloy at the researched ferroalloy prices; the HSLA extras) takes it in place of the book's own premium.
+    const ga = (cfg.gradeAdds ?? {})[id] as { gbpPerKg: number; basis: string; sources?: Array<{ source: string; date?: string }> } | undefined;
+    const memberSrc = ga?.sources ? [...new Set([srcText, ...ga.sources.map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`)])].join(' ; ') : srcText;
+    if (f.method === 'anchor-add' && !ga) throw new Error(`${id}: family ${f.family} adds a researched content, and gradeAdds has none`);
+    if (ga && (f.method === 'ladder-add' || f.method === 'ladder' || f.method === 'anchor-add')) {
+      price = f.anchorGbpPerKg + ga.gbpPerKg;
+      how = `+ £${ga.gbpPerKg.toFixed(4)}/kg (${ga.basis}) = £${(f.anchorGbpPerKg + ga.gbpPerKg).toFixed(4)}/kg`;
+    } else if (f.method === 'direct') { price = f.anchorGbpPerKg; how = 'direct'; }
     else if (f.method === 'ladder') {
       const proxy = (f.proxies ?? {})[id] ? snapMat.get(f.proxies[id]) : undefined;
       const ratio = (proxy ?? cur).gbpPerKg / f.base;
@@ -116,7 +124,7 @@ for (const f of cfg.materialFamilies) {
     const scrap = f.scrapGbpPerKg != null ? Math.min(cur.scrapGbpPerKg, f.scrapGbpPerKg) : cur.scrapGbpPerKg;
     if (!held && scrap >= price) throw new Error(`${id}: scrap credit £${scrap} would be ≥ the new price £${price} — set the family's scrap`);
     register.push({ kind: 'material', id, name: cur.grade, current: cur.gbpPerKg, next: held ? cur.gbpPerKg : price, unit: '£/kg',
-      decision: held ? 'held (evidence agrees)' : 'updated', basis: `${f.family} — ${f.anchorBasis}; ${how}${scrap !== cur.scrapGbpPerKg ? `; scrap credit £${cur.scrapGbpPerKg} → £${scrap} (${f.scrapBasis})` : ''}`, source: srcText });
+      decision: held ? 'held (evidence agrees)' : 'updated', basis: `${f.family} — ${f.anchorBasis}; ${how}${scrap !== cur.scrapGbpPerKg ? `; scrap credit £${cur.scrapGbpPerKg} → £${scrap} (${f.scrapBasis})` : ''}`, source: memberSrc });
     if (held) continue;
     const [a, b] = objectSpan(lib, id);
     let obj = lib.slice(a, b);
@@ -127,7 +135,7 @@ for (const f of cfg.materialFamilies) {
     // are history, the price basis is the first sentence
     const live = /sourceNote:\s*'((?:[^'\\]|\\.)*)'/.exec(obj)![1];
     const earlier = (live.startsWith('UK book') ? live.replace(/^.*?Earlier note: /, '') : live).replace(/ \| Refresh \d{4}-\d{2}:.*$/, '');
-    obj = setField(obj, 'sourceNote', `'${q(`${TAG}: ${f.family} — ${f.anchorBasis}; ${how}${fixNote}. Was £${cur.gbpPerKg}/kg. Source: ${srcText}. Earlier note: ${earlier}`)}'`);
+    obj = setField(obj, 'sourceNote', `'${q(`${TAG}: ${f.family} — ${f.anchorBasis}; ${how}${fixNote}. Was £${cur.gbpPerKg}/kg. Source: ${memberSrc}. Earlier note: ${earlier}`)}'`);
     obj = setField(obj, 'confidence', `'${f.confidence}'`);
     lib = lib.slice(0, a) + obj + lib.slice(b);
   }

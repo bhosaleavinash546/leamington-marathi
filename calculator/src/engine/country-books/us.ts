@@ -98,15 +98,15 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-hsla340": {
-   "gbpPerKg": 1.7819,
-   "basis": "CR automotive grades: CR automotive grades — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg × the book's grade premium over its base; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28)",
+   "gbpPerKg": 1.295,
+   "basis": "CR automotive grades: CR automotive grades — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor $1.675 + $0.050/kg = $1.725/kg — the researched £0.0372/kg at $1.3317/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla420": {
-   "gbpPerKg": 1.9316,
-   "basis": "CR automotive grades: CR automotive grades — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg × the book's grade premium over its base; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28)",
+   "gbpPerKg": 1.3239,
+   "basis": "CR automotive grades: CR automotive grades — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor $1.675 + $0.088/kg = $1.763/kg — the researched £0.0661/kg at $1.3317/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla550": {
@@ -416,15 +416,15 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.298,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on US heavy scrap $0.3740/kg (2026-10-28) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = $0.3969/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
-   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28)",
+   "gbpPerKg": 0.3044,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on US heavy scrap $0.3740/kg (2026-10-28) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = $0.3969/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor $0.397 + $0.009/kg = $0.405/kg — the researched £0.0064/kg at $1.3317/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.438,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on US heavy scrap $0.3740/kg (2026-10-28) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = $0.3969/kg (the German book's arithmetic; mix an engineering assumption); ladder +$0.19/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28)",
+   "gbpPerKg": 0.3922,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on US heavy scrap $0.3740/kg (2026-10-28) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = $0.3969/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor $0.397 + $0.125/kg = $0.522/kg — the researched £0.0942/kg at $1.3317/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "http://steelbenchmarker.com/history.pdf (2026-10-28) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {

@@ -66,7 +66,8 @@ describe('1. the bracket: the casting route = cast + machine, to the penny', () 
       const axes = ((rec(BRACKET).geometry as { featureTable?: Array<{ axes?: unknown[] }> }).featureTable ?? []).some(r => r.axes?.length);
       // Review round (4 Nov 2026): 8.22 → 9.14 — the foundry indirect lines (new sand, ladle preheat, dust extraction, plant
       // electricity), 12 impressions (the 60 % plate rule) for 20, the HMC at £300,000
-      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 9.14 : 8.80, 2);
+      // Phase B (4 Nov 2026): 9.14 → 9.77 — the UK cast-steel charge at consumer scrap + trim ÷ 0.96 (£0.148 → £0.314/kg)
+      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 9.77 : 8.80, 2);
     }, 60_000);
   }
 

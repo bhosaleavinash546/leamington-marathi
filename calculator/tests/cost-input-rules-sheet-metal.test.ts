@@ -255,7 +255,8 @@ describe('sheet-metal rules end to end', () => {
     expect(r.status).toBe('complete');
     // Only ADVISORY questions remain: the finish (CAD to COST D4) — costed bare until answered — and safety-critical
     // (report standard review, 3 Nov 2026) — recorded, a Yes listed as not costed.
-    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['service.finish', 'advisory'], ['service.safetyCritical', 'advisory']]);
+    // Phase B (4 Nov 2026): and the sheet grade — costed at the grade the evidence gives until it is answered.
+    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['material.grade', 'advisory'], ['service.finish', 'advisory'], ['service.safetyCritical', 'advisory']]);
 
     const sm = r.suggestions.sheetMetal as Record<string, number | string>;
     expect(sm.thicknessMm).toBe(1.5);
@@ -326,7 +327,11 @@ describe('sheet-metal rules end to end', () => {
     // Before, no rule chose a grade: the form kept DC01 (£0.91/kg small-lot) and
     // headless fell back to DC04 (£0.77/kg coil) for the same part.
     const r = runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, STEEL));
-    expect((r.suggestions.sheetMetal as Record<string, unknown>).materialId).toBe('mat-dc04');
+    // Phase B (4 Nov 2026): the file is a SEAT cross member — the name leans the costed grade to HSLA 340, assumed;
+    // with no such name the representative DC04 stays
+    expect((r.suggestions.sheetMetal as Record<string, unknown>).materialId).toBe('mat-hsla340');
+    const plain = runCostInputRules(SHEET_METAL_RULES, { ...ctx(CROSS_MEMBER, STEEL), filename: 'cross-member-lh.step' });
+    expect((plain.suggestions.sheetMetal as Record<string, unknown>).materialId).toBe('mat-dc04');
   });
 
   it('asks the commodity question before the material one on an ambiguous shell', () => {

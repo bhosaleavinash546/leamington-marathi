@@ -40,7 +40,7 @@ import { representativeMaterialId, materialGradeName } from '../derive/material.
 import type { MaterialFamily } from '../../material-family.js';
 import {
   adviseForgingProcess, estimateForgingTonnage, estimateForgingDieCost,
-  estimateForgingSecondaryAdders, forgingHeatKwhPerKg, forgingDieLifeFactors, shapeConstraintFactor,
+  estimateForgingSecondaryAdders, forgingHeatKwhPerKg, forgingDieLifeFactors, shapeConstraintFactor, coldSlugDiameterMm,
   FORGING_PROCESS_REFERENCE, FORGING_FLOW_STRESS_MPA,
   type ForgingProcess, type ForgingAlloyFamily, type ShapeComplexity,
   type DieSteel, type ComplexityLevel,
@@ -266,6 +266,151 @@ export const FORGING_MACHINING_STOCK_MM: Record<ForgingProcess, number> = {
   'closed-die': 2.0, precision: 0.75, 'open-die': 5.0, 'ring-rolling': 3.0, 'cold-forming': 0,
 };
 
+/**
+ * Minimum finish (machining) stock a surface for drop and press forgings, by the forging's greatest dimension — IS 3469
+ * (Part I):1974 Table 1.5 (Bureau of Indian Standards, made public by Public.Resource.Org; DIN 7523-2 is withdrawn and
+ * EN 10243-1 gives tolerances, not allowances — phase-B research rows D2 / D4). It REPLACES the closed-die 2.0 mm of
+ * `FORGING_MACHINING_STOCK_MM`, an unsourced figure for exactly this quantity (phase B, 4 Nov 2026). The other routes
+ * keep theirs: the table is for drop and press (impression) forgings, not precision, open-die, ring or cold forming.
+ */
+export const IS3469_FINISH_STOCK_MM: ReadonlyArray<readonly [number, number]> = [[205, 1.5], [410, 2.5], [610, 3.0], [915, 4.0], [Infinity, 5.0]];
+export function machiningStockMm(process: ForgingProcess, greatestMm: number | null): { mm: number; basis: string } {
+  if (process !== 'closed-die' || !greatestMm || greatestMm <= 0) {
+    return { mm: FORGING_MACHINING_STOCK_MM[process], basis: `${FORGING_MACHINING_STOCK_MM[process]} mm a side on the machined faces, ${process} (CostVision engineering-typical, not sourced)` };
+  }
+  const i = IS3469_FINISH_STOCK_MM.findIndex(([upTo]) => greatestMm <= upTo);
+  const [upTo, mm] = IS3469_FINISH_STOCK_MM[i];
+  const from = i > 0 ? IS3469_FINISH_STOCK_MM[i - 1][0] : 0;
+  return { mm, basis: `${mm} mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5 minimum finish stock for a drop / press forging whose greatest dimension `
+    + `(${fmt(greatestMm, 1)} mm) is ${from > 0 ? `over ${from} mm${Number.isFinite(upTo) ? ' and ' : ''}` : ''}${Number.isFinite(upTo) ? `not over ${upTo} mm` : ''}` };
+}
+
+/**
+ * Draft angles for drop and press forgings — IS 3469 (Part I):1974 Table 1.4, degrees, by surface (outside / inside) and
+ * the depth from the parting plane (≤ 25 mm / > 25 mm); "normal" and "close" tolerance (research row D1). The LOWER end
+ * of each range is costed — the least draft the standard recommends; a forger may use more. A closed-die forging takes
+ * the normal class, a precision forging the close class.
+ */
+export const IS3469_DRAFT_DEG = {
+  normal: { outside: { upTo25: [5, 7], above25: [5, 10] }, inside: { upTo25: [7, 10], above25: [8, 12] } },
+  close: { outside: { upTo25: [3, 5], above25: [3, 7] }, inside: { upTo25: [5, 8], above25: [5, 9] } },
+} as const;
+
+/** The axis a forging parts on — the normal of its largest measured silhouette (`forgingPlanAreaCm2`). */
+function partingAxis(ctx: RuleContext): 'x' | 'y' | 'z' | null {
+  const p = ctx.geo.projectedArea;
+  const c: Array<['x' | 'y' | 'z', number]> = [['x', p?.xMm2 ?? 0], ['y', p?.yMm2 ?? 0], ['z', p?.zMm2 ?? 0]];
+  const best = c.reduce((a, b) => (b[1] > a[1] ? b : a));
+  return best[1] > 0 ? best[0] : null;
+}
+
+/**
+ * The DRAFT METAL a forging carries over the finished part (phase B, 4 Nov 2026) — a measured rule. Every face the
+ * kernel reports at zero draft along the forging's parting axis (`draftAnalysis.zeroDraftByAxis`, the release table at
+ * that draw: area, extent along the draw, inside / outside) gets the wedge the die's draft adds to it: drafted, the
+ * surface touches the finished face at its point FARTHEST from the parting plane and stands off it by h·tan α at the
+ * plane, so a face reaching a depth h from the plane carries V = A·h·tan α / 2 (exact for a plane face; a cylinder parallel
+ * to the draw takes the same wedge on its developed area — an approximation). A face crossing the plane is drafted from
+ * each side: V = (A / (h₁ + h₂)) · tan α · (h₁² + h₂²) / 2. The parting plane is the mid-plane of the part's extent along
+ * the axis (CostVision approximation: a forging parts round its largest periphery; where along the axis is not measured).
+ * Holes drilled from solid are not forged, so their faces carry no draft.
+ */
+export function forgingDraftMetal(ctx: RuleContext, process: ForgingProcess, drilledFaceIds: Set<number>):
+  { cm3: number; faces: number; basis: string } {
+  const cls = process === 'closed-die' ? 'normal' : process === 'precision' ? 'close' : null;
+  if (!cls) return { cm3: 0, faces: 0, basis: `${process} — no impression die, no draft` };
+  const axis = partingAxis(ctx);
+  const z = axis ? ctx.geo.draftAnalysis?.zeroDraftByAxis?.[axis] : undefined;
+  if (!axis || !z) return { cm3: 0, faces: 0, basis: 'draft metal NOT costed — the zero-draft faces were not measured on this geometry (an STL or an older measurement)' };
+  const ang = IS3469_DRAFT_DEG[cls];
+  const groups: Record<string, { deg: number; areaMm2: number; ahMm3: number; n: number }> = {};
+  let faces = 0;
+  for (const [id, area, lo, hi, inside] of z.rows) {
+    if (drilledFaceIds.has(id) || !(hi > lo) || !(area > 0)) continue;
+    const mid = z.partingMidMm;
+    const up = Math.max(0, hi - Math.max(lo, mid)), down = Math.max(0, Math.min(hi, mid) - lo);
+    const depth = Math.max(Math.abs(hi - mid), Math.abs(lo - mid));
+    const side = inside ? 'inside' : 'outside';
+    const band = depth <= 25 ? 'upTo25' : 'above25';
+    const deg = ang[side][band][0];
+    const key = `${side} ${band === 'upTo25' ? '≤ 25 mm' : '> 25 mm'}`;
+    const g = groups[key] ??= { deg, areaMm2: 0, ahMm3: 0, n: 0 };
+    // A·h_eff, h_eff = (h₁² + h₂²) / (h₁ + h₂) — the face's own A·h when it starts at the plane
+    g.ahMm3 += area / (hi - lo) * (up * up + down * down);
+    g.areaMm2 += area; g.n++; faces++;
+  }
+  const lines = Object.entries(groups).sort();
+  const mm3 = lines.reduce((t, [, g]) => t + g.ahMm3 * Math.tan(g.deg * Math.PI / 180) / 2, 0);
+  const cm3 = Math.round(mm3 / 100) / 10;
+  if (!faces) return { cm3: 0, faces: 0, basis: `no zero-draft forged face along the ${axis.toUpperCase()} parting axis — no draft metal` };
+  return {
+    cm3, faces,
+    basis: `draft metal ${fmt(cm3, 1)} cm³ = Σ A·h·tan α / 2 over the ${faces} zero-draft face(s) along the ${axis.toUpperCase()} parting axis `
+      + `(parting at the mid-plane of the part's extent, ${fmt(z.partingMidMm, 1)} mm — CostVision approximation): `
+      + lines.map(([k, g]) => `${k} ${g.n} face(s), ${Math.round(g.areaMm2).toLocaleString('en-GB')} mm², Σ A·h ${Math.round(g.ahMm3).toLocaleString('en-GB')} mm³ at ${g.deg}°: `
+        + `${Math.round(g.ahMm3)} × ${Math.tan(g.deg * Math.PI / 180).toFixed(5)} ÷ 2 ÷ 1000 = ${fmt(Math.round(g.ahMm3) * Number(Math.tan(g.deg * Math.PI / 180).toFixed(5)) / 2 / 1000, 2)} cm³`).join('; ')
+      + ` — α the lower end of IS 3469 (Part I):1974 Table 1.4 ${cls} drafts (outside ${ang.outside.upTo25.join('–')}° / ${ang.outside.above25.join('–')}°, `
+      + `inside ${ang.inside.upTo25.join('–')}° / ${ang.inside.above25.join('–')}°, depth ≤ 25 / > 25 mm); inside = the face's outward normal meets the part again `
+      + '(one ray); exact for a plane face, a cylinder on its developed area; holes drilled from solid excluded',
+  };
+}
+
+/**
+ * The forge line's billet cut-off saw and induction heater (phase B, 4 Nov 2026 — "not in the cost model" until then).
+ * Machines `forge-billet-saw` / `forge-induction-heater` are UK-book machines from the generator (capex ESTIMATES that
+ * quote their anchors, scripts/research/2026-11-phase-b rows FG1–FG6).
+ */
+export const BILLET_SAW = {
+  machineId: 'forge-billet-saw',
+  /** Cuts an hour — ENGINEERING ESTIMATE (research grade D): no published cut time for a Ø40–100 mm bar was found. */
+  cutsPerHour: 400,
+  /** One operator tends two saws — ENGINEERING ESTIMATE (research grade D). */
+  manning: 0.5,
+  /** Saw kerf, mm — engineering-typical for a carbide cold saw (research grade D), not sourced. */
+  kerfMm: 3,
+  /** Largest round bar the library saw cuts — the Tsune TK5C-160GL's capacity, Ø30–160 mm (research row FG5). */
+  maxDiaMm: 160,
+} as const;
+export const INDUCTION_HEATER = {
+  machineId: 'forge-induction-heater',
+  /** SMS Elotherm: ~500 kW heats up to 1,250 kg/h of steel billets (≤ Ø51 mm) to 1,250 °C (research row FG1, a maker's claim). */
+  kw: 500, kgPerHour: 1250,
+  /** = 500 kW ÷ 1,250 kg/h. */
+  kwhPerKg: 0.4,
+} as const;
+/** The steels the heater's kWh/kg is the maker's figure for. */
+const HEATER_STEELS: ForgingAlloyFamily[] = ['carbon-steel', 'microalloyed-steel', 'alloy-steel'];
+
+/** Does this route heat its billets in-line by induction (the furnace rule), and so run them through the heater? */
+function inductionHeated(a: { alloy: ForgingAlloyFamily; process: ForgingProcess }): boolean {
+  if (a.process === 'cold-forming') return false;
+  return !(a.alloy === 'aluminium' || a.alloy === 'copper' || a.process === 'open-die');
+}
+
+/** The billet heated (forging + flash ÷ yield), kg. */
+function billetKgOf(a: ForgeAdvice): number {
+  return (a.forgedKg + a.flashKg) / a.yieldFraction;
+}
+
+/** The saw cuts the billet off the bar: impression and ring routes from bar up to the saw's capacity. */
+function billetSaw(a: ForgeAdvice): { cut: boolean; diaMm: number; kerfKg: number; basis: string } {
+  const kg = billetKgOf(a);
+  const dia = coldSlugDiameterMm(kg, a.alloy);
+  const density = a.partKg > 0 && a.densityGcm3 > 0 ? a.densityGcm3 : 7.85;
+  if (!(a.process === 'closed-die' || a.process === 'precision' || a.process === 'ring-rolling')) {
+    return { cut: false, diaMm: dia, kerfKg: 0, basis: a.process === 'cold-forming'
+      ? 'cold forming — the wire is sheared in the former, no billet saw'
+      : 'open-die stock is cut from heavy bar or bloom off this saw — not costed (no machine for it in the library)' };
+  }
+  if (dia > BILLET_SAW.maxDiaMm) {
+    return { cut: false, diaMm: dia, kerfKg: 0, basis: `a Ø${dia.toFixed(0)} mm billet is above the Ø${BILLET_SAW.maxDiaMm} mm the library saw cuts — cut-off NOT costed` };
+  }
+  const kerfKg = Math.round(Math.PI / 4 * dia * dia * BILLET_SAW.kerfMm * density / 1e6 * 10_000) / 10_000;
+  return { cut: true, diaMm: dia, kerfKg,
+    basis: `billet ${fmt(kg, 3)} kg cut from round bar at a height / diameter of 2.3 (the free-upset limit, CostVision heuristic) = Ø${dia.toFixed(1)} mm; `
+      + `kerf π/4 × ${dia.toFixed(1)}² mm² × ${BILLET_SAW.kerfMm} mm (engineering-typical carbide kerf, not sourced) × ${density.toFixed(2)} g/cm³ = ${fmt(kerfKg, 4)} kg` };
+}
+
 const isHydraulic = (forgeId: string) => /4000t|8000t/.test(forgeId);
 
 export function forgeLine(a: { process: ForgingProcess; impressions: number; shape: ShapeComplexity; partKg: number; forgeId: string }): {
@@ -370,9 +515,11 @@ interface ForgeAdvice {
   flashKg: number;
   dieSteel: DieSteel;
   impressions: number;
-  /** As-forged weight: finished + holes drilled from solid + per-side machining stock. */
+  /** As-forged weight: finished + holes drilled from solid + per-side machining stock + draft metal. */
   forgedKg: number;
   forgedBasis: string;
+  /** The metal's density, g/cm³ (the costed grade's). */
+  densityGcm3: number;
 }
 
 function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutcome<never> } {
@@ -450,18 +597,25 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
   const pierce = rec.process === 'open-die' ? Infinity : CORED_ABOVE_MM.forging;
   const drilledCm3 = rows.filter(r => r.kind === 'hole' && r.diaMm <= pierce)
     .reduce((s2, r) => s2 + Math.PI * r.diaMm ** 2 / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
-  const stockMm = FORGING_MACHINING_STOCK_MM[rec.process];
+  const bb = ctx.geo.boundingBox;
+  const stock = machiningStockMm(rec.process, bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : null);
+  const stockMm = stock.mm;
   const faceCm3 = stockMm > 0 ? nearNetStockCm3(rows, stockMm, pierce) : 0;
+  // Draft metal (phase B): the wedge the die's draft adds on every zero-draft forged face — not on holes drilled from solid.
+  const drilledIds = new Set(rows.filter(r => r.kind === 'hole' && r.diaMm <= pierce).flatMap(r => r.faceIds ?? []));
+  const draft = forgingDraftMetal(ctx, rec.process, drilledIds);
   // The turned axis the secondary machining turns on the lathe (a spindle, or a turned part's outside) is forged with the
   // near-net turning stock that machining roughs off — poured as metal here as on cast + machine (secondary-machining
   // parity, Nov 2026: the plan turned it, the weight did not carry it).
   const turnedCm2 = costedNearNetRows(rows).length ? nearNetTurnedAreaCm2(ctx.geo.turning, ctx.geo.surfaceArea?.cm2 ?? 0) : 0;
   const turnCm3 = Math.round(turnedCm2 * NEAR_NET_TURN_STOCK_MM / 10 * 10) / 10;
-  const forgedKg = Math.round((mat.massKg + (drilledCm3 + faceCm3 + turnCm3) * density) * 1000) / 1000;
+  const forgedKg = Math.round((mat.massKg + (drilledCm3 + faceCm3 + turnCm3 + draft.cm3) * density) * 1000) / 1000;
   const forgedBasis = `${fmt(mat.massKg, 3)} kg finished + ${fmt(drilledCm3, 1)} cm³ of holes drilled from solid`
     + `${pierce < Infinity ? ` (≤ Ø${pierce}; larger bores pierced)` : ''} + ${fmt(faceCm3, 1)} cm³ machining stock `
-    + `(${stockMm} mm a side on the machined faces, ${rec.process})`
+    + `(${stock.basis})`
     + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² turned axis (${NEAR_NET_TURN_STOCK_MM} mm a side, engineering-typical, not sourced)` : '')
+    + ` + ${fmt(draft.cm3, 1)} cm³ draft metal (${draft.basis})`
+    + ` = ${fmt(mat.massKg, 3)} kg + ${fmt(drilledCm3 + faceCm3 + turnCm3 + draft.cm3, 1)} cm³ × ${density.toFixed(5)} kg/cm³ = ${fmt(forgedKg, 3)} kg`
     + ` — ${mat.basis}`;
   return {
     advice: {
@@ -490,7 +644,7 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
       flashKg: Math.round(forgedKg * y.flashFrac * 1000) / 1000,
       dieSteel: dieSteelFor(alloy),
       impressions: IMPRESSIONS[rec.process] + (shape === 'complex' && rec.process === 'closed-die' ? 1 : 0),
-      forgedKg, forgedBasis,
+      forgedKg, forgedBasis, densityGcm3: density * 1000,
     },
   };
 }
@@ -753,8 +907,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
         return decided('forging.cycleTimeHr', Math.round(l.cycleSec / 3600 * 1e6) / 1e6, 'rule', l.basis
-          + '. Not costed: billet cut-off (saw / shear) and the billet heater\'s capital — the rate book has no billet saw,'
-          + ' bar shear or induction heater (the heating energy is costed)', 0.6);
+          + '. The billet cut-off and the induction heater are their own operations (billetSaw…, billetHeater…)', 0.6);
       },
     },
     {
@@ -798,6 +951,89 @@ export const FORGING_RULES: CommodityRuleSpec = {
           gas ? (r.advice.process === 'open-die' ? 'large open-die stock heats in a gas furnace'
             : `${r.advice.alloy} forges warm — billets soak in a gas furnace`)
             : 'steel / titanium billets for an impression line heat in-line by induction', 0.6);
+      },
+    },
+    // ── Billet cut-off and induction heater (phase B, 4 Nov 2026) ─────────────
+    {
+      id: 'forging.billetSawMachineId',
+      path: 'forging.billetSawMachineId',
+      fieldId: 'forge-saw-mach',
+      label: 'billetSawMachineId',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const s = billetSaw(r.advice);
+        return decided('forging.billetSawMachineId', s.cut ? BILLET_SAW.machineId : '', 'rule',
+          s.cut ? `billet cut off the bar on the automatic carbide saw (${s.basis})` : s.basis, 0.6);
+      },
+    },
+    {
+      id: 'forging.billetSawCycleHr',
+      path: 'forging.billetSawCycleHr',
+      fieldId: 'forge-saw-ct',
+      label: 'billetSawCycleHr',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!billetSaw(r.advice).cut) return decided('forging.billetSawCycleHr', 0, 'rule', 'no billet cut-off costed on this route', 0.6);
+        return decided('forging.billetSawCycleHr', Math.round(1 / BILLET_SAW.cutsPerHour * 1e6) / 1e6, 'rule',
+          `1 ÷ ${BILLET_SAW.cutsPerHour} cuts an hour = ${(1 / BILLET_SAW.cutsPerHour).toFixed(4)} h a billet — ENGINEERING ESTIMATE (no published cut time for this bar was found)`, 0.4);
+      },
+    },
+    {
+      id: 'forging.billetSawManning',
+      path: 'forging.billetSawManning',
+      fieldId: 'forge-saw-manning',
+      label: 'billetSawManning',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!billetSaw(r.advice).cut) return decided('forging.billetSawManning', 0, 'rule', 'no billet cut-off costed on this route', 0.6);
+        return decided('forging.billetSawManning', BILLET_SAW.manning, 'rule',
+          `one operator tends two automatic saws — ENGINEERING ESTIMATE, not sourced`, 0.4);
+      },
+    },
+    {
+      id: 'forging.billetSawKerfKg',
+      path: 'forging.billetSawKerfKg',
+      fieldId: 'forge-saw-kerf',
+      label: 'billetSawKerfKg',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const s = billetSaw(r.advice);
+        return decided('forging.billetSawKerfKg', s.cut ? s.kerfKg : 0, 'rule',
+          s.cut ? `${s.basis} — bought as bar, lost in the cut, credited as scrap` : 'no billet cut-off costed on this route', 0.5);
+      },
+    },
+    {
+      id: 'forging.billetHeaterMachineId',
+      path: 'forging.billetHeaterMachineId',
+      fieldId: 'forge-heater-mach',
+      label: 'billetHeaterMachineId',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const on = inductionHeated(r.advice);
+        return decided('forging.billetHeaterMachineId', on ? INDUCTION_HEATER.machineId : '', 'rule',
+          on ? `the in-line induction billet heater (~${INDUCTION_HEATER.kw} kW, SMS Elotherm sizing); fed by the forge crew — no crew of its own; `
+            + 'its energy is the per-kg heating line, not in its machine rate'
+            : r.advice.process === 'cold-forming' ? 'cold forming — the billet is never heated' : 'billets heat in a gas furnace (its fuel is the heating line) — no induction heater', 0.6);
+      },
+    },
+    {
+      id: 'forging.billetHeaterCycleHr',
+      path: 'forging.billetHeaterCycleHr',
+      fieldId: 'forge-heater-ct',
+      label: 'billetHeaterCycleHr',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!inductionHeated(r.advice)) return decided('forging.billetHeaterCycleHr', 0, 'rule', 'no induction heater on this route', 0.6);
+        const kg = billetKgOf(r.advice);
+        return decided('forging.billetHeaterCycleHr', Math.round(kg / INDUCTION_HEATER.kgPerHour * 1e6) / 1e6, 'rule',
+          `${fmt(kg, 3)} kg billet ÷ ${INDUCTION_HEATER.kgPerHour.toLocaleString('en-GB')} kg/h = ${(kg / INDUCTION_HEATER.kgPerHour).toFixed(5)} h a billet`
+          + ` — the heater's throughput, SMS Elotherm (~${INDUCTION_HEATER.kw} kW to 1,250 °C, a maker's claim for billets ≤ Ø51 mm; a larger billet heats slower — not adjusted)`, 0.5);
       },
     },
     {
@@ -934,13 +1170,19 @@ export const FORGING_RULES: CommodityRuleSpec = {
           return decided('forging.heatingEnergyKwhPerKg', 0, 'rule',
             'cold forming — the billet is never heated', 0.9);
         }
-        const kwhKg = forgingHeatKwhPerKg(r.advice.alloy);
-        const billet = (r.advice.forgedKg + r.advice.flashKg) / r.advice.yieldFraction;
-        return decided('forging.heatingEnergyKwhPerKg', kwhKg, 'library',
-          `energy to bring ${r.advice.alloy} to forging temperature, wall-plug at an induction heater — CostVision`
-          + ` engineering-typical, not sourced; charged on every billet heated: ${kwhKg} kWh/kg × ${fmt(billet, 3)} kg billet`
+        // Phase B: an induction-heated steel billet takes the in-line heater's own figure — SMS Elotherm ~500 kW for up to
+        // 1,250 kg/h = 0.40 kWh/kg (a maker's claim, row FG1); other metals keep the table (CostVision, not sourced).
+        const heater = inductionHeated(r.advice) && HEATER_STEELS.includes(r.advice.alloy);
+        const kwhKg = heater ? INDUCTION_HEATER.kwhPerKg : forgingHeatKwhPerKg(r.advice.alloy);
+        const billet = billetKgOf(r.advice);
+        return decided('forging.heatingEnergyKwhPerKg', kwhKg, heater ? 'rule' : 'library',
+          (heater
+            ? `energy to bring ${r.advice.alloy} to forging temperature in the in-line induction heater: ${INDUCTION_HEATER.kw} kW ÷ ${INDUCTION_HEATER.kgPerHour.toLocaleString('en-GB')} kg/h`
+              + ` = ${kwhKg} kWh/kg (SMS Elotherm, a maker's claim for steel billets ≤ Ø51 mm to 1,250 °C)`
+            : `energy to bring ${r.advice.alloy} to forging temperature, wall-plug at an induction heater — CostVision engineering-typical, not sourced`)
+          + `; charged on every billet heated: ${kwhKg} kWh/kg × ${fmt(billet, 3)} kg billet`
           + ` ÷ 0.98 for the ${FORGING_REJECT * 100}% scrap = ${fmt(kwhKg * billet / (1 - FORGING_REJECT), 3)} kWh a good part,`
-          + ' priced at the costing book\'s tariff (gas furnace × 2.4 kWh of gas)', 0.7);
+          + ' priced at the costing book\'s tariff as kWh (gas furnace × 2.4 kWh of gas)', heater ? 0.7 : 0.7);
       },
     },
     {

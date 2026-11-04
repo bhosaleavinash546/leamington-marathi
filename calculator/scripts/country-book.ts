@@ -101,6 +101,12 @@ const correctionNote = (keys: string[]) => keys.filter(k => CORRECTED.has(k)).ma
 const UK_SNAP = JSON.parse(readFileSync(resolve(ROOT, 'scripts/rate-refresh/uk-2026-10/current-uk-book.json'), 'utf8')) as {
   materials: Array<{ id: string; grade: string; gbpPerKg: number }> };
 const ukMat = new Map(UK_SNAP.materials.map(m => [m.id, { id: m.id, grade: m.grade, pricePerKg: m.gbpPerKg }]));
+// Phase B (4 Nov 2026): a grade with a RESEARCHED content over its family anchor — the low-alloy cast steels' alloy at the
+// researched ferroalloy prices, the HSLA cold-rolled extras — takes it in this book too, in place of the frozen UK book's
+// grade premium (which the research found 7–15 × the published HSLA extras): this book's own anchor + the same £/kg at its
+// FX. Read from the UK config, where build-config.py writes it with its sources.
+const GRADE_ADDS = (JSON.parse(readFileSync(resolve(ROOT, 'scripts/rate-refresh/2026-10-uk.json'), 'utf8')).gradeAdds ?? {}) as
+  Record<string, { gbpPerKg: number; basis: string; sources?: Array<{ source: string; date?: string }> }>;
 const curMat = new Map(SNAP.materials.map(m => [m.id, m]));
 for (const f of cfg.materialFamilies) {
   // each source once (a material note listed the same Mysteel page twice)
@@ -119,7 +125,12 @@ for (const f of cfg.materialFamilies) {
     let inr: number, how: string;
     const curInr = cur.inrPerKg;
     const anchor = local(f, 'anchor', 'PerKg');
-    if (f.method === 'direct') { inr = anchor; how = 'direct'; }
+    const ga = GRADE_ADDS[id];
+    if (ga && (f.method === 'ladder' || f.method === 'ladder-add')) {
+      inr = anchor + ga.gbpPerKg * FX;
+      how = `for this grade NOT the book's premium but the anchor ${SYM}${anchor.toFixed(3)} + ${SYM}${(ga.gbpPerKg * FX).toFixed(3)}/kg = ${SYM}${inr.toFixed(3)}/kg — `
+        + `the researched £${ga.gbpPerKg.toFixed(4)}/kg at ${SYM}${FX}/£ (${ga.basis}; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)`;
+    } else if (f.method === 'direct') { inr = anchor; how = 'direct'; }
     else if (f.method === 'ladder') {
       const proxy = (f.proxies ?? {})[id] ? ukMat.get(f.proxies[id]) : undefined;   // a duplicate grade takes its twin's premium
       const ratio = (proxy ?? uk).pricePerKg / f.base;
@@ -139,7 +150,9 @@ for (const f of cfg.materialFamilies) {
     const decision = Math.abs(inr - curInr) < 0.005 * curInr ? 'held (evidence agrees)' : how.startsWith('held') ? 'held' : 'updated';
     // a book with unpriced items AT PAR has no country factor to fall back on: an agreeing figure is still the book's
     if (!decision.startsWith('held') || (cfg.heldMaterialsAtPar && decision === 'held (evidence agrees)')) {
-      materials[id] = { gbpPerKg: gbp(inr), basis: `${f.family}: ${f.anchorBasis}; ${how}${correctionNote((f.sources as Array<{ research?: string }>).map(x => x.research ?? ''))}`, source: srcText, confidence: f.confidence as Confidence };
+      const memberSrc = ga?.sources && (f.method === 'ladder' || f.method === 'ladder-add')
+        ? [...new Set([srcText, ...ga.sources.map(x => `${x.source}${x.date ? ` (${x.date})` : ''}`)])].join(' ; ') : srcText;
+      materials[id] = { gbpPerKg: gbp(inr), basis: `${f.family}: ${f.anchorBasis}; ${how}${correctionNote((f.sources as Array<{ research?: string }>).map(x => x.research ?? ''))}`, source: memberSrc, confidence: f.confidence as Confidence };
     }
     register.push({ kind: 'material', id, name: uk.grade, currentInr: r2(curInr), newInr: r2(decision.startsWith('held') ? curInr : inr), unit: `${SYM}/kg`,
       decision, basis: `${f.family} — ${how}`, source: srcText });
@@ -246,6 +259,8 @@ for (const k of ['overhead', 'packaging', 'logistics'] as const) {
     decision: Math.abs(m.value - cur) < 0.005 ? 'held (evidence agrees)' : 'updated', basis: m.basis, source: m.source ?? '' });
 }
 const billet = cfg.alBilletPremiumUsdPerT;
+const scrapDiff = cfg.alScrapDiffUsdPerT as { value: number; basis: string; source?: string } | undefined;
+if (scrapDiff) register.push({ kind: 'material', id: `AL_SCRAP_6XXX_BY_REGION.${REGION}`, name: `${NAME} clean 6063 process scrap over LME`, currentInr: null, newInr: scrapDiff.value, unit: 'USD/t', decision: 'added (phase B, 4 Nov 2026)', basis: scrapDiff.basis, source: scrapDiff.source ?? '' });
 if (billet) register.push({ kind: 'material', id: `BILLET_PREMIUM_USD_PER_T.${REGION}`, name: `${NAME} Al billet premium over LME`, currentInr: billet.current ?? 550, newInr: billet.value, unit: 'USD/t', decision: 'updated', basis: billet.basis, source: billet.source });
 
 // ── report ───────────────────────────────────────────────────────────────────
@@ -341,6 +356,15 @@ if (billet) {
   if (!billetRe.test(ald)) throw new Error(`BILLET_PREMIUM_USD_PER_T.${REGION} not found`);
   // a function replacer: the basis carries '$1,070', which a replacement string reads as capture group 1
   ald = ald.replace(billetRe, () => `  ${REGION}: { usdPerT: ${billet.value}, sourced: true, basis: '${String(billet.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);
+  // Phase B (4 Nov 2026): the region's own clean 6xxx process-scrap level (AL_SCRAP_6XXX_BY_REGION) — written, or the
+  // region's line removed when the config has none (the region then takes the European differential)
+  const scrapCfg = cfg.alScrapDiffUsdPerT as { value: number; basis: string } | undefined;
+  const blockRe = /(export const AL_SCRAP_6XXX_BY_REGION: [^=]+= \{\n)([\s\S]*?)(\n\};)/;
+  const blk = blockRe.exec(ald);
+  if (!blk) throw new Error('AL_SCRAP_6XXX_BY_REGION not found');
+  const lines = blk[2].split('\n').filter(l => l.trim() && !l.startsWith(`  ${REGION}: `));
+  if (scrapCfg) lines.push(`  ${REGION}: { usdPerT: ${scrapCfg.value}, sourced: true, basis: '${String(scrapCfg.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);
+  ald = ald.replace(blockRe, (_m, a, _b, c) => `${a}${lines.sort().join('\n')}${c}`);
   writeFileSync(ALD, ald);
 }
 console.log(`written: ${BOOK_FILE}, regional-rates.ts (${REGION}), rate-library.ts (lab-${cc}-*${newElec !== undefined ? `, energy-${cc}` : ''})${billet ? `, al-extrusion-data.ts (${REGION} billet)` : ''}, register.csv`);

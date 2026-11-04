@@ -1661,11 +1661,18 @@
  "shopMultipliersAtPar": true,
  "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no China overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched (China's automotive-supplier filings — SG&A ÷ cost of sales, Tuopu 4.15 %, Huayu 6.04 % v TI Fluid Systems 7.68 % — suggest 0.67–0.79; read in search results only, not applied until verified on the filings)",
  "alBilletPremiumUsdPerT": {
-  "value": -21,
+  "value": 11,
   "current": -186,
-  "basis": "A00 ¥21.47/kg (Changjiang Sep 2026 avg) + 6063 billet fee ¥0.045/kg (Foshan, Sep 2026), ex-VAT = $3219/t at ¥6.684/$ — over the library LME $3240",
-  "research": "nonferrous.al.billet6063_premium",
-  "source": "https://list1.mysteel.com/zhishi/lvdingjiagongfei.html",
-  "date": "2026-09-18"
+  "basis": "A00 ¥21.47/kg ex-VAT (Changjiang Sep 2026 avg) + 6063 billet fee ¥0.2611/kg ex-VAT (SMM Foshan daily 27 Oct 2026: Φ90 ¥320/t, Φ120 / Φ178 ¥270/t, midpoint ¥295/t incl. 13 % VAT ÷ 1.13; phase B 4 Nov 2026 — was ¥0.045/kg, Mysteel 18 Sep, a cyclical low below SMM's ¥200–300/t casting cost) = $3251/t at ¥6.684/$ — over the library LME $3240",
+  "research": "phase-b AL1",
+  "source": "SMM (Shanghai Metals Market), 'Foshan Aluminum Billet Processing Fees Flat on October 27' — https://news.metal.com/newscontent/104181171-foshan-aluminum-billet-processing-fees-flat-on-october-27",
+  "date": "2026-10-27; read 2026-11-04"
+ },
+ "alScrapDiffUsdPerT": {
+  "value": -158,
+  "basis": "clean new 6063 extrusion scrap (6063 白料新料), Mysteel: 28 Oct ¥20,500–20,800/t, 30 Oct ¥20,400–20,700/t, Guangdong 2 Nov ¥20,600/t — mean ¥20,600/t, read VAT-FREE (quoted cash, no VAT invoice, buyer collects; a VAT-inclusive reading would be ¥18.23/kg) = $3082/t at ¥6.684/$ — under the library LME $3240",
+  "research": "phase-b AL5",
+  "source": "Mysteel (我的钢铁网), 废铝 price summaries — https://m.mysteel.com/hot/1326398.html",
+  "date": "2026-10-28 / 10-30 / 11-02; read 2026-11-04"
  }
 }

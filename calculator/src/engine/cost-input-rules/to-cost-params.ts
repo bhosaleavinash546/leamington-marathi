@@ -624,6 +624,15 @@ export function toCostParams(
           trimmingLabourId: f.trimLabourId || 'lab-uk-forge',
           ...(num(f.trimManning) > 0 ? { trimmingManning: num(f.trimManning) } : {}),
         } : {}),
+        // Billet cut-off and the in-line induction heater (phase B, 4 Nov 2026), as the screen collects them.
+        ...(f.billetSawMachineId && num(f.billetSawCycleHr) > 0 ? {
+          billetSawMachineId: f.billetSawMachineId, billetSawCycleHr: num(f.billetSawCycleHr),
+          ...(num(f.billetSawManning) > 0 ? { billetSawManning: num(f.billetSawManning) } : {}),
+          ...(num(f.billetSawKerfKg) > 0 ? { billetSawKerfKg: num(f.billetSawKerfKg) } : {}),
+        } : {}),
+        ...(f.billetHeaterMachineId && num(f.billetHeaterCycleHr) > 0 ? {
+          billetHeaterMachineId: f.billetHeaterMachineId, billetHeaterCycleHr: num(f.billetHeaterCycleHr),
+        } : {}),
         heatingEnergyKwhPerKg: num(f.heatingEnergyKwhPerKg, 0.35),
         dieLife: num(f.dieLife, 30_000),
         dieCost: num(f.dieCostGBP),

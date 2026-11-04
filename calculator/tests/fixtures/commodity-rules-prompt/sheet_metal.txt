@@ -24,7 +24,8 @@ SHEET METAL COST INPUT RULES:
   dieLife=1050000  [170 MPa shear at 12.25 mm on a progressive die: 1,000,000 × (300 ÷ 170 MPa)^1.3 × 0.500 (1.5 ÷ 12.25 mm gauge, ≥ 0.5), 50k–3M, to the nearest 10k = 1,050,000 hits (CostVision engineering heuristic, not sourced) — deterministic, use verbatim]
   dieType=progressive  [coil-fed progressive die, 4 stations — deterministic, use verbatim]
   process=Progressive stamping (4 stations)  [high volume (100,000/yr): stamping — laser + brake is not an option: 12.25 mm is beyond a fibre laser's economic range — deterministic, use verbatim]
-  materialId=mat-aa5754-sheet  [aluminium → AA5754-H22 Sheet (representative coil grade — not a drawing callout) — deterministic, use verbatim]
+  materialId=mat-aa5754-sheet  [aluminium → AA5754-H22 Sheet: assumed — confirm: AA5754-H22 Sheet, the route's representative coil grade — not a drawing callout — deterministic, use verbatim]
+  grade: UNDECIDED — needs "Which aluminium sheet grade?" (AA5754-H22 Sheet — Aluminium | AA5182 — Aluminium | AA5052-H32 Sheet — Aluminium | AA5083-H111 Sheet — Aluminium | Recycled-Content Al 5xxx (Secondary) — Aluminium | AA6016-T4 Sheet (Auto Skin) — Aluminium | AA6111-T4 Sheet (Auto Skin) — Aluminium | AA6082-T6 Sheet — Aluminium | AA6061-T6 Sheet/Plate — Aluminium | AA6063-T5 Sheet — Aluminium | AA1050A-H14 Sheet (heat shields, reflectors) — Aluminium | AA3003-H14 Sheet — Aluminium | AA7075-T6 Sheet/Plate — Aluminium | Aluminium Busbar (EV / battery) — Aluminium)
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   shearStrengthMPa=170  [170 MPa — engineering-typical for a 5xxx / 6xxx aluminium sheet — not the grade’s own — deterministic, use verbatim]
   route=stamping  [stamping — laser + brake is not an option: 12.25 mm is beyond a fibre laser's economic range — deterministic, use verbatim]
@@ -58,6 +59,7 @@ SHEET METAL COST INPUT RULES:
   dieType: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   process: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   materialId: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  grade: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   netWeightKg: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   shearStrengthMPa: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   route: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)

@@ -97,15 +97,15 @@ export const INDIA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-hsla340": {
-   "gbpPerKg": 0.802,
-   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09) ; https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/ (n/a)",
+   "gbpPerKg": 0.6033,
+   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; for this grade NOT the book's premium but the anchor ₹72.010 + ₹4.732/kg = ₹76.742/kg — the researched £0.0372/kg at ₹127.2/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09) ; https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/ (n/a) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla420": {
-   "gbpPerKg": 0.8694,
-   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09) ; https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/ (n/a)",
+   "gbpPerKg": 0.6322,
+   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; for this grade NOT the book's premium but the anchor ₹72.010 + ₹8.408/kg = ₹80.418/kg — the researched £0.0661/kg at ₹127.2/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09) ; https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/ (n/a) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla550": {
@@ -631,15 +631,15 @@ export const INDIA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.3007,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; the anchor grade itself",
-   "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09)",
+   "gbpPerKg": 0.3071,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; for this grade NOT the book's premium but the anchor ₹38.250 + ₹0.814/kg = ₹39.064/kg — the researched £0.0064/kg at ₹127.2/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3208,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; ladder ×1.067 (book £2.24 ÷ base £2.1)",
-   "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09)",
+   "gbpPerKg": 0.3949,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; for this grade NOT the book's premium but the anchor ₹38.250 + ₹11.982/kg = ₹50.232/kg — the researched £0.0942/kg at ₹127.2/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hadfield": {

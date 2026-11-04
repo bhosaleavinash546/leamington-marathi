@@ -98,15 +98,15 @@ export const JAPAN_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-hsla340": {
-   "gbpPerKg": 0.6283,
-   "basis": "CR automotive grades: CR automotive grades — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg × the book's grade premium over its base; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm (2026-07-30)",
+   "gbpPerKg": 0.4807,
+   "basis": "CR automotive grades: CR automotive grades — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor JP¥93.350 + JP¥7.830/kg = JP¥101.180/kg — the researched £0.0372/kg at JP¥210.486/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm (2026-07-30) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla420": {
-   "gbpPerKg": 0.6811,
-   "basis": "CR automotive grades: CR automotive grades — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg × the book's grade premium over its base; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm (2026-07-30)",
+   "gbpPerKg": 0.5096,
+   "basis": "CR automotive grades: CR automotive grades — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor JP¥93.350 + JP¥13.913/kg = JP¥107.263/kg — the researched £0.0661/kg at JP¥210.486/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm (2026-07-30) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla550": {
@@ -416,15 +416,15 @@ export const JAPAN_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2579,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on JP heavy scrap JP¥51.0000/kg (2026-10-22) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = JP¥54.2795/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
-   "source": "https://www.tokyosteel.co.jp/assets/docs/scrapprice/price/2026/2026.10.22.pdf (2026-10-22)",
+   "gbpPerKg": 0.2643,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on JP heavy scrap JP¥51.0000/kg (2026-10-22) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = JP¥54.2795/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor JP¥54.279 + JP¥1.347/kg = JP¥55.627/kg — the researched £0.0064/kg at JP¥210.486/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.tokyosteel.co.jp/assets/docs/scrapprice/price/2026/2026.10.22.pdf (2026-10-22) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3979,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on JP heavy scrap JP¥51.0000/kg (2026-10-22) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = JP¥54.2795/kg (the German book's arithmetic; mix an engineering assumption); ladder +JP¥29.47/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "https://www.tokyosteel.co.jp/assets/docs/scrapprice/price/2026/2026.10.22.pdf (2026-10-22)",
+   "gbpPerKg": 0.3521,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on JP heavy scrap JP¥51.0000/kg (2026-10-22) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = JP¥54.2795/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor JP¥54.279 + JP¥19.828/kg = JP¥74.107/kg — the researched £0.0942/kg at JP¥210.486/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.tokyosteel.co.jp/assets/docs/scrapprice/price/2026/2026.10.22.pdf (2026-10-22) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {

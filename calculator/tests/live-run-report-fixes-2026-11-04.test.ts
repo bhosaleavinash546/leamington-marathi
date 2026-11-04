@@ -278,8 +278,9 @@ describe('2. Casting and cast + machine rows that are the same costing are one r
     expect(castLike[0].label).toBe('Casting + machining');
     expect(castLike[0].alsoRoutes).toEqual(['casting']);
     // Review round (4 Nov 2026): 8.6877 → 9.3923 — the foundry indirect lines, the impressions limits and the CNC lathe's
-    // UK award capex (the spindle is turned)
-    expect(castLike[0].total!).toBeCloseTo(9.3923, 3);
+    // UK award capex (the spindle is turned). Phase B (4 Nov 2026): 9.3923 → 10.1103 — the UK cast-steel charge is the
+    // consumer-scrap level + trim ÷ 0.96 (£0.148 → £0.314/kg)
+    expect(castLike[0].total!).toBeCloseTo(10.1103, 3);
   }, 120_000);
 });
 

@@ -255,7 +255,8 @@ describe('should-fix list', () => {
     expect(reportStandardFor('gear').notIncluded.some(i => i.text === 'Rust preventive')).toBe(true);
     const f = buildCoreReport({ result: castRes, input: cast, library: lib, commodity: 'forging', region: 'UK' });
     expect(f.notIncluded.join(' | ')).not.toMatch(/Billet shear/);
-    expect(f.notModelled[0]).toMatch(/^Billet shear \/ saw and the induction heater.*a gap in the cost model/);
+    // phase B (4 Nov 2026): the billet saw and the induction heater are costed — no longer a gap in the cost model
+    expect(f.notModelled.join(' | ')).not.toMatch(/Billet shear|induction heater/);
   });
 
   it('the country table states its basis; DFM pending is one line', () => {

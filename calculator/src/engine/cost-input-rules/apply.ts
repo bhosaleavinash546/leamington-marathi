@@ -164,6 +164,13 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'forging.trimCycleHr': { to: 'forging.trimCycleHr' },
   'forging.trimLabourId': { to: 'forging.trimLabourId' },
   'forging.trimManning': { to: 'forging.trimManning' },
+  // Billet cut-off and induction heater (phase B, 4 Nov 2026) — were "not in the cost model".
+  'forging.billetSawMachineId': { to: 'forging.billetSawMachineId' },
+  'forging.billetSawCycleHr': { to: 'forging.billetSawCycleHr' },
+  'forging.billetSawManning': { to: 'forging.billetSawManning' },
+  'forging.billetSawKerfKg': { to: 'forging.billetSawKerfKg' },
+  'forging.billetHeaterMachineId': { to: 'forging.billetHeaterMachineId' },
+  'forging.billetHeaterCycleHr': { to: 'forging.billetHeaterCycleHr' },
   // Gear cutting — geometry-measured z/module/face, engineer-answered helix/
   // quality/material class, rule-derived blank. materialId/netWeightKg land on
   // the shared top-level fields, as for every metal commodity.
@@ -480,6 +487,7 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'alExtrusion.ageOven': 'report — the builder sets the oven from the temper on both paths',
   'casting.q.grade': 'advisory question — its answer reaches both paths through casting.materialId',
   'forging.q.grade': 'advisory question — its answer reaches both paths through forging.materialId',
+  'sheetMetal.q.grade': 'advisory question (phase B, Nov 2026) — its answer reaches both paths through sheetMetal.materialId',
   'casting.q.finish': 'advisory question — its answer reaches both paths through casting.finishRoute',
   'forging.q.finish': 'advisory question — its answer reaches both paths through forging.finishRoute',
   'sheetMetal.q.finish': 'advisory question — its answer reaches both paths through sheetMetal.finishRoute',

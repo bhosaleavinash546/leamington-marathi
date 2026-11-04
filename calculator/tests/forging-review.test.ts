@@ -86,11 +86,11 @@ describe('4. die sets wear fractionally, not rounded up inside a year', () => {
 });
 
 describe('5. the forging carries its machining stock', () => {
-  it('knuckle: finished 2.795 kg + drilled holes + 2 mm a side on the machined faces', () => {
+  it('knuckle: finished 2.795 kg + drilled holes + 2.5 mm a side on the machined faces (IS 3469 Table 1.5, 205–410 mm)', () => {
     const f = forge('steering_knuckle_RH.stp');
     expect(Number(f.partWeightKg)).toBeGreaterThan(2.795);
     expect(runCostInputRules(FORGING_RULES, ctx('steering_knuckle_RH.stp')).provenance['forge-part-wt'].basis)
-      .toContain('2 mm a side on the machined faces');
+      .toContain('2.5 mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5');
   });
 });
 
@@ -180,7 +180,10 @@ describe('10. the hub flange reconciles by hand', () => {
   // Secondary-machining parity (Nov 2026): the near-net plan of cast + machine — outside and faces turned in a lathe
   // fixture, holes and bore on the 5-axis in one fixturing, deburr, turning stock forged on — £11.72 → £13.00.
   // Review round (4 Nov 2026): the spindle is turned on the CNC lathe, whose capex is now a UK award (£56,004 → £135,041)
-  it('£13.23 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13.23);
+  // Phase B (4 Nov 2026): the billet saw and induction heater as operations, the heater's 0.40 kWh/kg, the measured draft
+  // metal on the zero-draft faces (IS 3469 Table 1.4) and the IS 3469 Table 1.5 stock (1.5 mm a side below 205 mm, was
+  // 2.0 mm): £13.23 → £13.85.
+  it('£13.85 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13.85);
   });
 });

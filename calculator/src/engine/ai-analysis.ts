@@ -176,6 +176,12 @@ export interface OCCTGeometry {
     minPositiveDraftDeg: number | null;
     maxPositiveDraftDeg: number | null;
     analyzedFaceCount: number;
+    /**
+     * The faces at zero draft along EACH principal axis (kernel `_zero_draft_faces`, phase B Nov 2026): per face
+     * [1-based id, area mm², lowest and highest coordinate along the axis mm, inside 1 / outside 0], and the mid-plane of
+     * the part's extent along it. A forging's draft metal reads the axis it parts on. Absent on an STL / older measurement.
+     */
+    zeroDraftByAxis?: Partial<Record<'x' | 'y' | 'z', { partingMidMm: number; rows: Array<[number, number, number, number, number]> }>>;
     /** The three principal axes tried; the reported direction is the one with the fewest undercuts. */
     pullDirectionSearch?: {
       candidates: Array<{ drawDirectionXYZ: number[]; undercutFaceCount: number }>;
@@ -526,6 +532,13 @@ export interface CADAnalysisResult {
       trimCycleHr?: number;
       trimLabourId?: string;
       trimManning?: number;
+      /** Billet cut-off and induction heater (phase B, Nov 2026): rule-decided on both paths. */
+      billetSawMachineId?: string;
+      billetSawCycleHr?: number;
+      billetSawManning?: number;
+      billetSawKerfKg?: number;
+      billetHeaterMachineId?: string;
+      billetHeaterCycleHr?: number;
     };
     sheetMetal?: {
       thicknessMm: number;

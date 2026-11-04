@@ -28,7 +28,14 @@ const BASELINE = join(import.meta.dirname, '../../tests/fixtures/real-parts-base
 // ── The model's constants, as printed on the bases (UK basis; the programme and country are the dump's own) ─────────
 const C = dumpContext(DUMP);
 const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
-const STOCK_MM = 2, PIERCE_ABOVE_MM = 25, TURN_STOCK_MM = 2;   // + near-net turning stock a side (NEAR_NET_TURN_STOCK_MM)                   // closed-die machining stock a side; bores > Ø25 pierced
+const PIERCE_ABOVE_MM = 25, TURN_STOCK_MM = 2;   // bores > Ø25 pierced; near-net turning stock a side (NEAR_NET_TURN_STOCK_MM)
+// Phase B (4 Nov 2026): closed-die machining stock a side by the greatest dimension — IS 3469 (Part I):1974 Table 1.5
+const IS3469_STOCK: Array<[number, number]> = [[205, 1.5], [410, 2.5], [610, 3.0], [915, 4.0], [Infinity, 5.0]];
+// Draft metal: the lower end of IS 3469 Table 1.4 "normal" drafts — outside 5° (any depth), inside 7° (≤ 25 mm) / 8° (> 25 mm)
+const DRAFT_OUT_DEG = 5, DRAFT_IN_DEG_25 = 7, DRAFT_IN_DEG_DEEP = 8;
+// Billet saw (engineering estimates, research grade D) and the in-line induction heater (SMS Elotherm, 500 kW ÷ 1,250 kg/h)
+const SAW_CUTS_PER_H = 400, SAW_CREW = 0.5, KERF_MM = 3, SLUG_H_OVER_D = 2.3, SAW_MAX_DIA = 160;
+const HEATER_KG_PER_H = 1250;
 const FLASH = 0.10, BAND_MID = (0.55 + 0.80) / 2;            // closed-die
 const KT = { simple: 3, moderate: 5, complex: 8 } as const;
 const FLOW_MICROALLOYED = 105;                                // MPa, hot
@@ -36,7 +43,7 @@ const FORGE_LADDER = [500, 1600, 2500, 4000, 8000];
 const STAMP_LADDER = [100, 200, 400, 630, 800, 1000, 1250];
 const LOAD_S = 3, HIT_S_MECH = 4, HIT_S_HYD = 8, IMPRESSIONS = 2;
 const CREW = 2, TRIM_CREW = 1, REJECT = 0.02, OEE = 0.8, EFF = 0.92;
-const HEAT_KWH_PER_KG = 0.35, DESCALE_GBP_KG = 0.12;
+const HEAT_KWH_PER_KG = 0.40, DESCALE_GBP_KG = 0.12;   // 0.40 = the heater's 500 kW ÷ 1,250 kg/h (phase B; was 0.35, unsourced)
 // MPI as a station (lead's merge, arithmetic audit F14): 75 s a part × (the book's inspector £/h × 1 + a UK £4/h bench
 // × the country's inspection factor), the casting route's NDT_STATION.mpi — written out here from the rate book, not imported.
 const MPI_GBP = Math.round(75 / 3600 * (C.labourRate('lab-uk-inspector') * 1 + 4 * C.factor('inspection')) * 10_000) / 10_000;   // 4 dp, as the product (7-country review)
@@ -44,7 +51,7 @@ const DIE_LIFE_BASE = 38_000;                                 // microalloyed st
 const OVERHEAD = C.overheadPct, MARGIN = C.marginPct;
 const TN = 9806.65;
 
-type Row = { kind: string; diaMm: number; depthMm: number; count: number; areaMm2?: number };
+type Row = { kind: string; diaMm: number; depthMm: number; count: number; areaMm2?: number; faceIds?: number[] };
 const lib = C.book;
 const machineRate = C.machineRate;
 const labourRate = C.labourRate;
@@ -85,19 +92,38 @@ for (const name of PARTS) {
   const rows = (g.featureTable ?? []) as Row[];
   const drilled = rows.filter(r => r.kind === 'hole' && r.diaMm <= PIERCE_ABOVE_MM)
     .reduce((s, r) => s + Math.PI * r.diaMm ** 2 / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
+  const greatest = Math.max(g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm);
+  const STOCK_MM = IS3469_STOCK.find(([upTo]) => greatest <= upTo)![1];
   let stockMm3 = 0;
   for (const r of rows) {
     if (r.kind === 'face') stockMm3 += (r.areaMm2 ?? 0) * r.count * STOCK_MM;
     else if (r.kind === 'hole' && r.diaMm > PIERCE_ABOVE_MM) stockMm3 += Math.PI * r.diaMm * Math.max(r.depthMm, 0) * r.count * STOCK_MM;
   }
+  // Draft metal (phase B): the zero-draft faces along the axis of the largest silhouette, parted at the mid-plane;
+  // each face's wedge pivots at its point farthest from the plane — A / (h₁ + h₂) × tan α × (h₁² + h₂²) / 2.
+  const sil = { x: g.projectedArea.xMm2, y: g.projectedArea.yMm2, z: g.projectedArea.zMm2 } as Record<string, number>;
+  const axis = (['x', 'y', 'z'] as const).reduce((a, b) => (sil[b] > sil[a] ? b : a));
+  const zd = g.draftAnalysis?.zeroDraftByAxis?.[axis];
+  const drilledFaces = new Set(rows.filter(r => r.kind === 'hole' && r.diaMm <= PIERCE_ABOVE_MM).flatMap(r => r.faceIds ?? []));
+  let draftMm3 = 0;
+  for (const [id, a, lo, hi, inside] of (zd?.rows ?? []) as Array<[number, number, number, number, number]>) {
+    if (drilledFaces.has(id) || !(hi > lo) || !(a > 0)) continue;
+    const m = zd.partingMidMm;
+    const h1 = Math.max(0, hi - Math.max(lo, m)), h2 = Math.max(0, Math.min(hi, m) - lo);
+    const depth = Math.max(Math.abs(hi - m), Math.abs(lo - m));
+    const deg = inside ? (depth <= 25 ? DRAFT_IN_DEG_25 : DRAFT_IN_DEG_DEEP) : DRAFT_OUT_DEG;
+    draftMm3 += a / (hi - lo) * Math.tan(deg * Math.PI / 180) * (h1 * h1 + h2 * h2) / 2;
+  }
+  const draft = Math.round(draftMm3 / 100) / 10;
+  check(name, 'draft metal cm³ (zero-draft faces, IS 3469)', draft, Number((prov['forge-part-wt']?.basis ?? '').match(/\+ ([\d.]+) cm³ draft metal/)?.[1] ?? NaN), { abs: 0.05 });
   const stock = Math.round(stockMm3 / 100) / 10;
   // Secondary-machining parity (3 Nov 2026): the secondary machining is the near-net plan, which turns a turned axis
   // (outside ≥ 20 cm² and ≥ 8 % of the surface) on the lathe — the forging carries that axis's 2 mm turning stock.
   const ext = (g.turning?.externalAreaMm2 ?? 0) / 100;
   const turnedCm2 = rows.some(r => r.kind === 'hole' || r.kind === 'face') && ext >= 20 && ext / g.surfaceArea.cm2 >= 0.08 ? ext : 0;
   const turn = Math.round(turnedCm2 * TURN_STOCK_MM / 10 * 10) / 10;
-  const forged = Math.round((finished + (drilled + stock + turn) * rho) * 1000) / 1000;
-  check(name, 'as-forged kg (finished + drilled + stock + turning stock)', forged, P.partWeightKg, { abs: 0.0015 });
+  const forged = Math.round((finished + (drilled + stock + turn + draft) * rho) * 1000) / 1000;
+  check(name, 'as-forged kg (finished + drilled + stock + turning + draft)', forged, P.partWeightKg, { abs: 0.0015 });
 
   // ── Plan area, shape, press ──
   const pa = g.projectedArea;
@@ -150,10 +176,16 @@ for (const name of PARTS) {
   const forgedT = Number(P.partWeightKg), flashT = Number(P.flashAndScaleKg);
   const billet = (forgedT + flashT) / yieldFraction;
   const uplift = 1 / (1 - REJECT);
+  // Saw kerf (phase B): the billet cut from round bar at h / d 2.3; kerf = π/4 · D² · 3 mm · 7.85 g/cm³
+  const dia = Math.cbrt(4 * (billet / 7.85 * 1e6) / (Math.PI * SLUG_H_OVER_D));
+  const sawn = dia <= SAW_MAX_DIA;
+  const kerf = sawn ? Math.round(Math.PI / 4 * dia * dia * KERF_MM * (rho * 1000) / 1e6 * 10_000) / 10_000 : 0;
+  check(name, 'saw kerf kg', kerf, Number(P.billetSawKerfKg ?? 0), { abs: 0.00015 });
+  const bar = billet + kerf;
   check(name, 'yield fraction', yieldFraction, P.yieldFraction, { abs: 0.0005 });
   check(name, 'flash kg', flashKg, P.flashAndScaleKg, { abs: 0.0015 });
   const rm = d.trace.drivers.rawMaterial;
-  check(name, 'material utilisation = forging ÷ billet', P.partWeightKg / billet, rm.materialUtilization, { rel: 0.001 });
+  check(name, 'material utilisation = forging ÷ (billet + kerf)', P.partWeightKg / bar, rm.materialUtilization, { rel: 0.001 });
   check(name, 'net kg = forging ÷ (1 − scrap)', P.partWeightKg * uplift, rm.netWeightKg, { rel: 0.0005 });
   has(name, 'yield basis prints the billet arithmetic', prov['forge-yield'].basis,
     new RegExp(`= ${(forgedT + flashT).toFixed(3)} kg ÷ ${yieldFraction.toFixed(3)} = ${billet.toFixed(3)} kg`));
@@ -201,6 +233,19 @@ for (const name of PARTS) {
   const forgeLab = cycleHr * uplift * CREW * labourRate('lab-uk-forge') / EFF;
   const trimProc = cycleHr * uplift / OEE * machineRate(P.trimmingMachineId);
   const trimLab = cycleHr * uplift * TRIM_CREW * labourRate('lab-uk-forge') / EFF;
+  // Billet saw and induction heater (phase B): the saw at 400 cuts an hour, 0.5 crew; the heater billet ÷ 1,250 kg/h, no crew
+  const sawOp = fOps.find(o => o.operationName === 'Billet cut-off (saw)');
+  const heatOp = fOps.find(o => o.operationName === 'Induction billet heating');
+  const sawHr = sawn ? 1 / SAW_CUTS_PER_H : 0, heatHr = billet / HEATER_KG_PER_H;
+  check(name, 'saw machine', sawn ? 'forge-billet-saw' : '', String(P.billetSawMachineId ?? ''));
+  check(name, 'heater machine', 'forge-induction-heater', String(P.billetHeaterMachineId ?? ''));
+  const sawProc = sawn ? sawHr * uplift / OEE * machineRate('forge-billet-saw') : 0;
+  const sawLab = sawn ? sawHr * uplift * SAW_CREW * labourRate('lab-uk-forge') / EFF : 0;
+  const heatProc = Math.round(heatHr * 1e6) / 1e6 * uplift / OEE * machineRate('forge-induction-heater');
+  check(name, 'saw op process £', sawProc, sawOp?.processCost ?? 0, pence);
+  check(name, 'saw op labour £', sawLab, sawOp?.labourCost ?? 0, pence);
+  check(name, 'heater op process £', heatProc, heatOp?.processCost ?? 0, pence);
+  check(name, 'heater op labour £ (no crew of its own)', 0, heatOp?.labourCost ?? 0, pence);
   check(name, 'forge op process £', forgeProc, forgeOp?.processCost, pence);
   check(name, 'forge op labour £', forgeLab, forgeOp?.labourCost, pence);
   check(name, 'trim op process £', trimProc, trimOp?.processCost, pence);
@@ -213,12 +258,12 @@ for (const name of PARTS) {
   // a station whose cycle is 0 (labour-only bench op) still costs its labour — included above
 
   // ── Buckets ──
-  const gross = P.partWeightKg * uplift / (P.partWeightKg / billet);
+  const gross = P.partWeightKg * uplift / (P.partWeightKg / bar);
   const material = gross * mat.pricePerKg - (gross - P.partWeightKg * uplift) * mat.scrapRecoveryPricePerKg
     + consumables + kwh * tariff;
   const tooling = (die * Math.max(1, AMORT / life) + Number(P.secondaryMachiningToolingCost ?? 0)) / AMORT;
-  const process_ = forgeProc + trimProc + secProc;
-  const labour = forgeLab + trimLab + secLab;
+  const process_ = forgeProc + trimProc + secProc + sawProc + heatProc;
+  const labour = forgeLab + trimLab + secLab + sawLab;
   const pkg = d.trace.stackInput.packagingPerPart, log = d.trace.stackInput.logisticsPerPart;   // shop defaults (not forging's)
   check(name, 'overhead % / margin %', `${OVERHEAD}/${MARGIN}`, `${d.trace.stackInput.overheadPct}/${d.trace.stackInput.marginPct}`);
   if (C.terms === 'EXW') check(name, 'ex-works: logistics £ = 0', 0, log, { abs: 0 });

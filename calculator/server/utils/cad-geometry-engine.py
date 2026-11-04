@@ -1739,7 +1739,8 @@ def _compute_draft_analysis(wrapped, face_map, draw_dir=(0.0, 0.0, 1.0), inter=N
     d_mag = math.sqrt(dx*dx + dy*dy + dz*dz) or 1.0
     undercuts, zero_draft, adequate, cavity = 0, 0, 0, 0
     pos_drafts = []
-    for r in _release_table(wrapped, face_map, diag, draw_dir, inter).values():
+    zero_ids = []
+    for idx, r in _release_table(wrapped, face_map, diag, draw_dir, inter).items():
         if r["blocked"] is not None:
             if r["cavity"]:
                 cavity += 1
@@ -1753,6 +1754,7 @@ def _compute_draft_analysis(wrapped, face_map, draw_dir=(0.0, 0.0, 1.0), inter=N
         draft = abs(90.0 - math.degrees(math.acos(cos_a)))
         if draft < 1.0:
             zero_draft += 1
+            zero_ids.append((idx, r))
         else:
             adequate += 1
             pos_drafts.append(round(draft, 2))
@@ -1766,7 +1768,57 @@ def _compute_draft_analysis(wrapped, face_map, draw_dir=(0.0, 0.0, 1.0), inter=N
         "minPositiveDraftDeg": round(min(pos_drafts), 2) if pos_drafts else None,
         "maxPositiveDraftDeg": round(max(pos_drafts), 2) if pos_drafts else None,
         "analyzedFaceCount": undercuts + zero_draft + adequate,
+        "zeroDraftFaces": _zero_draft_faces(wrapped, face_map, zero_ids, (dx / d_mag, dy / d_mag, dz / d_mag), inter, diag),
     }
+
+
+def _zero_draft_faces(wrapped, face_map, zero_ids, d, inter, diag):
+    """The zero-draft faces along this draw, for the forging's draft metal (phase B, Nov 2026): per face its 1-based id,
+    area (mm²), its extent along the draw (lo, hi, mm, the file's coordinates — the face's exact bounding box) and
+    whether it is an INSIDE surface (a ray from just off the face along its outward normal meets the part again: the wall
+    of a pocket or bore) or an OUTSIDE one (the ray escapes). One ray from one point — a face partly facing material
+    reads by that point; stated, not hidden. `partingMidMm` is the mid-plane of the part's own extent along the draw."""
+    try:
+        from OCP.TopoDS import TopoDS
+        from OCP.Bnd import Bnd_Box
+        from OCP.BRepBndLib import BRepBndLib
+        from OCP.BRepGProp import BRepGProp
+        from OCP.GProp import GProp_GProps
+        from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
+    except Exception:
+        return None
+    k = 0 if abs(d[0]) > 0.9 else (1 if abs(d[1]) > 0.9 else (2 if abs(d[2]) > 0.9 else None))
+    if k is None:
+        return None      # only the three principal draws are searched
+    try:
+        sb = Bnd_Box()
+        BRepBndLib.AddOptimal_s(wrapped, sb, False, False)
+        b = sb.Get()
+        mid = (b[k] + b[k + 3]) / 2.0
+    except Exception:
+        return None
+    rows = []
+    gp = GProp_GProps()
+    off = max(diag * 5e-5, RELEASE_OFFSET_MM)
+    for idx, r in zero_ids:
+        try:
+            face = TopoDS.Face_s(face_map.FindKey(idx))
+            fb = Bnd_Box()
+            BRepBndLib.AddOptimal_s(face, fb, False, False)
+            g = fb.Get()
+            BRepGProp.SurfaceProperties_s(face, gp)
+            area = abs(gp.Mass())
+            inside = 0
+            if inter is not None:
+                pt, n = r["pt"], r["n"]
+                start = gp_Pnt(pt[0] + n[0] * off, pt[1] + n[1] * off, pt[2] + n[2] * off)
+                inter.PerformNearest(gp_Lin(start, gp_Dir(n[0], n[1], n[2])), 0.0, diag * 1.05)
+                if inter.IsDone() and inter.NbPnt() > 0 and start.Distance(inter.Pnt(1)) > MIN_BLOCK_MM:
+                    inside = 1
+            rows.append([idx, round(area, 1), round(g[k], 2), round(g[k + 3], 2), inside])
+        except Exception:
+            continue
+    return {"axis": "xyz"[k], "partingMidMm": round(mid, 2), "rows": rows}
 
 
 # ─── Machining setup count ────────────────────────────────────────────────────
@@ -3285,6 +3337,13 @@ def analyze(filepath: str) -> dict:
                 candidates.append(di)
             candidates.sort(key=lambda d: (d["undercutFaceCount"], -_sil(d), -d["adequateDraftFaceCount"]))
             draft_info = dict(candidates[0])
+            # The zero-draft faces along EACH principal axis: a forging parts round its largest silhouette, which need
+            # not be the moulding draw chosen here (the forging's draft metal reads the axis it parts on).
+            draft_info.pop("zeroDraftFaces", None)
+            draft_info["zeroDraftByAxis"] = {c["zeroDraftFaces"]["axis"]: {"partingMidMm": c["zeroDraftFaces"]["partingMidMm"], "rows": c["zeroDraftFaces"]["rows"]}
+                                             for c in candidates if c.get("zeroDraftFaces")}
+            for c in candidates:
+                c.pop("zeroDraftFaces", None)
             runner = candidates[1] if len(candidates) > 1 else None
             draft_info["pullDirectionSearch"] = {
                 "candidates": [{"drawDirectionXYZ": c["drawDirectionXYZ"], "undercutFaceCount": c["undercutFaceCount"]} for c in candidates],

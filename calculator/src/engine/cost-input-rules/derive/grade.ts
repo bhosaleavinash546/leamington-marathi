@@ -30,6 +30,7 @@ import type { MaterialFamily } from '../../material-family.js';
 import type { ForgingAlloyFamily } from '../../modules/forging-advisor.js';
 import type { AlloyFamily } from '../../modules/casting-advisor.js';
 import { castingAlloyOf } from '../../casting-melt.js';
+import { SHEET_GRADE_ORDER as SHEET_TAXONOMY_ORDER, sheetGradeInfo, SHEET_FAMILIES } from '../../sheet-material-taxonomy.js';
 import type { Decision, RuleContext } from '../types.js';
 import { familyFromMaterialId, materialFacts, type MaterialFacts } from './material.js';
 import { partNames } from './part-evidence.js';
@@ -58,13 +59,25 @@ export const GRADE_SCOPE: Record<string, RegExp> = {
   casting: MATERIAL_SCOPE_BY_COMMODITY.casting,
   cast_and_machine: MATERIAL_SCOPE_BY_COMMODITY.cast_and_machine,
   forging: MATERIAL_SCOPE_BY_COMMODITY.forging,
+  // Sheet metal (phase B, 4 Nov 2026): stamping, fab and BIW pressings — the sheet grades in scope, in the sheet
+  // taxonomy's order (family → standard → grade), not by price.
+  sheet_metal: MATERIAL_SCOPE_BY_COMMODITY.sheet_metal,
+  sheet_metal_fab: MATERIAL_SCOPE_BY_COMMODITY.sheet_metal_fab,
 };
+
+const SHEET_ROUTES = new Set(['sheet_metal', 'sheet_metal_fab']);
+export const isSheetRoute = (commodity: string) => SHEET_ROUTES.has(commodity);
 
 /** The grades a route offers for a family; aluminium castings by route (die v gravity / sand). */
 export function gradeCandidates(commodity: string, family: MaterialFamily, subtype?: string | null): MaterialRate[] {
   const scope = GRADE_SCOPE[commodity];
   if (!scope) return [];
   let out = DEFAULT_RATE_LIBRARY.materials.filter(m => scope.test(m.category) && familyFromMaterialId(m.id) === family);
+  if (isSheetRoute(commodity)) {
+    // the taxonomy's order (the order the form's picker lists them); a grade the taxonomy does not file goes last
+    const order = (id: string) => { const i = SHEET_TAXONOMY_ORDER.indexOf(id); return i < 0 ? 1e6 : i; };
+    return out.sort((a, b) => order(a.id) - order(b.id) || a.pricePerKg - b.pricePerKg);
+  }
   if (family === 'aluminium' && commodity !== 'forging' && subtype) {
     const die = /Die Cast|HPDC/i;
     const routed = out.filter(m => (subtype === 'hpdc') === die.test(m.category));
@@ -72,6 +85,17 @@ export function gradeCandidates(commodity: string, family: MaterialFamily, subty
   }
   return out.sort((a, b) => a.pricePerKg - b.pricePerKg);
 }
+
+/**
+ * Sheet grades a part name or a CAD designation may give by ANOTHER designation than the library's name: the
+ * EN 10268 cold-rolled micro-alloyed names of the library's generic "HSLA 340 / 420" (the phase-B research reads
+ * HC340LA ≈ HSLA 345 MPa, HC420LA ≈ HSLA 60 ksi). Only exact equivalents — HC460LA / HC500LA have no library grade.
+ */
+export const SHEET_GRADE_ALIASES: Record<string, string[]> = {
+  'mat-hsla340': ['HC340LA'],
+  'mat-hsla420': ['HC420LA'],
+};
+const gradeText = (m: MaterialRate) => [m.grade, ...(SHEET_GRADE_ALIASES[m.id] ?? [])].join(' / ');
 
 /**
  * Designation keys for a grade name: "EN-GJS-400-15" → gjs 400, en gjs 400 15 …;
@@ -109,7 +133,7 @@ function gradeNamedIn(text: string, candidates: MaterialRate[]): MaterialRate | 
   const t = norm(text);
   let best: { m: MaterialRate; len: number; base: number } | null = null;
   for (const m of candidates) {
-    for (const k of keysOf(m.grade)) {
+    for (const k of keysOf(gradeText(m))) {
       // A tie (a bare "GJS-500" names 500-7 and 500-14 alike) goes to the shorter designation —
       // the base grade, not its variant.
       if (k.test(t)) {
@@ -254,6 +278,99 @@ export function gradeDecision(ctx: RuleContext, family: MaterialFamily, defaultI
         + (safety && BRITTLE_IRON.test(m.id) ? ' · brittle — not for a safety-critical part' : ''),
       leaning: m.id === lean,
       costed: m.id === (ev?.source === 'declared' ? ev.id : defaultId),
+    })),
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
+  };
+}
+
+// ─── Sheet metal (phase B, 4 Nov 2026) ────────────────────────────────────────
+
+/**
+ * A part name that gives the APPLICATION of a steel pressing: a seat, pillar or reinforcement part is high-strength
+ * in practice — thyssenkrupp recommends S420MC for seat reinforcement brackets (2.0–2.5 mm) and HC420LA / HC460LA for
+ * rear seat panels; ArcelorMittal's front-seat study uses HSLA, DP and CP for the side members, gussets and brackets;
+ * WorldAutoSteel's concept body puts TRIP690 in the B-pillars; no source recommends a mild deep-drawing grade for a seat
+ * structural or locking bracket (scripts/research/2026-11-phase-b, rows SH4–SH6). "Reinf" is the usual abbreviation.
+ */
+export const HSLA_APPLICATION_RE = /(?<![a-z])(seat|pillar|reinf|reinforcement|reinforcing)(?![a-z])/;
+const HSLA_APPLICATION_SOURCES = 'thyssenkrupp Steel, lightweight seat structures (seat reinforcement brackets S420MC, rear seat panels '
+  + 'HC420LA / HC460LA); ArcelorMittal S-in motion front seat (HSLA / DP / CP side members, gussets, brackets); WorldAutoSteel SEM1 '
+  + '(B-pillar TRIP690)';
+
+export interface SheetGrade {
+  id: string;
+  /** answered by the engineer, declared in the CAD file, named by the part / file name, the application the name gives, or the default */
+  source: 'answered' | 'declared' | 'name' | 'application' | 'default';
+  basis: string;
+}
+
+/**
+ * The grade a sheet pressing is COSTED at (stamping, fab and BIW). Unlike a casting or a forging, where a name only
+ * leans the question, a sheet grade is costed on its evidence until the question is answered — the strongest first:
+ *   1. the engineer's answer (`material.grade`, or a grade pinned on the CAD panel);
+ *   2. a grade DECLARED in the CAD file (the designer's material property);
+ *   3. a grade the part / file name NAMES (HC420LA, S420MC, DC04 … — the library's names and their EN aliases);
+ *   4. the APPLICATION the name gives (seat / pillar / reinforcement → HSLA): the lowest-strength HSLA grade of the
+ *      product form — cold-rolled HSLA 340 (HC340LA) to 3 mm, hot-rolled S355MC above — since a name gives the
+ *      application, not the strength;
+ *   5. otherwise the route's representative coil grade, "assumed — confirm".
+ * Every case but 1 is an ASSUMPTION the report and the cost card say so. A grade read off a drawing by the
+ * identification step (AI) only leans the question — a model reading never sets a price.
+ */
+export function sheetGrade(ctx: RuleContext, family: MaterialFamily, defaultId: string, heavyGauge: boolean): SheetGrade {
+  const all = gradeCandidates(ctx.commodity, family);
+  const name = (id: string) => DEFAULT_RATE_LIBRARY.materials.find(m => m.id === id)?.grade ?? id;
+  const ans = ctx.answers[GRADE_DECISION_ID];
+  if (typeof ans === 'string' && all.some(m => m.id === ans)) return { id: ans, source: 'answered', basis: 'chosen by the engineer' };
+  for (const d of ctx.geo.cadMetadata?.materialDesignations ?? []) {
+    const m = gradeNamedIn(d, all);
+    if (m) return { id: m.id, source: 'declared', basis: `declared in the CAD file ("${d}")` };
+  }
+  const names = partNames(ctx.filename, ctx.geo);
+  for (const n of names) {
+    const m = gradeNamedIn(n.text, all);
+    if (m) return { id: m.id, source: 'name', basis: `assumed — confirm: ${n.where} ("${n.text}") names ${m.grade}` };
+  }
+  if (family === 'steel') {
+    for (const n of names) {
+      const hit = HSLA_APPLICATION_RE.exec(norm(n.text));
+      if (!hit) continue;
+      const id = heavyGauge ? 'mat-s355mc' : 'mat-hsla340';
+      if (!all.some(m => m.id === id)) break;
+      return { id, source: 'application', basis: `assumed — confirm: ${n.where} ("${n.text}") says "${hit[1]}" — a seat, pillar or `
+        + `reinforcement pressing is high-strength steel in practice (${HSLA_APPLICATION_SOURCES}); ${name(id)}, the lowest-strength `
+        + `${heavyGauge ? 'hot-rolled (EN 10149-2)' : 'cold-rolled'} HSLA grade, is costed — the name gives the application, not the strength` };
+    }
+  }
+  return { id: defaultId, source: 'default', basis: `assumed — confirm: ${name(defaultId)}, the route's representative coil grade — not a drawing callout` };
+}
+
+/**
+ * The sheet grade question — ADVISORY (the part is costed at `sheetGrade` until it is answered). Options: the in-scope
+ * sheet grades of the family in the taxonomy's order. Leaning: the costed grade, or a grade a drawing read names.
+ */
+export function sheetGradeDecision(ctx: RuleContext, family: MaterialFamily, costed: SheetGrade): Decision | null {
+  const candidates = gradeCandidates(ctx.commodity, family);
+  if (candidates.length < 2) return null;
+  const cm3 = ctx.geo.volume?.cm3 ?? 0;
+  const ai = ctx.answers['material.gradeText'];
+  const drawn = typeof ai === 'string' ? gradeNamedIn(ai, candidates) : null;
+  const lean = costed.source === 'default' && drawn ? drawn.id : costed.id;
+  const lo = [...candidates].sort((a, b) => a.pricePerKg - b.pricePerKg)[0];
+  const hi = [...candidates].sort((a, b) => b.pricePerKg - a.pricePerKg)[0];
+  const famLabel = (m: MaterialRate) => SHEET_FAMILIES.find(f => f.id === sheetGradeInfo(m).family)?.label;
+  const costedGrade = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === costed.id)?.grade ?? costed.id;
+  return {
+    id: GRADE_DECISION_ID, kind: 'material_grade',
+    question: `Which ${family} sheet grade?`,
+    why: `The family is settled; the grade sets the £/kg — £${lo.pricePerKg.toFixed(2)} (${lo.grade}) to £${hi.pricePerKg.toFixed(2)} `
+      + `(${hi.grade}) for this route — and the density. Costed at ${costedGrade} until it is answered (${costed.basis}).`
+      + (drawn && drawn.id !== costed.id ? ` The drawing read names ${drawn.grade} — to confirm.` : ''),
+    options: candidates.map(m => ({
+      value: m.id, label: famLabel(m) ? `${m.grade} — ${famLabel(m)}` : m.grade,
+      consequence: `£${m.pricePerKg.toFixed(2)}/kg · ${(cm3 * m.densityKgPerM3 / 1e6).toFixed(2)} kg`,
+      leaning: m.id === lean,
+      costed: m.id === costed.id,
     })),
     blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
   };

@@ -139,10 +139,13 @@ describe('3. The arithmetic on a row', () => {
     const axes = ((part('steering_knuckle_RH.stp').geometry as unknown as { featureTable?: Array<{ axes?: unknown[] }> }).featureTable ?? []).some(r => r.axes?.length);
     // Review round (4 Nov 2026): the CNC lathe at its UK award capex (£56,004 → £135,041) turns the spindle, and the
     // twin-pallet HMC at £300,000 (was £185,000) machines the rest — 16.7767 → 17.5199 (recorded geometry with axis lines).
-    expect(ref.total).toBeCloseTo(axes ? 17.5199 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
-    expect(ref.tooling!.investment).toBe(443582.83);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
+    // Phase B (4 Nov 2026): the billet saw and induction heater as operations, the heater's 0.40 kWh/kg, the measured draft
+    // metal (51.4 cm³ on the zero-draft faces, IS 3469 Table 1.4) and the IS 3469 2.5 mm stock — 17.5199 → 19.1288; the die
+    // is sized on the heavier forging (443,582.83 → 443,915.43); bought 5.084 → 5.916 kg (with the saw kerf).
+    expect(ref.total).toBeCloseTo(axes ? 19.1288 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
+    expect(ref.tooling!.investment).toBe(443915.43);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
     expect(ref.tooling!.amortisedOver).toBe(500_000);
-    expect(ref.material).toMatchObject({ netKg: 3.434, boughtKg: 5.084 });
+    expect(ref.material).toMatchObject({ netKg: 3.927, boughtKg: 5.916 });
     // The casting route and cast + machine now cost the same scope the same, process by process — printed once.
     for (const proc of ['sand', 'investment']) {
       expect(cmp.rows.some(r => r.route === 'casting' && r.process === proc), proc).toBe(false);
@@ -210,12 +213,14 @@ describe('3. The arithmetic on a row', () => {
     // the machining row (50.5 kg of plate for a 2.85 kg part) is costed, itemised and marked not credible
     expect(mach.credible).toBe(false);
     expect(mach.notCredible.join(' ')).toMatch(/5\.7% utilisation/);
-    // the cast-steel rows rest on GS-C25 bought below the forging's own steel scrap credit: refused with that reason
-    // (route-material-guard.ts, fresh numbers review 4 Nov 2026); every other row is credible
-    const castSteel = cmp.rows.filter(r => r.materialCheck?.status === 'implausible');
+    // the cast-steel rows rested on GS-C25 bought below the forging's own steel scrap credit and were refused (route-
+    // material-guard.ts, fresh numbers review 4 Nov 2026); since phase B (4 Nov 2026) GS-C25 is the consumer-scrap charge
+    // (£0.314/kg) — no row is implausible, the cast-steel rows rest on a HELD price; every row but machining is credible
+    expect(cmp.rows.filter(r => r.materialCheck?.status === 'implausible')).toHaveLength(0);
+    const castSteel = cmp.rows.filter(r => r.material?.materialId === 'mat-gs-c25');
     expect(castSteel.length).toBeGreaterThan(0);
-    for (const r of castSteel) expect(r.material?.materialId).toBe('mat-gs-c25');
-    expect(cmp.rows.filter(r => r !== mach && !castSteel.includes(r)).every(r => r.credible)).toBe(true);
+    for (const r of castSteel) expect(r.materialCheck?.status).toBe('held');
+    expect(cmp.rows.filter(r => r !== mach).every(r => r.credible)).toBe(true);
     const precision = cmp.rows.find(r => r.process === 'precision')!;
     // one name for the tool wear on every route (secondary-machining follow-ups, Nov 2026)
     expect(precision.consumables.map(l => l.label)).toEqual(['descale', 'NDT', 'cutting-tool wear']);
@@ -297,9 +302,13 @@ describe('6. Second round — processes, the independent re-add, the specificati
     expect(ex.filter(l => /high-pressure die casting/i.test(l))).toHaveLength(1);
     expect(cmp.excluded.find(e => e.label === 'High-pressure die casting + machining')!.reasons[0].measured).toMatch(/sand-moulded or investment cast in this rate book/);
     expect(cmp.excluded.find(e => e.label === 'forging — cold forming')!.reasons[0].measured).toMatch(/slug/);
-    // A process the rules price with the same operations and tooling says so — the difference is yield, not process.
+    // A process the rules price with the same operations and tooling says so — the difference is yield, not process. Since
+    // phase B (4 Nov 2026) the in-line induction heater is an operation whose time is the billet kg ÷ 1,250 kg/h, so the
+    // precision row (a different yield, a lighter billet) differs from the reference in that one operation — no caveat.
     const precision = cmp.rows.find(r => r.label === 'forging — precision forging')!;
-    expect(precision.caveats.join(' ')).toMatch(/same operations and tooling/);
+    expect(precision.caveats.join(' ')).not.toMatch(/same operations and tooling/);
+    const diff = precision.operations!.filter((o, k) => Math.abs(o.processCost - cmp.rows[0].operations![k].processCost) > 1e-4);
+    expect(diff.map(o => (o as unknown as { name: string }).name)).toEqual(['Induction billet heating']);
   }, 120_000);
   it('every costed row re-adds independently to the penny on three parts, and the re-add is not the engine', async () => {
     for (const name of ['steering_knuckle_RH.stp', 'PRCR002.stp', 'TF_Trim_Cover.stp']) {

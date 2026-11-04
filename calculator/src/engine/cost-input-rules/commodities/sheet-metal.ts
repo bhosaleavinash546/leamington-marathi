@@ -36,6 +36,7 @@ import { FORM_EFFICIENCY_DEFAULTS, SHOP_DEFAULTS } from '../to-cost-params.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { serviceQuestionRules } from '../derive/service-questions.js';
 import { materialFacts, representativeMaterialId, materialGradeName } from '../derive/material.js';
+import { sheetGrade, sheetGradeDecision, GRADE_DECISION_ID, type SheetGrade } from '../derive/grade.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
@@ -158,7 +159,9 @@ function formingNote(ctx: RuleContext, dev: NonNullable<RuleContext['geo']['blan
   let note = `. Forming solve: ${(f.blankAreaUnfoldMm2 / 100).toFixed(0)} → ${(f.blankAreaSolvedMm2 / 100).toFixed(0)} cm² once the stretched metal is `
     + `put back; thinning ${f.thinningP95Pct.toFixed(0)}% at the 95th percentile, ${f.maxThinningPct.toFixed(0)}% at the worst well-shaped element`;
   const mat = materialFacts(ctx);
-  const props = formingPropertiesFor(typeof ctx.answers['material.id'] === 'string' ? ctx.answers['material.id'] : null, mat.family ?? null);
+  // the answered grade's own n where there is one (not the costed default: the gauge it needs is read through this note)
+  const pinned = ctx.answers['material.id'] ?? ctx.answers[GRADE_DECISION_ID];
+  const props = formingPropertiesFor(typeof pinned === 'string' ? pinned : null, mat.family ?? null);
   const t = ctx.geo.sheetMetal?.thicknessMm ?? 0;
   if (props && t > 0 && f.strainPoints?.length) {
     const chk = formingLimitCheck(f.strainPoints, props.nValue, t);
@@ -451,6 +454,23 @@ interface SmAdvice {
   massBasis: string;
 }
 
+/**
+ * The grade the pressing is COSTED at (phase B, 4 Nov 2026): the engineer's answer, a grade declared in the CAD file or
+ * named by the part, the HSLA a seat / pillar / reinforcement name gives, else the representative coil grade — hot-rolled
+ * pickled & oiled above the cold-rolled limit (`sheetGrade`, derive/grade.ts). Null while the family is open.
+ */
+export function costedSheetGrade(ctx: RuleContext): (SheetGrade & { heavy: boolean; gaugeMm: number | null }) | null {
+  const mat = materialFacts(ctx);
+  if (mat.decision || !mat.family) return null;
+  // Above 3 mm a steel pressing is bought hot-rolled (pickled & oiled), not as cold-rolled deep-drawing coil —
+  // a 5 mm plate sprocket was costed in DC04 (uploaded-parts review, Oct 2026).
+  const g = gaugeMm(ctx);
+  const heavy = mat.family === 'steel' && g != null && g.mm > SHEET_COLD_ROLLED_MAX_MM;
+  const def = heavy ? 'mat-hrpo' : representativeMaterialId(ctx.commodity, mat.family);
+  if (!def) return null;
+  return { ...sheetGrade(ctx, mat.family, def, heavy), heavy, gaugeMm: g?.mm ?? null };
+}
+
 function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome<never> } {
   // Before anything: is this even a metal part?
   const amb = thinWallAmbiguity(ctx);
@@ -485,6 +505,14 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
     materialFamily: family === 'aluminium' ? 'aluminium' : 'steel',
   });
 
+  // The grade sets the density (phase B, 4 Nov 2026): a grade answered, declared, named or leaned on by the application
+  // weighs the part at its own density; the default grade keeps the family's (the two agree for carbon-steel coil).
+  const sg = costedSheetGrade(ctx);
+  const gm = sg && sg.source !== 'default' ? DEFAULT_RATE_LIBRARY.materials.find(m => m.id === sg.id) : undefined;
+  const cm3 = ctx.geo.volume?.cm3 ?? 0;
+  const graded = gm && cm3 > 0
+    ? { massKg: Math.round(cm3 * gm.densityKgPerM3 / 1e6 * 1000) / 1000, massBasis: `${cm3.toFixed(0)} cm³ × ${gm.densityKgPerM3} kg/m³ (${gm.grade}, ${sg!.source === 'answered' ? 'chosen by the engineer' : sg!.source === 'declared' ? 'declared in the CAD file' : 'the grade costed — assumed, confirm'})` }
+    : null;
   return {
     advice: {
       primaryProcess: rec.primaryProcess,
@@ -495,8 +523,8 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
       gaugeConfidence: g.confidence,
       shearMPa,
       family,
-      massKg: mat.massKg,
-      massBasis: mat.basis,
+      massKg: graded?.massKg ?? mat.massKg,
+      massBasis: graded?.massBasis ?? mat.basis,
     },
   };
 }
@@ -1189,13 +1217,30 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if (amb.decision) return ask(amb.decision);
         const mat = materialFacts(ctx);
         if (mat.decision) return ask(mat.decision);
-        // Above 3 mm a steel pressing is bought hot-rolled (pickled & oiled), not as cold-rolled deep-drawing coil —
-        // a 5 mm plate sprocket was costed in DC04 (uploaded-parts review, Oct 2026).
-        const g = gaugeMm(ctx);
-        const heavySteel = mat.family === 'steel' && g != null && g.mm > SHEET_COLD_ROLLED_MAX_MM;
-        const id = heavySteel ? 'mat-hrpo' : representativeMaterialId(ctx.commodity, mat.family!);
-        return decided('sheetMetal.materialId', id ?? mat.family!, 'geometry',
-          `${mat.family} → ${id ? materialGradeName(id, ctx.rates) : mat.family} (representative ${heavySteel ? `hot-rolled grade for a ${g!.mm.toFixed(1)} mm gauge — cold-rolled coil stops at ~${SHEET_COLD_ROLLED_MAX_MM} mm` : 'coil grade'} — not a drawing callout)`, 0.85);
+        // The grade costed (phase B, 4 Nov 2026): answered, declared, named, leaned on by the application, or the
+        // representative coil grade — every one but the answer printed as an assumption ("assumed — confirm"). It was a
+        // 'geometry' source, so the cost card's Basis printed "Measured | Grade" on a rule default (live review).
+        const sg = costedSheetGrade(ctx);
+        if (!sg) return decided('sheetMetal.materialId', mat.family!, 'rule', `${mat.family} — no representative grade for this route`, 0.5);
+        const heavyNote = sg.heavy && sg.source === 'default'
+          ? ` (representative hot-rolled grade for a ${sg.gaugeMm!.toFixed(1)} mm gauge — cold-rolled coil stops at ~${SHEET_COLD_ROLLED_MAX_MM} mm)` : '';
+        return decided('sheetMetal.materialId', sg.id, sg.source === 'answered' || sg.source === 'declared' ? 'engineer' : 'rule',
+          `${mat.family} → ${materialGradeName(sg.id, ctx.rates)}: ${sg.basis}${heavyNote}`, sg.source === 'answered' || sg.source === 'declared' ? 1 : 0.7);
+      },
+    },
+    {
+      // The sheet grade question (phase B, 4 Nov 2026): ADVISORY — the part is costed at the grade above until it is
+      // answered; the answer reaches both paths through sheetMetal.materialId.
+      id: 'sheetMetal.q.grade', path: 'sheetMetal.q.grade', label: 'grade',
+      evaluate: (ctx) => {
+        const amb = thinWallAmbiguity(ctx);
+        if (amb.decision) return ask(amb.decision);
+        const mat = materialFacts(ctx);
+        if (mat.decision) return ask(mat.decision);
+        if (ctx.answers[GRADE_DECISION_ID] !== undefined) return decided('sheetMetal.q.grade', String(ctx.answers[GRADE_DECISION_ID]), 'engineer', 'answered', 1);
+        const sg = costedSheetGrade(ctx);
+        const d = sg ? sheetGradeDecision(ctx, mat.family!, sg) : null;
+        return d ? ask(d) : decided('sheetMetal.q.grade', sg?.id ?? '', 'rule', 'one grade for this family', 1);
       },
     },
     {

@@ -98,15 +98,15 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-hsla340": {
-   "gbpPerKg": 1.0123,
-   "basis": "CR automotive grades: no ZA or regional price found — the European market price at par (traded material, no country factor): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "gbpPerKg": 0.7518,
+   "basis": "CR automotive grades: no ZA or regional price found — the European market price at par (traded material, no country factor): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg; for this grade NOT the book's premium but the anchor R15.836 + R0.824/kg = R16.660/kg — the researched £0.0372/kg at R22.1611/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla420": {
-   "gbpPerKg": 1.0974,
-   "basis": "CR automotive grades: no ZA or regional price found — the European market price at par (traded material, no country factor): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "gbpPerKg": 0.7807,
+   "basis": "CR automotive grades: no ZA or regional price found — the European market price at par (traded material, no country factor): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg; for this grade NOT the book's premium but the anchor R15.836 + R1.465/kg = R17.301/kg — the researched £0.0661/kg at R22.1611/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla550": {
@@ -416,15 +416,15 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2507,
-   "basis": "Cast carbon / low-alloy steel (charge): no ZA or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R5.5547/kg; the anchor grade itself",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.2571,
+   "basis": "Cast carbon / low-alloy steel (charge): no ZA or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R5.5547/kg; for this grade NOT the book's premium but the anchor R5.555 + R0.142/kg = R5.697/kg — the researched £0.0064/kg at R22.1611/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3907,
-   "basis": "Cast carbon / low-alloy steel (charge): no ZA or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R5.5547/kg; ladder +R3.10/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.3449,
+   "basis": "Cast carbon / low-alloy steel (charge): no ZA or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R5.5547/kg; for this grade NOT the book's premium but the anchor R5.555 + R2.088/kg = R7.642/kg — the researched £0.0942/kg at R22.1611/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {

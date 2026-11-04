@@ -130,9 +130,10 @@ describe('R1 / R32 / R33 / U6 — the comparison on screen and in the reports', 
     const cmp = await compareRoutes({ geo: p.geometry as never, filename: p.part, current: 'forging', answers: p.answers, region: 'UK', annualVolume: 100_000, programmeYears: 5, baseBook: book, bands: false, referenceBand: band });
     const ref = cmp.rows[0];
     expect(ref.caveats.filter(c => /same operations and tooling/.test(c))).toHaveLength(0);
+    // Phase B (4 Nov 2026): the induction heater's time follows the billet weight, which the precision process's yield
+    // changes — so the precision row no longer has the SAME operations and carries no such caveat (route-compare-review §6)
     const precision = cmp.rows.find(r => r.process === 'precision')!;
-    expect(precision.caveats.filter(c => /same operations and tooling/.test(c))).toHaveLength(1);
-    expect(precision.caveats[precision.caveats.length - 1]).toMatch(/material line \(yield, machining stock, per-part services/);
+    expect(precision.caveats.filter(c => /same operations and tooling/.test(c))).toHaveLength(0);
     expect(ref.band).toEqual(band);
     expect(ref.byVolume.find(v => v.volume === 100_000)).toMatchObject({ p10: 15.5, p90: 19.2 });
     const q = parts.find(x => x.part === 'IM_ECU_Cover.stp')!;

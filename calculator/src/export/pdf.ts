@@ -1853,7 +1853,7 @@ export function renderShouldCostSections(
       : baseLibrary
       ? computeRegionalComparisonExact(input, baseLibrary, { landed: false, sourceRegion: region as ManufacturingRegion, sourceResult: result })
       : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
-        ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
+        ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy, 1 - (input.rawMaterial.materialUtilization ?? 1)) } : {}) });
     const cheapest = Math.min(...rc.map(r => r.total));
     const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;

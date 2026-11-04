@@ -171,6 +171,20 @@ for (const c of CASES) {
   check('rule: ladle preheat kWh/t (iron 100, steel 200)', pv(pre + 'ladle-kwh'), LADLE_KWH_PER_T[c.alloy], { abs: 0 });
   check('rule: dust extraction kWh/t', pv(pre + 'dust-kwh'), DUST_KWH_PER_T, { abs: 0 });
   check('rule: other plant electricity kWh/t (0.475 − 0.020 kWh/kg)', pv(pre + 'plant-kwh'), PLANT_KWH_PER_T, { abs: 0 });
+  // Phase B (4 Nov 2026): the UK metal CHARGE re-derived from the research figures, written out again (not read from the
+  // generator): steel = (HMS export unit value + Mn/Si/Al trim) ÷ 0.96 (+ the alloy content for G20Mn5 / G42CrMo4);
+  // ductile iron = (0.5 pig + 0.5 HMS + 1.2 % FeSiMg) ÷ 0.98. A country book prices its own charge — UK dumps only.
+  const HMS = (721498782 + 139195452) / (2472204515 + 496961012);                       // HMRC OTS 7204 49 90, Jan–Aug 2026
+  const TRIM = (4.4 * 3667343 / 4193930 + 5 * 4370594 / 4760315 + 1.5 * 2.0) / 1000;      // FeMn + FeSi + Al deox, £/kg steel
+  const MN = 3667343 / 4193930 / (3 / 4.4), CR = (24140075 + 24654169) / (23828070 + 26852769) / (12.5 / 20), MO = 5768326 / 220989 / (5.5 / 8.3);
+  const steelCharge = Math.round((HMS + TRIM) / 0.96 * 10_000) / 10_000;
+  const charge: Record<string, number> = {
+    'mat-gs-c25': steelCharge, 'mat-astm-a216-wcb': steelCharge,
+    'mat-g20mn5': steelCharge + Math.round(0.005 * MN * 10_000) / 10_000,
+    'mat-g42crmo4': steelCharge + Math.round((0.01 * CR + 0.002 * MO) * 10_000) / 10_000,
+    'mat-gjs500': Math.round((0.5 * 0.3867 + 0.5 * HMS + 0.012 * 1.8985) / 0.98 * 10_000) / 10_000,
+  };
+  if (charge[matId] !== undefined) check(`UK charge £/kg for ${matId} (research: HMS export parity + trim ÷ loss)`, mat.pricePerKg, Math.round(charge[matId] * 1000) / 1000, { abs: 0.0005 });
   const metalGbp = (castUsed + lost) * mat.pricePerKg;                                   // no scrap credit: loss is gone
   const energyGbp = elecKwh * tariff.electricityPerKwh + gasKwh * tariff.gasPerKwh;
 

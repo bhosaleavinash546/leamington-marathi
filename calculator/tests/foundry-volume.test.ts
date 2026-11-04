@@ -54,7 +54,8 @@ describe('rate book — two machines added through the UK book generator', () =>
     const cfg = JSON.parse(readFileSync(new URL('../scripts/rate-refresh/2026-10-uk.json', import.meta.url), 'utf8'));
     const added = cfg.machines.added as Array<{ id: string; capexGbp: number; hours: number; utilisation: number; research: string; hoursBasis: string }>;
     // the twin-pallet HMC joined them in the review round (4 Nov 2026) — tests/review-round-2026-11-04.test.ts
-    expect(added.map(a => a.id)).toEqual(['sand-auto-vertical-line', 'fettle-robot-cell', 'mach-hmc-400']);
+    // and the forge line's billet saw and induction heater in phase B (4 Nov 2026) — tests/phase-b-2026-11.test.ts
+    expect(added.map(a => a.id)).toEqual(['sand-auto-vertical-line', 'fettle-robot-cell', 'mach-hmc-400', 'forge-billet-saw', 'forge-induction-heater']);
     expect(added[0].capexGbp).toBe(Math.round(3_000_000 / 1.1965));   // Dovre €3.0 M at the book's €1.1965
     expect(added[1].capexGbp).toBe(Math.round(1_634_390 / 5.096));    // KAW-MET zł1,634,390 at zł5.096
     for (const a of added.slice(0, 2)) {

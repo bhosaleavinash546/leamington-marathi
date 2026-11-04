@@ -660,6 +660,7 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 .cad-grade--typed { background: var(--info-bg); color: var(--info); }
 .cad-grade--rule { background: var(--warning-bg); color: var(--warning); }
 .cad-grade--default { background: var(--surface-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
+.cad-grade--assumed { background: var(--warning-bg); color: var(--warning); border: 1px dashed var(--warning); }
 .cad-not-included { margin: 6px 0 4px; padding-left: 18px; font-size: 0.76rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
 .cad-stamp { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.68rem; color: var(--text-muted); }
 .cad-cost-card .cad-steps { margin: 0 0 2px; }

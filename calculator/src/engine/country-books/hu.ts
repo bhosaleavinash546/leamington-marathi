@@ -98,15 +98,15 @@ export const HUNGARY_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-hsla340": {
-   "gbpPerKg": 1.0132,
-   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "gbpPerKg": 0.7524,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; for this grade NOT the book's premium but the anchor Ft313.067 + Ft16.284/kg = Ft329.351/kg — the researched £0.0372/kg at Ft437.75/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla420": {
-   "gbpPerKg": 1.0983,
-   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "gbpPerKg": 0.7813,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; for this grade NOT the book's premium but the anchor Ft313.067 + Ft28.935/kg = Ft342.002/kg — the researched £0.0661/kg at Ft437.75/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-hsla550": {
@@ -416,15 +416,15 @@ export const HUNGARY_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2673,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge Ft117.0/kg (Hungarian steel scrap Ft110/kg — liquidator's 2026 valuation, agreeing with German E3 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
-   "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026) ; https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract))",
+   "gbpPerKg": 0.2737,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge Ft117.0/kg (Hungarian steel scrap Ft110/kg — liquidator's 2026 valuation, agreeing with German E3 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); for this grade NOT the book's premium but the anchor Ft117.000 + Ft2.802/kg = Ft119.802/kg — the researched £0.0064/kg at Ft437.75/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026) ; https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.4073,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge Ft117.0/kg (Hungarian steel scrap Ft110/kg — liquidator's 2026 valuation, agreeing with German E3 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +Ft61.29/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026) ; https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract))",
+   "gbpPerKg": 0.3615,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge Ft117.0/kg (Hungarian steel scrap Ft110/kg — liquidator's 2026 valuation, agreeing with German E3 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); for this grade NOT the book's premium but the anchor Ft117.000 + Ft41.236/kg = Ft158.236/kg — the researched £0.0942/kg at Ft437.75/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026) ; https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf (2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {

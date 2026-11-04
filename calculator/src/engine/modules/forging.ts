@@ -40,6 +40,21 @@ export interface ForgingInputs {
   trimmingCycleHr?: number;
   /** Crew on the trim press (default: the forge crew). */
   trimmingManning?: number;
+  // ── Billet cut-off and heater (phase B, 4 Nov 2026) — both were "not in the cost model" ──
+  /** The saw (or shear) that cuts the billet off the bar; absent = no cut-off op. */
+  billetSawMachineId?: string;
+  /** Saw time a billet, hr (> 0 adds the op). */
+  billetSawCycleHr?: number;
+  /** Operators on the saw (a fraction: one tends several saws). Default 0.5. */
+  billetSawManning?: number;
+  billetSawLabourId?: string;
+  /** Metal lost in the saw cut, kg a billet — bought as bar, credited as scrap. */
+  billetSawKerfKg?: number;
+  /** The in-line billet heater (induction); its time a billet is billet kg ÷ its kg/h. Its ENERGY stays the per-kg
+   *  `heatingEnergyKwhPerKg` — the heater's machine rate carries no energy, so it is not counted twice. */
+  billetHeaterMachineId?: string;
+  /** Heater time a billet, hr (> 0 adds the op). */
+  billetHeaterCycleHr?: number;
   /** Fuel the billet heater runs on; the executor prices `heatingEnergyPricePerKwh` from it. */
   furnaceType?: 'induction' | 'gas' | 'electric-resistance';
   /** Cutting tools worn in the secondary machining, £/part. */
@@ -90,6 +105,12 @@ export function getForgingInputSchema(): Record<string, string> {
     trimmingMachineId: 'string? — trimming press machine ID',
     trimmingLabourId: 'string? — trimming labour rate ID',
     trimmingCycleHr: 'number? — trimming cycle time hr',
+    billetSawMachineId: 'string? — billet cut-off saw machine ID (adds the cut-off op)',
+    billetSawCycleHr: 'number? — saw time a billet hr',
+    billetSawManning: 'number? — operators on the saw (default 0.5)',
+    billetSawKerfKg: 'number? — metal lost in the saw cut kg a billet (bought, credited as scrap)',
+    billetHeaterMachineId: 'string? — in-line induction billet heater machine ID (its energy is heatingEnergyKwhPerKg)',
+    billetHeaterCycleHr: 'number? — heater time a billet hr (billet kg ÷ the heater kg/h)',
     heatTreatCostPerKg: 'number? — external heat treatment cost £/kg of part',
     descaleCostPerKg: 'number? — descaling/shot blast cost £/kg of forging (after the trim; the flash is not blasted)',
     coiningCostPerPart: 'number? — coining/sizing/straightening cost £/part',
@@ -104,11 +125,14 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     ? 1 / (1 - inputs.rejectRate)
     : 1;
 
-  // Billet weight purchased: (part + flash/scale) / yield
+  // Billet weight heated and forged: (part + flash/scale) / yield
   const billetWeightKg = (inputs.partWeightKg + inputs.flashAndScaleKg) / inputs.yieldFraction;
+  // Bar bought: the billet + the saw kerf (phase B) — the kerf is cut away before the heater, so it is bought, never heated.
+  const kerfKg = inputs.billetSawKerfKg && inputs.billetSawKerfKg > 0 ? inputs.billetSawKerfKg : 0;
+  const barKg = billetWeightKg + kerfKg;
 
-  // materialUtilization = net part weight / billet weight (based on per-billet geometry, not reject)
-  const materialUtilization = inputs.partWeightKg / billetWeightKg;
+  // materialUtilization = net part weight / bar bought (based on per-billet geometry, not reject)
+  const materialUtilization = inputs.partWeightKg / barKg;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -122,6 +146,38 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     : (inputs.strokesToForm * (inputs.timePerBlowSec ?? 10)) / 3600;
 
   const operations: OperationInput[] = [];
+
+  // Billet cut-off and heating (phase B, 4 Nov 2026): every billet cut and heated, the scrap ones too (rejectUplift).
+  if (inputs.billetSawMachineId && inputs.billetSawCycleHr && inputs.billetSawCycleHr > 0) {
+    const sawHr = inputs.billetSawCycleHr * rejectUplift;
+    operations.push({
+      operationName: 'Billet cut-off (saw)',
+      machineId: inputs.billetSawMachineId,
+      labourId: inputs.billetSawLabourId ?? inputs.labourId,
+      cycleTimeHr: sawHr,
+      partsPerCycle: 1,
+      oee: inputs.oee,
+      manning: inputs.billetSawManning && inputs.billetSawManning > 0 ? inputs.billetSawManning : 0.5,
+      labourTimeHr: sawHr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
+  if (inputs.billetHeaterMachineId && inputs.billetHeaterCycleHr && inputs.billetHeaterCycleHr > 0) {
+    const heatHr = inputs.billetHeaterCycleHr * rejectUplift;
+    operations.push({
+      operationName: 'Induction billet heating',
+      machineId: inputs.billetHeaterMachineId,
+      labourId: inputs.labourId,
+      cycleTimeHr: heatHr,
+      partsPerCycle: 1,
+      oee: inputs.oee,
+      // in line, fed by the forge crew (counted on the forging op) — no crew of its own
+      manning: 1,
+      labourTimeHr: 0,
+      labourEfficiency: inputs.labourEfficiency,
+      untended: true,
+    });
+  }
 
   // Optional preform / blocker stage (multi-step forging): an upset/block pass
   // before the finish impression, on its own machine + labour.

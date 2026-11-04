@@ -98,15 +98,15 @@ export const TURKEY_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-hsla340": {
-   "gbpPerKg": 0.7234,
-   "basis": "CR automotive grades: CR automotive grades — TR's market: SMM: 'For CRC ... keeping domestic and export quotes flat at 680 USD/tonne EXW and 675 USD/tonne FOB' (3 Aug: domestic 680 EXW, large orders 670). = 680 USD/t ex-works, ex-VAT (2026-08-31) = ₺33.8895/kg × the book's grade premium over its base; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://news.metal.com/newscontent/104088635-smm-steel-cost-support-and-post-holiday-expectations-lift-turkish-hrc-and-crc-prices (2026-08-31)",
+   "gbpPerKg": 0.5478,
+   "basis": "CR automotive grades: CR automotive grades — TR's market: SMM: 'For CRC ... keeping domestic and export quotes flat at 680 USD/tonne EXW and 675 USD/tonne FOB' (3 Aug: domestic 680 EXW, large orders 670). = 680 USD/t ex-works, ex-VAT (2026-08-31) = ₺33.8895/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor ₺33.889 + ₺2.469/kg = ₺36.358/kg — the researched £0.0372/kg at ₺66.3681/£ (HSLA 340 (≈ HC340LA) extra over deep-drawing quality (DDS $1.50/cwt in both books) = the mean of U.S. Steel HSLA-F 345 MPa $3.25/cwt and Stelco HSLA Grade 50 $4.25/cwt less DDS, $2.25/cwt; $2.25 × 22.046 = $49.6/t; $49.6 ÷ 1,000 ÷ 1.3344 = £0.0372/kg — North American producer extras (U.S. Steel 08/2026, Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://news.metal.com/newscontent/104088635-smm-steel-cost-support-and-post-holiday-expectations-lift-turkish-hrc-and-crc-prices (2026-08-31) ; U.S. Steel, NA flat rolled products pricing (PDF served at the page URL) — https://www.ussteel.com/na-flat-rolled-products-pricing (effective 08/02/2026; read 2026-11-04) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla420": {
-   "gbpPerKg": 0.7842,
-   "basis": "CR automotive grades: CR automotive grades — TR's market: SMM: 'For CRC ... keeping domestic and export quotes flat at 680 USD/tonne EXW and 675 USD/tonne FOB' (3 Aug: domestic 680 EXW, large orders 670). = 680 USD/t ex-works, ex-VAT (2026-08-31) = ₺33.8895/kg × the book's grade premium over its base; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://news.metal.com/newscontent/104088635-smm-steel-cost-support-and-post-holiday-expectations-lift-turkish-hrc-and-crc-prices (2026-08-31)",
+   "gbpPerKg": 0.5767,
+   "basis": "CR automotive grades: CR automotive grades — TR's market: SMM: 'For CRC ... keeping domestic and export quotes flat at 680 USD/tonne EXW and 675 USD/tonne FOB' (3 Aug: domestic 680 EXW, large orders 670). = 680 USD/t ex-works, ex-VAT (2026-08-31) = ₺33.8895/kg × the book's grade premium over its base; for this grade NOT the book's premium but the anchor ₺33.889 + ₺4.387/kg = ₺38.276/kg — the researched £0.0661/kg at ₺66.3681/£ (HSLA 420 (≈ HC420LA) extra over deep-drawing quality = Stelco HSLA Grade 60 $5.50/cwt less DDS $1.50, $4.00/cwt; $4.00 × 22.046 = $88.2/t; $88.2 ÷ 1,000 ÷ 1.3344 = £0.0661/kg (U.S. Steel quotes \"Inquire\" above 345 MPa) — a North American producer extra (Stelco 07/2024), no European list found; the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://news.metal.com/newscontent/104088635-smm-steel-cost-support-and-post-holiday-expectations-lift-turkish-hrc-and-crc-prices (2026-08-31) ; Stelco, Price Book updated July 8 2024 — https://stelco.com/wp-content/uploads/2025/07/Stelco-Price-Book-Updated-July-8-2024.pdf (July 2024; read 2026-11-04)",
    "confidence": "Medium"
   },
   "mat-hsla550": {
@@ -416,15 +416,15 @@ export const TURKEY_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.3457,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on TR heavy scrap ₺21.6793/kg (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₺22.9466/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
-   "source": "https://news.metal.com/newscontent/104188742-smm-analysis-september-2026-global-crude-steel-market-outlook-european-supply-squeeze-overshadows-headline-swings (2026-10-30 (deal late Oct; assessment 411 mid-Oct))",
+   "gbpPerKg": 0.3521,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on TR heavy scrap ₺21.6793/kg (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₺22.9466/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor ₺22.947 + ₺0.425/kg = ₺23.371/kg — the researched £0.0064/kg at ₺66.3681/£ (G20Mn5 over GS-C25: 0.50 % Mn × £1.283/kg Mn = £0.0064/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://news.metal.com/newscontent/104188742-smm-analysis-september-2026-global-crude-steel-market-outlook-european-supply-squeeze-overshadows-headline-swings (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.4857,
-   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on TR heavy scrap ₺21.6793/kg (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₺22.9466/kg (the German book's arithmetic; mix an engineering assumption); ladder +₺9.29/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "https://news.metal.com/newscontent/104188742-smm-analysis-september-2026-global-crude-steel-market-outlook-european-supply-squeeze-overshadows-headline-swings (2026-10-30 (deal late Oct; assessment 411 mid-Oct))",
+   "gbpPerKg": 0.4399,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on TR heavy scrap ₺21.6793/kg (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₺22.9466/kg (the German book's arithmetic; mix an engineering assumption); for this grade NOT the book's premium but the anchor ₺22.947 + ₺6.252/kg = ₺29.198/kg — the researched £0.0942/kg at ₺66.3681/£ (G42CrMo4 over GS-C25: 1.00 % Cr × £1.540/kg Cr + 0.20 % Mo × £39.391/kg Mo = £0.0942/kg (ferroalloy price ÷ the element a kg delivers — FeMn £0.874 ÷ 0.682, HC FeCr £0.963 ÷ 0.625, FeMo £26.10 ÷ 0.663: UK import unit values, HMRC OTS; consumptions the research's sizing, grade D); the UK book's figure, phase B 4 Nov 2026, in place of the frozen book's grade premium)",
+   "source": "https://news.metal.com/newscontent/104188742-smm-analysis-september-2026-global-crude-steel-market-outlook-european-supply-squeeze-overshadows-headline-swings (2026-10-30 (deal late Oct; assessment 411 mid-Oct)) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072021180%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072027000%20and%20MonthId%20ge%20202501%20and%20MonthId%20le%20202512&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (read 2026-11-04) ; roymech.org, EN 10213 steel castings table — https://roymech.org/Useful_Tables/Matter/Steel_Data/Steel-10213.html (read 2026-11-04)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {

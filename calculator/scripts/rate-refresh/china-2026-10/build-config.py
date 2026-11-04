@@ -240,7 +240,28 @@ machines = {
 # Al extrusion billet = A00 + the 6063 billet processing fee, over the library's LME (al-extrusion-data AL_MARKET)
 LME, USD_PER_GBP = 3240, 1.3285
 cny_per_usd = FX / USD_PER_GBP
-billet_usd = (A00 + v('nonferrous.al.billet6063_premium')) / cny_per_usd * 1000
+# Phase B (4 Nov 2026, scripts/research/2026-11-phase-b/data.json): the September fee (Mysteel, Foshan 18 Sep: ¥45/t) was
+# a cyclical low "clearly below the industry's average production cost line" (SMM, Aug 2026, row AL3; SMM puts billet
+# casting at ¥200–300/t, AL4). The fee is now read off SMM's Foshan daily of 27 Oct 2026 by the book's own method — the
+# midpoint of the Φ90 and Φ120–178 fees — and taken EX-VAT (SMM spot quotes carry 13 % VAT, as the A00 the book divides
+# by 1.13; the September figure was added as quoted). The September A00 basis is kept.
+PB = {r['id']: r for r in json.load(open(os.path.join(HERE, '..', '..', 'research', '2026-11-phase-b', 'data.json')))}
+for n in ('fee at RMB 320/t', 'fee at RMB 270/t'):
+    assert n.replace('fee at', 'processing fee at') in PB['AL1']['quote'], n
+FEE_INCL = (320 + 270) / 2                       # ¥/t incl. VAT, Foshan 27 Oct 2026: Φ90 ¥320, Φ120 / Φ178 ¥270
+FEE_EX = round(FEE_INCL / 1.13 / 1000, 4)        # ¥/kg ex-VAT
+billet_usd = (A00 + FEE_EX) / cny_per_usd * 1000
+# Extrusion process scrap is NOT worth the billet it is cut from: clean new 6063 scrap (6063 白料新料) per Mysteel —
+# national summary 28 Oct ¥20,500–20,800/t and 30 Oct ¥20,400–20,700/t, Guangdong daily 2 Nov ¥20,600/t (row AL5): the
+# mean of the three reads (range midpoints, the daily as quoted). VAT: Mysteel quotes these "多为现款不开票自提价" — cash,
+# NO VAT invoice, buyer collects — so the price is read as VAT-FREE (the research's recommended reading; a VAT-inclusive
+# reading, ÷ 1.13, would be ¥18.23/kg — the gap only a supplier's invoice settles).
+for n in ('20400-20700', '20600', '现款不开票自提价'):
+    assert n in PB['AL5']['quote'], n
+for n in ('20,500–20,800',):
+    assert n in PB['AL5']['value'], n
+SCRAP_CNY_T = ((20500 + 20800) / 2 + (20400 + 20700) / 2 + 20600) / 3
+scrap_usd = SCRAP_CNY_T / 1000 / cny_per_usd * 1000
 cfg = {'asOf': '2026-10-10', 'label': 'China rate book — 4-cluster average (Yangtze / Pearl River deltas, Chongqing, Wuhan), 2 × 12 h',
        'region': 'CN', 'currency': 'CNY', 'currencySymbol': '¥', 'dir': 'scripts/rate-refresh/china-2026-10',
        'snapshot': 'scripts/rate-refresh/china-2026-10/current-china-book.json', 'bookFile': 'src/engine/country-books/cn.ts', 'bookConst': 'CHINA_BOOK',
@@ -248,7 +269,11 @@ cfg = {'asOf': '2026-10-10', 'label': 'China rate book — 4-cluster average (Ya
        # round 30 Oct 2026: the overhead multiplier checked against supplier filings (it is not changed — the evidence agrees)
        'shopMultipliersAtPar': True, 'shopMultipliersBasis': "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no China overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched (China's automotive-supplier filings — SG&A ÷ cost of sales, Tuopu 4.15 %, Huayu 6.04 % v TI Fluid Systems 7.68 % — suggest 0.67–0.79; read in search results only, not applied until verified on the filings)",
        'alBilletPremiumUsdPerT': {'value': round(billet_usd - LME), 'current': -186,
-                                  'basis': f'A00 ¥{A00}/kg (Changjiang Sep 2026 avg) + 6063 billet fee ¥{v("nonferrous.al.billet6063_premium")}/kg (Foshan, Sep 2026), ex-VAT = ${billet_usd:.0f}/t at ¥{cny_per_usd:.3f}/$ — over the library LME ${LME}',
-                                  **src('nonferrous.al.billet6063_premium')}}
+                                  'basis': f'A00 ¥{A00}/kg ex-VAT (Changjiang Sep 2026 avg) + 6063 billet fee ¥{FEE_EX}/kg ex-VAT (SMM Foshan daily 27 Oct 2026: Φ90 ¥320/t, Φ120 / Φ178 ¥270/t, midpoint ¥{FEE_INCL:.0f}/t incl. 13 % VAT ÷ 1.13; phase B 4 Nov 2026 — was ¥0.045/kg, Mysteel 18 Sep, a cyclical low below SMM\'s ¥200–300/t casting cost) = ${billet_usd:.0f}/t at ¥{cny_per_usd:.3f}/$ — over the library LME ${LME}',
+                                  'research': 'phase-b AL1', 'source': f"{PB['AL1']['source']} — {PB['AL1']['url']}", 'date': PB['AL1']['date']},
+       # Phase B: the region's own clean 6063 process-scrap price (al-extrusion-data AL_SCRAP_6XXX_BY_REGION), US$/t over LME
+       'alScrapDiffUsdPerT': {'value': round(scrap_usd - LME),
+                              'basis': f'clean new 6063 extrusion scrap (6063 白料新料), Mysteel: 28 Oct ¥20,500–20,800/t, 30 Oct ¥20,400–20,700/t, Guangdong 2 Nov ¥20,600/t — mean ¥{SCRAP_CNY_T:,.0f}/t, read VAT-FREE (quoted cash, no VAT invoice, buyer collects; a VAT-inclusive reading would be ¥{SCRAP_CNY_T / 1.13 / 1000:.2f}/kg) = ${scrap_usd:.0f}/t at ¥{cny_per_usd:.3f}/$ — under the library LME ${LME}',
+                              'research': 'phase-b AL5', 'source': f"{PB['AL5']['source']} — {PB['AL5']['url']}", 'date': PB['AL5']['date']}}
 json.dump(cfg, open(os.path.join(HERE, '..', '2026-10-china.json'), 'w'), indent=1, ensure_ascii=False)
 print(f'{len(families)} families, {sum(len(f["members"]) for f in families)} grades; billet premium ${cfg["alBilletPremiumUsdPerT"]["value"]}/t; rent ¥{rent:.2f}/m²/month')

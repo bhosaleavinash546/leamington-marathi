@@ -1146,7 +1146,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const alAlloy = commodity === 'aluminium_extrusion' ? AL_ALLOY_LIST.find(al => `mat-al-billet-${al.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
     const rc = a.regionalRows?.length ? a.regionalRows
       : a.baseLibrary ? computeRegionalComparisonExact(input, a.baseLibrary, { landed: false, sourceRegion: regionCode as ManufacturingRegion, sourceResult: result })
-      : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: regionCode as ManufacturingRegion, ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
+      : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: regionCode as ManufacturingRegion, ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy, 1 - (input.rawMaterial.materialUtilization ?? 1)) } : {}) });
     countries = {
       rows: rc.map(r => ({ name: r.name, total: r.total, vsBasePct: r.vsBasePct, isBase: r.isBase, approx: r.basis === 'stack-reprice' || r.basis === 'scaled' })),
       note: input.deliveryTerms === 'EXW'

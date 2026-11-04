@@ -23,6 +23,13 @@
  *
  *   npx tsx scripts/arith-audit/extrusion.ts            # all 12 parts
  *   npx tsx scripts/arith-audit/extrusion.ts --verbose  # every check, not only the FAILs
+ *   npx tsx scripts/arith-audit/extrusion.ts <dumpDir>  # PLUS the aluminium MATERIAL line of every AL_ part in a dump of
+ *                                                       # scripts/arith-audit/dump.ts, in the dump's own region (phase B)
+ *
+ * Phase B (4 Nov 2026): process scrap is credited at the REGION's own clean-6xxx level where one is sourced (China:
+ * Mysteel clean 6063, LME − $158/t) with the alloy's discount to clean 6063 kept, else at LME + the alloy's differential;
+ * never above the billet. China's billet = LME + $11/t (ex-VAT A00 + the late-October fee, ex-VAT). Restated below from
+ * the data table, then the material line is re-added from the dump's own gross / net / consumables / kWh.
  */
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
@@ -33,8 +40,11 @@ import { ANSWERS, BASELINE } from '../real-parts-baseline.js';
 import type { OCCTGeometry } from '../../server/utils/geometry-bridge.js';
 import {
   AL_ALLOYS, AL_PRESSES, AL_DIES, AL_LINE, AL_DOWNSTREAM, AL_DIE_NITRIDE, AL_CONFORM, AL_IMPACT, AL_MARKET,
-  BILLET_PREMIUM_USD_PER_T, type AlAlloy, type AlDieType,
+  BILLET_PREMIUM_USD_PER_T, AL_SCRAP_6XXX_BY_REGION, SCRAP_DIFF_6XXX_USD, type AlAlloy, type AlDieType,
 } from '../../src/engine/al-extrusion-data.js';
+import { dumpContext, contextLine } from './dump-context.js';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { featureMinutesEach } from '../../src/engine/feature-machining.js';
 import { CUTTING_DATA, secondaryMachiningCell } from '../../src/engine/machining-time.js';
 
@@ -446,9 +456,50 @@ export async function runExtrusionAudit(): Promise<{ checks: Check[]; parts: Rec
   return { checks, parts };
 }
 
+/**
+ * The aluminium MATERIAL line of every AL_ part in a dump, in the dump's own region (phase B, 4 Nov 2026): billet £/kg =
+ * (LME + the region's premium + the alloy adder) ÷ FX; scrap £/kg = (LME + the region's own clean-6xxx level + the alloy's
+ * discount to clean 6063, or LME + the alloy's differential where the region has none) ÷ FX, capped at the billet; material
+ * £ = gross × billet − (gross − net) × scrap + consumables + kWh × the book's tariff — re-added from the dump's own figures.
+ */
+export function runAluminiumMaterialDumpAudit(dumpDir: string): Check[] {
+  const C = dumpContext(dumpDir);
+  const checks: Check[] = [];
+  for (const part of Object.keys(ANSWERS).filter(p => p.startsWith('AL_'))) {
+    const name = part.replace(/\.(stp|step)$/i, '');
+    const f = join(dumpDir, `${name}.json`);
+    if (!existsSync(f)) continue;
+    const d = JSON.parse(readFileSync(f, 'utf8'));
+    if (d.status !== 'costed') continue;
+    const alloy = String(d.answers['material.alAlloy']) as AlAlloy;
+    const a = AL_ALLOYS[alloy];
+    const add = (what: string, expected: number | string, actual: unknown, kind: 'money' | 'input' = 'input') => {
+      const v = typeof expected === 'number' ? Number(actual) : String(actual);
+      checks.push({ part: name, what: `[${C.region} dump] ${what}`, expected, actual: v as number | string, pass: typeof expected === 'number' ? near(expected, v as number, kind) : expected === v });
+    };
+    const billet = r4((AL_MARKET.lmeUsdPerT + BILLET_PREMIUM_USD_PER_T[C.region].usdPerT + a.billetAdderUsdPerT) / AL_MARKET.usdPerGbp / 1000);
+    const own = AL_SCRAP_6XXX_BY_REGION[C.region];
+    const diff = own ? own.usdPerT + (a.scrapDiffUsdPerT - SCRAP_DIFF_6XXX_USD) : a.scrapDiffUsdPerT;
+    const scrap = Math.min(billet, r4((AL_MARKET.lmeUsdPerT + diff) / AL_MARKET.usdPerGbp / 1000));
+    const mat = C.material(`mat-al-billet-${alloy.toLowerCase()}`);
+    add('billet £/kg (LME + region premium + adder) ÷ FX', billet, mat.pricePerKg, 'input');
+    add(`scrap £/kg (LME ${own ? '+ the region\'s own clean 6063 level' : '+ the alloy differential'}, ≤ billet)`, scrap, mat.scrapRecoveryPricePerKg, 'input');
+    const rm = d.trace.stackInput.rawMaterial as { netWeightKg: number; materialUtilization: number; consumablesCostPerPart?: number; energyKwh?: { gas?: number; electricity?: number } };
+    const gross = rm.netWeightKg / rm.materialUtilization;
+    const tariff = C.book.energy[0];
+    const material = gross * billet - (gross - rm.netWeightKg) * scrap + (rm.consumablesCostPerPart ?? 0)
+      + (rm.energyKwh?.gas ?? 0) * tariff.gasPerKwh + (rm.energyKwh?.electricity ?? 0) * tariff.electricityPerKwh;
+    add('material £ re-added (gross × billet − scrap kg × scrap + consumables + kWh)', material, d.breakdown.rawMaterial, 'money');
+  }
+  return checks;
+}
+
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const verbose = process.argv.includes('--verbose');
-  const { checks, parts } = await runExtrusionAudit();
+  const dumpDir = process.argv.slice(2).find(x => !x.startsWith('--'));
+  const run = await runExtrusionAudit();
+  if (dumpDir) { console.log(contextLine(dumpContext(dumpDir))); run.checks.push(...runAluminiumMaterialDumpAudit(dumpDir)); }
+  const { checks, parts } = run;
   let lastPart = '';
   for (const c of checks) {
     if (!verbose && c.pass) continue;

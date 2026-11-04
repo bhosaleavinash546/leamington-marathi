@@ -13,7 +13,7 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage, questionsToStopOn, newQuestionsMessage, GET_COST_AFTER_STOP_LABEL } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -4845,6 +4845,18 @@ function renderForgingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Cycle (hr, 0=none)</label><input type="number" id="forge-trim-ct" step="0.001" min="0" value="0"/></div>
       <div class="field-group"><label>Trim Crew</label><input type="number" id="forge-trim-manning" step="0.5" min="0" value="1"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Billet Saw (opt.) <span title="The saw that cuts each billet off the bar. From CAD: the automatic carbide saw when the route forges from bar.">ℹ</span></label><select id="forge-saw-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Saw Time (hr a billet, 0=none)</label><input type="number" id="forge-saw-ct" step="0.0001" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Saw Crew</label><input type="number" id="forge-saw-manning" step="0.1" min="0" value="0.5"/></div>
+      <div class="field-group"><label>Saw Kerf (kg a billet) <span title="Metal lost in the cut: bought as bar, credited as scrap.">ℹ</span></label><input type="number" id="forge-saw-kerf" step="0.001" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Billet Heater (opt.) <span title="The in-line induction heater. Its energy is the Heating (kWh/kg) line above — the heater's machine rate carries none.">ℹ</span></label><select id="forge-heater-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Heater Time (hr a billet, 0=none)</label><input type="number" id="forge-heater-ct" step="0.0001" min="0" value="0"/></div>
     </div>
     ${renderSurfaceFinishingSection('forge', 'forging')}`;
 }
@@ -13345,6 +13357,9 @@ function collectForgingInput(): UniversalStackInput {
   const trimCt = num('forge-trim-ct');
   const trimmingMachineId = sel('forge-trim-mach') || undefined;
   const trimmingLabourId = sel('forge-trim-lab') || undefined;
+  // Billet cut-off and the in-line heater (phase B, Nov 2026) — the same inputs toCostParams builds headless.
+  const sawCt = num('forge-saw-ct'), sawMach = sel('forge-saw-mach') || undefined;
+  const heaterCt = num('forge-heater-ct'), heaterMach = sel('forge-heater-mach') || undefined;
 
   const materialId = sel('forge-mat');
   const forgeId = sel('forge-mach');
@@ -13416,6 +13431,9 @@ function collectForgingInput(): UniversalStackInput {
     trimmingLabourId: trimCt > 0 ? trimmingLabourId : undefined,
     trimmingCycleHr: trimCt > 0 ? trimCt : undefined,
     trimmingManning: trimCt > 0 ? (num('forge-trim-manning') || undefined) : undefined,
+    ...(sawCt > 0 && sawMach ? { billetSawMachineId: sawMach, billetSawCycleHr: sawCt,
+      billetSawManning: num('forge-saw-manning') || undefined, billetSawKerfKg: num('forge-saw-kerf') || undefined } : {}),
+    ...(heaterCt > 0 && heaterMach ? { billetHeaterMachineId: heaterMach, billetHeaterCycleHr: heaterCt } : {}),
     rejectRate: num('forge-reject') || undefined,
     ...(forgeSurfaceFinishing ? { surfaceFinishing: forgeSurfaceFinishing } : {}),
   });
@@ -21469,10 +21487,9 @@ function collectCADBasis(): BasisRow[] {
     const value = shown(id);
     if (!value) continue;
     const typed = String(rf.value ?? '') !== '' && now !== String(rf.value) && !(Number.isFinite(+now) && Math.abs(+now - Number(rf.value)) < 1e-9);
-    // The grade field holds the representative grade until the grade question is answered — a default, not a rule.
-    const gradeDefault = /-mat$/.test(id) && !_cadDecisionAnswers['material.grade'] && !_cadDecisionAnswers['material.resin'];
-    const grade: BasisRow['grade'] = typed ? 'Typed' : rf.source === 'geometry' ? 'Measured' : rf.source === 'engineer' ? 'Answered'
-      : gradeDefault ? 'Default' : 'Rule';
+    // The grade field holds an assumed grade until the grade question is answered — never "Measured" (basisGradeFor).
+    const grade: BasisRow['grade'] = basisGradeFor({ typed, source: rf.source, gradeField: /-mat$/.test(id),
+      gradeAnswered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin']) });
     rows.push({ grade, what: labelOf(id), value });
   }
   // Measured fields the fill wrote outside the rule set (weights, envelope).

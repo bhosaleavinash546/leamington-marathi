@@ -78,7 +78,8 @@ describe('2. a grade the file names', () => {
     const ht = r.provenance['forge-ht-cost'];
     expect(ht.value).toBe(0);
     expect(ht.basis).toMatch(/controlled-cooled/);
-    expect(ht.basis).toMatch(/The file names C45 .*normalised — £0\.3\/kg × 3\.093 kg = £0\.9279 a part .*NOT in this cost/);
+    // phase B (4 Nov 2026): the as-forged weight carries the draft metal on the IS 3469 stock — 3.093 → 3.185 kg
+    expect(ht.basis).toMatch(/The file names C45 .*normalised — £0\.3\/kg × 3\.185 kg = £0\.9555 a part .*NOT in this cost/);
   });
 
   it('answered C45, the heat treatment follows the grade (normalise) and the note goes', () => {

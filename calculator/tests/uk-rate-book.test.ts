@@ -56,8 +56,11 @@ describe('materials: European anchors; a casting is its charge', () => {
   });
   it('a casting grade is the metal charge (the engine adds melt, loss, line, labour, overhead, margin)', () => {
     // ÷ 0.98 melt loss on the part's own metal (round 30 Oct 2026 — the engine loses metal only on the remelted gating)
-    expect(mat('mat-gjs500').pricePerKg).toBeCloseTo(0.287 / 0.98, 3);
-    expect(mat('mat-gs-c25').pricePerKg).toBeCloseTo(0.1425 / 0.96, 3);
+    // Phase B (4 Nov 2026): the scrap is the CONSUMER level — UK heavy-melting-scrap export parity (HMRC OTS) — not
+    // letsrecycle's merchant buying price; the steel charge carries its Mn / Si / Al trim
+    const hms = (721498782 + 139195452) / (2472204515 + 496961012);
+    expect(mat('mat-gjs500').pricePerKg).toBeCloseTo((0.5 * 0.3867 + 0.5 * hms + 0.012 * 1.8985) / 0.98, 3);
+    expect(mat('mat-gs-c25').pricePerKg).toBeCloseTo((hms + 0.01144) / 0.96, 3);
     expect(mat('mat-gjs500').sourceNote).toMatch(/charge/i);
     expect(mat('mat-gs-c25').scrapRecoveryPricePerKg).toBeLessThan(mat('mat-gs-c25').pricePerKg);
     expect(mat('mat-adc12').pricePerKg).toBeCloseTo(2.104, 3);

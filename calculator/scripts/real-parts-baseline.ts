@@ -118,15 +118,24 @@ export const ANSWERS: Record<string, {
   // panel, so the transfer and tandem routes had never seen real geometry.
   'BIW_Floor_Reinforcement.stp': {
     note: 'MODELLED: 450 x 300 x 70 mm drawn pan, 1.2 mm, 4° draft, R15/R8, 25 mm flange, 2 holes. Mild steel.',
-    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal',
+               // the model's note states mild steel: the sheet grade question (phase B, Nov 2026) answered DC04 — a
+               // "reinforcement" name would otherwise lean the costing to HSLA
+               'material.grade': 'mat-dc04' },
   },
   'BIW_Inner_Panel.stp': {
     note: 'MODELLED: 1100 x 700 x 120 mm drawn inner panel, 0.9 mm, 5° draft, R40/R15, 30 mm flange. Mild steel.',
-    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal',
+               // the model's note states mild steel: the sheet grade question (phase B, Nov 2026) answered DC04 — a
+               // "reinforcement" name would otherwise lean the costing to HSLA
+               'material.grade': 'mat-dc04' },
   },
   'BIW_Reinf_Channel.stp': {
     note: 'MODELLED: 240 mm U-channel reinforcement, 60 x 40 mm section, 2.0 mm, R3 bends, 3 holes. Mild steel.',
-    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal',
+               // the model's note states mild steel: the sheet grade question (phase B, Nov 2026) answered DC04 — a
+               // "reinforcement" name would otherwise lean the costing to HSLA
+               'material.grade': 'mat-dc04' },
   },
   // ── Machined from solid (machining review, 2 Oct 2026) ────────────────────
   // NOT customer parts: modelled in OCP by cad-audit/parts/MACH_modelled_parts.py

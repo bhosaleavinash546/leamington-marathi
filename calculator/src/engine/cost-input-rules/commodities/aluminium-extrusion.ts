@@ -309,7 +309,7 @@ export const ALUMINIUM_EXTRUSION_RULES: CommodityRuleSpec = {
   header: 'ALUMINIUM EXTRUSION COST INPUT RULES:',
   rules: [
     rule('alExtrusion.alloy', 'alx-alloy', 'alloy', a => ({ value: a.spec.alloy, source: 'engineer', confidence: 1, basis: AL_ALLOYS[a.spec.alloy].label })),
-    rule('alExtrusion.materialId', undefined, 'materialId', a => ({ value: a.build.inputs.materialId, source: 'library', confidence: 1, basis: 'billet grade for the alloy (LME + regional premium + alloy adder)' })),
+    rule('alExtrusion.materialId', undefined, 'materialId', a => ({ value: a.build.inputs.materialId, source: 'library', confidence: 1, basis: 'billet grade for the alloy (LME + regional premium + alloy adder); its process scrap is credited at the costing country\'s scrap level — the region\'s own clean 6063 scrap price where one is sourced (China), else LME + the European differential, never above the billet' })),
     rule('alExtrusion.route', 'alx-route', 'route', a => ({ value: a.spec.route, source: 'rule', confidence: 0.8, basis: a.routeBasis })),
     rule('alExtrusion.areaMm2', 'alx-area', 'areaMm2', a => ({ value: Math.round(a.spec.section.areaMm2 * 100) / 100, source: 'geometry', confidence: 0.95, basis: a.sec.basis })),
     rule('alExtrusion.perimeterMm', 'alx-perim', 'perimeterMm', a => ({ value: Math.round(a.spec.section.perimeterMm * 10) / 10, source: 'geometry', confidence: 0.9, basis: 'outline of the section, outer and inner loops' })),

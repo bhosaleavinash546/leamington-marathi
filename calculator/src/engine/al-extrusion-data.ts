@@ -56,7 +56,7 @@ export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium
   US: { usdPerT: 2_960, sourced: false, basis: 'US Midwest duty-paid premium $2,410/t (30 Sep 2026, cbonds Midwest index; Section 232 tariff) + billet upcharge ~$550/t (20–30 c/lb) — premium sourced, upcharge estimate' },
   MX: { usdPerT: 395, sourced: true, basis: 'Fastmarkets 6063 billet premium CIF Mexico $370–420/t, 9 Sep 2026 — mid-point' },
   BR: { usdPerT: 725, sourced: true, basis: 'Fastmarkets 6063/6060 billet premium CIF Brazilian main ports $700–750/t — mid-point' },
-  CN: { usdPerT: -21, sourced: true, basis: 'A00 ¥21.47/kg (Changjiang Sep 2026 avg) + 6063 billet fee ¥0.045/kg (Foshan, Sep 2026), ex-VAT = $3219/t at ¥6.684/$ — over the library LME $3240 (China rate book 2026-10-10)' },
+  CN: { usdPerT: 11, sourced: true, basis: 'A00 ¥21.47/kg ex-VAT (Changjiang Sep 2026 avg) + 6063 billet fee ¥0.2611/kg ex-VAT (SMM Foshan daily 27 Oct 2026: Φ90 ¥320/t, Φ120 / Φ178 ¥270/t, midpoint ¥295/t incl. 13 % VAT ÷ 1.13; phase B 4 Nov 2026 — was ¥0.045/kg, Mysteel 18 Sep, a cyclical low below SMM’s ¥200–300/t casting cost) = $3251/t at ¥6.684/$ — over the library LME $3240 (China rate book 2026-10-10)' },
   IN: { usdPerT: 710, sourced: true, basis: 'Hindalco AA6063 billet (P1020 + ₹17,600/t, Aug 2026) over LME 3M, Oct 2026 derived; May measured $803–842/t — the book held $550 (India rate book 2026-10-10)' },
   TH: { usdPerT: 420, sourced: false, basis: 'Asian P1020 premium ~$200–395/t + Thai 6063 billet processing fee $100–250 (alcircle, 2026) — estimate' },
   VN: { usdPerT: 450, sourced: false, basis: 'Asian P1020 premium + Vietnamese 6063 billet fee ~$200/t mid-June 2026 (alcircle) — estimate' },
@@ -213,12 +213,47 @@ export function billetPriceGbpPerKg(alloy: AlAlloy, region: ManufacturingRegion)
   return Math.round(usd / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
 }
 
+/** Process-scrap value, £/kg: LME + the alloy's differential in the region (its own clean-6xxx level where it has one). */
+export function alScrapGbpPerKg(alloy: AlAlloy, region?: ManufacturingRegion): number {
+  return Math.round((AL_MARKET.lmeUsdPerT + alScrapDiffUsdPerT(alloy, region)) / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
+}
+
 /**
- * Process-scrap value, £/kg: LME + the alloy's differential. Scrap is sold on
- * LME terms, not at the regional billet premium, so it is the same in every region.
+ * A region's OWN clean 6xxx process-scrap price, US$/t over (or under) the library LME (phase B, 4 Nov 2026). Process
+ * scrap was credited at LME + the European Fastmarkets differential in every region — in China that put the credit above
+ * the billet it is cut from, and the cap then credited it AT the billet price (¥21.52/kg), while clean new 6063 scrap
+ * trades at ¥20.6/kg there. A region listed here takes its own level; every other region keeps LME +
+ * `SCRAP_DIFF_6XXX_USD` (the research gave no other local figure). Written by `scripts/country-book.ts` from a config's
+ * `alScrapDiffUsdPerT` — edit the config, not these lines.
  */
-export function alScrapGbpPerKg(alloy: AlAlloy): number {
-  return Math.round((AL_MARKET.lmeUsdPerT + AL_ALLOYS[alloy].scrapDiffUsdPerT) / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
+export interface AlScrapBasis { usdPerT: number; sourced: boolean; basis: string }
+export const AL_SCRAP_6XXX_BY_REGION: Partial<Record<ManufacturingRegion, AlScrapBasis>> = {
+  CN: { usdPerT: -158, sourced: true, basis: 'clean new 6063 extrusion scrap (6063 白料新料), Mysteel: 28 Oct ¥20,500–20,800/t, 30 Oct ¥20,400–20,700/t, Guangdong 2 Nov ¥20,600/t — mean ¥20,600/t, read VAT-FREE (quoted cash, no VAT invoice, buyer collects; a VAT-inclusive reading would be ¥18.23/kg) = $3082/t at ¥6.684/$ — under the library LME $3240 (China rate book 2026-10-10)' },
+};
+
+/**
+ * Process-scrap differential for an alloy in a region, US$/t over LME: the region's own clean-6xxx level where it has
+ * one (`AL_SCRAP_6XXX_BY_REGION`), with the alloy's discount to clean 6063 (its `scrapDiffUsdPerT` − the 6063
+ * differential) kept on top; else the alloy's own differential (LME terms, the European level).
+ */
+export function alScrapDiffUsdPerT(alloy: AlAlloy, region?: ManufacturingRegion): number {
+  const own = region ? AL_SCRAP_6XXX_BY_REGION[region] : undefined;
+  return own ? own.usdPerT + (AL_ALLOYS[alloy].scrapDiffUsdPerT - SCRAP_DIFF_6XXX_USD) : AL_ALLOYS[alloy].scrapDiffUsdPerT;
+}
+
+/** The sentence a costing prints for its scrap value: the level it was credited at and its source. */
+export function alScrapBasis(alloy: AlAlloy, region?: ManufacturingRegion): string {
+  const own = region ? AL_SCRAP_6XXX_BY_REGION[region] : undefined;
+  const d = alScrapDiffUsdPerT(alloy, region);
+  const sign = (n: number) => `${n >= 0 ? '+' : '−'} $${Math.abs(n)}/t`;
+  if (own) {
+    const alloyDisc = AL_ALLOYS[alloy].scrapDiffUsdPerT - SCRAP_DIFF_6XXX_USD;
+    return `Scrap at LME ${sign(d)} — this region's own clean 6063 scrap level, LME ${sign(own.usdPerT)} (${own.basis})`
+      + (alloyDisc !== 0 ? `, ${sign(alloyDisc)} for ${alloy} (its discount to clean 6063, ESTIMATE)` : '');
+  }
+  return `Scrap at LME ${sign(d)} (${AL_ALLOYS[alloy].series === '6xxx' || AL_ALLOYS[alloy].series === '1xxx'
+    ? 'Fastmarkets clean 6063 production scrap, delivered consumer Europe, 2026 average LME + €48/t'
+    : 'ESTIMATE — alloyed scrap sold segregated, at a discount to 6063'}; no local scrap price for this region — the European level)`;
 }
 
 /** The library material id for an alloy's billet. */

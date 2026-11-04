@@ -2,7 +2,7 @@ import type { RateLibrary, MaterialRate, Breakdown8Bucket, DeliveryTerms } from 
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { COUNTRY_BOOKS, countryMachine, countryMaterial, sourcedServiceFactor } from './country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
-import { AL_ALLOYS, AL_MARKET, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
+import { AL_ALLOYS, AL_MARKET, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, alScrapGbpPerKg, alScrapBasis, type AlAlloy } from './al-extrusion-data.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
 
@@ -1165,22 +1165,24 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     materials: baseLibrary.materials.map(m => {
       // Aluminium extrusion billet: LME + THIS region's all-in billet premium + the
       // alloy adder (al-extrusion-data.ts) — a US billet carries the Midwest premium,
-      // a Chinese one sits under LME. The scrap value is LME-based, so it stays.
+      // a Chinese one sits near LME. The scrap value is the region's own clean-6xxx scrap level where it has one
+      // (AL_SCRAP_6XXX_BY_REGION, phase B 4 Nov 2026: China's Mysteel clean 6063), else LME + the European differential.
       const alAlloy = m.id.startsWith('mat-al-billet-')
         ? (Object.keys(AL_ALLOYS) as AlAlloy[]).find(a => `mat-al-billet-${a.toLowerCase()}` === m.id) : undefined;
       if (alAlloy) {
         const p = billetPriceGbpPerKg(alAlloy, region);
         // Process scrap is remelted into billet, so it is never credited above the billet it becomes: China's billet
-        // sits UNDER LME (−$21/t) while the European scrap differential (+$56/t) put the credit above it — ¥22.03/kg of
+        // sat UNDER LME (−$21/t) while the European scrap differential (+$56/t) put the credit above it — ¥22.03/kg of
         // scrap against ¥21.52/kg of billet (7-country review, 3 Nov 2026).
-        const scrapCapped = m.scrapRecoveryPricePerKg > p;
-        const scrap = scrapCapped ? p : m.scrapRecoveryPricePerKg;
+        const regionScrap = alScrapGbpPerKg(alAlloy, region);
+        const scrapCapped = regionScrap > p;
+        const scrap = scrapCapped ? p : regionScrap;
         return { ...m, pricePerKg: p, scrapRecoveryPricePerKg: scrap, region: rd.name, confidence: 'Medium' as const,
           // The region's OWN build-up — the UK note ("UK all-in billet premium $1100/t … UK imports billet") was kept and
           // this appended, so a German report printed two premiums (Germany live review, Oct 2026).
           sourceNote: `${rd.name}: LME $${AL_MARKET.lmeUsdPerT}/t + ${rd.name} billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t `
             + `(${BILLET_PREMIUM_USD_PER_T[region].basis}) + ${alAlloy} alloy adder $${AL_ALLOYS[alAlloy].billetAdderUsdPerT}/t (engineering estimate) `
-            + `at $${AL_MARKET.usdPerGbp}/£ = £${p.toFixed(3)}/kg. Scrap at LME ${AL_ALLOYS[alAlloy].scrapDiffUsdPerT >= 0 ? '+' : '−'} $${Math.abs(AL_ALLOYS[alAlloy].scrapDiffUsdPerT)}/t, the same in every region (scrap trades on LME terms)`
+            + `at $${AL_MARKET.usdPerGbp}/£ = £${p.toFixed(3)}/kg. ${alScrapBasis(alAlloy, region)} = £${regionScrap.toFixed(4)}/kg`
             + (scrapCapped ? ` — capped at this billet price, £${p.toFixed(3)}/kg: scrap remelted into billet is not worth more than the billet.` : '.') };
       }
       const own = book ? countryMaterial(book, m, rd.name) : null;
@@ -1408,9 +1410,17 @@ export function computeRegionalComparison(
  * table — so a US row carries the Midwest premium and a Chinese row the SHFE
  * discount rather than the flat "globally traded" factor.
  */
-export function alBilletMaterialFactors(alloy: AlAlloy): Partial<Record<ManufacturingRegion, number>> {
-  const uk = billetPriceGbpPerKg(alloy, 'UK');
+export function alBilletMaterialFactors(alloy: AlAlloy, scrapShare = 0): Partial<Record<ManufacturingRegion, number>> {
+  // The NET metal a part costs per kg of billet bought: billet − the scrap share credited at the region's own scrap value
+  // (phase B, 4 Nov 2026: China's clean 6063 scrap sits under its billet; share 0 = the billet price alone, as before). The
+  // credit is capped at the billet price, as buildRegionalLibrary caps it.
+  const share = Math.min(1, Math.max(0, scrapShare));
+  const net = (r: ManufacturingRegion) => {
+    const b = billetPriceGbpPerKg(alloy, r);
+    return b - share * Math.min(b, alScrapGbpPerKg(alloy, r));
+  };
+  const uk = net('UK');
   const out: Partial<Record<ManufacturingRegion, number>> = {};
-  for (const r of Object.keys(REGIONAL_DATA) as ManufacturingRegion[]) out[r] = billetPriceGbpPerKg(alloy, r) / uk;
+  for (const r of Object.keys(REGIONAL_DATA) as ManufacturingRegion[]) out[r] = net(r) / uk;
   return out;
 }

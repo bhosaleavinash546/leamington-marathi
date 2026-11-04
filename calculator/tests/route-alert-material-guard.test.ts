@@ -19,10 +19,14 @@ process.env.AIR_GAPPED = '1';
 const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 
 describe('the material price a route row rests on', () => {
-  it('UK: cast steel GS-C25 bought below the forging\'s own steel scrap credit is implausible, with the figures', () => {
+  it('UK: cast steel GS-C25 is now the consumer-scrap charge (phase B, £0.314/kg) — above the forging\'s steel scrap credit', () => {
+    // It was the merchant 0A price ÷ 0.96, £0.148/kg — below the £0.20/kg the forging's own scrap is credited at, so the
+    // guard refused it. Phase B (4 Nov 2026) prices it at UK heavy-melting-scrap export parity + trim ÷ 0.96: no longer
+    // implausible; still Low (an engineering-typical melt loss), so HELD — no route alert rests on it.
     const c = routeMaterialCheck('mat-gs-c25', 'mat-steel-38mnvs6', book);
-    expect(c.status).toBe('implausible');
-    expect(c.reason).toMatch(/GS-C25.*£0\.1480\/kg.*£0\.2000\/kg/);
+    expect(book.materials.find(m => m.id === 'mat-gs-c25')!.pricePerKg).toBeGreaterThan(0.2);
+    expect(c.status).not.toBe('implausible');
+    expect(c.status).toBe('held');
   });
   it('a grade bought below its OWN scrap credit is implausible', () => {
     const lib = { ...book, materials: book.materials.map(m => (m.id === 'mat-steel-38mnvs6' ? { ...m, pricePerKg: 0.1 } : m)) };
@@ -42,8 +46,8 @@ describe('the material price a route row rests on', () => {
   });
 });
 
-describe('the comparison refuses the knuckle\'s casting row with its reason', () => {
-  it('UK knuckle: the cast-steel row is costed (GS-C25, the steel melt) but not credible', async () => {
+describe('the knuckle\'s casting row and the material guard', () => {
+  it('UK knuckle: the cast-steel row is costed (GS-C25, the steel melt) on a held price, no longer refused (phase B)', async () => {
     const fixtures = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{ part: string; answers: Record<string, string>; geometry: unknown; outcome: { commodity?: string } }>;
     const p = fixtures.find(x => x.part === 'steering_knuckle_RH.stp')!;
     const cmp = await compareRoutes({ geo: p.geometry as never, filename: p.part, current: p.outcome.commodity ?? 'forging', answers: { ...p.answers },
@@ -53,9 +57,9 @@ describe('the comparison refuses the knuckle\'s casting row with its reason', ()
     expect(cast.status).toBe('costed');
     expect(cast.material?.materialId).toBe('mat-gs-c25');
     expect(cast.consumables.length + (cast.breakdown?.rawMaterial ?? 0)).toBeGreaterThan(0);
-    expect(cast.materialCheck?.status).toBe('implausible');
-    expect(cast.credible).toBe(false);
-    expect(cast.notCredible.join(' ')).toMatch(/below the £0\.2000\/kg the costed route's own steel scrap/);
+    // phase B: GS-C25 at £0.314/kg is above the forging's £0.20/kg scrap — no longer refused as implausible, but HELD
+    expect(cast.materialCheck?.status).toBe('held');
+    expect(cast.notCredible.join(' ')).not.toMatch(/below the £0\.2000\/kg the costed route's own steel scrap/);
   }, 180_000);
 });
 

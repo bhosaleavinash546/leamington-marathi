@@ -29,7 +29,11 @@ import { toolSetItems } from '../tooling-split.js';
  * The process plan (press, openings, speed, billet, yield, die) comes from
  * `aluminium-extrusion-advisor.ts`; this module only multiplies it by the rate
  * library. Butt, strand ends, saw kerf and machining chips are all process
- * scrap, bought as billet and credited at the alloy's scrap value.
+ * scrap, bought as billet and credited at the alloy's scrap value IN THE COSTING'S
+ * REGION — the library grade's `scrapRecoveryPricePerKg`, which `buildRegionalLibrary`
+ * sets from `alScrapGbpPerKg(alloy, region)`: the region's own clean-6xxx scrap level
+ * where one is sourced (China, Mysteel clean 6063 — phase B, Nov 2026), else LME + the
+ * European differential; never above the billet. The material line prints it.
  */
 export interface AluminiumExtrusionInputs {
   materialId: string;

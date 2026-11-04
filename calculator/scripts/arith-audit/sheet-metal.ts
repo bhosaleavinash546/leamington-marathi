@@ -16,8 +16,16 @@
  * Cases: the four sheet parts at 50,000 a year (stamping; the drawn BIW panels on a tandem line), the seat
  * bracket at 5,000 a year (soft tooling; the laser + brake route is refused — the bracket is stretch-formed), and
  * the reinforcement channel at 5,000 a year chosen as sheet_metal_fab — the laser + press-brake route costed.
+ *
+ * Phase B (4 Nov 2026): the GRADE costed is restated — the engineer's `material.grade` answer, else HSLA when the part
+ * name says seat / pillar / reinforcement (HSLA 340 to 3 mm, S355MC above), else DC04 (HRPO above 3 mm) — and the UK
+ * HSLA prices as the CR base £0.756 + the published extras (U.S. Steel HSLA-F 345 and Stelco HSLA 50 / 60 over DDS).
+ *   npx tsx scripts/arith-audit/sheet-metal.ts <dumpDir>  # PLUS the grade and the material line of every sheet part in a
+ *                                                         # dump.ts dump, in the dump's own region's book
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { dumpContext, contextLine } from './dump-context.js';
 import { costMeasuredPart, type BulkPartResult } from '../../server/services/bulk-run.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import { TOOLROOM_RATES_UK, TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
@@ -56,6 +64,20 @@ const pickPress = (tonnes: number, bolster: number) =>
   PRESSES.find(p => p.t >= tonnes * C.safety && p.bolster >= bolster) ?? PRESSES[PRESSES.length - 1];
 
 const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+
+/** The grade the sheet rules cost (phase B), restated: answer → HSLA from a seat / pillar / reinforcement name → default. */
+export function expectedSheetGrade(part: string, answers: Record<string, unknown>, gaugeMm: number): string {
+  if (typeof answers['material.grade'] === 'string') return answers['material.grade'] as string;
+  const name = ` ${part.replace(/\.(stp|step)$/i, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ')} `;
+  const heavy = gaugeMm > 3;
+  if (answers['material.family'] === 'steel' && /(?<![a-z])(seat|pillar|reinf|reinforcement|reinforcing)(?![a-z])/.test(name)) return heavy ? 'mat-s355mc' : 'mat-hsla340';
+  return heavy ? 'mat-hrpo' : 'mat-dc04';
+}
+// UK HSLA = CR base (€880/t × 0.859 = £0.756) + the published extra over DDS (US$/cwt × 22.046 ÷ US$1.3344/£)
+const HSLA_UK = {
+  'mat-hsla340': Math.round((0.756 + ((3.25 - 1.5) + (4.25 - 1.5)) / 2 * 22.046 / 1.3344 / 1000) * 1000) / 1000,
+  'mat-hsla420': Math.round((0.756 + (5.5 - 1.5) * 22.046 / 1.3344 / 1000) * 1000) / 1000,
+} as Record<string, number>;
 const mRate = (id: string) => book.machines.find(m => m.id === id)!.computedRatePerHr;
 const lRate = (id: string) => book.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
 const mat = (id: string) => book.materials.find(m => m.id === id)!;
@@ -253,6 +275,9 @@ export async function runSheetMetalAudit(): Promise<Check[]> {
     const params = r.params as Record<string, any>;
     const tr = r.trace as any;
     const fab = r.commodity === 'sheet_metal_fab';
+    const grade = expectedSheetGrade(c.part, spec.answers, Number(r.provenance?.['sm-thick']?.value ?? p.geometry.sheetMetal?.thicknessMm ?? 0));
+    add('grade costed (answer → seat / pillar / reinforcement → HSLA → default)', params.materialId, grade);
+    if (HSLA_UK[grade] !== undefined) add(`UK ${grade} £/kg = CR base + the published HSLA extra`, mat(grade).pricePerKg, HSLA_UK[grade], 0.0005);
     const pitch = Number(r.provenance?.['sm-pitch']?.value), strip = Number(r.provenance?.['sm-strip-w']?.value);
     // The nest is geometry: the strip width is the outline's extent across the coil + 2 edge margins at the printed
     // angle, and the printed utilisation is the grown outline's area ÷ the strip cell.
@@ -314,9 +339,34 @@ export async function runSheetMetalAudit(): Promise<Check[]> {
   return checks;
 }
 
+/** The grade and the material line of every sheet part in a dump, in the dump's region (phase B, 4 Nov 2026). */
+export function runSheetDumpAudit(dumpDir: string): Check[] {
+  const D = dumpContext(dumpDir);
+  const out: Check[] = [];
+  for (const part of Object.keys(ANSWERS)) {
+    const f = join(dumpDir, `${part.replace(/\.(stp|step)$/i, '')}.json`);
+    if (!existsSync(f)) continue;
+    const d = JSON.parse(readFileSync(f, 'utf8'));
+    if (d.status !== 'costed' || !/^sheet_metal/.test(String(d.commodity))) continue;
+    const label = `${part} [${D.region} dump]`;
+    const add = (what: string, product: number | string | undefined, sh: number | string, tol = 0.005) =>
+      out.push({ part: label, what, product: product ?? 'missing', shadow: sh, pass: typeof sh === 'number' && typeof product === 'number' ? Math.abs(product - sh) <= tol : product === sh });
+    const grade = expectedSheetGrade(part, d.answers, Number(d.provenance?.['sm-thick']?.value ?? 0));
+    add('grade costed', d.params.materialId, grade);
+    const m = D.material(grade);
+    const rm = d.trace.stackInput.rawMaterial;
+    const gross = rm.netWeightKg / rm.materialUtilization;
+    add('material £ re-added in the dump\'s book (gross × £/kg − scrap kg × scrap + consumables)', d.breakdown.rawMaterial,
+      gross * m.pricePerKg - (gross - rm.netWeightKg) * m.scrapRecoveryPricePerKg + (rm.consumablesCostPerPart ?? 0));
+  }
+  return out;
+}
+
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('sheet-metal.ts')) {
   const verbose = process.argv.includes('--verbose');
+  const dumpDir = process.argv.slice(2).find(x => !x.startsWith('--'));
   const checks = await runSheetMetalAudit();
+  if (dumpDir) { console.log(contextLine(dumpContext(dumpDir))); checks.push(...runSheetDumpAudit(dumpDir)); }
   let fails = 0;
   for (const c of checks) {
     if (!c.pass) fails++;

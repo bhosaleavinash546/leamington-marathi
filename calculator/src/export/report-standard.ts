@@ -139,9 +139,13 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Descale', match: /descale/i, question: 'Descale method and its cost a forging?' },
       { name: 'NDT (MPI)', match: /\bndt\b/i, question: 'Crack-detection regime and its cost a forging?' },
       { name: 'Trim press', match: /trim[\s-]?mach/i, question: 'Trim (and pierce) press, in line or separate?' },
+      // Phase B (4 Nov 2026): the billet cut-off and the induction heater are costed — capex ESTIMATES until quoted.
+      { name: 'Billet cut-off', match: /saw/i, question: 'Billet cut-off: saw or shear, cuts an hour, kerf and blade cost a cut?' },
+      { name: 'Induction heater', match: /heater/i, question: 'Billet heater: kW, kg/h, and who tends it?' },
     ],
     notIncluded: [...LAUNCH, ni('Grain-flow / macro-etch or ultrasonic testing, if specified'), ni('Shot peening', /peen/i), ni('Part marking / traceability', /mark/i), ni('Rust protection or coating', /rust|coat|oil/i, BARE), ni('Machining of features left as-forged')],
-    notModelled: ['Billet shear / saw and the induction heater: their machine time and capital are not in the rate book, so not in this price — a supplier will charge them (a gap in the cost model, not an item you can exclude; ask for them on the quotation).'],
+    // The billet saw and the induction heater were the gap here until phase B (4 Nov 2026): both are costed now.
+    notModelled: [],
     quoteBreakdown: ['Forging price a part and £/kg as forged', 'Bar / billet £/kg and the index it follows', 'Billet kg, forging kg, flash and yield',
       'Press tonnage, hits and takt', 'Die set price, die life and sets over the programme', 'Heat treatment, descale and MPI cost a forging',
       'Machining cycle (if machined) by operation', 'Overhead and margin %'],

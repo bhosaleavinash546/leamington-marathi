@@ -200,10 +200,23 @@ export function notIncludedFor(commodity: string, finishRoute: string | null = n
     : common;
 }
 
-export type BasisGrade = 'Measured' | 'Answered' | 'Rule' | 'Default' | 'Typed';
+export type BasisGrade = 'Measured' | 'Answered' | 'Assumed' | 'Rule' | 'Default' | 'Typed';
 export interface BasisRow { grade: BasisGrade; what: string; value: string }
 
-const GRADE_ORDER: BasisGrade[] = ['Typed', 'Answered', 'Default', 'Rule', 'Measured'];
+const GRADE_ORDER: BasisGrade[] = ['Typed', 'Answered', 'Assumed', 'Default', 'Rule', 'Measured'];
+
+/**
+ * How a rule-filled field is graded on the Basis: typed beats everything; an engineer's answer (or a grade the CAD file
+ * declares) is Answered; a material GRADE field whose grade question is unanswered is Assumed — whatever the rule's
+ * source says. The sheet grade's rule said 'geometry' and the card printed "Measured | Grade" on a default (phase B live
+ * review, Nov 2026): a grade is never measured.
+ */
+export function basisGradeFor(a: { typed: boolean; source: string | undefined; gradeField: boolean; gradeAnswered: boolean }): BasisGrade {
+  if (a.typed) return 'Typed';
+  if (a.source === 'engineer') return 'Answered';
+  if (a.gradeField && !a.gradeAnswered) return 'Assumed';
+  return a.source === 'geometry' ? 'Measured' : 'Rule';
+}
 
 /** Basis rows grouped so what a person chose or must check comes first; measured facts last. */
 export function sortBasis(rows: BasisRow[]): BasisRow[] {
@@ -349,7 +362,7 @@ export function cadCostCardHtml(m: CostCardModel): string {
           <ol class="cad-movers-list">${m.topMovers.map(t => `<li><span>${esc(t.driver)}</span><span class="cad-basis-val">± ${esc(m.fmt(t.swing))}</span></li>`).join('')}</ol>
         </div>` : '';
   const extraChips = [
-    m.grade ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Grade</span> <strong>${esc(m.grade.label)}</strong>${m.grade.answered ? '' : ' <span class="cad-answer-k">(default)</span>'}</span>` : '',
+    m.grade ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Grade</span> <strong>${esc(m.grade.label)}</strong>${m.grade.answered ? '' : ' <span class="cad-answer-k">(assumed — confirm)</span>'}</span>` : '',
     m.weights ? weightChipsHtml(m.weights)
       : m.costedWeightKg && m.costedWeightKg > 0 ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Weight</span> <strong>${m.costedWeightKg.toFixed(3)} kg</strong> <span class="cad-answer-k">costed</span></span>` : '',
   ].join('');

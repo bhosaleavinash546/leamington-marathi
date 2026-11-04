@@ -47,12 +47,17 @@ describe('1. billet: LME + the regional all-in premium + the alloy adder', () =>
     expect(billetPriceGbpPerKg('6063', 'UK')).toBeCloseTo(want, 3);
     expect(billetPriceGbpPerKg('6063', 'UK')).toBeCloseTo(3.267, 2);
   });
-  it('every region has a premium with a basis; the US carries the tariff, China sits under LME', () => {
+  it('every region has a premium with a basis; the US carries the tariff, China sits near LME', () => {
     for (const r of Object.keys(REGIONAL_DATA) as ManufacturingRegion[]) {
       expect(BILLET_PREMIUM_USD_PER_T[r].basis.length).toBeGreaterThan(10);
     }
     expect(billetPriceGbpPerKg('6063', 'US')).toBeGreaterThan(billetPriceGbpPerKg('6063', 'DE') * 1.3);
-    expect(billetPriceGbpPerKg('6063', 'CN')).toBeLessThan(AL_MARKET.lmeUsdPerT / AL_MARKET.usdPerGbp / 1000);
+    // Phase B (4 Nov 2026): China = ex-VAT A00 (at about LME) + the late-October billet fee, ex-VAT — a few $/t over LME
+    // (it was −$21/t on September's cyclical-low fee), far under the European premium.
+    const lme = AL_MARKET.lmeUsdPerT / AL_MARKET.usdPerGbp / 1000;
+    expect(billetPriceGbpPerKg('6063', 'CN')).toBeGreaterThan(lme);
+    expect(billetPriceGbpPerKg('6063', 'CN')).toBeLessThan(lme * 1.02);
+    expect(BILLET_PREMIUM_USD_PER_T.CN.basis).toMatch(/SMM Foshan daily 27 Oct 2026.*÷ 1\.13/);
   });
   it('hard alloys cost more billet than soft (7075 > 6082 > 6063)', () => {
     expect(billetPriceGbpPerKg('7075', 'UK')).toBeGreaterThan(billetPriceGbpPerKg('6082', 'UK'));
@@ -197,7 +202,7 @@ describe('5. headless costs every part, and matches the rules', () => {
 });
 
 describe('aluminium process scrap is never credited above the billet (7-country review, 3 Nov 2026)', () => {
-  it('China: billet under LME, scrap capped at the billet price and says so', async () => {
+  it('China: scrap at its own clean 6063 level, under the billet (phase B: no longer the billet price)', async () => {
     const { buildRegionalLibrary } = await import('../src/engine/regional-rates.js');
     const { DEFAULT_RATE_LIBRARY } = await import('../src/engine/rate-library.js');
     for (const cc of ['CN', 'UK', 'DE', 'IN'] as const) {
@@ -207,6 +212,9 @@ describe('aluminium process scrap is never credited above the billet (7-country 
       }
     }
     const cn = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, 'CN').materials.find(m => m.id === 'mat-al-billet-6063')!;
-    expect(cn.sourceNote).toMatch(/capped at this billet price/);
+    // Before phase B the European differential put China's scrap above its billet and the cap credited it AT the billet.
+    expect(cn.sourceNote).not.toMatch(/capped at this billet price/);
+    expect(cn.sourceNote).toMatch(/own clean 6063 scrap level.*Mysteel.*VAT-FREE/);
+    expect(cn.scrapRecoveryPricePerKg).toBeLessThan(cn.pricePerKg - 0.05);
   });
 });

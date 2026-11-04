@@ -145,6 +145,9 @@ const GRADES: Array<[string, SheetFamily, string]> = [
   ['mat-ss301-spring', 'spring', 'EN 10151 stainless spring strip'],
 ];
 
+/** Every filed sheet grade in the taxonomy's order (family → standard → grade) — the order the sheet grade question lists. */
+export const SHEET_GRADE_ORDER: string[] = GRADES.map(g => g[0]);
+
 function familyOfCategory(category: string): SheetFamily {
   const c = category.toLowerCase();
   if (/electrical/.test(c)) return 'electrical';

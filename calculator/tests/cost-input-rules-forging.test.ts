@@ -299,7 +299,8 @@ describe('press, die and secondary ops', () => {
 
   it('heats the billet only when the route is hot', () => {
     const hot = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
-    expect((hot.suggestions.forging as Record<string, number>).heatingEnergyKwhPerKg).toBe(0.35);
+    // phase B: the in-line induction heater's own figure for steel — SMS Elotherm 500 kW ÷ 1,250 kg/h = 0.40 kWh/kg
+    expect((hot.suggestions.forging as Record<string, number>).heatingEnergyKwhPerKg).toBe(0.4);
 
     // A small high-volume CARBON-steel part whose slug fits a cold former (≤ Ø50 mm) goes cold-formed — no furnace.
     const smallPart = {

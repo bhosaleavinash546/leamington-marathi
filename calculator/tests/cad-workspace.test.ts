@@ -188,7 +188,7 @@ describe('step 3 — the cost card', () => {
     expect(traceFieldLabel('Tooling')).toBe('Tooling');
   });
   it('grade and costed weight are chips; a default grade says so', () => {
-    expect(full).toMatch(/Grade<\/span> <strong>38MnVS6 \(Microalloyed\)<\/strong> <span class="cad-answer-k">\(default\)/);
+    expect(full).toMatch(/Grade<\/span> <strong>38MnVS6 \(Microalloyed\)<\/strong> <span class="cad-answer-k">\(assumed — confirm\)/);
     expect(full).toMatch(/Weight<\/span> <strong>3\.321 kg<\/strong>/);
   });
   it('the basis leads with what moves the cost most, then the commercial basis as fields', () => {
