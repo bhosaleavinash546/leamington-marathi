@@ -510,6 +510,10 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
     check(part, `setup hr (${ch.setups}${lathe ? ' + lathe' : ''}) × 45 min`, setups * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
   } else {
     check(part, `fixtures + programming £ (${rows.length} machined rows)`, millFx + latheFx + prog, P.secondaryMachiningToolingCost, 1);
+    // the programming inside it — the module prints fixtures and programming as cast + machine's two items (Nov 2026)
+    check(part, `programming £ (${rows.length} machined rows)`, prog, P.secondaryMachiningProgrammingNRE, 0.5);
+    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx,
+      Number(P.secondaryMachiningToolingCost) - Number(P.secondaryMachiningProgrammingNRE), 0.5);
   }
 }
 

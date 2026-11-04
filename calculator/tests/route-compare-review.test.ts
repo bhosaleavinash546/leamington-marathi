@@ -111,7 +111,9 @@ describe('2. The screen on every real part: same family, the shape, the equipmen
 describe('3. The arithmetic on a row', () => {
   it('the knuckle: buckets add up on every costed row; the machining row buys 50.9 kg of plate for a 2.85 kg part; tooling investment ÷ amortisation = tooling a part', async () => {
     const cmp = await compareRoutes(input('steering_knuckle_RH.stp'), undefined);
-    expect([...new Set(cmp.rows.map(r => r.route))]).toEqual(['forging', 'casting', 'cast_and_machine', 'machining']);
+    // the casting route and cast + machine are one row per process (they cost the same scope to the penny): cast + machine
+    // carries it, named for the process (secondary-machining follow-ups, Nov 2026)
+    expect([...new Set(cmp.rows.map(r => r.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
     expect(cmp.rows[0].label).toBe('forging — closed-die forging');
     for (const r of cmp.rows) {
       expect(r.status, r.route).toBe('costed');
@@ -134,11 +136,12 @@ describe('3. The arithmetic on a row', () => {
     expect(ref.tooling!.investment).toBe(443582.83);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.434, boughtKg: 5.084 });
-    // The casting route and cast + machine now cost the same scope the same, process by process.
+    // The casting route and cast + machine now cost the same scope the same, process by process — printed once.
     for (const proc of ['sand', 'investment']) {
-      const a = cmp.rows.find(r => r.route === 'casting' && r.process === proc)!;
+      expect(cmp.rows.some(r => r.route === 'casting' && r.process === proc), proc).toBe(false);
       const b = cmp.rows.find(r => r.route === 'cast_and_machine' && r.process === proc)!;
-      expect(a.total, proc).toBe(b.total);
+      expect(b.alsoRoutes, proc).toEqual(['casting']);
+      expect(b.label).toBe(`${proc === 'sand' ? 'Sand' : 'Investment'} casting + machining`);
     }
     const mach = cmp.rows.find(r => r.route === 'machining')!;
     expect(mach.material!.netKg).toBe(2.852);
@@ -153,7 +156,7 @@ describe('3. The arithmetic on a row', () => {
       // Tooling spread over more parts: the part never gets dearer as the volume rises on these routes.
       for (let k = 1; k < r.byVolume.length; k++) expect(r.byVolume[k].total!).toBeLessThanOrEqual(r.byVolume[k - 1].total! + 0.0001);
     }
-    expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'casting', 'cast_and_machine', 'machining']);
+    expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
     // A precision STEEL forging is MPI-tested like a closed-die one (report standard review, 3 Nov 2026 — it carried
     // £32 of CT a part, £34.52 of consumables): with less steel bought it is the cheaper process at every volume.
     // Foundry at volume + catalogue machining (3 Nov 2026): sand cast + machine crosses BELOW closed-die forging inside
@@ -185,7 +188,8 @@ describe('3. The arithmetic on a row', () => {
     expect(mach.notCredible.join(' ')).toMatch(/5\.7% utilisation/);
     expect(cmp.rows.filter(r => r !== mach).every(r => r.credible)).toBe(true);
     const precision = cmp.rows.find(r => r.process === 'precision')!;
-    expect(precision.consumables.map(l => l.label)).toEqual(['descale', 'NDT', 'machining tool wear and cell consumables']);
+    // one name for the tool wear on every route (secondary-machining follow-ups, Nov 2026)
+    expect(precision.consumables.map(l => l.label)).toEqual(['descale', 'NDT', 'cutting-tool wear']);
     expect(precision.consumables.find(l => l.label === 'NDT')!.gbp).toBeLessThan(1);
   }, 60_000);
   it('a volume not on the ladder is added to it', async () => {
@@ -255,12 +259,14 @@ describe('6. Second round — processes, the independent re-add, the specificati
     expect(labels[0]).toBe('forging — closed-die forging');            // the reference names the advisor's choice
     expect(cmp.rows[0].notes.join(' ')).toMatch(/closed-die forging is the process the advisor chose/);
     expect(labels).toContain('forging — precision forging');
-    expect(labels).toContain('cast and machine — sand casting');
-    expect(labels).toContain('cast and machine — investment casting');
+    // the casting route and cast + machine cost one machining plan: one row (and one refusal) per process, named for it
+    expect(labels).toContain('Sand casting + machining');
+    expect(labels).toContain('Investment casting + machining');
     const ex = cmp.excluded.map(e => e.label);
     expect(ex).toContain('forging — cold forming');
-    expect(ex).toContain('cast and machine — high-pressure die casting');
-    expect(cmp.excluded.find(e => e.label === 'cast and machine — high-pressure die casting')!.reasons[0].measured).toMatch(/sand-moulded or investment cast in this rate book/);
+    expect(ex).toContain('High-pressure die casting + machining');
+    expect(ex.filter(l => /high-pressure die casting/i.test(l))).toHaveLength(1);
+    expect(cmp.excluded.find(e => e.label === 'High-pressure die casting + machining')!.reasons[0].measured).toMatch(/sand-moulded or investment cast in this rate book/);
     expect(cmp.excluded.find(e => e.label === 'forging — cold forming')!.reasons[0].measured).toMatch(/slug/);
     // A process the rules price with the same operations and tooling says so — the difference is yield, not process.
     const precision = cmp.rows.find(r => r.label === 'forging — precision forging')!;
@@ -321,7 +327,7 @@ describe('6. Second round — processes, the independent re-add, the specificati
     const x = routeComparisonExport(cmp, { current: 'forging', headline: cmp.rows[0].total, labels: { forging: 'Forging', cast_and_machine: 'Cast + Machine', machining: 'Machining' } });
     const html = routeCompareHtml(x, { fmt: n => `£${n.toFixed(2)}` });
     expect(html).toContain('Forging — closed-die forging');
-    expect(html).toContain('Cast + Machine — sand casting');
+    expect(html).toContain('Sand casting + machining');
     expect(html).toContain('re-add closes');
     expect(html).toContain('Specification costed');
     expect(html).toContain('Programme spend');

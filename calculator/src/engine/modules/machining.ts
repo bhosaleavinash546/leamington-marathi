@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { MACHINING_FIXTURES_LABEL, CNC_PROGRAMMING_LABEL } from '../tooling-split.js';
 
 export type MachiningOpType = 'turning' | 'milling_3ax' | 'milling_5ax' | 'drilling' | 'grinding' | 'tapping' | 'boring';
 
@@ -143,8 +144,8 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
     // Fixtures and CAM programming are one-off NRE, invoiced up front (report standard #9); the cutting tools a part
     // wears are a material consumable, not here.
     items: [
-      ...(inputs.toolingCost > 0 ? [{ label: 'Machining fixtures', gbp: inputs.toolingCost, kind: 'nre' as const }] : []),
-      ...(inputs.programmingNRE > 0 ? [{ label: 'CNC programming (NRE)', gbp: inputs.programmingNRE, kind: 'nre' as const }] : []),
+      ...(inputs.toolingCost > 0 ? [{ label: MACHINING_FIXTURES_LABEL, gbp: inputs.toolingCost, kind: 'nre' as const }] : []),
+      ...(inputs.programmingNRE > 0 ? [{ label: CNC_PROGRAMMING_LABEL, gbp: inputs.programmingNRE, kind: 'nre' as const }] : []),
     ],
   };
 

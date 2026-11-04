@@ -2,7 +2,7 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
 import { moduleEnergy } from '../module-energy.js';
-import { toolSetItems } from '../tooling-split.js';
+import { toolSetItems, machiningNreItems, CUTTING_TOOL_WEAR_LABEL } from '../tooling-split.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -26,6 +26,9 @@ export interface CastingInputs {
   secondaryMachiningOps?: OperationInput[];
   /** Fixturing + setup + CNC programming NRE for the secondary machining. */
   secondaryMachiningToolingCost?: number;
+  /** The CNC programming inside `secondaryMachiningToolingCost`, £ — the rest is fixtures; printed as cast + machine's two
+   *  items ("Machining fixtures", "CNC programming (NRE)"). Absent on a typed figure (one item that says it covers both). */
+  secondaryMachiningProgrammingNRE?: number;
   /** Cutting tools worn in the secondary machining, £/part. */
   secondaryMachiningConsumablesPerPart?: number;
   // HPDC specific
@@ -372,7 +375,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   item('shot blast', inputs.shotBlastCostPerPart ?? 0);
   item('impregnation', inputs.impregnationCostPerPart ?? 0);
   item('NDT', inputs.ndtCostPerPart ?? 0);
-  item('machining consumables', inputs.secondaryMachiningConsumablesPerPart ?? 0);
+  item(CUTTING_TOOL_WEAR_LABEL, inputs.secondaryMachiningConsumablesPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
   // the casting process. Near-net → machining TIME only; no extra material.
@@ -381,7 +384,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   }
   if (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0) {
     tooling = { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost,
-      items: [...(tooling.items ?? []), { label: 'Secondary machining fixtures and programming', gbp: inputs.secondaryMachiningToolingCost, kind: 'nre' }] };
+      items: [...(tooling.items ?? []), ...machiningNreItems(inputs.secondaryMachiningToolingCost, inputs.secondaryMachiningProgrammingNRE)] };
   }
 
   // ── Surface finishing ────────────────────────────────────────────────────

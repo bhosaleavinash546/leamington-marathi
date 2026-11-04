@@ -231,7 +231,8 @@ for (const c of CASES) {
     check('secondary machining: change-over at labour efficiency 1', setupOp?.labourEfficiency ?? NaN, 1, { abs: 0 });
     const cutMin = (P.secondaryMachiningOps as Array<any>).filter(o => !o.benchOperation && !/^Machining Setup|^Pallet change|load|clamp|unload/i.test(o.operationName))
       .reduce((s: number, o: any) => s + o.cycleTimeHr, 0) * 60;
-    check('tool wear £ (cutting min × £/min)', items.get('machining consumables') ?? 0, cutMin * perMin, { abs: 0.0005 });
+    // one name on both routes (Nov 2026): the casting route's tool wear is "cutting-tool wear", as cast + machine's
+    check('tool wear £ (cutting min × £/min)', items.get('cutting-tool wear') ?? 0, cutMin * perMin, { abs: 0.0005 });
   }
 
   // ── 6. Tooling: the sand pattern build-up, sets over the programme, amortisation ──
@@ -260,11 +261,21 @@ for (const c of CASES) {
   check('first pattern set £ (up front)', patternItems.find(i => i.kind === 'initial')?.gbp ?? NaN, pattern, { abs: 0.5 });
   const machTooling = cam ? Number(P.machiningToolingCost) + Number(P.machiningProgrammingNRE) : Number(P.secondaryMachiningToolingCost ?? 0);
   const toolingTotal = sets * pattern + machTooling;
+  // The machining NRE under one set of names on both routes (Nov 2026): fixtures and programming, each its own NRE item.
+  const machItems = (T.drivers.tooling.items as Array<{ label: string; gbp: number; kind?: string }>).filter(i => !/^Pattern/.test(i.label));
+  const fixtures = cam ? Number(P.machiningToolingCost) : machTooling - Number(P.secondaryMachiningProgrammingNRE ?? 0);
+  const programming = cam ? Number(P.machiningProgrammingNRE) : Number(P.secondaryMachiningProgrammingNRE ?? 0);
+  const namesGot = machItems.map(i => `${i.label}/${i.kind}`).join(' + ');
+  const namesWant = [...(fixtures > 0 ? ['Machining fixtures/nre'] : []), ...(programming > 0 ? ['CNC programming (NRE)/nre'] : [])].join(' + ');
+  if (namesGot !== namesWant) console.log(`  machining NRE items: product «${namesGot}» shadow «${namesWant}»`);
+  check('machining NRE items named as cast + machine names them (1 = same)', namesGot === namesWant ? 1 : 0, 1, { abs: 0 });
+  check('machining fixtures £', machItems.find(i => i.label === 'Machining fixtures')?.gbp ?? 0, fixtures, { abs: 0.005 });
+  check('CNC programming £', machItems.find(i => i.label === 'CNC programming (NRE)')?.gbp ?? 0, programming, { abs: 0.005 });
   check('tooling £ / part (total ÷ annual × years)', res.breakdown.tooling, toolingTotal / AMORT, { abs: 0.00005 });
 
   // ── 7. The eight buckets ──
   const consumables = (items.get('cores') ?? 0) + (items.get('green-sand additions') ?? 0) + (items.get('heat treatment') ?? 0)
-    + (items.get('shot blast') ?? 0) + (items.get('NDT') ?? 0) + (items.get('cutting-tool wear') ?? 0) + (items.get('machining consumables') ?? 0);
+    + (items.get('shot blast') ?? 0) + (items.get('NDT') ?? 0) + (items.get('cutting-tool wear') ?? 0);
   const matB = metalGbp + energyGbp + consumables;
   const procB = mould.processCost + (onCell ? fettle.processCost : 0) + machProc;
   const labB = mould.labourCost + fettle.labourCost + meltOp.labourCost + machLab;

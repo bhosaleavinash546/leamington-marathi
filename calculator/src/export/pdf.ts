@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import { utilisationReference, bandText } from '../engine/suggestion-facts.js';
 import autoTable from 'jspdf-autotable';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
-import { shortOperationName } from '../engine/operation-names.js';
+import { shortOperationName, chargedFixturings } from '../engine/operation-names.js';
 import { reportNoteText, directMaterialBasis } from './money-text.js';
 import { coverWarningText, decisionAnswerLabel } from './decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
@@ -1135,10 +1135,9 @@ export function renderShouldCostSections(
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
   y = renderChecksApplied(doc, y, cadMeta.checks, { fx: fxRate, sym }, library.materials);
-  const fixturings = (() => {
-    const m = input.operations.map(o => /Load \/ clamp \/ unload\s*[—-]\s*(\d+) fixturing/i.exec(o.operationName)).find(Boolean);
-    return m ? Number(m[1]) : null;
-  })();
+  // the routing's fixturings, off its load / clamp / unload OR its pallet change (a twin-pallet cell has no load op — the
+  // near-net plan of a casting or forging is on that cell, and the setups finding lost its "in this costing" line)
+  const fixturings = chargedFixturings(input.operations.map(o => o.operationName));
   y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted, cadMeta.geometricDFMPending, fixturings);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 

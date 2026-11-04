@@ -170,8 +170,10 @@ describe('the core report model', () => {
     expect(scope.lines[0]).toContain(`about £${allIn.toFixed(2)} a part all-in`);
     expect(scope.lines[0]).toContain(`(£${Math.round(allIn * 200_000).toLocaleString('en-GB')} a year)`);
     expect(scope.lines[0]).toMatch(/feature-machining table \(standard minutes a feature/);
-    // the costing's own drilling is 12 holes in 7.97 min — 0.66 min each against the table's 6 min: said so
-    expect(scope.lines[1]).toMatch(/The two time models differ: the costing's own machining build-up prices its 12 features at 0\.66 min each/);
+    // like for like (secondary-machining follow-ups, Nov 2026): the rows the costing machines — here the 2 holes the table
+    // costs at 1 min — take 11.71 min in its own cutting operations (+Y face 3.74 + drilling 7.97): said so, with both
+    // figures and the ratio, never minutes a feature of one kind set against another kind's
+    expect(scope.lines[1]).toMatch(/The two time models differ on the same features: the 2 feature instance\(s\) this costing machines take 11\.71 min in its own machining build-up and 1\.00 min in the feature table \(× 11\.71\)/);
     expect(scope.lines.join(' ')).not.toMatch(/…/);
     const turned = buildCoreReport({ result: castRes, input: cast, library: lib, commodity: 'cast_and_machine', region: 'UK', cadMeta: { ...meta, featureTurningOp: 'Turning — spindle' } as never });
     expect(turned.alerts.some(a => a.kind === 'scope')).toBe(false);

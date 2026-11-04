@@ -150,8 +150,13 @@ export interface RouteRow {
   route: string;
   /** The casting or forging process this row is costed by, when the route has more than one. */
   process: string | null;
-  /** The row's name: the route, with its process when it has one. */
+  /** The row's name: the route, with its process when it has one ("Sand casting + machining" on a folded row). */
   label: string;
+  /**
+   * Routes folded into this row because they cost the same part to the penny with the same operations — the casting
+   * route and cast + machine price one near-net machining plan since Nov 2026 (`foldSameScopeRows`). Absent otherwise.
+   */
+  alsoRoutes?: string[];
   /** The route costed — a stamping the rules price cheaper as laser + brake comes back as sheet_metal_fab. */
   commodity: string | null;
   status: BulkPartResult['status'];
@@ -218,8 +223,9 @@ export interface RouteCrossover {
 export interface RouteComparison {
   principle: string;
   rows: RouteRow[];
-  /** Routes (and processes) the screen refused, each with the checks it failed. */
-  excluded: Array<{ route: string; process: string | null; label: string; reasons: FeasibilityCheck[] }>;
+  /** Routes (and processes) the screen refused, each with the checks it failed. A process refused alike on the casting
+   *  route and cast + machine is one entry (`alsoRoutes`), as its costed rows are. */
+  excluded: Array<{ route: string; process: string | null; label: string; reasons: FeasibilityCheck[]; alsoRoutes?: string[] }>;
   ladder: number[];
   crossovers: RouteCrossover[];
   /** The costing's volume and programme life the programme view is built on. */
@@ -823,13 +829,93 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
     if (!twin) return true;
     twin.notes.push(`${row.route.replace(/_/g, ' ')} was also priced: the rules choose this route at this volume`);
     return false;
-  }).slice(0, MAX_COSTED_ROUTES);
+  });
+  // The casting route and cast + machine cost one near-net machining plan (secondary-machining parity, Nov 2026): the same
+  // process on both is the same costing, printed once — before the cap, so the cap keeps distinct routes.
+  const folded = foldSameScopeRows(kept, ref).slice(0, MAX_COSTED_ROUTES);
 
   return {
-    principle: COMPARISON_PRINCIPLE, rows: kept, excluded, ladder,
-    crossovers: crossovers(kept, ref, ladder, i.annualVolume),
+    principle: COMPARISON_PRINCIPLE, rows: folded, excluded: foldSameScopeExcluded(excluded), ladder,
+    crossovers: crossovers(folded, ref, ladder, i.annualVolume),
     programme: { annualVolume: i.annualVolume, years, yearsAssumed },
   };
+}
+
+/**
+ * Route pairs that price the same finished scope with ONE machining plan: the casting route's secondary machining is cast +
+ * machine's near-net plan (cost-input-rules/secondary-machining.ts, Nov 2026), so the same process on both routes is the
+ * same costing — the knuckle printed sand £13.2883 and investment £74.7197 twice.
+ */
+export const SAME_SCOPE_ROUTES: ReadonlyArray<readonly [string, string]> = [['casting', 'cast_and_machine']];
+
+const sameMoney = (a: number | null | undefined, b: number | null | undefined) =>
+  a == null || b == null ? a == null && b == null : Math.abs(a - b) < CLOSE_GBP;
+
+/**
+ * Two costed rows are the same costing: the total and every bucket to the penny, the same operations (name, £ process and
+ * £ labour each), the same tooling investment and the same figure at every ladder volume. Anything else keeps both rows.
+ */
+export function sameCosting(a: RouteRow, b: RouteRow): boolean {
+  if (a.status !== 'costed' || b.status !== 'costed' || a.total == null || b.total == null) return false;
+  if (!sameMoney(a.total, b.total) || !a.breakdown || !b.breakdown) return false;
+  const keys = new Set([...Object.keys(a.breakdown), ...Object.keys(b.breakdown)]);
+  for (const k of keys) if (!sameMoney(a.breakdown[k] ?? 0, b.breakdown[k] ?? 0)) return false;
+  const oa = a.operations ?? [], ob = b.operations ?? [];
+  if (!oa.length || oa.length !== ob.length) return false;
+  if (!oa.every((op, k) => op.name === ob[k].name && sameMoney(op.processCost, ob[k].processCost) && sameMoney(op.labourCost, ob[k].labourCost))) return false;
+  if (!sameMoney(a.tooling?.investment ?? null, b.tooling?.investment ?? null)) return false;
+  if (a.byVolume.length !== b.byVolume.length) return false;
+  return a.byVolume.every((p, k) => p.volume === b.byVolume[k].volume && sameMoney(p.total, b.byVolume[k].total));
+}
+
+/**
+ * One row per process where two routes cost the same scope (`SAME_SCOPE_ROUTES`) — only when the two rows are the same
+ * costing (`sameCosting`); otherwise both are kept. The costing's own row survives when it is one of the pair (it stays
+ * the reference and equals the headline); else the pair's second route (cast + machine). The survivor is named for what
+ * it is ("Sand casting + machining"), lists the route folded into it (`alsoRoutes`) and says so in its notes. Crossovers,
+ * the ladder and the bands are then read off the folded rows.
+ */
+export function foldSameScopeRows(rows: RouteRow[], ref: RouteRow): RouteRow[] {
+  const drop = new Set<RouteRow>();
+  for (const [ra, rb] of SAME_SCOPE_ROUTES) {
+    for (const a of rows) {
+      if (drop.has(a) || a.route !== ra || !a.process) continue;
+      const b = rows.find(o => !drop.has(o) && o.route === rb && o.process === a.process);
+      if (!b || !sameCosting(a, b)) continue;
+      // the costing's own row stays (the reference); else the second route of the pair — cast + machine, whose form
+      // carries the machining half, so "Cost this route" opens the costing that shows it
+      const [keep, gone] = a === ref ? [a, b] : [b, a];
+      const proc = CASTING_PROCESS_LABEL[a.process] ?? a.process;
+      keep.label = `${proc.charAt(0).toUpperCase()}${proc.slice(1)} + machining`;
+      keep.alsoRoutes = [...(keep.alsoRoutes ?? []), gone.route];
+      keep.notes.push(`the ${ra.replace(/_/g, ' ')} and ${rb.replace(/_/g, ' ')} routes cost this process the same to the penny, with the same `
+        + `operations (one near-net machining plan) — printed once`);
+      drop.add(gone);
+    }
+  }
+  return rows.filter(r => !drop.has(r));
+}
+
+/**
+ * The refused processes the same way: a process refused on the casting route and on cast + machine for the same reasons
+ * (the advisor's own process rule reads the alloy and the section, not the route) is one entry named for the process —
+ * "High-pressure die casting + machining" — instead of the same refusal twice.
+ */
+export function foldSameScopeExcluded(excluded: RouteComparison['excluded']): RouteComparison['excluded'] {
+  const key = (e: RouteComparison['excluded'][number]) => JSON.stringify(e.reasons.map(r => [r.id, r.measured, r.limit, r.source]));
+  const drop = new Set<RouteComparison['excluded'][number]>();
+  for (const [ra, rb] of SAME_SCOPE_ROUTES) {
+    for (const a of excluded) {
+      if (drop.has(a) || a.route !== ra || !a.process) continue;
+      const b = excluded.find(o => !drop.has(o) && o.route === rb && o.process === a.process);
+      if (!b || key(a) !== key(b)) continue;
+      const proc = CASTING_PROCESS_LABEL[a.process] ?? a.process;
+      b.label = `${proc.charAt(0).toUpperCase()}${proc.slice(1)} + machining`;
+      b.alsoRoutes = [...(b.alsoRoutes ?? []), ra];
+      drop.add(a);
+    }
+  }
+  return excluded.filter(e => !drop.has(e));
 }
 
 /**

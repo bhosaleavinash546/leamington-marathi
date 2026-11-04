@@ -2,6 +2,7 @@ import type { CommodityDrivers, OperationInput, ToolingInput } from '../types.js
 import type { CastingSubtype, CastingInputs } from './casting.js';
 import type { MachiningOperation } from './machining.js';
 import { computeCastingDrivers } from './casting.js';
+import { MACHINING_FIXTURES_LABEL, CNC_PROGRAMMING_LABEL, CUTTING_TOOL_WEAR_LABEL } from '../tooling-split.js';
 import type { CommodityFinishingInput } from './surface-finishing.js';
 
 export interface CastAndMachineInputs {
@@ -139,8 +140,8 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   const combinedTooling: ToolingInput = {
     items: [
       ...(castDrivers.tooling.items ?? []),
-      ...(inputs.machiningToolingCost > 0 ? [{ label: 'Machining fixtures', gbp: inputs.machiningToolingCost, kind: 'nre' as const }] : []),
-      ...(inputs.machiningProgrammingNRE > 0 ? [{ label: 'CNC programming (NRE)', gbp: inputs.machiningProgrammingNRE, kind: 'nre' as const }] : []),
+      ...(inputs.machiningToolingCost > 0 ? [{ label: MACHINING_FIXTURES_LABEL, gbp: inputs.machiningToolingCost, kind: 'nre' as const }] : []),
+      ...(inputs.machiningProgrammingNRE > 0 ? [{ label: CNC_PROGRAMMING_LABEL, gbp: inputs.machiningProgrammingNRE, kind: 'nre' as const }] : []),
     ],
     totalToolingCost: castDrivers.tooling.totalToolingCost + inputs.machiningToolingCost + inputs.machiningProgrammingNRE,
     amortizationVolume: inputs.amortizationVolume,
@@ -164,7 +165,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     ['impregnation', inputs.impregnationCostPerPart ?? 0],
     ['deburring', inputs.deburringCostPerPart ?? 0],
     ['NDT', inputs.ndtCostPerPart ?? 0],
-    ['cutting-tool wear', inputs.machiningToolWearCostPerPart ?? 0],
+    [CUTTING_TOOL_WEAR_LABEL, inputs.machiningToolWearCostPerPart ?? 0],
   ] as Array<[string, number]>).filter(([, g]) => g > 0).map(([label, gbp]) => ({ label, gbp }));
   const finalRawMaterial = postCastCost > 0
     ? {

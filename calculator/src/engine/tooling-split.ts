@@ -77,3 +77,35 @@ export function toolingSplit(t: Pick<ToolingInput, 'totalToolingCost' | 'items'>
   if (Math.abs(gap) > 0.005) s.unclassified += gap;
   return { ...s, upFront: s.initial + s.nre + s.unclassified, running: s.replacement + s.perishable, total };
 }
+
+// ─── The machining half of a cast or forged part: one set of names on every route ──────────────────────────────────────
+// The casting and forging routes cost their secondary machining on cast + machine's near-net plan (secondary-machining.ts,
+// Nov 2026), so they carry the SAME items under the SAME names: the casting / forging tooling printed one "Secondary
+// machining fixtures and programming" item and "machining consumables" / "machining tool wear and cell consumables"
+// beside cast + machine's "Machining fixtures", "CNC programming (NRE)" and "cutting-tool wear" for one figure.
+
+/** The fixtures the machining routing needs (tombstone / dedicated / lathe fixtures) — an NRE item. */
+export const MACHINING_FIXTURES_LABEL = 'Machining fixtures';
+/** CAM programming and prove-out of the machined rows — an NRE item. */
+export const CNC_PROGRAMMING_LABEL = 'CNC programming (NRE)';
+/** A typed figure that covers both (a quotation): it cannot be split, and says what it covers. */
+export const MACHINING_FIXTURES_AND_PROGRAMMING_TYPED_LABEL = 'Machining fixtures and CNC programming (NRE), as typed';
+/** Cutting tools worn by the machining, £ a part — a consumable in material. */
+export const CUTTING_TOOL_WEAR_LABEL = 'cutting-tool wear';
+
+/**
+ * The machining NRE items of a cast or forged part: fixtures and programming, each its own `nre` item, adding up to
+ * `totalGbp` exactly (fixtures = total − programming). With no programming figure (a typed quotation of both, or a
+ * programming figure outside 0..total) it is one item that says it covers both. Nothing is re-priced.
+ */
+export function machiningNreItems(totalGbp: number, programmingGbp?: number | null): ToolingItem[] {
+  if (!(totalGbp > 0)) return [];
+  if (programmingGbp == null || !(programmingGbp >= 0) || programmingGbp > totalGbp) {
+    return [{ label: MACHINING_FIXTURES_AND_PROGRAMMING_TYPED_LABEL, gbp: totalGbp, kind: 'nre' }];
+  }
+  const fixtures = totalGbp - programmingGbp;
+  return [
+    ...(fixtures > 0 ? [{ label: MACHINING_FIXTURES_LABEL, gbp: fixtures, kind: 'nre' as const }] : []),
+    ...(programmingGbp > 0 ? [{ label: CNC_PROGRAMMING_LABEL, gbp: programmingGbp, kind: 'nre' as const }] : []),
+  ];
+}

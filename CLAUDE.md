@@ -967,6 +967,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   autoclave alert. `reference-part.test.ts` keeps its TYPED cycle times (it pins stack arithmetic). `country-book.ts`
   accepts a machine added after its register snapshot. Effect at 200k / 5 yr UK EXW: stub axle £41.24 → £24.18, casting
   bracket £19.42 → £9.18, other machined parts −25 to −37 % — still to be confirmed against a supplier cycle sheet / PO.
+  Secondary machining (4 Nov 2026): casting and forging routes machine through the SAME near-net plan as cast + machine
+  (`cost-input-rules/secondary-machining.ts::nearNetSecondaryMachining`, headless and screen) — as-cast / as-forged weight
+  carries the machining stock (`asCastWeight`), deburr counts MACHINED faces (`machinedFaceCount`), programming the machined
+  rows, tooling / consumable names are one set (`tooling-split.ts`). Route compare folds a casting and a cast + machine row
+  that are the same costing to the penny into one row (`foldSameScopeRows`, `alsoRoutes`); page 1's machining half counts
+  only machining / lathe machines (`isMachiningOp` — fettling and blast stay in the casting half).
+  `tests/secondary-machining-parity.test.ts`, `tests/secondary-machining-followups.test.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

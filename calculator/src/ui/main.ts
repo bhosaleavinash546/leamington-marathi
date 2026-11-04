@@ -10871,6 +10871,8 @@ function populateMachinedFeatures(prefix: string): void {
 
 /** Read the panel and build secondary machining ops (null if none active). */
 function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; toolWearPerPart: number; result: ReturnType<typeof computeFeatureMachining>;
+  /** The CNC programming inside `toolingCost` when it is the plan's own (the module prints fixtures and programming as
+   *  cast + machine's two items); absent on a typed figure. */ programmingNRE?: number;
   /** Near-net: the rows the plan machines — the casting pours their stock (as cast). */ rows?: FeatureRow[] } | null {
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
   if (!rows.length) return null;
@@ -10925,7 +10927,8 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
     if (machSel && machineAuto) machSel.value = resolveMachineIdForOp(sec.machineId, 'CNC Milling');
     // A typed figure replaces the derived fixtures + programming; 0 keeps them.
     const typed = num(`${prefix}-mf-tooling`);
-    return { ops: sec.operations, toolingCost: typed > 0 ? typed : sec.toolingGBP, toolWearPerPart: sec.toolWearPerPart, result: sec.result, rows: sec.rows };
+    return { ops: sec.operations, toolingCost: typed > 0 ? typed : sec.toolingGBP, ...(typed > 0 ? {} : { programmingNRE: sec.programmingGBP }),
+      toolWearPerPart: sec.toolWearPerPart, result: sec.result, rows: sec.rows };
   }
   const cut = computeFeatureMachining(rows, base);
   if (cut.featureCount === 0) return null;
@@ -13254,6 +13257,7 @@ function collectCastingInput(): UniversalStackInput {
     ...common, ...extra,
     secondaryMachiningOps: secondary?.ops,
     secondaryMachiningToolingCost: secondary?.toolingCost,
+    ...(secondary?.programmingNRE != null ? { secondaryMachiningProgrammingNRE: secondary.programmingNRE } : {}),
     secondaryMachiningConsumablesPerPart: secondary?.toolWearPerPart || undefined,
     ...(surfaceFinishing ? { surfaceFinishing } : {}),
     // Melt at the selected region's tariff, as forging heats at it.
@@ -13331,6 +13335,7 @@ function collectForgingInput(): UniversalStackInput {
     amortizationVolume: num('forge-amort') || num('annual-volume') || 100000,
     secondaryMachiningOps: forgeSecondary?.ops,
     secondaryMachiningToolingCost: forgeSecondary?.toolingCost,
+    ...(forgeSecondary?.programmingNRE != null ? { secondaryMachiningProgrammingNRE: forgeSecondary.programmingNRE } : {}),
     secondaryMachiningConsumablesPerPart: forgeSecondary?.toolWearPerPart || undefined,
     heatTreatCostPerKg: num('forge-ht-cost') || undefined,
     descaleCostPerKg: num('forge-descale') || undefined,

@@ -344,7 +344,10 @@ export function routeReferenceRow(x: Pick<RouteComparisonExport, 'rows' | 'curre
 }
 
 /** A row's name on screen and in the reports: the route's label, with its process when the route has several. */
-export function routeRowLabel(r: Pick<RouteCompareRow, 'route' | 'process' | 'label'>, labels: Record<string, string>): string {
+export function routeRowLabel(r: Pick<RouteCompareRow, 'route' | 'process' | 'label' | 'alsoRoutes'>, labels: Record<string, string>): string {
+  // A row two routes share (casting and cast + machine cost one machining plan) is named for the process: "Sand casting +
+  // machining" — never one route's label over the other's.
+  if (r.alsoRoutes?.length) return r.label;
   const base = labels[r.route] ?? r.route.replace(/_/g, ' ');
   const proc = r.process ? r.label.split(' — ')[1] : null;
   return proc ? `${base} — ${proc}` : base;

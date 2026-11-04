@@ -16,7 +16,7 @@ import { runSensitivity } from '../engine/sensitivity.js';
 import { confidenceWhy } from '../engine/uncertainty.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
-import { shortOperationName } from '../engine/operation-names.js';
+import { shortOperationName, isFeatureCutOperation } from '../engine/operation-names.js';
 import { traceFieldLabel } from '../ui/cad-workspace.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import { REGIONAL_DATA, regionalShopDefaults, deliveryTermsLine, computeRegionalComparison, alBilletMaterialFactors,
@@ -520,7 +520,9 @@ function attributeRule(key: string, c: ReturnType<typeof costLinesOf>): CostLine
   if (/trim/i.test(key)) return nonEmpty(opsAll(/trim|router|waterjet/i));
   if (/lay[\s-]?up/i.test(key)) return nonEmpty(opsAll(/lay[\s-]?up/i));
   if (/cure[\s-]?time/i.test(key)) return nonEmpty(opsAll(/cure|autoclave|oven/i));
-  if (/set[\s-]?up[\s-]?time|setup[\s-]?hr|die[\s-]?chg|change[\s-]?over/i.test(key)) return nonEmpty(opsAll(/set-?up|change/i));
+  // the set-up / change-over operation ("Machining Setup (amortised)", "Machining change-over, amortised", a die or mould
+  // change) — not the twin-pallet cell's "Pallet change", which the pallet-change time drives, not the set-up time
+  if (/set[\s-]?up[\s-]?time|setup[\s-]?hr|die[\s-]?chg|change[\s-]?over/i.test(key)) return nonEmpty(opsAll(/set-?up|change/i).filter(l => !/^pallet change/i.test(l.label)));
   if (/fixture|mach[\s-]?tooling/i.test(key)) return nonEmpty(tools(['fixture']));
   if (/\bprog(ramming)?\b|prog[\s-]?nre|-prog/i.test(key)) return nonEmpty(tools(['programming']));
   // a tool's LIFE drives how many replacement sets are bought; its PRICE drives every set
@@ -745,11 +747,16 @@ function usedFor(d: DecisionForUsed, input: UniversalStackInput, rvs: NonNullabl
   return decisionUsedValue(d, { costedItems, ruleValues: rvs });
 }
 
-/** Machining inside a cast + machine or forge + machine costing: the machine is a cutting machine, or a bench deburr / gauge. */
+/**
+ * Machining inside a cast + machine or forge + machine costing: the machine is a cutting machine (the library's `mach-`
+ * machines, or a class that says machining centre / lathe), or a bench deburr / gauge. The class test read "machin" and
+ * "grind" anywhere: "Gravity Die Casting Machine", "Shot Blast Machine" and the "Robotic fettling / grinding cell" were
+ * counted as machining, and page 1 put the casting route's robotic fettling (£0.44 on the bracket) in the machining half.
+ */
 function isMachiningOp(o: { operationName: string; machineId: string; benchOperation?: boolean }, library: RateLibrary): boolean {
   if (o.benchOperation) return /deburr|gauge|machin/i.test(o.operationName);
   const m = library.machines.find(x => x.id === o.machineId);
-  return /^mach-/.test(o.machineId) || /machin|lathe|turning|\bmill|drill|grind/i.test(m?.machineClass ?? '');
+  return /^mach-/.test(o.machineId) || /\bmachining\b|\blathe\b/i.test(m?.machineClass ?? '');
 }
 
 export function buildCoreReport(a: CoreReportArgs): CoreReport {
@@ -1154,20 +1161,27 @@ function uncostedScopeAlert(not: FeatureMachiningLine[], meta: CoreReportMeta, r
   }
   const direct = (min / 60) * perHr;
   const allIn = direct * omFactor;
-  // the per-feature time of the costed machining (an operation named "… N features / holes / bores")
-  let costedMin = 0, costedN = 0;
-  for (const o of machOps) {
-    const k = /(\d+)\s+(?:features?|holes?|cored bores?|bores?)\b/i.exec(o.operationName);
-    if (k) { costedMin += o.cycleTimeHr * 60; costedN += Number(k[1]); }
-  }
+  // Do the two time models agree? Compared LIKE FOR LIKE (secondary-machining parity, Nov 2026): the costing's own minutes
+  // for the rows it machines — its operations that cut features (`isFeatureCutOperation`: the change-over, handling,
+  // spindle turning and bench excluded) — against the feature table's minutes for the SAME rows (the lines it costs). It
+  // compared minutes a feature only on operations named "N features / holes / bores": on the near-net plan ("Finish
+  // machining — +X side", "Drilling — 8 holes", "Finish boring — 4 cored bore(s)") the faces dropped out, and the
+  // knuckle's 12 holes and bores (0.27 min each) were set against its uncosted pockets (0.83 min each) as "two time
+  // models" — one catalogue, different features. No costed row, or no minutes on either side: no comparison is printed.
+  const costedLines = (meta.featureLines ?? []).filter(l => l.included);
+  const costedN = costedLines.reduce((s, l) => s + l.count, 0);
+  const tableMin = costedLines.reduce((s, l) => s + l.totalMinutes, 0);
+  const costingMin = machOps.filter(o => isFeatureCutOperation(o.operationName))
+    .reduce((s, o) => s + o.cycleTimeHr * 60 / Math.max(1, o.partsPerCycle || 1), 0);
+  const ratio = costedN > 0 && tableMin > 0 && costingMin > 0 ? costingMin / tableMin : null;
+  const differs = ratio != null && (ratio > 1.5 || ratio < 1 / 1.5);
   const per = n > 0 ? min / n : 0;
-  const perCosted = costedN > 0 ? costedMin / costedN : null;
-  const differs = perCosted != null && per > 0 && (per / perCosted > 1.5 || perCosted / per > 1.5);
   const lines = [
     `${n} feature instance(s), ${min.toFixed(1)} min from the feature-machining table (standard minutes a feature, ${per.toFixed(2)} min each) `
       + `${how}, × overhead and margin ${omFactor.toFixed(4)}: about ${M(allIn)} a part all-in${annual ? ` (${MW(allIn * annual)} a year)` : ''}. Confirm which are machined before using this price.`,
-    ...(differs ? [`The two time models differ: the costing's own machining build-up prices its ${costedN} features at ${perCosted!.toFixed(2)} min each, `
-      + `the feature table these at ${per.toFixed(2)} min each — at the costing's minutes they would add about ${M(costedN ? (n * perCosted! / 60) * perHr * omFactor : 0)} a part.`] : []),
+    ...(differs ? [`The two time models differ on the same features: the ${costedN} feature instance(s) this costing machines take `
+      + `${costingMin.toFixed(2)} min in its own machining build-up and ${tableMin.toFixed(2)} min in the feature table (× ${ratio!.toFixed(2)}) — `
+      + `at that ratio these would take about ${(min * ratio!).toFixed(1)} min and add about ${M((min * ratio! / 60) * perHr * omFactor)} a part.`] : []),
     `Features: ${not.map(l => `${l.count}× ${l.kind}${l.diaMm ? ` Ø${l.diaMm.toFixed(1)}` : ''}`).join(', ')}.`,
   ];
   return { kind: 'scope', title: `Uncosted scope: ${n} machinable feature${n === 1 ? '' : 's'} detected and NOT in this price`, lines };

@@ -446,6 +446,8 @@ export function toCostParams(
         // Fixtures + programming and tool wear, from the same plan the screen
         // prices (forging review, Oct 2026 — this used to be "not derived, 0").
         params.secondaryMachiningToolingCost = sec.toolingGBP;
+        // the programming inside it: the module prints fixtures and programming as cast + machine's two items
+        params.secondaryMachiningProgrammingNRE = sec.programmingGBP;
         params.secondaryMachiningConsumablesPerPart = sec.toolWearPerPart;
         // A machined casting is poured, heat-treated and blasted AS CAST — finished + drilled-hole stock + machining stock
         // on the rows it machines — as cast + machine pours it (secondary-machining parity, Nov 2026: it poured the
@@ -634,6 +636,8 @@ export function toCostParams(
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
         params.secondaryMachiningToolingCost = sec.toolingGBP;
+        // the programming inside it: the module prints fixtures and programming as cast + machine's two items
+        params.secondaryMachiningProgrammingNRE = sec.programmingGBP;
         params.secondaryMachiningConsumablesPerPart = sec.toolWearPerPart;
       }
       return { commodity, params, assumed };

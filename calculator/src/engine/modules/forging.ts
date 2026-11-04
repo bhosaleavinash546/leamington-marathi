@@ -2,7 +2,7 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
 import { moduleEnergy, FURNACE_FUEL } from '../module-energy.js';
-import { toolSetItems } from '../tooling-split.js';
+import { toolSetItems, machiningNreItems, CUTTING_TOOL_WEAR_LABEL } from '../tooling-split.js';
 
 export interface ForgingInputs {
   materialId: string;
@@ -56,6 +56,9 @@ export interface ForgingInputs {
   secondaryMachiningOps?: OperationInput[];
   /** Fixturing + setup + CNC programming NRE for the secondary machining. */
   secondaryMachiningToolingCost?: number;
+  /** The CNC programming inside `secondaryMachiningToolingCost`, £ — the rest is fixtures; printed as cast + machine's two
+   *  items ("Machining fixtures", "CNC programming (NRE)"). Absent on a typed figure (one item that says it covers both). */
+  secondaryMachiningProgrammingNRE?: number;
 }
 
 export function getForgingInputSchema(): Record<string, string> {
@@ -233,7 +236,7 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   }
   const finalTooling: ToolingInput = (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0)
     ? { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost,
-        items: [...(tooling.items ?? []), { label: 'Secondary machining fixtures and programming', gbp: inputs.secondaryMachiningToolingCost, kind: 'nre' }] }
+        items: [...(tooling.items ?? []), ...machiningNreItems(inputs.secondaryMachiningToolingCost, inputs.secondaryMachiningProgrammingNRE)] }
     : tooling;
 
   // ── Surface finishing ────────────────────────────────────────────────────
@@ -267,7 +270,7 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   const consumablesItems = ([
     ['billet heating (typed tariff)', heatingCostPerPart], ['heat treatment', heatTreatCostPerPart], ['descale', descaleCostPerPart],
     ['coining', coiningCostPerPart], ['NDT', ndtCostPerPart],
-    ['machining tool wear and cell consumables', inputs.secondaryMachiningConsumablesPerPart ?? 0],
+    [CUTTING_TOOL_WEAR_LABEL, inputs.secondaryMachiningConsumablesPerPart ?? 0],
     ['surface finishing consumables', finishing?.consumablesPerPart ?? 0],
   ] as Array<[string, number]>).filter(([, v]) => v > 0).map(([label, gbp]) => ({ label, gbp }));
 
