@@ -63,6 +63,58 @@ export function programmeLifeLine(years: number | null, annual: number,
   return `Tooling is spread over ${years} year${years === 1 ? '' : 's'} × ${annual.toLocaleString('en-GB')} = ${parts.toLocaleString('en-GB')} parts.`;
 }
 
+/**
+ * A typed-value question that also offers choices (gear helix: "Spur — 0°" suggested, "Helical — enter β"; ISO 1328
+ * class: 6 / 7 suggested / 8 / 9). The screen drew a lone text box labelled with the FIRST option ("Class 6 — ground")
+ * and an empty value, so the suggestion (class 7) was never shown and the engineer had to type 0 and 7 (CAD to COST
+ * fresh review, Nov 2026). It is drawn like every other question — the options as radios, the suggestion ticked with
+ * its reason — plus a box for a value that is not on the list.
+ */
+export interface EntryChoiceDecision {
+  id: string;
+  question: string;
+  options: ReadonlyArray<{ value: string; label: string; consequence?: string; leaning?: boolean; costed?: boolean }>;
+  entry: { kind: 'number' | 'text'; unit?: string; placeholder?: string };
+}
+
+/** An option that IS an answer (a number on a number question); "Helical — enter β" only opens the box. */
+export function isDirectEntryOption(d: EntryChoiceDecision, value: string): boolean {
+  return d.entry.kind !== 'number' || (String(value).trim() !== '' && Number.isFinite(Number(value)));
+}
+
+/** The answer the question holds: a typed value wins, else a ticked option that is an answer itself, else none. */
+export function entryChoiceValue(d: EntryChoiceDecision, checked: string | null | undefined, typed: string | null | undefined): string | null {
+  const t = String(typed ?? '').trim();
+  if (t) return t;
+  const c = String(checked ?? '').trim();
+  return c && isDirectEntryOption(d, c) ? c : null;
+}
+
+/** Radios (the suggestion ticked unless answered otherwise) and a box for any other value. `text` localises consequences. */
+export function entryChoiceHtml(d: EntryChoiceDecision, answer: unknown, text: (s: string) => string = s => s): string {
+  const a = answer === undefined || answer === null ? '' : String(answer).trim();
+  const onList = d.options.some(o => isDirectEntryOption(d, o.value) && o.value === a);
+  const typedValue = a && !onList ? a : '';
+  const ticked = (o: EntryChoiceDecision['options'][number]) => (a ? (onList ? o.value === a : !isDirectEntryOption(d, o.value)) : !!o.leaning);
+  const radios = d.options.map(o => `
+        <label class="cad-entry-opt" style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
+          <input type="radio" name="dec-${esc(d.id)}" value="${esc(o.value)}"${ticked(o) ? ' checked' : ''}${isDirectEntryOption(d, o.value) ? '' : ' data-entry-opens="1"'} style="margin-top:2px"/>
+          <span>
+            <span style="font-weight:600;color:var(--text-primary)">${esc(o.label)}</span>
+            ${o.consequence ? `<span style="color:var(--text-muted)"> &mdash; ${esc(text(o.consequence))}</span>` : ''}
+            ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above)</span>' : ''}
+          </span>
+        </label>`).join('');
+  return `<div class="cad-entry-choice" role="radiogroup" aria-label="${esc(d.question)}">${radios}
+        <label style="display:flex;align-items:center;gap:7px;font-size:0.72rem;margin-top:4px">
+          <span style="color:var(--text-secondary)">Or type the value off the drawing</span>
+          <input type="${d.entry.kind === 'number' ? 'number' : 'text'}" data-decision-entry="1" value="${esc(typedValue)}"
+                 placeholder="${esc(d.entry.placeholder ?? '')}" aria-label="${esc(d.question)} — a value not listed" style="width:170px;padding:3px 6px;font-size:0.72rem"/>
+          ${d.entry.unit ? `<span style="color:var(--text-muted)">${esc(d.entry.unit)}</span>` : ''}
+        </label>
+      </div>`;
+}
+
 /** Short names for the answer chips. */
 const ANSWER_NAMES: Record<string, string> = {
   'commodity.route': 'Process',
@@ -177,10 +229,15 @@ export interface CostCardModel {
   fmt: (n: number) => string;
   /** Why the confidence grade (the traceability mix it is graded on), or null when calibrated. */
   confidenceWhy?: { total: number; high: number; medium: number; low: number; lowFields: string[] } | null;
+  /** What would raise it: the Low-graded inputs carrying the most £ a part (uncertainty.ts confidenceRaisers). */
+  raisers?: Array<{ fields: string[]; gbp: number }>;
   /** The grade the material line is priced at, and whether it was answered or is the default. */
   grade?: { label: string; answered: boolean } | null;
   /** The weight the material line is costed on, kg. */
   costedWeightKg?: number | null;
+  /** A casting's or forging's weight set (executive-summary.ts formWeights) — the same names as the PDF and workbook:
+   *  finished, as cast / as forged, billet, bought. Replaces the single "Weight … costed" chip when present. */
+  weights?: { form: 'cast' | 'forged'; finishedKg: number | null; formedKg: number; billetKg: number | null; boughtKg: number } | null;
   /** The inputs that move the £ most: each ±10 %, re-costed through the stack (engine sensitivity.ts). */
   topMovers?: Array<{ driver: string; swing: number }>;
   /** The commercial basis, editable here (proposal v2 #4); each writes its form field and re-costs. */
@@ -227,6 +284,47 @@ export function confidenceWhyText(grade: string | null, w: CostCardModel['confid
     + ' A quote typed in for one of them, or prices paid logged with Log actual £, is what moves it.';
 }
 
+/**
+ * A casting's or forging's weights, one chip each, named as every report names them: finished (the CAD part), as cast /
+ * as forged (poured or forged with its machining stock — the material line and every per-kg figure are on it), billet, bought.
+ * The bracket read 2.51, 2.512, 3.039 and 3.04 kg in four places under three names (fresh review, Nov 2026).
+ */
+export function weightChipsHtml(w: NonNullable<CostCardModel['weights']>): string {
+  const chip = (k: string, kg: number, sub?: string) =>
+    `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">${k}</span> <strong>${kg.toFixed(3)} kg</strong>${sub ? ` <span class="cad-answer-k">${sub}</span>` : ''}</span>`;
+  return (w.finishedKg != null ? chip('Finished', w.finishedKg) : '')
+    + chip(w.form === 'cast' ? 'As cast' : 'As forged', w.formedKg, w.form === 'cast' ? 'poured, machining stock on' : 'machining stock on')
+    + (w.billetKg != null ? chip('Billet', w.billetKg) : '')
+    + chip('Bought', w.boughtKg, 'a good part');
+}
+
+/**
+ * What the band covers and what it does not (fresh review, Nov 2026: "± 6.9 %" beside "confidence Low" with 0 High
+ * inputs read as two opposite messages). The band is the Monte-Carlo spread of the inputs it varies; it is not the chance
+ * that an unsourced rate is wrong, nor scope the costing leaves out, nor the model's own error. No new number.
+ */
+export function bandScopeHtml(m: Pick<CostCardModel, 'band' | 'confidence'>): string {
+  const low = m.confidence === 'Low';
+  return `<p class="cad-cost-note" id="cad-band-scope">The band is the spread of the modelled input ranges, not the model's error. `
+    + (m.band ? `It covers the Monte-Carlo spread of the inputs it varies — each drawn over a range set by how it was obtained (measured, rule, answered or default) and each rate by its library grade. `
+      + `It does not cover an unsourced rate or assumption being wrong (those are varied, not checked), scope this costing leaves out (Not included, below), or the model's own error`
+      + `${low ? ' — so a narrow band and a Low grade are not a contradiction: the inputs are spread narrowly, but most are not sourced' : ''}. ` : '')
+    + `Accuracy against prices actually paid is not yet measured — log an actual price to calibrate it.</p>`;
+}
+
+/** "What would raise confidence": the Low-graded inputs carrying the most money, each with the £ a part resting on it. */
+export function raisersHtml(m: Pick<CostCardModel, 'raisers' | 'fmt' | 'confidence'>): string {
+  const r = m.raisers ?? [];
+  if (!r.length || m.confidence === 'calibrated') return '';
+  const name = (f: string[]) => {
+    const n = [...new Set(f.map(traceFieldLabel))];
+    return n[0] + (n.length > 1 ? ` (and ${n.length - 1} more operation${n.length === 2 ? '' : 's'} on the same rate)` : '');
+  };
+  return `<div class="cad-cost-note" id="cad-confidence-raise"><strong>What would raise confidence</strong> — the unsourced inputs carrying the most money, each with what rests on it a part:
+      <ol class="cad-raise-list">${r.map(x => `<li>${esc(name(x.fields))} — ${esc(m.fmt(x.gbp))} a part</li>`).join('')}</ol>
+      A quote typed into the form for one of them, or a price paid logged with Log actual, replaces the unsourced figure.</div>`;
+}
+
 /** The Cost step's card, under the result headline: tooling investment, what the band means, answers, basis, exclusions. */
 export function cadCostCardHtml(m: CostCardModel): string {
   const perPart = m.amortisationVolume > 0 ? m.toolingTotal / m.amortisationVolume : 0;
@@ -252,7 +350,8 @@ export function cadCostCardHtml(m: CostCardModel): string {
         </div>` : '';
   const extraChips = [
     m.grade ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Grade</span> <strong>${esc(m.grade.label)}</strong>${m.grade.answered ? '' : ' <span class="cad-answer-k">(default)</span>'}</span>` : '',
-    m.costedWeightKg && m.costedWeightKg > 0 ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Weight</span> <strong>${m.costedWeightKg.toFixed(3)} kg</strong> <span class="cad-answer-k">costed</span></span>` : '',
+    m.weights ? weightChipsHtml(m.weights)
+      : m.costedWeightKg && m.costedWeightKg > 0 ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Weight</span> <strong>${m.costedWeightKg.toFixed(3)} kg</strong> <span class="cad-answer-k">costed</span></span>` : '',
   ].join('');
   return `
     <div class="cad-cost-card" id="cad-cost-card">
@@ -274,8 +373,9 @@ export function cadCostCardHtml(m: CostCardModel): string {
           ${m.band && m.band.p10 != null && m.band.p90 != null ? `<span class="cad-cost-sub">P10 ${esc(m.fmt(m.band.p10))} – P90 ${esc(m.fmt(m.band.p90))}</span>` : ''}
         </div>
       </div>
-      <p class="cad-cost-note">The band is the spread of the modelled input ranges, not the model's error. Accuracy against prices actually paid is not yet measured — log an actual price to calibrate it.</p>
+      ${bandScopeHtml(m)}
       ${why ? `<p class="cad-cost-note" id="cad-confidence-why">Confidence ${esc(why)}</p>` : ''}
+      ${raisersHtml(m)}
       <div class="cad-answer-chips" role="list" aria-label="Costing context">
         ${m.chips.some(c => c.name === 'Process') ? '' : `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Route</span> <strong>${esc(m.commodityLabel)}</strong></span>`}
         <span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Country</span> <strong>${esc(m.country)}</strong></span>
@@ -412,7 +512,7 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
           ${r.band ? `<h5>Band</h5><p>P10 ${money0(r.band.p10)} – P90 ${money0(r.band.p90)} (± ${r.band.plusMinusPct}% about the median, confidence ${esc(r.band.confidence)}) — the spread of the modelled input ranges, not the model's error</p>` : ''}
         </div>
         <div><h5>Specification costed</h5><table class="cad-compare-mini"><tbody>${r.spec.map(sp => `<tr><th scope="row">${esc(sp.label)}</th><td>${esc(sp.value)}</td><td><span class="cad-compare-src">${esc(sp.source)}</span></td></tr>`).join('') || '<tr><td>—</td></tr>'}</tbody></table>
-          <h5>Material</h5>${r.material ? `<p>${esc(r.material.label)}${r.material.netKg == null && r.material.boughtKg == null ? '' : `<br>net ${kg(r.material.netKg)} · bought ${kg(r.material.boughtKg)}`}${r.material.utilisation != null ? ` · ${(r.material.utilisation * 100).toFixed(0)}% utilisation` : ''}</p>` : '<p>—</p>'}
+          <h5>Material</h5>${r.material ? `<p>${esc(r.material.label)}${r.material.netKg == null && r.material.boughtKg == null ? '' : `<br>${esc(r.material.netLabel ?? 'net')} ${kg(r.material.netKg)} · bought ${kg(r.material.boughtKg)}`}${r.material.utilisation != null ? ` · ${(r.material.utilisation * 100).toFixed(0)}% utilisation` : ''}</p>` : '<p>—</p>'}
           <h5>Tooling</h5>${r.tooling ? `<p>${money0(r.tooling.investment)} one-off over ${r.tooling.amortisedOver.toLocaleString('en-GB')} parts = ${money0(r.toolingPerPart ?? 0)} a part${r.tooling.items.length ? `<br><span class="cad-compare-items">${r.tooling.items.map(it => `${esc(it.label)} ${money0(it.gbp)}`).join(' · ')}</span>` : ''}</p>` : '<p>—</p>'}
           ${r.programme ? `<h5>Programme (${r.programme.parts.toLocaleString('en-GB')} parts over ${r.programme.years} yr)</h5><p>${money0(r.programme.pieceExTooling)} a part excluding tooling × ${r.programme.parts.toLocaleString('en-GB')} = ${money0(r.programme.pieceSpend)}, + tooling ${money0(r.programme.tooling)} = <strong>${money0(r.programme.total)}</strong></p>` : ''}
           ${r.byVolume.length ? `<h5>By volume (median, P10–P90)</h5><table class="cad-compare-mini"><tbody>${r.byVolume.map(v => `<tr><th scope="row">${v.volume.toLocaleString('en-GB')} / yr</th><td class="num">${v.total != null ? money0(v.total) : `— <span class="cad-compare-note">${esc(v.note ?? '')}</span>`}</td><td class="num cad-compare-note">${v.p10 != null && v.p90 != null ? `${money0(v.p10)}–${money0(v.p90)}` : ''}</td></tr>`).join('')}</tbody></table>${cross ? `<p class="cad-compare-cross">${esc(cross.text)}</p>` : ''}` : ''}

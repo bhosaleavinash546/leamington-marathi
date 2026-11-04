@@ -884,6 +884,7 @@ export const GEAR_RULES: CommodityRuleSpec = {
       },
     },
     // Safety-critical, advisory (report standard review, 3 Nov 2026): a transmission gear (fatigue) was never asked.
-    ...serviceQuestionRules('gear', { safety: true }),
+    // asked from the first screen: a gear never asks `material.family` (its material is `gear.materialClass`)
+    ...serviceQuestionRules('gear', { safety: true, waitForMaterial: false }),
   ],
 };

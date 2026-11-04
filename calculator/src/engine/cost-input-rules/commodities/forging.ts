@@ -34,6 +34,7 @@
  *    text says so ("no flash"). The prompt charged all five routes 10%.
  */
 import { finishRules } from '../derive/finish.js';
+import { upFrontServiceRules, SERVICE_DECISION_IDS } from '../derive/service-questions.js';
 import { bRepFaceCount } from '../derive/facts.js';
 import { representativeMaterialId, materialGradeName } from '../derive/material.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -50,7 +51,7 @@ import { activeLabourRate, gbpFigure } from '../../rate-context.js';
 import { countryFactor } from '../../regional-services.js';
 import { nearNetStockCm3, CORED_ABOVE_MM, costedNearNetRows, nearNetTurnedAreaCm2, NEAR_NET_TURN_STOCK_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
-import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome, type Decision } from '../types.js';
 import { toForgingAlloyFamily } from '../derive/material.js';
 import { gradedMaterialFacts as materialFacts, forgingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, namedGradeNote, namedGradeNotCosted } from '../derive/grade.js';
 import { projectedAreaCm2, projectedAreaBasis, isRingShape } from '../derive/envelope.js';
@@ -533,10 +534,21 @@ function adderPerPart(a: ForgeAdvice, match: RegExp): number {
   return Math.round((secondaries(a).adders.find(x => match.test(x.label))?.costPerPartGbp ?? 0) * 10_000) / 10_000;   // 4 dp, as the station it reads (7-country review)
 }
 
+/** What the advisor is blocked on BEFORE its service questions (the material, an unsupported alloy, a missing envelope). */
+function blockedBefore(ctx: RuleContext): Decision | undefined {
+  const r = advise(ctx);
+  if (!('blocked' in r)) return undefined;
+  const d = (r.blocked as { decision?: Decision }).decision;
+  return d && !SERVICE_DECISION_IDS.has(d.id) ? d : undefined;
+}
+
 export const FORGING_RULES: CommodityRuleSpec = {
   commodity: 'forging',
   header: 'FORGING COST INPUT RULES:',
   rules: [
+    // Tolerance class and safety-critical asked together once the material is answered (CAD to COST fresh review,
+    // Nov 2026). The advisor reads the same answers.
+    ...upFrontServiceRules('forging', ['tolerance', 'safety'], blockedBefore),
     {
       id: 'forging.materialId',
       path: 'forging.materialId',

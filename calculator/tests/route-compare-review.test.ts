@@ -188,14 +188,23 @@ describe('3. The arithmetic on a row', () => {
       }
       expect(`${c.route}/${c.process}`).toBe('cast_and_machine/sand');
       const d = row.byVolume.map((v, i) => v.total! - ref.byVolume[i].total!);
-      const i = d.findIndex((x, j) => j > 0 && Math.sign(x) !== Math.sign(d[j - 1]));
-      expect(i).toBeGreaterThan(0);
-      const [v1, v2] = [row.byVolume[i - 1].volume, row.byVolume[i].volume];
-      expect(c.atVolume).toBeCloseTo(v1 + (v2 - v1) * d[i - 1] / (d[i - 1] - d[i]), -1);
-      expect(c.text).toMatch(new RegExp(`interpolated between re-costs at ${v1.toLocaleString('en-GB')} and ${v2.toLocaleString('en-GB')}`));
+      // EVERY sign change is a crossing, each interpolated between the two re-costs either side of it (the sand row
+      // crosses twice — the sentence described only the first, "dearer … above ~7,549", beside a row that is cheaper at
+      // the costing's volume: CAD to COST fresh review, Nov 2026).
+      const changes = d.map((_, j) => j).filter(j => j > 0 && Math.sign(d[j]) !== Math.sign(d[j - 1]));
+      expect(changes.length).toBeGreaterThan(0);
+      expect(c.crossings!.length).toBe(changes.length);
+      changes.forEach((i, k) => {
+        const [v1, v2] = [row.byVolume[i - 1].volume, row.byVolume[i].volume];
+        expect(c.crossings![k].atVolume).toBeCloseTo(v1 + (v2 - v1) * d[i - 1] / (d[i - 1] - d[i]), -1);
+        expect(c.crossings![k].cheaperAbove).toBe(d[i] < 0);
+        expect(c.text).toMatch(new RegExp(`interpolated between re-costs at ${v1.toLocaleString('en-GB')} and ${v2.toLocaleString('en-GB')}`));
+      });
+      // the headline crossing is the one that decides the costing's own volume, and the sentence ends with its side
+      const here = d[row.byVolume.findIndex(v => v.volume === 100_000)];
+      expect(c.cheaperAbove).toBe(here < 0);
+      expect(c.text).toMatch(new RegExp(`at this costing's 100,000 a year it is ${here < 0 ? 'cheaper' : 'dearer'}`));
       expect(c.indistinguishable).not.toBeNull();
-      expect(c.indistinguishable!.from).toBeLessThanOrEqual(v1);
-      expect(c.indistinguishable!.to).toBeGreaterThanOrEqual(v2);
       expect(c.text).toMatch(/indistinguishable/);
     }
     // the machining row (50.5 kg of plate for a 2.85 kg part) is costed, itemised and marked not credible

@@ -37,6 +37,7 @@ import { routeMaterialCheck } from '../engine/route-material-guard.js';
 import { familyOfCategory } from '../engine/route-feasibility.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
+import { formWeights, type CoreWeights } from './form-weights.js';
 import { compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
 import { ruleReportNotes, type RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
 import type { RuleContext } from '../engine/cost-input-rules/types.js';
@@ -810,70 +811,7 @@ export function routeAlertEligible(r: { material?: { materialId: string | null }
   return routeMaterialCheck(r.material?.materialId ?? null, refMaterialId ?? null, library).status === 'ok';
 }
 
-/** A casting's or forging's weights, each named once: what is made, what is bought, what is sold back as scrap. */
-export interface CoreWeights {
-  form: 'forged' | 'cast';
-  /** The finished (machined) part, kg — when the costing states it. */
-  finishedKg: number | null;
-  /** One forging / casting as it leaves the press or the mould (machining stock and drilled metal on), kg. */
-  asFormedKg: number;
-  /** Flash a forging, kg (forging only). */
-  flashKg: number | null;
-  /** Billet a forging = (as forged + flash) ÷ stock yield, kg (forging only). */
-  billetKg: number | null;
-  yieldFraction: number | null;
-  /** Scrap forgings / castings, 0–1 (the stack buys and makes 1 ÷ (1 - r) a good part). */
-  rejectRate: number;
-  /** Bought a GOOD part (billet / poured charge ÷ (1 - reject)), kg — the material line's kg. */
-  boughtKg: number;
-  /** Sold back as scrap a good part, kg — the scrap-credit line's kg (0 when the loss is not scrap). */
-  scrapKg: number;
-  /** The set as one sentence, printed under the material split. */
-  line: string;
-}
-
-/**
- * The weight set of a casting or forging read off the values the rules set (as-formed, flash, yield, reject) and the
- * stack's own net / utilisation — so page 2 (material, £/kg), page 4 (descale on the forging) and page 5 (stock yield,
- * flash) print the same weights under the same names. Null for other commodities or without the rules' as-formed weight.
- */
-export function formWeights(rvs: ReadonlyArray<{ label: string; value: unknown; fieldId?: string; ruleValue?: unknown }>,
-  input: UniversalStackInput, commodity: string | null): CoreWeights | null {
-  const c = String(commodity ?? '');
-  const forged = /forg/.test(c);
-  if (!forged && !/cast/.test(c)) return null;
-  const num = (re: RegExp): number | null => {
-    const r = rvs.find(x => re.test(x.fieldId ?? ''));
-    if (!r) return null;
-    const v = Number(String(r.ruleValue ?? r.value ?? '').replace(/,/g, ''));
-    return Number.isFinite(v) ? v : null;
-  };
-  // as-formed: the forging's part weight (as forged, CLAUDE forging notes); cast + machine's as-cast weight, the casting
-  // route's part weight (as cast, machining stock on). Finished: cast + machine's finished weight (the STEP's).
-  const asFormed = forged ? num(/^forge-part-wt$/) : num(/^(cam-cast-wt|cast-part-wt)$/);
-  if (!(asFormed && asFormed > 0)) return null;
-  const finished = forged ? null : num(/^cam-finish-wt$/);
-  // the forging stack buys and makes 1 ÷ (1 − reject) a good part (modules/forging.ts); the casting stack does not fold
-  // its reject into the material weights
-  const reject = forged ? Math.max(0, Math.min(0.9, num(/^forge-reject$/) ?? 0)) : 0;
-  const flash = forged ? Math.max(0, num(/^forge-flash$/) ?? 0) : null;
-  const yieldF = forged ? num(/^forge-yield$/) : null;
-  const billet = forged && yieldF && yieldF > 0 ? (asFormed + (flash ?? 0)) / yieldF : null;
-  const rm = input.rawMaterial;
-  const bought = rm.materialUtilization > 0 ? rm.netWeightKg / rm.materialUtilization : rm.netWeightKg;
-  const scrap = rm.lossIsNotScrap ? 0 : Math.max(0, bought - rm.netWeightKg);
-  const k = (v: number) => `${v.toFixed(3)} kg`;
-  const one = forged ? 'a forging' : 'a casting';
-  const per = reject > 0 ? ` (÷ ${(1 - reject).toFixed(2)} for ${+(reject * 100).toFixed(1)} % scrap ${forged ? 'forgings' : 'castings'})` : '';
-  const line = `Weights: ${finished ? `finished ${k(finished)} · ` : ''}as ${forged ? 'forged' : 'cast'} ${k(asFormed)} ${one}`
-    + (forged && flash ? ` + flash ${k(flash)}` : '')
-    + (billet ? ` · billet ${k(billet)} ${one} = (${k(asFormed)} + ${k(flash ?? 0)} flash) ÷ ${yieldF!.toFixed(3)} stock yield` : '')
-    + ` · bought ${k(bought)} a good part${per}`
-    + (scrap > 0 ? ` · scrap sold ${k(scrap)} a good part (bought - ${k(rm.netWeightKg)} made a good part)` : rm.lossIsNotScrap ? ' · the metal lost is not sold as scrap' : '')
-    + '. The £/kg figures are on the weight of ONE ' + (forged ? 'forging as forged' : 'casting as cast') + '.';
-  return { form: forged ? 'forged' : 'cast', finishedKg: finished, asFormedKg: asFormed, flashKg: flash, billetKg: billet, yieldFraction: yieldF,
-    rejectRate: reject, boughtKg: bought, scrapKg: scrap, line };
-}
+export { formWeights, type CoreWeights } from './form-weights.js';
 
 export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const { result, input, library } = a;

@@ -78,7 +78,7 @@ export function initActionMenu(doc: Document = document): void {
 
 /** Replace the header's bare "Sign Out" with an account menu. */
 export function initAccountMenu(signOut: () => void, doc: Document = document): void {
-  const old = doc.querySelector<HTMLElement>('header button[onclick="signOut()"], button[onclick="signOut()"]');
+  const old = doc.querySelector<HTMLElement>('#signout-btn, button[data-cv-action="sign-out"]');
   if (!old || doc.querySelector('.cv-account')) return;
   let name = '', email = '';
   try {

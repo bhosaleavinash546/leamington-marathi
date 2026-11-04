@@ -13,7 +13,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { nextCostStep, costStepMessage, type FlowDecision } from '../src/ui/cad-flow.js';
+import { nextCostStep, costStepMessage, questionsToStopOn, type FlowDecision } from '../src/ui/cad-flow.js';
 import { fetchMeshFrame, stlFromFrame, clearMeshCache, meshErrorText, MeshFetchError } from '../src/ui/cad-mesh-cache.js';
 
 const main = readFileSync('src/ui/main.ts', 'utf8');
@@ -60,7 +60,7 @@ describe('F1–F4: one path from the upload to the cost', () => {
   });
 
   it('every apply path is gated on open blocking questions', () => {
-    expect(fnBody('applyCADToForm')).toMatch(/if \(openCADDecisions\(\)\.length\) \{ void cadGetCost\(autoCalculate\); return; \}/);
+    expect(fnBody('applyCADToForm')).toMatch(/if \(openCADDecisions\(\)\.length\) \{ onDone\?\.\(\); void cadGetCost\(autoCalculate\); return; \}/);
     // Analyze & Calculate goes through the same gate, never straight to applyCADToForm.
     expect(fnBody('renderCADResults')).toMatch(/if \(open\.length\) showCADQuestions\([^)]*\)[^;]*;\s*else void cadGetCost\(true\);/);
     // An answer recorded on the panel but not re-run does not open the gate.
@@ -91,7 +91,9 @@ describe('a question the engineer has not seen is never accepted for them (live 
     const awaitAt = body.indexOf('await _cadReanalyzeChain;');
     expect(seenAt).toBeGreaterThan(0);
     expect(seenAt).toBeLessThan(awaitAt);   // captured BEFORE anything can re-render the panel
-    expect(body).toMatch(/openCADDecisions\(\)\.filter\(d => !seen\.has\(d\.id\) \|\|/);
+    // the stop rule lives in cad-flow.ts (questionsToStopOn: not seen, or New and untouched)
+    expect(body).toMatch(/questionsToStopOn\(openCADDecisions\(\)\.map\(d => d\.id\), seen, _cadNewQuestions, _cadTouchedDecisions\)/);
+    expect(questionsToStopOn(['a', 'b'], new Set(['a']), new Set(), new Set())).toEqual(['b']);
     // The unseen check comes before the panel's ticks are read as answers.
     expect(body.indexOf('if (unseen.length)')).toBeLessThan(body.indexOf('readCADDecisionPanel();'));
   });
@@ -99,7 +101,9 @@ describe('a question the engineer has not seen is never accepted for them (live 
   it('a question an automatic re-run adds is stopped on once, even if it was drawn before the press', () => {
     expect(fnBody('wireCADDecisionsPanel')).toMatch(/void autoRerunCAD\(\)/);
     expect(fnBody('autoRerunCAD')).toMatch(/_cadNewQuestions\.add\(d\.id\)/);
-    expect(fnBody('cadGetCost')).toMatch(/_cadNewQuestions\.has\(d\.id\) && !_cadTouchedDecisions\.has\(d\.id\)/);
+    expect(fnBody('cadGetCost')).toMatch(/questionsToStopOn\(.*_cadNewQuestions, _cadTouchedDecisions\)/);
+    expect(questionsToStopOn(['a'], new Set(['a']), new Set(['a']), new Set())).toEqual(['a']);   // drawn before the press, New, untouched
+    expect(questionsToStopOn(['a'], new Set(['a']), new Set(['a']), new Set(['a']))).toEqual([]);  // touched = looked at
     expect(fnBody('cadGetCost')).toMatch(/_cadNewQuestions\.clear\(\);/);
     // Touching the question counts as looking at it.
     expect(fnBody('wireCADDecisionsPanel')).toMatch(/_cadNewQuestions\.delete\(id\);/);
@@ -255,7 +259,8 @@ describe('F10–F12 and kept settings', () => {
   it('a long option list is a drop-down the panel reader understands', () => {
     expect(main).toMatch(/const CAD_DECISION_SELECT_OVER = 12;/);
     expect(fnBody('renderCADDecisionsPanel')).toMatch(/<select data-decision-select="1"/);
-    expect(fnBody('readCADDecisionPanel')).toMatch(/select\[data-decision-select\]/);
+    expect(fnBody('readCADDecisionPanel')).toMatch(/pickedDecisionValue\(block,/);
+    expect(fnBody('pickedDecisionValue')).toMatch(/select\[data-decision-select\]/);
   });
 
   it('the CAD screen keeps its volume, overrides and mode when it is redrawn', () => {
@@ -299,7 +304,7 @@ describe('the questions offer shortlists — and say where the full lists are', 
     expect(other).toMatch(/d\.id === 'material\.resin'/);
     expect(other).toMatch(/MATERIAL_SCOPE_BY_COMMODITY\[commodity\]/);
     expect(other).toMatch(/data-decision-other="1"/);
-    expect(fnBody('readCADDecisionPanel')).toMatch(/other\?\.value \? other :/);
+    expect(fnBody('pickedDecisionValue')).toMatch(/other\?\.value \? other :/);
     expect(fnBody('renderCADDecisionsPanel')).toMatch(/\$\{otherChoiceHtml\(d\)\}/);
   });
 

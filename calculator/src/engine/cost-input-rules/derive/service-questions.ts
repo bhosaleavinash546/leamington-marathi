@@ -14,7 +14,8 @@
  */
 import { decided, ask, type Decision, type RuleContext, type RuleDef } from '../types.js';
 import {
-  PRESSURE_TIGHT_DECISION_ID, SAFETY_CRITICAL_DECISION_ID, pressureTightDecision, safetyCriticalDecision,
+  PRESSURE_TIGHT_DECISION_ID, SAFETY_CRITICAL_DECISION_ID, TOLERANCE_CLASS_DECISION_ID, pressureTightDecision, safetyCriticalDecision,
+  toleranceClassDecision, answeredBool, answeredToleranceClass,
 } from './service-context.js';
 import { materialFacts } from './material.js';
 
@@ -115,15 +116,24 @@ export function impregnationDecision(): Decision {
  * The advisory question rules for one commodity pack (`ns` is the pack's path namespace). Each decides "yes" / "no"
  * once answered — with a NOT COSTED note on a "Yes" this route charges nothing for — and asks, advisory, until then.
  */
-export function serviceQuestionRules(ns: string, which: { safety?: boolean; pressure?: boolean }): RuleDef[] {
+export function serviceQuestionRules(ns: string, which: {
+  safety?: boolean; pressure?: boolean;
+  /**
+   * False on a route that never asks `material.family` (gear: its own `gear.materialClass` names the steel). The
+   * questions waited on `materialFacts(ctx).decision`, which a gear never settles — gear is not in COMMODITY_FAMILIES —
+   * so its safety question never appeared (O17, confirmed live in the CAD to COST fresh review, Nov 2026).
+   */
+  waitForMaterial?: boolean;
+}): RuleDef[] {
   const out: RuleDef[] = [];
+  const pending = (ctx: RuleContext): boolean => which.waitForMaterial !== false && !!materialFacts(ctx).decision;
   if (which.safety) {
     out.push({
       id: `${ns}.q.safetyCritical`, path: `${ns}.q.safetyCritical`, label: 'safety-critical question',
       evaluate: (ctx) => {
         const a = answered(ctx, SAFETY_CRITICAL_DECISION_ID);
         // Asked after the route and the material, as the finish is: it waits quietly while they are open.
-        if (a === null && materialFacts(ctx).decision) return decided(`${ns}.q.safetyCritical`, 'pending', 'rule', 'pending the material answer', 0.1);
+        if (a === null && pending(ctx)) return decided(`${ns}.q.safetyCritical`, 'pending', 'rule', 'pending the material answer', 0.1);
         if (a === null) return ask(advisory(safetyCriticalDecision(ctx)));
         const nc = serviceNotCosted(ctx.commodity, ctx.answers).find(x => x.decisionId === SAFETY_CRITICAL_DECISION_ID);
         return decided(`${ns}.q.safetyCritical`, a ? 'yes' : 'no', 'engineer',
@@ -137,7 +147,7 @@ export function serviceQuestionRules(ns: string, which: { safety?: boolean; pres
       id: `${ns}.q.pressureTight`, path: `${ns}.q.pressureTight`, label: 'leak-tight question',
       evaluate: (ctx) => {
         const a = answered(ctx, PRESSURE_TIGHT_DECISION_ID);
-        if (a === null && materialFacts(ctx).decision) return decided(`${ns}.q.pressureTight`, 'pending', 'rule', 'pending the material answer', 0.1);
+        if (a === null && pending(ctx)) return decided(`${ns}.q.pressureTight`, 'pending', 'rule', 'pending the material answer', 0.1);
         if (a === null) return ask(advisory(pressureTightDecision(ctx)));
         const nc = serviceNotCosted(ctx.commodity, ctx.answers).find(x => x.decisionId === PRESSURE_TIGHT_DECISION_ID);
         return decided(`${ns}.q.pressureTight`, a ? 'yes' : 'no', 'engineer',
@@ -148,4 +158,47 @@ export function serviceQuestionRules(ns: string, which: { safety?: boolean; pres
     });
   }
   return out;
+}
+
+/** The service questions a casting or forging advisor blocks on. */
+export const SERVICE_DECISION_IDS: ReadonlySet<string> = new Set([PRESSURE_TIGHT_DECISION_ID, TOLERANCE_CLASS_DECISION_ID, SAFETY_CRITICAL_DECISION_ID]);
+
+/**
+ * The BLOCKING service questions of a casting or forging, asked TOGETHER once the material is settled.
+ *
+ * The advisors ask them one at a time (leak-tight → tolerance → safety): each answer opened the next question only after
+ * Get cost re-ran the rules, so the casting bracket needed three presses — the first stopped on a pre-ticked leak-tight
+ * "No" tagged New, the second re-ran the rules and opened the tolerance class, the third costed (CAD to COST fresh review,
+ * Nov 2026). Listing all of them as soon as the material is answered puts every question for the route on screen at
+ * once; the advisor still reads the same answers. A rule here decides nothing that costs: the answer reaches the cost
+ * through the advisor's rules on both paths.
+ */
+export function upFrontServiceRules(
+  ns: string, which: ReadonlyArray<'pressure' | 'tolerance' | 'safety'>,
+  /** The question that must be answered first (the material), or undefined once it is. */
+  waitFor: (ctx: RuleContext) => Decision | undefined,
+): RuleDef[] {
+  const defs = {
+    pressure: { id: PRESSURE_TIGHT_DECISION_ID, key: 'pressureTight', label: 'leak-tight question', ask: pressureTightDecision,
+      read: (ctx: RuleContext) => { const a = answeredBool(ctx, PRESSURE_TIGHT_DECISION_ID); return a === null ? null : a ? 'yes' : 'no'; } },
+    tolerance: { id: TOLERANCE_CLASS_DECISION_ID, key: 'toleranceClass', label: 'tolerance-class question', ask: () => toleranceClassDecision(),
+      read: (ctx: RuleContext) => answeredToleranceClass(ctx) },
+    safety: { id: SAFETY_CRITICAL_DECISION_ID, key: 'safetyCritical', label: 'safety-critical question', ask: safetyCriticalDecision,
+      read: (ctx: RuleContext) => { const a = answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID); return a === null ? null : a ? 'yes' : 'no'; } },
+  } as const;
+  return which.map(w => {
+    const d = defs[w];
+    const path = `${ns}.q.${d.key}`;
+    return {
+      id: path, path, label: d.label,
+      evaluate: (ctx: RuleContext) => {
+        const first = waitFor(ctx);
+        if (first) return ask(first);
+        const v = d.read(ctx);
+        if (v === null) return ask(d.ask(ctx));
+        return decided(path, v, ctx.answers[d.id] !== undefined ? 'engineer' : 'rule',
+          ctx.answers[d.id] !== undefined ? 'answered' : 'assumed — confirm before quoting', ctx.answers[d.id] !== undefined ? 1 : 0.5, [d.id]);
+      },
+    } satisfies RuleDef;
+  });
 }

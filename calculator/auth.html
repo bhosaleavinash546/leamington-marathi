@@ -700,11 +700,11 @@
           <div class="form-group">
             <div class="row-between">
               <label for="signin-pw">Password</label>
-              <button type="button" class="btn-link" onclick="gotoView('forgot')">Forgot password?</button>
+              <button type="button" class="btn-link" data-cv-action="goto" data-view="forgot">Forgot password?</button>
             </div>
             <div class="input-wrap">
               <input type="password" id="signin-pw" placeholder="Enter your password" autocomplete="current-password" />
-              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'signin-pw\', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" data-cv-action="toggle-pw" data-target="signin-pw" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -724,7 +724,7 @@
         </form>
 
         <!-- Ghost button — no divider, visually separated by margin -->
-        <button type="button" class="btn btn-ghost" onclick="gotoView('signup')">
+        <button type="button" class="btn btn-ghost" data-cv-action="goto" data-view="signup">
           Create a free account
         </button>
       </div>
@@ -732,7 +732,7 @@
       <!-- ── SIGN UP ── -->
       <div id="view-signup" class="view">
         <h2 class="view-heading">Create account</h2>
-        <p class="view-sub">Already have one? <a href="#" onclick="gotoView('signin');return false">Sign in</a></p>
+        <p class="view-sub">Already have one? <a href="#" data-cv-action="goto" data-view="signin">Sign in</a></p>
 
         <div id="signup-banner" class="banner error" role="alert" aria-atomic="true">
           <span class="banner-icon" aria-hidden="true">⚠</span>
@@ -762,8 +762,8 @@
             <label for="signup-pw">Password</label>
             <div class="input-wrap">
               <input type="password" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password"
-                     oninput="checkPwStrength(this.value, 'signup-pw-strength')" />
-              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'signup-pw\', this)" tabindex="-1">
+                     data-cv-input="pw-strength" data-strength="signup-pw-strength" />
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" data-cv-action="toggle-pw" data-target="signup-pw" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -776,7 +776,7 @@
             <label for="signup-pw2">Confirm Password</label>
             <div class="input-wrap">
               <input type="password" id="signup-pw2" placeholder="Re-enter your password" autocomplete="new-password" />
-              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw('signup-pw2', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" data-cv-action="toggle-pw" data-target="signup-pw2" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -821,14 +821,14 @@
                 aria-labelledby="otp-expires-label">5:00</span>
         </div>
 
-        <button type="button" class="btn btn-primary" id="btn-verify" onclick="submitOTP()">
+        <button type="button" class="btn btn-primary" id="btn-verify" data-cv-action="otp-submit">
           <div class="spinner"></div>
           <span class="btn-text">Verify Code</span>
           <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
         </button>
 
         <div style="text-align:center;margin-top:16px">
-          <button type="button" class="btn-link" id="btn-resend" onclick="resendOTP()" disabled>Resend code</button>
+          <button type="button" class="btn-link" id="btn-resend" data-cv-action="otp-resend" disabled>Resend code</button>
           <span id="resend-hint" style="font-size:0.78rem;color:var(--text-3)"> · available when timer expires</span>
         </div>
       </div>
@@ -836,7 +836,7 @@
       <!-- ── FORGOT PASSWORD ── -->
       <div id="view-forgot" class="view">
         <h2 class="view-heading">Reset password</h2>
-        <p class="view-sub">Enter your email to receive a reset code. <a href="#" onclick="gotoView('signin');return false">Back to sign in</a></p>
+        <p class="view-sub">Enter your email to receive a reset code. <a href="#" data-cv-action="goto" data-view="signin">Back to sign in</a></p>
 
         <div id="forgot-banner" class="banner error" role="alert" aria-atomic="true">
           <span class="banner-icon" aria-hidden="true">⚠</span>
@@ -855,7 +855,7 @@
             <span class="btn-text">Send Reset Code</span>
             <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
           </button>
-          <button type="button" class="btn btn-ghost" onclick="gotoView('signin')">Back to Sign In</button>
+          <button type="button" class="btn btn-ghost" data-cv-action="goto" data-view="signin">Back to Sign In</button>
         </form>
       </div>
 
@@ -874,8 +874,8 @@
             <label for="reset-pw">New Password</label>
             <div class="input-wrap">
               <input type="password" id="reset-pw" placeholder="Min. 8 characters"
-                     oninput="checkPwStrength(this.value, 'reset-pw-strength')" />
-              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'reset-pw\', this)" tabindex="-1">
+                     data-cv-input="pw-strength" data-strength="reset-pw-strength" />
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" data-cv-action="toggle-pw" data-target="reset-pw" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -888,7 +888,7 @@
             <label for="reset-pw2">Confirm New Password</label>
             <div class="input-wrap">
               <input type="password" id="reset-pw2" placeholder="Re-enter your new password" />
-              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw('reset-pw2', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" data-cv-action="toggle-pw" data-target="reset-pw2" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -1386,5 +1386,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/calculator/sw.js', { scope: '/calculator/' });
 }
 </script>
+<!-- Buttons are wired here, not by inline onclick: the CSP (script-src-attr 'none') blocks inline handlers. -->
+<script type="module" src="/src/ui/auth-page.ts"></script>
 </body>
 </html>

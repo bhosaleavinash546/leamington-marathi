@@ -74,7 +74,10 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     expect(ids).toContain(GEAR_HELIX_DECISION_ID);
     expect(ids).toContain(GEAR_QUALITY_DECISION_ID);
     expect(ids).toContain(GEAR_MATERIAL_DECISION_ID);
-    for (const d of r.decisions) expect(d.severity).toBe('blocking');
+    // every question is blocking except the advisory safety-critical one, asked from the first screen since the gear
+    // never asks a material family (O17, CAD to COST fresh review, Nov 2026)
+    for (const d of r.decisions) expect(d.severity, d.id).toBe(d.id === 'service.safetyCritical' ? 'advisory' : 'blocking');
+    expect(ids).toContain('service.safetyCritical');
     // No option is preselected as an answer: leanings are displayed, not taken.
     expect((r.suggestions as { gear?: { qualityClass?: number } }).gear?.qualityClass).toBeUndefined();
   });
@@ -173,7 +176,9 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     // assumptions with a printed note. The material class is the documented
     // dominant failure mode — it stays a blocking question even here.
     expect(r.status).toBe('needs_decision');
-    expect(r.decisions.map(d => d.id)).toEqual([GEAR_MATERIAL_DECISION_ID]);
+    expect(r.decisions.filter(d => d.severity === 'blocking').map(d => d.id)).toEqual([GEAR_MATERIAL_DECISION_ID]);
+    // the advisory safety question is still asked (it never blocks, never assumed)
+    expect(r.decisions.filter(d => d.severity === 'advisory').map(d => d.id)).toEqual(['service.safetyCritical']);
     const g = (r.suggestions as { gear: Record<string, unknown> }).gear;
     expect(g.helixAngleDeg).toBe(0);
     expect(g.qualityClass).toBe(7);

@@ -84,3 +84,30 @@ export function costStepMessage(step: CostStep): string {
     case 'apply': return 'Costing…';
   }
 }
+
+/**
+ * The questions Get cost stops on — ONCE (B3 / F13): a blocking question that was not on screen when the engineer
+ * pressed, or one an automatic re-run added (tagged New) that they have not touched. A pre-ticked suggestion must be
+ * seen before it counts; the stub axle's safety "No" was once accepted unseen.
+ */
+export function questionsToStopOn(open: readonly string[], seen: ReadonlySet<string>,
+  fresh: ReadonlySet<string>, touched: ReadonlySet<string>): string[] {
+  return open.filter(id => !seen.has(id) || (fresh.has(id) && !touched.has(id)));
+}
+
+/**
+ * What the screen says when Get cost stops on new questions. The stop used to be a dead press: no request, the same
+ * notice as before, nothing moved, for 20 s (CAD to COST fresh review, Nov 2026 — bracket 3 presses, knuckle 2). Now it
+ * says why it stopped and what the next press does.
+ */
+export function newQuestionsMessage(n: number, addedByRerun: boolean): string {
+  const what = n === 1 ? '1 new question was' : `${n} new questions were`;
+  const it = n === 1 ? 'it' : 'them';
+  return addedByRerun
+    ? `${what} added by the re-run: review ${it}, then press Get cost — the next press costs the part with the answers shown.`
+    : `${n === 1 ? '1 question needs' : `${n} questions need`} a look before the cost: review ${it}, then press Get cost — the next press costs the part with the answers shown.`;
+}
+
+/** The Get cost button's label: what the next press does. */
+export const GET_COST_LABEL = 'Get cost →';
+export const GET_COST_AFTER_STOP_LABEL = 'Get cost with these answers →';

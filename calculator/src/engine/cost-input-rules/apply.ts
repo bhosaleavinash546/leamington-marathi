@@ -497,6 +497,13 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'rotationalMoulding.q.pressureTight': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
   'blowMoulding.q.pressureTight': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
   'extrusion.q.pressureTight': 'advisory question — its answer reaches both paths through extrusion.leakTest',
+  // Asked together once the material is answered (CAD to COST fresh review, Nov 2026): the answers reach both paths
+  // through the casting / forging advisor, which reads the same decisions (derive/service-questions.ts).
+  'casting.q.pressureTight': 'blocking question asked up front — its answer reaches both paths through the casting advisor',
+  'casting.q.toleranceClass': 'blocking question asked up front — its answer reaches both paths through the casting advisor',
+  'casting.q.safetyCritical': 'blocking question asked up front — its answer reaches both paths through the casting advisor',
+  'forging.q.toleranceClass': 'blocking question asked up front — its answer reaches both paths through the forging advisor',
+  'forging.q.safetyCritical': 'blocking question asked up front — its answer reaches both paths through the forging advisor',
   'casting.q.impregnation': 'advisory question — its answer reaches both paths through casting.impregnationCostPerPart',
   'extrusion.colourChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',
   'extrusion.dieChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',

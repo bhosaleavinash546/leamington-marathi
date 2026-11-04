@@ -16,7 +16,7 @@
  *    their true material. Only HPDC happened to agree.
  */
 import { finishRules } from '../derive/finish.js';
-import { IMPREGNATION_DECISION_ID, impregnationDecision } from '../derive/service-questions.js';
+import { IMPREGNATION_DECISION_ID, impregnationDecision, upFrontServiceRules, SERVICE_DECISION_IDS } from '../derive/service-questions.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCountry as countryGbp, countryNote, type CountryBasis } from '../../regional-services.js';
 
 /** A sand core: ~30% sand and binder (traded, held), the rest core-shop labour and machine time. ESTIMATE split. */
@@ -37,7 +37,7 @@ import {
 import { libraryMachineRate } from '../../uk-tariff.js';
 import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
-import { answeredNumber, decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { answeredNumber, decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome, type Decision } from '../types.js';
 import { asCastWeight, costedNearNetRows, DRILLED_FROM_SOLID_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import {
@@ -598,10 +598,21 @@ const FOUNDRY_INDIRECT_RULES: CommodityRuleSpec['rules'] = [
   },
 ];
 
+/** What the advisor is blocked on BEFORE its service questions (the material, an unsupported alloy, a missing envelope). */
+function blockedBefore(ctx: RuleContext): Decision | undefined {
+  const r = advise(ctx);
+  if (!('blocked' in r)) return undefined;
+  const d = (r.blocked as { decision?: Decision }).decision;
+  return d && !SERVICE_DECISION_IDS.has(d.id) ? d : undefined;
+}
+
 export const CASTING_RULES: CommodityRuleSpec = {
   commodity: 'casting',
   header: 'CASTING COST INPUT RULES:',
   rules: [
+    // Leak-tight, tolerance class and safety-critical asked together once the material is answered (CAD to COST fresh
+    // review, Nov 2026 — one at a time cost the bracket three Get cost presses). The advisor reads the same answers.
+    ...upFrontServiceRules('casting', ['pressure', 'tolerance', 'safety'], blockedBefore),
     {
       // The material GRADE, derived from the confirmed family. Casting used to
       // emit only the weight from the family and leave the grade as the AI's —

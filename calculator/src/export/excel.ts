@@ -8,7 +8,7 @@ import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import { reportNoteText } from './money-text.js';
 import type { ChecksAppliedMeta, CADReportMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
-import { buildCoreReport } from './executive-summary.js';
+import { buildCoreReport, formWeights } from './executive-summary.js';
 import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
@@ -310,6 +310,8 @@ export async function exportToExcelBlob(
       ['Material ID', rm.materialId, '', ''],
       ['Grade / Description', mat?.grade ?? rm.materialId, '', reportNoteText(mat?.sourceNote)],
       ['Costed Net Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on — the finished part plus any machining stock or reject allowance the module carries'],
+      // a casting / forging names its weights ONCE, as the core report and the cost card do (fresh review, Nov 2026)
+      ...(() => { const fw = formWeights(checks?.ruleValues ?? [], input, commodity ?? null); return fw ? [['Weight set', fw.line, '', 'per-kg figures are on the ' + (fw.form === 'cast' ? 'as-cast' : 'as-forged') + ' weight']] : []; })(),
       ['Gross Weight (material bought)', num4(gross), 'kg', '= net ÷ utilisation'],
       ['Material Utilisation', pctCell(rm.materialUtilization), '', lossIsNotScrap ? 'melt loss only — runners and risers are remelted' : '= net ÷ gross'],
       ['Material Price', m(price), `${currency}/kg`, 'as costed'],
@@ -507,7 +509,7 @@ export async function exportToExcelBlob(
       [x.principle],
       [`Programme view: ${x.programme.annualVolume.toLocaleString('en-GB')} a year over ${x.programme.years} years${x.programme.yearsAssumed ? ' (5 years assumed — no programme life given)' : ''}.`],
       [],
-      ['Route · process', 'Status', 'Cost / part', 'Band P10', 'Band P90', '± %', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Independent re-add', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling over programme', 'Amortised over', 'Programme spend', 'Basis'],
+      ['Route · process', 'Status', 'Cost / part', 'Band P10', 'Band P90', '± %', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Independent re-add', 'Grade costed', 'Net kg', 'Net kg is', 'Bought kg', 'Utilisation', 'Tooling over programme', 'Amortised over', 'Programme spend', 'Basis'],
       ...x.rows.map(r => [
         `${name(r)}${r === refRow ? ' (this costing)' : ''}`, r.status,
         r.total != null ? m(r.total) : '—',
@@ -516,8 +518,8 @@ export async function exportToExcelBlob(
         ...['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'].map(k => (r.breakdown ? m(r.breakdown[k] ?? 0) : '—')),
         r.reconciles == null ? '' : r.reconciles ? 'OK' : 'MISMATCH',
         r.audit ? (r.audit.closes ? 'CLOSES' : 'OPEN') : '',
-        ...(isItemisedRouteMaterial(r.material) ? [ITEMISED_MATERIAL_TEXT, '', '', '']
-          : [r.material?.label ?? '', r.material?.netKg ?? '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '']),
+        ...(isItemisedRouteMaterial(r.material) ? [ITEMISED_MATERIAL_TEXT, '', '', '', '']
+          : [r.material?.label ?? '', r.material?.netKg ?? '', r.material?.netKg != null ? (r.material.netLabel ?? 'net') : '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '']),
         r.tooling ? m(r.tooling.investment) : '', r.tooling?.amortisedOver ?? '', r.programme ? m(r.programme.total) : '',
         [...(r.commodity && r.commodity !== r.route ? [`costed as ${x.labels[r.commodity] ?? r.commodity}`] : []), ...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`), ...(r.refusal ? [`not costed: ${r.refusal}`] : []), ...r.notes, ...r.caveats].join('; '),
       ]),

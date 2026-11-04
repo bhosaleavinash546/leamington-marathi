@@ -1937,7 +1937,7 @@ export function renderShouldCostSections(
         r.programme ? c(r.programme.total) : '—',
         r.audit ? (r.audit.closes ? 'closes' : 'OPEN') : '—',
         isItemisedRouteMaterial(r.material) ? ITEMISED_MATERIAL_TEXT
-          : r.material ? `${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} (${r.material.label})` : '—',
+          : r.material ? `bought ${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} ${r.material.netLabel ?? 'net'} (${r.material.label})` : '—',
         why(r),
       ]),
       headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 5.8 },

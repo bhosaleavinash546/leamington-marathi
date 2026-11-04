@@ -449,12 +449,23 @@ if (!NO_ROUTES) {
       const row = cmp.rows.find(r => r.route === x.route && r.process === x.process)!;
       const pts = cmp.ladder.map(v => ({ v, a: row.byVolume.find(p => p.volume === v)?.total, b: ref.byVolume.find(p => p.volume === v)?.total }))
         .filter(p => p.a != null && p.b != null).map(p => ({ v: p.v, dd: p.a! - p.b! }));
-      let at: number | null = null;
+      // EVERY sign change is a crossing (a route can cross twice); the headline one is the last at or below the
+      // costing's own volume, else the first (fresh review, Nov 2026 — the knuckle's sand row crossed twice and the
+      // sentence named only the first).
+      const all: number[] = [];
       for (let k = 1; k < pts.length; k++) {
         const p0 = pts[k - 1], p1 = pts[k];
-        if ((p0.dd < 0 && p1.dd > 0) || (p0.dd > 0 && p1.dd < 0) || p1.dd === 0) { at = Math.round(p1.dd === 0 ? p1.v : p0.v + (p1.v - p0.v) * (-p0.dd) / (p1.dd - p0.dd)); break; }
+        if ((p0.dd < 0 && p1.dd > 0) || (p0.dd > 0 && p1.dd < 0)) all.push(p0.v + (p1.v - p0.v) * (-p0.dd) / (p1.dd - p0.dd));
+        else if (p1.dd === 0 && p0.dd !== 0) {
+          const next = pts.slice(k + 1).find(p => p.dd !== 0);
+          if ((next ? next.dd < 0 : p0.dd > 0) !== (p0.dd < 0)) all.push(p1.v);
+        }
       }
+      const annual = cmp.programme.annualVolume;
+      const decisive = [...all].reverse().find(v => v <= annual) ?? all[0];
+      const at = decisive != null ? Math.round(decisive) : null;
       check(part, `crossover "${x.label}" volume (interpolated here)`, at ?? -1, x.atVolume ?? -1, 1);
+      check(part, `crossover "${x.label}" crossings on the ladder`, all.length, x.crossings?.length ?? 0, 0);
       if (x.payback) {
         // Report standard #9: the payback is on the UP-FRONT tooling (first sets + NRE); replacement sets and perishable
         // tools stay in the piece price compared. Summed here from the items' kinds, not from the code's split.

@@ -12,8 +12,8 @@ import { SHEET_TAXONOMY } from '../engine/sheet-material-taxonomy.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
-import { nextCostStep, costStepMessage } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
+import { nextCostStep, costStepMessage, questionsToStopOn, newQuestionsMessage, GET_COST_AFTER_STOP_LABEL } from './cad-flow.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -27,6 +27,10 @@ import './styles/saas-polish.css';
 import './styles/dark-green.css';   // dark theme only: black + green (every rule scoped to not-light)
 import './styles/cad-viewer.css';  // 3D viewer (theme-aware, --v-* tokens)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
+import { installPageActions } from './page-actions.js';
+import { watchActionBarHeight } from './sticky-cta.js';
+import { beginRecost, endRecost } from './recost-pending.js';
+import { formWeights } from '../export/form-weights.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
 import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot, isReadablePcbPhoto } from './pcb/photo-slots.js';
@@ -187,7 +191,7 @@ import { countryFactor } from '../engine/regional-services.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printAuditPackPDF as printAuditPackType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
-import { computeCostUncertainty, confidenceWhy } from '../engine/uncertainty.js';
+import { computeCostUncertainty, confidenceWhy, confidenceRaisers } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
   computeConformalBand, applyConformalBand, segmentDrift, calibrationCoverage, calibrationSummary,
@@ -6711,7 +6715,11 @@ function renderCADDecisionsPanel(): string {
     <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid ${accent}">
       <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
       <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(_inCurText(d.why))}</div>
-      ${d.entry
+      ${d.entry && d.options.length > 1
+        // A figure WITH choices (gear helix, ISO 1328 class): the options as radios, the suggestion ticked, and a box
+        // for a value not on the list — it drew one box labelled with the first option (cad-workspace.ts).
+        ? entryChoiceHtml(d as EntryChoiceDecision, _cadDecisionAnswers[d.id], _inCurText)
+        : d.entry
         // Some answers are a figure, not a choice — an investment-casting
         // quotation, a gauge off a drawing. Rendering those as a radio group
         // with one option made 23 of the engine's questions unanswerable.
@@ -6774,7 +6782,7 @@ function renderCADDecisionsPanel(): string {
   return chipsHtml + `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;${bg};border-radius:8px">
     ${blockingBlock}
     ${advisoryBlock}
-    <div style="margin-top:11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+    <div class="cad-get-cost-row" style="margin-top:11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
       <button class="btn btn-primary" id="cad-get-cost-btn" style="font-size:0.78rem;padding:6px 14px">Get cost →</button>
       <button class="btn btn-secondary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px" title="Re-run the rules with these answers without costing">Apply answers</button>
       <span id="cad-decisions-status" role="status" style="font-size:0.7rem;color:var(--text-muted)">${open.length ? `${answered} of ${open.length} answered` : 'optional'}</span>
@@ -6802,11 +6810,25 @@ function readCADDecisionPanel(): void {
     if (!id) continue;
     const advisory = _cadDecisions.find(d => d.id === id)?.severity === 'advisory';
     if (advisory && !_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined) continue;
-    const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
-    const other = block.querySelector<HTMLSelectElement>('select[data-decision-other]');
-    const picked = typed ?? (other?.value ? other : block.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]'));
-    if (picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
+    // A question a re-run added (New) and nobody has touched is not answered by its pre-tick until Get cost has stopped
+    // on it once (B3). Answering ANOTHER question used to send it with the re-run, and it came back a chip unseen — the
+    // stub axle's leak-tight "No" in the live walk (fresh review, Nov 2026).
+    if (_cadNewQuestions.has(id) && !_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined) continue;
+    const v = pickedDecisionValue(block, _cadDecisions.find(d => d.id === id));
+    if (v) _cadDecisionAnswers[id] = v;
   }
+}
+
+/** What one question block holds as its answer: a typed value, the "Other" drop-down, a ticked radio or the select. */
+function pickedDecisionValue(block: HTMLElement | null | undefined, d: CADDecision | undefined): string {
+  if (!block) return '';
+  const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
+  if (d?.entry && d.options.length > 1) {
+    return entryChoiceValue(d as EntryChoiceDecision, block.querySelector<HTMLInputElement>('input[type=radio]:checked')?.value, typed?.value) ?? '';
+  }
+  const other = block.querySelector<HTMLSelectElement>('select[data-decision-other]');
+  const picked = typed ?? (other?.value ? other : block.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]'));
+  return (picked?.value ?? '').trim();
 }
 
 /** Blocking questions with a selection on the panel (a ticked suggestion counts — Get cost accepts what is shown). */
@@ -6816,10 +6838,7 @@ function readyBlockingCount(): { ready: number; total: number } {
   let ready = 0;
   for (const d of open) {
     const block = panel?.querySelector<HTMLElement>(`.cad-decision[data-decision-id="${CSS.escape(d.id)}"]`);
-    const typed = block?.querySelector<HTMLInputElement>('input[data-decision-entry]');
-    const other = block?.querySelector<HTMLSelectElement>('select[data-decision-other]');
-    const picked = typed ?? (other?.value ? other : block?.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]'));
-    if ((picked?.value ?? '').trim() || _cadDecisionAnswers[d.id]) ready++;
+    if (pickedDecisionValue(block, d) || _cadDecisionAnswers[d.id]) ready++;
   }
   return { ready, total: open.length };
 }
@@ -6848,6 +6867,14 @@ function wireCADDecisionsPanel(): void {
     } else if (t.matches('input[type=radio]')) {
       const o = blk?.querySelector<HTMLSelectElement>('select[data-decision-other]');
       if (o) o.value = '';
+      // A figure with choices: a listed value clears the box; "enter β off the drawing" opens it.
+      const box = blk?.querySelector<HTMLInputElement>('.cad-entry-choice input[data-decision-entry]');
+      if (box && (t as HTMLInputElement).checked) {
+        if ((t as HTMLInputElement).dataset.entryOpens) { if (e.type === 'change') box.focus(); } else box.value = '';
+      }
+    } else if (t.matches('.cad-entry-choice input[data-decision-entry]') && (t as HTMLInputElement).value.trim()) {
+      // a typed value is the answer: tick the "enter it" option, or untick the listed ones
+      blk?.querySelectorAll<HTMLInputElement>('input[type=radio]').forEach(r => { r.checked = !!r.dataset.entryOpens; });
     }
     readCADDecisionPanel();
     status();
@@ -6948,13 +6975,14 @@ async function cadGetCost(calculate = true): Promise<void> {
       if (!cadAnalysisResult) return;
     }
     const unseen = cadAnalysisResult
-      ? openCADDecisions().filter(d => !seen.has(d.id) || (_cadNewQuestions.has(d.id) && !_cadTouchedDecisions.has(d.id)))
+      ? questionsToStopOn(openCADDecisions().map(d => d.id), seen, _cadNewQuestions, _cadTouchedDecisions)
       : [];
+    const byRerun = unseen.some(id => _cadNewQuestions.has(id)) || seen.size > 0;
     _cadNewQuestions.clear();   // stopped on once: the next press accepts what is shown
     if (unseen.length) {
-      showCADQuestions(seen.size
-        ? `Your answers opened ${unseen.length === 1 ? 'one more question' : `${unseen.length} more questions`} — check the suggested answer and press Get cost.`
-        : costStepMessage({ kind: 'answer', missing: unseen }) + ' Check the suggested answer and press Get cost.');
+      // Never a dead press (fresh review, Nov 2026): the stop scrolls to the question(s), says why it stopped, and the
+      // button says what the next press does.
+      showCADQuestions(newQuestionsMessage(unseen.length, byRerun), unseen);
       return;
     }
     readCADDecisionPanel();
@@ -6967,7 +6995,7 @@ async function cadGetCost(calculate = true): Promise<void> {
       // New questions the answers opened are shown, not accepted on the engineer's behalf.
       const opened = _cadDecisions.filter(d => d.severity === 'blocking' && !before.has(d.id));
       if (step.kind !== 'apply' && opened.length) {
-        showCADQuestions(`Your answers opened ${opened.length === 1 ? 'one more question' : `${opened.length} more questions`} — check the suggested answer and press Get cost.`);
+        showCADQuestions(newQuestionsMessage(opened.length, true), opened.map(d => d.id));
         return;
       }
     }
@@ -6979,6 +7007,8 @@ async function cadGetCost(calculate = true): Promise<void> {
       case 'analyse':   // only when there is no file to measure — handled above otherwise
         return;
       case 'answer':
+        showCADQuestions(costStepMessage(step), step.missing.map(d => d.id));
+        return;
       case 'reanalyse':
         showCADQuestions(costStepMessage(step));
         return;
@@ -7013,17 +7043,39 @@ function shownBlockingQuestionIds(): Set<string> {
   return new Set(ids.filter(id => _cadDecisions.find(d => d.id === id)?.severity === 'blocking'));
 }
 
-/** Bring the questions into view with one line saying why nothing is costed yet. */
-function showCADQuestions(message: string): void {
+/**
+ * Bring the questions into view with one line saying why nothing is costed yet. With `focusIds` (the questions Get cost
+ * stopped on) the first of them is scrolled to and focused, each is marked, the reason is written beside it, and the
+ * button says what the next press does — the stop used to change nothing on screen (fresh review, Nov 2026).
+ */
+function showCADQuestions(message: string, focusIds: readonly string[] = []): void {
   if (activeCommodity !== 'cad_analysis') {
     // A commodity form is showing — the questions live on the CAD screen (its state, not a saved draft).
     showWorkflowPanel('cad_analysis', { restoreDraft: false });
   }
   setCADFlowNotice(message, 'ask');
   const panel = document.getElementById('cad-decisions-panel');
-  panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  panel?.classList.add('cad-decisions--attention');
-  setTimeout(() => panel?.classList.remove('cad-decisions--attention'), 1600);
+  const blocks = focusIds.map(id => panel?.querySelector<HTMLElement>(`.cad-decision[data-decision-id="${CSS.escape(id)}"]`))
+    .filter((b): b is HTMLElement => !!b);
+  if (!blocks.length) {
+    panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    panel?.classList.add('cad-decisions--attention');
+    setTimeout(() => panel?.classList.remove('cad-decisions--attention'), 1600);
+    return;
+  }
+  panel?.querySelectorAll('.cad-decision-stop').forEach(n => n.remove());
+  for (const b of blocks) b.classList.add('cad-decision--stopped');
+  // The reason, beside the first question it concerns (the notice line above the panel is out of view down here).
+  const note = document.createElement('p');
+  note.className = 'cad-decision-stop';
+  note.setAttribute('role', 'status');
+  note.textContent = message;
+  blocks[0].insertBefore(note, blocks[0].firstChild);
+  blocks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const target = blocks[0].querySelector<HTMLElement>('input[type=radio]:checked, input[data-decision-entry], select, input[type=radio]');
+  target?.focus({ preventScroll: true });
+  const btn = document.getElementById('cad-get-cost-btn');
+  if (btn && !btn.hasAttribute('aria-busy')) { btn.textContent = GET_COST_AFTER_STOP_LABEL; btn.dataset.afterStop = '1'; }
 }
 
 /** The one-line status above the questions: busy, asking, an error, or nothing. */
@@ -7664,11 +7716,11 @@ const FACE_COLOURS: Record<string, string> = {
 function buildInlineDemoSection(commodity: string): string {
   const snippets = COMMODITY_DEMO_SNIPPETS[commodity];
   if (!snippets || snippets.length === 0) return '';
-  const cards = snippets.map((s, i) => `<button type="button" onclick="window.loadSUVDemo('${commodity}',${i + 1})" style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;flex:1;min-width:0;transition:border-color 0.15s"><div style="font-size:0.70rem;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(s.brand)}</div><div style="font-size:0.76rem;font-weight:600;color:var(--text-primary);margin:2px 0;line-height:1.3">${escHtml(s.name)}</div><div style="font-size:0.67rem;color:var(--text-muted)">${escHtml(s.spec)}</div></button>`).join('');
+  const cards = snippets.map((s, i) => `<button type="button" data-cv-action="suv-demo" data-commodity="${escHtml(commodity)}" data-slot="${i + 1}" style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;flex:1;min-width:0;transition:border-color 0.15s"><div style="font-size:0.70rem;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(s.brand)}</div><div style="font-size:0.76rem;font-weight:600;color:var(--text-primary);margin:2px 0;line-height:1.3">${escHtml(s.name)}</div><div style="font-size:0.67rem;color:var(--text-muted)">${escHtml(s.spec)}</div></button>`).join('');
   const pdfBanner = `<div id="demo-pdf-banner" style="display:none;margin-top:10px;padding:9px 13px;background:linear-gradient(135deg,rgba(230,81,0,0.08),rgba(230,81,0,0.04));border:1px solid rgba(230,81,0,0.30);border-radius:8px;align-items:center;gap:10px;flex-wrap:wrap">
     <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="8" cy="8" r="7"/><polyline points="5 8 8 11 11 8"/><line x1="8" y1="4" x2="8" y2="11"/></svg>
     <span id="demo-pdf-banner-label" style="font-size:0.75rem;font-weight:600;color:var(--text-primary);flex:1">Demo loaded — results ready</span>
-    <button type="button" onclick="window.__demoOpenPDF&&window.__demoOpenPDF()" style="display:flex;align-items:center;gap:5px;font-size:0.73rem;font-weight:600;padding:5px 12px;background:rgba(230,81,0,0.12);border:1px solid rgba(230,81,0,0.4);border-radius:6px;cursor:pointer;color:#e65100;transition:background 0.15s" onmouseover="this.style.background='rgba(230,81,0,0.22)'" onmouseout="this.style.background='rgba(230,81,0,0.12)'">
+    <button type="button" class="cv-demo-pdf-btn" data-cv-action="demo-pdf" style="display:flex;align-items:center;gap:5px;font-size:0.73rem;font-weight:600;padding:5px 12px;border:1px solid rgba(230,81,0,0.4);border-radius:6px;cursor:pointer;color:#e65100;transition:background-color 0.15s">
       <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
       Export Full Report PDF
     </button>
@@ -7979,8 +8031,7 @@ function buildPCBDemoSection(): string {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
         <div style="padding:12px;border:1px solid rgba(79,142,247,0.3);border-radius:10px;background:rgba(79,142,247,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
-             onmouseenter="this.style.background='rgba(79,142,247,0.09)'" onmouseleave="this.style.background='rgba(79,142,247,0.04)'"
-             onclick="window.__loadPCBDemo('ecu')">
+             data-cv-action="pcb-demo" data-demo="ecu">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">Automotive ECU</span>
@@ -7998,8 +8049,7 @@ function buildPCBDemoSection(): string {
           </div>
         </div>
         <div style="padding:12px;border:1px solid rgba(139,92,246,0.3);border-radius:10px;background:rgba(139,92,246,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
-             onmouseenter="this.style.background='rgba(139,92,246,0.09)'" onmouseleave="this.style.background='rgba(139,92,246,0.04)'"
-             onclick="window.__loadPCBDemo('adas')">
+             data-cv-action="pcb-demo" data-demo="adas">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">ADAS Camera PCB</span>
@@ -8017,8 +8067,7 @@ function buildPCBDemoSection(): string {
           </div>
         </div>
         <div style="padding:12px;border:1px solid rgba(239,68,68,0.3);border-radius:10px;background:rgba(239,68,68,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
-             onmouseenter="this.style.background='rgba(239,68,68,0.09)'" onmouseleave="this.style.background='rgba(239,68,68,0.04)'"
-             onclick="window.__loadPCBDemo('bosch_radar')">
+             data-cv-action="pcb-demo" data-demo="bosch_radar">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">77 GHz Radar ECU</span>
@@ -11166,7 +11215,7 @@ function showCADProvenanceBanner(): void {
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-right:4px"></span>${measured} measured (geometry)</span>` +
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} ${selectedAnalysisMode() === 'deterministic' ? 'set by a rule' : 'estimated'} — each graded in the Basis</span>` +
     (blocked ? `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#dc2626;margin-right:4px"></span>${blocked} waiting on a decision</span>` : '') +
-    `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" onclick="this.parentElement.remove()">&#10005;</button>`;
+    `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" aria-label="Dismiss" data-cv-action="dismiss-parent">&#10005;</button>`;
   const anchor = document.getElementById('commodity-tabs');
   if (anchor?.parentElement) anchor.parentElement.insertBefore(div, anchor.nextSibling);
   else panel.prepend(div);
@@ -12150,11 +12199,13 @@ async function captureCountryFills(targetCommodity: CommodityType, cadAnnVol: st
   return out;
 }
 
-function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
-  if (!cadAnalysisResult) return;
+function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false,
+  /** Called once the fill (and the cost, with autoCalculate) is drawn — or the apply stopped. */
+  onDone?: () => void): void {
+  if (!cadAnalysisResult) { onDone?.(); return; }
   // Never fill a form while the rules are still asking: its weight, cycle times and tools wait on the answers, and the
   // questions would leave the screen with the CAD panel (CAD to COST 360 review, Oct 2026).
-  if (openCADDecisions().length) { void cadGetCost(autoCalculate); return; }
+  if (openCADDecisions().length) { onDone?.(); void cadGetCost(autoCalculate); return; }
   _cadAppliedTo = targetCommodity;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
@@ -12196,9 +12247,11 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 
       document.documentElement.dataset.cadFilled = String(Date.now());   // e2e: the fill (all countries) is done
     } finally { doneBusy(); }
-    if (autoCalculate) {
-      compute();
-    }
+    try {
+      if (autoCalculate) {
+        compute();
+      }
+    } finally { onDone?.(); }
   }, 150);
 }
 
@@ -20504,6 +20557,12 @@ async function init(): Promise<void> {
   // Both rebuilt from local storage, dropping company rates. Now: one path.
   const _applyCountry = (code: string) => {
     const region = (REGIONAL_DATA[code as ManufacturingRegion] ? code : 'UK') as ManufacturingRegion;
+    // A finished result is re-costed in the new book: until that is drawn, no figure from the old book (converted to the
+    // new currency) and no half-built one is shown — a labelled placeholder instead (recost-pending.ts, fresh review
+    // Nov 2026: the bracket flickered ¥81.16 → ¥37.69, the stub axle went blank and its stamp read "United Kingdom rate
+    // book v2.2.0-CN").
+    const recost = lastResult && lastInput && region !== _mfgRegion ? beginRecost(REGIONAL_DATA[region].name) : null;
+    const done = () => { if (recost !== null) endRecost(recost); };
     _mfgRegion = region;
     try { localStorage.setItem('cv-region', region); } catch { /* storage blocked — the session still works */ }
     _rebuildActiveLibrary();
@@ -20515,16 +20574,17 @@ async function init(): Promise<void> {
     // bulk path uses too (regionalShopDefaults), so screen and headless agree.
     const shop = applyCountryShopFields(region);
     if (shop.changedOverhead) showToast(`Overhead ${shop.overheadPct}% · packaging and logistics set for ${rd.name}. Adjust if needed.`, 'info');
+    // Both pickers show the country (set without firing their change events) — BEFORE anything is redrawn: the stamp
+    // read the picker while the library was already the new country's ("United Kingdom rate book v2.2.0-CN").
+    for (const id of ['mfg-region-selector', 'costing-country-sel']) {
+      const sel = el<HTMLSelectElement>(id);
+      if (sel && Array.from(sel.options).some(o => o.value === region)) sel.value = region;
+    }
     // Display currency follows the country unless the user pinned one.
     const cur = _currencyUserPinned ? _displayCurrency : rd.currency;
     const curSel = el<HTMLSelectElement>('currency-selector');
     if (curSel && Array.from(curSel.options).some(o => o.value === cur)) curSel.value = cur;
     _applyCurrency(cur);
-    // Both pickers show the country (set without firing their change events).
-    for (const id of ['mfg-region-selector', 'costing-country-sel']) {
-      const sel = el<HTMLSelectElement>(id);
-      if (sel && Array.from(sel.options).some(o => o.value === region)) sel.value = region;
-    }
     const infoEl = document.getElementById('country-bar-info');
     if (infoEl) {
       const sym = CURRENCY_SYMBOL[cur] ?? cur;
@@ -20541,12 +20601,14 @@ async function init(): Promise<void> {
     if (cadAnalysisResult && _cadAppliedTo) {
       if (selectedAnalysisMode() === 'deterministic') {
         const target = _cadAppliedTo;
-        void reanalyzeCAD().then(() => { if (cadAnalysisResult) applyCADToForm(target, true); });
+        void reanalyzeCAD().then(() => { if (cadAnalysisResult) applyCADToForm(target, true, done); else done(); }, done);
         return;
       }
       showToast(`Rates now ${rd.name}. Press "Re-analyse" to re-price the CAD rule values (tools, finishing) in ${rd.name} — it calls the AI again.`, 'warning');
     }
-    if (lastResult && lastInput) el('calc-btn')?.click();
+    try {
+      if (lastResult && lastInput) el('calc-btn')?.click();
+    } finally { done(); }
   };
   el<HTMLSelectElement>('costing-country-sel')?.addEventListener('change', e => {
     _applyCountry((e.target as HTMLSelectElement).value);
@@ -20667,7 +20729,25 @@ async function init(): Promise<void> {
   // The action bar's secondary buttons in a "More" menu, the account menu, and
   // keyboard-reachable scrolling tables (saas-shell.ts).
   initActionMenu();
+  // Controls drawn with data-cv-action instead of an inline onclick, which the server's CSP blocks (page-actions.ts).
+  {
+    const w = window as unknown as Record<string, ((...a: unknown[]) => unknown) | undefined>;
+    installPageActions({
+      'sign-out': () => { w.signOut?.(); },
+      'clear-search': elx => {
+        const f = document.getElementById(elx.dataset.target ?? '') as HTMLInputElement | null;
+        if (f) { f.value = ''; f.dispatchEvent(new Event('input')); }
+      },
+      'suv-demo': elx => { w.loadSUVDemo?.(elx.dataset.commodity ?? '', Number(elx.dataset.slot)); },
+      'demo-pdf': () => { w.__demoOpenPDF?.(); },
+      'pcb-demo': elx => { w.__loadPCBDemo?.(elx.dataset.demo ?? ''); },
+      'dismiss-parent': elx => { elx.parentElement?.remove(); },
+      'hide-target': elx => { const t = document.getElementById(elx.dataset.target ?? ''); if (t) t.style.display = 'none'; },
+      'toggle-collapse': elx => { elx.closest(elx.dataset.group ?? '')?.classList.toggle(elx.dataset.collapseClass ?? 'collapsed'); },
+    });
+  }
   initAccountMenu(() => (window as unknown as { signOut?: () => void }).signOut?.());
+  watchActionBarHeight();   // CAD to COST's Get cost row stays clear of the sticky bar (sticky-cta.ts)
   watchScrollRegions();
   // The panel header's commodity name is a searchable switcher (commodity-switcher.ts).
   initCommoditySwitcher();
@@ -21354,8 +21434,9 @@ function costedFromCAD(): boolean {
 
 /** The reproducibility stamp: the rate book, the rules and the kernel behind this costing, and the date. */
 function currentCADStamp(): string {
+  // The country of the ACTIVE book (the one `library.version` names) — the picker could lag it mid-switch.
   const sel = document.getElementById('costing-country-sel') as HTMLSelectElement | null;
-  const country = sel?.selectedOptions[0]?.textContent?.trim() || 'UK';
+  const country = REGIONAL_DATA[_mfgRegion]?.name ?? (sel?.selectedOptions[0]?.textContent?.trim() || 'UK');
   return cadStamp({ rateBook: `${country} rate book v${library.version}`, rules: _cadVersions?.rules ?? null,
     kernel: _cadVersions?.kernel ?? null, date: new Date() });
 }
@@ -21480,10 +21561,20 @@ function renderCADCostCard(): void {
     confidence: _lastBandInfo?.conf ?? null,
     basis,
     confidenceWhy: _lastBandInfo?.conf === 'calibrated' ? null : confidenceWhy(lastResult!),
+    raisers: _lastBandInfo?.conf === 'calibrated' ? [] : confidenceRaisers(lastResult!, input),
     // A laminate is two materials priced per kg (a direct cost on the placeholder id): the Laminate chip names it and
     // the costed weight is the cured part weight the form holds — "Grade Virtual / Pass-through (default)" and no
     // weight is what the hat stiffener printed (parity sweep, Oct 2026).
     grade: mat && !/^mat-virtual/.test(input.rawMaterial.materialId) ? { label: mat.grade, answered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin'] || _cadDecisionAnswers['material.elastomer'] || _cadDecisionAnswers['material.alAlloy'] || _cadDecisionAnswers['gear.materialClass'] || _cadMaterialLocked) } : null,
+    weights: (() => {
+      // the same weight set the PDF and workbook print (formWeights), read off the form the engine costed
+      const rvs = Object.values(_cadRuleFields).filter(rf => rf.fieldId).map(rf => {
+        const f = document.getElementById(rf.fieldId) as HTMLInputElement | null;
+        return { label: rf.fieldId, value: f?.value ?? rf.value, fieldId: rf.fieldId };
+      });
+      const w = formWeights(rvs, input, activeCommodity);
+      return w ? { form: w.form, finishedKg: w.finishedKg, formedKg: w.asFormedKg, billetKg: w.billetKg, boughtKg: w.boughtKg } : null;
+    })(),
     costedWeightKg: input.rawMaterial.netWeightKg > 0 ? input.rawMaterial.netWeightKg   // a gear's blank carries its net weight beside the direct cost
       : (activeCommodity === 'composites' ? (parseFloat((document.getElementById('comp-part-wt') as HTMLInputElement | null)?.value ?? '') || null) : null),
     topMovers,

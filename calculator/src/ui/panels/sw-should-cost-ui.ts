@@ -745,7 +745,7 @@ function renderSWPanelHTML(): string {
 
     return `
     <div class="sw-cat-group" data-cat="${cat}">
-      <div class="sw-cat-header" style="border-left:3px solid ${meta.color}" onclick="this.closest('.sw-cat-group').classList.toggle('sw-collapsed')">
+      <div class="sw-cat-header" style="border-left:3px solid ${meta.color}" data-cv-action="toggle-collapse" data-group=".sw-cat-group" data-collapse-class="sw-collapsed">
         <span class="sw-cat-icon">${meta.icon}</span>
         <span class="sw-cat-label">${esc(meta.label)}</span>
         <span class="sw-cat-count">${mods.length}/${mods.length} modules</span>

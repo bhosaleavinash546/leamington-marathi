@@ -97,6 +97,9 @@ export interface RouteMaterial {
   /** The grade's name in the book. */
   label: string;
   netKg: number | null;
+  /** What `netKg` is, named as the costing's own weight set names it: "as cast" (a casting poured with its machining
+   *  stock — the bought weight's base), "as forged + scrap forgings", or "net". One label on screen, PDF and workbook. */
+  netLabel?: string;
   boughtKg: number | null;
   utilisation: number | null;
 }
@@ -218,6 +221,9 @@ export interface RouteCrossover {
   atVolume: number | null;
   /** True when the route is the cheaper one ABOVE the crossover. */
   cheaperAbove: boolean | null;
+  /** Every crossing on the ladder, in volume order (a route can cross more than once); `atVolume` / `cheaperAbove` above
+   *  are the one that decides the costing's own volume (the last at or below it). */
+  crossings?: Array<{ atVolume: number; cheaperAbove: boolean }>;
   /** The ladder range over which the two routes' P10–P90 bands overlap around the crossover (indistinguishable there). */
   indistinguishable: { from: number; to: number } | null;
   /** Tooling payback against the costing's route at the costing's volume, when this route costs more UP-FRONT tooling
@@ -379,10 +385,14 @@ function materialOf(r: BulkPartResult, book: RateLibrary): RouteMaterial | null 
     return { materialId: null, label: `priced by its itemised lines${refs.length ? ` (${refs.join(', ')})` : ''} — not by weight`,
       netKg: null, boughtKg: null, utilisation: null };
   }
+  const route = String(r.commodity ?? '');
+  const netLabel = /^(casting|cast_and_machine)$/.test(route) && rm.lossIsNotScrap ? 'as cast'
+    : route === 'forging' ? 'as forged + scrap forgings' : 'net';
   return {
     materialId: rm.materialId ?? null,
     label: m?.grade ?? rm.materialId ?? 'material',
     netKg: net != null ? round(net, 3) : null,
+    netLabel,
     boughtKg: net != null && util != null ? round(net / util, 3) : null,
     utilisation: util != null ? round(util, 3) : null,
   };
@@ -1009,28 +1019,57 @@ export function crossovers(rows: RouteRow[], ref: RouteRow, ladder: number[], an
     }
     const base = { route: row.route, process: row.process, label: row.label, indistinguishable, payback };
     if (pts.length < 2) {
-      out.push({ ...base, atVolume: null, cheaperAbove: null, text: 'not re-costed across the ladder' });
+      out.push({ ...base, atVolume: null, cheaperAbove: null, crossings: [], text: 'not re-costed across the ladder' });
       continue;
     }
-    let found: RouteCrossover | null = null;
+    // EVERY sign change on the ladder. A route can cross twice — cheaper at a few thousand a year, dearer in the middle,
+    // cheaper again at volume — and the sentence used to describe only the FIRST crossing: the knuckle's sand-cast row
+    // read "dearer than the costed route above ~6,278 a year" beside its own −£3.40 (−20 %) at 200,000 (fresh review,
+    // Nov 2026). Each crossing is interpolated between the two re-costs either side of it; the sentence names every
+    // stretch and ends with the direction AT the costing's own volume, the row's figure.
+    const crossings: Array<{ v: number; cheaperAbove: boolean; from: number; to: number }> = [];
     for (let k = 1; k < pts.length; k++) {
       const p0 = pts[k - 1], p1 = pts[k];
-      if ((p0.d < 0 && p1.d > 0) || (p0.d > 0 && p1.d < 0) || p1.d === 0) {
-        const v = p1.d === 0 ? p1.v : p0.v + (p1.v - p0.v) * (-p0.d) / (p1.d - p0.d);
-        const cheaperAbove = p1.d < 0 || (p1.d === 0 && p0.d > 0);
-        found = {
-          ...base, atVolume: Math.round(v), cheaperAbove,
-          text: `${cheaperAbove ? 'cheaper' : 'dearer'} than the costed route above ~${fmtV(v)} a year on the central estimate `
-            + `(interpolated between re-costs at ${fmtV(p0.v)} and ${fmtV(p1.v)})`,
-        };
-        break;
+      if ((p0.d < 0 && p1.d > 0) || (p0.d > 0 && p1.d < 0)) {
+        crossings.push({ v: p0.v + (p1.v - p0.v) * (-p0.d) / (p1.d - p0.d), cheaperAbove: p1.d < 0, from: p0.v, to: p1.v });
+      } else if (p1.d === 0 && p0.d !== 0) {
+        // equal on a re-cost: the direction above it is the next point's (or the opposite of the one before)
+        const next = pts.slice(k + 1).find(p => p.d !== 0);
+        const cheaperAbove = next ? next.d < 0 : p0.d > 0;
+        if (cheaperAbove !== (p0.d < 0)) crossings.push({ v: p1.v, cheaperAbove, from: p0.v, to: p1.v });
       }
     }
-    if (!found) {
+    const word = (cheaper: boolean) => (cheaper ? 'cheaper' : 'dearer');
+    const between = (c: { from: number; to: number }) => `interpolated between re-costs at ${fmtV(c.from)} and ${fmtV(c.to)}`;
+    let found: RouteCrossover;
+    if (!crossings.length) {
       const allCheaper = pts.every(p => p.d < 0);
       found = {
-        ...base, atVolume: null, cheaperAbove: null,
+        ...base, atVolume: null, cheaperAbove: null, crossings: [],
         text: `${allCheaper ? 'cheaper' : 'dearer'} than the costed route at every volume from ${fmtV(pts[0].v)} to ${fmtV(pts[pts.length - 1].v)} a year`,
+      };
+    } else {
+      // the crossing that decides the costing's own volume: the last one at or below it (else the first)
+      const decisive = [...crossings].reverse().find(c => c.v <= annualVolume) ?? crossings[0];
+      let text: string;
+      if (crossings.length === 1) {
+        const c = crossings[0];
+        text = `${word(c.cheaperAbove)} than the costed route above ~${fmtV(c.v)} a year on the central estimate (${between(c)})`;
+      } else {
+        const parts = [`${word(!crossings[0].cheaperAbove)} than the costed route below ~${fmtV(crossings[0].v)} a year`];
+        for (let k = 0; k < crossings.length; k++) {
+          const c = crossings[k], nx = crossings[k + 1];
+          parts.push(nx ? `${word(c.cheaperAbove)} from ~${fmtV(c.v)} to ~${fmtV(nx.v)}` : `${word(c.cheaperAbove)} above ~${fmtV(c.v)} a year`);
+        }
+        text = `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]} on the central estimate (crossings ${crossings.map(between).join('; ')})`;
+      }
+      // the direction at the costing's own volume — the row's own delta, never contradicted by the sentence
+      const here = pts.find(p => p.v === annualVolume);
+      if (here && here.d !== 0) text += `; at this costing's ${fmtV(annualVolume)} a year it is ${word(here.d < 0)}`;
+      found = {
+        ...base, atVolume: Math.round(decisive.v), cheaperAbove: decisive.cheaperAbove,
+        crossings: crossings.map(c => ({ atVolume: Math.round(c.v), cheaperAbove: c.cheaperAbove })),
+        text,
       };
     }
     if (indistinguishable) {

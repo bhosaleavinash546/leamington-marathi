@@ -50,14 +50,15 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-DPILcIZG.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index--xl9ud-h.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
+  <link rel="modulepreload" crossorigin href="/calculator/assets/page-actions-nKHQQblO.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/al-extrusion-data-C2fkJkpt.js">
-  <link rel="modulepreload" crossorigin href="/calculator/assets/money-text-3HY7xg1Z.js">
+  <link rel="modulepreload" crossorigin href="/calculator/assets/money-text-LPFgnzLf.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-BDYKo4-7.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-CvDoa17S.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DBz3bEAR.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DkO7mAht.css">
 </head>
 <body>
 
@@ -182,7 +183,7 @@
     <!-- User -->
     <div id="user-menu" style="display:flex;align-items:center;gap:7px">
       <span id="user-greeting" style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap"></span>
-      <button onclick="signOut()" style="font-size:0.73rem;padding:5px 11px;background:var(--surface-elevated);border:1px solid var(--border-strong);border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;font-family:var(--font)" title="Sign out">Sign Out</button>
+      <button id="signout-btn" data-cv-action="sign-out" style="font-size:0.73rem;padding:5px 11px;background:var(--surface-elevated);border:1px solid var(--border-strong);border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;font-family:var(--font)" title="Sign out">Sign Out</button>
     </div>
   </div>
 </header>
@@ -695,7 +696,7 @@
     <div style="font-size:3rem;margin-bottom:12px"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div>
     <p style="font-size:0.95rem;margin-bottom:16px">No articles found. Try refreshing or selecting a different category.</p>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('news-search').value='';document.getElementById('news-search').dispatchEvent(new Event('input'))">Clear search</button>
+      <button class="btn btn-secondary btn-sm" data-cv-action="clear-search" data-target="news-search">Clear search</button>
       <button class="btn btn-secondary btn-sm" id="news-empty-refresh-btn">↻ Refresh feed</button>
     </div>
   </div>
@@ -4927,12 +4928,12 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
   <div style="background:#fff;border-radius:14px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:var(--font)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <h3 id="cv-feedback-title" style="margin:0;font-size:1rem;font-weight:800;color:#0f172a"></h3>
-      <button onclick="document.getElementById('cv-feedback-modal').style.display='none'" style="background:none;border:none;font-size:1.3rem;color:#94a3b8;cursor:pointer">×</button>
+      <button type="button" data-cv-action="hide-target" data-target="cv-feedback-modal" style="background:none;border:none;font-size:1.3rem;color:#94a3b8;cursor:pointer">×</button>
     </div>
     <p id="cv-feedback-desc" style="font-size:0.8rem;color:#64748b;margin-bottom:12px"></p>
     <textarea id="cv-feedback-text" placeholder="Describe your idea or the bug you encountered..." rows="5" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.8rem;font-family:var(--font);resize:vertical;color:#1e293b;outline:none"></textarea>
     <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
-      <button onclick="document.getElementById('cv-feedback-modal').style.display='none'" style="padding:8px 16px;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc;font-size:0.8rem;cursor:pointer;font-family:var(--font);color:#64748b">Cancel</button>
+      <button type="button" data-cv-action="hide-target" data-target="cv-feedback-modal" style="padding:8px 16px;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc;font-size:0.8rem;cursor:pointer;font-family:var(--font);color:#64748b">Cancel</button>
       <button id="cv-feedback-submit" style="padding:8px 20px;border-radius:7px;border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:var(--font)">Send Feedback</button>
     </div>
     <p id="cv-feedback-sent" style="display:none;text-align:center;color:#059669;font-size:0.82rem;margin-top:10px;font-weight:600">Copied to your clipboard — this build does not send feedback; paste it into an email to the CostVision team.</p>

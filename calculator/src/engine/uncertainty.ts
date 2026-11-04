@@ -60,6 +60,45 @@ export function confidenceWhy(result: PartCostResult): {
     lowFields: [...new Set(all.filter(t => t.confidence === 'Low').map(t => t.field))] };
 }
 
+/**
+ * What would raise the confidence grade: the Low-graded inputs (a rate or price with no stated source) that carry the
+ * most money, each with the £ a part that rests on it — figures the costing already holds, no new number: an operation's
+ * machine or labour cost, the material bought at the price, the scrap credited, a £ line. Inputs on the same library rate
+ * are one item (a labour rate shared by six operations is one quote to get). Most £ first.
+ * The card printed a ±6.9 % band beside "Low" with no way to tell what would move it (fresh review, Nov 2026).
+ */
+export function confidenceRaisers(result: PartCostResult, input?: Pick<UniversalStackInput, 'rawMaterial'> | null, n = 3):
+  Array<{ fields: string[]; gbp: number }> {
+  const rm = input?.rawMaterial;
+  const gross = rm && rm.materialUtilization > 0 ? rm.netWeightKg / rm.materialUtilization : null;
+  const opBy = new Map(result.operationDetails.map(o => [o.operationName, o]));
+  const groups = new Map<string, { fields: string[]; gbp: number }>();
+  for (const t of result.traceability) {
+    if (t.confidence !== 'Low') continue;
+    let gbp: number | null = null;
+    let kind = 'line';
+    const m = /^(.*)\.(machineRatePerHr|labourRatePerHr)$/.exec(t.field);
+    if (m) {
+      const op = opBy.get(m[1]);
+      kind = m[2];
+      gbp = op ? (m[2] === 'machineRatePerHr' ? op.processCost : op.labourCost) : null;
+    } else if (t.field === 'material.pricePerKg') {
+      gbp = gross != null ? gross * t.value : null; kind = 'material';
+    } else if (t.field === 'material.scrapRecoveryPricePerKg') {
+      gbp = gross != null && rm && !rm.lossIsNotScrap ? Math.max(0, gross - rm.netWeightKg) * t.value : null; kind = 'scrap';
+    } else if (t.unit === '£') {
+      gbp = t.value;
+    }
+    if (gbp == null || !(gbp > 0)) continue;
+    const key = `${kind}|${t.rateId}|${kind === 'line' ? t.field : ''}`;
+    const g = groups.get(key) ?? { fields: [], gbp: 0 };
+    g.fields.push(t.field);
+    g.gbp += gbp;
+    groups.set(key, g);
+  }
+  return [...groups.values()].sort((a, b) => b.gbp - a.gbp).slice(0, n);
+}
+
 export function overallConfidence(result: PartCostResult): Confidence {
   const all = result.traceability;
   if (!all.length) return 'Medium';
