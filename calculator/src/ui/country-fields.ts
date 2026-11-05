@@ -41,8 +41,52 @@ export function applyDeliveryTermsToForm(region: ManufacturingRegion, doc: Docum
 
 /** Where each figure came from — the cost card's Basis grades it by this (it read a size estimate as "Typed"). */
 export type ShopFigureSource = 'default' | 'size' | 'typed';
-const source: Record<'packaging' | 'logistics', ShopFigureSource> = { packaging: 'default', logistics: 'default' };
-export function shopFigureSource(field: 'packaging' | 'logistics'): ShopFigureSource { return source[field]; }
+export type ShopField = 'overhead' | 'packaging' | 'logistics';
+const source: Record<ShopField, ShopFigureSource> = { overhead: 'default', packaging: 'default', logistics: 'default' };
+export function shopFigureSource(field: ShopField): ShopFigureSource { return source[field]; }
+
+/** The form field of each shop figure. */
+export const SHOP_FIELD_IDS: Record<ShopField, string> = { overhead: 'overhead-pct', packaging: 'packaging', logistics: 'logistics' };
+
+/**
+ * The overhead % typed into its field by a person (a trusted keystroke). A programmatic fill — a country switch, a demo,
+ * a draft or a CAD fill — is not typed, so the figure keeps following the country (Part1 review, Nov 2026: a 9 % stored
+ * from an earlier China book survived as if typed and the report said "as entered" beside China's 12 % default).
+ */
+export function overheadTyped(byPerson = true): void { if (byPerson) source.overhead = 'typed'; }
+
+/**
+ * Back to defaults: nothing typed. A new costing starts here; a restored draft sets what IT recorded as typed.
+ */
+export function resetShopSources(): void { source.overhead = 'default'; source.packaging = 'default'; source.logistics = 'default'; }
+
+/** What a draft stores of the shop figures: each one's source, and the UK basis a typed / size figure was taken back to. */
+export interface ShopDraftState { sources: Record<ShopField, ShopFigureSource>; basis: { packagingPerPart?: number; logisticsPerPart?: number } }
+export function shopDraftState(): ShopDraftState { return { sources: { ...source }, basis: { ...basis } }; }
+
+/**
+ * Which of a draft's shop fields are restored as VALUES: only those a person typed. A figure that was a default (or a
+ * size estimate) is the country's — the country applied first sets it from the book in force now, so a value stored from
+ * an earlier book never comes back as if typed. A draft saved before sources were stored has none: nothing restores.
+ */
+export function restorableShopFields(state: Partial<ShopDraftState> | null | undefined): Set<string> {
+  const out = new Set<string>();
+  for (const f of ['overhead', 'packaging', 'logistics'] as const) if (state?.sources?.[f] === 'typed') out.add(SHOP_FIELD_IDS[f]);
+  return out;
+}
+
+/** Take a draft's shop state back: typed sources and the UK basis (so a size estimate keeps following the country). */
+export function restoreShopDraftState(state: Partial<ShopDraftState> | null | undefined): void {
+  // a draft saved before sources were stored says nothing about them: the figures on the page keep their own sources
+  if (!state?.sources) return;
+  resetShopSources();
+  for (const f of ['overhead', 'packaging', 'logistics'] as const) {
+    const v = state.sources[f];
+    if (v === 'typed' || v === 'size') source[f] = v;
+  }
+  if (state.basis?.packagingPerPart !== undefined && source.packaging !== 'default') basis.packagingPerPart = state.basis.packagingPerPart;
+  if (state.basis?.logisticsPerPart !== undefined && source.logistics !== 'default') basis.logisticsPerPart = state.basis.logisticsPerPart;
+}
 
 /** Record the UK-basis packaging / logistics (the CAD estimate, or a figure typed in the UK). */
 export function setShopBasisUK(b: { packagingPerPart?: number; logisticsPerPart?: number }): void {
@@ -76,7 +120,8 @@ export function applyCountryShopFields(region: ManufacturingRegion, doc: Documen
     return Math.abs(prev - v) > 1e-9;
   };
   const ohPct = Math.round(f.overheadPct * 1000) / 10;
-  const changedOverhead = set('overhead-pct', ohPct);
+  // A typed overhead is the engineer's figure and stays; a default follows the country.
+  const changedOverhead = source.overhead === 'typed' ? false : set('overhead-pct', ohPct);
   set('packaging', Math.round(f.packagingPerPart * 10_000) / 10_000);
   set('logistics', Math.round(f.logisticsPerPart * 10_000) / 10_000);
   applyDeliveryTermsToForm(region, doc);

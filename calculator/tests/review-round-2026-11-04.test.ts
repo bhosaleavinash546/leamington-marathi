@@ -18,7 +18,7 @@ import { CAST_AND_MACHINE_RULES } from '../src/engine/cost-input-rules/commoditi
 import { RULE_PATH_MAP } from '../src/engine/cost-input-rules/apply.js';
 import { impressionPlan } from '../src/engine/cost-input-rules/commodities/casting.js';
 import { IMPRESSION_LIMITS, SAND_LINE_CLASSES } from '../src/engine/modules/casting-advisor.js';
-import { FOUNDRY_INDIRECT, NEW_SAND_GBP_PER_T_SAND, PLANT_OTHER_KWH_PER_T, NEW_SAND_BASIS, FOUNDRY_NOT_COSTED } from '../src/engine/casting-melt.js';
+import { FOUNDRY_INDIRECT, NEW_SAND_GBP_PER_T_SAND, PLANT_OTHER_KWH_PER_T, NEW_SAND_BASIS, FOUNDRY_NOT_COSTED, foundryNotCostedText } from '../src/engine/casting-melt.js';
 import { computeCastingDrivers } from '../src/engine/modules/casting.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates, computeMachineRateFromBuildup } from '../src/engine/rate-library.js';
 import { buildRegionalLibrary, REGIONAL_DATA, type ManufacturingRegion } from '../src/engine/regional-rates.js';
@@ -72,7 +72,9 @@ describe('1. foundry indirect costs are named rules, each with its value, source
     expect(p('cam-dust-kwh').value).toBe(20);
     expect(p('cam-plant-kwh').value).toBe(455);
     expect(p('cam-plant-kwh').basis).toMatch(/^ESTIMATE \(grade D/);
-    expect(p('cam-plant-kwh').basis).toContain(FOUNDRY_NOT_COSTED);
+    // the items for THIS process and metal: a ductile-iron sand casting has no steel riser cut-off (Part1 review, Nov 2026)
+    expect(p('cam-plant-kwh').basis).toContain(foundryNotCostedText({ subtype: 'sand', alloy: 'ductile-iron' }));
+    expect(p('cam-plant-kwh').basis).not.toMatch(/riser cut-off/);
     expect(FOUNDRY_NOT_COSTED).toMatch(/refractory.*metallurgical lab.*pouring and sand-plant crew.*riser cut-off, weld repair and steel refractory/);
   });
 

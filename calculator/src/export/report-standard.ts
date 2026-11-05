@@ -16,6 +16,7 @@
  * Nothing here is a number: every £ the core report prints comes from the costing.
  */
 import type { CommodityType } from '../engine/types.js';
+import { foundryNotModelledReport } from '../engine/casting-melt.js';
 
 export interface KeyDriver {
   /** What the reader calls it. */
@@ -58,6 +59,13 @@ export interface CommodityReportStandard {
 const LAUNCH: NotIncludedItem[] = [{ text: 'PPAP / initial samples and first-article inspection' }, { text: 'Gauges and check fixtures / CMM programme', costedIf: /check fixture|gauges and fixtures|inspection fixture/i }];
 const ni = (text: string, costedIf?: RegExp, unlessAnswered?: NotIncludedItem['unlessAnswered']): NotIncludedItem =>
   ({ text, ...(costedIf ? { costedIf } : {}), ...(unlessAnswered ? { unlessAnswered } : {}) });
+/**
+ * Threads: the kernel cannot see a thread (a modelled thread is a plain cylinder), so a hole is costed as drilled and is
+ * tapped only where its Ø is a tapping-drill size (feature-ops.ts tappedThread). Listed on every machined route until the
+ * engineer confirms which holes are tapped — never costed by guess (Part1 review, Nov 2026).
+ */
+const THREADS: NotIncludedItem = { text: 'Threads not detected — confirm: the CAD model shows no thread, so each hole is costed drilled '
+  + '(tapped only where its Ø is a tapping-drill size); say which holes are tapped and their size' };
 /** Settled by a "No" to the leak-tight question. */
 const NOT_PRESSURE_TIGHT = { id: 'service.pressureTight', answer: /^no$/ };
 /** A safety-critical part: answered Yes. */
@@ -78,36 +86,102 @@ const BARE = { id: 'service.finish', answer: /^none$/ };
 /** Heat treatment the costing prices as an operation or a consumable line. */
 const HEAT_TREAT_COSTED = /heat treat|normalis|anneal|stress relie|temper|quench|carburi|nitrid|solution/i;
 
-const CASTING_DRIVERS: KeyDriver[] = [
-  { name: 'Casting yield (poured kg a good casting)', match: /cast[\s-]?yield|casting yield/i, question: 'What is your method yield — poured kg per good casting?' },
-  { name: 'Moulding line rate', match: /sand[\s-]?ct\b|cycle time/i, question: 'Which moulding line, how many moulds an hour and how many impressions a mould?' },
-  { name: 'Moulding line crew', match: /cast[\s-]?manning|casting manning/i, question: 'What crew runs the moulding line?' },
-  { name: 'Cores', match: /\bcore\b|sand[\s-]?core/i, question: 'How many cores, which process (cold box / shell) and what do they cost a casting?' },
-  { name: 'Pattern / tool price', match: /die[\s-]?cost/i, question: 'Pattern and core-box price, material, and who owns them?' },
-  { name: 'Pattern life', match: /die[\s-]?life/i, question: 'Pattern life in moulds, and how many sets over the programme?' },
-  { name: 'Fettling', match: /fettl/i, question: 'Fettling method and minutes a casting?' },
-  { name: 'Heat treatment', match: /ht[\s-]?cost|heat treat/i, question: 'Heat-treatment route and its price a kg?' },
-  { name: 'Shot blast', match: /blast/i, question: 'Blast process and its cost a casting?' },
-  { name: 'NDT', match: /\bndt\b/i, question: 'NDT regime (MPI, X-ray sampling) and its cost a casting?' },
-  { name: 'Machining cell', match: /setup[\s-]?mach|setup machine/i, question: 'Which machine and how many clampings for the machining?' },
-  { name: 'Cutting-tool wear', match: /tool[\s-]?wear/i, question: 'Cutting-tool cost a part?' },
-  { name: 'Machining fixtures', match: /mach[\s-]?tooling|machining fixtures/i, question: 'How many fixtures, and their price?' },
-];
+/** The rule fields every casting route carries, matched the same way whatever the process calls them. */
+const CYCLE = /sand[\s-]?ct\b|cycle time/i;
+const CREW = /cast[\s-]?manning|casting manning/i;
+const CORES = /\bcore\b|sand[\s-]?core/i;
+const TOOL_PRICE = /die[\s-]?cost/i;
+const TOOL_LIFE = /die[\s-]?life/i;
 
 /**
- * Foundry costs the research could not price (review round, 4 Nov 2026 — casting-melt.ts FOUNDRY_NOT_COSTED): a gap in
- * the cost model a foundry WILL charge, never invented. The new sand, ladle preheat, dust extraction and plant electricity
- * ARE costed (named rules).
+ * The casting process the costing chose — the words a buyer and a foundry use for its line and its tool. Sand is a
+ * moulding line and pattern equipment; a permanent-mould route (gravity, HPDC) is a die-casting cell and a die (Part1
+ * review, Nov 2026: a gravity die casting printed "Moulding line rate", "Pattern and core-box price" and "Pattern life
+ * … shots"); investment is a shell-and-pour line and a wax-injection die. `any`: the subtype is not known.
  */
-const FOUNDRY_NOT_MODELLED = 'Foundry costs no published price was found for — furnace and ladle refractory, the metallurgical '
-  + 'lab a melt, the pouring and sand-plant crew, bentonite and coal dust on green sand; on steel castings riser cut-off, weld repair and steel '
-  + 'refractory wear: not in this price — a foundry will charge them (a gap in the cost model, not an item you can exclude; ask '
-  + 'for them on the quotation).';
+export type CastingProcessKey = 'sand' | 'gravity' | 'hpdc' | 'investment' | 'any';
+export function castingProcessKey(subtype: string | null | undefined): CastingProcessKey {
+  const s = String(subtype ?? '').toLowerCase();
+  return s === 'sand' || s === 'gravity' || s === 'hpdc' || s === 'investment' ? s : /die[\s_-]?cast/.test(s) ? 'hpdc' : 'any';
+}
+
+const CASTING_FORM_DRIVERS: Record<CastingProcessKey, KeyDriver[]> = {
+  sand: [
+    { name: 'Moulding line rate', match: CYCLE, question: 'Which moulding line, how many moulds an hour and how many impressions a mould?' },
+    { name: 'Moulding line crew', match: CREW, question: 'What crew runs the moulding line?' },
+    { name: 'Cores', match: CORES, question: 'How many cores, which process (cold box / shell) and what do they cost a casting?' },
+    { name: 'Pattern / tool price', match: TOOL_PRICE, question: 'Pattern and core-box price, material, and who owns them?' },
+    { name: 'Pattern life', match: TOOL_LIFE, question: 'Pattern life in moulds, and how many sets over the programme?' },
+  ],
+  gravity: [
+    { name: 'Die casting cell rate', match: CYCLE, question: 'Which die-casting cell, its cycle a casting, and how many dies run at this volume?' },
+    { name: 'Cell crew', match: CREW, question: 'What crew runs the die-casting cell?' },
+    { name: 'Sand cores', match: CORES, question: 'Any sand cores in the die: how many, and what do they cost a casting?' },
+    { name: 'Die price (first set) and slides', match: TOOL_PRICE, question: 'Die price for the first set, the slides and cores in it, the die steel, and who owns it?' },
+    { name: 'Die life (castings)', match: TOOL_LIFE, question: 'Die life in castings, and how many dies over the programme?' },
+  ],
+  hpdc: [
+    { name: 'Die casting cell rate', match: CYCLE, question: 'Which HPDC cell (locking force), its shot cycle, and cavities a die?' },
+    { name: 'Cell crew', match: CREW, question: 'What crew runs the die-casting cell?' },
+    { name: 'Die price (first set) and slides', match: TOOL_PRICE, question: 'Die price for the first set, the slides in it, the die steel, and who owns it?' },
+    { name: 'Die life (shots)', match: TOOL_LIFE, question: 'Die life in shots, and how many dies over the programme?' },
+  ],
+  investment: [
+    { name: 'Shell and pour line rate', match: CYCLE, question: 'Parts a tree, trees an hour and the pour cycle?' },
+    { name: 'Shell and pour line crew', match: CREW, question: 'What crew runs the shell and pour line?' },
+    { name: 'Wax-injection die price', match: TOOL_PRICE, question: 'Wax-injection die price, and who owns it?' },
+    { name: 'Wax die life', match: TOOL_LIFE, question: 'Wax die life in patterns, and how many dies over the programme?' },
+  ],
+  any: [
+    { name: 'Casting line rate', match: CYCLE, question: 'Which casting line or cell, and its cycle a casting?' },
+    { name: 'Casting line crew', match: CREW, question: 'What crew runs the casting line?' },
+    { name: 'Cores', match: CORES, question: 'How many cores and what do they cost a casting?' },
+    { name: 'Pattern or die price', match: TOOL_PRICE, question: 'Pattern or die price, material, and who owns it?' },
+    { name: 'Pattern or die life', match: TOOL_LIFE, question: 'Pattern or die life, and how many sets over the programme?' },
+  ],
+};
+
+function castingDrivers(p: CastingProcessKey): KeyDriver[] {
+  return [
+    { name: 'Casting yield (poured kg a good casting)', match: /cast[\s-]?yield|casting yield/i, question: 'What is your method yield — poured kg per good casting?' },
+    ...CASTING_FORM_DRIVERS[p],
+    { name: p === 'hpdc' ? 'Trim / fettling' : 'Fettling', match: /fettl/i, question: p === 'hpdc' ? 'Trim press or fettling, and minutes a casting?' : 'Fettling method and minutes a casting?' },
+    { name: 'Heat treatment', match: /ht[\s-]?cost|heat treat/i, question: 'Heat-treatment route and its price a kg?' },
+    { name: 'Shot blast', match: /blast/i, question: 'Blast process and its cost a casting?' },
+    { name: 'NDT', match: /\bndt\b/i, question: 'NDT regime (MPI, X-ray sampling) and its cost a casting?' },
+    { name: 'Machining cell', match: /setup[\s-]?mach|setup machine/i, question: 'Which machine and how many clampings for the machining?' },
+    { name: 'Cutting-tool wear', match: /tool[\s-]?wear/i, question: 'Cutting-tool cost a part?' },
+    { name: 'Machining fixtures', match: /mach[\s-]?tooling|machining fixtures/i, question: 'How many fixtures, and their price?' },
+  ];
+}
+const CASTING_DRIVERS = castingDrivers('sand');
+
+/** The casting quote lines that name the line and the tool, in the process's words. */
+const CASTING_TOOL_QUOTE: Record<CastingProcessKey, string[]> = {
+  sand: ['Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, blast and NDT cost a casting'],
+  gravity: ['Sand cores in the die (if any): count and cost a casting', 'Die: first-set price, slides, life in castings and dies over the programme', 'Fettling, blast and NDT cost a casting'],
+  hpdc: ['Die: first-set price, slides, life in shots and dies over the programme', 'Trim, blast and NDT cost a casting'],
+  investment: ['Wax-injection die: price, life and sets', 'Shell, knock-out, fettling and NDT cost a casting'],
+  any: ['Cores: count and cost a casting', 'Pattern or die: price, life and sets', 'Fettling, blast and NDT cost a casting'],
+};
+const CASTING_LINE_QUOTE: Record<CastingProcessKey, string> = {
+  sand: 'Moulding line, moulds an hour, impressions and crew', gravity: 'Die-casting cell, cycle a casting, dies running and crew',
+  hpdc: 'HPDC cell (locking force), shot cycle, cavities and crew', investment: 'Shell and pour line, parts a tree and crew',
+  any: 'Casting line or cell, cycle and crew',
+};
+
+/**
+ * Foundry costs the research could not price (review round, 4 Nov 2026 — casting-melt.ts FOUNDRY_NOT_COSTED_ITEMS): a gap
+ * in the cost model a foundry WILL charge, never invented — filtered by the costed process and metal (bentonite and coal
+ * dust only on green sand, riser cut-off / weld repair / steel refractory only on steel). The new sand, ladle preheat,
+ * dust extraction and plant electricity ARE costed (named rules).
+ */
+const FOUNDRY_NOT_MODELLED = foundryNotModelledReport({ subtype: null, alloy: null });
 
 const STANDARDS: Record<string, CommodityReportStandard> = {
   cast_and_machine: {
     keyDrivers: CASTING_DRIVERS,
-    notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), DUCTILE_TEST_BARS, ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
+    notIncluded: [...LAUNCH, THREADS, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), DUCTILE_TEST_BARS, ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
     notModelled: [FOUNDRY_NOT_MODELLED],
     quoteBreakdown: ['Casting price a part and £/kg as cast, ex-foundry', 'Metal charge £/kg and the index it follows',
       'Poured kg and yield', 'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, blast and NDT cost a casting',
@@ -143,7 +217,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Billet cut-off', match: /saw/i, question: 'Billet cut-off: saw or shear, cuts an hour, kerf and blade cost a cut?' },
       { name: 'Induction heater', match: /heater/i, question: 'Billet heater: kW, kg/h, and who tends it?' },
     ],
-    notIncluded: [...LAUNCH, ni('Grain-flow / macro-etch or ultrasonic testing, if specified'), ni('Shot peening', /peen/i), ni('Part marking / traceability', /mark/i), ni('Rust protection or coating', /rust|coat|oil/i, BARE), ni('Machining of features left as-forged')],
+    notIncluded: [...LAUNCH, THREADS, ni('Grain-flow / macro-etch or ultrasonic testing, if specified'), ni('Shot peening', /peen/i), ni('Part marking / traceability', /mark/i), ni('Rust protection or coating', /rust|coat|oil/i, BARE), ni('Machining of features left as-forged')],
     // The billet saw and the induction heater were the gap here until phase B (4 Nov 2026): both are costed now.
     notModelled: [],
     quoteBreakdown: ['Forging price a part and £/kg as forged', 'Bar / billet £/kg and the index it follows', 'Billet kg, forging kg, flash and yield',
@@ -161,7 +235,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'CAM programming', match: /prog/i, question: 'Programming and prove-out cost?' },
       { name: 'Scrap', match: /reject|scrap/i, question: 'Machining scrap rate?' },
     ],
-    notIncluded: [...LAUNCH, ni('Pressure / leak test (hydraulic parts — ask)', /leak|pressure test/i, NOT_PRESSURE_TIGHT), ni('Cross-hole deburr (thermal / ECM / brush)', /deburr/i), ni('Cleanliness wash (ISO 16232)', /wash/i), ni('Anodise / coating', /anodis|coat/i, BARE), ni('Part marking', /mark/i)],
+    notIncluded: [...LAUNCH, THREADS, ni('Pressure / leak test (hydraulic parts — ask)', /leak|pressure test/i, NOT_PRESSURE_TIGHT), ni('Cross-hole deburr (thermal / ECM / brush)', /deburr/i), ni('Cleanliness wash (ISO 16232)', /wash/i), ni('Anodise / coating', /anodis|coat/i, BARE), ni('Part marking', /mark/i)],
     quoteBreakdown: ['Stock form, size and £/kg', 'Cycle time by set-up (roughing, finishing, holes)', 'Machine class and £/h', 'Labour £/h and manning',
       'Cutting-tool cost a part', 'Fixtures and programming (one-off)', 'Scrap rate', 'Overhead and margin %'],
     dfm: { apply: ['machining.'], notApply: ['moulding.', 'blow.', 'sheetmetal.', 'casting.', 'forging.'] },
@@ -339,8 +413,27 @@ const DEFAULT_STANDARD: CommodityReportStandard = {
   dfm: { apply: [], notApply: [] },
 };
 
-export function reportStandardFor(commodity: CommodityType | string | null | undefined): CommodityReportStandard {
-  return STANDARDS[String(commodity ?? '')] ?? DEFAULT_STANDARD;
+/** What the report knows of the costed process: the casting subtype the rules chose and the metal (library category or
+ *  advisor alloy). Absent = the commodity's general row. */
+export interface ReportStandardContext { castingSubtype?: string | null; alloy?: string | null }
+
+export function reportStandardFor(commodity: CommodityType | string | null | undefined, ctx: ReportStandardContext = {}): CommodityReportStandard {
+  const std = STANDARDS[String(commodity ?? '')] ?? DEFAULT_STANDARD;
+  if ((commodity !== 'casting' && commodity !== 'cast_and_machine') || (ctx.castingSubtype === undefined && ctx.alloy === undefined)) return std;
+  // A casting: the drivers, the quote lines and the foundry gaps in the costed process's own words (data above).
+  const p = castingProcessKey(ctx.castingSubtype);
+  const tools = CASTING_TOOL_QUOTE[p];
+  const quoteBreakdown = commodity === 'cast_and_machine'
+    ? ['Casting price a part and £/kg as cast, ex-foundry', 'Metal charge £/kg and the index it follows', 'Poured kg and yield', ...tools,
+      'Machining cycle by operation and machine class', 'Machine and labour £/h', 'Tooling investment separate from the piece price', 'Overhead and margin %']
+    : ['Casting price a part and £/kg as cast', 'Metal charge £/kg and the index it follows', 'Poured kg and yield', ...tools.map(t => t.replace(/^Fettling, blast/, 'Fettling, heat treatment, blast')),
+      CASTING_LINE_QUOTE[p], 'Overhead and margin %'];
+  return {
+    ...std,
+    keyDrivers: castingDrivers(p),
+    notModelled: [foundryNotModelledReport({ subtype: p === 'any' ? null : p, alloy: ctx.alloy ?? null })],
+    quoteBreakdown,
+  };
 }
 
 /** Does a geometric DFM rule apply to this commodity's costed process? A must-NOT family is never shown in the core. */

@@ -5,7 +5,6 @@
 ### context: full
 MACHINING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
-  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialFamily=mat-al6082-bar  [aluminium → 6082-T6 Aluminium Bar (representative machining grade — not a drawing callout); 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   stockWeightKg=21.697  [328 × 245 mm cut from 100 mm plate (part 320 × 240 × 96: 2.5 mm a side to square the sawn edges + 3 mm saw cut, 1 mm skim a face then the next stocked thickness) = 8036 cm³ of aluminium, 21.697 kg, of which the part is 13% — deterministic, use verbatim]
@@ -18,11 +17,11 @@ MACHINING COST INPUT RULES:
   operationCount=6  [6 operation(s): cutting by approach direction, 1 measured drilling op, handling and the bench deburr — deterministic, use verbatim]
   operations=Milling — +Z (40 faces) 0.231 hr on mach-hmc-400; Milling — -Z (30 faces) 0.173 hr on mach-hmc-400; Milling — +X (20 faces) 0.116 hr on mach-hmc-400; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.030 hr on mach-hmc-400; Pallet change — 2 fixturing(s) 0.004 hr on mach-hmc-400; Deburr and gauge check (bench) 0.025 hr on mach-hmc-400  [sums to 0.578 hr: measured cutting, handling per fixturing, bench deburr — deterministic, use verbatim]
   rejectRate=0.02  [2% machining scrap (first-offs and dimensional rejects) — engineering typical, replace with the supplier's figure — deterministic, use verbatim]
-  fixtureCostGBP=24000  [2 dedicated hydraulic (tombstone) fixture(s) × £12,000 (the volume cell's dedicated fixture; fixture prices engineering-typical toolroom builds, not sourced) — deterministic, use verbatim]
-  programmingNRE=175  [CAM programming and prove-out 5.25 h (1.5 h × 2 fixturing(s) + 0.25 h × 1 feature group(s) + 2 h surfacing) × £33.27/h manufacturing engineer (hours engineering-typical, not sourced) — deterministic, use verbatim]
+  fixtureCostGBP=288000  [12 fixture set(s), one a machine — on the Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell): cycle ÷ OEE 41.5200 min + change-over 0.0180 min = 41.5380 min a part; 41.5380 × 100,000 a year ÷ 60 = 69,230 h; 69,230 h ÷ 6,000 h available = 11.54 machine(s), rounded up — the capacity at this volume; 24 dedicated hydraulic (tombstone) fixture(s) × £12,000 (the volume cell's dedicated fixture; fixture prices engineering-typical toolroom builds, not sourced) — deterministic, use verbatim]
+  programmingNRE=175  [CAM programming and prove-out 5.25 h (1.5 h × 2 fixturing(s) + 0.25 h × 1 feature group(s) + 2 h surfacing) × £33.27/h manufacturing engineer (hours engineering-typical, not sourced); programmed once a fixturing and run on all 12 machines — not repeated a machine — deterministic, use verbatim]
   toolWearCostPerPart=1.3193  [33.0 min of cutting × £0.0400/min inserts, end mills and drills (aluminium) — not in the machine rate (£/min engineering-typical, not sourced) — deterministic, use verbatim]
-  safety-critical question: UNDECIDED — needs "Is this part safety-critical or fatigue-loaded?" (Yes — safety-critical | No)
-  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)
+  safety-critical question=no  [answered: not safety-critical — deterministic, use verbatim]
+  leak-tight question=no  [answered: not leak-tight — deterministic, use verbatim]
 
 ### context: degraded
 MACHINING COST INPUT RULES:

@@ -93,7 +93,7 @@ export function nearNetSecondaryMachining(
   }));
   const setups = routing.chosen.setups + (cut.spindle ? 1 : 0);
   const machineId = o.machineId ?? primaryMachineId;
-  const nre = machiningNRE(ctx, cut, routing);
+  const nre = machiningNRE(ctx, cut, routing, { ops: plan, machineId });
   const cuttingMin = cuttingMinutesOf(plan);
   const wear = toolWearPerPart(cuttingMin, o.family);
   // The rules' setup time (`machining.setupTimeHr`, 3 dp) and batch (`machining.batchSize`) — as cast + machine reads them.

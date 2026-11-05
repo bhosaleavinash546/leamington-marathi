@@ -6,12 +6,12 @@
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  leak-tight question=no  [assumed — confirm before quoting — deterministic, use verbatim]
-  tolerance-class question=standard  [assumed — confirm before quoting — deterministic, use verbatim]
-  safety-critical question=no  [assumed — confirm before quoting — deterministic, use verbatim]
+  leak-tight question=no  [answered — deterministic, use verbatim]
+  tolerance-class question=standard  [answered — deterministic, use verbatim]
+  safety-critical question=no  [answered — deterministic, use verbatim]
   materialId=mat-lm25  [aluminium gravity casting → LM25 / A356 (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout) — deterministic, use verbatim]
   grade: UNDECIDED — needs "Which aluminium grade?" (EN AC-46200 (AlSi8Cu3, gravity / low-pressure — cylinder heads, housings) | LM4 / AlSi5Cu3 (secondary, sand / gravity) | LM6 / EN AC-44100 (AlSi12, gravity / sand) | LM25 / A356 | EN AC-51300 (AlMg5, marine sand / gravity) | LM13 / EN AC-48000 (AlSi12CuNiMg — pistons) | EN AC-45300 (AlSi5Cu1Mg / C355 — cylinder heads, T6) | A357 / AlSi7Mg0.6 (Premium T6) | A206 / AlCu4.5MgTi (high-strength premium casting))
-  subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
+  subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die — deterministic, use verbatim]
   yieldFraction=0.6  [gravity aluminium yield band 0.5–0.7, midpoint (feeding scales with the alloy's shrinkage; engineering-typical band, not sourced — the foundry's method yield replaces it) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)) — a quotation overrides this — deterministic, use verbatim]
@@ -20,7 +20,7 @@ CASTING COST INPUT RULES:
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
   fettlingMinutes=2  [light fettling — gravity aluminium, 2.8 kg: gate / riser removal and grind at the foundry rate, 2 min (engineering-typical, not sourced — published manual times run from 45 s a small high-volume ductile casting (Malleable Castings time study) to 15–20 min a cylinder block (Mahindra, 2011)) — deterministic, use verbatim]
   heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg × the as-cast kg (advisor rate, UK; engineering-typical, not sourced) — deterministic, use verbatim]
-  shotBlastCostPerPart=0.236  [gravity castings are blasted to remove sand / scale / flash — 2.85 kg as cast (finished + machining stock) ÷ 600 kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × (blast machine £25.07/h + operator £24.60/h), min £0.10 = £0.2360 (CostVision engineering heuristic) — deterministic, use verbatim]
+  shotBlastCostPerPart=0.236  [gravity castings are blasted to clean the as-cast surface — oxide and die-joint flash (no sand core is costed on the permanent mould) — 2.85 kg as cast (finished + machining stock) ÷ 600 kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × (blast machine £25.07/h + operator £24.60/h), min £0.10 = £0.2360 (CostVision engineering heuristic) — deterministic, use verbatim]
   impregnationCostPerPart=0  [not pressure-tight — no impregnation — deterministic, use verbatim]
   impregnation question=no  [not pressure-tight — not asked — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
@@ -28,7 +28,7 @@ CASTING COST INPUT RULES:
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
   ladlePreheatKwhPerT=0  [aluminium — ladle preheat is sourced for iron and steel foundries only (EU JRC SF BREF 2024, BAT-AEPL Tables 4.1 (iron) and 4.2 (steel), kWh per tonne of liquid metal); NOT costed for this metal — deterministic, use verbatim]
   dustExtractionKwhPerT=0  [aluminium — the dust-extraction figure is an iron / steel foundry's (German data restated in the EU JRC SF BREF 2024 §2.3.8.1 (flue-gas cleaning ~20 kWh per tonne of good casting)); NOT costed for this metal — deterministic, use verbatim]
-  plantElectricityKwhPerT=0  [gravity aluminium — the plant-electricity figure is a green-sand iron plant's; NOT costed for this route / metal. NOT costed (no published price found): furnace and ladle refractory (8–9 kg/t molten on induction, 1994 data — no current price), the metallurgical lab a melt, the pouring and sand-plant crew beyond the moulding-line crew and the melt shop's operator-hours, bentonite and coal-dust additions (bentonite €228/t is published, no consumption a tonne poured), and on steel castings riser cut-off, weld repair and steel refractory wear — deterministic, use verbatim]
+  plantElectricityKwhPerT=0  [gravity aluminium — the plant-electricity figure is a green-sand iron plant's; NOT costed for this route / metal. NOT costed (no published price found): furnace and ladle refractory (8–9 kg/t molten on induction, 1994 data — no current price), the metallurgical lab a melt, the pouring crew beyond the cell crew and the melt shop's operator-hours — deterministic, use verbatim]
   finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | E-coat / KTL (zirconium pre-treat) | Powder coat (iron phosphate pre-treat) | Vibratory mass finish (deburr))
   finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
   finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]

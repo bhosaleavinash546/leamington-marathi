@@ -18615,16 +18615,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 16.54,
+      "total": 16.83,
       "breakdown": {
         "rawMaterial": 6.1,
         "process": 3.21,
         "labour": 3.26,
-        "tooling": 0.76,
+        "tooling": 1,
         "packaging": 0.14,
         "logistics": 0.25,
-        "overhead": 1.6,
-        "margin": 1.23
+        "overhead": 1.63,
+        "margin": 1.25
       }
     }
   },
@@ -23627,16 +23627,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 16.91,
+      "total": 17.49,
       "breakdown": {
         "rawMaterial": 6.87,
         "process": 3.25,
         "labour": 3.15,
-        "tooling": 0.48,
+        "tooling": 0.96,
         "packaging": 0.1,
         "logistics": 0.16,
-        "overhead": 1.65,
-        "margin": 1.25
+        "overhead": 1.71,
+        "margin": 1.3
       }
     }
   },
@@ -27677,16 +27677,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 27.15,
+      "total": 27.44,
       "breakdown": {
         "rawMaterial": 11.84,
         "process": 4.17,
         "labour": 4.86,
-        "tooling": 0.63,
+        "tooling": 0.87,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 2.58,
-        "margin": 2.01
+        "overhead": 2.61,
+        "margin": 2.03
       }
     }
   },
@@ -29810,16 +29810,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 37.07,
+      "total": 38.81,
       "breakdown": {
         "rawMaterial": 18.27,
         "process": 5.96,
         "labour": 5.71,
-        "tooling": 0.49,
+        "tooling": 1.93,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 3.65,
-        "margin": 2.75
+        "overhead": 3.82,
+        "margin": 2.87
       }
     }
   },

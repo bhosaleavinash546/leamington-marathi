@@ -280,7 +280,8 @@ describe('2. Casting and cast + machine rows that are the same costing are one r
     // Review round (4 Nov 2026): 8.6877 → 9.3923 — the foundry indirect lines, the impressions limits and the CNC lathe's
     // UK award capex (the spindle is turned). Phase B (4 Nov 2026): 9.3923 → 10.1103 — the UK cast-steel charge is the
     // consumer-scrap level + trim ÷ 0.96 (£0.148 → £0.314/kg)
-    expect(castLike[0].total!).toBeCloseTo(10.1103, 3);
+    // Part1 review (5 Nov 2026): 10.1103 → 10.1223 — one machining fixture set a machine the capacity implies
+    expect(castLike[0].total!).toBeCloseTo(10.1223, 3);
   }, 120_000);
 });
 

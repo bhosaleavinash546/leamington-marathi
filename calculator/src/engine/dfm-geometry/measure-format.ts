@@ -31,6 +31,7 @@ export const MEASURE_LABELS: Record<string, string> = {
   setups: 'Fixturings',
   thicknessMm: 'Thickness',
   thicknessRatio: 'Thickness ratio',
+  widthMm: 'Slit width',
 };
 export function measureLabel(field: string): string { return MEASURE_LABELS[field] ?? field; }
 

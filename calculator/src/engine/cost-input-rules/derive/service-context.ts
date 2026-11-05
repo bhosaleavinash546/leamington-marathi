@@ -163,3 +163,25 @@ export function assumedNote(ctx: RuleContext, id: string): string {
   if (!ctx.assumeLeanings || ctx.answers[id] !== undefined) return '';
   return ' (assumed — confirm before quoting)';
 }
+
+/**
+ * The service flags a costing ASSUMED rather than had answered, read off the rule bases it carries — the casting and
+ * forging advisors print "[pressure-tight, tolerance class, safety-critical assumed — confirm before quoting]" on the
+ * reason every other rule quotes. No route assumes them since Nov 2026 (an engineer is at the screen in every mode); this
+ * is the report's backstop for any costing that still carries one (a stored or older analysis, a harness that sets
+ * `assumeLeanings`), so the core report lists it as "assumed — confirm" and counts it as an open question.
+ */
+export const ASSUMED_SERVICE_FLAGS: ReadonlyArray<{ id: string; name: string; question: string; assumed: string }> = [
+  { id: PRESSURE_TIGHT_DECISION_ID, name: 'pressure-tight', question: 'Does this part have to hold pressure or be leak-tight?', assumed: 'not leak-tight' },
+  { id: TOLERANCE_CLASS_DECISION_ID, name: 'tolerance class', question: 'What tolerance class does the drawing call for?', assumed: 'standard tolerance class' },
+  { id: SAFETY_CRITICAL_DECISION_ID, name: 'safety-critical', question: 'Is this part safety-critical or fatigue-loaded?', assumed: 'not safety-critical' },
+];
+export function assumedServiceFlagsIn(bases: ReadonlyArray<string | null | undefined>): typeof ASSUMED_SERVICE_FLAGS[number][] {
+  const names = new Set<string>();
+  for (const b of bases) {
+    for (const m of String(b ?? '').matchAll(/\[([^\]]*?) assumed — confirm before quoting\]/g)) {
+      for (const n of m[1].split(/,\s*/)) names.add(n.trim());
+    }
+  }
+  return ASSUMED_SERVICE_FLAGS.filter(f => names.has(f.name));
+}

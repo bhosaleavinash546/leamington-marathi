@@ -37,7 +37,7 @@ SHEET METAL COST INPUT RULES:
   finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | Powder coat (iron phosphate pre-treat) | E-coat / KTL (zirconium pre-treat) | Sulphuric anodise (aluminium))
   finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
   finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]
-  safety-critical question: UNDECIDED — needs "Is this part safety-critical or fatigue-loaded?" (Yes — safety-critical | No)
+  safety-critical question=no  [answered: not safety-critical — deterministic, use verbatim]
 
 ### context: degraded
 SHEET METAL COST INPUT RULES:

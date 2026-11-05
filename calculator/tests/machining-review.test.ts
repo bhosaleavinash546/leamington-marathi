@@ -163,7 +163,9 @@ describe('6–8. handling, crew and change-over are charged as the routing was r
 describe('9–14. fixtures, programming, tool wear, deburr, scrap, batch and grade are rules on both paths', () => {
   it('fixtures and programming were £0 headless and £15,000 / £0 on the screen', () => {
     const m = mach('MACH_Hydraulic_Manifold.stp', 'aluminium');
-    expect(m.toolingCost).toBe(24_000);                      // 2 dedicated hydraulic tombstone fixtures × £12,000 (the volume cell at 50,000/yr)
+    // 2 dedicated hydraulic tombstone fixtures × £12,000 a machine × 2 machines — the cell runs 1.75 machines' hours at
+    // 50,000/yr, and each machine carries its own fixtures (Part1 review, Nov 2026: one set was costed for all of them)
+    expect(m.toolingCost).toBe(2 * 2 * 12_000);
     expect(mach('MACH_Hydraulic_Manifold.stp', 'aluminium', 10_000).toolingCost).toBe(10_000);   // 4 dedicated fixtures × £2,500 at 10,000/yr
     expect(Number(m.programmingNRE)).toBeGreaterThan(150);   // 2 fixturings on the cell (4 on the split routing gave > 300)
   });

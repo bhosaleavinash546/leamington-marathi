@@ -157,9 +157,37 @@ export const PLANT_OTHER_KWH_PER_T = Math.round(FOUNDRY_INDIRECT.plantElectricit
 
 /**
  * What the research could not price (review round, notes.md §3 gaps 5–6) — listed, NOT costed, never invented. Printed on
- * the casting rules' basis and in the report standard's "Not in the cost model".
+ * the casting rules' basis and in the report standard's "Not in the cost model" — ONE list, filtered by the costed process
+ * and metal (Part1 review, Nov 2026: a gravity aluminium casting printed bentonite and coal dust on green sand and steel
+ * riser cut-off). `text` is the rule basis's wording, `report` the report's.
  */
-export const FOUNDRY_NOT_COSTED = 'NOT costed (no published price found): furnace and ladle refractory (8–9 kg/t molten on '
-  + 'induction, 1994 data — no current price), the metallurgical lab a melt, the pouring and sand-plant crew beyond the '
-  + 'moulding-line crew and the melt shop\'s operator-hours, bentonite and coal-dust additions (bentonite €228/t is published, '
-  + 'no consumption a tonne poured), and on steel castings riser cut-off, weld repair and steel refractory wear';
+export type FoundryCostContext = { subtype: string | null | undefined; alloy?: string | null };
+const isSteelCasting = (p: FoundryCostContext) => /steel|superalloy/i.test(String(p.alloy ?? ''));
+export const FOUNDRY_NOT_COSTED_ITEMS: ReadonlyArray<{ text: string; report: string; when: (p: FoundryCostContext) => boolean }> = [
+  { text: 'furnace and ladle refractory (8–9 kg/t molten on induction, 1994 data — no current price)', report: 'furnace and ladle refractory',
+    when: () => true },
+  { text: 'the metallurgical lab a melt', report: 'the metallurgical lab a melt', when: () => true },
+  // a sand line pours from ladles and runs a sand plant; a permanent mould (gravity) and an investment shell are poured by
+  // the cell; an HPDC cell ladles automatically, its crew is the cell's (no item)
+  { text: 'the pouring and sand-plant crew beyond the moulding-line crew and the melt shop\'s operator-hours',
+    report: 'the pouring and sand-plant crew', when: p => p.subtype !== 'gravity' && p.subtype !== 'investment' && p.subtype !== 'hpdc' },
+  { text: 'the pouring crew beyond the cell crew and the melt shop\'s operator-hours', report: 'the pouring crew beyond the cell crew',
+    when: p => p.subtype === 'gravity' || p.subtype === 'investment' },
+  { text: 'bentonite and coal-dust additions (bentonite €228/t is published, no consumption a tonne poured)',
+    report: 'bentonite and coal dust on green sand', when: p => p.subtype === 'sand' || !p.subtype },
+  { text: 'and on steel castings riser cut-off, weld repair and steel refractory wear',
+    report: 'on steel castings riser cut-off, weld repair and steel refractory wear', when: p => isSteelCasting(p) || !p.alloy },
+];
+const joinList = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')}, ${xs[xs.length - 1]}`);
+/** The rule basis's "NOT costed" sentence for this process and metal. */
+export function foundryNotCostedText(p: FoundryCostContext): string {
+  return `NOT costed (no published price found): ${joinList(FOUNDRY_NOT_COSTED_ITEMS.filter(i => i.when(p)).map(i => i.text))}`;
+}
+/** The report's "Not in the cost model" line for this process and metal. */
+export function foundryNotModelledReport(p: FoundryCostContext): string {
+  const items = FOUNDRY_NOT_COSTED_ITEMS.filter(i => i.when(p)).map(i => i.report);
+  return `Foundry costs no published price was found for — ${joinList(items).replace(/, on steel castings/, '; on steel castings')}: not in `
+    + 'this price — a foundry will charge them (a gap in the cost model, not an item you can exclude; ask for them on the quotation).';
+}
+/** The whole list (a sand casting in steel) — kept for the callers that print every item. */
+export const FOUNDRY_NOT_COSTED = foundryNotCostedText({ subtype: 'sand', alloy: 'carbon-steel' });

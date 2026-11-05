@@ -32,7 +32,7 @@ import {
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
 import {
-  FOUNDRY_INDIRECT, FOUNDRY_NOT_COSTED, NEW_SAND_GBP_PER_T_SAND, NEW_SAND_BASIS, PLANT_OTHER_KWH_PER_T,
+  FOUNDRY_INDIRECT, foundryNotCostedText, NEW_SAND_GBP_PER_T_SAND, NEW_SAND_BASIS, PLANT_OTHER_KWH_PER_T,
 } from '../../casting-melt.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
 import type { ToolComplexity } from '../../toolmaking.js';
@@ -465,6 +465,18 @@ function fettlingOnCell(ctx: RuleContext, a: Pick<Advice, 'subtype' | 'alloy' | 
  * as-cast casting (finished + machining stock) before it is machined, so it passes that mass (arithmetic audit, Oct
  * 2026: it blasted the finished mass, 7.36 kg of a 9.08 kg stub-axle casting).
  */
+/**
+ * Why a casting of each route is blasted — said in the route's own terms (Part1 review, Nov 2026: a gravity casting on a
+ * metal die printed "blasted to remove sand"). Only a sand mould leaves moulding sand on the casting; a permanent mould
+ * leaves oxide and die-joint flash (no sand core is costed on it), a die casting flash and release residue, an
+ * investment casting its ceramic shell.
+ */
+export const BLAST_PURPOSE: Record<string, string> = {
+  sand: 'blasted to remove the moulding sand, scale and fins',
+  gravity: 'blasted to clean the as-cast surface — oxide and die-joint flash (no sand core is costed on the permanent mould)',
+  hpdc: 'blasted to remove flash and die-release residue',
+  investment: 'blasted to remove the ceramic shell residue',
+};
 export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLabel: string): RuleOutcome<number> {
   const rate = libraryMachineRate('blast-machine');
   const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
@@ -476,7 +488,7 @@ export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLa
   const blast = massKg / BLAST_KG_PER_HR * (rate + lab);
   const v = Math.max(floor, Math.round(blast * 10_000) / 10_000);
   return decided('casting.shotBlastCostPerPart', v, 'library',
-    `${subtype} castings are blasted to remove sand / scale / flash — ${massKg.toFixed(2)} ${massLabel} ÷ `
+    `${subtype} castings are ${BLAST_PURPOSE[subtype] ?? 'blasted to clean the as-cast surface'} — ${massKg.toFixed(2)} ${massLabel} ÷ `
     + `${BLAST_KG_PER_HR} kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × `
     + `(blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
     + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`
@@ -586,14 +598,14 @@ const FOUNDRY_INDIRECT_RULES: CommodityRuleSpec['rules'] = [
       if (r.advice.subtype !== 'sand' || !FERROUS.has(r.advice.alloy)) {
         return decided('casting.plantElectricityKwhPerT', 0, 'rule',
           `${r.advice.subtype} ${r.advice.alloy.replace('-', ' ')} — the plant-electricity figure is a green-sand iron plant's; NOT costed `
-          + `for this route / metal. ${FOUNDRY_NOT_COSTED}`, 0.3);
+          + `for this route / metal. ${foundryNotCostedText(r.advice)}`, 0.3);
       }
       const dust = FOUNDRY_INDIRECT.dustExtractionKwhPerT.value;
       return decided('casting.plantElectricityKwhPerT', PLANT_OTHER_KWH_PER_T, 'rule',
         `ESTIMATE (grade D — an inference, not a published figure): other plant electricity beyond melting and holding (sand plant, `
         + `moulding, cleaning, compressed air, services) ${P.bandKwhPerKg[0]}–${P.bandKwhPerKg[1]} kWh/kg good casting, midpoint `
         + `${P.midKwhPerKg} (${P.source}) − ${dust / 1000} kWh/kg dust extraction charged on its own line = ${PLANT_OTHER_KWH_PER_T} kWh `
-        + `per tonne of good casting, at the costed country's tariff. ${FOUNDRY_NOT_COSTED}`, 0.3);
+        + `per tonne of good casting, at the costed country's tariff. ${foundryNotCostedText(r.advice)}`, 0.3);
     },
   },
 ];

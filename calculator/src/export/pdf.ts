@@ -161,6 +161,9 @@ export interface CADReportMeta {
   /** The screen's suggestion context: was an annual volume typed, are packaging / logistics estimates. */
   volumeProvided?: boolean;
   pkgLogisticsEstimated?: boolean;
+  /** Where the overhead and packaging on the form came from (country-fields.ts): a figure prints "as entered" only when a
+   *  person TYPED it, otherwise as the country's default (Part1 review, Nov 2026). */
+  shopSources?: { overhead?: 'default' | 'size' | 'typed'; packaging?: 'default' | 'size' | 'typed' };
   /** How the geometry was obtained: precise B-rep (occt), mesh (stl_parser), or
    *  the text/heuristic fallback (text_parsing) that only estimates weight. */
   geometrySource?: 'occt' | 'stl_parser' | 'text_parsing' | null;

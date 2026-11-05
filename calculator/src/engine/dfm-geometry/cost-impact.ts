@@ -112,6 +112,9 @@ export interface CostContext {
  * route, said in the route's own terms (a sand mould has no die to wear).
  */
 export const NOT_MODELLED: Record<string, string | ((part: PartContext) => string)> = {
+  'machining.slot.narrow-slit':
+    'The cutting data has no slitting-saw (or wire-EDM) row, so the slit is not timed and NOT in this price — no minutes '
+    + 'are invented. Ask the supplier for the operation, its minutes and its tooling a part.',
   'casting.draft.insufficient': (part) => {
     const r = String(part.process ?? '').toLowerCase();
     return r === 'hpdc' || r === 'diecast' || r === 'gravity'

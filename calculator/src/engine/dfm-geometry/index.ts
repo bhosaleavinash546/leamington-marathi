@@ -12,6 +12,7 @@ import { runGeometricRules, normaliseSeverity, severityRank } from './types.js';
 import { CASTING_RULES, CASTING_LIMITATIONS, castingHotSpotFindings, hotSpotStatement } from './commodities/casting.js';
 import { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 import { MACHINING_RULES, MACHINING_LIMITATIONS } from './commodities/machining.js';
+import { narrowSlitFindings } from './commodities/slits.js';
 import { machiningPartLevelFindings, toothedSets, toothedFindings } from './commodities/machining-access.js';
 import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS, sheetDeepHoleNote } from './commodities/sheet-metal.js';
 import { sheetBlankFindings, sheetBlankStatement } from './commodities/sheet-blank.js';
@@ -188,6 +189,10 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   const accessNotes: string[] = [];
   if (part.commodity === 'machining' || part.commodity === 'cast_and_machine') {
     findings.push(...machiningPartLevelFindings(part, accessNotes));
+  }
+  // A narrow slit (a clamp's saw cut) the near-net feature table has no row for: flagged, never timed (slits.ts).
+  if (part.commodity === 'cast_and_machine' || part.commodity === 'casting' || part.commodity === 'forging') {
+    findings.push(...narrowSlitFindings(part));
   }
   const blankFindings = part.commodity === 'sheet_metal' || part.commodity === 'sheet_metal_fab' ? sheetBlankFindings(part) : [];
   findings.push(...blankFindings);

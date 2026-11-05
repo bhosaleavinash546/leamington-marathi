@@ -29,7 +29,7 @@ ROTATIONAL MOULDING COST INPUT RULES:
   oee: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   labourEfficiency: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   rejectRate: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
-  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)
+  leak-tight question=no  [answered: not leak-tight — deterministic, use verbatim]
 
 ### context: degraded
 ROTATIONAL MOULDING COST INPUT RULES:

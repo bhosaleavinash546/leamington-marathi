@@ -94,7 +94,9 @@ describe('1. the volume machining cell', () => {
     expect(m.operations.some(o => o.name.startsWith('Load / unload on the pallet'))).toBe(false);
     expect(m.operations.find(o => o.name.startsWith('Drilling'))!.machineId).toBe(HMC_MACHINE_ID);
     expect(m.operations.find(o => o.name.startsWith('Turning — spindle'))!.machineId).toBe('mach-lathe-cnc');
-    expect(m.toolingCost).toBe(FIXTURE_GBP.hydraulic + FIXTURE_GBP.dedicated);   // 1 hydraulic tombstone fixture + the lathe's dedicated fixture
+    // 1 hydraulic tombstone fixture a cell + the lathe's dedicated fixture, one a machine the capacity implies (Part1 review,
+    // Nov 2026): 3.32 HMCs' hours at 100,000/yr → 4 cells, and 2 lathes
+    expect(m.toolingCost).toBe(4 * FIXTURE_GBP.hydraulic + 2 * FIXTURE_GBP.dedicated);
   });
 
   it('the stub axle at 10,000/yr stays off the volume cell — a job-shop routing, ranked in £', () => {
@@ -118,7 +120,7 @@ describe('1. the volume machining cell', () => {
     expect(ops.find(o => o.name.startsWith('Drilling'))!.machineId).toBe(HMC_MACHINE_ID);
     expect(ops.some(o => o.name.startsWith('Load / clamp / unload'))).toBe(false);
     const r = runCostInputRules(MACHINING_RULES, c);
-    expect((r.suggestions.machining as { toolingCost: number }).toolingCost).toBe(2 * FIXTURE_GBP.hydraulic);
+    expect((r.suggestions.machining as { toolingCost: number }).toolingCost).toBe(2 * 2 * FIXTURE_GBP.hydraulic);   // × 2 cells (1.75 machines' hours)
   });
 
   it('the feature path (forgings): the same cell, the same two operations, screen = headless helper', () => {

@@ -36,7 +36,9 @@ import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
 import { routeMaterialCheck } from '../engine/route-material-guard.js';
 import { familyOfCategory } from '../engine/route-feasibility.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
+import { NARROW_SLIT_RULE_ID } from '../engine/dfm-geometry/commodities/slits.js';
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
+import { assumedServiceFlagsIn } from '../engine/cost-input-rules/derive/service-context.js';
 import { formWeights, type CoreWeights } from './form-weights.js';
 import { compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
 import { ruleReportNotes, type RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
@@ -261,6 +263,8 @@ export interface CoreReportMeta {
   uncertainty?: { p10: number; p90: number; plusMinusPct: number } | null;
   volumeProvided?: boolean;
   pkgLogisticsEstimated?: boolean;
+  /** Where the overhead and packaging on the form came from — "as entered" only when TYPED (Part1 review, Nov 2026). */
+  shopSources?: { overhead?: 'default' | 'size' | 'typed'; packaging?: 'default' | 'size' | 'typed' };
   geometrySource?: 'occt' | 'stl_parser' | 'text_parsing' | null;
   measuredWeightKg?: number | null;
   featureLines?: FeatureMachiningLine[] | null;
@@ -698,19 +702,47 @@ export function capacityImplied(input: UniversalStackInput, library: RateLibrary
   return [...by.values()].sort((a, b) => b.machines - a.machines);
 }
 
+/**
+ * The casting line rate a rule set (its "Cycle Time (hr)") and the casting operation that runs at it ÷ (1 - reject). The
+ * casting module multiplies the line time by 1 ÷ (1 - reject) and by nothing else (modules/casting.ts — a rejected casting
+ * takes its line time too), so the reject is read off the reject field when the costing carries one, else off the two
+ * figures themselves (1 - line ÷ costed), and accepted only between 0 and 50 %. Null when there is no such pair.
+ */
+export function castingLineRate<O extends { operationName: string; cycleTimeHr: number; benchOperation?: boolean }>(
+  rvs: ReadonlyArray<{ label: string; fieldId?: string; value: unknown }>, ops: readonly O[],
+): { rv: { label: string; fieldId?: string; value: unknown }; op: O; lineMin: number; costedMin: number; rejectPct: number } | null {
+  const rv = rvs.find(r => /sand[\s-]?ct\b|cycle time/i.test(ruleKey(r)) && /cast|cam-|sand|grav/i.test(ruleKey(r)));
+  const lineHr = Number(String(rv?.value ?? '').replace(/,/g, ''));
+  if (!rv || !(lineHr > 0)) return null;
+  const op = ops.find(o => !o.benchOperation && /cast|mould|pour/i.test(o.operationName) && !SECONDARY_OP_RE.test(o.operationName));
+  if (!op || !(op.cycleTimeHr > 0)) return null;
+  const rej = rvs.find(r => /reject/i.test(ruleKey(r)) && /cast|cam-/i.test(ruleKey(r)));
+  const typed = Number(String(rej?.value ?? '').replace(/,/g, ''));
+  const reject = typed > 0 && typed < 1 && Math.abs(op.cycleTimeHr - lineHr / (1 - typed)) <= 0.002 * op.cycleTimeHr ? typed : 1 - lineHr / op.cycleTimeHr;
+  if (!(reject > 0.0005 && reject < 0.5)) return null;
+  return { rv, op, lineMin: lineHr * 60, costedMin: op.cycleTimeHr * 60, rejectPct: +(reject * 100).toFixed(1) };
+}
+
+/** A cutting machine by its class — its cutting minutes come from the cutting catalogue. */
+const CUTTING_MACHINE_RE = /machin|mill|lathe|turn|drill|\bhmc\b|\bvmc\b/i;
 /** What the capacity rows call for a remark on: a dedicated line (> 5 machines) or one line over 100 % loaded. */
 export function capacityWarnings(rows: CoreCapacityRow[], annual: number): string[] {
   const out: string[] = [];
-  let dedicated = false;
+  let dedicated = false; let cutting = false;
   for (const r of rows) {
     if (r.line && r.machines > 1) {
       out.push(`${r.machine} loaded ${(r.machines * 100).toFixed(0)} % at ${annual.toLocaleString('en-GB')} a year on its ${r.availableHours.toLocaleString('en-GB')} h: one line cannot make the volume — a second line, more shifts or a faster cycle; ask the supplier which.`);
     } else if (r.machines > CAPACITY_DEDICATED_LINE) {
       dedicated = true;
+      if (CUTTING_MACHINE_RE.test(r.machine)) cutting = true;
       out.push(`${r.machines.toFixed(1)} × ${r.machine} for this one part: a supplier would run a dedicated line or transfer cell at this volume.`);
     }
   }
-  if (dedicated) out.push(`The cycle times are the costing's — machining minutes are engineering-typical and conservative; confirm with a supplier cycle sheet (more than ${CAPACITY_DEDICATED_LINE} machines for one part: CostVision engineering heuristic, not sourced).`);
+  // Which minutes are sourced (Part1 review, Nov 2026: it said "machining minutes are engineering-typical and
+  // conservative" after the cutting minutes moved onto the makers' published cutting data — cutting-catalogue.ts).
+  if (dedicated) out.push(`The cycle times are the costing's${cutting
+    ? ': the CUTTING minutes are from the tool makers\' published cutting data (speeds and feeds, section 4 and the audit pack); the load / unload handling, the set-up and the fixed positioning allowances are engineering-typical, not sourced'
+    : ' (their bases are in section 4)'} — confirm with a supplier cycle sheet (more than ${CAPACITY_DEDICATED_LINE} machines for one part: CostVision engineering heuristic, not sourced).`);
   return out;
 }
 
@@ -780,6 +812,25 @@ export function paramDisplay(label: string, value: string): string {
   return `${fmtNum(n)} ${unit}`;
 }
 
+/**
+ * The casting subtype of a costing: the rule value the casting rules wrote (cam-cast-subtype / cast-subtype), else the
+ * casting operation's own name ("Gravity Die Casting", "HPDC Casting", "Sand Casting — Moulding", investment). '' when
+ * neither says.
+ */
+export function coreCastSubtype(rvs: ReadonlyArray<{ fieldId?: string; value: unknown; ruleValue?: unknown }>, input: Pick<UniversalStackInput, 'operations'>): string {
+  const subRv = rvs.find(r => /(^|-)cast-subtype$/.test(r.fieldId ?? ''));
+  const v = String((subRv as { ruleValue?: unknown } | undefined)?.ruleValue ?? subRv?.value ?? '').toLowerCase();
+  if (/sand|gravity|hpdc|investment/.test(v)) return /hpdc|high.?pressure/.test(v) ? 'hpdc' : /gravity/.test(v) ? 'gravity' : /investment/.test(v) ? 'investment' : 'sand';
+  for (const o of input.operations ?? []) {
+    const n = o.operationName.toLowerCase();
+    if (/^hpdc|high.?pressure die/.test(n)) return 'hpdc';
+    if (/gravity die|permanent mould/.test(n)) return 'gravity';
+    if (/^sand casting/.test(n)) return 'sand';
+    if (/investment|lost.?wax|shell build|pour.*tree/.test(n)) return 'investment';
+  }
+  return '';
+}
+
 /** What the costing did for an unanswered advisory question — the reader is told, not sent to "the basis". */
 function usedFor(d: DecisionForUsed, input: UniversalStackInput, rvs: NonNullable<NonNullable<CoreReportMeta['checks']>['ruleValues']>): string | null {
   // ONE resolver with the screen's checks (decision-used.ts): what the costing holds for an unanswered advisory.
@@ -818,7 +869,11 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const meta = a.cadMeta ?? {};
   const commodity = a.commodity ?? null;
   const regionCode = String(a.region ?? library.regional?.code ?? 'UK');
-  const std = reportStandardFor(commodity);
+  // The casting subtype the rules chose (else read off the casting operation) and the metal: the report's drivers, quote
+  // lines and foundry gaps are in that process's words (Part1 review, Nov 2026 — a gravity die casting read as a sand line).
+  const castSubtype = coreCastSubtype(meta.checks?.ruleValues ?? [], input);
+  const std = reportStandardFor(commodity, /cast/.test(String(commodity ?? ''))
+    ? { castingSubtype: castSubtype || null, alloy: library.materials.find(m => m.id === input.rawMaterial.materialId)?.category ?? null } : {});
   const total = result.total;
   const share = (gbp: number) => (total > 0 ? Math.round(gbp / total * 1000) / 10 : 0);
   const annual = input.annualVolume && input.annualVolume > 0 ? input.annualVolume : (meta.annualVolume && meta.annualVolume > 0 ? meta.annualVolume : null);
@@ -877,12 +932,16 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const counted = new Map<string, CostLine>();
   const unsourcedItems: CoreUnsourcedItem[] = [];
   const driverName = (r: { label: string; fieldId?: string }) => std.keyDrivers.find(d => d.match.test(ruleKey(r)))?.name;
+  // a sand pattern's and a gravity die's life are counted in castings (moulds × impressions / one casting a cycle), not shots
+  const lifeInCastings = (name: string | undefined, shown: string) =>
+    (name && /^(Pattern|Die) life/.test(name) && /\b(sand|gravity)\b/i.test(castSubtype) ? shown.replace(/\b(shots|cycles)\b/, 'castings') : shown);
   for (const rv of rvs) {
     if (!isUnsourcedText(rv.basis)) continue;
     const lines = attributeRule(ruleKey(rv), cl);
     for (const l of lines ?? []) counted.set(l.id, l);
     const gbp = lines ? lines.reduce((s, l) => s + l.gbp, 0) : null;
-    unsourcedItems.push({ label: driverName(rv) ?? cleanFieldLabel(rv.label), value: paramDisplay(rv.label, String(rv.value)), basis: reportNoteText(rv.basis), gbp,
+    const dn = driverName(rv);
+    unsourcedItems.push({ label: dn ?? cleanFieldLabel(rv.label), value: lifeInCastings(dn, paramDisplay(rv.label, String(rv.value))), basis: reportNoteText(rv.basis), gbp,
       drives: (lines ?? []).map(l => l.label) });
   }
   const selfLabelled: CostLine[] = [
@@ -991,6 +1050,17 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const not = meta.featureLines.filter(l => !l.included && !turned(l));
     if (not.length) alerts.push(uncostedScopeAlert(not, meta, result, library, annual, omFactor, M, MW));
   }
+  // A narrow slit (a clamp's saw cut) the feature table has no row for — found by the geometric DFM (slits.ts), never timed:
+  // the cutting data has no slitting-saw row (Part1 review, Nov 2026: two 3 mm clamp slits, neither costed nor flagged).
+  const slit = (meta.geometricDFM?.grouped ?? []).find(x => x.ruleId === NARROW_SLIT_RULE_ID && dfmRuleApplies(commodity, x.ruleId));
+  if (slit) {
+    alerts.push({ kind: 'scope', title: `Uncosted scope: ${slit.count} narrow slit${slit.count === 1 ? '' : 's'} (saw cut) detected and NOT in this price`,
+      lines: [
+        ...(slit.worst?.detail ? [slit.worst.detail] : []),
+        'Question for the supplier: how is the slit cut (slitting saw, wire EDM), and what are its minutes and tooling a part? '
+          + 'CostVision has no published cutting data for a slitting saw, so it does not time it — no figure is invented.',
+      ] });
+  }
 
   const decisionsAll = meta.checks?.decisions ?? [];
   // Scope: the commodity's "Not included until answered" list, without the items the costing does price.
@@ -1018,9 +1088,23 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
 
   const answerOf = (d: typeof decisionsAll[number]) => decisionAnswerLabel(d.id, d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials });
   const withUsed = (d: typeof decisionsAll[number]) => ({ ...d, used: d.answer == null || d.answer === '' ? usedFor(d, input, rvs) : d.used });
-  const openQuestions = decisionsAll.filter(d => d.answer == null || d.answer === '')
-    .map(d => `${d.question} — ${decisionAnswerText({ severity: d.severity, answer: null, used: withUsed(d).used })}`);
-  const spec = decisionsAll.map(d => ({ question: d.question, answer: decisionAnswerText({ severity: d.severity, answer: answerOf(d), used: withUsed(d).used }) }));
+  // A service flag the costing ASSUMED (its rule bases say "… assumed — confirm before quoting") and nobody answered: an
+  // open question, listed as such — AI-led mode once costed leak-tight / tolerance / safety unseen (Part1 review, Nov 2026).
+  const assumedFlags = assumedServiceFlagsIn(rvs.map(r => r.basis))
+    .filter(f => !decisionsAll.some(d => d.id === f.id && d.answer != null && d.answer !== ''));
+  const assumedOpen = assumedFlags.filter(f => !decisionsAll.some(d => d.id === f.id));
+  const openQuestions = [
+    ...decisionsAll.filter(d => d.answer == null || d.answer === '')
+      .map(d => `${d.question} — ${assumedFlags.some(f => f.id === d.id) ? `assumed — confirm: costed as ${assumedFlags.find(f => f.id === d.id)!.assumed}`
+        : decisionAnswerText({ severity: d.severity, answer: null, used: withUsed(d).used })}`),
+    ...assumedOpen.map(f => `${f.question} — assumed — confirm: costed as ${f.assumed}`),
+  ];
+  const spec = [
+    ...decisionsAll.map(d => ({ question: d.question, answer: (d.answer == null || d.answer === '') && assumedFlags.some(f => f.id === d.id)
+      ? `assumed — confirm: costed as ${assumedFlags.find(f => f.id === d.id)!.assumed}`
+      : decisionAnswerText({ severity: d.severity, answer: answerOf(d), used: withUsed(d).used }) })),
+    ...assumedOpen.map(f => ({ question: f.question, answer: `assumed — confirm: costed as ${f.assumed}` })),
+  ];
 
   const buckets = ([
     ['1. Material', bk.rawMaterial], ['2. Process (machine)', bk.process], ['3. Direct labour', bk.labour], ['4. Tooling (amortised)', bk.tooling],
@@ -1064,15 +1148,27 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     }
   }
 
+  // "As entered" only for a figure a person TYPED; a default is named as the country's (Part1 review, Nov 2026: a stale
+  // 9 % from an earlier China book printed "as entered on the costing" beside China's 12 % default).
+  const countryName = REGIONAL_DATA[regionCode as ManufacturingRegion]?.name ?? regionCode;
+  const ohSrc = meta.shopSources?.overhead;
   const commercial = [
     { label: 'Overhead', value: `${(input.overheadPct * 100).toFixed(1)} % of material + process + labour + tooling`,
-      source: overheadDefault ? 'CostVision default, not sourced — not a market benchmark' : 'as entered on the costing' },
+      source: ohSrc === 'typed' ? 'as entered on the costing (typed)'
+        : overheadDefault ? `${countryName} default (CostVision, not sourced — not a market benchmark)`
+        : ohSrc ? `not typed and not the ${countryName} default (${(defaultOverhead * 100).toFixed(1)} %) — check the costing form`
+        : 'as entered on the costing' },
     { label: 'Margin', value: `${(input.marginPct * 100).toFixed(1)} % of the subtotal`, source: 'the figure on the costing form (CostVision default unless typed), not sourced' },
     { label: 'Packaging', value: `£${input.packagingPerPart.toFixed(4)} a part`,
-      source: pkgDefault ? 'CostVision default from the part\'s size, not sourced — replace with the supplier\'s pack' : 'as entered on the costing' },
+      source: meta.shopSources?.packaging === 'typed' ? 'as entered on the costing (typed)'
+        : pkgDefault ? `${countryName} default from the part\'s size (CostVision, not sourced — replace with the supplier\'s pack)` : 'as entered on the costing' },
     { label: 'Terms', value: deliveryTermsLine(input.deliveryTerms), source: 'as selected on the costing' },
   ];
 
+  // The casting line's rate and the cycle it is COSTED at reconcile: a rejected casting takes its line time too, so the
+  // operation runs at line rate ÷ (1 - reject). Both figures say so (Part1 review, Nov 2026: 4.80 min in the negotiation
+  // table, 4.95 min in the operations table, neither labelled).
+  const lineRate = castingLineRate(rvs, result.operationDetails);
   const operations: CoreOperation[] = result.operationDetails.map(o => {
     const m = library.machines.find(x2 => x2.id === o.machineId);
     const bench = !!o.benchOperation;
@@ -1081,7 +1177,9 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const crewCharged = bench ? o.manning : (o.cycleTimeHr > 0 ? o.manning * o.labourTimeHr / o.cycleTimeHr : 0);
     const labourPerHr = o.labourRateUsed * crewCharged / eff;
     const oee = bench ? null : (o.oee > 0 ? o.oee : 1);
-    return { name: shortOperationName(o.operationName), machine: bench ? 'Bench (labour only)' : (m?.machineClass ?? 'machine'), bench,
+    const name = shortOperationName(o.operationName);
+    return { name: lineRate && lineRate.op === o ? `${name} — ${lineRate.lineMin.toFixed(2)} min line rate ÷ (1 - ${lineRate.rejectPct} % reject)` : name,
+      machine: bench ? 'Bench (labour only)' : (m?.machineClass ?? 'machine'), bench,
       cycleMin: (bench ? o.labourTimeHr : o.cycleTimeHr) * 60, partsPerCycle: o.partsPerCycle, oee, crew: o.manning, crewCharged,
       labourEfficiency: eff, machinePerHr, labourPerHr, ratePerHr: (machinePerHr ?? 0) / (oee ?? 1) + labourPerHr, gbp: o.processCost + o.labourCost };
   });
@@ -1094,9 +1192,6 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   // Key process parameters and the negotiation sheet: the commodity's drivers, matched to the values the rules set.
   const used = new Set<number>();
   const keyParams: CoreParam[] = [];
-  // The subtype the casting rules chose: a SAND pattern's life is counted in castings (moulds × impressions), not shots.
-  const subRv = rvs.find(r => /(^|-)cast-subtype$/.test(r.fieldId ?? ''));
-  const castSubtype = String((subRv as { ruleValue?: unknown } | undefined)?.ruleValue ?? subRv?.value ?? '');
   const isZero = (v: unknown) => String(v ?? '').trim() !== '' && Number(String(v).replace(/,/g, '')) === 0;
   for (const d of std.keyDrivers) {
     const matching = rvs.map((_r, k) => k).filter(k => !used.has(k) && d.match.test(ruleKey(rvs[k])));
@@ -1106,7 +1201,11 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const i = matching.find(k => !isZero(rvs[k].value)) ?? matching[0];
     used.add(i);
     let shown = paramDisplay(rvs[i].label, String(rvs[i].value));
-    if (d.name === 'Pattern life' && /\bsand\b/i.test(castSubtype)) shown = shown.replace(/\b(shots|cycles)\b/, 'castings');
+    shown = lifeInCastings(d.name, shown);
+    if (lineRate && d.match.test(ruleKey(lineRate.rv)) && rvs[i] === lineRate.rv) {
+      shown = `${lineRate.lineMin.toFixed(2)} min line rate (${fmtNum(60 / lineRate.lineMin)} an hour); ${lineRate.costedMin.toFixed(2)} min costed = `
+        + `${lineRate.lineMin.toFixed(2)} ÷ (1 - ${lineRate.rejectPct} % reject)`;
+    }
     // the forging weights under the names page 2 uses (formWeights)
     if (weights?.billetKg && /^Stock yield/.test(d.name)) shown = `${shown} — billet ${weights.billetKg.toFixed(3)} kg a forging = (as forged ${weights.asFormedKg.toFixed(3)} kg + flash ${(weights.flashKg ?? 0).toFixed(3)} kg) ÷ ${weights.yieldFraction!.toFixed(3)}`;
     if (weights && d.name === 'Flash' && weights.flashKg != null) shown = `${weights.flashKg.toFixed(3)} kg a forging (as forged ${weights.asFormedKg.toFixed(3)} kg)`;

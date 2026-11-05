@@ -93,6 +93,17 @@ const FIXTURE = { modular: 500, dedicated: 2500, softJaws: 300, hydraulic: 12_00
 /** machining-time.ts fixtureCostGBP: the UK-basis £ × the book's toolroom factor, rounded once per call. */
 const fixtureGBP = (ukGbp: number) => Math.round(ukGbp * C.toolroomFactor);
 const PROG = { perFix: 1.5, perRow: 0.25, surf: 2 };
+/**
+ * Fixture SETS (Part1 review, Nov 2026): each machine the part keeps busy carries its own set — annual × Σ (op hours ÷
+ * OEE) on the machine + the change-over (fixturings × 45 min ÷ batch, OEE 1), ÷ the machine's available hours in the
+ * book, rounded UP; no volume or no hours → 1. Restated from the capacity arithmetic the report prints, not called.
+ */
+const fixtureSets = (ops: Array<{ hr: number; oee: number; machineId: string; bench?: boolean }>, machineId: string, setups: number, batch: number): number => {
+  const avail = (BOOK.machines.find((m: { id: string }) => m.id === machineId) as { buildup?: { annualAvailableHours?: number } } | undefined)?.buildup?.annualAvailableHours ?? 0;
+  if (!(ANNUAL > 0) || !(avail > 0)) return 1;
+  const run = ops.filter(o => !o.bench && o.machineId === machineId).reduce((h, o) => h + o.hr / (o.oee > 0 ? o.oee : 1), 0);
+  return Math.max(1, Math.ceil(ANNUAL * (run + setups * SETUP_MIN / 60 / batch) / avail - 1e-6));
+};
 const PECK = 1.5, TAP_APPROACH = 0.10;
 const TAP_DRILLS = TAP.map(t => t[0]);
 const CORED: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6, forging: 25 };
@@ -402,8 +413,9 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   check(part, 'setup machine', ch.primary, P.setup.machineId);
   const chuck = ch.label === 'turned' ? 2 : 0;
   const each = ch.label === 'volume-cell' ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular;
-  const fixture = fixtureGBP((ch.setups - chuck) * each + chuck * FIXTURE.softJaws);
-  check(part, 'fixtures £ (× toolroom factor)', fixture, P.toolingCost, 0.5);
+  const sets = fixtureSets(ops.map(o => ({ hr: o.ct, oee: o.oee, machineId: o.machineId, bench: o.bench })), ch.primary, ch.setups, batch);
+  const fixture = fixtureGBP(((ch.setups - chuck) * each + chuck * FIXTURE.softJaws) * sets);
+  check(part, `fixtures £ (× toolroom factor, ${sets} set(s) — one a machine)`, fixture, P.toolingCost, 0.5);
   const progHr = Math.round((PROG.perFix * ch.setups + PROG.perRow * rows.length + (free > 0.5 && surfMin > 0 ? PROG.surf : 0)) * 100) / 100;
   const prog = Math.round(progHr * labourRate('lab-uk-engineer'));
   check(part, 'programming £ = h × engineer', prog, P.programmingNRE, 0.5);
@@ -555,19 +567,23 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   check(part, 'tool wear £ = cutting min (no handling) × £/min', wear, mode === 'cam' ? P.machiningToolWearCostPerPart : P.secondaryMachiningConsumablesPerPart);
   // the cell's fixture(s) — a hydraulic tombstone fixture on the HMC, dedicated fixtures on a split / 5-axis routing — and
   // the lathe's own dedicated fixture, each a toolroom build (× the book's toolroom factor, rounded per fixture set)
-  const millFx = fixtureGBP(ch.setups * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
-  const latheFx = lathe ? fixtureGBP(ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular) : 0;
+  // one fixture set a machine the capacity implies (the mill on its plan ops + change-over; the lathe on its own ops)
+  const planOps = expected.map(([name, hr, mach]) => ({ hr, oee: OEE, machineId: mach, bench: /^Deburr|^Load \/ unload on the pallet/.test(name) }));
+  const millSets = fixtureSets(planOps, ch.primary, ch.setups, batch);
+  const latheSets = lathe ? fixtureSets(planOps, 'mach-lathe-cnc', 1, batch) : 0;
+  const millFx = fixtureGBP(ch.setups * millSets * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
+  const latheFx = lathe ? fixtureGBP(latheSets * (ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular)) : 0;
   // programming: the MACHINED feature rows (a cast-in pocket or boss is not programmed)
   const prog = Math.round(Math.round((PROG.perFix * setups + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
   if (mode === 'cam') {
-    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx, P.machiningToolingCost, 0.5);
+    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} × ${millSets} set(s) + lathe × ${latheSets})`, millFx + latheFx, P.machiningToolingCost, 0.5);
     check(part, `programming £ (${rows.length} machined rows)`, prog, P.machiningProgrammingNRE, 0.5);
     check(part, `setup hr (${ch.setups}${lathe ? ' + lathe' : ''}) × 45 min`, setups * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
   } else {
     check(part, `fixtures + programming £ (${rows.length} machined rows)`, millFx + latheFx + prog, P.secondaryMachiningToolingCost, 1);
     // the programming inside it — the module prints fixtures and programming as cast + machine's two items (Nov 2026)
     check(part, `programming £ (${rows.length} machined rows)`, prog, P.secondaryMachiningProgrammingNRE, 0.5);
-    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx,
+    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} × ${millSets} set(s) + lathe × ${latheSets})`, millFx + latheFx,
       Number(P.secondaryMachiningToolingCost) - Number(P.secondaryMachiningProgrammingNRE), 0.5);
   }
 }

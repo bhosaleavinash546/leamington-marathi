@@ -142,8 +142,12 @@ describe('3. The arithmetic on a row', () => {
     // Phase B (4 Nov 2026): the billet saw and induction heater as operations, the heater's 0.40 kWh/kg, the measured draft
     // metal (51.4 cm³ on the zero-draft faces, IS 3469 Table 1.4) and the IS 3469 2.5 mm stock — 17.5199 → 19.1288; the die
     // is sized on the heavier forging (443,582.83 → 443,915.43); bought 5.084 → 5.916 kg (with the saw kerf).
-    expect(ref.total).toBeCloseTo(axes ? 19.1288 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
-    expect(ref.tooling!.investment).toBe(443915.43);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
+    // Part1 review (5 Nov 2026): one fixture set a machine the capacity implies (the tombstone fixture on each HMC, the lathe
+    // fixture on each lathe) — 19.1288 → 19.1578
+    expect(ref.total).toBeCloseTo(axes ? 19.1578 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
+    // the tombstone fixture on each of the 2 HMCs the capacity implies (+£12,000, Part1 review) + the lathe's own fixture,
+    // programming of the machined rows
+    expect(ref.tooling!.investment).toBe(455915.43);
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.927, boughtKg: 5.916 });
     // The casting route and cast + machine now cost the same scope the same, process by process — printed once.

@@ -183,7 +183,8 @@ import { setActiveRates } from '../engine/rate-context.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
-import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource, deliveryTerms, setDeliveryTerms, applyDeliveryTermsToForm } from './country-fields.js';
+import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource, deliveryTerms, setDeliveryTerms, applyDeliveryTermsToForm,
+  overheadTyped, shopDraftState, restoreShopDraftState, restorableShopFields, SHOP_FIELD_IDS, type ShopDraftState } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
 import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
@@ -222,6 +223,7 @@ import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material
 import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
 import type { RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
 import { decisionUsedValue } from '../export/decision-used.js';
+import { isDecisionPickClick, pinnedGradeAnswer } from './decision-pick.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { localiseGbpText, reportNoteText } from '../export/money-text.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
@@ -6899,6 +6901,10 @@ function wireCADDecisionsPanel(): void {
   };
   panel.addEventListener('change', onEdit);
   panel.addEventListener('input', onEdit);
+  // Clicking the option that is ALREADY ticked (an advisory question's costed default, "LM25 / A356 (costed until you
+  // choose)") fires no change event, so the engineer's pick was never recorded and the reports printed "not answered —
+  // costed as LM25" (Part1 review, Nov 2026). A click on a radio is a pick (decision-pick.ts).
+  panel.addEventListener('click', e => { if (isDecisionPickClick(e.target)) onEdit(e); });
   document.getElementById('cad-decisions-apply')?.addEventListener('click', () => {
     readCADDecisionPanel();
     void reanalyzeCAD();
@@ -7648,6 +7654,13 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     };
     if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
     if (commOvr) { body['commodity'] = commOvr; body['commodityExplicit'] = true; }
+    // The process picked in step 1 (More options) travels with every re-run, as with the first: on the AI-led path a
+    // re-analyse without it let the model's selector re-route the part (Part1 live run, Nov 2026: a cast + machine pick
+    // came back machined from solid after the family was answered). An answered route still wins (effectiveForcedCommodity).
+    else {
+      const step1 = (document.getElementById('cad-commodity-override') as HTMLSelectElement | null)?.value ?? '';
+      if (step1) body['commodity'] = step1;
+    }
     if (matOvr)  body['material']  = matOvr;
     if (procOvr) body['process']   = procOvr;
     body['acknowledged'] = [..._cadSanityAcks];
@@ -11606,6 +11619,12 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
       markAIFilled(partNameEl);
     }
 
+    // The overhead is the costed country's default unless a person typed one: a value left on the form by a demo, a
+    // draft or an earlier rate book is not this costing's (Part1 review, Nov 2026 — 9 % printed "as entered" in China).
+    if (shopFigureSource('overhead') !== 'typed') {
+      const oh = el<HTMLInputElement>('overhead-pct');
+      if (oh) oh.value = String(Math.round(shopFieldsFor(_mfgRegion).overheadPct * 1000) / 10);
+    }
     // Size-aware packaging from the shipping envelope + weight (the flat £0.15
     // default is wrong for a bulky bumper and for a 3 g part alike).
     {
@@ -18357,7 +18376,9 @@ function buildChecksApplied(): CADReportMeta['checks'] {
     // a question asked in an earlier round and no longer asked was settled by a later answer (the resin settles the
     // family) — it printed "OPEN" under a "COSTABLE — no blocking decision is open" status (Poland live review)
     decisions: Object.entries(asked).map(([id, d]) => {
-      const answer = optionLabel(id, _cadDecisionAnswers[id]) ?? (_cadDecisions.some(c => c.id === id) ? null
+      const answer = optionLabel(id, _cadDecisionAnswers[id])
+        ?? pinnedGradeAnswer(id, _cadMaterialLocked ? _cadPinnedMaterialId : '', library.materials)
+        ?? (_cadDecisions.some(c => c.id === id) ? null
         : id === 'material.family' && _cadDecisionAnswers['material.resin']
           ? `plastic — settled by the resin answered (${library.materials.find(m => m.id === _cadDecisionAnswers['material.resin'])?.grade ?? _cadDecisionAnswers['material.resin']})`
           : 'no longer asked — settled by a later answer');
@@ -18417,6 +18438,7 @@ function buildCadReportMeta(): CADReportMeta {
     annualVolume: lastInput?.annualVolume ?? null,
     volumeProvided: uiSuggestionContext().volumeProvided,
     pkgLogisticsEstimated: uiSuggestionContext().pkgLogisticsEstimated,
+    shopSources: { overhead: shopFigureSource('overhead'), packaging: shopFigureSource('packaging') },
     photos: reportPhotos(),
     functionalSafety: reportFunctionalSafety(),
     // Present only when the background job has landed. Omitted rather than
@@ -20656,6 +20678,8 @@ async function init(): Promise<void> {
       shopBasisFromTyped(_mfgRegion, f, Number((e.target as HTMLInputElement).value), e.isTrusted);
     });
   }
+  // The overhead a person types stays theirs; any other value follows the country (country-fields.ts overheadTyped).
+  el<HTMLInputElement>('overhead-pct')?.addEventListener('input', e => overheadTyped(e.isTrusted));
 
   // Rate-database transparency export: dump the ACTIVE library (all rates with
   // their audit-trail source notes) + the full multi-country reference table.
@@ -21341,7 +21365,7 @@ function saveDraftSoon(): void {
     // Never while the comparison countries are being filled: _mfgRegion is another country for a moment, and a draft
     // saved then put that country back on the page the next time the panel opened (CAD to COST phase 2 live run).
     if (_capturingCountryFills) { saveDraftSoon(); return; }
-    try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), region: _mfgRegion, fields: collectDraft() })); } catch { /* quota */ }
+    try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), region: _mfgRegion, fields: collectDraft(), shop: shopDraftState() })); } catch { /* quota */ }
   }, 800);
 }
 
@@ -21349,13 +21373,19 @@ function restoreDraft(): void {
   try {
     const raw = localStorage.getItem(draftKey());
     if (!raw) return;
-    const draft = JSON.parse(raw) as { ts: number; region?: string; fields: Record<string, string> };
+    const draft = JSON.parse(raw) as { ts: number; region?: string; fields: Record<string, string>; shop?: ShopDraftState };
     if (!draft?.fields) return;
-    // The draft's fields (overhead, packaging…) were entered in its country — apply
-    // that country FIRST, then restore the fields over its defaults.
+    // The draft's fields were entered in its country — apply that country FIRST, then restore the fields over its
+    // defaults. Overhead, packaging and logistics come back as VALUES only when a person typed them; otherwise the
+    // country's figure from the book in force NOW stands (Part1 review, Nov 2026: a 9 % stored under an earlier China
+    // book came back on reload and printed "as entered").
     if (draft.region && draft.region !== _mfgRegion && REGIONAL_DATA[draft.region as ManufacturingRegion]) _applyCountryHook?.(draft.region);
+    restoreShopDraftState(draft.shop);
+    const shopTyped = restorableShopFields(draft.shop);
+    const shopIds = new Set(Object.values(SHOP_FIELD_IDS));
     Object.entries(draft.fields).forEach(([id, val]) => {
       if (DRAFT_SKIP.has(id)) return;
+      if (shopIds.has(id) && !shopTyped.has(id)) return;
       const elm = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
       if (!elm) return;
       if (elm instanceof HTMLInputElement && (elm.type === 'file' || elm.type === 'button')) return;   // never writable
@@ -21364,7 +21394,9 @@ function restoreDraft(): void {
     });
     // the terms select restored its value — the state and the logistics field follow it
     const t = (document.getElementById('delivery-terms') as HTMLSelectElement | null)?.value;
-    if (t) { setDeliveryTerms(t); applyDeliveryTermsToForm(_mfgRegion); }
+    if (t) setDeliveryTerms(t);
+    // the shop figures that were not typed: the country's, from the book in force now (typed ones are left as restored)
+    applyCountryShopFields(_mfgRegion);
   } catch { /* corrupt draft — ignore */ }
 }
 

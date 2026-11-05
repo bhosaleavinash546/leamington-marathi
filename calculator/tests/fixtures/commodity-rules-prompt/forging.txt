@@ -6,12 +6,12 @@
 FORGING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  tolerance-class question=standard  [assumed — confirm before quoting — deterministic, use verbatim]
-  safety-critical question=no  [assumed — confirm before quoting — deterministic, use verbatim]
+  tolerance-class question=standard  [answered — deterministic, use verbatim]
+  safety-critical question=no  [answered — deterministic, use verbatim]
   materialId=mat-al6082-forge  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer); aluminium → 6082 (Al Forging Stock) (representative forging billet — not a drawing callout) — deterministic, use verbatim]
   grade: UNDECIDED — needs "Which aluminium grade?" (6082 (Al Forging Stock) | 6061 (Al Forging Stock) | 2014 (Al-Cu forging stock — aero and automotive) | 7075 (Al Forging Stock) | 2618 (Al-Cu Piston/Aero) | 7050 (Al-Zn Aero Forging Stock))
   partWeightKg=2.851  [2.800 kg finished + 18.8 cm³ of holes drilled from solid (≤ Ø25; larger bores pierced) + 0.0 cm³ machining stock (2.5 mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5 minimum finish stock for a drop / press forging whose greatest dimension (320.0 mm) is over 205 mm and not over 410 mm) + 0.0 cm³ draft metal (draft metal NOT costed — the zero-draft faces were not measured on this geometry (an STL or an older measurement)) = 2.800 kg + 18.8 cm³ × 0.00270 kg/cm³ = 2.851 kg — 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
-  process=closed-die  [aluminium at 100,000/yr — closed-die impression forging is the volume workhorse: net-shape grain flow, good tolerance, lowest piece cost once dies amortise [tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
+  process=closed-die  [aluminium at 100,000/yr — closed-die impression forging is the volume workhorse: net-shape grain flow, good tolerance, lowest piece cost once dies amortise — deterministic, use verbatim]
   projectedAreaCm2=288.4  [estimated: bbox face × √fill for a solid, bbox face for a shell below 5% fill (no measured silhouette) — deterministic, use verbatim]
   shapeComplexity=moderate  [score 1 + 0 + 1 = 2 → moderate — 1 for 4 free-form face(s), 0 for 2 undercut face(s), 1 for 120 faces (≥ 3 complex, ≥ 1 moderate; free-form ≥ 3 / ≥ 8, undercuts ≥ 4, faces ≥ 120 — CostVision heuristic) — deterministic, use verbatim]
   yieldFraction=0.743  [closed-die stock yield band 0.55–0.8, midpoint 0.675 — as-forged weight ÷ billet, CostVision engineering-typical, not sourced; the 10% flash is itemised, so yieldFraction = 0.675 × 1.10 = 0.743; billet = 2.851 kg forging + 0.285 kg flash = 3.136 kg ÷ 0.743 = 4.221 kg; finished ÷ billet = 2.800 kg ÷ 4.221 kg = 0.66; 4.221 − 3.136 = 1.085 kg is scale, crop and any pierced wad (not itemised) — deterministic, use verbatim]

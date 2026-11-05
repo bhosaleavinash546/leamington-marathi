@@ -29,7 +29,7 @@
  * guard is what took the servo horn from 50 minutes of cutting to something a
  * 3 g part can physically absorb.
  */
-import { activeLabourRate } from '../../rate-context.js';
+import { activeLabourRate, activeRates } from '../../rate-context.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -501,29 +501,70 @@ export function cuttingMinutesOf(ops: OperationPlan[]): number {
   return ops.filter(o => !o.benchOperation && !o.name.startsWith('Load / clamp') && !o.name.startsWith('Pallet change')).reduce((s, o) => s + o.cycleTimeHr * 60, 0);
 }
 
-/** Fixtures and programming for a plan, £. */
-export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: RoutingChoice): {
-  fixtureGBP: number; fixtureBasis: string; programmingGBP: number; programmingBasis: string;
+/**
+ * How many machines the part keeps busy at this volume — the capacity the report prints (executive-summary.ts
+ * `capacityImplied`): annual × cycle ÷ parts a cycle ÷ OEE, summed over the plan's operations on the machine, plus the
+ * amortised change-over (fixturings × 45 min ÷ the batch, OEE 1), ÷ that machine's own annual available hours in the
+ * costed book. Each machine running the part carries its own set of the fixturings' fixtures (Part1 review, Nov 2026:
+ * one set of 4 fixtures was costed for the 5 VF-2s the capacity table implied). Rounded UP: 5.03 machines is 6.
+ * Unknown hours or no volume → one machine, said so.
+ */
+export function machineSetsFor(ops: ReadonlyArray<Pick<OperationPlan, 'machineId' | 'cycleTimeHr' | 'partsPerCycle' | 'oee' | 'benchOperation'>>,
+  machineId: string, annualVolume: number, setups: number): { sets: number; hours: number; availableHours: number | null; machineClass: string; basis: string } {
+  const m = activeRates().machines.find(x => x.id === machineId);
+  const avail = m?.buildup?.annualAvailableHours ?? 0;
+  const name = m?.machineClass ?? machineId;
+  if (!(annualVolume > 0) || !(avail > 0)) {
+    return { sets: 1, hours: 0, availableHours: avail > 0 ? avail : null, machineClass: name,
+      basis: `one fixture set (${!(annualVolume > 0) ? 'no annual volume' : `no available hours for the ${name} in the rate book`} to size the machines on)` };
+  }
+  const run = ops.filter(o => !o.benchOperation && o.machineId === machineId)
+    .reduce((h, o) => h + o.cycleTimeHr / (o.partsPerCycle > 0 ? o.partsPerCycle : 1) / ((o.oee ?? 0) > 0 ? o.oee! : 1), 0);
+  const setupHr = setups * SETUP_MIN_PER_FIXTURING / 60 / standardBatchSize(annualVolume);
+  const hours = annualVolume * (run + setupHr);
+  const machines = hours / avail;
+  const sets = Math.max(1, Math.ceil(machines - 1e-6));
+  // printed so it can be re-done: (Σ cycle ÷ OEE + change-over) min a part × the volume ÷ 60 = h; h ÷ h available = machines
+  const runMin = Math.round(run * 60 * 10_000) / 10_000, setupMin = Math.round(setupHr * 60 * 10_000) / 10_000;
+  const perPart = Math.round((runMin + setupMin) * 10_000) / 10_000;
+  return { sets, hours, availableHours: avail, machineClass: name,
+    basis: `${sets} fixture set(s), one a machine — on the ${name}: cycle ÷ OEE ${runMin.toFixed(4)} min + change-over ${setupMin.toFixed(4)} min `
+      + `= ${perPart.toFixed(4)} min a part; ${perPart.toFixed(4)} × ${annualVolume.toLocaleString('en-GB')} a year ÷ 60 `
+      + `= ${Math.round(hours).toLocaleString('en-GB')} h; ${Math.round(hours).toLocaleString('en-GB')} h ÷ ${avail.toLocaleString('en-GB')} h available `
+      + `= ${machines.toFixed(2)} machine(s), rounded up — the capacity at this volume` };
+}
+
+/** Fixtures and programming for a plan, £. With the plan's operations, one fixture set a machine the capacity implies. */
+export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: RoutingChoice,
+  plan?: { ops: ReadonlyArray<OperationPlan>; machineId: string }): {
+  fixtureGBP: number; fixtureBasis: string; programmingGBP: number; programmingBasis: string; fixtureSets: number;
 } {
   const chuckings = routing.chosen.label === 'turned' && cut.turned ? 2 : 0;
   // A near-net spindle is held in its own dedicated lathe fixture (a knuckle cannot go in jaws).
   const lathe = cut.kind === 'near-net' && cut.spindle ? 1 : 0;
   const kind = routing.chosen.label === 'volume-cell' ? 'hydraulic' : 'auto';
-  const mill = fixtureCostGBP(Math.max(0, routing.chosen.setups - chuckings), chuckings, ctx.annualVolume, kind);
-  // the near-net spindle's lathe fixture is its own dedicated one (not a tombstone fixture)
-  const latheFx = lathe ? fixtureCostGBP(1, 0, ctx.annualVolume) : null;
-  const fx = { gbp: mill.gbp + (latheFx?.gbp ?? 0), basis: latheFx ? `${mill.basis}; lathe: ${latheFx.basis}` : mill.basis };
+  const cap = plan ? machineSetsFor(plan.ops, plan.machineId, ctx.annualVolume, routing.chosen.setups) : null;
+  const n = cap?.sets ?? 1;
+  const mill = fixtureCostGBP(Math.max(0, routing.chosen.setups - chuckings) * n, chuckings * n, ctx.annualVolume, kind);
+  // the near-net spindle's lathe fixture is its own dedicated one (not a tombstone fixture), one a lathe the plan keeps busy
+  const latheCap = lathe && plan ? machineSetsFor(plan.ops, 'mach-lathe-cnc', ctx.annualVolume, 1) : null;
+  const latheFx = lathe ? fixtureCostGBP(latheCap?.sets ?? 1, 0, ctx.annualVolume) : null;
+  const fx = {
+    gbp: mill.gbp + (latheFx?.gbp ?? 0),
+    basis: (cap ? `${cap.basis}; ` : '') + (latheFx ? `${mill.basis}; lathe: ${latheCap ? `${latheCap.basis}; ` : ''}${latheFx.basis}` : mill.basis),
+  };
   // From solid every feature row is programmed; near-net only the rows it machines (a cast-in pocket is not programmed —
   // secondary-machining parity, Nov 2026).
   const rows = cut.kind === 'near-net' && cut.rows ? cut.rows.length : (ctx.geo.featureTable ?? []).length;
   const hrs = programmingHours(routing.chosen.setups + lathe, rows, cut.surfaced);
   const rate = activeLabourRate('lab-uk-engineer');   // the costed country's engineer
   return {
-    fixtureGBP: fx.gbp, fixtureBasis: fx.basis,
+    fixtureGBP: fx.gbp, fixtureBasis: fx.basis, fixtureSets: n,
     programmingGBP: Math.round(hrs * rate),
     programmingBasis: `CAM programming and prove-out ${fmt(hrs, 2)} h (${PROGRAMMING_HR.perFixturing} h × ${routing.chosen.setups + lathe} fixturing(s)${lathe ? ' incl. the lathe' : ''} `
       + `+ ${PROGRAMMING_HR.perFeatureRow} h × ${rows} ${cut.kind === 'near-net' ? 'machined ' : ''}feature group(s)${cut.surfaced ? ` + ${PROGRAMMING_HR.surfacing} h surfacing` : ''}) `
-      + `× £${rate.toFixed(2)}/h manufacturing engineer (hours engineering-typical, not sourced)`,
+      + `× £${rate.toFixed(2)}/h manufacturing engineer (hours engineering-typical, not sourced)`
+      + (n > 1 ? `; programmed once a fixturing and run on all ${n} machines — not repeated a machine` : ''),
   };
 }
 
@@ -610,7 +651,7 @@ function advise(ctx: RuleContext, cutFor: CutFor): { advice: MachAdvice } | { bl
       family: mat.family!, massBasis: mat.basis, netKg, stock, cut, ops, routing,
       // The lathe fixturing of a near-net spindle is a set-up like any other (change-over, programming, fixture).
       setups: routing.chosen.setups + (cut.kind === 'near-net' && cut.spindle ? 1 : 0), machineId,
-      nre: machiningNRE(ctx, cut, routing),
+      nre: machiningNRE(ctx, cut, routing, { ops, machineId }),
       cuttingMin: cuttingMinutesOf(ops),
     },
   };

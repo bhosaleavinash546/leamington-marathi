@@ -26,9 +26,9 @@ const geo: OCCTGeometry = {
 
 const overrides = { annualVolume: 50_000, forcedCommodity: '', forcedMaterial: '' };
 
-describe('leanings are assumed only when nobody is at the screen', () => {
-  it('AI path assumes leanings; deterministic path blocks', () => {
-    expect(ruleContextFor('casting', geo, 'x.step', overrides, {}, 'ai').assumeLeanings).toBe(true);
+describe('leanings are never assumed on a route — an engineer is at the screen in every mode', () => {
+  it('AI-led, both and deterministic all block (Part1 review, Nov 2026: AI-led mode assumed leak-tight / tolerance / safety unseen)', () => {
+    expect(ruleContextFor('casting', geo, 'x.step', overrides, {}, 'ai').assumeLeanings).toBe(false);
     expect(ruleContextFor('casting', geo, 'x.step', overrides, {}, 'both').assumeLeanings).toBe(false);
     expect(ruleContextFor('casting', geo, 'x.step', overrides, {}, 'deterministic').assumeLeanings).toBe(false);
   });

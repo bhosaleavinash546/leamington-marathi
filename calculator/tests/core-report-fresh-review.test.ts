@@ -232,7 +232,9 @@ describe('should-fix list', () => {
     const rows = capacityImplied(cast, lib, 2_000_000);
     const w = capacityWarnings(rows, 2_000_000);
     expect(w.some(x => /× Horizontal machining centre.*dedicated line or transfer cell/.test(x))).toBe(true);
-    expect(w[w.length - 1]).toMatch(/machining minutes are engineering-typical and conservative; confirm with a supplier cycle sheet/);
+    // which minutes are sourced (Part1 review, Nov 2026): the cutting minutes are the catalogue's, handling and set-up are not
+    expect(w[w.length - 1]).toMatch(/CUTTING minutes are from the tool makers' published cutting data.*handling, the set-up and the fixed positioning allowances are engineering-typical, not sourced — confirm with a supplier cycle sheet/);
+    expect(w[w.length - 1]).not.toMatch(/machining minutes are engineering-typical and conservative/);
     expect(w.some(x => /Sand Casting Moulding Line loaded \d+ %.*one line cannot make the volume/.test(x))).toBe(true);
     for (const r of rows) expect(lib.machines.some(m => m.machineClass === r.machine && m.buildup?.annualAvailableHours === r.availableHours)).toBe(true);
   });

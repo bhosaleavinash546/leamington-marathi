@@ -118,8 +118,12 @@ const DEGRADED_GEO = {
  * uses. `degraded` names nothing, so every material-dependent line renders
  * UNDECIDED — which is the honest output and the branch worth capturing.
  */
-const CONTEXTS: Array<{ name: string; geo: OCCTGeometry; filename: string }> = [
-  { name: 'full', geo: FULL_GEO, filename: 'reference-part-aluminium.step' },
+const CONTEXTS: Array<{ name: string; geo: OCCTGeometry; filename: string; answers?: Record<string, unknown> }> = [
+  // The service questions answered, as on the re-analyse after the engineer answers them: since Nov 2026 no mode assumes
+  // them (Part1 review), so an unanswered full context renders every casting / forging line UNDECIDED behind them — the
+  // degraded context keeps that branch.
+  { name: 'full', geo: FULL_GEO, filename: 'reference-part-aluminium.step',
+    answers: { 'service.pressureTight': 'no', 'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' } },
   { name: 'degraded', geo: DEGRADED_GEO, filename: 'reference-part.stl' },
 ];
 
@@ -136,6 +140,7 @@ function render(commodity: string, c: (typeof CONTEXTS)[number]): string {
       c.geo,
       c.filename,
       { annualVolume: 100_000, forcedCommodity: commodity, forcedMaterial: '' },
+      c.answers ?? {},
     ),
     // The built-in UK book, not whatever company book this machine's database
     // holds — the route prices in the deployment's active book, the baseline must not.
