@@ -13,7 +13,9 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage, questionsToStopOn, newQuestionsMessage, GET_COST_AFTER_STOP_LABEL } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, optionCostSlotHtml, optionCostHtml, optionCostNoteText, pricedQuestionsReady, PRICED_QUESTION_IDS, cardLeadHtml, routeAlternativesHtml, type QuestionCosts, type CardPage1, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
+// Phase C: the cost card reads page 1 of the core report from its own model (already in this bundle via excel.ts).
+import { buildCoreReport } from '../export/executive-summary.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -6720,7 +6722,9 @@ function renderCADDecisionsPanel(): string {
   // was applied (ECU cover, CAD to COST 360 live run, Oct 2026).
   // Answers already applied, as chips the engineer can reopen (proposal v2, M3): a question the rules no longer list
   // used to vanish with its answer.
-  const chipsHtml = answerChipsHtml(answerChips(_cadDecisionAnswers, _cadDecisionsAsked), true);
+  const chipsHtml = answerChipsHtml(answerChips(_cadDecisionAnswers, _cadDecisionsAsked), true)
+    // Phase C: the process answered — each route offered, re-costed (refreshOptionCosts fills it)
+    + routeAlternativesHtml(_cadDecisionsAsked['commodity.route'], _cadDecisionAnswers['commodity.route']);
   if (!open.length && !advisory.length) {
     return chipsHtml + `<div id="cad-decisions-panel" class="cad-ready" style="margin-bottom:12px;padding:11px 13px;background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span style="font-size:0.78rem;color:var(--text-primary);flex:1;min-width:220px"><strong>Nothing left to answer.</strong> The geometry${Object.keys(_cadDecisionAnswers).length ? ' and your answers' : ''} settle the route and the material.</span>
@@ -6760,7 +6764,7 @@ function renderCADDecisionsPanel(): string {
             return `<select data-decision-select="1" aria-label="${escHtml(d.question)}" style="width:100%;max-width:420px;font-size:0.74rem">
               ${sel ? '' : '<option value="">— choose —</option>'}
               ${d.options.map(o => `<option value="${escHtml(o.value)}" ${o.value === sel ? 'selected' : ''}>${escHtml(o.label + tag(o))}</option>`).join('')}
-            </select>`;
+            </select>${optionCostSlotHtml(d.id, '').replace('<span class="cad-opt-cost"', '<span class="cad-opt-cost cad-opt-cost--select" data-opt-cost-select="1"')}`;
           })()
         : d.options.map(o => `
         <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
@@ -6773,6 +6777,7 @@ function renderCADDecisionsPanel(): string {
             ${o.costed && !o.leaning && d.options.some(x => x.leaning) ? '<span style="color:var(--text-muted);font-style:italic"> (costed until you choose)</span>' : ''}
             ${o.leaning && !o.costed && d.options.some(x => x.costed) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; select it to cost it)</span>' : ''}
             ${o.leaning && (o.costed || !d.options.some(x => x.costed)) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above)</span>' : ''}
+            ${/* Phase C: the part re-costed with this answer (refreshOptionCosts fills it) */ optionCostSlotHtml(d.id, o.value)}
           </span>
         </label>`).join('')}${otherChoiceHtml(d)}
     </div>`;
@@ -6806,6 +6811,7 @@ function renderCADDecisionsPanel(): string {
       <button class="btn btn-secondary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px" title="Re-run the rules with these answers without costing">Apply answers</button>
       <span id="cad-decisions-status" role="status" style="font-size:0.7rem;color:var(--text-muted)">${open.length ? `${answered} of ${open.length} answered` : 'optional'}</span>
     </div>
+    ${[...open, ...advisory].some(d => PRICED_QUESTION_IDS.includes(d.id)) ? '<p class="cad-opt-cost-note" id="cad-opt-cost-note" role="status" aria-live="polite"></p>' : ''}
   </div>`;
 }
 
@@ -6897,6 +6903,7 @@ function wireCADDecisionsPanel(): void {
     }
     readCADDecisionPanel();
     status();
+    scheduleOptionCosts();
     // A blocking answer can change the route, the grade and the questions that follow: re-run the rules now so the
     // follow-up questions appear here, in place, instead of one round per button press.
     if (e.type === 'change' && _cadDecisions.find(d => d.id === id)?.severity === 'blocking') {
@@ -6928,6 +6935,136 @@ function wireCADDecisionsPanel(): void {
     sel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     sel?.focus();
   }));
+  scheduleOptionCosts(0);
+}
+
+// ─── Phase C (5 Nov 2026): the £ beside each option ─────────────────────────────────────────────────────────────────
+
+/** Option re-costs already fetched, by request — the server caches too (option-costs route). */
+const _optionCostCache = new Map<string, QuestionCosts[]>();
+let _optionCostSeq = 0;
+let _optionCostTimer: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleOptionCosts(delayMs = 400): void {
+  if (_optionCostTimer) clearTimeout(_optionCostTimer);
+  _optionCostTimer = setTimeout(() => { _optionCostTimer = null; void refreshOptionCosts(); }, delayMs);
+}
+
+/**
+ * The answers Get cost would send if pressed now (readCADDecisionPanel without recording): what is answered, plus each
+ * BLOCKING question's tick — never an untouched advisory default (it is costed as its default, unsent) and never a
+ * question a re-run just added that nobody has seen (Get cost stops on it first).
+ */
+function getCostAnswersPreview(): Record<string, string> {
+  const out: Record<string, string> = { ..._cadDecisionAnswers };
+  const panel = document.getElementById('cad-decisions-panel');
+  for (const block of Array.from(panel?.querySelectorAll<HTMLElement>('.cad-decision') ?? [])) {
+    const id = block.dataset.decisionId;
+    const d = id ? _cadDecisions.find(x => x.id === id) : undefined;
+    if (!id || !d || out[id] !== undefined) continue;
+    if (d.severity !== 'blocking' && !_cadTouchedDecisions.has(id)) continue;
+    if (_cadNewQuestions.has(id) && !_cadTouchedDecisions.has(id)) continue;
+    const v = pickedDecisionValue(block, d);
+    if (v) out[id] = v;
+  }
+  return out;
+}
+
+/**
+ * Fill the slot beside each option of a priced question with the part re-costed on that answer (server option-costs:
+ * costMeasuredPart, the chain Get cost equals to the penny). Bounded: only the options drawn, only questions whose
+ * blocking predecessors hold a value, one request a panel state, cached by its body.
+ */
+async function refreshOptionCosts(): Promise<void> {
+  const panel = document.getElementById('cad-decisions-panel');
+  const SLOTS = '#cad-decisions-panel .cad-opt-cost, #cad-route-alts .cad-opt-cost';
+  const slots = Array.from(document.querySelectorAll<HTMLElement>(SLOTS));
+  const note = document.getElementById('cad-opt-cost-note');
+  if (!panel || !slots.length) return;
+  const fmt = (n: number) => _currFmt(n);
+  const setAll = (html: (slot: HTMLElement) => string) => { for (const s of slots) s.innerHTML = html(s); };
+  const country = REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion;
+  if (!cadGeometryHash || !cadAnalysisResult) { setAll(() => ''); return; }
+  if (!programmeYearsValue()) {
+    setAll(() => optionCostHtml({ kind: 'off', reason: 'enter the programme life in step 1 — the tooling is spread over it' }, fmt));
+    if (note) note.textContent = optionCostNoteText('ready', country);
+    return;
+  }
+  const preview = getCostAnswersPreview();
+  const order = [..._cadDecisions.filter(d => d.severity === 'blocking'), ..._cadDecisions.filter(d => d.severity !== 'blocking')];
+  const ready = new Set(pricedQuestionsReady(order, id => preview[id] !== undefined && preview[id] !== ''));
+  // A question a re-run just added holds its tick but is not sent until seen (Get cost stops on it once): say so.
+  const waitingOn = order.some(d => d.severity === 'blocking' && _cadNewQuestions.has(d.id) && !_cadTouchedDecisions.has(d.id))
+    ? 'confirm the New question above first — Get cost stops on it once' : 'answer the questions above first';
+  const selectedOf = (id: string): string | null => {
+    if (preview[id] !== undefined) return preview[id];
+    const d = _cadDecisions.find(x => x.id === id);
+    return d?.options.find(o => o.costed)?.value ?? (d?.severity === 'blocking' ? null : d?.options.find(o => o.leaning)?.value ?? null);
+  };
+  // The answered process (its chip): every route offered, re-costed once every blocking question holds a value.
+  const routeAsked = _cadDecisionsAsked['commodity.route'];
+  const routeAlts = !!document.getElementById('cad-route-alts') && !!preview['commodity.route'] && !ready.has('commodity.route')
+    && order.every(d => d.severity !== 'blocking' || (preview[d.id] !== undefined && preview[d.id] !== ''));
+  if (routeAlts) ready.add('commodity.route');
+  const questions = [...ready].map(id => {
+    if (id === 'commodity.route' && routeAlts) {
+      return { id, values: (routeAsked?.options ?? []).map(o => String(o.value)), selected: preview['commodity.route'] };
+    }
+    const d = _cadDecisions.find(x => x.id === id)!;
+    const sel = panel.querySelector<HTMLSelectElement>(`.cad-decision[data-decision-id="${CSS.escape(id)}"] select[data-decision-select]`);
+    const selected = selectedOf(id);
+    const values = sel ? [...new Set([sel.value, selected].filter((v): v is string => !!v))] : d.options.map(o => String(o.value));
+    return { id, values, selected };
+  }).filter(q => q.values.length);
+  const viewFor = (slot: HTMLElement, got: QuestionCosts[] | null): string => {
+    const id = slot.dataset.optCostId ?? '';
+    if (!ready.has(id)) return optionCostHtml({ kind: 'off', reason: waitingOn }, fmt, _inCurText);
+    if (!got) return optionCostHtml({ kind: 'loading' }, fmt);
+    const q = got.find(x => x.id === id);
+    const value = slot.dataset.optCostSelect
+      ? (panel.querySelector<HTMLSelectElement>(`.cad-decision[data-decision-id="${CSS.escape(id)}"] select[data-decision-select]`)?.value ?? '')
+      : (slot.dataset.optCostValue ?? '');
+    const o = q?.options.find(x => x.value === value);
+    if (!q || !o) return optionCostHtml({ kind: 'off', reason: 'not in this re-cost' }, fmt);
+    return optionCostHtml({ kind: 'cost', option: o, selected: value === q.selected }, fmt, _inCurText);
+  };
+  if (!questions.length) { setAll(s => viewFor(s, [])); if (note) note.textContent = optionCostNoteText('ready', country); return; }
+  const body: Record<string, unknown> = {
+    geometryHash: cadGeometryHash, filename: cadFile?.name ?? 'part.step',
+    current: String(cadAnalysisResult.costInputSuggestions.recommendedCommodity ?? ''),
+    decisionAnswers: preview, acknowledged: [..._cadSanityAcks], annualVolume: cadAnnualVolume(), region: _mfgRegion,
+    questions,
+  };
+  if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
+  if (deliveryTerms() === 'EXW') body['deliveryTerms'] = 'EXW';
+  if (_cadMaterialLocked && _cadPinnedMaterialId) body['material'] = _cadPinnedMaterialId;
+  if (cadOCCTGeometry?.blank?.blankHash) body['blankHash'] = cadOCCTGeometry.blank.blankHash;
+  const key = JSON.stringify(body);
+  const cached = _optionCostCache.get(key);
+  if (cached) { setAll(s => viewFor(s, cached)); if (note) note.textContent = optionCostNoteText('ready', country); return; }
+  const seq = ++_optionCostSeq;
+  setAll(s => viewFor(s, null));
+  panel.setAttribute('aria-busy', 'true');
+  if (note) note.textContent = optionCostNoteText('loading', country);
+  try {
+    const res = await fetch('/api/cad/option-costs', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify(body) });
+    const data = await res.json() as { questions?: QuestionCosts[]; error?: string };
+    if (!res.ok || !data.questions) throw new Error(data.error ?? `HTTP ${res.status}`);
+    _optionCostCache.set(key, data.questions);
+    if (seq !== _optionCostSeq) return;   // a newer panel state is being costed
+    const live = Array.from(document.querySelectorAll<HTMLElement>(SLOTS));
+    for (const s of live) s.innerHTML = viewFor(s, data.questions);
+    const n2 = document.getElementById('cad-opt-cost-note');
+    if (n2) n2.textContent = optionCostNoteText('ready', country);
+  } catch (err) {
+    if (seq !== _optionCostSeq) return;
+    const msg = err instanceof Error ? err.message : String(err);
+    for (const s of Array.from(document.querySelectorAll<HTMLElement>(SLOTS))) s.innerHTML = optionCostHtml({ kind: 'off', reason: 'the re-cost failed' }, fmt);
+    const n2 = document.getElementById('cad-opt-cost-note');
+    if (n2) n2.textContent = optionCostNoteText('error', country, msg);
+  } finally {
+    if (seq === _optionCostSeq) document.getElementById('cad-decisions-panel')?.removeAttribute('aria-busy');
+  }
 }
 
 let _cadCostRunning = false;
@@ -7003,6 +7140,7 @@ async function cadGetCost(calculate = true): Promise<void> {
     const byRerun = unseen.some(id => _cadNewQuestions.has(id)) || seen.size > 0;
     _cadNewQuestions.clear();   // stopped on once: the next press accepts what is shown
     if (unseen.length) {
+      scheduleOptionCosts(0);   // the ticks are now what Get cost sends: the options can be costed on them
       // Never a dead press (fresh review, Nov 2026): the stop scrolls to the question(s), says why it stopped, and the
       // button says what the next press does.
       showCADQuestions(newQuestionsMessage(unseen.length, byRerun), unseen);
@@ -21614,8 +21752,48 @@ function collectCADBasis(): BasisRow[] {
 }
 
 /**
+ * Page 1 of the core report for the costing on screen (Phase C): `buildCoreReport` — the model the PDF's page 1 is drawn
+ * from — with the same costing, book, commodity, country and CAD metadata the PDF button passes (openPDF), so the card's
+ * piece price, tiles, re-add, alerts and open questions are the PDF's to the penny. Money it writes into text is in the
+ * display currency (fx / sym), as the PDF's is. The country rows are not passed: page 1 does not read them.
+ */
+function cadCardPage1(): CardPage1 | null {
+  if (!lastResult || !lastInput) return null;
+  try {
+    const m = buildCoreReport({ result: lastResult, input: lastInput, library, commodity: activeCommodity as CommodityType, region: _mfgRegion,
+      cadMeta: buildCadReportMeta() as never, fx: _displayFxRate, sym: currencySymbol(_displayCurrency) });
+    return { total: m.total, price: m.price, tooling: m.tooling, band: m.band, alerts: m.alerts, openQuestions: m.openQuestions,
+      confidence: { grade: m.confidence.grade, sentence: m.confidence.sentence, gradeNote: m.confidence.gradeNote } };
+  } catch (err) {
+    console.warn('[cad card] page 1 model unavailable:', err instanceof Error ? err.message : String(err));
+    return null;
+  }
+}
+
+/** Whole display-currency units, as page 1 prints a lump sum. */
+function _currWhole(n: number): string {
+  return `${currencySymbol(_displayCurrency)}${Math.round(n * _displayFxRate).toLocaleString('en-GB')}`;
+}
+/** Four decimals, for a lump sum ÷ parts. */
+function _currFmt4(n: number): string {
+  const v = n * _displayFxRate;
+  return `${v < 0 ? '−' : ''}${currencySymbol(_displayCurrency)}${Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
+}
+
+/** Redraw the card's lead (piece price, tiles, re-add, alerts) in place — after the route comparison lands, its "cheaper
+ *  route" alert is page 1's too. The rest of the card (the comparison table) is left as it is. */
+function refreshCADCardLead(): void {
+  const lead = document.getElementById('cad-card-lead');
+  if (!lead || !costedFromCAD()) return;
+  const p1 = cadCardPage1();
+  if (!p1) return;
+  lead.outerHTML = cardLeadHtml(p1, { fmt: (n: number) => _currFmt(n), whole: _currWhole, fmt4: _currFmt4, text: _inCurText });
+}
+
+/**
  * Step 3 of CAD to COST (proposal v2): under the headline, what a director checks — tooling investment and its
  * amortisation, what the band means, the answers, every input by how it was set, and what is not included.
+ * Phase C (5 Nov 2026): it leads with the piece price as page 1 of the core report does (cadCardPage1).
  */
 function renderCADCostCard(): void {
   const host = document.getElementById('cad-cost-card-host');
@@ -21686,6 +21864,10 @@ function renderCADCostCard(): void {
       deliveryTerms()),
     stamp: currentCADStamp(),
     fmt: (n: number) => _currFmt(n),
+    page1: cadCardPage1(),
+    whole: _currWhole,
+    fmt4: _currFmt4,
+    text: _inCurText,
   });
   host.hidden = false;
   for (const id of wasOpen) {
@@ -21771,6 +21953,7 @@ async function loadRouteComparison(): Promise<void> {
       current: activeCommodity, headline: lastResult?.total ?? null, labels: COMMODITY_REPORT_LABELS as Record<string, string>,
     });
     host.innerHTML = routeCompareHtml(_cadRouteComparison, { fmt: (n: number) => _currFmt(n) });
+    refreshCADCardLead();   // a feasible route ≥ 20 % cheaper is a page-1 alert: the card shows it as the PDF will
     host.querySelectorAll<HTMLButtonElement>('[data-cost-route]').forEach(btn => btn.addEventListener('click', () => {
       // Re-analyse AS that route on the CAD screen — its own questions come up there before Get cost. A process row
       // (sand / HPDC / precision …) records the process as the engineer's choice; the rules cost it as chosen.

@@ -257,6 +257,14 @@ export interface CostCardModel {
   topMovers?: Array<{ driver: string; swing: number }>;
   /** The commercial basis, editable here (proposal v2 #4); each writes its form field and re-costs. */
   commercial?: Array<{ id: string; label: string; value: number; unit: '%' | 'money' | 'count'; grade: BasisGrade }>;
+  /** Phase C: page 1 of the core report (buildCoreReport) — the card leads with its piece price, tiles, re-add and
+   *  alerts, and grades confidence as page 1 does. Absent (no model): the card shows what it has. */
+  page1?: CardPage1 | null;
+  /** Whole-unit money (a lump sum, as page 1 prints it) and 4-dp money (a lump sum ÷ parts). */
+  whole?: (n: number) => string;
+  fmt4?: (n: number) => string;
+  /** Converts £ written in model text (alerts, questions) into the display currency. */
+  text?: (s: string) => string;
 }
 
 /** The core's material-line traceability keys, named as a report prints them. */
@@ -349,6 +357,13 @@ export function cadCostCardHtml(m: CostCardModel): string {
   const counts = m.basis.reduce<Record<string, number>>((acc, r) => { acc[r.grade] = (acc[r.grade] ?? 0) + 1; return acc; }, {});
   const countText = GRADE_ORDER.filter(g => counts[g]).map(g => `${counts[g]} ${g.toLowerCase()}`).join(' · ');
   const why = confidenceWhyText(m.confidence, m.confidenceWhy ?? null);
+  // Phase C: page 1's model leads the card; its grade is the one the PDF prints (a calibrated band keeps its own word).
+  const p1 = m.page1 ?? null;
+  const whole = m.whole ?? m.fmt;
+  const text = m.text ?? ((s: string) => s);
+  const grade = m.confidence === 'calibrated' ? 'calibrated' : p1?.confidence.grade ?? m.confidence;
+  const band = m.band ?? (p1?.band ? { pm: p1.band.plusMinusPct, p10: p1.band.p10, p90: p1.band.p90 } : null);
+  const toolingDetail = p1 ? cardToolingDetailText(p1, m.fmt, whole) : null;
   const commercialHtml = m.commercial?.length ? `
         <div class="cad-commercial" role="group" aria-labelledby="cad-commercial-h">
           <div class="cad-commercial-h" id="cad-commercial-h">Commercial basis — change one to re-cost</div>
@@ -375,21 +390,21 @@ export function cadCostCardHtml(m: CostCardModel): string {
         <span class="cad-cost-step">Step 3 · Cost from CAD</span>
         <button type="button" class="cad-answer-change" id="cad-change-answers">Change answers</button>
       </div>
-      <div class="cad-cost-figs">
+      ${p1 ? cardLeadHtml(p1, { fmt: m.fmt, whole, ...(m.fmt4 ? { fmt4: m.fmt4 } : {}), text }) : ''}
+      <div class="cad-cost-figs cad-cost-figs--band">
         <div class="cad-cost-fig">
-          <span class="cad-cost-k">Tooling over the programme</span>
-          <span class="cad-cost-v">${m.toolingTotal > 0 ? esc(m.fmt(m.toolingTotal)) : 'none'}</span>
-          ${m.toolingTotal > 0 ? `<span class="cad-cost-sub">${esc(m.fmt(perPart))} a part over ${esc(amort)}</span>` : ''}
-          ${m.toolingTotal > 0 && m.toolingItems?.length ? `<span class="cad-cost-sub">${m.toolingItems.map(i => `${esc(i.label)} ${esc(m.fmt(i.gbp))}`).join(' · ')}</span>` : ''}
-        </div>
-        <div class="cad-cost-fig">
-          <span class="cad-cost-k">Band${m.confidence ? ` · confidence ${esc(m.confidence)}` : ''}</span>
-          <span class="cad-cost-v">${m.band ? `± ${m.band.pm}%` : '—'}</span>
-          ${m.band && m.band.p10 != null && m.band.p90 != null ? `<span class="cad-cost-sub">P10 ${esc(m.fmt(m.band.p10))} – P90 ${esc(m.fmt(m.band.p90))}</span>` : ''}
+          <span class="cad-cost-k">Band${grade ? ` · confidence ${esc(grade)}` : ''}</span>
+          <span class="cad-cost-v cad-cost-v--band">${band ? `± ${band.pm}%` : '—'}</span>
+          ${band && band.p10 != null && band.p90 != null ? `<span class="cad-cost-sub">P10 ${esc(m.fmt(band.p10))} – P90 ${esc(m.fmt(band.p90))}</span>` : ''}
         </div>
       </div>
-      ${bandScopeHtml(m)}
-      ${why ? `<p class="cad-cost-note" id="cad-confidence-why">Confidence ${esc(why)}</p>` : ''}
+      ${bandScopeHtml({ band, confidence: grade })}
+      ${p1 ? `<p class="cad-cost-note" id="cad-confidence-why">Confidence ${esc(p1.confidence.grade)}: ${esc(p1.confidence.sentence)}.${p1.confidence.gradeNote ? ` ${esc(text(p1.confidence.gradeNote))}` : ''}</p>`
+        : why ? `<p class="cad-cost-note" id="cad-confidence-why">Confidence ${esc(why)}</p>` : ''}
+      <p class="cad-cost-note cad-tooling-detail" id="cad-tooling-detail">${m.toolingTotal > 0
+        ? `Tooling over the programme ${esc(m.fmt(m.toolingTotal))} — ${esc(m.fmt(perPart))} a part over ${esc(amort)}${m.toolingItems?.length ? ` (${m.toolingItems.map(i => `${esc(i.label)} ${esc(m.fmt(i.gbp))}`).join(' · ')})` : ''}.`
+          + (toolingDetail ? ` ${esc(toolingDetail)}` : '')
+        : 'Tooling over the programme: none.'}</p>
       ${raisersHtml(m)}
       <div class="cad-answer-chips" role="list" aria-label="Costing context">
         ${m.chips.some(c => c.name === 'Process') ? '' : `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Route</span> <strong>${esc(m.commodityLabel)}</strong></span>`}
@@ -555,4 +570,172 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
     <caption class="sr-only">Cost per part by manufacturing route and process</caption>
     <thead><tr><th scope="col">Route · process</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling over programme</th><th scope="col" class="num">Tooling / part</th><th scope="col" class="num">Programme spend</th></tr></thead>
     <tbody>${body}</tbody></table></div>${excluded}`;
+}
+
+// ─── Phase C (5 Nov 2026): the £ beside each option of a step-2 question ──────────────────────────────────────────
+
+export type OptionCost = import('../../server/services/option-costs.js').OptionCost;
+export type QuestionCosts = import('../../server/services/option-costs.js').QuestionCosts;
+
+/** The process question: each option is a route (server/services/option-costs.ts costs it on that route). */
+export const ROUTE_QUESTION_IDS: readonly string[] = ['commodity.route'];
+/**
+ * The questions whose options carry a £ a part: the route (with each casting / forging process under a route option),
+ * the process choices when asked, the material grade / resin / compound / alloy / laminate, and the advisory gravity
+ * impressions, aluminium heat treatment and finish. Each figure is the part re-costed with that one answer changed.
+ */
+export const PRICED_QUESTION_IDS: readonly string[] = [
+  ...ROUTE_QUESTION_IDS, 'casting.processChoice', 'forging.processChoice', 'composites.processChoice',
+  'material.grade', 'material.resin', 'material.elastomer', 'material.alAlloy', 'material.laminate',
+  'casting.impressions', 'casting.heatTreat', 'service.finish',
+];
+
+/** An empty slot beside an option of a priced question — main.ts fills it (`optionCostHtml`). */
+export function optionCostSlotHtml(id: string, value: string): string {
+  if (!PRICED_QUESTION_IDS.includes(id)) return '';
+  return `<span class="cad-opt-cost" data-opt-cost-id="${esc(id)}" data-opt-cost-value="${esc(value)}"></span>`;
+}
+
+/**
+ * The priced questions to re-cost now: only once every BLOCKING question drawn before them holds a value (an answer or
+ * a ticked suggestion — what Get cost would send). A question whose predecessors are open would be re-costed on an
+ * answer nobody has given.
+ */
+export function pricedQuestionsReady(decisions: ReadonlyArray<{ id: string; severity: string }>, hasValue: (id: string) => boolean): string[] {
+  const out: string[] = [];
+  let blocked = false;
+  for (const d of decisions) {
+    if (PRICED_QUESTION_IDS.includes(d.id) && !blocked) out.push(d.id);
+    if (d.severity === 'blocking' && !hasValue(d.id)) blocked = true;
+  }
+  return out;
+}
+
+/** What one option's slot says. */
+export type OptionCostView =
+  | { kind: 'loading' }
+  | { kind: 'off'; reason: string }
+  | { kind: 'cost'; option: OptionCost; selected: boolean };
+
+const signedMoney = (n: number, fmt: (n: number) => string) => (Math.abs(n) < 0.005 ? fmt(0) : `${n > 0 ? '+' : '−'}${fmt(Math.abs(n))}`);
+
+/**
+ * "£9.14 a part (Δ +£1.20)" beside an option; "£9.14 a part (this choice)" on the one Get cost would cost; "costing…"
+ * while it is re-costed — never a number then; "not costed: <reason>" when there is no costed figure. No animation: money
+ * never moves on screen (motion policy). A casting / forging route option lists each feasible process's £.
+ */
+export function optionCostHtml(v: OptionCostView, fmt: (n: number) => string, text: (s: string) => string = s => s): string {
+  if (v.kind === 'loading') return '<span class="cad-opt-cost-loading">costing…</span>';
+  if (v.kind === 'off') return `<span class="cad-opt-cost-off">not costed: ${esc(text(v.reason))}</span>`;
+  const o = v.option;
+  if (o.status !== 'costed' || o.total == null) {
+    return `<span class="cad-opt-cost-off">not costed: ${esc(text(o.reason ?? 'no costed figure'))}</span>`;
+  }
+  const delta = v.selected ? 'this choice' : o.delta == null ? null : `Δ ${signedMoney(o.delta, fmt)}`;
+  const assumed = o.assumed.length ? `<span class="cad-opt-cost-assumed"> assumes ${esc(o.assumed.join('; '))}</span>` : '';
+  const procs = o.processes?.length ? `<span class="cad-opt-cost-procs"> by process: ${o.processes.map(p => p.total != null
+    ? `${esc(p.label)} ${esc(fmt(p.total))}${p.chosen ? ' (the rules\' choice)' : ''}`
+    : `${esc(p.label)} not costed (${esc(text(p.reason ?? ''))})`).join(' · ')}</span>` : '';
+  return `<span class="cad-opt-cost-v">${esc(fmt(o.total))} a part${delta ? ` (${esc(delta)})` : ''}</span>${assumed}${procs}`;
+}
+
+/**
+ * The process once answered (Phase C): the route question becomes a chip and leaves the panel, and its options could not
+ * be priced while it was open if the material came after it. Under the chips, each route the part was offered, with the
+ * same slot — the part re-costed on that route with every answer given (filled once the questions below hold a value).
+ */
+export function routeAlternativesHtml(asked: { options?: ReadonlyArray<{ value: string; label: string }> } | undefined, answered: string | undefined): string {
+  const opts = asked?.options ?? [];
+  if (!answered || opts.length < 2) return '';
+  return `<div class="cad-route-alts" id="cad-route-alts" role="group" aria-labelledby="cad-route-alts-h">
+      <div class="cad-commercial-h" id="cad-route-alts-h">Each process offered for this part, re-costed with your answers</div>
+      <ul>${opts.map(o => `<li><span class="cad-route-alt-name">${esc(o.label.split(' — ')[0])}${o.value === answered ? ' (your answer)' : ''}</span> ${optionCostSlotHtml('commodity.route', o.value)}</li>`).join('')}</ul>
+      <p class="cad-cost-note">To cost another process, press "change" on the Process chip and choose it.</p>
+    </div>`;
+}
+
+/** The line above the priced questions: what the figures are, and the progress state. */
+export function optionCostNoteText(state: 'loading' | 'ready' | 'error', country: string, error?: string): string {
+  const what = `£ a part beside an option: this part re-costed with that one answer changed — the rules and the ${country} rate book, as Get cost gives it (typed form figures are not in it).`;
+  return state === 'loading' ? `${what} Costing the options…`
+    : state === 'error' ? `${what} The options could not be costed: ${error ?? 'unknown error'}.`
+    : what;
+}
+
+// ─── Phase C: the cost card led by the piece price, as the core report's page 1 ───────────────────────────────────
+
+/**
+ * Page 1 of the core report, as the card shows it — read off `buildCoreReport` (src/export/executive-summary.ts), the
+ * model the PDF's page 1 is drawn from, so the card and the PDF cannot disagree. Nothing here is computed.
+ */
+export interface CardPage1 {
+  total: number;
+  price: { mode: 'amortized' | 'one_time_nre' | 'none'; pieceAsQuotedGbp: number; upfrontGbp: number; upfrontFactor: number | null;
+    amortisationVolume: number; runningPerPartGbp: number; toolWearInMaterialGbp: number; unsplitCountedUpfront: boolean };
+  tooling: { mode: 'amortized' | 'one_time_nre'; totalGbp: number; initialGbp: number; replacementGbp: number; perishableGbp: number;
+    unsplitGbp: number; amortisationVolume: number; bucketPerPartGbp: number };
+  band: { p10: number; p90: number; plusMinusPct: number } | null;
+  confidence: { grade: string; sentence: string; gradeNote: string | null };
+  alerts: Array<{ kind: 'blocking' | 'route' | 'scope'; title: string; lines: string[] }>;
+  openQuestions: string[];
+}
+
+/** The re-add page 1 prints: piece price + up-front tooling ÷ parts × its overhead and margin = the headline. */
+export function cardReAddText(p: CardPage1, money: (n: number) => string, whole: (n: number) => string): string | null {
+  const pr = p.price;
+  if (pr.mode === 'amortized' && pr.upfrontFactor != null) {
+    return `Re-add: piece price ${money(pr.pieceAsQuotedGbp)} + up-front tooling ${whole(pr.upfrontGbp)} ÷ ${Math.round(pr.amortisationVolume).toLocaleString('en-GB')} parts × ${pr.upfrontFactor.toFixed(4)} (its overhead and margin) = ${money(p.total)} a part.`;
+  }
+  if (pr.mode === 'amortized') return `Re-add: piece price ${money(pr.pieceAsQuotedGbp)} = ${money(p.total)} a part (all tooling is replacement or wear).`;
+  if (pr.mode === 'one_time_nre') return `Tooling ${whole(pr.upfrontGbp)} is charged once, outside the piece price; the piece price is the headline.`;
+  return null;
+}
+
+/** "Tooling over the programme" as page 1's detail line: first sets + replacements + perishables ÷ parts. */
+export function cardToolingDetailText(p: CardPage1, money: (n: number) => string, whole: (n: number) => string): string | null {
+  const t = p.tooling;
+  if (!(t.totalGbp > 0) || t.mode !== 'amortized') return null;
+  return `Tooling over the programme ${whole(t.totalGbp)} = first sets and NRE ${whole(t.initialGbp)} + replacements ${whole(t.replacementGbp)} + perishables ${whole(t.perishableGbp)}`
+    + `${t.unsplitGbp > 0.5 ? ` + not split ${whole(t.unsplitGbp)}` : ''}, ÷ ${Math.round(t.amortisationVolume).toLocaleString('en-GB')} parts = ${money(t.bucketPerPartGbp)} a part (bucket 4, before overhead and margin).`;
+}
+
+/**
+ * The card's lead (Phase C): the should-cost a part, then the three figures a buyer negotiates — the piece price as
+ * quoted (running tooling inside), the up-front tooling as a lump sum and its share a part, the tool replacement sets a
+ * part — and the re-add that closes them to the headline; then page 1's alerts (a BLOCKING DFM finding, uncosted scope,
+ * a cheaper feasible route) and the open or assumed questions.
+ */
+export function cardLeadHtml(p: CardPage1, o: { fmt: (n: number) => string; fmt4?: (n: number) => string; whole: (n: number) => string; text?: (s: string) => string }): string {
+  const { fmt, whole } = o;
+  const fmt4 = o.fmt4 ?? fmt;
+  const text = o.text ?? ((s: string) => s);
+  const pr = p.price;
+  const tile = (k: string, v: string, sub: string, id: string) => `<div class="cad-card-tile" id="${id}">
+          <span class="cad-cost-k">${esc(k)}</span><span class="cad-card-tile-v">${esc(v)}</span><span class="cad-cost-sub">${esc(sub)}</span></div>`;
+  const vol = Math.round(pr.amortisationVolume);
+  const tiles = [
+    tile('Piece price as quoted', fmt(pr.pieceAsQuotedGbp), pr.mode === 'amortized'
+      ? 'replacement sets and tool wear inside it; the up-front tooling out (the stack re-run)'
+      : pr.mode === 'one_time_nre' ? 'the headline: tooling is charged once, outside it' : 'the headline: no tooling in this costing', 'cad-card-piece'),
+    tile('Up-front tooling (lump sum)', pr.upfrontGbp > 0.5 ? whole(pr.upfrontGbp) : 'none',
+      pr.upfrontGbp <= 0.5 ? 'no up-front tooling in this costing'
+        : `${pr.unsplitCountedUpfront ? `first sets, fixtures, programming — incl. ${whole(p.tooling.unsplitGbp)} not split into sets` : 'first sets, fixtures, programming and masters'}`
+          + (pr.mode === 'amortized' && vol > 0 ? `; ÷ ${vol.toLocaleString('en-GB')} parts = ${fmt4(pr.upfrontGbp / vol)} a part before overhead and margin` : ''), 'cad-card-upfront'),
+    tile('Of which tool replacement sets', pr.mode === 'amortized' ? `${fmt(pr.runningPerPartGbp)} a part` : 'none',
+      'replacement tool sets, with overhead and margin — inside the piece price (not cutting-tool wear)', 'cad-card-running'),
+  ].join('');
+  const readd = cardReAddText(p, fmt, whole);
+  const alerts = p.alerts.map(a => `<div class="cad-card-alert cad-card-alert--${a.kind}" role="note">
+          <strong>${esc(text(a.title))}</strong>${a.lines.map(l => `<span>${esc(text(l))}</span>`).join('')}</div>`).join('');
+  const open = p.openQuestions.length ? `<div class="cad-card-open" id="cad-card-open">
+          <div class="cad-commercial-h">Open or assumed questions — costed as stated until answered</div>
+          <ul>${p.openQuestions.slice(0, 5).map(q => `<li>${esc(text(q))}</li>`).join('')}</ul>
+          ${p.openQuestions.length > 5 ? `<span class="cad-cost-note">${p.openQuestions.length - 5} more in the report.</span>` : ''}</div>` : '';
+  return `<section class="cad-card-lead" id="cad-card-lead" aria-labelledby="cad-card-headline-k">
+        <div class="cad-card-headline"><span class="cad-cost-k" id="cad-card-headline-k">Should-cost a part</span>
+          <span class="cad-card-total" id="cad-card-total">${esc(fmt(p.total))}</span></div>
+        <div class="cad-card-tiles">${tiles}</div>
+        ${readd ? `<p class="cad-card-readd" id="cad-card-readd">${esc(readd)}</p>` : ''}
+        ${alerts || open ? `<div class="cad-card-alerts" id="cad-card-alerts">${alerts}${open}</div>` : ''}
+      </section>`;
 }

@@ -346,7 +346,7 @@ const round = (n: number, dp = 4) => Math.round(n * 10 ** dp) / 10 ** dp;
  * beside a £62.04 headline on screen, Excel 8-Routes and PDF §9b (live run, 3 Nov 2026). The figure is rounded ONCE, at
  * display.
  */
-const exactTotal = (r: BulkPartResult): number | null => {
+export const exactTotal = (r: BulkPartResult): number | null => {
   const t = (r.trace as { result?: { total?: number } } | undefined)?.result?.total;
   return typeof t === 'number' && Number.isFinite(t) ? t : r.total ?? null;
 };
@@ -568,8 +568,9 @@ function bandOf(r: BulkPartResult, book: RateLibrary, geometryQuality: 'occt' | 
   }
 }
 
-/** Cost one route once, resolving leanings on its own questions (each one recorded). */
-async function costRoute(
+/** Cost one route once, resolving leanings on its own questions (each one recorded). Also the option £ of step 2
+ *  (option-costs.ts): the same leaning rule, so an option and a compare row are costed alike. */
+export async function costRoute(
   i: CompareRoutesInput, route: string, answers: Record<string, unknown>, annualVolume: number,
   assumed: string[] | null,
 ): Promise<{ r: BulkPartResult | null; open: string[] }> {

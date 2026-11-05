@@ -2902,6 +2902,65 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
   res.json({ region, comparison, rows: comparison.rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));
 
+/** Single re-costs of the option £ (CAD to COST Phase C), by (part, answers, route, region, volume, terms, versions, book). */
+const OPTION_COST_CACHE = new Map<string, import('../services/option-costs.js').OneCost>();
+const OPTION_COST_CACHE_MAX = 4000;
+const optionCostsLimiter = cadLimiter(400, 'option re-costs');
+
+/**
+ * The £ a part beside each option of a step-2 question (CAD to COST Phase C): the measured part re-costed through
+ * `costMeasuredPart` with the answers Get cost would send and that one answer changed (server/services/option-costs.ts).
+ * The geometry is the server's, looked up by hash; no AI. The client bounds the work: only the options it shows, only
+ * questions whose blocking predecessors are answered. Cached by part, answers, route, region, volume, life, terms, rules,
+ * kernel and the rate book's content.
+ */
+router.post('/option-costs', requireAuth, optionCostsLimiter, asyncRoute(async (req, res): Promise<void> => {
+  const geometryHash = typeof req.body?.geometryHash === 'string' ? req.body.geometryHash.trim() : '';
+  const answersIn = parseDecisionAnswers(req.body?.decisionAnswers);
+  const unitScale = answersIn['units.confirm'] === 'inch' ? 25.4 : 1;
+  let geo: OCCTGeometry | null = geometryHash ? getGeometry(geometryHash, unitScale) : null;
+  if (!geo || geo.status !== 'success') {
+    res.status(400).json({ error: 'No measured geometry on this server for that geometryHash — measure the part again.' });
+    return;
+  }
+  const blankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
+  if (blankHash) {
+    const b = getBlank<NonNullable<OCCTGeometry['blank']>>(blankHash);
+    if (b) geo = { ...geo, blank: b };
+  }
+  const current = typeof req.body?.current === 'string' ? req.body.current.trim() : '';
+  const rawQs: unknown[] = Array.isArray(req.body?.questions) ? req.body.questions : [];
+  const { costOptions, PRICED_QUESTION_IDS, MAX_QUESTIONS, MAX_OPTIONS_A_QUESTION } = await import('../services/option-costs.js');
+  const questions = rawQs.flatMap(q => {
+    const o = q as { id?: unknown; values?: unknown; selected?: unknown };
+    const id = typeof o.id === 'string' ? o.id : '';
+    if (!PRICED_QUESTION_IDS.includes(id) || !Array.isArray(o.values)) return [];
+    const values = o.values.filter((v): v is string => typeof v === 'string' && v.length > 0 && v.length < 200).slice(0, MAX_OPTIONS_A_QUESTION);
+    return [{ id, values, selected: typeof o.selected === 'string' && o.selected ? o.selected : null }];
+  }).slice(0, MAX_QUESTIONS);
+  const filename = (typeof req.body?.filename === 'string' && req.body.filename) || 'part.step';
+  const forcedMaterial = typeof req.body?.material === 'string' ? req.body.material.trim() : '';
+  const programmeYears = parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body.programmeYears) : undefined;
+  const annualVolume = parseFloat(req.body?.annualVolume) || 100000;
+  const deliveryTerms = req.body?.deliveryTerms === 'EXW' ? 'EXW' as const : undefined;
+  const acknowledge = parseAcknowledged(req.body?.acknowledged);
+  const region = rateRegionOf(requestRegion(req));
+  const baseBook = recomputeMachineRates(resolveActiveRateBook());
+  const { fingerprintRateLibrary } = await import('../utils/rate-library-fingerprint.js');
+  const bookPrint = fingerprintRateLibrary(baseBook);
+  const keyOf = (route: string, answers: Record<string, unknown>) => JSON.stringify([geometryHash, blankHash, unitScale, filename, route,
+    Object.keys(answers).sort().map(k => [k, answers[k]]), region, annualVolume, programmeYears ?? null, deliveryTerms ?? 'DAP',
+    [...acknowledge].sort(), RULE_ENGINE_VERSION, KERNEL_REV, bookPrint]);
+  if (OPTION_COST_CACHE.size > OPTION_COST_CACHE_MAX) OPTION_COST_CACHE.clear();
+  const result = await costOptions({
+    geo, filename, current: current || 'machining',
+    answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
+    region, annualVolume, ...(programmeYears ? { programmeYears } : {}), ...(deliveryTerms ? { deliveryTerms } : {}),
+    acknowledge, baseBook, questions,
+  }, OPTION_COST_CACHE, keyOf);
+  res.json({ region, questions: result, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
+}));
+
 router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, res): Promise<void> => {
   const filename = (req.body.filename as string) || 'cached_part.step';
   // The geometry is the server's, looked up by the hash /analyze returned. It

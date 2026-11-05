@@ -713,3 +713,30 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 
 .cad-compare-basis td { padding-top: 2px; border-bottom: 1px solid var(--border); }
 .cad-compare-table tbody tr:not(.cad-compare-basis) th, .cad-compare-table tbody tr:not(.cad-compare-basis) td { border-bottom: 0; }
+
+/* Phase C (5 Nov 2026): the £ beside each option of a step-2 question — no motion: money never moves (motion policy). */
+.cad-opt-cost { display: block; margin-top: 1px; font-size: 0.7rem; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.cad-opt-cost:empty { display: none; }
+.cad-opt-cost--select { margin-top: 4px; }
+.cad-opt-cost-v { font-weight: 600; color: var(--text-primary); }
+.cad-opt-cost-loading, .cad-opt-cost-off { color: var(--text-muted); font-style: italic; }
+.cad-opt-cost-assumed, .cad-opt-cost-procs { display: block; color: var(--text-secondary); }
+.cad-opt-cost-note { margin: 8px 0 0; font-size: 0.68rem; line-height: 1.45; color: var(--text-muted); }
+
+/* Phase C: the cost card leads with the piece price, as page 1 of the core report. */
+.cad-card-lead { display: flex; flex-direction: column; gap: 8px; }
+.cad-card-headline { display: flex; flex-direction: column; gap: 2px; }
+.cad-card-total { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.cad-card-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 720px) { .cad-card-tiles { grid-template-columns: 1fr; } }
+.cad-card-tile { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-elevated); }
+.cad-card-tile-v { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cad-card-readd { margin: 0; font-size: 0.74rem; font-weight: 600; line-height: 1.45; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.cad-card-alerts { display: flex; flex-direction: column; gap: 6px; }
+.cad-card-alert { display: flex; flex-direction: column; gap: 2px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); border-left: 3px solid var(--danger); background: var(--danger-bg); font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); }
+.cad-card-alert strong { color: var(--text-primary); }
+.cad-card-alert--route { border-left-color: var(--accent); background: var(--info-bg); }
+.cad-card-open { padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-elevated); font-size: 0.72rem; color: var(--text-secondary); }
+.cad-card-open ul { margin: 2px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+.cad-cost-v--band { font-size: 1.05rem; }
+.cad-tooling-detail { font-variant-numeric: tabular-nums; }
