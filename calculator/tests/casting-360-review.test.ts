@@ -211,7 +211,7 @@ describe('X5 / X19 / X20 — DFM texts claim only what the costing holds', () =>
 import { buildRegionalLibrary } from '../src/engine/regional-rates.js';
 import { processServiceFactor } from '../src/engine/regional-services.js';
 import { withRates } from '../src/engine/rate-context.js';
-import { BLAST_MIN_CHARGE_UK } from '../src/engine/cost-input-rules/commodities/casting.js';
+import { BLAST_MIN_CHARGE } from '../src/engine/cost-input-rules/commodities/casting.js';
 
 describe('X40 — the shot-blast minimum follows the country', () => {
   const all = JSON.parse(readFileSync(new URL('./fixtures/real-parts-baseline.json', import.meta.url), 'utf8')) as Array<{ part: string; geometry: unknown }>;
@@ -227,7 +227,7 @@ describe('X40 — the shot-blast minimum follows the country', () => {
   };
   it('India: below the UK £0.10, never below the UK minimum × the process-service factor', () => {
     const v = blastIn('IN');
-    const floor = withRates(buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), 'IN'), () => BLAST_MIN_CHARGE_UK * processServiceFactor());
+    const floor = withRates(buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), 'IN'), () => BLAST_MIN_CHARGE.uk * processServiceFactor());
     expect(v).toBeLessThan(0.10);
     expect(v).toBeGreaterThanOrEqual(floor - 1e-4);
   });

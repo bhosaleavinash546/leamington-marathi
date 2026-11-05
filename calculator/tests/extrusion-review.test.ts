@@ -6,9 +6,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  AL_ALLOYS, AL_ALLOY_LIST, AL_LINE, AL_DOWNSTREAM, AL_MARKET, SCRAP_DIFF_6XXX_USD, alScrapGbpPerKg, alBilletId,
+  AL_ALLOYS, AL_ALLOY_LIST, AL_LINE, AL_MARKET, SCRAP_DIFF_6XXX_USD, alScrapGbpPerKg, alBilletId,
 } from '../src/engine/al-extrusion-data.js';
-import { planAlExtrusion, chooseDieType } from '../src/engine/modules/aluminium-extrusion-advisor.js';
+import { planAlExtrusion, chooseDieType, AL_SERVICE } from '../src/engine/modules/aluminium-extrusion-advisor.js';
 import { buildAlExtrusionInputs, computeAluminiumExtrusionDrivers, temperNeeds, ctlSecPerPart } from '../src/engine/modules/aluminium-extrusion.js';
 import { ALUMINIUM_EXTRUSION_RULES, alloyEvidence } from '../src/engine/cost-input-rules/commodities/aluminium-extrusion.js';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
@@ -133,12 +133,12 @@ describe('6. finishing: area by process, and what the coating consumes', () => {
   it('coating consumables are charged per m²', () => {
     const mill = stack(spec()).breakdown.rawMaterial;
     const powder = stack(spec({ finish: 'powder', finishOutsideAreaM2: 0.16 })).breakdown.rawMaterial;
-    expect(powder - mill).toBeCloseTo(AL_DOWNSTREAM.powder.consumablesGbpPerM2 * 0.16 / (1 - AL_LINE.rejectRate), 3);
+    expect(powder - mill).toBeCloseTo(AL_SERVICE.powderConsumablesGbpPerM2 * 0.16 / (1 - AL_LINE.rejectRate), 3);
   });
   it('stretch bending carries its form tooling', () => {
     const t0 = stack(spec()).breakdown.tooling;
     const t1 = stack(spec({ bends: 1 })).breakdown.tooling;
-    expect((t1 - t0) * 50_000).toBeCloseTo(AL_DOWNSTREAM.bender.toolFirstGbp, 0);
+    expect((t1 - t0) * 50_000).toBeCloseTo(AL_SERVICE.bendToolFirstGbp, 0);
   });
 });
 

@@ -6,7 +6,7 @@ import {
   alBilletId, type AlAlloy, type AlExtrusionRoute, type AlFinish, type AlDieType, type AlTemper,
 } from '../al-extrusion-data.js';
 export type { AlTemper } from '../al-extrusion-data.js';
-import { planAlExtrusion, planImpact, planConform, AL_TOOL_BASIS, alToolChain, AL_DIE_FACTOR_NOTE, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
+import { planAlExtrusion, planImpact, planConform, AL_TOOL_BASIS, AL_SERVICE, alFinishConsumablesGbpPerM2, alToolChain, AL_DIE_FACTOR_NOTE, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
 import { secondaryMachiningCell } from '../machining-time.js';
 import { toolSetItems } from '../tooling-split.js';
 
@@ -344,8 +344,8 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     // left the tool never wearing out: 250,000 cans on a 150,000-hit tool; arithmetic audit X1).
     billetKgPerPart = ip.slugKg; dieGbp = ip.toolGbp; dieLifeKg = ip.toolLifeHits * spec.partWeightKg;
     dieBasis = `impact tool: ${ip.toolBasis} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits (${AL_DIE_FACTOR_NOTE}) — ${ip.basis}`;
-    heatKwh = 0; feedAdder = inCountry(AL_IMPACT.slugPrepGbpPerKg, 'process'); runs = 12; dieChangeHr = 1;   // slug prep: a process service
-    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool: ${ip.toolBasis} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits; `
+    heatKwh = 0; feedAdder = inCountry(AL_SERVICE.slugPrepGbpPerKg, 'process'); runs = 12; dieChangeHr = 1;   // slug prep: a process service
+    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_SERVICE.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool: ${ip.toolBasis} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits; `
       + `12 runs a year with a 1 h tool change each — ESTIMATE (engineering-typical, not sourced)`);
   } else if (spec.route === 'conform') {
     const cp = planConform(s, spec.alloy);
@@ -406,15 +406,15 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   const finishArea = finishLine?.outsideOnly && spec.finishOutsideAreaM2 ? spec.finishOutsideAreaM2 : spec.finishAreaM2;
   if (finishLine) {
     notes.push(`finish: ${spec.finish} over ${finishArea.toFixed(3)} m² (${finishLine.outsideOnly ? (spec.finishOutsideAreaM2 ? 'outside only' : 'whole surface — outside not measured') : 'every surface, chambers included'}) `
-      + `at ${finishLine.m2PerHr} m²/h + £${finishLine.consumablesGbpPerM2}/m² consumables`);
+      + `at ${finishLine.m2PerHr} m²/h + £${alFinishConsumablesGbpPerM2(spec.finish as 'anodise' | 'powder' | 'ecoat')}/m² consumables`);
   }
   // Cold cut-to-length: every profile route but Conform (cut in line) and impact.
   const ctl = plan ? ctlSecPerPart(s.ccdMm, plan.partsPerMillLength) : null;
   if (ctl) notes.push(`cut to length: ${ctl.basis}`);
-  const bendTool = spec.bends > 0 ? Math.round((AL_DOWNSTREAM.bender.toolFirstGbp + (spec.bends - 1) * AL_DOWNSTREAM.bender.toolPerExtraBendGbp) * countryFactor(AL_TOOL_BASIS)) : 0;
+  const bendTool = spec.bends > 0 ? Math.round((AL_SERVICE.bendToolFirstGbp + (spec.bends - 1) * AL_SERVICE.bendToolPerExtraGbp) * countryFactor(AL_TOOL_BASIS)) : 0;
   if (bendTool) {
     // the chain in full, the country's die factor printed every time (report standard round, Nov 2026)
-    const B = AL_DOWNSTREAM.bender, cf = countryFactor(AL_TOOL_BASIS), uk = B.toolFirstGbp + (spec.bends - 1) * B.toolPerExtraBendGbp;
+    const B = { toolFirstGbp: AL_SERVICE.bendToolFirstGbp, toolPerExtraBendGbp: AL_SERVICE.bendToolPerExtraGbp }, cf = countryFactor(AL_TOOL_BASIS), uk = B.toolFirstGbp + (spec.bends - 1) * B.toolPerExtraBendGbp;
     notes.push(`stretch-bend form tooling: UK £${B.toolFirstGbp.toLocaleString('en-GB')} + ${spec.bends - 1} × £${B.toolPerExtraBendGbp.toLocaleString('en-GB')} = £${uk.toLocaleString('en-GB')}; `
       + `£${uk.toLocaleString('en-GB')} × ${factorText('die factor', cf)} = £${(Math.round(uk * cf * 100) / 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} → £${bendTool.toLocaleString('en-GB')} `
       + `for ${spec.bends} bend${spec.bends === 1 ? '' : 's'} (${AL_DIE_FACTOR_NOTE})`);
@@ -434,9 +434,9 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     fabOps, fabToolingGbp: fabTooling, fabConsumablesGbp: fabWear,
     finish: spec.finish,
     ...(finishLine ? { finishLineId: finishLine.id, finishAreaM2: finishArea, finishM2PerHr: finishLine.m2PerHr, finishCrew: finishLine.crew,
-      finishConsumablesGbpPerM2: finishLine.consumablesGbpPerM2 } : {}),
+      finishConsumablesGbpPerM2: alFinishConsumablesGbpPerM2(spec.finish as 'anodise' | 'powder' | 'ecoat') } : {}),
     packSecPerPart: Math.round((6 + 4 * s.partLengthMm / 1000) * 10) / 10, inspectLabourId: 'lab-uk-semiskilled',
-    dieCostGbp: dieGbp, dieLifeKg, ...(dieBasis ? { dieBasis } : {}), nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
+    dieCostGbp: dieGbp, dieLifeKg, ...(dieBasis ? { dieBasis } : {}), nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_SERVICE.dieNitrideGbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
     amortizationVolume: spec.amortizationVolume && spec.amortizationVolume > 0 ? spec.amortizationVolume : spec.annualVolume,
     annualVolume: spec.annualVolume,
   };

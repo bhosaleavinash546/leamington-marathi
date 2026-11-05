@@ -4,6 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import { serviceView, serviceUk } from '../service-rates.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor, countryNote } from '../regional-services.js';
 import { activeLabourRate } from '../rate-context.js';
 import { NDT_STATION } from './casting-advisor.js';
@@ -415,22 +416,22 @@ export interface ForgingSecondaryResult {
 }
 
 /** UK £/kg of forging, bought-in heat treatment — CostVision engineering-typical, not sourced (printed on the rule). */
-export const HEAT_TREAT_COST_PER_KG: Record<'normalise' | 'quench-temper' | 'anneal' | 'solution-age', number> = {
-  normalise: 0.30,
-  'quench-temper': 0.65,     // Q&T — furnace + quench + temper
-  anneal: 0.35,
-  'solution-age': 1.20,      // Ti/superalloy/PH — solution + age
-};
+export const HEAT_TREAT_COST_PER_KG: Record<'normalise' | 'quench-temper' | 'anneal' | 'solution-age', number> = serviceView({
+  normalise: 'heat-treat.forging-normalise',
+  'quench-temper': 'heat-treat.forging-quench-temper',     // Q&T — furnace + quench + temper
+  anneal: 'heat-treat.forging-anneal',
+  'solution-age': 'heat-treat.forging-solution-age',       // Ti/superalloy/PH — solution + age
+});
 
 /** UK £ a part — CostVision engineering-typical, not sourced (printed on the rule). */
-export const NDT_COST_PER_PART: Record<'mpi' | 'ut' | 'ct', number> = {
-  mpi: 2.5,             // magnetic particle (ferrous surface)
-  ut: 6.0,             // ultrasonic (sub-surface)
-  ct: 32.0,            // industrial CT (safety-critical)
-};
+export const NDT_COST_PER_PART: Record<'mpi' | 'ut' | 'ct', number> = serviceView({
+  mpi: 'ndt.forging-mpi',      // magnetic particle (ferrous surface)
+  ut: 'ndt.forging-ut',        // ultrasonic (sub-surface)
+  ct: 'ndt.forging-ct',        // industrial CT (safety-critical)
+});
 
 /** Scale removal (shot blast or pickle), UK £ per kg of FORGING — CostVision engineering-typical, not sourced. */
-export const FORGING_DESCALE_GBP_PER_KG_UK = 0.12;
+export const FORGING_DESCALE = serviceView({ gbpPerKgUk: 'forging.descale' });
 
 export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): ForgingSecondaryResult {
   const adders: ForgingSecondaryAdder[] = [];
@@ -457,7 +458,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.descale) {
     adders.push({
       label: 'Descale / pickle',
-      basis: 'per-kg', unitCostGbp: svc(FORGING_DESCALE_GBP_PER_KG_UK), costPerPartGbp: svc(FORGING_DESCALE_GBP_PER_KG_UK) * wt,
+      basis: 'per-kg', unitCostGbp: svc(FORGING_DESCALE.gbpPerKgUk), costPerPartGbp: svc(FORGING_DESCALE.gbpPerKgUk) * wt,
       note: 'Remove forge scale before machining/inspection; per kg of forging.',
     });
   }
@@ -465,7 +466,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.shotBlast) {
     adders.push({
       label: 'Shot blast / surface prep',
-      basis: 'per-part', unitCostGbp: svc(0.35), costPerPartGbp: svc(0.35),
+      basis: 'per-part', unitCostGbp: svc(serviceUk('forging.shot-blast')), costPerPartGbp: svc(serviceUk('forging.shot-blast')),
       note: 'Cleans scale and keys the surface for coating/inspection.',
     });
   }
@@ -473,7 +474,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.coining) {
     adders.push({
       label: 'Coining / sizing / straighten',
-      basis: 'per-part', unitCostGbp: svc(0.55), costPerPartGbp: svc(0.55),
+      basis: 'per-part', unitCostGbp: svc(serviceUk('forging.coining')), costPerPartGbp: svc(serviceUk('forging.coining')),
       note: 'Cold restrike to hit tight flatness/thickness tolerance after forging.',
     });
   }
@@ -650,7 +651,8 @@ export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDie
     labourLine('EDM (deep ribs, tight radii)', 'edm', 0.25 * sinkHrs * complexityFactor, TOOLROOM_RATES.edm,
       `${complexity}: 25% of sinking hours × complexity`),
     { item: 'Harden + temper the blocks', kind: 'heatTreat',
-      cost: Math.round((2500 + steelKg * 2.2) * countryFactor('heatTreat')), basis: `£2,500 + £2.20/kg of die steel (UK)${countryNote('heatTreat')}` },
+      cost: Math.round((serviceUk('forge-die.harden-fixed') + steelKg * serviceUk('forge-die.harden-per-kg')) * countryFactor('heatTreat')),
+      basis: `£${serviceUk('forge-die.harden-fixed').toLocaleString('en-GB')} + £${serviceUk('forge-die.harden-per-kg').toFixed(2)}/kg of die steel (UK)${countryNote('heatTreat')}` },
     labourLine(`Impression polishing × ${impressions}`, 'polish', impressions * 16 * complexityFactor,
       TOOLROOM_RATES.polish, '16 h per impression × complexity'),
     labourLine('Die tryout — 3 sessions', 'tryout', 18, TOOLROOM_RATES.tryoutPress, 'press strokes + first-offs'),

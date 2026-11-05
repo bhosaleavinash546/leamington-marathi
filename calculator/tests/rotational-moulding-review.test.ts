@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
 import {
-  ROTATIONAL_MOULDING_RULES, rotoIndexSec, rotoMoulds, rotoMachineFor, ROTO_GRINDING_GBP_PER_KG,
+  ROTATIONAL_MOULDING_RULES, rotoIndexSec, rotoMoulds, rotoMachineFor, ROTO_GRINDING,
 } from '../src/engine/cost-input-rules/commodities/rotational-moulding.js';
 import { RESIN_DECISION_ID, resinFacts } from '../src/engine/cost-input-rules/derive/resin.js';
 import { hollowVerdict, enclosedShell } from '../src/engine/cost-input-rules/derive/hollow.js';
@@ -86,7 +86,7 @@ describe('3. the material is a roto powder, ground', () => {
     expect(q.options.map(o => o.value)).toEqual(['mat-lldpe-roto', 'mat-hdpe-roto', 'mat-xlpe-roto', 'mat-pp-roto', 'mat-pa12-roto']);
   });
   it('a grinding adder on both paths (headless had none, the screen £0.25/kg)', () => {
-    expect(rm(geoOf('ROTO_Header_Tank.stp')).s.powderCostAdderPerKg).toBe(ROTO_GRINDING_GBP_PER_KG);
+    expect(rm(geoOf('ROTO_Header_Tank.stp')).s.powderCostAdderPerKg).toBe(ROTO_GRINDING.gbpPerKg);
   });
 });
 

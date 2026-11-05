@@ -31,6 +31,7 @@
  * not a measured cycle: a supplier's cycle sheet replaces it. AI never sets any of them.
  */
 import { activeToolroomFactor } from './rate-context.js';
+import { serviceView } from './service-rates.js';
 import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
@@ -57,17 +58,18 @@ export interface CuttingData {
  * Cutting data by metal family. The removal rates are derived from the catalogue (cutting-catalogue.ts) — never typed
  * here; tool wear £/min is engineering-typical, not sourced.
  */
-const TOOL_COST_PER_CUT_MIN: Record<MaterialFamily, number> = {
-  aluminium: 0.04, magnesium: 0.04, plastic: 0.02, 'copper alloy': 0.06, 'cast iron': 0.10, steel: 0.12, titanium: 0.35,
-  zinc: 0.04, 'nickel alloy': 0.50,
-};
+const TOOL_COST_PER_CUT_MIN: Record<MaterialFamily, number> = serviceView({
+  aluminium: 'tool-wear.aluminium', magnesium: 'tool-wear.magnesium', plastic: 'tool-wear.plastic',
+  'copper alloy': 'tool-wear.copper-alloy', 'cast iron': 'tool-wear.cast-iron', steel: 'tool-wear.steel',
+  titanium: 'tool-wear.titanium', zinc: 'tool-wear.zinc', 'nickel alloy': 'tool-wear.nickel-alloy',
+});
+// tool wear £/min is the active book's `tool-wear.*` row (rates flow R2) — read on every access, never frozen at load
 export const CUTTING_DATA: Record<MaterialFamily, CuttingData> = Object.fromEntries(
-  (Object.keys(MACHINABILITY_RATIO) as MaterialFamily[]).map(f => [f, {
+  (Object.keys(MACHINABILITY_RATIO) as MaterialFamily[]).map(f => [f, Object.defineProperty({
     timeFactor: MACHINABILITY_RATIO[f],
     millRoughCm3PerMin: millRoughEffective(f),
     turnRoughCm3PerMin: turnRoughEffective(f),
-    toolCostPerCutMin: TOOL_COST_PER_CUT_MIN[f],
-  }]),
+  }, 'toolCostPerCutMin', { get: () => TOOL_COST_PER_CUT_MIN[f], enumerable: true }) as CuttingData]),
 ) as Record<MaterialFamily, CuttingData>;
 
 /**
@@ -581,9 +583,11 @@ export function toolWearPerPart(cuttingMin: number, family: MaterialFamily): num
 }
 
 /** Fixture cost per fixturing, £ — modular / soft-jaw work holding for a short programme, a dedicated fixture otherwise. */
-export const FIXTURE_GBP = { modular: 500, dedicated: 2_500, softJaws: 300, threshold5yParts: 10_000,
-  /** A dedicated hydraulic fixture on a 4th-axis tombstone (the volume cell): engineering-typical toolroom build. */
-  hydraulic: 12_000 } as const;
+export const FIXTURE_GBP = serviceView(
+  // £ each: the active book's `fixture.*` rows (rates flow R2) — the hydraulic one is a dedicated fixture on a 4th-axis
+  // tombstone (the volume cell); engineering-typical toolroom builds
+  { modular: 'fixture.modular', dedicated: 'fixture.dedicated', softJaws: 'fixture.soft-jaws', hydraulic: 'fixture.hydraulic' },
+  { threshold5yParts: 10_000 } as const);
 
 export function fixtureCostGBP(millFixturings: number, latheChuckings: number, annualVolume: number,
   kind: 'auto' | 'hydraulic' = 'auto'): { gbp: number; basis: string } {

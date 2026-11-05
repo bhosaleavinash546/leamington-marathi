@@ -1,3 +1,4 @@
+import { serviceView } from '../service-rates.js';
 import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
@@ -195,7 +196,7 @@ export interface RubberMouldCostBreakdown {
 
 /** Parametric cavity build-up (UK toolroom £) — engineering-typical, not sourced: £ a cavity = (fixed + cm² × perCm2)
  *  × steel × complexity, × cavities^exponent for the block; £ an insert nest. */
-export const RUBBER_CAVITY_GBP = { fixed: 900, perCm2: 35, exponent: 0.9, insertNest: 1200 } as const;
+export const RUBBER_CAVITY_GBP = serviceView({ insertNest: 'rubber.insert-nest' }, { fixed: 900, perCm2: 35, exponent: 0.9 } as const);
 /** Complexity factor on the cavity block. */
 export function rubberComplexityFactor(c: RubberComplexity | undefined): number {
   return (c ?? 'moderate') === 'complex' ? 1.5 : (c ?? 'moderate') === 'simple' ? 0.8 : 1.0;

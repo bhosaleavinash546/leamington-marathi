@@ -17,6 +17,7 @@
  * the kilogram, bought-outs each, 22% shop overhead) and return the same
  * `detail` a dedicated tooling tool would print.
  */
+import { serviceUk } from './service-rates.js';
 import { activeToolroomFactor } from './rate-context.js';
 import { countryFactor, countryNote } from './regional-services.js';
 import {
@@ -73,8 +74,10 @@ export function estimateHPDCDieCost(p: CastingToolInputs): CastingToolEstimate {
       `${complexity} die detail`),
     labourLine('Cooling-line drilling', 'machining', 0.10 * H * nEcon, TOOLROOM_RATES.cnc, 'intensive conformal-ish cooling, 10% of cavity hours'),
     labourLine('Bench fitting & spotting', 'fitting', FITTING_FRACTION * H * nEcon, TOOLROOM_RATES.fitting, '25% of cavity hours'),
-    boughtOutLine('Shot sleeve + biscuit block', 1, 4500, 'wear set, catalogue'),
-    { item: 'Stress-relief + nitride heat treat', kind: 'heatTreat', cost: Math.round((2500 + area * 4) * countryFactor('heatTreat')), basis: `£2,500 + £4/cm² against heat checking (UK)${countryNote('heatTreat')}` },
+    boughtOutLine('Shot sleeve + biscuit block', 1, serviceUk('casting-die.shot-sleeve-set'), 'wear set, catalogue'),
+    { item: 'Stress-relief + nitride heat treat', kind: 'heatTreat',
+      cost: Math.round((serviceUk('casting-die.heat-treat-fixed') + area * serviceUk('casting-die.heat-treat-per-cm2')) * countryFactor('heatTreat')),
+      basis: `£${serviceUk('casting-die.heat-treat-fixed').toLocaleString('en-GB')} + £${serviceUk('casting-die.heat-treat-per-cm2')}/cm² against heat checking (UK)${countryNote('heatTreat')}` },
     labourLine('Die tryout — 4 shots sessions', 'tryout', 32, TOOLROOM_RATES.tryoutPress, 'press time + first-offs'),
   ];
   return clampTotal(composeTool(lines), 35_000, 320_000);
@@ -153,7 +156,7 @@ export function estimateInvestmentToolCost(p: CastingToolInputs & { coreCount?: 
       cost: Math.round(wax.total * 0.8),
       basis: `low-pressure aluminium/P20 wax tool — mould model £${wax.total.toLocaleString()} × 0.8` },
     ...(cores > 0
-      ? [boughtOutLine(`Soluble-core boxes × ${cores}`, cores, Math.round(1200 * countryFactor('toolroom')), `per core box, £1,200 UK${countryNote('toolroom')} — made in a toolroom`)]
+      ? [boughtOutLine(`Soluble-core boxes × ${cores}`, cores, Math.round(serviceUk('casting.soluble-core-box') * countryFactor('toolroom')), `per core box, £${serviceUk('casting.soluble-core-box').toLocaleString('en-GB')} UK${countryNote('toolroom')} — made in a toolroom`)]
       : []),
   ];
   // wax.total already carries the shop overhead — compose without doubling it.

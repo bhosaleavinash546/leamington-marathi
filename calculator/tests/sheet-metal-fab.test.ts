@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeSheetMetalFabDrivers, ASSIST_GAS_COST_PER_HR, WATERJET_ABRASIVE_COST_PER_HR } from '../src/engine/modules/sheet-metal-fab.js';
+import { computeSheetMetalFabDrivers, ASSIST_GAS_COST_PER_HR, WATERJET_ABRASIVE } from '../src/engine/modules/sheet-metal-fab.js';
 import { adviseSheetMetalProcess, classifyVolume } from '../src/engine/modules/sheet-metal-advisor.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
@@ -175,7 +175,7 @@ describe('Sheet Metal Fab — assist gas consumable', () => {
       ...BASE_FAB, blankingMethod: 'waterjet', blankingMachineId: 'waterjet-flow-mach500',
       blankingCycleTimeSec: 120, toleranceMm: undefined, assistGas: undefined,
     });
-    const expected = WATERJET_ABRASIVE_COST_PER_HR * (120 / 3600);
+    const expected = WATERJET_ABRASIVE.costPerHr * (120 / 3600);
     expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(expected, 6);
   });
 

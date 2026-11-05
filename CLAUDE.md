@@ -932,6 +932,20 @@ what is true** — nothing here has been compared with a price JLR paid.
   always adopts `/active`, re-checks `/status` on focus, never reads a browser-local copy; the rate table is read only.
   The stamp prints the book's label + short fingerprint (`rate-book-sync.ts`). Audit: `GET /api/rate-library/audit`.
   Developed blanks persist in SQLite; a named blank that is gone is refused (409 `BLANK_GONE`), never costed around.
+- Company rate book flow R2 (5 Nov 2026, `tests/rates-flow-r2*.test.ts`): a company row changes ONLY the country it names.
+  Materials / Machines / Overhead / Services rows carry a `country` (blank = UK); Labour / Energy name it in the id
+  (`lab-cn-*`, `energy-cn`). Non-UK Materials / Machines rows live in `countryRows[cc]`; Overhead / Services rows keep their
+  `country` and are always looked up BY it. `buildRegionalLibrary` rebuilds every country from the BUILT-IN UK basis
+  (`builtInUkBasis`: `resolveActiveLibrary` records in `ukBuiltInBasis` the built-in rows a company row, alias or override
+  replaced and the ids it added) — never from a company UK row (held / at-par capital, "book size", scrap ratio leaks).
+  Overhead + margin = the book's Overhead row for (commodity, country) > (`*`, country) > built-in (`oh-default` 12 % / 8 %,
+  `shop-defaults-data.ts`; a country with no row: × its overhead multiplier) via `regionalShopDefaults(…, { commodity,
+  library })` / `shopRowFor` — screen (margin now follows too, `marginTyped`), headless, compare routes, executor; a typed
+  figure wins. Services & toolroom: every service / toolroom / tool-material / fixture / tool-wear / NDT / heat-treat £ is a row
+  in `service-rates-data.ts` (built-in = the old literal) read through the active book by `serviceUk` / `serviceView`
+  (service-rates.ts) — never a literal; a country with no own row takes the built-in UK figure × `countryFactor(basis)`.
+  Parametric tool curves, gear shop data, PCB country rates and EV parts lists are their own stated sources (header of
+  service-rates-data.ts). No FX sheet (an old one is ignored with a warning).
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds

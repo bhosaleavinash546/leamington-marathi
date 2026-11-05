@@ -31,6 +31,7 @@
  * obediently answered "infusion" was returning a value nothing downstream could
  * use. See `derive/laminate.ts`.
  */
+import { serviceView } from '../../service-rates.js';
 import { materialGradeName } from '../derive/material.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
 import { activeToolroomFactor, activeLabourRate, activeRates, factorText, gbpFigure } from '../../rate-context.js';
@@ -269,7 +270,7 @@ export interface CompositesNotCosted { item: string; reason: string }
  * ~£400k robot PAUT cell over 10 yr at 4,000 h (£10/h) + 50 % for maintenance, couplant and power. The inspector is
  * the costed country's `lab-uk-inspector` role; the cell's £/h is UK basis × the country's inspection factor.
  */
-export const NDI_STATION = { scanM2PerHr: 25, loadUnloadSec: 60, manning: 1, cellGbpPerHrUk: 15 } as const;
+export const NDI_STATION = serviceView({ cellGbpPerHrUk: 'ndi.cscan-cell' }, { scanM2PerHr: 25, loadUnloadSec: 60, manning: 1 } as const);
 
 /** The C-scan station's £ a part on `areaM2` of laminate, in the costed country, with its arithmetic. */
 export function ndiStationCost(areaM2: number): { gbp: number; basis: string } {

@@ -1,3 +1,4 @@
+import { serviceView } from '../service-rates.js';
 import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
@@ -88,8 +89,7 @@ export function rotoMouldRates(type: RotoMouldType): { base: number; perCm2: num
 }
 
 /** £ per vent / insert and £ for the mould's insulation — engineering-typical, not sourced. */
-export const ROTO_VENT_GBP = 250;
-export const ROTO_INSULATION_GBP = 500;
+export const ROTO_MOULD_ITEMS = serviceView({ ventGbp: 'roto.vent', insulationGbp: 'roto.insulation' });   // the book's rows (R2)
 /** Complexity multiplier on the size term — engineering-typical, not sourced. */
 export const ROTO_COMPLEXITY_FACTOR: Record<RotoComplexity, number> = { simple: 0.75, moderate: 1.0, complex: 1.5 };
 
@@ -104,7 +104,7 @@ export function estimateRotoMouldCost(inputs: RotoMouldCostInputs): RotoMouldCos
 
   const base = rates.base;
   const size = area * rates.perCm2 * complexityFactor;
-  const details = Math.max(0, Math.floor(inputs.ventsAndInserts ?? 0)) * ROTO_VENT_GBP + ROTO_INSULATION_GBP; // insulation + vents
+  const details = Math.max(0, Math.floor(inputs.ventsAndInserts ?? 0)) * ROTO_MOULD_ITEMS.ventGbp + ROTO_MOULD_ITEMS.insulationGbp; // insulation + vents
 
   // Built where the part is made: × the country's toolroom factor (1 in the UK).
   const tf = activeToolroomFactor();

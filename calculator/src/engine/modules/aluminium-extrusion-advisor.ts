@@ -26,11 +26,25 @@
  * Every constant is in al-extrusion-data.ts with its basis. Nothing here sets a
  * price: it decides quantities the cost module multiplies by library rates.
  */
+import { serviceView } from '../service-rates.js';
 import { countryFactor, inCountry, type CountryBasis } from '../regional-services.js';
 import { factorText } from '../rate-context.js';
 
 /** An extrusion / impact die or bend tool: ~20% H13 steel (traded), the rest die-shop labour and machining. ESTIMATE split. */
 export const AL_TOOL_BASIS: CountryBasis = { globalShare: 0.2, rest: 'toolroom' };
+
+/** The aluminium-extrusion service and tool £ the active book holds (rates flow R2, Services & toolroom rows `al-ext.*`). */
+export const AL_SERVICE = serviceView({
+  slugPrepGbpPerKg: 'al-ext.slug-prep', dieNitrideGbp: 'al-ext.die-nitride',
+  bendToolFirstGbp: 'al-ext.bend-tool-first', bendToolPerExtraGbp: 'al-ext.bend-tool-extra',
+  anodiseConsumablesGbpPerM2: 'al-ext.anodise-consumables', powderConsumablesGbpPerM2: 'al-ext.powder-consumables',
+  ecoatConsumablesGbpPerM2: 'al-ext.ecoat-consumables',
+});
+/** A finish line's consumables, £/m² (the book's row). */
+export function alFinishConsumablesGbpPerM2(finish: 'anodise' | 'powder' | 'ecoat'): number {
+  return finish === 'anodise' ? AL_SERVICE.anodiseConsumablesGbpPerM2 : finish === 'powder' ? AL_SERVICE.powderConsumablesGbpPerM2
+    : AL_SERVICE.ecoatConsumablesGbpPerM2;
+}
 import {
   AL_ALLOYS, AL_PRESSES, AL_CONFORM, AL_IMPACT, AL_DIES, AL_DIE_NITRIDE, AL_LINE,
   type AlAlloy, type AlExtrusionRoute, type AlDieType, type AlPress,
@@ -162,8 +176,8 @@ export function dieCost(type: AlDieType, ccdMm: number, holes: number, s: AlSect
     + ` (${holes > 1 ? `${holes} openings at +45% an opening; ` : ''}${AL_DIE_FACTOR_NOTE}) — ESTIMATE `
     + `(European die-maker figures above the published Asian $300–10,000; the opening / void / intricacy multipliers engineering-typical); `
     // the nitride is a heat-treat service in the costed country (aluminium-extrusion.ts inCountry): its factor printed
-    + `life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t at UK £${AL_DIE_NITRIDE.gbp} × `
-    + `${factorText('heat-treat', countryFactor('heatTreat'))} = £${inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat').toFixed(2)}` };
+    + `life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t at UK £${AL_SERVICE.dieNitrideGbp} × `
+    + `${factorText('heat-treat', countryFactor('heatTreat'))} = £${inCountry(AL_SERVICE.dieNitrideGbp, 'heatTreat').toFixed(2)}` };
 }
 
 /**

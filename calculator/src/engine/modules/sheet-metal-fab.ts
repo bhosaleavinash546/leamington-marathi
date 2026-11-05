@@ -1,3 +1,4 @@
+import { serviceView } from '../service-rates.js';
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import type { SheetHardwareItem } from './sheet-metal-hardware.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
@@ -18,11 +19,11 @@ export type AssistGas = 'nitrogen' | 'oxygen' | 'air';
  * Oxygen: mild-steel oxidation cutting uses far lower flow (2–5 m³/hr, <6 bar) → £1–3/hr bulk.
  * Air: compressor amortization + energy for compressed-air cutting/plasma.
  */
-export const ASSIST_GAS_COST_PER_HR: Record<AssistGas, number> = {
-  nitrogen: 9.00,
-  oxygen:   1.80,
-  air:      0.40,
-};
+export const ASSIST_GAS_COST_PER_HR: Record<AssistGas, number> = serviceView({
+  nitrogen: 'sheet.assist-gas-nitrogen',
+  oxygen:   'sheet.assist-gas-oxygen',
+  air:      'sheet.assist-gas-air',
+});
 
 /**
  * Waterjet abrasive consumable, £/hr of cutting (UK, 2026).
@@ -30,7 +31,7 @@ export const ASSIST_GAS_COST_PER_HR: Record<AssistGas, number> = {
  * plus orifice/mixing-tube wear ~£2–4/hr. Without this, waterjet parts are
  * materially under-costed (abrasive is the dominant waterjet operating cost).
  */
-export const WATERJET_ABRASIVE_COST_PER_HR = 18.00;
+export const WATERJET_ABRASIVE = serviceView({ costPerHr: 'sheet.waterjet-abrasive' });
 
 // [min_tolerance_mm, factor] — check from widest to tightest
 export const SM_FAB_TOLERANCE_FACTOR: [number, number][] = [
@@ -247,7 +248,7 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
 
   // Waterjet garnet abrasive + orifice wear — dominant waterjet operating cost
   const abrasiveAdder = inputs.blankingMethod === 'waterjet'
-    ? WATERJET_ABRASIVE_COST_PER_HR *
+    ? WATERJET_ABRASIVE.costPerHr *
       (inputs.blankingCycleTimeSec / 3600) * toleranceFactor * rejectUplift
     : 0;
 

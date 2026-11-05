@@ -171,7 +171,8 @@ describe('7 · the parser refuses garbage, naming sheet, row and column', () => 
   it('a currency other than GBP on a base-book row', () => {
     let row = 0;
     expect(errs(wb => { row = setCell(wb, 'Labour', 'lab-uk-skilled', 'currency', 'EUR'); })[0])
-      .toBe(`Labour row ${row}, column currency: 'EUR' — the base book is in GBP: write GBP and the figure in pounds (country rows in their own currency come with the country sheets).`);
+      // R2: a country row is in GBP too (at the published exchange rate) — the message says so
+      .toBe(`Labour row ${row}, column currency: 'EUR' — every row is in GBP: write GBP and the figure in pounds (a country row too, at the published exchange rate).`);
   });
 
   it('duplicate ids; an unknown id where the sheet takes only template ids; a new row missing a field', () => {

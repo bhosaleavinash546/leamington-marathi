@@ -15,6 +15,10 @@ import type { DeliveryTerms } from '../engine/types.js';
 
 const basis: { packagingPerPart?: number; logisticsPerPart?: number } = {};
 
+/** The commodity on the form: the Overhead sheet's rows are per commodity (rates flow R2). */
+let commodity: string | undefined;
+export function setShopCommodity(c: string | undefined): void { commodity = c; }
+
 /** Delivery terms of the costing: DAP (delivered, the default) or EXW (ex-works — the buyer collects, no freight). */
 let terms: DeliveryTerms = 'DAP';
 export function deliveryTerms(): DeliveryTerms { return terms; }
@@ -41,12 +45,12 @@ export function applyDeliveryTermsToForm(region: ManufacturingRegion, doc: Docum
 
 /** Where each figure came from — the cost card's Basis grades it by this (it read a size estimate as "Typed"). */
 export type ShopFigureSource = 'default' | 'size' | 'typed';
-export type ShopField = 'overhead' | 'packaging' | 'logistics';
-const source: Record<ShopField, ShopFigureSource> = { overhead: 'default', packaging: 'default', logistics: 'default' };
+export type ShopField = 'overhead' | 'margin' | 'packaging' | 'logistics';
+const source: Record<ShopField, ShopFigureSource> = { overhead: 'default', margin: 'default', packaging: 'default', logistics: 'default' };
 export function shopFigureSource(field: ShopField): ShopFigureSource { return source[field]; }
 
 /** The form field of each shop figure. */
-export const SHOP_FIELD_IDS: Record<ShopField, string> = { overhead: 'overhead-pct', packaging: 'packaging', logistics: 'logistics' };
+export const SHOP_FIELD_IDS: Record<ShopField, string> = { overhead: 'overhead-pct', margin: 'margin-pct', packaging: 'packaging', logistics: 'logistics' };
 
 /**
  * The overhead % typed into its field by a person (a trusted keystroke). A programmatic fill — a country switch, a demo,
@@ -54,14 +58,16 @@ export const SHOP_FIELD_IDS: Record<ShopField, string> = { overhead: 'overhead-p
  * from an earlier China book survived as if typed and the report said "as entered" beside China's 12 % default).
  */
 export function overheadTyped(byPerson = true): void { if (byPerson) source.overhead = 'typed'; }
+/** The margin % typed by a person — kept; a default follows the country and commodity (the Overhead sheet, R2). */
+export function marginTyped(byPerson = true): void { if (byPerson) source.margin = 'typed'; }
 
 /**
  * Back to defaults: nothing typed. A new costing starts here; a restored draft sets what IT recorded as typed.
  */
-export function resetShopSources(): void { source.overhead = 'default'; source.packaging = 'default'; source.logistics = 'default'; }
+export function resetShopSources(): void { source.overhead = 'default'; source.margin = 'default'; source.packaging = 'default'; source.logistics = 'default'; }
 
 /** What a draft stores of the shop figures: each one's source, and the UK basis a typed / size figure was taken back to. */
-export interface ShopDraftState { sources: Record<ShopField, ShopFigureSource>; basis: { packagingPerPart?: number; logisticsPerPart?: number } }
+export interface ShopDraftState { sources: { [K in ShopField]?: ShopFigureSource }; basis: { packagingPerPart?: number; logisticsPerPart?: number } }
 export function shopDraftState(): ShopDraftState { return { sources: { ...source }, basis: { ...basis } }; }
 
 /**
@@ -71,7 +77,7 @@ export function shopDraftState(): ShopDraftState { return { sources: { ...source
  */
 export function restorableShopFields(state: Partial<ShopDraftState> | null | undefined): Set<string> {
   const out = new Set<string>();
-  for (const f of ['overhead', 'packaging', 'logistics'] as const) if (state?.sources?.[f] === 'typed') out.add(SHOP_FIELD_IDS[f]);
+  for (const f of ['overhead', 'margin', 'packaging', 'logistics'] as const) if (state?.sources?.[f] === 'typed') out.add(SHOP_FIELD_IDS[f]);
   return out;
 }
 
@@ -80,7 +86,7 @@ export function restoreShopDraftState(state: Partial<ShopDraftState> | null | un
   // a draft saved before sources were stored says nothing about them: the figures on the page keep their own sources
   if (!state?.sources) return;
   resetShopSources();
-  for (const f of ['overhead', 'packaging', 'logistics'] as const) {
+  for (const f of ['overhead', 'margin', 'packaging', 'logistics'] as const) {
     const v = state.sources[f];
     if (v === 'typed' || v === 'size') source[f] = v;
   }
@@ -104,12 +110,13 @@ export function shopBasisFromTyped(region: ManufacturingRegion, field: 'packagin
   if (byPerson) source[field] = 'typed';
 }
 
-/** The packaging and logistics a region shows for the current basis. */
-export function shopFieldsFor(region: ManufacturingRegion): { overheadPct: number; packagingPerPart: number; logisticsPerPart: number } {
-  return regionalShopDefaults(region, basis, terms);
+/** Overhead, margin, packaging and logistics a region shows for the current basis and commodity (overhead / margin from
+ *  the active book's Overhead rows — rates flow R2). */
+export function shopFieldsFor(region: ManufacturingRegion): { overheadPct: number; marginPct: number; packagingPerPart: number; logisticsPerPart: number } {
+  return regionalShopDefaults(region, basis, terms, { commodity });
 }
 
-/** Write overhead, packaging and logistics for `region` into the form. Returns the overhead % set. */
+/** Write overhead, margin, packaging and logistics for `region` into the form. Returns the overhead % set. */
 export function applyCountryShopFields(region: ManufacturingRegion, doc: Document = document): { overheadPct: number; changedOverhead: boolean } {
   const f = shopFieldsFor(region);
   const set = (id: string, v: number) => {
@@ -122,6 +129,8 @@ export function applyCountryShopFields(region: ManufacturingRegion, doc: Documen
   const ohPct = Math.round(f.overheadPct * 1000) / 10;
   // A typed overhead is the engineer's figure and stays; a default follows the country.
   const changedOverhead = source.overhead === 'typed' ? false : set('overhead-pct', ohPct);
+  // the margin likewise (it sat at the form's 8 whatever the book said — R2)
+  if (source.margin !== 'typed') set('margin-pct', Math.round(f.marginPct * 1000) / 10);
   set('packaging', Math.round(f.packagingPerPart * 10_000) / 10_000);
   set('logistics', Math.round(f.logisticsPerPart * 10_000) / 10_000);
   applyDeliveryTermsToForm(region, doc);

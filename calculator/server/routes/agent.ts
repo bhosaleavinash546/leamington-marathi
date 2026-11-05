@@ -41,8 +41,8 @@ required one. A call carrying a number the user did not give is refused and tell
         description: 'Commodity-specific parameters',
       },
       partName:         { type: 'string' },
-      overheadPct:      { type: 'number', description: 'Default 0.12' },
-      marginPct:        { type: 'number', description: 'Default 0.08' },
+      overheadPct:      { type: 'number', description: 'Default: the rate book\'s Overhead row for the commodity and country (built-in 0.12)' },
+      marginPct:        { type: 'number', description: 'Default: the rate book\'s Overhead row for the commodity and country (built-in 0.08)' },
       packagingPerPart: { type: 'number', description: 'Default 0.15' },
       logisticsPerPart: { type: 'number', description: 'Default 0.25' },
       region: {
@@ -64,13 +64,16 @@ required one. A call carrying a number the user did not give is refused and tell
  */
 export function costInRegion(input: CostToolInput & { region?: string }, sessionRegion: string | undefined): Omit<ReturnType<typeof executeCalculateCost>, 'trace'> & { region: string } {
   const region = regionOf(input.region ?? sessionRegion);
-  const shop = regionalShopDefaults(region);
+  const book = rateBookForRegion(region);
+  // overhead and margin: the book's Overhead rows for this commodity and country (rates flow R2)
+  const shop = regionalShopDefaults(region, {}, 'DAP', { commodity: input.commodity, library: book });
   const r = executeCalculateCost({
     ...input,
     overheadPct: input.overheadPct ?? shop.overheadPct,
+    marginPct: input.marginPct ?? shop.marginPct,
     packagingPerPart: input.packagingPerPart ?? shop.packagingPerPart,
     logisticsPerPart: input.logisticsPerPart ?? shop.logisticsPerPart,
-    rateLibrary: rateBookForRegion(region),
+    rateLibrary: book,
   });
   const { trace: _trace, ...rest } = r;   // the per-line trace is for audits, not the model's context
   return { ...rest, region };

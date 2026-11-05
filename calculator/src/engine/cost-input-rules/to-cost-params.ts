@@ -33,6 +33,8 @@
  * measurements, and any number that moves because of them is attributable to
  * this block.
  */
+import { BUILT_IN_SHOP_ROW } from '../shop-defaults-data.js';
+import { serviceUk } from '../service-rates.js';
 import { activeRates } from '../rate-context.js';
 import { finishSpec, FINISH_PRODUCT_FORM, FINISH_RACK_DEFAULTS, SURFACE_ROUTE_LABELS } from '../surface-finish-routes.js';
 import { countryFactor } from '../regional-services.js';
@@ -138,8 +140,10 @@ export const SHOP_DEFAULTS = {
   /** £/part, both arms. The engine's own worked examples use this band. */
   packagingPerPart: 0.15,
   logisticsPerPart: 0.25,
-  overheadPct: 0.12,
-  marginPct: 0.08,
+  /** The BUILT-IN Overhead row (shop-defaults-data.ts). A costing reads the book's row for its commodity and country
+   *  through `regionalShopDefaults` (rates flow R2) — these two are for scripts that cost in the built-in UK book. */
+  overheadPct: BUILT_IN_SHOP_ROW.overheadPct,
+  marginPct: BUILT_IN_SHOP_ROW.marginPct,
 } as const;
 
 /** Labour grade by commodity — a foundry hand is not a CNC setter. */
@@ -850,7 +854,7 @@ export function toCostParams(
             bendLabourId: s.fabBrakeLabourId || 'lab-uk-skilled',
             oee: D.oee, manning: 1, labourEfficiency: D.labourEfficiency,
             rejectRate: s.fabRejectRate !== undefined ? num(s.fabRejectRate) : D.rejectRate,
-            toolingCost: num(s.fabToolingGBP, Math.round(1500 * countryFactor('engineer'))),   // programming + first-off, UK £1,500
+            toolingCost: num(s.fabToolingGBP, Math.round(serviceUk('sheet.fab-programming') * countryFactor('engineer'))),   // programming + first-off (the book's row)
             amortizationVolume: amortVolume,
             ...hardware,
           },

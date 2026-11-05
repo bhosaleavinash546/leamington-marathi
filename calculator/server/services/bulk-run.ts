@@ -380,11 +380,14 @@ export async function costMeasuredPart(
   // Overhead, packaging and logistics for the country — the same function the
   // screen's country switch uses (it used to be the UK's 12 % / £0.15 / £0.25 here
   // whatever the region, while the screen scaled them).
-  const shop = regionalShopDefaults(region, { packagingPerPart: mapped.packagingPerPart, logisticsPerPart: mapped.logisticsPerPart }, opts.deliveryTerms);
+  // Overhead and margin: the book's Overhead rows for this commodity and country (rates flow R2) — the same function the
+  // screen's country switch uses, handed the book this costing runs in.
+  const shop = regionalShopDefaults(region, { packagingPerPart: mapped.packagingPerPart, logisticsPerPart: mapped.logisticsPerPart }, opts.deliveryTerms,
+    { commodity, library: book });
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
     rateLibrary: book,
-    overheadPct: shop.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
+    overheadPct: shop.overheadPct, marginPct: shop.marginPct,
     packagingPerPart: shop.packagingPerPart,
     logisticsPerPart: shop.logisticsPerPart,
     ...(opts.deliveryTerms ? { deliveryTerms: opts.deliveryTerms } : {}),

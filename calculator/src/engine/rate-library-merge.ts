@@ -12,10 +12,36 @@
  * the uploaded book whole, which froze every template row (country rows included) at upload date and hid every new
  * engine id (the Nov foundry / forge machines) behind "Machine '…' not found".
  */
-import type { RateLibrary, MachineRateBuildup, MaterialRate, MachineRate, LabourRate, EnergyRate, FXRate, OverheadDefault } from './types.js';
+import type {
+  RateLibrary, MachineRateBuildup, MaterialRate, MachineRate, LabourRate, EnergyRate, OverheadDefault, ServiceRate, CountryRateRows,
+} from './types.js';
 
-export type RateTable = 'materials' | 'machines' | 'labour' | 'energy' | 'fx' | 'overheadDefaults';
+/**
+ * The tables a company book carries rows for, in workbook order (rates flow R2, Nov 2026: FX is not one — it stays the
+ * published central-bank rate of the built-in book and the country books; Services & toolroom is new).
+ */
+export const RATE_TABLES = ['materials', 'machines', 'labour', 'energy', 'overheadDefaults', 'services'] as const;
+export type RateTable = typeof RATE_TABLES[number];
 export type RateSource = 'builtin' | 'company';
+
+/** The region a row applies to: its `country` (a region code), 'UK' when absent. */
+export const rowCountry = (r: { country?: string }): string => (r.country && r.country !== 'UK' ? r.country : 'UK');
+/** The merge key of a row whose table carries a `country` (Overhead, Services): id + country. */
+const keyOf = (r: { id: string; country?: string }): string => `${r.id}|${rowCountry(r)}`;
+/** Tables whose rows carry their own `country` in the main table. */
+const COUNTRY_KEYED = new Set<RateTable>(['overheadDefaults', 'services']);
+
+/**
+ * A row of the UK base book — the rows a UK company row replaces. Labour and energy name their country in the id
+ * (`lab-cn-skilled`, `energy-cn`): those are that country's rows, read only by its own book. A machine whose region is
+ * another country's (`mach-vmc3-cn`) is likewise that country's named row. (Rates flow R2.)
+ */
+export function isBaseRow(table: 'materials' | 'machines' | 'labour' | 'energy', row: { id: string; region?: string }): boolean {
+  if (table === 'labour') { const m = /^lab-([a-z]{2})-/.exec(row.id); return !m || m[1] === 'uk'; }
+  if (table === 'energy') return row.id === 'energy-uk';
+  if (table === 'machines') return !row.region || row.region === 'UK';
+  return true;
+}
 
 export interface RateOverride {
   table: RateTable;
@@ -62,7 +88,8 @@ export function applyRateOverrides(lib: RateLibrary, overrides: RateOverride[]):
   for (const o of overrides) {
     const rows = next[o.table] as unknown as Array<Record<string, unknown>> | undefined;
     if (!Array.isArray(rows)) continue;
-    const row = rows.find(r => r.id === o.id);
+    // a cell override edits the UK base row (Overhead and Services carry country rows under the same id — R2)
+    const row = rows.find(r => r.id === o.id && (!COUNTRY_KEYED.has(o.table) || rowCountry(r as { country?: string }) === 'UK'));
     if (!row) continue;
     if (!Number.isFinite(o.value) || o.value < 0) continue;           // no NaN/negatives
     if (DERIVED_FIELDS.has(o.field.split('.').pop() ?? '')) continue; // don't override recomputed fields
@@ -133,9 +160,7 @@ export function applyAliases(lib: RateLibrary): { library: RateLibrary; errors: 
   return { library: { ...lib, machines, labour }, errors };
 }
 
-/** The tables a company book can carry rows for, in workbook order. */
-export const RATE_TABLES = ['materials', 'machines', 'labour', 'energy', 'fx', 'overheadDefaults'] as const;
-type RowOf = { materials: MaterialRate; machines: MachineRate; labour: LabourRate; energy: EnergyRate; fx: FXRate; overheadDefaults: OverheadDefault };
+type RowOf = { materials: MaterialRate; machines: MachineRate; labour: LabourRate; energy: EnergyRate; overheadDefaults: OverheadDefault; services: ServiceRate };
 
 /**
  * The fields that make a row "changed". A row whose fields here all equal the built-in row's is NOT a company rate: it
@@ -148,8 +173,8 @@ export const VALUE_FIELDS: { [T in RateTable]: string[] } = {
     'buildup.indirectSupport', 'buildup.financeCost', 'buildup.annualAvailableHours', 'buildup.machineUtilization', 'machineClass'],
   labour: ['fullyLoadedRatePerHr', 'skillLevel'],
   energy: ['electricityPerKwh', 'gasPerKwh'],
-  fx: ['rate', 'fromCurrency', 'toCurrency'],
-  overheadDefaults: ['overheadPct', 'marginPct', 'commodityType', 'supplierTier'],
+  overheadDefaults: ['overheadPct', 'marginPct', 'commodityType'],
+  services: ['value'],
 };
 
 const getPath = (row: unknown, path: string): unknown =>
@@ -166,82 +191,165 @@ export function changedFields(table: RateTable, row: unknown, builtIn: unknown):
   return VALUE_FIELDS[table].filter(f => !sameValue(getPath(row, f), getPath(builtIn, f)));
 }
 
-export interface RowRef { table: RateTable; id: string; fields?: string[] }
+export interface RowRef { table: RateTable; id: string; fields?: string[]; country?: string }
 
 /** What a company book does to the built-in, row by row — the upload response and the admin status report. */
 export interface CompanyRowReport {
-  /** Built-in ids the company book sets to a different value (pinned at the company value). */
+  /** Built-in rows the company book sets to a different value (pinned at the company value). A row for another country
+   *  carries `country` and is compared with that country's own built-in book. */
   changed: RowRef[];
-  /** Ids the built-in book does not have. */
+  /** Ids the built-in book (or, for a country row, that country's built-in book) does not have. */
   added: RowRef[];
   /** Company rows equal to the built-in value (only an upload made before R1 stores these; they cost as the built-in). */
   sameAsBuiltIn: RowRef[];
-  /** Built-in rows the company book does not touch, per table — they follow every built-in refresh. */
+  /** Built-in UK rows the company book does not touch, per table — they follow every built-in refresh. */
   leftBuiltIn: Record<RateTable, number>;
 }
 
-export function companyRowReport(builtIn: RateLibrary, company: Partial<RateLibrary> | null | undefined): CompanyRowReport {
+/** The built-in book of a country, for comparing a company country row (`buildRegionalLibrary(builtIn, cc)`). */
+export type CountryBookOf = (region: string) => RateLibrary | null;
+
+/** The country rows of a book, flattened: [region, table, row]. */
+function countryRowList(lib: Partial<RateLibrary> | null | undefined): Array<[string, 'materials' | 'machines', { id: string }]> {
+  const out: Array<[string, 'materials' | 'machines', { id: string }]> = [];
+  for (const [cc, rows] of Object.entries(lib?.countryRows ?? {})) {
+    for (const t of ['materials', 'machines'] as const) for (const r of (rows?.[t] ?? []) as Array<{ id: string }>) out.push([cc, t, r]);
+  }
+  return out;
+}
+
+export function companyRowReport(builtIn: RateLibrary, company: Partial<RateLibrary> | null | undefined, countryBook?: CountryBookOf): CompanyRowReport {
   const out: CompanyRowReport = { changed: [], added: [], sameAsBuiltIn: [],
-    leftBuiltIn: { materials: 0, machines: 0, labour: 0, energy: 0, fx: 0, overheadDefaults: 0 } };
+    leftBuiltIn: { materials: 0, machines: 0, labour: 0, energy: 0, overheadDefaults: 0, services: 0 } };
   for (const t of RATE_TABLES) {
-    const base = builtIn[t] as Array<{ id: string }>;
-    const rows = ((company?.[t] ?? []) as Array<{ id: string }>);
-    const byId = new Map(base.map(r => [r.id, r]));
+    const base = (builtIn[t] ?? []) as Array<{ id: string; country?: string }>;
+    const rows = ((company?.[t] ?? []) as Array<{ id: string; country?: string }>);
+    const k = COUNTRY_KEYED.has(t) ? keyOf : (r: { id: string }) => r.id;
+    const byKey = new Map(base.map(r => [k(r), r]));
     const touched = new Set<string>();
     for (const r of rows) {
-      const b = byId.get(r.id);
-      if (!b) { out.added.push({ table: t, id: r.id }); continue; }
-      touched.add(r.id);
+      const cc = rowCountry(r);
+      const ref: RowRef = { table: t, id: r.id, ...(cc !== 'UK' ? { country: cc } : {}) };
+      const b = byKey.get(k(r));
+      if (!b) { out.added.push(ref); continue; }
+      touched.add(k(r));
       const f = changedFields(t, r, b);
-      if (f.length) out.changed.push({ table: t, id: r.id, fields: f });
-      else out.sameAsBuiltIn.push({ table: t, id: r.id });
+      if (f.length) out.changed.push({ ...ref, fields: f });
+      else out.sameAsBuiltIn.push(ref);
     }
-    out.leftBuiltIn[t] = base.filter(r => !touched.has(r.id)).length;
+    out.leftBuiltIn[t] = base.filter(r => !touched.has(k(r))).length;
+  }
+  for (const [cc, t, r] of countryRowList(company)) {
+    const book = countryBook?.(cc);
+    const b = (book?.[t] as Array<{ id: string }> | undefined)?.find(x => x.id === r.id);
+    if (!b) { out.added.push({ table: t, id: r.id, country: cc }); continue; }
+    const f = changedFields(t, r, b);
+    if (f.length) out.changed.push({ table: t, id: r.id, country: cc, fields: f });
+    else out.sameAsBuiltIn.push({ table: t, id: r.id, country: cc });
   }
   return out;
 }
 
 /**
  * Only the rows a company book actually sets: those that differ from the built-in, and new ids. Everything else is
- * dropped, so it keeps following the built-in — the rule written in the template's Instructions sheet.
+ * dropped, so it keeps following the built-in — the rule written in the template's Instructions sheet. A country row
+ * (Materials / Machines with a `country`) is compared with that country's own built-in book (`countryBook`); without one
+ * every country row is kept. FX rows are never stored (R2: FX is the published rate).
  */
-export function companyDelta(builtIn: RateLibrary, sheet: RateLibrary): RateLibrary {
+export function companyDelta(builtIn: RateLibrary, sheet: RateLibrary, countryBook?: CountryBookOf): RateLibrary {
   const keep = <T extends RateTable>(t: T): RowOf[T][] => {
-    const byId = new Map((builtIn[t] as Array<{ id: string }>).map(r => [r.id, r]));
-    return (sheet[t] as unknown as RowOf[T][]).filter(r => {
-      const b = byId.get((r as { id: string }).id);
+    const k = COUNTRY_KEYED.has(t) ? keyOf : (r: { id: string }) => r.id;
+    const byKey = new Map(((builtIn[t] ?? []) as Array<{ id: string; country?: string }>).map(r => [k(r), r]));
+    return ((sheet[t] ?? []) as unknown as RowOf[T][]).filter(r => {
+      const b = byKey.get(k(r as { id: string; country?: string }));
       return !b || changedFields(t, r, b).length > 0;
     });
   };
+  const countryRows: Record<string, CountryRateRows> = {};
+  for (const [cc, t, r] of countryRowList(sheet)) {
+    const b = (countryBook?.(cc)?.[t] as Array<{ id: string }> | undefined)?.find(x => x.id === r.id);
+    if (b && !changedFields(t, r, b).length) continue;
+    ((countryRows[cc] ??= {})[t] ??= [] as never[]).push(r as never);
+  }
   return {
     materials: keep('materials'), machines: keep('machines'), labour: keep('labour'),
-    energy: keep('energy'), fx: keep('fx'), overheadDefaults: keep('overheadDefaults'),
+    energy: keep('energy'), fx: [], overheadDefaults: keep('overheadDefaults'), services: keep('services'),
+    ...(Object.keys(countryRows).length ? { countryRows } : {}),
     ...(sheet.aliases?.length ? { aliases: sheet.aliases } : {}),
     version: sheet.version, lastModified: sheet.lastModified,
   };
 }
 
-/** Company rows over the built-in, by id: a company row replaces the built-in row with its id, a new id is appended. */
+/**
+ * Company rows over the built-in: a company row replaces the built-in row with its id (Overhead and Services: its id AND
+ * country), a new one is appended. A company's rows for other countries ride along as `countryRows` — only
+ * `buildRegionalLibrary(…, cc)` reads them. FX is the built-in's whatever the company book holds (R2).
+ */
 export function mergeCompanyRows(builtIn: RateLibrary, company: Partial<RateLibrary>): RateLibrary {
-  const merge = <T extends { id: string }>(base: T[], over: T[] | undefined): T[] => {
+  const merge = <T extends { id: string; country?: string }>(base: T[], over: T[] | undefined, k: (r: T) => string = r => r.id): T[] => {
     if (!over?.length) return base;
-    const byId = new Map(over.map(r => [r.id, r]));
-    const known = new Set(base.map(r => r.id));
-    return [...base.map(r => byId.get(r.id) ?? r), ...over.filter(r => !known.has(r.id))];
+    const byKey = new Map(over.map(r => [k(r), r]));
+    const known = new Set(base.map(k));
+    return [...base.map(r => byKey.get(k(r)) ?? r), ...over.filter(r => !known.has(k(r)))];
   };
   const aliases = company.aliases?.length ? company.aliases : builtIn.aliases;
+  const countryRows = company.countryRows && Object.keys(company.countryRows).length ? company.countryRows : builtIn.countryRows;
   return {
     ...builtIn,
     materials: merge(builtIn.materials, company.materials),
     machines: merge(builtIn.machines, company.machines),
     labour: merge(builtIn.labour, company.labour),
     energy: merge(builtIn.energy, company.energy),
-    fx: merge(builtIn.fx, company.fx),
-    overheadDefaults: merge(builtIn.overheadDefaults, company.overheadDefaults),
+    fx: builtIn.fx,
+    overheadDefaults: merge(builtIn.overheadDefaults, company.overheadDefaults, keyOf),
+    services: merge(builtIn.services ?? [], company.services, keyOf),
+    ...(countryRows ? { countryRows } : {}),
     ...(aliases ? { aliases } : {}),
     // The built-in version: every row the company did not set is the built-in's. The book's identity is its fingerprint.
     version: builtIn.version,
     lastModified: company.lastModified || builtIn.lastModified,
+  };
+}
+
+/**
+ * The built-in UK rows `lib` (a resolved UK book) no longer holds as built — replaced by a company row, an alias or a cell
+ * override — and the UK ids it added (rates flow R2). Only UK base rows count: a `lab-cn-*` / `energy-cn` row is China's
+ * own and stays in force for China.
+ */
+export function ukBuiltInBasisOf(builtIn: RateLibrary, lib: RateLibrary): NonNullable<RateLibrary['ukBuiltInBasis']> | undefined {
+  const out: NonNullable<RateLibrary['ukBuiltInBasis']> = { materials: [], machines: [], labour: [], energy: [], added: [] };
+  for (const t of ['materials', 'machines', 'labour', 'energy'] as const) {
+    const byId = new Map((builtIn[t] as Array<{ id: string; region?: string }>).map(r => [r.id, r]));
+    for (const r of lib[t] as Array<{ id: string; region?: string }>) {
+      const b = byId.get(r.id);
+      if (!b) { if (isBaseRow(t, r)) out.added.push(`${t}:${r.id}`); continue; }
+      if (!isBaseRow(t, b) || r === b) continue;
+      // a value or text change (an alias carries the target's economics under the slot id; an override edits a cell)
+      if (JSON.stringify(r) !== JSON.stringify(b)) (out[t] as unknown[]).push(b);
+    }
+  }
+  return out.materials.length || out.machines.length || out.labour.length || out.energy.length || out.added.length ? out : undefined;
+}
+
+/**
+ * The UK basis a country book is rebuilt from (rates flow R2): `lib` with every UK row a company row, alias or cell
+ * override replaced put back to its BUILT-IN row, and the UK ids the company added left out. A book that never met a
+ * company row (the built-in, a script's own book) is its own basis.
+ */
+export function builtInUkBasis(lib: RateLibrary): RateLibrary {
+  const b = lib.ukBuiltInBasis;
+  if (!b) return lib;
+  const added = new Set(b.added);
+  const put = <T extends { id: string }>(t: 'materials' | 'machines' | 'labour' | 'energy', rows: T[], orig: T[]): T[] => {
+    const byId = new Map(orig.map(r => [r.id, r]));
+    return rows.filter(r => !added.has(`${t}:${r.id}`)).map(r => byId.get(r.id) ?? r);
+  };
+  return {
+    ...lib,
+    materials: put('materials', lib.materials, b.materials),
+    machines: put('machines', lib.machines, b.machines),
+    labour: put('labour', lib.labour, b.labour),
+    energy: put('energy', lib.energy, b.energy),
   };
 }
 
@@ -268,7 +376,13 @@ export function resolveActiveLibrary(opts: {
   // Aliases first: an override edits a cell on a row, and the row a slot points
   // at must exist before a cell on it can be edited.
   const aliased = applyAliases(base).library;
-  const library = applyRateOverrides(aliased, opts.overrides ?? []);
+  const resolved = applyRateOverrides(aliased, opts.overrides ?? []);
+  // What the company rows, aliases and overrides changed in the UK base — so a country book is rebuilt from the built-in
+  // UK basis and a UK company rate moves only UK costs (R2). Absent when nothing changed (the built-in book, unchanged).
+  const changedBasis = ukBuiltInBasisOf(opts.builtIn, resolved);
+  let library: RateLibrary = resolved;
+  if (changedBasis) library = { ...resolved, ukBuiltInBasis: changedBasis };
+  else if (resolved.ukBuiltInBasis) { const { ukBuiltInBasis: _stale, ...rest } = resolved; library = rest; }
   return { library, effectiveSource: useCompany ? 'company' : 'builtin' };
 }
 
@@ -288,7 +402,7 @@ export function rateValueError(field: string, v: number): string | null {
   const pct = (x: number) => `looks like a percentage — use ${(x / 100).toFixed(2)}`;
   switch (f) {
     case 'pricePerKg': case 'densityKgPerM3': case 'fullyLoadedRatePerHr':
-    case 'electricityPerKwh': case 'gasPerKwh': case 'rate':
+    case 'electricityPerKwh': case 'gasPerKwh': case 'rate': case 'value':
       return v > 0 ? null : 'must be more than 0 (a zero rate would cost the item free)';
     case 'annualAvailableHours':
       return v <= 0 ? 'must be more than 0 hours' : v > HOURS_IN_A_YEAR ? `is more hours than a year has (${HOURS_IN_A_YEAR})` : null;
@@ -307,6 +421,6 @@ export const NUMERIC_FIELDS: { [T in RateTable]: string[] } = {
   machines: VALUE_FIELDS.machines.filter(f => f.startsWith('buildup.')),
   labour: ['fullyLoadedRatePerHr'],
   energy: ['electricityPerKwh', 'gasPerKwh'],
-  fx: ['rate'],
   overheadDefaults: ['overheadPct', 'marginPct'],
+  services: ['value'],
 };

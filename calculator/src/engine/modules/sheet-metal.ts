@@ -1,3 +1,4 @@
+import { serviceUk } from '../service-rates.js';
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { inCountry } from '../regional-services.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
@@ -231,7 +232,7 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // fewer parts, fewer joins — and is not netted off here.
   const twb = inputs.tailorWeldedBlank;
   const twbCostPerPart = twb
-    ? Math.max(0, twb.premiumPerKg) * grossBlankKg + Math.max(0, twb.weldLengthMm) * (twb.weldCostPerMm ?? inCountry(0.006, 'process'))   // laser-weld service, £0.006/mm UK
+    ? Math.max(0, twb.premiumPerKg) * grossBlankKg + Math.max(0, twb.weldLengthMm) * (twb.weldCostPerMm ?? inCountry(serviceUk('sheet.twb-laser-weld'), 'process'))   // laser-weld service, £/mm UK (the book's row)
     : 0;
 
   // Per-part material-bucket consumables: hot-stamp furnace heat + any extra

@@ -1,6 +1,8 @@
 import { EV_MACHINES } from './ev-data.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
 import type { RateLibrary, MachineRate, MachineRateBuildup, MaterialRate } from './types.js';
+import { BUILT_IN_SHOP_ROW } from './shop-defaults-data.js';
+import { SERVICE_RATES } from './service-rates-data.js';
 import {
   AL_PRESSES, AL_CONFORM, AL_IMPACT, AL_DOWNSTREAM, AL_ALLOYS, AL_ALLOY_LIST, AL_MARKET, AL_LINE,
   BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, alScrapGbpPerKg, alBilletId,
@@ -2058,36 +2060,12 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'fx-gbp-krw', fromCurrency: 'GBP', toCurrency: 'KRW', rate: 1798,  effectiveDate: '2026-09-29', sourceNote: 'fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)' },
   ],
 
-  overheadDefaults: [
-    { id: 'oh-machining-t2',         commodityType: 'machining',          supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-machining-t1',         commodityType: 'machining',          supplierTier: 'Tier 1', overheadPct: 0.15, marginPct: 0.10, sourceNote: 'Industry benchmark' },
-    { id: 'oh-sheet-metal-t2',       commodityType: 'sheet_metal',        supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Industry benchmark' },
-    { id: 'oh-injection-moulding-t2',commodityType: 'injection_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-casting-t2',           commodityType: 'casting',            supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-forging-t2',           commodityType: 'forging',            supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-painting-t2',          commodityType: 'painting',           supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.06, sourceNote: 'Industry benchmark' },
-    { id: 'oh-biw-t2',               commodityType: 'biw_assembly',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Industry benchmark' },
-    { id: 'oh-pcb-fab-t2',           commodityType: 'pcb_fab',            supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
-    { id: 'oh-pcba-t2',              commodityType: 'pcba',               supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
-    { id: 'oh-cast-and-machine-t2',  commodityType: 'cast_and_machine',   supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.09, sourceNote: 'Industry benchmark' },
-    { id: 'oh-blow-moulding-t2',    commodityType: 'blow_moulding',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-aluminium_extrusion-t1', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 1', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Aluminium extrusion build 2026-10 — integrated extruder with fabrication and finishing' },
-    { id: 'oh-aluminium_extrusion-t2', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Aluminium extrusion build 2026-10 — profile extruder' },
-    { id: 'oh-aluminium_extrusion-t3', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 3', overheadPct: 0.08, marginPct: 0.05, sourceNote: 'Aluminium extrusion build 2026-10 — commodity profile mill' },
-    { id: 'oh-extrusion-t1',        commodityType: 'extrusion',           supplierTier: 'Tier 1', overheadPct: 0.12, marginPct: 0.10, sourceNote: 'Industry benchmark — Tier-1/OEM in-house extrusion (higher overhead, full validation)' },
-    { id: 'oh-extrusion-t2',        commodityType: 'extrusion',           supplierTier: 'Tier 2', overheadPct: 0.09, marginPct: 0.07, sourceNote: 'Industry benchmark' },
-    { id: 'oh-extrusion-t3',        commodityType: 'extrusion',           supplierTier: 'Tier 3', overheadPct: 0.07, marginPct: 0.05, sourceNote: 'Industry benchmark — high-volume commodity extruder (lean overhead/margin)' },
-    { id: 'oh-thermoforming-t1',    commodityType: 'thermoforming',       supplierTier: 'Tier 1', overheadPct: 0.13, marginPct: 0.10, sourceNote: 'Industry benchmark — Tier-1/OEM thermoforming (automotive interior, full validation/PPAP; higher overhead)' },
-    { id: 'oh-thermoforming-t2',    commodityType: 'thermoforming',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-thermoforming-t3',    commodityType: 'thermoforming',       supplierTier: 'Tier 3', overheadPct: 0.07, marginPct: 0.05, sourceNote: 'Industry benchmark — high-volume packaging thermoformer (roll-fed, lean overhead/margin)' },
-    { id: 'oh-rotomoulding-t2',     commodityType: 'rotational_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
-    { id: 'oh-sheet-metal-fab-t2', commodityType: 'sheet_metal_fab',     supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-rubber-t2', commodityType: 'rubber', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
-    { id: 'oh-composites-t2',    commodityType: 'composites',     supplierTier: 'Tier 2', overheadPct: 0.14, marginPct: 0.10, sourceNote: 'Industry benchmark' },
-    { id: 'oh-wiring-harness-t2',commodityType: 'wiring_harness', supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-battery-pack-t1',  commodityType: 'battery_pack',   supplierTier: 'Tier 1', overheadPct: 0.08, marginPct: 0.06, sourceNote: 'EV propulsion build 2026-10 — ESTIMATE (on the integration only: the bought-in cells carry handling, not overhead / margin)' },
-    { id: 'oh-e-motor-t1',       commodityType: 'e_motor',        supplierTier: 'Tier 1', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'EV propulsion build 2026-10 — ESTIMATE' },
-  ],
+  // ONE built-in row (rates flow R2): the 12 % / 8 % every costing has used (shop-defaults-data.ts). The per-commodity
+  // benchmark rows that sat here were never read by a costing (perturbation review P0-2) and are retired.
+  overheadDefaults: [{ ...BUILT_IN_SHOP_ROW }],
+  // Service, toolroom and tool £ rates — the Services & toolroom sheet (service-rates-data.ts).
+  services: SERVICE_RATES.map(r => ({ ...r })),
+
 };
 
 export function getLibraryFromStorage(): RateLibrary {

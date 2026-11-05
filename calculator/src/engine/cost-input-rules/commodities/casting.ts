@@ -15,6 +15,7 @@
  *    under-charges metal — investment castings were being costed at roughly half
  *    their true material. Only HPDC happened to agree.
  */
+import { serviceView, serviceUk } from '../../service-rates.js';
 import { finishRules } from '../derive/finish.js';
 import { IMPREGNATION_DECISION_ID, impregnationDecision, upFrontServiceRules, SERVICE_DECISION_IDS } from '../derive/service-questions.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCountry as countryGbp, countryNote, type CountryBasis } from '../../regional-services.js';
@@ -33,7 +34,7 @@ import {
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
 import {
-  FOUNDRY_INDIRECT, foundryNotCostedText, NEW_SAND_GBP_PER_T_SAND, NEW_SAND_BASIS, PLANT_OTHER_KWH_PER_T,
+  FOUNDRY_INDIRECT, foundryNotCostedText, NEW_SAND, NEW_SAND_BASIS, PLANT_OTHER_KWH_PER_T,
 } from '../../casting-melt.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
 import type { ToolComplexity } from '../../toolmaking.js';
@@ -247,8 +248,9 @@ export const INVESTMENT_TREE = { POUR_KG: 20, HR_PER_TREE: 0.40, MAX_PARTS: 60 }
  * operator). The flat £0.35 charged a 50 kg casting what it charged a 0.5 kg one.
  */
 export const BLAST_KG_PER_HR = 600;
-/** Shot-blast minimum charge per casting, UK £ (CostVision engineering heuristic) — × the process-service factor abroad. */
-export const BLAST_MIN_CHARGE_UK = 0.10;
+/** Shot-blast minimum charge per casting, UK £ (CostVision engineering heuristic) — × the process-service factor abroad.
+ *  The active book's `casting.blast-min-charge` row (rates flow R2). */
+export const BLAST_MIN_CHARGE = serviceView({ uk: 'casting.blast-min-charge' });
 
 /**
  * The section that governs filling and freezing: the casting modulus 2·V/S, mm.
@@ -573,7 +575,8 @@ export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLa
   const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
   // The minimum charge is a UK £ figure: it follows the country like any bought-in process service (casting 360
   // review X40 — the UK £0.10 bound in India, where the blast itself costs less).
-  const floor = Math.round(BLAST_MIN_CHARGE_UK * processServiceFactor() * 10_000) / 10_000;
+  const minUk = BLAST_MIN_CHARGE.uk;
+  const floor = Math.round(minUk * processServiceFactor() * 10_000) / 10_000;
   // £ to 4 dp, not the UK penny: a penny-rounded value broke its own printed arithmetic once converted (CN ¥2.34 shown,
   // ¥2.31 costed — 7-country review, 3 Nov 2026). The result is printed so the line can be re-done.
   const blast = massKg / BLAST_KG_PER_HR * (rate + lab);
@@ -582,7 +585,7 @@ export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLa
     `${subtype} castings are ${BLAST_PURPOSE[subtype] ?? 'blasted to clean the as-cast surface'} — ${massKg.toFixed(2)} ${massLabel} ÷ `
     + `${BLAST_KG_PER_HR} kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × `
     + `(blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
-    + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`
+    + `min £${floor === minUk ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${minUk.toFixed(2)}${countryNote('process')})`}`
     + ` = £${v.toFixed(4)}${v === floor && blast < floor ? ' (the minimum)' : ''} (CostVision engineering heuristic)`, 0.5);
 }
 
@@ -623,8 +626,8 @@ const FOUNDRY_INDIRECT_RULES: CommodityRuleSpec['rules'] = [
       const r = advise(ctx);
       if ('blocked' in r) return r.blocked;
       const N = FOUNDRY_INDIRECT.newSand;
-      const perTSand = Math.round(NEW_SAND_GBP_PER_T_SAND * 10_000) / 10_000;
-      const uk = Math.round(N.shareOfPoured * NEW_SAND_GBP_PER_T_SAND * 10_000) / 10_000;
+      const perTSand = Math.round(NEW_SAND.gbpPerTSand * 10_000) / 10_000;
+      const uk = Math.round(N.shareOfPoured * NEW_SAND.gbpPerTSand * 10_000) / 10_000;
       const v = countryGbp(uk, NEW_SAND_BASIS);
       return decided('casting.newSandGbpPerTPoured', v, 'library',
         `new silica sand added at ${N.shareOfPoured * 100} % of the poured weight (the midpoint of ${N.shareBand[0] * 100}–${N.shareBand[1] * 100} %) `
@@ -833,14 +836,14 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const under = d?.undercutFaceCount ?? null;
         const sealed = ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === true;
         if (under === null && !sealed) {
-          return decided('casting.coreCostPerPart', countryGbp(1.5, CORE_BASIS), 'rule',
+          return decided('casting.coreCostPerPart', countryGbp(serviceUk('casting.core-simple'), CORE_BASIS), 'rule',
             `no draft analysis measured — the mid simple-core figure (£0.50–2, UK)${countryNote(CORE_BASIS)} stands until someone checks the pattern`, 0.4);
         }
         const n = under ?? 0;
-        const [cost, band] = sealed ? [6, 'an enclosed cavity — a complex core (£2–8)']
-          : n >= 20 ? [3, `${n} undercut faces — a complex multi-core (£2–8)`]
-          : n >= 6 ? [1.5, `${n} undercut faces — a simple cavity core (£0.50–2)`]
-          : n >= 1 ? [0.75, `${n} undercut face(s) — a small core or loose piece (£0.50–2)`]
+        const [cost, band] = sealed ? [serviceUk('casting.core-enclosed'), 'an enclosed cavity — a complex core (£2–8)']
+          : n >= 20 ? [serviceUk('casting.core-complex'), `${n} undercut faces — a complex multi-core (£2–8)`]
+          : n >= 6 ? [serviceUk('casting.core-simple'), `${n} undercut faces — a simple cavity core (£0.50–2)`]
+          : n >= 1 ? [serviceUk('casting.core-small'), `${n} undercut face(s) — a small core or loose piece (£0.50–2)`]
           : [0, 'no undercut along the best pull — the pattern draws cleanly, no core'];
         return decided('casting.coreCostPerPart', countryGbp(cost, CORE_BASIS), 'geometry',
           `${band}; per-part core (sand, binder, labour), material consumable — a default band (UK, engineering-typical, not sourced)${countryNote(CORE_BASIS)}, not a core-shop quote`, 0.55);
@@ -1352,8 +1355,9 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const sf = processServiceFactor();   // a bought-in process service: labour + equipment, in the costed country
-        const gbp = Math.round(0.9 * sf * 10_000) / 10_000;
-        const rate = `£0.90 a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`;
+        const impUk = serviceUk('casting.impregnation');
+        const gbp = Math.round(impUk * sf * 10_000) / 10_000;
+        const rate = `£${impUk.toFixed(2)} a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`;
         if (!r.advice.pressureTight) {
           return decided('casting.impregnationCostPerPart', 0, 'rule', 'not pressure-tight — no impregnation', 0.6, [PRESSURE_TIGHT_DECISION_ID]);
         }
@@ -1431,9 +1435,10 @@ export const CASTING_RULES: CommodityRuleSpec = {
       },
       evaluate: (ctx) => {
         const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
-        const v = ctx.geo.processSpecificEstimates?.investWaxCostGBP ?? Math.round(Math.max(0.30, sa * 0.015) * 100) / 100;
+        const per = serviceUk('casting.invest-wax-per-cm2'), min = serviceUk('casting.invest-wax-min');
+        const v = ctx.geo.processSpecificEstimates?.investWaxCostGBP ?? Math.round(Math.max(min, sa * per) * 100) / 100;
         return decided('casting.investWaxCostPerPart', countryGbp(v, INVEST_BASIS), 'geometry',
-          `wax pattern from ${Math.round(sa)} cm² surface at £0.015/cm² (min £0.30), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
+          `wax pattern from ${Math.round(sa)} cm² surface at £${per}/cm² (min £${min.toFixed(2)}), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
       },
     },
     {
@@ -1447,9 +1452,10 @@ export const CASTING_RULES: CommodityRuleSpec = {
       },
       evaluate: (ctx) => {
         const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
-        const v = ctx.geo.processSpecificEstimates?.investShellCostGBP ?? Math.round(Math.max(0.80, sa * 0.045) * 100) / 100;
+        const per = serviceUk('casting.invest-shell-per-cm2'), min = serviceUk('casting.invest-shell-min');
+        const v = ctx.geo.processSpecificEstimates?.investShellCostGBP ?? Math.round(Math.max(min, sa * per) * 100) / 100;
         return decided('casting.investShellCostPerPart', countryGbp(v, INVEST_BASIS), 'geometry',
-          `ceramic shell from ${Math.round(sa)} cm² surface at £0.045/cm² (min £0.80), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
+          `ceramic shell from ${Math.round(sa)} cm² surface at £${per}/cm² (min £${min.toFixed(2)}), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
       },
     },
     {

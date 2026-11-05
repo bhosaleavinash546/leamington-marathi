@@ -22,6 +22,7 @@
  * dross / oxidation loss per remelt: aluminium and magnesium 2–6%, ferrous 2–4%,
  * zinc ~1–3%. A midpoint of each band is used.
  */
+import { serviceView } from './service-rates.js';
 import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 import type { AlloyFamily } from './modules/casting-advisor.js';
 import type { CountryBasis } from './regional-services.js';
@@ -143,9 +144,9 @@ export const FOUNDRY_INDIRECT = {
   },
 } as const;
 
-/** New sand + its disposal, £ a tonne of sand, UK (2014 euros at the book FX, not escalated). */
-export const NEW_SAND_GBP_PER_T_SAND = (FOUNDRY_INDIRECT.newSand.sandEurPerT + FOUNDRY_INDIRECT.newSand.disposalEurPerT)
-  / FOUNDRY_INDIRECT.newSand.eurPerGbp;
+/** New sand + its disposal, £ a tonne of sand, UK (2014 euros at the book FX, not escalated) — the active book's
+ *  `foundry.new-sand` row (rates flow R2; built-in = (€45 + €43) ÷ €1.1965/£, the euro figures above). */
+export const NEW_SAND = serviceView({ gbpPerTSand: 'foundry.new-sand' });
 /** The sand part of the £ is the traded mineral; the disposal is a local service — the split is the sourced prices'. */
 export const NEW_SAND_TRADED_SHARE = FOUNDRY_INDIRECT.newSand.sandEurPerT
   / (FOUNDRY_INDIRECT.newSand.sandEurPerT + FOUNDRY_INDIRECT.newSand.disposalEurPerT);

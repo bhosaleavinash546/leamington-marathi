@@ -317,8 +317,8 @@ export const AL_CONFORM = {
 export const AL_IMPACT = {
   id: 'al-impact-press-800t', label: '800 t mechanical impact-extrusion press', strokesPerMin: 30,
   capexGbp: 3_200_000, crew: 1,
-  /** Slug prep: sawn / punched slug + anneal + lubricate (phosphate / zinc stearate), £/kg. */
-  slugPrepGbpPerKg: 0.42,
+  // Slug prep £/kg (sawn / punched slug + anneal + lubricate): the active book's `al-ext.slug-prep` row (rates flow R2,
+  // `AL_SERVICE` in aluminium-extrusion-advisor.ts).
   /** Trim allowance on the cup mouth. */
   trimAllowance: 0.08,
   /** Tool set (punch + die + ejector) cost by part Ø, £: base + per mm. */
@@ -336,7 +336,8 @@ export const AL_DOWNSTREAM = {
    * for the first sweep and £5k for each further bend form — ESTIMATE (review, Oct
    * 2026: the build charged no bending tool at all).
    */
-  bender: { id: 'al-stretch-bender', label: 'CNC stretch-bending machine (3D, sweep)', capexGbp: 1_100_000, secPerBend: 45, loadSec: 30, toolFirstGbp: 15_000, toolPerExtraBendGbp: 5_000 },
+  // the form tooling £ (first sweep, each further bend) are the book's `al-ext.bend-tool-*` rows (rates flow R2, `AL_SERVICE`)
+  bender: { id: 'al-stretch-bender', label: 'CNC stretch-bending machine (3D, sweep)', capexGbp: 1_100_000, secPerBend: 45, loadSec: 30 },
   /**
    * Precision cut-to-length (review, Oct 2026). The press saw cuts the strand into
    * MILL LENGTHS that go through ageing; the part is cut to length cold, with a
@@ -352,9 +353,10 @@ export const AL_DOWNSTREAM = {
    * Powder coats the OUTSIDE only (outer outline × length); anodise and e-coat are
    * immersion processes and coat every surface, chambers included.
    */
-  anodise: { id: 'al-anodise-line', label: 'Anodising line (sulphuric, 10–25 µm, seal)', capexGbp: 4_200_000, m2PerHr: 70, crew: 4, consumablesGbpPerM2: 0.35, outsideOnly: false },
-  powder: { id: 'al-powder-line', label: 'Vertical powder-coating line (pretreat + cure)', capexGbp: 2_800_000, m2PerHr: 140, crew: 4, consumablesGbpPerM2: 0.72, outsideOnly: true },
-  ecoat: { id: 'al-ecoat-line', label: 'E-coat / conversion-coat line (chrome-free, for bonding)', capexGbp: 3_500_000, m2PerHr: 160, crew: 3, consumablesGbpPerM2: 0.28, outsideOnly: false },
+  anodise: { id: 'al-anodise-line', label: 'Anodising line (sulphuric, 10–25 µm, seal)', capexGbp: 4_200_000, m2PerHr: 70, crew: 4, outsideOnly: false },
+  powder: { id: 'al-powder-line', label: 'Vertical powder-coating line (pretreat + cure)', capexGbp: 2_800_000, m2PerHr: 140, crew: 4, outsideOnly: true },
+  ecoat: { id: 'al-ecoat-line', label: 'E-coat / conversion-coat line (chrome-free, for bonding)', capexGbp: 3_500_000, m2PerHr: 160, crew: 3, outsideOnly: false },
+  // each line's consumables £/m² are the book's `al-ext.<line>-consumables` rows (rates flow R2, `AL_SERVICE`)
   /** Billet log heater, gas: cp·ΔT ≈ 0.115 kWh/kg to 480 °C at ~40% efficiency. DERIVED. */
   billetHeatGasKwhPerKg: 0.29,
   /** Induction heating, electricity: ~0.18 kWh/kg at ~65% efficiency. DERIVED. */
@@ -383,7 +385,8 @@ export const AL_DIES: Record<AlDieType, { baseGbp: number; perMmGbp: number; lif
   'multi-port': { baseGbp: 4_500, perMmGbp: 60, lifeT: 25, label: 'micro multi-port (MPE) die' },
 };
 /** Die nitriding every 30–50 t (published), £ a treatment incl. correction. ESTIMATE. */
-export const AL_DIE_NITRIDE = { everyT: 40, gbp: 180 };
+/** Die nitride interval, t; the £ a treatment is the book's `al-ext.die-nitride` row (rates flow R2, `AL_SERVICE`). */
+export const AL_DIE_NITRIDE = { everyT: 40 };
 
 // ─── Line constants (ESTIMATES unless stated) ─────────────────────────────────
 

@@ -27,6 +27,12 @@ export function activeRates(): RateLibrary {
   return active ?? DEFAULT_RATE_LIBRARY;
 }
 
+/** The scoped or screen-set book, or null when none is set (the built-in UK book is then in force). Reads no module
+ *  binding, so it is safe from code that runs while the rate library itself is being built. */
+export function activeRatesOrNull(): RateLibrary | null {
+  return active;
+}
+
 /** Set the rate book for everything that follows (the screen, on a library change). */
 export function setActiveRates(lib: RateLibrary | null): void {
   active = lib;

@@ -10,6 +10,7 @@ import type { OperationResult, TraceabilityRecord, CommodityDrivers, UniversalSt
 import { withRates } from '../../src/engine/rate-context.js';
 import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { regionalShopDefaults, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { RateLibrary } from '../../src/engine/types.js';
 
 import { computeMachiningDrivers }        from '../../src/engine/modules/machining.js';
@@ -40,7 +41,7 @@ export interface CostToolInput {
   params: Record<string, unknown>;
   partName?: string;
   overheadPct?: number;      // default 0.12
-  marginPct?: number;        // default 0.08
+  marginPct?: number;        // default: the book's Overhead row (built-in 0.08)
   packagingPerPart?: number; // default 0.15
   logisticsPerPart?: number; // default 0.25
   /** Delivery terms of the price — 'EXW' carries no freight (the caller passes logistics 0); printed by the reports. */
@@ -177,11 +178,18 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
     commodity,
     params,
     partName = 'Part',
-    overheadPct     = 0.12,
-    marginPct       = 0.08,
     packagingPerPart = 0.15,
     logisticsPerPart = 0.25,
   } = input;
+
+  // Overhead and margin not given: the book's Overhead rows for this commodity in the book's country (rates flow R2) —
+  // the built-in 12 % / 8 % unless a company row says otherwise. Never a literal here.
+  const shopDefault = (input.overheadPct === undefined || input.marginPct === undefined)
+    ? regionalShopDefaults(((input.rateLibrary?.regional?.code ?? 'UK') as ManufacturingRegion), {}, 'DAP',
+        { commodity, library: input.rateLibrary ?? DEFAULT_RATE_LIBRARY })
+    : null;
+  const overheadPct = input.overheadPct ?? shopDefault!.overheadPct;
+  const marginPct = input.marginPct ?? shopDefault!.marginPct;
 
   try {
     const computeFn = COMMODITY_MAP[commodity];

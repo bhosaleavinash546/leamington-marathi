@@ -18,7 +18,7 @@ import { CAST_AND_MACHINE_RULES } from '../src/engine/cost-input-rules/commoditi
 import { RULE_PATH_MAP } from '../src/engine/cost-input-rules/apply.js';
 import { impressionPlan } from '../src/engine/cost-input-rules/commodities/casting.js';
 import { IMPRESSION_LIMITS, SAND_LINE_CLASSES } from '../src/engine/modules/casting-advisor.js';
-import { FOUNDRY_INDIRECT, NEW_SAND_GBP_PER_T_SAND, PLANT_OTHER_KWH_PER_T, NEW_SAND_BASIS, FOUNDRY_NOT_COSTED, foundryNotCostedText } from '../src/engine/casting-melt.js';
+import { FOUNDRY_INDIRECT, NEW_SAND, PLANT_OTHER_KWH_PER_T, NEW_SAND_BASIS, FOUNDRY_NOT_COSTED, foundryNotCostedText } from '../src/engine/casting-melt.js';
 import { computeCastingDrivers } from '../src/engine/modules/casting.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates, computeMachineRateFromBuildup } from '../src/engine/rate-library.js';
 import { buildRegionalLibrary, REGIONAL_DATA, type ManufacturingRegion } from '../src/engine/regional-rates.js';
@@ -51,7 +51,7 @@ describe('1. foundry indirect costs are named rules, each with its value, source
     expect(FOUNDRY_INDIRECT.newSand.shareOfPoured).toBe(0.15);                        // S2: 10–20 % of poured metal
     expect(FOUNDRY_INDIRECT.newSand.sandEurPerT).toBe(RESEARCH.get('S3')!.value_num);  // S3: €45/t new sand
     expect(FOUNDRY_INDIRECT.newSand.disposalEurPerT).toBe(43);                        // S3: €43/t disposal
-    expect(NEW_SAND_GBP_PER_T_SAND).toBeCloseTo(88 / 1.1965, 10);
+    expect(NEW_SAND.gbpPerTSand).toBeCloseTo(88 / 1.1965, 10);
     expect(FOUNDRY_INDIRECT.ladlePreheatKwhPerT.iron.band).toEqual([50, 150]);        // E1
     expect(FOUNDRY_INDIRECT.ladlePreheatKwhPerT.steel.band).toEqual([100, 300]);      // E1
     expect(FOUNDRY_INDIRECT.dustExtractionKwhPerT.value).toBe(RESEARCH.get('E2')!.value_num);

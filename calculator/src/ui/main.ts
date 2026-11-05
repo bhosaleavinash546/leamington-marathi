@@ -192,7 +192,7 @@ import { computeRegionalComparisonExact } from '../engine/regional-comparison.js
 import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
 import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource, deliveryTerms, setDeliveryTerms, applyDeliveryTermsToForm,
-  overheadTyped, shopDraftState, restoreShopDraftState, restorableShopFields, SHOP_FIELD_IDS, type ShopDraftState } from './country-fields.js';
+  overheadTyped, marginTyped, setShopCommodity, shopDraftState, restoreShopDraftState, restorableShopFields, SHOP_FIELD_IDS, type ShopDraftState } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
 import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
@@ -367,6 +367,8 @@ async function syncActiveRateLibrary(): Promise<boolean> {
     _serverBook = adopted.info;
     _baseLibrary = recomputeMachineRates(adopted.library);
     _rebuildActiveLibrary();
+    // an overhead / margin nobody typed follows the book's Overhead rows (rates flow R2)
+    if (changed) applyCountryShopFields(_mfgRegion);
     return changed;
   } catch { return false; }   // offline / not authed — keep the book we have
 }
@@ -1721,7 +1723,9 @@ function renderNegotiationPanel(): void {
     }
 
     // Enrich with causal + conformal signals.
-    const causal = buildCausalModel({ partTotal: shouldCost, materialCostGBP: shouldBreakdown.rawMaterial, materialFamily: family, overheadPct: 0.12, marginPct: 0.08, indices: commodityIndices() });
+    const causal = buildCausalModel({ partTotal: shouldCost, materialCostGBP: shouldBreakdown.rawMaterial, materialFamily: family, // the costing's own overhead / margin (the book's Overhead row or a typed figure — rates flow R2), not a literal
+      overheadPct: lastInput?.overheadPct ?? shopFieldsFor(_mfgRegion).overheadPct, marginPct: lastInput?.marginPct ?? shopFieldsFor(_mfgRegion).marginPct,
+      indices: commodityIndices() });
     const premium = causal.driver ? impliedIndexPremiumPct(causal, quote) : null;
     const conf = computeConformalBand(getCalibrationRecords(), { commodity, materialFamily: family, region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK' }, 0.9);
 
@@ -11780,6 +11784,11 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
       const oh = el<HTMLInputElement>('overhead-pct');
       if (oh) oh.value = String(Math.round(shopFieldsFor(_mfgRegion).overheadPct * 1000) / 10);
     }
+    // The margin likewise: the book's Overhead row for this commodity and country unless a person typed one (R2).
+    if (shopFigureSource('margin') !== 'typed') {
+      const mg = el<HTMLInputElement>('margin-pct');
+      if (mg) mg.value = String(Math.round(shopFieldsFor(_mfgRegion).marginPct * 1000) / 10);
+    }
     // Size-aware packaging from the shipping envelope + weight (the flat £0.15
     // default is wrong for a bulky bumper and for a 3 g part alike).
     {
@@ -12448,6 +12457,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false,
 function switchCommodity(type: CommodityType): void {
   breadcrumb(`commodity:${type}`);
   activeCommodity = type;
+  // The Overhead sheet's rows are per commodity (rates flow R2): an overhead / margin nobody typed follows the commodity.
+  setShopCommodity(type);
+  applyCountryShopFields(_mfgRegion);
   setPanelTitle(type);
   updateFormWide(type);
   // A new form opens at its top — it kept the previous one's scroll (the CAD form opened
@@ -15193,6 +15205,7 @@ function costInComparisonCountries(): Map<ManufacturingRegion, CountryCosting> {
     // CAD fills only describe the form CAD apply drew — not one the engineer switched to since.
     ...(activeCommodity === _cadAppliedTo ? { fillSource: _cadFillSource, fillsByRegion: _cadFillsByRegion } : { fillSource: {}, fillsByRegion: {} }),
     shopFor: r => shopFieldsFor(r),
+    typed: f => shopFigureSource(f) === 'typed',
     countryControls: r => ({
       'mfg-region-selector': r, 'costing-country-sel': r,
       'pcb-mfg-country': pcbMarketFor(r).id, 'pcbf-region': pcbFabRegionFor(r).region,
@@ -15208,7 +15221,7 @@ function costInComparisonCountries(): Map<ManufacturingRegion, CountryCosting> {
 /** The comparison rows: each country's row is the part costed with that country selected. */
 function comparisonRows(input: UniversalStackInput, result: PartCostResult, landed: boolean): RegionalComparisonRow[] {
   const rows = computeRegionalComparisonExact(input, _baseLibrary, {
-    landed, sourceRegion: _mfgRegion, sourceResult: result,
+    landed, sourceRegion: _mfgRegion, sourceResult: result, commodity: activeCommodity,
     resultFor: code => _countryCostings.get(code)?.result ?? null,
   });
   // Read by e2e/country-live.ts, which checks each row against that country costed live.
@@ -20851,6 +20864,7 @@ async function init(): Promise<void> {
   }
   // The overhead a person types stays theirs; any other value follows the country (country-fields.ts overheadTyped).
   el<HTMLInputElement>('overhead-pct')?.addEventListener('input', e => overheadTyped(e.isTrusted));
+  el<HTMLInputElement>('margin-pct')?.addEventListener('input', e => marginTyped(e.isTrusted));
 
   // Rate-database transparency export: dump the ACTIVE library (all rates with
   // their audit-trail source notes) + the full multi-country reference table.
@@ -21706,11 +21720,12 @@ function collectCADBasis(): BasisRow[] {
   }
   // The commercial basis: a default from the country, or a figure someone typed.
   const region = ((document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK') as ManufacturingRegion;
-  const d = regionalShopDefaults(region);
+  // the defaults in force: the book's Overhead row for this commodity and country (rates flow R2)
+  const d = regionalShopDefaults(region, {}, 'DAP', { commodity: activeCommodity });
   const num = (id: string) => parseFloat((document.getElementById(id) as HTMLInputElement | null)?.value ?? '');
   const oh = num('overhead-pct'), mg = num('margin-pct');
   if (isFinite(oh)) rows.push({ grade: Math.abs(oh - d.overheadPct * 100) < 0.05 ? 'Default' : 'Typed', what: 'Overhead (% of material + process + labour + tooling)', value: `${oh}%` });
-  if (isFinite(mg)) rows.push({ grade: Math.abs(mg - 8) < 0.05 ? 'Default' : 'Typed', what: 'Supplier margin (% of subtotal)', value: `${mg}%` });
+  if (isFinite(mg)) rows.push({ grade: Math.abs(mg - d.marginPct * 100) < 0.05 ? 'Default' : 'Typed', what: 'Supplier margin (% of subtotal)', value: `${mg}%` });
   // Packaging and logistics: the size-based estimate (a rule), the country default, or a figure someone typed. They sit
   // outside the commodity form, so the fill snapshot never held them and every one read "Typed" (CAD to COST trace,
   // 28 Oct 2026).

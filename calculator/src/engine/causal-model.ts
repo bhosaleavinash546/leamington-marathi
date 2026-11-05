@@ -1,3 +1,4 @@
+import { BUILT_IN_SHOP_ROW } from './shop-defaults-data.js';
 /**
  * Causal cost model — the agent's belief about *why* a part costs what it does.
  *
@@ -197,7 +198,8 @@ export interface ScenarioImpact {
 export function scenarioPortfolioDrift(
   cases: PortfolioCase[],
   indexDeltaByCategory: Record<string, number>,   // e.g. { Steel: 10, Aluminium: -5 }
-  defaults: { overheadPct: number; marginPct: number } = { overheadPct: 0.12, marginPct: 0.08 },
+  // the built-in Overhead row (rates flow R2) when a case carries none
+  defaults: { overheadPct: number; marginPct: number } = { overheadPct: BUILT_IN_SHOP_ROW.overheadPct, marginPct: BUILT_IN_SHOP_ROW.marginPct },
 ): ScenarioImpact[] {
   const out: ScenarioImpact[] = [];
   for (const c of cases) {

@@ -1,3 +1,4 @@
+import { serviceUk } from '../service-rates.js';
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { inCountry, countryNote } from '../regional-services.js';
 import {
@@ -249,7 +250,7 @@ export function estimateMouldCost(inputs: MouldCostInputs): MouldCostBreakdown {
     prototype:   { mat: 'al-7075',  hourF: 0.55, coating: 0 },
     standard:    { mat: 'p20',      hourF: 1.0,  coating: 0 },
     production:  { mat: 'p20-hard', hourF: 1.12, coating: 0 },
-    high_volume: { mat: 'h13',      hourF: 1.2,  coating: 6000 },
+    high_volume: { mat: 'h13',      hourF: 1.2,  coating: serviceUk('imm.wear-coating') },   // the active book's row (R2)
   };
   const steel = steelMap[inputs.steelClass ?? 'standard'];
 

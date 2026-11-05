@@ -420,8 +420,9 @@ const gap = (ws: ExcelJS.Worksheet) => { guideRow++; };
   say(ws, '', 'change goes on the JLR tabs, on Settings, and on Mapping. Those are the shaded cells.');
   say(ws, '•', 'Do not add or remove columns on the JLR tabs. Rows, as many as you like.');
   say(ws, '•', 'Anything you do not map keeps the value CostVision ships with. A part-filled card is fine.');
-  say(ws, '•', 'Energy, FX and overhead are not on the JLR exports, so they are not on Mapping. They sit');
-  say(ws, '', 'on their own tabs as plain numbers. Edit them there if they need to move.');
+  say(ws, '•', 'Energy and overhead are not on the JLR exports, so they are not on Mapping. They sit');
+  say(ws, '', 'on their own tabs as plain numbers. Edit them there if they need to move. There is no FX');
+  say(ws, '', 'tab: exchange rates are the published central-bank rates of CostVision\'s books.');
   say(ws, '•', 'The grey columns on the right of each tab are the sheet working. Leave them be.');
   say(ws, '•', 'The sheet reads the first 20,000 rows of each JLR tab. That is far more than a rate card,');
   say(ws, '', 'and if you ever paste more, the Check tab says so rather than quietly ignoring them.');
@@ -440,7 +441,6 @@ const gap = (ws: ExcelJS.Worksheet) => { guideRow++; };
     ['Machines', 'what CostVision reads. Fills itself in. Do not type here.'],
     ['Labour', 'what CostVision reads. Fills itself in. Do not type here.'],
     ['Energy', 'not on the JLR card. Plain numbers, edit if you need to.'],
-    ['FX', 'not on the JLR card. Plain numbers, edit if you need to.'],
     ['Overhead', 'not on the JLR card. Plain numbers, edit if you need to.'],
     ['Check', 'read this before you upload'],
   ];
@@ -791,7 +791,7 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
   });
 }
 
-// Energy, FX and overhead are not on the exports, so they are carried through
+// Energy and overhead are not on the exports, so they are carried through
 // as values. Edit in place if they need to move.
 {
   const ws = sheet('Energy', 'output');
@@ -801,19 +801,13 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
     [e.id, e.region, e.electricityPerKwh, e.gasPerKwh, e.effectiveDate, e.sourceNote, e.confidence, 'GBP'],
     99, { 2: '#,##0.0000', 3: '#,##0.0000' }));
 }
-{
-  const ws = sheet('FX', 'output');
-  headers(ws, ['id', 'fromCurrency', 'toCurrency', 'rate', 'effectiveDate', 'sourceNote'],
-          [18, 15, 13, 13, 14, 40], 99);
-  LIB.fx.forEach((f, i) => writeRow(ws, i + 2,
-    [f.id, f.fromCurrency, f.toCurrency, f.rate, f.effectiveDate, f.sourceNote], 99, { 3: '#,##0.0000' }));
-}
+// No FX tab (rates flow R2): exchange rates are the published central-bank rates of the built-in and country books.
 {
   const ws = sheet('Overhead', 'output');
-  headers(ws, ['id', 'commodityType', 'supplierTier', 'overheadPct', 'marginPct', 'sourceNote'],
-          [24, 22, 17, 13, 13, 40], 99);
+  headers(ws, ['id', 'country', 'commodityType', 'overheadPct', 'marginPct', 'sourceNote'],
+          [24, 10, 22, 13, 13, 40], 99);
   LIB.overheadDefaults.forEach((o, i) => writeRow(ws, i + 2,
-    [o.id, o.commodityType, o.supplierTier, o.overheadPct, o.marginPct, o.sourceNote],
+    [o.id, o.country ?? '', o.commodityType, o.overheadPct, o.marginPct, o.sourceNote],
     99, { 3: '0.0%', 4: '0.0%' }));
 }
 

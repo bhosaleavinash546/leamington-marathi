@@ -10,6 +10,7 @@
  * its foundry furnace labour rate, and the furnace capital — a traded machine, priced the same everywhere (at par) — is a
  * £ a kg. The UK figure comes from the same build-up. Baskets, quench water and its treatment are NOT costed (no figure).
  */
+import { serviceUk } from './service-rates.js';
 import { fmt } from './cost-input-rules/types.js';
 
 export type AlHeatTreatment = 'T6' | 'T5';
@@ -68,7 +69,8 @@ const r6 = (x: number) => Math.round(x * 1e6) / 1e6;
 /** The T6 (solution + quench + age) or T5 (age only) station, per kg of castings. */
 export function alHeatTreatStation(t: AlHeatTreatment): AlHeatTreatStation {
   const F = AL_HT_FURNACE, A = AL_HT_ASSUMPTIONS;
-  const setGbp = Math.round((F.setUsd[0] + F.setUsd[1]) / 2 / F.usdPerGbp);
+  // £ a set: the active book's `heat-treat.al-furnace-set` row (rates flow R2; built-in = the US$ midpoint ÷ the FX above)
+  const setGbp = serviceUk('heat-treat.al-furnace-set');
   const solHr = F.solutionHeatUpHr + A.solutionSoakHr;
   const ageHr = F.ageHeatUpHr + A.ageSoakHr;
   const solKwh = F.solutionKw * solHr * A.drawShare;

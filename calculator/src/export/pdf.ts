@@ -1117,7 +1117,7 @@ export function renderShouldCostSections(
       ['Overhead Rate', pct(input.overheadPct * 100), 'Supplier Margin', pct(input.marginPct * 100)],
       ['Packaging / part', c(input.packagingPerPart), 'Logistics / part', c(input.logisticsPerPart)],
       ['Delivery terms', { content: deliveryTermsLine(input.deliveryTerms), colSpan: 3 }],
-      ['Basis', { content: shopDefaultsBasis(region as ManufacturingRegion | undefined, input.deliveryTerms), colSpan: 3 }],
+      ['Basis', { content: shopDefaultsBasis(region as ManufacturingRegion | undefined, input.deliveryTerms, { commodity: commodityType, library: baseLibrary ?? library }), colSpan: 3 }],
       ...(input.tooling.mode === 'amortized' ? [[
         'Total Tooling Cost', c(input.tooling.totalToolingCost),
         'Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`,
@@ -1868,7 +1868,7 @@ export function renderShouldCostSections(
       ? AL_ALLOY_LIST.find(a => `mat-al-billet-${a.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
     const rc = regionalRows?.length ? regionalRows
       : baseLibrary
-      ? computeRegionalComparisonExact(input, baseLibrary, { landed: false, sourceRegion: region as ManufacturingRegion, sourceResult: result })
+      ? computeRegionalComparisonExact(input, baseLibrary, { landed: false, sourceRegion: region as ManufacturingRegion, sourceResult: result, commodity: commodityType })
       : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
         ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy, 1 - (input.rawMaterial.materialUtilization ?? 1)) } : {}) });
     const cheapest = Math.min(...rc.map(r => r.total));

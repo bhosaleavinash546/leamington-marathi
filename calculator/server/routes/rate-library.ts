@@ -13,7 +13,9 @@
  *   GET  /api/rate-library/audit      who uploaded / switched / overrode / reset, fingerprints before → after (admin)
  *
  * Precedence, row by row (rates flow review R1, Nov 2026): cell override > company row > built-in. The company book is
- * merged by id over the built-in; an upload stores only the rows that differ from the built-in (and new ids), and it
+ * merged by id over the built-in (R2: a row applies only to the country it names — Materials / Machines / Overhead /
+ * Services carry a country, Labour / Energy name it in the id; every other country keeps its own published book, rebuilt
+ * from the BUILT-IN UK basis); an upload stores only the rows that differ from the built-in (and new ids), and it
  * CLEARS every cell override — its reply lists the ones it removed, so an earlier override can never silently beat a
  * newly uploaded value.
  */
@@ -29,7 +31,7 @@ import {
   type RateSource, type RateTable,
 } from '../../src/engine/rate-library-merge.js';
 import { fingerprintRateLibrary } from '../utils/rate-library-fingerprint.js';
-import { buildRateLibraryWorkbook, parseRateLibraryWorkbook } from '../utils/rate-library-xlsx.js';
+import { buildRateLibraryWorkbook, parseRateLibraryWorkbook, countryBookOf } from '../utils/rate-library-xlsx.js';
 import { buildSWRateWorkbook, parseSWRateWorkbook } from '../utils/sw-rate-library-xlsx.js';
 import { DEFAULT_SW_RATE_LIBRARY, resolveRateLibrary as resolveSWRateLibrary } from '../../src/engine/sw-rate-library.js';
 import {
@@ -97,7 +99,7 @@ function bookState() {
   const { library, effectiveSource } = resolve();
   const company = getCompanyLibrary(db);
   const overrideCount = getOverrides(db).length;
-  const report = effectiveSource === 'company' ? companyRowReport(DEFAULT_RATE_LIBRARY, company) : null;
+  const report = effectiveSource === 'company' ? companyRowReport(DEFAULT_RATE_LIBRARY, company, countryBookOf(DEFAULT_RATE_LIBRARY)) : null;
   return {
     library, effectiveSource, overrideCount, report,
     fingerprint: fingerprintRateLibrary(library),
@@ -193,7 +195,7 @@ router.get('/status', (req: AuthenticatedRequest, res: Response) => {
     label: b.label,
     isAdmin,
     ...(isAdmin ? {
-      companyRows: reportJson(companyRowReport(DEFAULT_RATE_LIBRARY, getCompanyLibrary(db))),
+      companyRows: reportJson(companyRowReport(DEFAULT_RATE_LIBRARY, getCompanyLibrary(db), countryBookOf(DEFAULT_RATE_LIBRARY))),
       overrides: getOverridesDetailed(db),
     } : {}),
   });

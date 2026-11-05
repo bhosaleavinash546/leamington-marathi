@@ -32,6 +32,8 @@ export function computeRegionalComparisonExact(
   baseLibrary: RateLibrary,
   opts: {
     regions?: ManufacturingRegion[]; sourceRegion?: ManufacturingRegion; baseRegion?: ManufacturingRegion; landed?: boolean;
+    /** The commodity costed — the Overhead sheet's rows are per commodity (rates flow R2). */
+    commodity?: string;
     /** The headline result in the source country — its row shows exactly that. */
     sourceResult?: { breakdown: import('./types.js').Breakdown8Bucket; total: number };
     /**
@@ -55,11 +57,16 @@ export function computeRegionalComparisonExact(
     // The overhead DEFAULT goes to that country's default — `regionalShopDefaults` rounds 12 % × the multiplier to a
     // whole per cent, the figure the country switch and headless costing use; scaling the source's 12 % by the ratio
     // gave India 8.64 % against the 9 % its own costing carries (arithmetic audit, 30 Oct 2026). A typed rate is scaled.
-    const ohDefault = Math.abs(input.overheadPct - regionalShopDefaults(source).overheadPct) < 1e-9;
+    // The Overhead sheet's rows for each country (rates flow R2): read from the base book, which holds every country's rows.
+    const shopOf = (r: ManufacturingRegion) => regionalShopDefaults(r, {}, 'DAP', { commodity: opts.commodity, library: baseLibrary });
+    const ohDefault = Math.abs(input.overheadPct - shopOf(source).overheadPct) < 1e-9;
+    const mgDefault = Math.abs(input.marginPct - shopOf(source).marginPct) < 1e-9;
     const inR: UniversalStackInput = {
       ...input,
       tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * toolroomFactorFor(code) / (toolroomFactorFor(source) || 1) },
-      overheadPct: ohDefault ? regionalShopDefaults(code).overheadPct : input.overheadPct * rd.overheadMultiplier / (src.overheadMultiplier || 1),
+      overheadPct: ohDefault ? shopOf(code).overheadPct : input.overheadPct * rd.overheadMultiplier / (src.overheadMultiplier || 1),
+      // a default margin is that country's default (its own Overhead row, R2); a typed one is the engineer's and stays
+      marginPct: mgDefault ? shopOf(code).marginPct : input.marginPct,
       packagingPerPart: input.packagingPerPart * rd.packagingMultiplier / (src.packagingMultiplier || 1),
       logisticsPerPart: input.logisticsPerPart * rd.logisticsMultiplier / (src.logisticsMultiplier || 1),
     };

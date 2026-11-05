@@ -4,6 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import { serviceView, serviceUk } from '../service-rates.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor } from '../regional-services.js';
 import { activeLabourRate, activeElectricityPerKwh, gbpFigure } from '../rate-context.js';
 import { alHeatTreatStation, alHeatTreatGbpPerKg } from '../al-heat-treat.js';
@@ -461,25 +462,26 @@ export interface CastingSecondaryResult {
 
 // HIP is dominated by furnace/vessel time and alloy; superalloy/steel need
 // higher temperature + pressure than light alloys.
-export const HIP_COST_PER_KG: Record<AlloyFamily, number> = {
-  aluminium: 3.0, magnesium: 3.5, zinc: 3.0, copper: 3.5,
-  'grey-iron': 3.5, 'ductile-iron': 3.5, 'carbon-steel': 4.0,
-  'stainless-steel': 4.5, superalloy: 9.0,
-};
+// UK £/kg — the active book's `hip.*` rows (rates flow R2; engineering-typical, not sourced).
+export const HIP_COST_PER_KG: Record<AlloyFamily, number> = serviceView({
+  aluminium: 'hip.aluminium', magnesium: 'hip.magnesium', zinc: 'hip.zinc', copper: 'hip.copper',
+  'grey-iron': 'hip.grey-iron', 'ductile-iron': 'hip.ductile-iron', 'carbon-steel': 'hip.carbon-steel',
+  'stainless-steel': 'hip.stainless-steel', superalloy: 'hip.superalloy',
+});
 
 /** UK £/kg of charge — engineering-typical, NOT sourced (arithmetic audit, Oct 2026): the rules print that wherever they
  *  charge one. 'stress-relieve' is also the rate the casting rules charge for normalising cast steel. The aluminium T6 /
  *  T5 (£1.10 / £0.55 a kg × a STEEL quench-and-temper country factor) were replaced by the heat-treat station
  *  (al-heat-treat.ts — gravity research round, Nov 2026), priced in each country's own book. */
-export const HEAT_TREAT_COST_PER_KG: Record<'stress-relieve', number> = {
-  'stress-relieve': 0.35,
-};
+export const HEAT_TREAT_COST_PER_KG: Record<'stress-relieve', number> = serviceView({
+  'stress-relieve': 'heat-treat.casting-stress-relieve',
+});
 
 /** UK £ a part — engineering-typical, NOT sourced (arithmetic audit, Oct 2026). */
-export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
-  xray: 5.0,            // 2D radiography, sampling/100%
-  ct: 32.0,            // industrial CT, safety-critical
-};
+export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = serviceView({
+  xray: 'ndt.casting-xray',    // 2D radiography, sampling/100%
+  ct: 'ndt.casting-ct',        // industrial CT, safety-critical
+});
 
 /**
  * NDT as a STATION, not a flat £ (pilot rule pack, 30 Oct 2026). A safety-critical ductile-iron knuckle or stub axle is
@@ -491,10 +493,10 @@ export const NDT_STATION = {
   /** 100 % wet-fluorescent MPI: load, magnetise, view under UV, demagnetise, unload — 75 s a part, one inspector;
    *  the bench itself (a ~£25k unit, UV lamps, ink) ~£4/h; one part in 50 radiographed (a sampling plan the drawing
    *  usually sets — AQL-type, engineering-typical). */
-  mpi: { secPerPart: 75, manning: 1, equipmentGbpPerHrUk: 4, sampleXrayFraction: 0.02 },
+  mpi: serviceView({ equipmentGbpPerHrUk: 'ndt.mpi-bench' }, { secPerPart: 75, manning: 1, sampleXrayFraction: 0.02 } as const),
   /** 100 % in-line real-time radiography: a cabinet with a manipulator the inspector half-tends — 30 s a part;
    *  the cabinet ~£20/h (a ~£250k unit over 13 yr at 6,000 h, maintenance and tube included — engineering-typical). */
-  rtr: { secPerPart: 30, manning: 0.5, equipmentGbpPerHrUk: 20, sampleXrayFraction: 0 },
+  rtr: serviceView({ equipmentGbpPerHrUk: 'ndt.rtr-cabinet' }, { secPerPart: 30, manning: 0.5, sampleXrayFraction: 0 } as const),
 } as const;
 
 export type NdtStationKind = keyof typeof NDT_STATION;
@@ -709,7 +711,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   if (inputs.impregnation) {
     adders.push({
       label: 'Vacuum resin impregnation',
-      basis: 'per-part', unitCostGbp: svc(0.90), costPerPartGbp: svc(0.90),
+      basis: 'per-part', unitCostGbp: svc(serviceUk('casting.impregnation')), costPerPartGbp: svc(serviceUk('casting.impregnation')),
       note: 'Seals interconnected porosity for leak-tight/pressure parts; ~£0.3–1.2/part depending on size.',
     });
   }
@@ -717,7 +719,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   if (inputs.shotBlast) {
     adders.push({
       label: 'Shot blast / surface prep',
-      basis: 'per-part', unitCostGbp: svc(0.35), costPerPartGbp: svc(0.35),
+      basis: 'per-part', unitCostGbp: svc(serviceUk('casting.shot-blast-flat')), costPerPartGbp: svc(serviceUk('casting.shot-blast-flat')),
       note: 'Removes scale/oxide and keys the surface for coating.',
     });
   }

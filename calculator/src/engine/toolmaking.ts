@@ -17,6 +17,7 @@
  */
 
 import { activeToolroomFactor } from './rate-context.js';
+import { serviceView } from './service-rates.js';
 
 export type ToolLineKind =
   | 'design' | 'material' | 'machining' | 'edm' | 'polish' | 'fitting'
@@ -41,17 +42,12 @@ export interface ToolCostDetail {
   total: number;
 }
 
-/** UK toolroom fully-loaded rates, £/hr. Jun 2026 benchmarks (58/52/58/48/45/85)
- *  moved to Sep 2026 by one quarter of UK manufacturing wage growth (ONS AWE +2.9%
- *  y/y → ×1.0072) — toolroom hours are labour-dominated. */
-export const TOOLROOM_RATES_UK = {
-  design: 58.42,
-  cnc: 52.37,
-  edm: 58.42,
-  fitting: 48.35,
-  polish: 45.32,
-  tryoutPress: 85.61,
-} as const;
+/** UK toolroom fully-loaded rates, £/hr — the Services & toolroom rows `toolroom.*` of the active book (rates flow R2;
+ *  built-in: Jun 2026 benchmarks moved to Sep 2026 by ONS AWE, service-rates-data.ts). Read on every access. */
+export const TOOLROOM_RATES_UK = serviceView({
+  design: 'toolroom.design', cnc: 'toolroom.cnc', edm: 'toolroom.edm', fitting: 'toolroom.fitting',
+  polish: 'toolroom.polish', tryoutPress: 'toolroom.tryout-press',
+});
 
 const tr = (k: keyof typeof TOOLROOM_RATES_UK) => Math.round(TOOLROOM_RATES_UK[k] * activeToolroomFactor() * 100) / 100;
 /**
@@ -71,30 +67,30 @@ export const TOOLROOM_RATES: { readonly [K in keyof typeof TOOLROOM_RATES_UK]: n
   get tryoutPress() { return tr('tryoutPress'); },
 };
 
-/** Tool materials, £/kg delivered (Jun 2026). Held at the Sep 2026 refresh: no
- *  public tool-steel (P20/H13) price index was sourced — refresh by supplier quote. */
-export const TOOL_MATERIAL_GBP_PER_KG = {
-  'p20': 6.8,
-  'p20-hard': 8.2,      // pre-hard/H13-class production steel
-  'h13': 9.5,
-  'hammer-1.2714': 5.8,
-  'premium-pm': 14.0,
-  'al-7075': 7.5,
-  'cast-iron': 2.8,
-  'plate-steel': 1.9,
-} as const;
+/** Tool materials, £/kg delivered — the `tool-steel.*` rows of the active book (built-in Jun 2026, held: no public
+ *  tool-steel price index; refresh by supplier quote). Traded: no country factor. */
+export const TOOL_MATERIAL_GBP_PER_KG = serviceView({
+  'p20': 'tool-steel.p20',
+  'p20-hard': 'tool-steel.p20-hard',      // pre-hard/H13-class production steel
+  'h13': 'tool-steel.h13',
+  'hammer-1.2714': 'tool-steel.hammer-1.2714',
+  'premium-pm': 'tool-steel.premium-pm',
+  'al-7075': 'tool-steel.al-7075',
+  'cast-iron': 'tool-steel.cast-iron',
+  'plate-steel': 'tool-steel.plate-steel',
+});
 export type ToolMaterialId = keyof typeof TOOL_MATERIAL_GBP_PER_KG;
 
-/** Bought-out components, £ each (catalogue-typical, Jun 2026). Held at the Sep 2026
- *  refresh: catalogue prices, no index — refresh by supplier quote. */
-export const BOUGHT_OUT_GBP = {
-  hotRunnerPerDrop: 3800,
-  hotRunnerController: 5500,
-  corePullCylinder: 1450,
-  guideAndEjectionSetSmall: 650,
-  guideAndEjectionSetLarge: 2400,
-  texturingPerTool: 3500,
-} as const;
+/** Bought-out components, £ each — the `tool-bought.*` rows of the active book (built-in: catalogue-typical Jun 2026,
+ *  held; refresh by supplier quote). */
+export const BOUGHT_OUT_GBP = serviceView({
+  hotRunnerPerDrop: 'tool-bought.hot-runner-drop',
+  hotRunnerController: 'tool-bought.hot-runner-controller',
+  corePullCylinder: 'tool-bought.core-pull-cylinder',
+  guideAndEjectionSetSmall: 'tool-bought.guide-ejection-small',
+  guideAndEjectionSetLarge: 'tool-bought.guide-ejection-large',
+  texturingPerTool: 'tool-bought.texturing-per-tool',
+});
 
 /** Toolmaker overhead + profit applied once on the built-up subtotal. */
 export const SHOP_OVERHEAD_PROFIT = 0.22;

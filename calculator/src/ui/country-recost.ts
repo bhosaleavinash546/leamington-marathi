@@ -65,7 +65,9 @@ export interface RecostDeps {
    */
   countryControls?: (r: ManufacturingRegion) => Record<string, string>;
   /** Overhead %, packaging and logistics for a country (country-fields.ts). */
-  shopFor: (r: ManufacturingRegion) => { overheadPct: number; packagingPerPart: number; logisticsPerPart: number };
+  shopFor: (r: ManufacturingRegion) => { overheadPct: number; marginPct?: number; packagingPerPart: number; logisticsPerPart: number };
+  /** A shop figure a person typed — kept in every country, as a country switch keeps it (country-fields.ts). */
+  typed?: (field: 'overhead' | 'margin') => boolean;
 }
 
 export interface CountryCosting { input: UniversalStackInput; result: PartCostResult; }
@@ -80,7 +82,7 @@ export function recostInCountries(regions: ManufacturingRegion[], d: RecostDeps)
   // failed Calculate on the PCB form. Files never enter a cost, so they are neither changed nor restored.
   const fields = Array.from(d.root.querySelectorAll<Field>('input[id], select[id]'))
     .filter(f => !(f instanceof HTMLInputElement && (f.type === 'file' || f.type === 'button' || f.type === 'submit')));
-  const shopIds = ['overhead-pct', 'packaging', 'logistics'];
+  const shopIds = ['overhead-pct', 'packaging', 'logistics', 'margin-pct'];
   const shop = shopIds.map(id => document.getElementById(id) as HTMLInputElement | null);
   const saved = new Map<Field, { value: string; checked?: boolean }>();
   for (const f of [...fields, ...shop.filter((x): x is HTMLInputElement => !!x)]) {
@@ -130,7 +132,9 @@ export function recostInCountries(regions: ManufacturingRegion[], d: RecostDeps)
         c.value = v;
       }
       const s = d.shopFor(X);
-      if (shop[0]) shop[0].value = String(Math.round(s.overheadPct * 1000) / 10);
+      if (shop[0] && !d.typed?.('overhead')) shop[0].value = String(Math.round(s.overheadPct * 1000) / 10);
+      // the margin a country switch would show: the book's Overhead row for the country (rates flow R2)
+      if (shop[3] && s.marginPct !== undefined && !d.typed?.('margin')) shop[3].value = String(Math.round(s.marginPct * 1000) / 10);
       if (shop[1]) shop[1].value = String(Math.round(s.packagingPerPart * 10_000) / 10_000);
       if (shop[2]) shop[2].value = String(Math.round(s.logisticsPerPart * 10_000) / 10_000);
       let input = withRates(book, () => d.collect());

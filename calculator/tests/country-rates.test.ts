@@ -122,7 +122,8 @@ describe('3. overhead, packaging and logistics: one function for screen and head
     expect(s.overheadPct).toBe(0.12);
     expect(s.packagingPerPart).toBeCloseTo(0.40, 4);
     expect(s.logisticsPerPart).toBeCloseTo(0.60 * R.CN.logisticsMultiplier, 4);
-    expect(regionalShopDefaults('UK')).toEqual({ overheadPct: 0.12, packagingPerPart: 0.15, logisticsPerPart: 0.25 });
+    // R2: margin comes from the Overhead sheet too, with where the figures came from
+    expect(regionalShopDefaults('UK')).toEqual({ overheadPct: 0.12, marginPct: 0.08, packagingPerPart: 0.15, logisticsPerPart: 0.25, shopSource: 'built-in' });
   });
   it('no booked country carries an overhead, packaging or material multiplier — the UK basis at par, labelled (3 Nov 2026)', () => {
     for (const [cc, r] of Object.entries(R)) {

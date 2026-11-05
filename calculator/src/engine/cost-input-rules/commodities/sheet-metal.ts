@@ -22,6 +22,7 @@
  *    and the gauge. `estimateStampingDieLife` already models both and was only
  *    ever reachable from a hand-typed form.
  */
+import { serviceUk } from '../../service-rates.js';
 import { finishRules } from '../derive/finish.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
 import { activeMachineRate, activeLabourRate, activeRates } from '../../rate-context.js';
@@ -730,7 +731,9 @@ export function dieClassFor(ctx: RuleContext): { soft: boolean; basis: string } 
  */
 export const FAB = {
   laserId: 'laser-trumpf-3030', brakeSmallId: 'brake-trumpf-trubend3100', brakeLargeId: 'brake-trumpf-5230',
-  bendSec: 12, handlingSec: 10, toolChanges: 2, toolChangeSec: 900, toolingGBP: 1500,
+  bendSec: 12, handlingSec: 10, toolChanges: 2, toolChangeSec: 900,
+  /** Nest + brake programming and first-off, UK £ — the active book's `sheet.fab-programming` row (rates flow R2). */
+  get toolingGBP(): number { return serviceUk('sheet.fab-programming'); },
   laserLabourId: 'lab-uk-semiskilled', brakeLabourId: 'lab-uk-skilled',
 } as const;
 

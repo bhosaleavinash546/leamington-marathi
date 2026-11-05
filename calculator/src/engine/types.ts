@@ -93,13 +93,48 @@ export interface FXRate {
   sourceNote: string;
 }
 
+/**
+ * Overhead and margin for a commodity in a country (rates flow R2, Nov 2026) — read by `regionalShopDefaults`, screen and
+ * headless. `commodityType: '*'` is every commodity the country has no own row for; `country` absent / 'UK' is the UK.
+ * A country with no row of its own keeps its published default (the BUILT-IN UK row × its overhead multiplier).
+ */
 export interface OverheadDefault {
   id: string;
-  commodityType: CommodityType;
-  supplierTier: string;
+  commodityType: CommodityType | '*';
+  /** Region code the row applies to (absent = UK). */
+  country?: string;
+  /** Descriptive only (pre-R2 rows carried a tier; no costing selects by it). */
+  supplierTier?: string;
   overheadPct: number;
   marginPct: number;
   sourceNote: string;
+}
+
+/**
+ * A service, toolroom or tool £ rate a rule or module prices with (rates flow R2, Nov 2026): the UK figure the code used to
+ * hold as a literal, with its unit, its country basis (what moves it in a country with no own row — `countryFactor`) and
+ * its source. A row with `country` set is that country's own figure, used as given (no country factor).
+ */
+export interface ServiceRate {
+  id: string;
+  /** Region code (absent = UK). */
+  country?: string;
+  label: string;
+  value: number;
+  /** "£/h", "£ each", "£/kg", "£/min of cut" … */
+  unit: string;
+  /** The country basis as text: toolroom / engineer / heatTreat / inspection / process / chemical / global, a library
+   *  material ("material:mat-…") or a traded share ("global 0.2 + toolroom"). */
+  basis: string;
+  effectiveDate: string;
+  sourceNote: string;
+  confidence: Confidence;
+}
+
+/** A company's rows for a country other than the UK (rates flow R2): applied ONLY to that country's book. */
+export interface CountryRateRows {
+  materials?: MaterialRate[];
+  machines?: MachineRate[];
 }
 
 /**
@@ -143,6 +178,23 @@ export interface RateLibrary {
    * Absent on the UK base library and on an uploaded company library.
    */
   regional?: { code: string; name: string; toolroomFactor: number };
+  /**
+   * Service, toolroom and tool £ rates (the Services & toolroom sheet, rates flow R2). Rows with `country` are that
+   * country's own; the rest are the UK's. Read through `serviceRate` (service-rates.ts), never the literal.
+   */
+  services?: ServiceRate[];
+  /** A company's Materials / Machines rows for other countries, by region code — `buildRegionalLibrary(…, cc)` only. */
+  countryRows?: Record<string, CountryRateRows>;
+  /**
+   * The BUILT-IN UK rows a company row, an alias or a cell override replaced in this UK book, and the ids the company
+   * added (rates flow R2). A country book is rebuilt from the built-in UK basis — never from the company's UK row — so a
+   * UK company rate cannot move another country's cost. Set by `resolveActiveLibrary`; absent on the built-in book.
+   */
+  ukBuiltInBasis?: {
+    materials: MaterialRate[]; machines: MachineRate[]; labour: LabourRate[]; energy: EnergyRate[];
+    /** `${table}:${id}` of the UK rows the built-in book does not have. */
+    added: string[];
+  };
 }
 
 // ─── Universal Stack Inputs ──────────────────────────────────────────────────

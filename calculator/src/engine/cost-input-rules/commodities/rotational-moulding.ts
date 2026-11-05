@@ -19,11 +19,12 @@
  * wrong is the difference between one part carrying a 25-minute bake and four
  * parts sharing it.
  */
+import { serviceView } from '../../service-rates.js';
 import { inCountry, countryNote } from '../../regional-services.js';
 import {
   estimateRotoCycle, estimateRotoMouldCost, rotoMouldRates,
   ROTO_HEAT_S_PER_MM, ROTO_HEAT_BASE_SEC, ROTO_COOL_FACTOR, ROTO_CYCLE_BASIS_LABEL,
-  ROTO_VENT_GBP, ROTO_INSULATION_GBP, ROTO_COMPLEXITY_FACTOR,
+  ROTO_MOULD_ITEMS, ROTO_COMPLEXITY_FACTOR,
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
 } from '../../modules/roto-advisor.js';
 import { ROTO_POWDER_YIELD } from '../../modules/rotational-moulding.js';
@@ -161,8 +162,9 @@ export function rotoHoursIn(rates: RateLibrary | null | undefined, machineId: st
   return h && h > 0 ? h : ROTO_HOURS;
 }
 export const ROTO_OEE = 0.80;
-/** Grinding pellet to ~35 mesh powder, £/kg — the library's roto grades say "add grinding premium". */
-export const ROTO_GRINDING_GBP_PER_KG = 0.25;
+/** Grinding pellet to ~35 mesh powder, £/kg — the library's roto grades say "add grinding premium". The active book's
+ *  `roto.grinding` row (rates flow R2). */
+export const ROTO_GRINDING = serviceView({ gbpPerKg: 'roto.grinding' });
 export const ROTO_REJECT = 0.03;
 /** Load station: arm handling + demould and charge per mould, s — engineering-typical, not sourced. */
 export const ROTO_ARM_HANDLING_SEC = 120;
@@ -453,6 +455,7 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const tf = activeToolroomFactor();
         // The UK build-up, then the country's toolroom factor — printed every time, on one chain (the parts printed
         // country £ beside UK arithmetic, the factor in a bracket only off the UK; report standard round, Nov 2026).
+        const ROTO_VENT_GBP = ROTO_MOULD_ITEMS.ventGbp, ROTO_INSULATION_GBP = ROTO_MOULD_ITEMS.insulationGbp;   // the book's rows (R2)
         const uk = rates.base + a.areaCm2 * rates.perCm2 * ROTO_COMPLEXITY_FACTOR[a.complexity] + a.vents * ROTO_VENT_GBP + ROTO_INSULATION_GBP;
         const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
         return decided('roto.mouldCost', est.total, 'advisor',
@@ -521,8 +524,8 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         // Toll grinding is a bought-in process service — in the costed country (regional-services.ts).
-        return decided('roto.powderCostAdderPerKg', inCountry(ROTO_GRINDING_GBP_PER_KG, 'process'), 'rule',
-          `grinding to ~35 mesh powder, £${ROTO_GRINDING_GBP_PER_KG}/kg UK (£0.15–0.40/kg, engineering-typical, not sourced)${countryNote('process')}; `
+        return decided('roto.powderCostAdderPerKg', inCountry(ROTO_GRINDING.gbpPerKg, 'process'), 'rule',
+          `grinding to ~35 mesh powder, £${ROTO_GRINDING.gbpPerKg}/kg UK (£0.15–0.40/kg, engineering-typical, not sourced)${countryNote('process')}; `
           + 'the library grades are pellet-priced and say to add it. Charged on the powder charged: part kg ÷ (1 − reject) '
           + `÷ ${ROTO_POWDER_YIELD} (1% lost to handling and venting — engineering-typical)`, 0.6);
       },

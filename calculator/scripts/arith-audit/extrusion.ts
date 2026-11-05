@@ -43,6 +43,9 @@ import {
   BILLET_PREMIUM_USD_PER_T, AL_SCRAP_6XXX_BY_REGION, SCRAP_DIFF_6XXX_USD, type AlAlloy, type AlDieType,
 } from '../../src/engine/al-extrusion-data.js';
 import { dumpContext, contextLine } from './dump-context.js';
+import { SERVICE_RATES } from '../../src/engine/service-rates-data.js';
+/** A built-in Services & toolroom figure (rates flow R2 moved these out of al-extrusion-data.ts into the book). */
+const svcRow = (id: string): number => SERVICE_RATES.find(r => r.id === id)!.value;
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { featureMinutesEach } from '../../src/engine/feature-machining.js';
@@ -226,7 +229,7 @@ export function shadowAluminium(geo: OCCTGeometry, answers: Record<string, unkno
     pressId = AL_IMPACT.id; crew = AL_IMPACT.crew; cycleSec = 60 / AL_IMPACT.strokesPerMin; perPush = 1; billetPerPart = slug;
     dieGbp = Math.round(AL_IMPACT.toolBaseGbp + AL_IMPACT.toolPerMmGbp * ccd);
     dieLifeKg = AL_IMPACT.toolLifeHits * partKgSpec;     // fix X1: the tool wears out by HITS — one part a hit
-    heatKwh = 0; feedAdder = AL_IMPACT.slugPrepGbpPerKg; runs = 12; dieChangeHr = 1;
+    heatKwh = 0; feedAdder = svcRow('al-ext.slug-prep'); runs = 12; dieChangeHr = 1;
   } else if (route === 'conform') {
     pressId = AL_CONFORM.id; crew = AL_CONFORM.crew; perPush = 1;
     cycleSec = extrudedKg / AL_CONFORM.outputKgPerHr * 3600; billetPerPart = extrudedKg * 1.03;
@@ -356,13 +359,13 @@ export function shadowAluminium(geo: OCCTGeometry, answers: Record<string, unkno
   ops.push({ name: 'pack', machineId: 'bench-assembly', labourId: lab, cycleHr: 0, ppc: 1, oee: 1, manning: 1, labourHr: packSec / 3600 * up, eff });
 
   // Material: the billet bought for good parts AND rejects; everything not in a GOOD part is scrap credit (fix X2).
-  const nitride = route === 'impact' ? 0 : AL_DIE_NITRIDE.gbp / (AL_DIE_NITRIDE.everyT * 1000) * exKg;
-  const finishCons = line ? line.consumablesGbpPerM2 * fArea : 0;
+  const nitride = route === 'impact' ? 0 : svcRow('al-ext.die-nitride') / (AL_DIE_NITRIDE.everyT * 1000) * exKg;
+  const finishCons = line ? svcRow(`al-ext.${line === AL_DOWNSTREAM.anodise ? 'anodise' : line === AL_DOWNSTREAM.powder ? 'powder' : 'ecoat'}-consumables`) * fArea : 0;
   const consumables = (feedAdder * billetKg + nitride + finishCons + fabWear) * up;
   const gasKwh = (heatKwh * billetKg + (age ? AL_DOWNSTREAM.ageOven.gasKwhPerKg * exKg : 0)) * up;
   // Tooling: dies consumed over the programme (fractional, at least one set) + one-off fab / bend tooling.
   const sets = dieLifeKg > 0 ? Math.max(1, AMORT * exKg / dieLifeKg) : 1;
-  const bendTool = bends > 0 ? AL_DOWNSTREAM.bender.toolFirstGbp + (bends - 1) * AL_DOWNSTREAM.bender.toolPerExtraBendGbp : 0;
+  const bendTool = bends > 0 ? svcRow('al-ext.bend-tool-first') + (bends - 1) * svcRow('al-ext.bend-tool-extra') : 0;
   const tooling = dieGbp * sets + fabTool + bendTool;
   const billetPrice = (AL_MARKET.lmeUsdPerT + BILLET_PREMIUM_USD_PER_T.UK.usdPerT + a.billetAdderUsdPerT) / AL_MARKET.usdPerGbp / 1000;
   const scrapPrice = (AL_MARKET.lmeUsdPerT + a.scrapDiffUsdPerT) / AL_MARKET.usdPerGbp / 1000;

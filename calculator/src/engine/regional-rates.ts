@@ -1,5 +1,7 @@
-import type { RateLibrary, MaterialRate, Breakdown8Bucket, DeliveryTerms } from './types.js';
-import { computeMachineRatePerHr } from './rate-library-merge.js';
+import type { RateLibrary, MaterialRate, Breakdown8Bucket, DeliveryTerms, OverheadDefault } from './types.js';
+import { computeMachineRatePerHr, builtInUkBasis, rowCountry } from './rate-library-merge.js';
+import { BUILT_IN_SHOP_ROW } from './shop-defaults-data.js';
+import { activeRates } from './rate-context.js';
 import { COUNTRY_BOOKS, countryMachine, countryMaterial, sourcedServiceFactor } from './country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
 import { AL_ALLOYS, AL_MARKET, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, alScrapGbpPerKg, alScrapBasis, type AlAlloy } from './al-extrusion-data.js';
@@ -1022,26 +1024,50 @@ export function toolroomFactorFor(region: ManufacturingRegion): number {
 }
 
 /**
- * Overhead %, packaging and logistics £/part for a region — the screen's country
- * switch and headless costing both read this, so the same part costs the same
- * in China on either path. Overhead 12 % × the region's multiplier. Packaging and
- * logistics are the UK-basis figure × the region's multipliers (logistics is
- * delivery to the UK): the size-aware estimate when the part's geometry gave one
- * (`estimatePackagingPerPart` / `estimateLogisticsPerPart`), else £0.15 / £0.25.
- * The screen used to overwrite a size-aware estimate with the flat £0.15 × factor.
+ * Overhead and margin for a commodity in a region (rates flow R2, Nov 2026) — the Overhead sheet. Precedence: the book's
+ * row for this country AND commodity, then its row for this country and every commodity ('*'), then — a country with no
+ * row of its own — its published default: the BUILT-IN UK row (never a company UK row) × the country's overhead
+ * multiplier, rounded as it always was. A UK book always holds the '*' row (built-in, or the company's).
+ */
+export function shopRowFor(lib: Pick<RateLibrary, 'overheadDefaults'> | null | undefined, region: ManufacturingRegion, commodity?: string):
+  { overheadPct: number; marginPct: number; source: 'company' | 'built-in'; row: OverheadDefault | null } {
+  const rows = (lib?.overheadDefaults ?? []).filter(o => rowCountry(o) === region);
+  const row = (commodity ? rows.find(o => o.commodityType === commodity) : undefined) ?? rows.find(o => o.commodityType === '*');
+  const builtIn = (o: OverheadDefault) => o.id === BUILT_IN_SHOP_ROW.id && o.commodityType === '*' && rowCountry(o) === 'UK'
+    && o.overheadPct === BUILT_IN_SHOP_ROW.overheadPct && o.marginPct === BUILT_IN_SHOP_ROW.marginPct;
+  if (row) return { overheadPct: row.overheadPct, marginPct: row.marginPct, source: builtIn(row) ? 'built-in' : 'company', row };
+  const rd = REGIONAL_DATA[region] ?? REGIONAL_DATA.UK;
+  return {
+    overheadPct: Math.round(BUILT_IN_SHOP_ROW.overheadPct * 100 * rd.overheadMultiplier) / 100,
+    marginPct: BUILT_IN_SHOP_ROW.marginPct,
+    source: 'built-in', row: null,
+  };
+}
+
+/**
+ * Overhead %, margin %, packaging and logistics £/part for a region — the screen's country switch and headless costing
+ * both read this, so the same part costs the same in China on either path. Overhead and margin come from the book's
+ * Overhead rows (`shopRowFor`; `library` defaults to the active book). Packaging and logistics are the UK-basis figure ×
+ * the region's multipliers (logistics is delivery to the UK): the size-aware estimate when the part's geometry gave one
+ * (`estimatePackagingPerPart` / `estimateLogisticsPerPart`), else £0.15 / £0.25. A figure typed into the form is a quote
+ * and is used instead (the screen keeps it).
  */
 export function regionalShopDefaults(
   region: ManufacturingRegion,
   ukBasis: { packagingPerPart?: number; logisticsPerPart?: number } = {},
   terms: DeliveryTerms = 'DAP',
-): { overheadPct: number; packagingPerPart: number; logisticsPerPart: number } {
+  opts: { commodity?: string; library?: Pick<RateLibrary, 'overheadDefaults'> | null } = {},
+): { overheadPct: number; marginPct: number; packagingPerPart: number; logisticsPerPart: number; shopSource: 'company' | 'built-in' } {
   const rd = REGIONAL_DATA[region] ?? REGIONAL_DATA.UK;
   const r4 = (n: number) => Math.round(n * 10_000) / 10_000;
+  const shop = shopRowFor(opts.library === undefined ? activeRates() : opts.library, region, opts.commodity);
   return {
-    overheadPct: Math.round(12 * rd.overheadMultiplier) / 100,
+    overheadPct: shop.overheadPct,
+    marginPct: shop.marginPct,
     packagingPerPart: r4((ukBasis.packagingPerPart ?? 0.15) * rd.packagingMultiplier),
     // ex-works: the buyer collects at the gate — packaging is in the price, freight is not
     logisticsPerPart: terms === 'EXW' ? 0 : r4((ukBasis.logisticsPerPart ?? 0.25) * rd.logisticsMultiplier),
+    shopSource: shop.source,
   };
 }
 
@@ -1053,8 +1079,19 @@ export function deliveryTermsLine(terms: DeliveryTerms | undefined): string {
 }
 
 /** Where the overhead / packaging / logistics DEFAULTS come from — the reports printed them with no basis (Germany review). */
-export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms: DeliveryTerms = 'DAP'): string {
+export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms: DeliveryTerms = 'DAP',
+  opts: { commodity?: string; library?: Pick<RateLibrary, 'overheadDefaults'> | null } = {}): string {
   const rd = REGIONAL_DATA[region ?? 'UK'] ?? REGIONAL_DATA.UK;
+  // A company Overhead row in force says so (rates flow R2) — the 12 % wording below is the built-in default's.
+  const shop = shopRowFor(opts.library === undefined ? activeRates() : opts.library, region ?? 'UK', opts.commodity);
+  if (shop.source === 'company' && shop.row) {
+    const pc = (v: number) => `${+(v * 100).toFixed(4)}%`;
+    const exw0 = terms === 'EXW';
+    return `Overhead ${pc(shop.overheadPct)} and margin ${pc(shop.marginPct)}: the company rate book's ${rowCountry(shop.row) === 'UK' ? 'UK' : rd.name} row `
+      + `${shop.row.commodityType === '*' ? 'for every commodity' : `for ${shop.row.commodityType.replace(/_/g, ' ')}`} (Overhead sheet, ${shop.row.id}); `
+      + `${exw0 ? 'packaging from the part\'s size × the country\'s multiplier. Ex-works: no freight in the price (logistics 0).' : 'packaging and logistics from the part\'s size × the country\'s multipliers.'}`
+      + ' A typed figure is used as given.';
+  }
   const f = (n: number) => `×${n.toFixed(2)}`;
   const exw = terms === 'EXW';
   const sized = exw ? 'packaging from the part\'s size' : 'packaging and logistics from the part\'s size';
@@ -1075,11 +1112,44 @@ export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms
     : `Defaults: overhead 12%; ${sized}${exw ? '' : ' (delivery within the UK)'}. A typed figure is used as given.`) + freight;
 }
 
-export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
+/**
+ * The book a costing in `region` runs in. Every country other than the UK is rebuilt from the BUILT-IN UK basis
+ * (`builtInUkBasis` — rates flow R2, Nov 2026): a company's UK row, alias or cell override is the UK's and never reaches
+ * another country through a "book size" ratio, a held capital at par, a material at par or a scrap ratio. What a company
+ * states for THIS country — `countryRows[region]` (Materials / Machines with a country), `lab-<cc>-*` / `energy-<cc>`
+ * rows, and Overhead / Services rows with `country` = region — is used as given, over the country's published book.
+ */
+export function buildRegionalLibrary(companyOrBase: RateLibrary, region: ManufacturingRegion): RateLibrary {
+  const built = buildRegionalFromBasis(region === 'UK' ? companyOrBase : builtInUkBasis(companyOrBase), companyOrBase, region);
+  if (region === 'UK') return built;
+  const own = companyOrBase.countryRows?.[region];
+  const overlay = <T extends { id: string }>(rows: T[], over: T[] | undefined): T[] => {
+    if (!over?.length) return rows;
+    const byId = new Map(over.map(r => [r.id, r]));
+    const known = new Set(rows.map(r => r.id));
+    return [...rows.map(r => byId.get(r.id) ?? r), ...over.filter(r => !known.has(r.id))];
+  };
+  // A company country row is that country's figure, stated: it carries the country's name and its £/h is its build-up.
+  const ownMachines = own?.machines?.map(m => ({ ...m, region: built.regional!.name, computedRatePerHr: computeMachineRatePerHr(m.buildup) }));
+  const ownMaterials = own?.materials?.map(m => ({ ...m, region: built.regional!.name }));
+  const { countryRows: _c, ukBuiltInBasis: _b, aliases: _a, ...rest } = built;
+  return {
+    ...rest,
+    materials: overlay(built.materials, ownMaterials),
+    machines: overlay(built.machines, ownMachines),
+    // Overhead / Services rows carry their own country and are always looked up BY it (`shopRowFor`, `serviceUk`), so
+    // every book keeps the full list — a UK row never decides another country's figure (R2).
+    overheadDefaults: companyOrBase.overheadDefaults ?? [],
+    services: companyOrBase.services ?? [],
+  };
+}
+
+function buildRegionalFromBasis(baseLibrary: RateLibrary, ownRows: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
   // The country's own book (country-books.ts) wins where it has evidence; the scaling below is the fallback.
   const book = COUNTRY_BOOKS[region];
-  const ownEnergy = baseLibrary.energy.find(e => e.id === `energy-${region.toLowerCase()}`);
+  // the book's own tariff for this country (a company `energy-<cc>` row is this country's — R2)
+  const ownEnergy = ownRows.energy.find(e => e.id === `energy-${region.toLowerCase()}`);
   const elecTariff = ownEnergy?.electricityPerKwh ?? rd.energy.electricityPerKwh;
 
   // Derive labour rates from the ID suffix (lab-{region}-{category} → rd.labour[category]).
@@ -1127,7 +1197,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       // The book's OWN rate for this role in this country wins (a company book's
       // lab-cn-skilled from a supplier audit) — the regional table is the default
       // where the book has none. It used to be ignored.
-      const own = region !== 'UK' ? baseLibrary.labour.find(x => x.id === `lab-${region.toLowerCase()}-${suffix}`) : undefined;
+      const own = region !== 'UK' ? ownRows.labour.find(x => x.id === `lab-${region.toLowerCase()}-${suffix}`) : undefined;
       if (own) {
         // the row's date is the rate's own — a German report dated its book rates with the UK entry's date (Germany review)
         return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name, effectiveDate: own.effectiveDate ?? l.effectiveDate,

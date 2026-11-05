@@ -138,7 +138,7 @@ export async function exportToExcelBlob(
   sum.push(['Packaging per Part', m(input.packagingPerPart)]);
   sum.push(['Logistics per Part', m(input.logisticsPerPart)]);
   sum.push(['Delivery terms', deliveryTermsLine(input.deliveryTerms)]);
-  sum.push(['Overhead / packaging / logistics basis', shopDefaultsBasis(library.regional?.code as ManufacturingRegion | undefined, input.deliveryTerms)]);
+  sum.push(['Overhead / packaging / logistics basis', shopDefaultsBasis(library.regional?.code as ManufacturingRegion | undefined, input.deliveryTerms, { commodity: commodity ?? undefined, library })]);
   if (input.tooling.mode === 'amortized') {
     sum.push(['Total Tooling Cost', m(input.tooling.totalToolingCost)]);
     for (const t of input.tooling.items ?? []) sum.push([`  ${t.label}`, m(t.gbp)]);

@@ -995,7 +995,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   unsourcedItems.sort((x, y) => (y.gbp ?? -1) - (x.gbp ?? -1));
   const unsourcedGbp = [...counted.values()].reduce((s, l) => s + l.gbp, 0);
 
-  const defaultOverhead = regionalShopDefaults(regionCode as ManufacturingRegion).overheadPct;
+  // the default in force for this commodity and country (the Overhead sheet, rates flow R2), from the book the report uses
+  const defaultOverhead = regionalShopDefaults(regionCode as ManufacturingRegion, {}, 'DAP', { commodity: commodity ?? undefined, ...(a.baseLibrary ? { library: a.baseLibrary } : {}) }).overheadPct;
   const overheadDefault = Math.abs(input.overheadPct - defaultOverhead) < 1e-9;
   const pkgDefault = meta.pkgLogisticsEstimated !== false;
   const bk = result.breakdown;
@@ -1306,7 +1307,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   try {
     const alAlloy = commodity === 'aluminium_extrusion' ? AL_ALLOY_LIST.find(al => `mat-al-billet-${al.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
     const rc = a.regionalRows?.length ? a.regionalRows
-      : a.baseLibrary ? computeRegionalComparisonExact(input, a.baseLibrary, { landed: false, sourceRegion: regionCode as ManufacturingRegion, sourceResult: result })
+      : a.baseLibrary ? computeRegionalComparisonExact(input, a.baseLibrary, { landed: false, sourceRegion: regionCode as ManufacturingRegion, sourceResult: result, commodity: commodity ?? undefined })
       : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: regionCode as ManufacturingRegion, ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy, 1 - (input.rawMaterial.materialUtilization ?? 1)) } : {}) });
     countries = {
       rows: rc.map(r => ({ name: r.name, total: r.total, vsBasePct: r.vsBasePct, isBase: r.isBase, approx: r.basis === 'stack-reprice' || r.basis === 'scaled' })),
