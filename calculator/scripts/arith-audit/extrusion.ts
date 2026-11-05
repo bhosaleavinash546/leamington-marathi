@@ -74,7 +74,7 @@ interface ShadowStack {
 }
 function stack(s: ShadowStack, book: RateLibrary, shop: { overheadPct: number; marginPct: number; packagingPerPart: number; logisticsPerPart: number }) {
   const mat = book.materials.find(m => m.id === s.materialId)!;
-  const tariff = book.energy[0];
+  const tariff = book.energy.find(e => e.id === `energy-${(book.regional?.code ?? 'uk').toLowerCase()}`)!;   // by id (R1)
   const rm = s.grossKg * mat.pricePerKg - (s.grossKg - s.netKg) * mat.scrapRecoveryPricePerKg
     + s.consumables + s.gasKwh * tariff.gasPerKwh + s.elecKwh * tariff.electricityPerKwh;
   const opsOut = s.ops.map(o => {
@@ -486,7 +486,7 @@ export function runAluminiumMaterialDumpAudit(dumpDir: string): Check[] {
     add(`scrap £/kg (LME ${own ? '+ the region\'s own clean 6063 level' : '+ the alloy differential'}, ≤ billet)`, scrap, mat.scrapRecoveryPricePerKg, 'input');
     const rm = d.trace.stackInput.rawMaterial as { netWeightKg: number; materialUtilization: number; consumablesCostPerPart?: number; energyKwh?: { gas?: number; electricity?: number } };
     const gross = rm.netWeightKg / rm.materialUtilization;
-    const tariff = C.book.energy[0];
+    const tariff = C.book.energy.find(e => e.id === `energy-${(C.book.regional?.code ?? 'uk').toLowerCase()}`)!;   // by id (R1)
     const material = gross * billet - (gross - rm.netWeightKg) * scrap + (rm.consumablesCostPerPart ?? 0)
       + (rm.energyKwh?.gas ?? 0) * tariff.gasPerKwh + (rm.energyKwh?.electricity ?? 0) * tariff.electricityPerKwh;
     add('material £ re-added (gross × billet − scrap kg × scrap + consumables + kWh)', material, d.breakdown.rawMaterial, 'money');

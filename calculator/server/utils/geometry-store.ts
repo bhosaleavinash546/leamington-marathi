@@ -125,7 +125,15 @@ export function getGeometry(hash: string, unitScale = 1): OCCTGeometry | null {
  * names a blank the server has already measured, and still cannot post numbers
  * of its own.
  */
-const blankCache = new Map<string, unknown>();
+// Persisted beside the geometry (the same SQLite-backed cache, same TTL), not in process memory: after a restart
+// compare-routes and /reanalyze found no blank under the hash and costed the seat bracket WITHOUT it, saying nothing
+// (£1.0637 → £0.8316 — rates flow perturbation run, Nov 2026). A caller that names a blank the store no longer holds is
+// refused (`BLANK_GONE`), never costed on the bounding-box estimate.
+const blankCache = createAnalysisCache('cad_blank_by_hash', GEOMETRY_TTL_MS);
+const blankDxfCache = createAnalysisCache('cad_blank_dxf_by_hash', GEOMETRY_TTL_MS);
+
+/** The refusal when a named blank is gone — the part is analysed again rather than costed without its blank. */
+export const BLANK_GONE = 'The developed blank for this part is no longer on this server — analyse the part again (it is not costed without its blank).';
 
 export function blankHashOf(dxf: Buffer): string {
   return createHash('sha256').update(dxf).digest('hex');
@@ -136,11 +144,11 @@ export function putBlank(hash: string, blank: unknown): void {
 }
 
 /** The DXF text of a blank the tool developed itself, by the blank's hash. */
-const blankDxfCache = new Map<string, string>();
 export function putBlankDxf(hash: string, dxf: string): void { blankDxfCache.set(hash, dxf); }
 export function getBlankDxf(hash: string): string | null {
   if (!/^[a-f0-9]{64}$/.test(hash)) return null;
-  return blankDxfCache.get(hash) ?? null;
+  const d = blankDxfCache.get(hash);
+  return typeof d === 'string' ? d : null;
 }
 
 export function getBlank<T>(hash: string): T | null {

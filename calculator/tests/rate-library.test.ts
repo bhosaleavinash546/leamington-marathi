@@ -98,16 +98,18 @@ describe('rate-library Excel round-trip', () => {
     expect(library!.machines[0].computedRatePerHr).toBeCloseTo(computeMachineRatePerHr(library!.machines[0].buildup), 4);
   });
 
+  /** The template with one Materials cell changed (rates flow R1: a sheet needs its required sheets and columns). */
+  const templateWith = (col: string, value: unknown): Buffer => {
+    const wb = XLSX.read(buildRateLibraryWorkbook(lib, { template: true }), { type: 'buffer' });
+    const rows = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets.Materials, { header: 1 });
+    XLSX.utils.sheet_add_aoa(wb.Sheets.Materials, [[value]], { origin: { r: 1, c: (rows[0] as string[]).indexOf(col) } });
+    return XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
+  };
+
   it('rejects a workbook with a negative price and reports the cell', () => {
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3', 'region', 'effectiveDate', 'sourceNote', 'confidence'],
-      ['mat-x', 'Al', 'metal', -5, 0, 2700, 'UK', '2026-01', '', 'High'],
-    ]), 'Materials');
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
-    const { library, errors } = parseRateLibraryWorkbook(buf);
+    const { library, errors } = parseRateLibraryWorkbook(templateWith('pricePerKg', -5));
     expect(library).toBeNull();
-    expect(errors.some(e => e.includes('pricePerKg') && e.includes('negative'))).toBe(true);
+    expect(errors).toContain('Materials row 2, column pricePerKg: -5 must not be negative.');
   });
 
   it('rejects a non-template workbook', () => {
@@ -120,25 +122,13 @@ describe('rate-library Excel round-trip', () => {
   });
 
   it('rejects a BLANK required numeric cell instead of silently reading it as 0', () => {
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3', 'region', 'effectiveDate', 'sourceNote', 'confidence'],
-      ['mat-x', 'Al', 'metal', '', 0, 2700, 'UK', '2026-01', '', 'High'],   // blank pricePerKg
-    ]), 'Materials');
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
-    const { library, errors } = parseRateLibraryWorkbook(buf);
+    const { library, errors } = parseRateLibraryWorkbook(templateWith('pricePerKg', ''));
     expect(library).toBeNull();
-    expect(errors.some(e => e.includes('pricePerKg'))).toBe(true);
+    expect(errors).toContain('Materials row 2, column pricePerKg: blank — a number is required.');
   });
 
   it('still accepts an explicit 0 (e.g. zero scrap recovery)', () => {
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3', 'region', 'effectiveDate', 'sourceNote', 'confidence'],
-      ['mat-x', 'Al', 'metal', 2.5, 0, 2700, 'UK', '2026-01', '', 'High'],
-    ]), 'Materials');
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
-    const { library, errors } = parseRateLibraryWorkbook(buf);
+    const { library, errors } = parseRateLibraryWorkbook(templateWith('scrapRecoveryPricePerKg', 0));
     expect(errors).toEqual([]);
     expect(library!.materials[0].scrapRecoveryPricePerKg).toBe(0);
   });

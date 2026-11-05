@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
 import { executeCalculateCost, type CostToolInput } from '../services/cost-executor.js';
-import { regionOf, rateBookForRegion, regionalShopDefaults } from '../services/rate-book.js';
+import { regionOf, rateBookForRegion, rateBookPrint, regionalShopDefaults } from '../services/rate-book.js';
 import type { RateLibrary } from '../../src/engine/types.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
 import { groundToolInput, ungroundedRefusal, numbersIn, isGroundedFor, numbersUnder, labelModelFigures } from '../utils/agent-grounding.js';
@@ -169,10 +169,17 @@ const AgentResponseSchema = z.object({
 /** Rate grounding per country — the rates the agent quotes are the selected country's
  *  (it was always the UK book, so an India conversation was grounded on UK rates). */
 const _ragCorpusByRegion = new Map<string, ReturnType<typeof buildRateCorpus>>();
+/** Keyed on the country AND the resolved book's fingerprint — cached per region for the process lifetime, the agent
+ *  quoted the book that was active at its first use after a restart (rates flow review R1, Nov 2026). */
 function ragCorpusFor(region: string | undefined): ReturnType<typeof buildRateCorpus> {
   const r = regionOf(region);
-  let c = _ragCorpusByRegion.get(r);
-  if (!c) { c = buildRateCorpus(rateBookForRegion(r)); _ragCorpusByRegion.set(r, c); }
+  const k = `${r}|${rateBookPrint(r).key}`;
+  let c = _ragCorpusByRegion.get(k);
+  if (!c) {
+    c = buildRateCorpus(rateBookForRegion(r));
+    if (_ragCorpusByRegion.size > 80) _ragCorpusByRegion.clear();
+    _ragCorpusByRegion.set(k, c);
+  }
   return c;
 }
 
@@ -1012,10 +1019,16 @@ Always be technically precise. Never invent material prices or machine rates.`);
 
 /** The system prompt with the machine and labour £/hr of the request's country, built once per country. */
 const _promptByRegion = new Map<string, string>();
-function systemPromptFor(region: string | undefined): string {
+/** Keyed on the country and the resolved book's fingerprint, like the grounding corpus (R1). */
+export function systemPromptFor(region: string | undefined): string {
   const r = regionOf(region);
-  let p = _promptByRegion.get(r);
-  if (!p) { p = withLibraryRates(SYSTEM_PROMPT_TEMPLATE, rateBookForRegion(r)); _promptByRegion.set(r, p); }
+  const k = `${r}|${rateBookPrint(r).key}`;
+  let p = _promptByRegion.get(k);
+  if (!p) {
+    p = withLibraryRates(SYSTEM_PROMPT_TEMPLATE, rateBookForRegion(r));
+    if (_promptByRegion.size > 80) _promptByRegion.clear();
+    _promptByRegion.set(k, p);
+  }
   return p;
 }
 

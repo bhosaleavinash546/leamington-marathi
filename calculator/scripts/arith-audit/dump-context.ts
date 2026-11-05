@@ -75,7 +75,7 @@ export function dumpContext(dumpDir: string): DumpContext {
     machineRate: id => find(book.machines, id, 'machine').computedRatePerHr,
     labourRate: id => find(book.labour, id, 'labour').fullyLoadedRatePerHr,
     material: id => find(book.materials, id, 'material'),
-    tariff: book.energy[0].electricityPerKwh,
+    tariff: book.energy.find(e => e.id === `energy-${(book.regional?.code ?? 'uk').toLowerCase()}`)!.electricityPerKwh,   // by id (R1)
     toolroomFactor: tf,
     toolroom,
     factor: (basis: CountryBasis) => {

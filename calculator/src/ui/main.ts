@@ -45,8 +45,13 @@ import { hydrateOnShow } from './lazy-blocks.js';
 import { watchFormWide, updateFormWide } from './form-wide.js';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
-  DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
+  DEFAULT_RATE_LIBRARY, recomputeMachineRates,
 } from '../engine/index.js';
+import { bookEnergyTariff } from '../engine/book-tariff.js';
+import {
+  retireLocalRateCopy, adoptServerBook, rateBookStampLabel, readOnlyRateNote, fetchServerBookFingerprint, shortPrint,
+  type ServerBookInfo,
+} from './rate-book-sync.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } from '../engine/modules/sheet-metal.js';
@@ -321,34 +326,24 @@ function driverProvenance(input: UniversalStackInput): DriverProvenance {
 // ─── State ────────────────────────────────────────────────────────────────────
 
 /**
- * The browser keeps a copy of the rate library (saved whenever rates are edited),
- * and that copy used to win over the built-in library for ever — a browser that
- * used the tool in June kept the June rates after the 29 Sep 2026 refresh
- * shipped, and warned "106 days old". When the built-in library is newer than the
- * saved copy, the built-in one is used and the old copy is kept as a backup
- * (localStorage `shouldCostRateLibrary.backup-<old version>`), and the user is told.
+ * The screen's book is the SERVER's resolved book (rate-book-sync.ts, rates flow review R1). A browser-local copy used
+ * to outrank it — a browser that once saved rates kept them, missing every later refresh. That copy is retired here
+ * (kept as a backup key, never read again); until the server answers, the built-in book is the base.
  */
 let rateLibraryUpgradeNotice = '';
 function loadRateLibrary(): RateLibrary {
-  const stored = getLibraryFromStorage();
-  if (stored === DEFAULT_RATE_LIBRARY) return stored;
-  const storedDate = String(stored.lastModified ?? '');
-  const builtInDate = String(DEFAULT_RATE_LIBRARY.lastModified ?? '');
-  if (builtInDate && storedDate < builtInDate) {
-    try { localStorage.setItem(`shouldCostRateLibrary.backup-${stored.version ?? (storedDate || 'old')}`, JSON.stringify(stored)); } catch { /* storage full or blocked */ }
-    saveLibraryToStorage(DEFAULT_RATE_LIBRARY);
-    rateLibraryUpgradeNotice = `Rates updated to library ${DEFAULT_RATE_LIBRARY.version} (${new Date(builtInDate).toLocaleDateString('en-GB')}). Your previous saved rates (${stored.version ?? storedDate}) are kept as a backup in this browser.`;
-    return DEFAULT_RATE_LIBRARY;
-  }
-  return stored;
+  try { rateLibraryUpgradeNotice = retireLocalRateCopy(typeof localStorage === 'undefined' ? null : localStorage); } catch { /* blocked */ }
+  return DEFAULT_RATE_LIBRARY;
 }
-// Two books: the BASE (the saved local book, or the company book when an admin
-// loaded one — UK basis) and the ACTIVE one costings use (the base rebuilt for the
-// selected country). The country switch used to rebuild from local storage, which
-// silently dropped company rates the moment a country was picked.
+// Two books: the BASE (the server's resolved book — built-in, company rows, cell overrides — UK basis) and the ACTIVE
+// one costings use (the base rebuilt for the selected country).
 let _baseLibrary: RateLibrary = recomputeMachineRates(loadRateLibrary());
 let library: RateLibrary = _baseLibrary;
 setActiveRates(library);
+/** The server book the base is (fingerprint + label), null until the server answers. */
+let _serverBook: ServerBookInfo | null = null;
+/** The server book the result on screen was costed on — the stamp prints this one, not a book adopted afterwards. */
+let _resultBook: ServerBookInfo | null = null;
 // Commodity-specific advisory warnings surfaced by a collector (e.g. sheet-metal
 // press-tonnage adequacy). Reset each compute(); merged into the warnings box.
 let _smExtraWarnings: string[] = [];
@@ -356,25 +351,41 @@ let lastResult: PartCostResult | null = null;
 let lastInput: UniversalStackInput | null = null;
 
 /**
- * Load the organisation's ACTIVE rate library from the server (built-in defaults,
- * or the admin-uploaded company library + overrides). When present it drives all
- * calculations; if offline / not signed in, we keep the local library.
+ * Load the organisation's ACTIVE rate book from the server and make it the base — ALWAYS, whatever its source (it used
+ * to be adopted only when the source was "company"). Returns true when the book changed. Offline / not signed in: the
+ * built-in book stays, and the stamp says it was not checked against a server.
  */
-async function syncActiveRateLibrary(): Promise<void> {
+async function syncActiveRateLibrary(): Promise<boolean> {
   try {
     const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
-    if (!token) return;
+    if (!token) return false;
     const res = await fetch('/api/rate-library/active', { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return;
-    const data = await res.json() as { library?: RateLibrary; source?: 'builtin' | 'company' };
-    // Only override the local library when the organisation has COMPANY rates
-    // active — company policy wins. When the server is on built-in defaults we
-    // keep the user's local library so their manual rate edits aren't discarded.
-    if (data.source === 'company' && data.library && Array.isArray(data.library.materials) && data.library.materials.length) {
-      _baseLibrary = recomputeMachineRates(data.library);
-      _rebuildActiveLibrary();
-    }
-  } catch { /* offline / not authed — keep the local library */ }
+    if (!res.ok) return false;
+    const adopted = adoptServerBook(await res.json());
+    if (!adopted) return false;
+    const changed = adopted.info.fingerprint !== _serverBook?.fingerprint;
+    _serverBook = adopted.info;
+    _baseLibrary = recomputeMachineRates(adopted.library);
+    _rebuildActiveLibrary();
+    return changed;
+  } catch { return false; }   // offline / not authed — keep the book we have
+}
+
+/**
+ * An open tab follows a source switch, reset or override made elsewhere: on focus it asks the server for the book's
+ * fingerprint and re-fetches the book only when it moved. The result on screen keeps the stamp of the book it was
+ * costed on; the toast says to recalculate.
+ */
+async function recheckServerBook(): Promise<void> {
+  if (!_serverBook) return;
+  const fp = await fetchServerBookFingerprint(authHeader());
+  if (!fp || fp === _serverBook.fingerprint) return;
+  const before = _serverBook.fingerprint;
+  if (await syncActiveRateLibrary()) {
+    populateSelects();
+    showToast(`The company rate book changed (book ${shortPrint(before)} → ${shortPrint(_serverBook.fingerprint)}: ${_serverBook.label}). `
+      + 'New costings use it — recalculate (and Get cost again on CAD to COST) to re-cost the part on screen.', 'info');
+  }
 }
 let lastLCResult: LearningCurveResult | null = null;
 let activeCommodity: CommodityType = 'machining';
@@ -2921,6 +2932,7 @@ function _applyAgentActionAndCompute(): void {
       const validation = validateStackInput(input, library);
       const result = computeUniversalStack(input, library);
       lastResult = result;
+      _resultBook = _serverBook;
       lastInput = input;
       showResultsArea();
       renderBreakdown(result);
@@ -13201,7 +13213,7 @@ function collectSheetMetalInput(): UniversalStackInput {
       partWeightKg: num('sm-net-wt'),
       stressReliefAnneal: sel('sm-lam-anneal') === 'yes',
       reCoat: sel('sm-lam-coat') === 'yes',
-      annealEnergyPricePerKwh: library.energy[0].electricityPerKwh,
+      annealEnergyPricePerKwh: bookEnergyTariff(library).electricityPerKwh,   // by id, never the first row
     });
     extraConsumablesPerPart = fin.totalPerPart;
     _smExtraWarnings.push(
@@ -13292,7 +13304,7 @@ function collectSheetMetalInput(): UniversalStackInput {
 
   if (hotStamping) {
     _smExtraWarnings.push(
-      `Hot stamping: austenitising-furnace energy costed at ${num('sm-hs-energy') || 0.30} kWh/kg × blank × £${library.energy?.[0]?.electricityPerKwh ?? 0.23}/kWh; ` +
+      `Hot stamping: austenitising-furnace energy costed at ${num('sm-hs-energy') || 0.30} kWh/kg × blank × £${bookEnergyTariff(library).electricityPerKwh}/kWh; ` +
       `press cycle set by ${num('sm-hs-dwell') || 8}s quench dwell (not SPM).`
     );
   }
@@ -15413,6 +15425,7 @@ function compute(): void {
     }
 
     lastResult = result;
+    _resultBook = _serverBook;
     lastInput = input;
     // The part as it would be costed with each comparison country SELECTED — computed
     // now, from this form, so the table and the PDF show the same rows (country-recost.ts).
@@ -20447,9 +20460,7 @@ function renderSavedAssemblies(): void {
 
 // ─── Rate Library Editor ──────────────────────────────────────────────────────
 
-/** Rate-library cells that are money (shown in the display currency, stored in £). */
-const MONEY_RATE_FIELDS = new Set(['pricePerKg', 'scrapRecoveryPricePerKg', 'annualDepreciation', 'maintenance', 'energy', 'fullyLoadedRatePerHr']);
-/** A £ value in the display currency, for an editable cell. */
+/** A £ value in the display currency, for a rate-table cell (read only — rate-book-sync.ts). */
 function _inCur(gbp: number, dp = 4): number {
   return Math.round(gbp * (_displayFxRate || 1) * 10 ** dp) / 10 ** dp;
 }
@@ -20463,13 +20474,14 @@ function renderRateLibraryTable(): void {
   const c = el('rate-library-content');
   c.innerHTML = `
     <div id="company-rate-admin" style="margin-bottom:16px"></div>
+    <p class="rate-readonly-note" style="font-size:0.78rem;color:var(--text-muted,#636B7A);margin:0 0 12px">${escHtml(readOnlyRateNote(_serverBook))}</p>
     <div class="panel-title" style="margin-bottom:8px">Materials</div>
     <table class="breakdown-table" style="margin-bottom:16px;font-size:0.76rem">
       <thead><tr><th>ID</th><th>Grade</th><th>${_displayCurrency}/kg</th><th>Scrap ${_displayCurrency}/kg</th><th>Region</th><th>Conf.</th></tr></thead>
       <tbody>${library.materials.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.grade}</td>
-        <td><input type="number" step="0.01" value="${_inCur(m.pricePerKg)}" data-update="material.${m.id}.pricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="0.01" value="${_inCur(m.scrapRecoveryPricePerKg)}" data-update="material.${m.id}.scrapRecoveryPricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td>${_inCur(m.pricePerKg)}</td>
+        <td>${_inCur(m.scrapRecoveryPricePerKg)}</td>
         <td>${m.region}</td><td><span class="badge ${m.confidence}">${m.confidence}</span></td>
       </tr>`).join('')}</tbody>
     </table>
@@ -20479,11 +20491,11 @@ function renderRateLibraryTable(): void {
       <tbody>${library.machines.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.machineClass}</td>
         <td style="font-weight:700">${_currFmt(m.computedRatePerHr)}</td>
-        <td><input type="number" step="100" value="${_inCur(m.buildup.annualDepreciation, 0)}" data-update="machine.${m.id}.annualDepreciation" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="100" value="${_inCur(m.buildup.maintenance, 0)}" data-update="machine.${m.id}.maintenance" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="100" value="${_inCur(m.buildup.energy, 0)}" data-update="machine.${m.id}.energy" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="100" value="${m.buildup.annualAvailableHours}" data-update="machine.${m.id}.annualAvailableHours" style="width:55px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="0.01" max="1" value="${m.buildup.machineUtilization}" data-update="machine.${m.id}.machineUtilization" style="width:50px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td>${_inCur(m.buildup.annualDepreciation, 0)}</td>
+        <td>${_inCur(m.buildup.maintenance, 0)}</td>
+        <td>${_inCur(m.buildup.energy, 0)}</td>
+        <td>${m.buildup.annualAvailableHours}</td>
+        <td>${m.buildup.machineUtilization}</td>
       </tr>`).join('')}</tbody>
     </table>
     <div class="panel-title" style="margin-bottom:8px">Labour Rates</div>
@@ -20491,7 +20503,7 @@ function renderRateLibraryTable(): void {
       <thead><tr><th>ID</th><th>Region</th><th>Skill</th><th>${_displayCurrency}/hr</th><th>Conf.</th></tr></thead>
       <tbody>${labourRoles(library).map(l => `<tr>
         <td style="font-family:monospace">${l.id}</td><td>${l.region}</td><td>${l.skillLevel}</td>
-        <td><input type="number" step="0.5" value="${_inCur(l.fullyLoadedRatePerHr)}" data-update="labour.${l.id}.fullyLoadedRatePerHr" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td>${_inCur(l.fullyLoadedRatePerHr)}</td>
         <td><span class="badge ${l.confidence}">${l.confidence}</span></td>
       </tr>`).join('')}</tbody>
     </table>`;
@@ -20507,7 +20519,7 @@ function authHeader(): Record<string, string> {
 async function renderCompanyRateAdmin(): Promise<void> {
   const host = document.getElementById('company-rate-admin');
   if (!host) return;
-  let status: { source?: string; hasCompany?: boolean; overrideCount?: number; isAdmin?: boolean } = {};
+  let status: { source?: string; hasCompany?: boolean; overrideCount?: number; isAdmin?: boolean; label?: string; fingerprint?: string } = {};
   try {
     const res = await fetch('/api/rate-library/status', { headers: authHeader() });
     if (res.ok) status = await res.json();
@@ -20536,6 +20548,7 @@ async function renderCompanyRateAdmin(): Promise<void> {
         <span style="font-weight:700;color:#1F2A44"><svg class="ic"><use href="#i-factory"/></svg> Company Rate Library</span>${badge}
         ${status.hasCompany ? '<span style="font-size:0.72rem;color:#636B7A">company file uploaded</span>' : '<span style="font-size:0.72rem;color:#636B7A">no company file yet</span>'}
         ${status.overrideCount ? `<span style="font-size:0.72rem;color:#636B7A">· ${status.overrideCount} cell override(s)</span>` : ''}
+        ${status.fingerprint ? `<span style="font-size:0.72rem;color:#636B7A">· ${escHtml(status.label ?? '')} · book ${escHtml(shortPrint(status.fingerprint))}</span>` : ''}
       </div>
       ${admin}
     </div>`;
@@ -20558,7 +20571,11 @@ async function renderCompanyRateAdmin(): Promise<void> {
       const res = await fetch('/api/rate-library/upload', { method: 'POST', headers: authHeader(), body: fd });
       const data = await res.json();
       if (!res.ok) { msg('Rejected: ' + ((data.errors ?? [data.error]).slice(0, 3).join('; ')), false); return; }
-      msg(`Uploaded and activated (${Object.values(data.counts ?? {}).reduce((a: number, b) => a + Number(b), 0)} rows).`);
+      // What the upload did, row by row: only changed and new rows are kept; the rest stay built-in (R1).
+      const cleared = (data.overridesCleared ?? []).length;
+      msg(`Uploaded and activated: ${(data.changed ?? []).length} changed, ${(data.added ?? []).length} added, every other row left built-in`
+        + `${cleared ? `; ${cleared} cell override${cleared === 1 ? '' : 's'} cleared` : ''} (book ${shortPrint(String(data.fingerprint ?? ''))}).`
+        + `${(data.warnings ?? []).length ? ` Check: ${(data.warnings as string[]).slice(0, 3).join(' ')}` : ''}`);
       await syncActiveRateLibrary(); renderRateLibraryTable();
     } catch { msg('Upload failed.', false); }
   });
@@ -20579,47 +20596,8 @@ async function renderCompanyRateAdmin(): Promise<void> {
   });
 }
 
-function applyRateLibraryEdits(): void {
-  el('rate-library-content').querySelectorAll<HTMLInputElement>('input[data-update]').forEach(input => {
-    const [type, id, field] = input.dataset.update!.split('.');
-    const typed = parseFloat(input.value);
-    if (isNaN(typed)) return;
-    // The table shows money in the display currency (renderRateLibraryTable) —
-    // store it in £. Hours and utilisation are not money.
-    const value = MONEY_RATE_FIELDS.has(field) ? typed / (_displayFxRate || 1) : typed;
-    if (type === 'material') {
-      const m = library.materials.find(x => x.id === id);
-      if (m) (m as unknown as Record<string, unknown>)[field] = value;
-    } else if (type === 'machine') {
-      const m = library.machines.find(x => x.id === id);
-      if (m) (m.buildup as unknown as Record<string, unknown>)[field] = value;
-    } else if (type === 'labour') {
-      const l = library.labour.find(x => x.id === id);
-      if (l) (l as unknown as Record<string, unknown>)[field] = value;
-    }
-  });
-  library = recomputeMachineRates(library);
-  setActiveRates(library);
-  if (_mfgRegion === 'UK') {
-    _baseLibrary = library;
-    saveLibraryToStorage(_baseLibrary);
-  } else {
-    // The saved book is the UK basis every country is rebuilt from. Writing this
-    // country's rebuilt book over it compounded the next country on top of this one.
-    showToast(`Rate edits apply to this ${REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion} costing only — switch to the UK to change the saved base rates.`, 'info');
-  }
-  populateSelects();
-  el('rate-modal').style.display = 'none';
-}
-
-function resetRateLibrary(): void {
-  if (!confirm('Reset rate library to factory defaults?')) return;
-  _baseLibrary = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
-  saveLibraryToStorage(_baseLibrary);
-  _rebuildActiveLibrary();   // still in the selected country — a reset used to drop to UK rates under a China label
-  populateSelects();
-  el('rate-modal').style.display = 'none';
-}
+// Per-browser rate edits (Apply Changes / Reset to Defaults) were removed (rates flow review R1, Nov 2026): the screen
+// costs on the server's book only. An administrator changes rates for everyone, through the upload, and it is audited.
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
@@ -20635,6 +20613,9 @@ async function init(): Promise<void> {
   // Load the organisation's active rate library (company rates when an admin has
   // uploaded them) so calculations use approved numbers, not just local defaults.
   await syncActiveRateLibrary();
+  // An open tab follows the server's book: a switch, reset or override made elsewhere is picked up on focus (R1).
+  window.addEventListener('focus', () => { void recheckServerBook(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void recheckServerBook(); });
 
   // M11: Surface IndexedDB failures to the user
   setScenarioErrorHandler(msg => showToast(msg, 'warning'));
@@ -20927,8 +20908,6 @@ async function init(): Promise<void> {
   el('rates-btn')?.addEventListener('click', openRateLibrary);
 
   // Rate modal
-  el('apply-rates-btn')?.addEventListener('click', applyRateLibraryEdits);
-  el('reset-rates-btn')?.addEventListener('click', resetRateLibrary);
   el('close-modal-btn')?.addEventListener('click', () => { el('rate-modal').style.display = 'none'; });
   el('rate-modal')?.addEventListener('click', e => { if (e.target === el('rate-modal')) el('rate-modal').style.display = 'none'; });
 
@@ -21677,7 +21656,8 @@ function currentCADStamp(): string {
   // The country of the ACTIVE book (the one `library.version` names) — the picker could lag it mid-switch.
   const sel = document.getElementById('costing-country-sel') as HTMLSelectElement | null;
   const country = REGIONAL_DATA[_mfgRegion]?.name ?? (sel?.selectedOptions[0]?.textContent?.trim() || 'UK');
-  return cadStamp({ rateBook: `${country} rate book v${library.version}`, rules: _cadVersions?.rules ?? null,
+  // Which book: the label and the fingerprint of the server book the result was costed on (rate-book-sync.ts, R1).
+  return cadStamp({ rateBook: rateBookStampLabel(country, library.version, _resultBook ?? _serverBook), rules: _cadVersions?.rules ?? null,
     kernel: _cadVersions?.kernel ?? null, date: new Date() });
 }
 

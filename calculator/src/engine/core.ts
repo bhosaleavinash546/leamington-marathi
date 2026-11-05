@@ -1,3 +1,4 @@
+import { bookEnergyTariff } from './book-tariff.js';
 import type {
   UniversalStackInput,
   PartCostResult,
@@ -207,8 +208,7 @@ export function computeUniversalStack(
   // Process energy, at the library's tariff (a regional library carries its region's).
   const en = input.rawMaterial.energyKwh;
   if (en && ((en.gas ?? 0) > 0 || (en.electricity ?? 0) > 0)) {
-    const tariff = library.energy[0];
-    if (!tariff) throw new Error('energyKwh given but the rate library has no energy tariff');
+    const tariff = bookEnergyTariff(library);   // by id (energy-uk / energy-<cc>), never the first row
     for (const [kind, kwh, price] of [['gas', en.gas ?? 0, tariff.gasPerKwh], ['electricity', en.electricity ?? 0, tariff.electricityPerKwh]] as const) {
       if (kwh <= 0) continue;
       rawMaterialCost += kwh * price;

@@ -15,7 +15,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL, kernelStatus } from '../utils/geometry-bridge.js';
 import { measureBlankDxf } from '../utils/dxf-blank.js';
-import { blankHashOf, putBlank, getBlank, getBlankDxf } from '../utils/geometry-store.js';
+import { blankHashOf, putBlank, getBlank, getBlankDxf, BLANK_GONE } from '../utils/geometry-store.js';
 import { developBlankFromCad } from '../services/blank-development.js';
 import type { MaterialFamily } from '../../src/engine/material-family.js';
 import { identifyPart, IDENTIFY_MODEL, IDENTIFY_DEEP_MODEL, type Identification, type IdentifyInput } from '../utils/cad-identify.js';
@@ -38,7 +38,7 @@ import { inferCommodity, looksLikeGear, COMMODITY_DECISION_ID } from '../../src/
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
-import { regionOf, rateBookForRegion } from '../services/rate-book.js';
+import { regionOf, rateBookForRegion, rateBookPrint } from '../services/rate-book.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
 import { applyRuleDecisions, toRuleFields, suppressAIForUndecided, type AISuppression } from '../../src/engine/cost-input-rules/apply.js';
@@ -1071,6 +1071,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     if (Array.isArray(rv)) renderViews = rv.filter((x): x is string => typeof x === 'string' && x.length > 0 && x.length < 800_000).slice(0, 4);
   } catch { /* views are an enhancement — ignore malformed input */ }
 
+  const bookPrint = rateBookPrint(userOverrides.region);
   const cacheKey = cadCache.buildKey([
     Buffer.from(`${uploadHash}:${unitScale}`),
     Buffer.from(partPhotoBase64),
@@ -1080,7 +1081,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       // Inputs that change the result and were missing (360 review, Oct 2026): the file NAME (it carries
       // material / part-name evidence), the FASTBLANK DXF, and the active company rate book (an admin's
       // upload was not reflected until the cache expired).
-      filename: originalname, blankHash, rateBook: (() => { const b = resolveActiveRateBook(); return `${b.version}|${b.lastModified}`; })() })),
+      // The RESOLVED book's fingerprint (company merge + cell overrides + the country rebuild) — `version|lastModified`
+      // missed a cell override, so an override replayed the old book's rule £ (rates flow review R1, Nov 2026).
+      filename: originalname, blankHash, rateBook: bookPrint.key })),
   ]);
   // `noCache` re-samples the model instead of serving the stored answer. Needed
   // for any A/B or variance measurement: without it a second run of the same
@@ -1273,8 +1276,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
-    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
-    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers, and the
+    // resolved rate book's fingerprint (UK basis — /api/rate-library/versions/:id — and the country book it was rebuilt to).
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV, rateBook: bookPrint.base, rateBookRegional: bookPrint.regional },
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -1406,8 +1410,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
-    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
-    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers, and the
+    // resolved rate book's fingerprint (UK basis — /api/rate-library/versions/:id — and the country book it was rebuilt to).
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV, rateBook: bookPrint.base, rateBookRegional: bookPrint.regional },
     success: true,
     analysis,
     sanityWarnings,
@@ -2872,7 +2877,8 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
   const blankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
   if (blankHash) {
     const b = getBlank<NonNullable<OCCTGeometry['blank']>>(blankHash);
-    if (b) geo = { ...geo, blank: b };
+    if (!b) { res.status(409).json({ error: BLANK_GONE, code: 'BLANK_GONE' }); return; }   // never cost without it silently
+    geo = { ...geo, blank: b };
   }
   const current = typeof req.body?.current === 'string' ? req.body.current.trim() : '';
   if (!specForCommodity(current)) {
@@ -2926,7 +2932,8 @@ router.post('/option-costs', requireAuth, optionCostsLimiter, asyncRoute(async (
   const blankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
   if (blankHash) {
     const b = getBlank<NonNullable<OCCTGeometry['blank']>>(blankHash);
-    if (b) geo = { ...geo, blank: b };
+    if (!b) { res.status(409).json({ error: BLANK_GONE, code: 'BLANK_GONE' }); return; }   // never cost without it silently
+    geo = { ...geo, blank: b };
   }
   const current = typeof req.body?.current === 'string' ? req.body.current.trim() : '';
   const rawQs: unknown[] = Array.isArray(req.body?.questions) ? req.body.questions : [];
@@ -2996,7 +3003,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const reBlankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
   if (reBlankHash) {
     const b = getBlank<NonNullable<OCCTGeometry['blank']>>(reBlankHash);
-    if (b) geo = { ...geo, blank: b };
+    if (!b) { res.status(409).json({ error: BLANK_GONE, code: 'BLANK_GONE' }); return; }   // never cost without it silently
+    geo = { ...geo, blank: b };
   }
   const unitsDecision = unitsDecisionFor(geo);
 
@@ -3042,10 +3050,13 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   }
 
   const deepAnalysis = isDeepReq(req);
+  // Keyed on the RESOLVED book (company merge + overrides + country): this key carried no book at all, so after an
+  // upload, switch or override every answered step-2/3 re-run replayed the old book's rule £ (rates flow review R1).
+  const bookPrint = rateBookPrint(userOverrides.region);
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV, rateBook: bookPrint.key })),
   ]);
   // `noCache` re-samples the model instead of serving the stored answer. Needed
   // for any A/B or variance measurement: without it a second run of the same
@@ -3191,8 +3202,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
-    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
-    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers, and the
+    // resolved rate book's fingerprint (UK basis — /api/rate-library/versions/:id — and the country book it was rebuilt to).
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV, rateBook: bookPrint.base, rateBookRegional: bookPrint.regional },
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -3307,8 +3319,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
-    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
-    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers, and the
+    // resolved rate book's fingerprint (UK basis — /api/rate-library/versions/:id — and the country book it was rebuilt to).
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV, rateBook: bookPrint.base, rateBookRegional: bookPrint.regional },
     success: true,
     analysis,
     sanityWarnings,

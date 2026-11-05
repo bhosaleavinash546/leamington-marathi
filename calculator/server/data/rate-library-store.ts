@@ -183,3 +183,64 @@ export function setPCBCountryOverrides(db: Database, overrides: Record<string, u
 export function clearPCBCountryOverrides(db: Database): void {
   db.prepare('DELETE FROM app_settings WHERE key = ?').run(PCB_COUNTRY_OV_KEY);
 }
+
+// ── Audit trail (rates flow review R1, Nov 2026) ─────────────────────────────
+/**
+ * Who changed the active rate book, when, and what it was before and after. The version table cannot be the audit:
+ * identical content collapses onto one row, so switching back to an earlier book recorded nothing, and an override's
+ * history was lost on upsert. Every upload, source switch, cell override (set / clear), reset and PCB country override
+ * writes one row here, with the resolved book's fingerprint before and after and the row counts.
+ */
+export interface RateAuditEntry {
+  id: number;
+  at: string;
+  by: string;
+  /** upload | source | override-set | override-clear | reset | pcb-overrides | pcb-overrides-clear */
+  action: string;
+  detail: string;
+  fingerprintBefore: string;
+  fingerprintAfter: string;
+  /** Row counts: changed / added / left built-in, overrides cleared / in force, … */
+  rows: Record<string, unknown>;
+}
+
+const _auditReady = new WeakSet<object>();
+function ensureAuditTable(db: Database): void {
+  if (_auditReady.has(db)) return;
+  db.exec(`CREATE TABLE IF NOT EXISTS rate_library_audit (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    at          TEXT NOT NULL,
+    by          TEXT NOT NULL,
+    action      TEXT NOT NULL,
+    detail      TEXT NOT NULL DEFAULT '',
+    fp_before   TEXT NOT NULL DEFAULT '',
+    fp_after    TEXT NOT NULL DEFAULT '',
+    rows        TEXT NOT NULL DEFAULT '{}'
+  )`);
+  _auditReady.add(db);
+}
+
+export function recordRateAudit(db: Database, e: Omit<RateAuditEntry, 'id'>): void {
+  ensureAuditTable(db);
+  db.prepare(`INSERT INTO rate_library_audit (at, by, action, detail, fp_before, fp_after, rows)
+              VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    .run(e.at, e.by, e.action, e.detail, e.fingerprintBefore, e.fingerprintAfter, JSON.stringify(e.rows ?? {}));
+}
+
+/** Newest first. */
+export function listRateAudit(db: Database, limit = 500): RateAuditEntry[] {
+  ensureAuditTable(db);
+  return (db.prepare(`SELECT id, at, by, action, detail, fp_before, fp_after, rows
+                        FROM rate_library_audit ORDER BY id DESC LIMIT ?`).all(Math.max(1, Math.min(limit, 5000))) as Array<{
+    id: number; at: string; by: string; action: string; detail: string; fp_before: string; fp_after: string; rows: string;
+  }>).map(r => ({ id: r.id, at: r.at, by: r.by, action: r.action, detail: r.detail,
+    fingerprintBefore: r.fp_before, fingerprintAfter: r.fp_after,
+    rows: (() => { try { return JSON.parse(r.rows) as Record<string, unknown>; } catch { return {}; } })() }));
+}
+
+/** Every override with who set it and when — the upload reply lists the ones it clears. */
+export function getOverridesDetailed(db: Database): Array<RateOverride & { updatedAt: string; updatedBy: string }> {
+  const rows = db.prepare('SELECT tbl, row_id, field, value, updated_at, updated_by FROM rate_overrides').all() as
+    Array<{ tbl: string; row_id: string; field: string; value: number; updated_at: string; updated_by: string }>;
+  return rows.map(r => ({ table: r.tbl as RateTable, id: r.row_id, field: r.field, value: r.value, updatedAt: r.updated_at, updatedBy: r.updated_by }));
+}

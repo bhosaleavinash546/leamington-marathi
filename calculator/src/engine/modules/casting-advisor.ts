@@ -5,7 +5,7 @@
  * indicative and override with real quotes via the admin Rate Library.
  */
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor } from '../regional-services.js';
-import { activeLabourRate, activeRates, gbpFigure } from '../rate-context.js';
+import { activeLabourRate, activeElectricityPerKwh, gbpFigure } from '../rate-context.js';
 import { alHeatTreatStation, alHeatTreatGbpPerKg } from '../al-heat-treat.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
@@ -685,7 +685,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
     // the furnace capital at par — al-heat-treat.ts); stress relief: the UK £/kg × the heat-treat service factor.
     const st = inputs.heatTreat === 't6' || inputs.heatTreat === 't5' ? alHeatTreatStation(inputs.heatTreat === 't6' ? 'T6' : 'T5') : null;
     const unit = st
-      ? Math.round(alHeatTreatGbpPerKg(st, activeRates().energy?.[0]?.electricityPerKwh ?? 0, activeLabourRate(st.labourId)) * 10_000) / 10_000
+      ? Math.round(alHeatTreatGbpPerKg(st, activeElectricityPerKwh(), activeLabourRate(st.labourId)) * 10_000) / 10_000
       : Math.round(HEAT_TREAT_COST_PER_KG['stress-relieve'] * heatTreatServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
     adders.push({
       label: `Heat treat (${inputs.heatTreat.toUpperCase()})`,

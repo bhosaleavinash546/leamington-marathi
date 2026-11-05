@@ -6,10 +6,29 @@ import {
   BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, alScrapGbpPerKg, alBilletId,
 } from './al-extrusion-data.js';
 
-export function computeMachineRateFromBuildup(b: MachineRateBuildup): number {
+export function computeMachineRateFromBuildup(b: MachineRateBuildup, energyFactor = 1): number {
   const totalAnnual =
-    b.annualDepreciation + b.maintenance + b.energy + b.floorSpace + b.indirectSupport + b.financeCost;
+    b.annualDepreciation + b.maintenance + b.energy * energyFactor + b.floorSpace + b.indirectSupport + b.financeCost;
   return totalAnnual / (b.annualAvailableHours * b.machineUtilization);
+}
+
+/**
+ * The factor the electricity inside a UK-basis machine £/h moves by: the book's own tariff (`energy-uk`) over the tariff
+ * the build-ups' energy £ is stated at (`UK_ELECTRICITY_GBP_PER_KWH`, £0.182). A build-up holds its energy as £ a year
+ * at that basis, i.e. kWh a year = energy £ ÷ £0.182; the £/h prices those kWh at the RESOLVED book's tariff (rates flow
+ * R1, Nov 2026 — an Energy-sheet change reached module kWh only, and the autoclave's £5.12 of machine electricity a part
+ * did not move). Exactly 1 on the built-in book (0.182 / 0.182), so no default cost moves. A country book (`regional`)
+ * is 1: `buildRegionalLibrary` already re-tariffs its machines' energy at that country's own tariff.
+ */
+export function machineEnergyFactor(lib: Pick<RateLibrary, 'energy' | 'regional'>): number {
+  if (lib.regional) return 1;
+  const t = lib.energy.find(e => e.id === 'energy-uk')?.electricityPerKwh;
+  return t && t > 0 ? t / UK_ELECTRICITY_GBP_PER_KWH : 1;
+}
+
+/** A UK-basis build-up's electricity in kWh a year (energy £ at the £0.182 basis ÷ £0.182). */
+export function machineEnergyKwhPerYear(b: MachineRateBuildup): number {
+  return b.energy / UK_ELECTRICITY_GBP_PER_KWH;
 }
 
 function makeMachine(
@@ -2088,11 +2107,13 @@ export function saveLibraryToStorage(lib: RateLibrary): void {
 }
 
 export function recomputeMachineRates(lib: RateLibrary): RateLibrary {
+  // The machine electricity at the book's own tariff (machineEnergyFactor — 1 on the built-in and on a country book).
+  const f = machineEnergyFactor(lib);
   return {
     ...lib,
     machines: lib.machines.map(m => ({
       ...m,
-      computedRatePerHr: computeMachineRateFromBuildup(m.buildup),
+      computedRatePerHr: computeMachineRateFromBuildup(m.buildup, f),
     })),
   };
 }

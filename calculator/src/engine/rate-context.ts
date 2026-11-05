@@ -18,6 +18,7 @@
  */
 import type { RateLibrary } from './types.js';
 import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
+import { bookEnergyTariff } from './book-tariff.js';
 
 let active: RateLibrary | null = null;
 
@@ -39,23 +40,26 @@ export function withRates<T>(lib: RateLibrary | null | undefined, fn: () => T): 
   try { return fn(); } finally { active = prev; }
 }
 
-/** Electricity £/kWh of the active book (its first tariff — a regional library has exactly one). */
+/** Electricity £/kWh of the active book — its own tariff by id (`energy-uk` / `energy-<cc>`), never the first row. */
 export function activeElectricityPerKwh(): number {
-  const lib = activeRates();
-  return (lib.energy[0] ?? DEFAULT_RATE_LIBRARY.energy[0]).electricityPerKwh;
+  return bookEnergyTariff(activeRates()).electricityPerKwh;
 }
 
-/** A machine's £/hr in the active book. */
+/**
+ * A machine's £/hr in the active book. A missing id throws exactly as the stack does (core.ts) — it used to fall back
+ * silently to the built-in UK row, so one costing priced a rule item at a UK rate the stack then refused (R1, Nov 2026).
+ * A company book is merged by id over the built-in, so a built-in id cannot go missing from it.
+ */
 export function activeMachineRate(id: string): number {
-  const m = activeRates().machines.find(x => x.id === id) ?? DEFAULT_RATE_LIBRARY.machines.find(x => x.id === id);
-  if (!m) throw new Error(`machine ${id} is not in the rate library`);
+  const m = activeRates().machines.find(x => x.id === id);
+  if (!m) throw new Error(`Machine '${id}' not found in rate library`);
   return m.computedRatePerHr;
 }
 
-/** A labour grade's £/hr in the active book. */
+/** A labour grade's £/hr in the active book — a missing id throws, as the stack does (no silent UK fallback). */
 export function activeLabourRate(id: string): number {
-  const l = activeRates().labour.find(x => x.id === id) ?? DEFAULT_RATE_LIBRARY.labour.find(x => x.id === id);
-  if (!l) throw new Error(`labour ${id} is not in the rate library`);
+  const l = activeRates().labour.find(x => x.id === id);
+  if (!l) throw new Error(`Labour rate '${id}' not found in rate library`);
   return l.fullyLoadedRatePerHr;
 }
 

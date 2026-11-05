@@ -63,7 +63,7 @@ const book = DC ? DC.book : recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const machineRate = (id: string) => (book.machines.find(m => m.id === id) as { computedRatePerHr: number }).computedRatePerHr;
 const labourRate = (id: string) => book.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
 const material = (id: string) => book.materials.find(m => m.id === id)!;
-const tariff = book.energy[0];
+const tariff = book.energy.find(e => e.id === `energy-${(book.regional?.code ?? 'uk').toLowerCase()}`)!;   // by id (R1 Nov 2026: the engine never takes the first row)
 
 // ── The stated constants, as each basis line prints them (the register in casting.md says where each lives) ──
 const ANNUAL = DC?.annual ?? 50_000, YEARS = DC?.years ?? 5, AMORT = ANNUAL * YEARS;

@@ -919,6 +919,19 @@ what is true** — nothing here has been compared with a price JLR paid.
   it, headless takes `BulkRunOptions.deliveryTerms`, compare-routes sends it, both reports print `deliveryTermsLine`.
   `tests/delivery-terms.test.ts`. Country provenance (where every £ of a costing's rates comes from: own / held capital /
   material factor / derived service factor / held multiplier / margin): `scripts/country-trace/provenance.ts`.
+- Company rate book flow R1 (5 Nov 2026, `tests/rates-flow-r1*.test.ts`): the company book is MERGED BY ID over the
+  built-in (`mergeCompanyRows` in rate-library-merge.ts) — an upload stores only rows whose VALUES differ from the
+  built-in plus new ids (`companyDelta`); unchanged rows keep following refreshes. Precedence: cell override > company
+  row > built-in; an upload CLEARS the overrides and lists them. The template is UK base rows only + an Instructions
+  sheet + a `currency` column (GBP); the parser refuses zero / bounds / "80 → use 0.80" / text / duplicates / unknown
+  ids / missing sheets or columns / a changed figure > 10× or < 1/10 of the built-in, naming sheet, row and column.
+  Every rate-dependent cache keys on the RESOLVED book fingerprint (`rateBookPrint` in services/rate-book.ts: /analyze,
+  /reanalyze, agent prompt + grounding; PCB on its country overrides). The UK tariff is `bookEnergyTariff` (by id, never
+  `energy[0]`); a UK machine's build-up energy £ is kWh at £0.182 re-priced at the book's energy-uk
+  (`machineEnergyFactor`, 1 on the built-in). `activeMachineRate` / `activeLabourRate` throw on a missing id. The screen
+  always adopts `/active`, re-checks `/status` on focus, never reads a browser-local copy; the rate table is read only.
+  The stamp prints the book's label + short fingerprint (`rate-book-sync.ts`). Audit: `GET /api/rate-library/audit`.
+  Developed blanks persist in SQLite; a named blank that is gone is refused (409 `BLANK_GONE`), never costed around.
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds

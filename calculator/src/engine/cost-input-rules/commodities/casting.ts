@@ -24,6 +24,7 @@ const CORE_BASIS: CountryBasis = { globalShare: 0.3, rest: 'process' };
 /** Investment wax pattern and ceramic shell: ~35% wax and slurry materials (traded), the rest dipping / injection labour. ESTIMATE split. */
 const INVEST_BASIS: CountryBasis = { globalShare: 0.35, rest: 'process' };
 import { activeLabourRate, activeRates } from '../../rate-context.js';
+import { bookEnergyTariff } from '../../book-tariff.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY, SAND_YIELD_BASIS,
   FETTLING_MINUTES, FETTLING_MINUTES_BASIS, FETTLING_CELL, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
@@ -1271,7 +1272,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (ht.t === 'F') return decided('casting.heatTreatment', 'F', 'engineer', 'answered: F — as cast, no heat treatment', 1, [AL_HEAT_TREAT_DECISION_ID]);
         const st = alHeatTreatStation(ht.t);
         const book = ctx.rates ?? activeRates();
-        const tariff = book.energy?.[0]?.electricityPerKwh ?? 0;
+        const tariff = bookEnergyTariff(book).electricityPerKwh;   // by id, never the first row
         const lab = activeLabourRate(st.labourId);
         const perKg = alHeatTreatGbpPerKg(st, tariff, lab);
         const mega = r.advice.process === 'megacasting' && ht.t === 'T6' ? ' (a megacasting\'s T7, costed as the T6 station)' : '';

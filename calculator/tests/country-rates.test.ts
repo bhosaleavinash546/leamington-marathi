@@ -307,8 +307,8 @@ describe('8. root cause: ONE country source for every country (Oct 2026, third p
     expect(main).not.toMatch(/£\$\{\w+\.computedRatePerHr\.toFixed/);               // machine drop-downs in display currency
     expect(main).not.toMatch(/Packaging \(\$\{sym\}\/part\)/);                        // the £ input is labelled £
     expect(main).toContain('_targetPriceGbp()');                                       // a ¥ target is compared in £
-    expect(main).toMatch(/value="\$\{_inCur\(m\.pricePerKg\)\}"/);                     // rate table in the display currency…
-    expect(main).toContain('typed / (_displayFxRate || 1)');                          // …and saved back in £
+    expect(main).toMatch(/<td>\$\{_inCur\(m\.pricePerKg\)\}<\/td>/);                   // rate table in the display currency
+    // (read only since rates flow R1, Nov 2026 — the per-browser edits that were "saved back in £" are removed)
     expect(main).toContain('labourRoles(library).map');                               // labour drop-down: roles only
     expect(main).toContain('syncPcbPickers(region)');                                 // PCB pickers follow the country
   });

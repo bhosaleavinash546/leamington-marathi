@@ -265,7 +265,7 @@ async function main(): Promise<void> {
       await ctx2.close();
     }
 
-    // ── A browser holding an older saved rate library gets the new one ─────
+    // ── A browser holding an older saved rate library costs on the server's book ─────
     // (It used to keep the June copy for ever and warn "106 days old".)
     {
       const ctx = await browser.newContext({ serviceWorkers: 'block' });
@@ -282,11 +282,13 @@ async function main(): Promise<void> {
         backup: !!localStorage.getItem('shouldCostRateLibrary.backup-2.1.0'),
         text: document.body.innerText,
       }));
-      if (st.lib === '2026-06-16') fail('old saved rate library (16 Jun 2026) still in use after the built-in library was refreshed');
+      // A browser-local copy is never used again (rates flow review R1): it is moved to a backup key and the screen costs
+      // on the server's book.
+      if (st.lib) fail('old saved rate library is still in localStorage — a local copy must never outrank the server book');
       if (!st.backup) fail('old saved rate library was not kept as a backup');
       if (/days old \(last updated 16\/06\/2026\)/.test(st.text)) fail('stale-rates warning still shown for the June library');
-      if (!/Rates updated to library/.test(st.text)) fail('no notice that the rates were updated');
-      else log(`saved June rate library replaced by ${st.lib}, backup kept, user told`);
+      if (!/Rates now always come from the server's rate book/.test(st.text)) fail('no notice that the local rate copy was retired');
+      else log('saved June rate library retired (backup kept), user told, the server book is used');
       await ctx.close();
     }
 

@@ -638,8 +638,8 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
   headers(ws, ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3',
     'region', 'effectiveDate', 'sourceNote', 'confidence',
     'JLR code', 'rows matched', 'MATERIAL_RATE', 'MATERIAL_RECLAIM', 'scrap £/kg', 'CO2 (not used)',
-    'built-in source note', 'built-in date'],
-    [24, 26, 17, 13, 22, 15, 10, 14, 44, 12, 13, 13, 15, 17, 13, 14, 44, 14], 10);
+    'built-in source note', 'built-in date', 'currency'],
+    [24, 26, 17, 13, 22, 15, 10, 14, 44, 12, 13, 13, 15, 17, 13, 14, 44, 14, 10], 10);
   const fmt = { 3: '#,##0.0000', 4: '#,##0.0000', 5: '#,##0', 12: '#,##0.0000',
                 13: '#,##0.00', 14: '#,##0.0000', 15: '#,##0.00' };
   LIB.materials.forEach((m, i) => {
@@ -671,6 +671,8 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
              `IF(${N}=0,0,IF(Settings!$B$5="percent",${M}*${N}/100,${N}))`), 0),
       F(pick(L, K, MATL, 'A', 'G', 'C', 'D'), 0),
       m.sourceNote, m.effectiveDate,
+      // The upload requires every money row to say its currency (rates flow review R1): the card is converted to £.
+      'GBP',
     ], 10, fmt);
   });
 }
@@ -690,9 +692,9 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
     'effectiveDate', 'sourceNote', 'confidence',
     'JLR code', 'rows matched', 'DEPRECIATION', 'FLOORSPACE', 'MRO', 'INSURANCE', 'INTEREST',
     'UTILITIES', 'CONSUMABLES', 'TOTAL_MACHINE_RATE', 'elements add to', 'rebuilt £/hr − total',
-    'built-in source note', 'built-in date'],
+    'built-in source note', 'built-in date', 'currency'],
     [24, 30, 10, 18, 15, 13, 13, 17, 15, 20, 18, 14, 52, 12,
-     13, 13, 14, 13, 11, 12, 11, 12, 14, 18, 15, 18, 44, 14], 14);
+     13, 13, 14, 13, 11, 12, 11, 12, 14, 18, 15, 18, 44, 14, 10], 14);
   const fmt: Record<number, string> = { 3: '#,##0', 4: '#,##0', 5: '#,##0', 6: '#,##0', 7: '#,##0',
     8: '#,##0', 9: '#,##0', 10: '0%', 16: '#,##0.00', 17: '#,##0.00', 18: '#,##0.00', 19: '#,##0.00',
     20: '#,##0.00', 21: '#,##0.00', 22: '#,##0.00', 23: '#,##0.00', 24: '#,##0.00', 25: '#,##0.0000' };
@@ -749,6 +751,7 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
              'The six columns divided back out, less the published total. Should be nought.',
              `IF(${X}<=0,0,ROUND((D${r}+E${r}+F${r}+G${r}+H${r}+I${r})/${scale}-${X},4))`), 0),
       m.sourceNote ?? '', m.effectiveDate,
+      'GBP',
     ], 14, fmt);
   });
 }
@@ -758,8 +761,8 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
   const ws = sheet('Labour', 'output');
   headers(ws, ['id', 'region', 'skillLevel', 'fullyLoadedRatePerHr', 'effectiveDate', 'sourceNote',
     'confidence', 'JLR code', 'rows matched', 'from JLR Labour', 'from JLR Machines', 'rate used',
-    'built-in source note'],
-    [24, 12, 28, 21, 14, 46, 12, 13, 13, 17, 19, 13, 44], 7);
+    'built-in source note', 'currency'],
+    [24, 12, 28, 21, 14, 46, 12, 13, 13, 17, 19, 13, 44, 10], 7);
   const fmt = { 3: '#,##0.00', 9: '#,##0.00', 10: '#,##0.00', 11: '#,##0.00' };
   LIB.labour.forEach((l, i) => {
     const r = i + 2;
@@ -783,6 +786,7 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
              `IF(${H}="",0,IFERROR(AVERAGEIFS(${rng(MACH, 'F')},${rng(MACH, 'E')},${H},${filt(MACH, 'C', 'D')}),0))`), 0),
       F(`IF(${J}>0,${J},${K})`, 0),
       l.sourceNote,
+      'GBP',
     ], 7, fmt);
   });
 }
@@ -791,10 +795,10 @@ function writeRow(ws: ExcelJS.Worksheet, r: number, cells: Cell[], firstHelper: 
 // as values. Edit in place if they need to move.
 {
   const ws = sheet('Energy', 'output');
-  headers(ws, ['id', 'region', 'electricityPerKwh', 'gasPerKwh', 'effectiveDate', 'sourceNote', 'confidence'],
-          [24, 12, 19, 15, 14, 40, 12], 99);
+  headers(ws, ['id', 'region', 'electricityPerKwh', 'gasPerKwh', 'effectiveDate', 'sourceNote', 'confidence', 'currency'],
+          [24, 12, 19, 15, 14, 40, 12, 10], 99);
   LIB.energy.forEach((e, i) => writeRow(ws, i + 2,
-    [e.id, e.region, e.electricityPerKwh, e.gasPerKwh, e.effectiveDate, e.sourceNote, e.confidence],
+    [e.id, e.region, e.electricityPerKwh, e.gasPerKwh, e.effectiveDate, e.sourceNote, e.confidence, 'GBP'],
     99, { 2: '#,##0.0000', 3: '#,##0.0000' }));
 }
 {

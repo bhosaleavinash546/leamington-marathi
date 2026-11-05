@@ -19,6 +19,7 @@ import {
   type VolumeCurvePoint,
   type PCBCountryCostBreakdown,
   PCB_BASIS_SOURCE,
+  getActivePCBCountryOverrides,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
@@ -1961,7 +1962,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
  * run and the cache replayed the old result, ignoring the measured board.
  * v8: Oct 2026 review pricing — results priced under the old rules must not replay.
  */
-function pcbCacheKey(req: import('express').Request, files: Record<string, Express.Multer.File[]> | undefined, deep: boolean, labels: string[]): string {
+export function pcbCacheKey(req: import('express').Request, files: Record<string, Express.Multer.File[]> | undefined, deep: boolean, labels: string[]): string {
   return buildCacheKey([
     ...(files?.pcbImages ?? []).map(f => f.buffer),
     Buffer.from(JSON.stringify({
@@ -1973,6 +1974,9 @@ function pcbCacheKey(req: import('express').Request, files: Record<string, Expre
       // v10: the ASIL is checked against the parts list (pcb-asil-guard.ts).
       // v11: named imagers priced at automotive volume, their listing a reference (IMAGER_RE, 9 Oct 2026).
       deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 11,
+      // The admin's PCB country-rate overrides price Stage 4 — an edited country rate replayed the old result for 30
+      // days (rates flow review R1, Nov 2026).
+      pcbCountryOverrides: getActivePCBCountryOverrides(),
     })),
     ...(files?.bomFile ?? []).map(f => f.buffer),
     ...(files?.fabFiles ?? []).flatMap(f => [Buffer.from(f.originalname), f.buffer]),

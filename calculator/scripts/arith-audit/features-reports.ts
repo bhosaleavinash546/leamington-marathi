@@ -110,7 +110,7 @@ export function myStack(si: UniversalStackInput, lib: RateLibrary): MyStack {
     metal = gross * m.pricePerKg - (rm.lossIsNotScrap ? 0 : (gross - rm.netWeightKg) * sp);
   }
   const consumables = rm.consumablesCostPerPart && rm.consumablesCostPerPart > 0 ? rm.consumablesCostPerPart : 0;
-  const t = lib.energy[0];
+  const t = lib.energy.find(e => e.id === `energy-${(lib.regional?.code ?? 'uk').toLowerCase()}`)!;   // by id (R1)
   const energy = (rm.energyKwh?.gas ?? 0) * (t?.gasPerKwh ?? 0) + (rm.energyKwh?.electricity ?? 0) * (t?.electricityPerKwh ?? 0);
   const boughtIn = Math.max(0, rm.boughtIn?.cost ?? 0);
   const material = metal + consumables + energy + boughtIn;
@@ -376,7 +376,7 @@ for (const part of PARTS) {
         ...dt.operations.flatMap((o, k): Array<[string, number]> => [[`op ${k + 1} process`, o.process.gapGBP], [`op ${k + 1} labour`, o.labour.gapGBP]]),
         ['tooling', dt.tooling.gapGBP], ['overhead', dt.overhead.gapGBP]];
       const off = lineGaps.filter(([, g]) => !(Math.abs(g) <= 0.011));
-      const energyGBP = (si.rawMaterial.energyKwh?.electricity ?? 0) * (book.energy[0]?.electricityPerKwh ?? 0) + (si.rawMaterial.energyKwh?.gas ?? 0) * (book.energy[0]?.gasPerKwh ?? 0);
+      const energyGBP = (si.rawMaterial.energyKwh?.electricity ?? 0) * (book.energy.find(e => e.id === `energy-${(book.regional?.code ?? 'uk').toLowerCase()}`)!.electricityPerKwh) + (si.rawMaterial.energyKwh?.gas ?? 0) * (book.energy.find(e => e.id === `energy-${(book.regional?.code ?? 'uk').toLowerCase()}`)!.gasPerKwh);
       proposed(part, `detailed teardown: every line gap is 0 on an identical quote (${tag})`, !off.length,
         `${off.map(([l, g]) => `${l} £${g.toFixed(2)}`).join(', ')} (the costing's energy line £${energyGBP.toFixed(4)}, ${si.rawMaterial.lossIsNotScrap ? 'melt loss not credited' : 'scrap credited'})`, 'P-TD1 quote-teardown-detailed.ts matCost: add energy, honour lossIsNotScrap');
     } else {

@@ -52,7 +52,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'no
 import { resolve, dirname, join } from 'node:path';
 import { runBulkCosting, type BulkPartInput, type BulkRunRecord } from '../server/services/bulk-run.js';
 import { geometryPool } from '../server/utils/geometry-pool.js';
-import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
+import { bookFromWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { RateLibrary } from '../src/engine/types.js';
 
@@ -85,7 +85,8 @@ function loadRates(path: string): RateLibrary {
     console.error(`Rate sheet not found: ${path}`);
     process.exit(1);
   }
-  const { library, errors, counts } = parseRateLibraryWorkbook(readFileSync(path));
+  // The book the upload would make of this sheet: company rows merged by id over the built-in, the Aliases sheet applied.
+  const { library, errors, counts } = bookFromWorkbook(readFileSync(path), DEFAULT_RATE_LIBRARY);
   if (!library) {
     console.error(`\n  That rate sheet did not validate, so the run stopped rather than`);
     console.error(`  quietly costing on the built-in UK book.\n`);

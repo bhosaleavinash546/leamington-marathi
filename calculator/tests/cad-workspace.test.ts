@@ -159,7 +159,8 @@ describe('step 3 — the cost card', () => {
     expect(readFileSync('src/export/excel.ts', 'utf8')).toMatch(/\.\.\.\(stamp \? \[\['Reproducibility', stamp\]\] : \[\]\)/);
     expect(readFileSync('src/export/pdf.ts', 'utf8')).toMatch(/Reproducibility: \$\{cadMeta\.stamp\}/);
     const cad = readFileSync('server/routes/cad.ts', 'utf8');
-    expect(cad.match(/versions: \{ rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV \}/g)?.length).toBe(6);
+    // rates flow R1: the analysis responses also name the resolved rate book (its fingerprint, UK basis and the country's)
+    expect(cad.match(/versions: \{ rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV(, rateBook: bookPrint\.base, rateBookRegional: bookPrint\.regional)? \}/g)?.length).toBe(6);
   });
   // CAD to COST trace (28 Oct 2026): the plan items the live run found missing on the cost step
   const full = cadCostCardHtml({
