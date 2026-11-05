@@ -736,6 +736,7 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 .cad-card-alert { display: flex; flex-direction: column; gap: 2px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); border-left: 3px solid var(--danger); background: var(--danger-bg); font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); }
 .cad-card-alert strong { color: var(--text-primary); }
 .cad-card-alert--route { border-left-color: var(--accent); background: var(--info-bg); }
+.cad-card-alert--costed { border-left-color: var(--accent); background: var(--info-bg); }
 .cad-card-open { padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-elevated); font-size: 0.72rem; color: var(--text-secondary); }
 .cad-card-open ul { margin: 2px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
 .cad-cost-v--band { font-size: 1.05rem; }

@@ -999,6 +999,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   slides priced, China tilt-machine capex, T6 / T5 a STATION build-up labelled ESTIMATE (`al-heat-treat.ts`, energy as kWh,
   every country its own book) with an advisory heat-treat question, gravity impressions an advisory question (1 or 2).
   LPDC is not modelled (deferred). Part1 CN ¥70.45 → ¥57.72. `tests/part1-review.test.ts`, `tests/gravity-die-review.test.ts`.
+  Phase 3 (5 Nov): core page 1 carries a static cost waterfall + part summary (`waterfall`, `corePartSummary`); core
+  text money is 2 dp (`coreMoneyText`, 4-dp figures stay in the audit pack / workbook); the export runs the route
+  comparison when none is held (`src/ui/report-route-compare.ts`), else one line says why; narrow slits are costed as a
+  slitting operation from maker data (`slitMinutes`, kernel `_narrow_slits`; research `scripts/research/2026-11-slitting/`).
+  Phase C (CAD to COST): step-2 options show £ a part from REAL re-costs (`POST /api/cad/option-costs`,
+  `server/services/option-costs.ts` — the figure equals Get cost with that option, to the penny); the step-3 cost card
+  is led by the piece price from `buildCoreReport` (the same model as PDF page 1, alerts included). `tests/part1-phase3`,
+  `tests/c2c-phase-c`. Part1 CN ¥56.52.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

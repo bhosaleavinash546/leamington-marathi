@@ -676,7 +676,7 @@ export interface CardPage1 {
     unsplitGbp: number; amortisationVolume: number; bucketPerPartGbp: number };
   band: { p10: number; p90: number; plusMinusPct: number } | null;
   confidence: { grade: string; sentence: string; gradeNote: string | null };
-  alerts: Array<{ kind: 'blocking' | 'route' | 'scope'; title: string; lines: string[] }>;
+  alerts: Array<{ kind: 'blocking' | 'route' | 'scope' | 'costed'; title: string; lines: string[] }>;
   openQuestions: string[];
 }
 
