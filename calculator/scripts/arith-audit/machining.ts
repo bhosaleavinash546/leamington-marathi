@@ -29,7 +29,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const DUMP = process.argv[2]
   ?? '/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/arith-dump';
-const BASE = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/real-parts-baseline.json'), 'utf8')) as Array<{ part: string; geometry: Geo }>;
+// CV_BASELINE_FILE: a baseline with re-measured geometry (Part1 review phase 3: the kernel's narrow slits) — the default is the
+// committed baseline.
+const BASE = JSON.parse(readFileSync(process.env.CV_BASELINE_FILE ?? join(ROOT, 'tests/fixtures/real-parts-baseline.json'), 'utf8')) as Array<{ part: string; geometry: Geo }>;
 const C = dumpContext(DUMP);
 const BOOK = C.book;
 /** Model the code BEFORE the audit's fixes (M1, L1, M3, L3, L4) — reproduces the shared pre-fix dump. */
@@ -109,6 +111,29 @@ const TAP_DRILLS = TAP.map(t => t[0]);
 const CORED: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6, forging: 25 };
 const CAST_STOCK_MM: Record<string, number> = { sand_ferrous: 3.0, sand: 2.0, gravity: 1.5, investment: 1.0, hpdc: 0.5 };
 const NEAR_NET_TURN_STOCK = 2;
+/**
+ * Slitting saws (Part1 review phase 3, Nov 2026), restated from scripts/research/2026-11-slitting/data.json (ZPS-FN HSS
+ * saws): the material group's vc and fz RANGES (#0–11) — the costing takes the middle; the saw type by chip form (#30);
+ * bodies [Ø, bore, Z at 2 / 2.5 / 3 mm wide] (#12–29). Collar = 2 × bore (ASSUMED). Feed along the root through the depth,
+ * full radial depth = the slit's length: travel = depth + √(ae(D − ae)) + 2 × 5 mm; one tool change a slitting op.
+ */
+const SAW: Record<string, { vc: [number, number]; fz: [number, number]; type: 'W' | 'H' }> = {
+  steel: { vc: [10, 20], fz: [0.02, 0.03], type: 'W' }, 'cast iron': { vc: [15, 25], fz: [0.04, 0.05], type: 'H' },
+  aluminium: { vc: [100, 150], fz: [0.03, 0.07], type: 'W' },
+};
+const SAW_BODIES: Record<'W' | 'H', Array<[number, number, [number, number, number]]>> = {
+  W: [[63, 16, [40, 32, 32]], [80, 22, [40, 40, 40]], [100, 22, [48, 48, 40]]],
+  H: [[63, 16, [80, 64, 64]], [80, 22, [80, 80, 80]], [100, 22, [100, 100, 80]]],
+};
+function slitMin(fam: string, s: { widthMm: number; depthMm: number; lengthMm: number | null }): number {
+  const k = SAW[fam]; const vc = (k.vc[0] + k.vc[1]) / 2; const fz = Math.round((k.fz[0] + k.fz[1]) / 2 * 10_000) / 10_000;
+  const wi = s.widthMm > 2.75 ? 2 : s.widthMm > 2.25 ? 1 : 0;
+  const bodies = SAW_BODIES[k.type];
+  const L = s.lengthMm && s.lengthMm > 0 ? s.lengthMm : null;
+  const [D, , zs] = (L != null ? bodies.find(([d, b]) => (d - 2 * b) / 2 >= L) : null) ?? bodies[bodies.length - 1];
+  const ae = L != null ? Math.min(L, D / 2) : D / 2;
+  return (s.depthMm + Math.sqrt(ae * (D - ae)) + 2 * CLEAR) / (n(vc, D) * zs[wi] * fz);
+}
 const CATALOGUE: Array<{ id: string; cap: string; env: [number, number, number] }> = [
   { id: 'mach-vmc3', cap: 'mill3', env: [1020, 660, 635] }, { id: 'mach-haas-vf2', cap: 'mill3', env: [762, 508, 406] },
   { id: 'mach-vmc5', cap: 'mill5', env: [800, 600, 500] }, { id: 'mach-haas-umc500', cap: 'mill5', env: [610, 406, 406] },
@@ -272,6 +297,7 @@ function stack(p: { materialId: string; netKg: number; util: number; wear: numbe
 // ── From solid ────────────────────────────────────────────────────────────────────────────────────────────────────
 function fromSolid(partFile: string, family: string, materialId: string): void {
   const part = partFile.replace(/\.stp$/, '');
+  if (!existsSync(join(DUMP, `${part}.json`))) { console.log(`  ${part}: no dump — skipped`); return; }
   const geo: Geo = BASE.find(b => b.part === partFile)!.geometry;
   const dump = JSON.parse(readFileSync(join(DUMP, `${part}.json`), 'utf8'));
   const P = dump.params, prov = dump.provenance;
@@ -449,6 +475,7 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
 // change-over first (efficiency 1) and the casting / forging tooling is fixtures + programming in one item.
 function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' | 'secondary', coredOverride?: number, turnStock?: number): void {
   const part = partFile.replace(/\.stp$/, '');
+  if (!existsSync(join(DUMP, `${part}.json`))) { console.log(`  ${part}: no dump — skipped`); return; }
   const geo: Geo = BASE.find(b => b.part === partFile)!.geometry;
   const dump = JSON.parse(readFileSync(join(DUMP, `${part}.json`), 'utf8'));
   const P = dump.params;
@@ -473,6 +500,10 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   const boreMin = r2(work.bored);
   const drillMin = Math.max(0, r2(nn.hole - boreMin));
   const millMin = tp ? 0 : nn.finish + nn.tc;
+  // the kernel's narrow slits: one saw, one approach a slit, one tool change (the walls are not in the face rows)
+  const slits = (geo.slits ?? []) as Array<{ widthMm: number; depthMm: number; lengthMm: number | null; rootFaceIds: number[]; wallFaceIds: number[] }>;
+  const slitGroups = new Set(slits.map(x => `${x.widthMm}|${x.depthMm}|${x.lengthMm}`)).size;
+  const slitTotal = slits.length ? r2(slits.reduce((t, x) => t + slitMin(family, x), 0) + TOOL_CHANGE_S / 60) : 0;
   const ext = (geo.turning?.externalAreaMm2 ?? 0) / 100;
   const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
   const spindleCm2 = tp ? tp.ext + facedCm2 : ext >= 20 && ext / geo.surfaceArea.cm2 >= 0.08 ? ext : 0;
@@ -488,7 +519,7 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   const sortedBb = [geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm].sort((a: number, b: number) => b - a);
   const dirs = tp ? 1 : Math.max(1, geo.setupAnalysis?.estimatedSetupCount ?? 1);
   const batch = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
-  const millHr = (millMin + boreMin) / 60, drillHr = drillMin / 60, setupHr = SETUP_MIN / 60, hHr = hMin / 60;
+  const millHr = (millMin + boreMin + slitTotal) / 60, drillHr = drillMin / 60, setupHr = SETUP_MIN / 60, hHr = hMin / 60;
   const lab = labourRate('lab-uk-skilled');
   const labourOf = (cutHr: number, handHr: number) => Math.round(lab * (cutHr * CUT_MANNING + handHr) * 10_000) / 10_000;
   const cands: Array<{ label: string; primary: string; drill: string; setups: number; total: number; masked: boolean }> = [];
@@ -516,6 +547,7 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   if (millMin > 0) for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
   if (drillMin > 0) expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
   if (boreMin > 0) expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
+  if (slitTotal > 0) expected.push(['Slitting', hr4(slitTotal), ch.primary, 0.5]);
   // The lathe op is the cut; loading the part into the lathe fixture is a whole operator's (finding M3).
   if (!spindleCm2) { /* no turned axis (a bracket): no lathe op */ }
   else if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
@@ -535,7 +567,7 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   // The deburr counts the MACHINED faces: the costed rows' B-rep faces, once each (a row without ids, one an instance).
   const ids = new Set<number>(); let unnamed = 0;
   for (const r of rows as Array<Row & { faceIds?: number[] }>) { if (r.faceIds?.length) r.faceIds.forEach(x => ids.add(x)); else unnamed += Math.max(1, r.count); }
-  const machinedFaces = ids.size + unnamed;
+  const machinedFaces = ids.size + unnamed + new Set(slits.flatMap(x => [...x.rootFaceIds, ...x.wallFaceIds])).size;
   expected.push(['Deburr', hr4(Math.round((1 + 0.004 * machinedFaces) * 100) / 100), ch.primary, 1]);
   const lathe = spindleCm2 ? 1 : 0;
   const setups = ch.setups + lathe;
@@ -574,7 +606,7 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
   const millFx = fixtureGBP(ch.setups * millSets * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
   const latheFx = lathe ? fixtureGBP(latheSets * (ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular)) : 0;
   // programming: the MACHINED feature rows (a cast-in pocket or boss is not programmed)
-  const prog = Math.round(Math.round((PROG.perFix * setups + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
+  const prog = Math.round(Math.round((PROG.perFix * setups + PROG.perRow * (rows.length + slitGroups)) * 100) / 100 * labourRate('lab-uk-engineer'));
   if (mode === 'cam') {
     check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} × ${millSets} set(s) + lathe × ${latheSets})`, millFx + latheFx, P.machiningToolingCost, 0.5);
     check(part, `programming £ (${rows.length} machined rows)`, prog, P.machiningProgrammingNRE, 0.5);
@@ -590,7 +622,10 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
 
 if (!existsSync(DUMP)) { console.error(`no dump at ${DUMP}`); process.exit(2); }
 console.log(`machining shadow model — ${contextLine(C)}`);
-fromSolid('Part1.stp', 'aluminium', 'mat-al6082-bar');
+// Part1: from solid on the baseline's answer; cast + machine (gravity die) when the dump costs it so — the Part1 review's
+// route, with its two narrow slits sawn (phase 3, Nov 2026).
+if (existsSync(join(DUMP, 'Part1.json')) && JSON.parse(readFileSync(join(DUMP, 'Part1.json'), 'utf8')).commodity === 'cast_and_machine') nearNet('Part1.stp', 'aluminium', 'gravity', 'cam');
+else fromSolid('Part1.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Hydraulic_Manifold.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Stepped_Shaft.stp', 'steel', 'mat-en8');
 nearNet('PRCR002.stp', 'cast iron', 'sand', 'cam');

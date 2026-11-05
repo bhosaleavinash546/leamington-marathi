@@ -451,6 +451,113 @@ def _extract_machining_features(wrapped, bbox):
     return rows
 
 
+NARROW_SLIT_MAX_WIDTH_MM = 3.0      # the DFM rule's threshold (dfm-geometry/commodities/slits.ts) — the tool's own
+NARROW_SLIT_SWEEP_DEG = (150.0, 210.0)   # a slot end sweeps ~180° (a blend ≤ 120°, a hole ≥ 300°)
+
+
+def _narrow_slits(wrapped, extents):
+    """Narrow slits (a clamp's saw cut) for the costing — the SAME definition as the geometric DFM's
+    `narrowSlits` (slits.ts), read here so the costing can time the cut (Part1 review phase 3, Nov 2026).
+
+    A slit is a CONCAVE partial cylinder sweeping 150–210° (a slot end, not a blend) of radius ≤ 1.5 mm, whose two
+    adjacent planar faces face each other (normals within 0.995 of opposite) at the root's diameter (± max(0.05 mm,
+    3 %)). Every figure is measured: width = the walls' gap, depth = the root's span along its axis (what the saw
+    passes through), length = the larger wall's area ÷ that depth (how far the slit runs in from the edge).
+
+    The planar-face pass (`_extract_machining_features`) reads the two walls as faced flats; the caller removes
+    exactly these wall faces from the `face` rows — a face mill cannot enter a slit this narrow."""
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    face_map = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
+    diag = math.sqrt(sum(e * e for e in extents)) or 1.0
+    cands = [g for g in _cylinder_features(wrapped, face_map, diag)
+             if not g["full"] and g["concave"] and 2 * g["r"] <= NARROW_SLIT_MAX_WIDTH_MM + 1e-6
+             and NARROW_SLIT_SWEEP_DEG[0] <= min(g["coverage"], 1.0) * 360.0 <= NARROW_SLIT_SWEEP_DEG[1]]
+    if not cands:
+        return []
+    adj = _face_adjacency(wrapped, face_map)
+    props = GProp_GProps()
+
+    def _plane(idx):
+        try:
+            face = TopoDS.Face_s(face_map.FindKey(idx))
+            ad = BRepAdaptor_Surface(face)
+            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Plane:
+                return None
+            BRepGProp.SurfaceProperties_s(face, props)
+            c = props.CentreOfMass()
+            n = ad.Plane().Axis().Direction()
+            nv = [n.X(), n.Y(), n.Z()]
+            if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+                nv = [-v for v in nv]
+            return {"id": idx, "n": nv, "c": [c.X(), c.Y(), c.Z()], "area": abs(props.Mass())}
+        except Exception:
+            return None
+
+    out = []
+    for g in cands:
+        own = set(g["faceIds"])
+        nb = sorted({j for k in g["faceIds"] for j in adj.get(k, ()) if j not in own})
+        planes = [p for p in (_plane(j) for j in nb) if p]
+        width = 2 * g["r"]
+        pair = None
+        gap = 0.0
+        for i in range(len(planes)):
+            for j in range(i + 1, len(planes)):
+                a, b = planes[i], planes[j]
+                if sum(a["n"][k] * b["n"][k] for k in range(3)) > -0.995:
+                    continue
+                d = abs(sum((a["c"][k] - b["c"][k]) * a["n"][k] for k in range(3)))
+                if abs(d - width) <= max(0.05, 0.03 * width):
+                    pair, gap = (a, b), d
+                    break
+            if pair:
+                break
+        if not pair:
+            continue
+        depth = g["span"]
+        area = max(pair[0]["area"], pair[1]["area"])
+        out.append({
+            "widthMm": round(gap, 2), "depthMm": round(depth, 1),
+            "lengthMm": round(area / depth, 1) if depth > 0 and area > 0 else None,
+            "radiusMm": round(g["r"], 3), "sweepDeg": round(min(g["coverage"], 1.0) * 360.0, 1),
+            "rootFaceIds": sorted(g["faceIds"]), "wallFaceIds": sorted([pair[0]["id"], pair[1]["id"]]),
+            "wallAreaMm2": round(area, 1), "axis": [round(c, 5) for c in g["axis"]],
+            "normal": [round(c, 5) for c in pair[0]["n"]],
+        })
+    return out
+
+
+def _without_slit_walls(rows, slits):
+    """The feature table with exactly the slit walls taken out of its `face` rows: a face row loses one count a wall
+    face it held, and goes when none is left. No other face takes a freed place (the rows were chosen before)."""
+    walls = {i for s in slits for i in s["wallFaceIds"]}
+    if not walls:
+        return rows
+    out = []
+    for r in rows:
+        if r.get("kind") != "face":
+            out.append(r)
+            continue
+        ids = r.get("faceIds") or []
+        gone = [i for i in ids if i in walls]
+        if not gone:
+            out.append(r)
+            continue
+        left = [i for i in ids if i not in walls]
+        n = r.get("count", len(ids)) - len(gone)
+        if n > 0 and left:
+            out.append({**r, "count": n, "faceIds": left})
+    return out
+
+
 def _bulk_wall_mm(volume_mm3, surface_mm2):
     """The wall the part has in bulk, as 2·V/S.
 
@@ -3292,6 +3399,12 @@ def analyze(filepath: str) -> dict:
         # radii as bores — over-counting features and drilling time.
         ft_rows = (_extract_feature_table(wrapped, (x_sz, y_sz, z_sz))
                    + _extract_machining_features(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax)))
+        # Narrow slits: costed as a slitting operation; their walls are not faced flats (Part1 review, Nov 2026).
+        try:
+            slits = _narrow_slits(wrapped, (x_sz, y_sz, z_sz))
+        except Exception:
+            slits = []
+        ft_rows = _without_slit_walls(ft_rows, slits)
         table_holes  = [r for r in ft_rows if r.get("kind") == "hole"]
         table_bosses = [r for r in ft_rows if r.get("kind") == "boss"]
         n_holes  = sum(r["count"] for r in table_holes)
@@ -3465,6 +3578,8 @@ def analyze(filepath: str) -> dict:
             # Exact per-feature table: hole/boss × diameter × depth × through,
             # axis-deduped counts — feeds the operations mapping in the client.
             "featureTable": ft_rows,
+            # Narrow slits (≤ 3 mm saw cuts) — width / depth / length measured, root and wall face ids.
+            "slits": slits,
             # Sheet-metal forming features (bends) — for the SM Fab press-brake cost.
             "sheetMetal": _detect_bends(wrapped, _bulk_wall_mm(volume_mm3, sa_mm2)),
             # Gear metrology — teeth counted from tip-circle patches; None when

@@ -77,6 +77,7 @@ import {
 } from '../engine/surface-finish-routes.js';
 import { boundDrawingCoating } from '../engine/coating-drawing-read.js';
 import { startLongTask, fmtAllowance } from './long-task-progress.js';
+import { ensureReportRouteComparison } from './report-route-compare.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
@@ -17500,6 +17501,7 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
 async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
+  await ensureRoutesForReport();
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
   // The first sheet is the core report's model and sheet 9 the DFM findings: the workbook gets the PDF's metadata and country rows.
   const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews(), activeCommodity,
@@ -18440,6 +18442,10 @@ function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     stamp: costedFromCAD() ? currentCADStamp() : null,
     routeComparison: costedFromCAD() ? _cadRouteComparison : null,
+    routeComparisonNote: costedFromCAD() && !_cadRouteComparison ? _cadRouteComparisonNote : null,
+    // page 1's part summary: the envelope, the feature table and the slits the costing read (Part1 review phase 3)
+    partGeometry: costedFromCAD() && cadOCCTGeometry
+      ? { boundingBox: cadOCCTGeometry.boundingBox ?? null, featureTable: cadOCCTGeometry.featureTable ?? null, slits: cadOCCTGeometry.slits ?? null } : null,
     // The band the screen shows, so the report cannot print a different one.
     ...(() => {
       if (!lastResult || !lastInput) return { uncertainty: null, uncertaintyBasis: null };
@@ -18532,9 +18538,39 @@ function buildCadReportMeta(): CADReportMeta {
   };
 }
 
+/** Inputs of the comparison an export ran (null: the screen's Compare routes drew it), and why a report has none. */
+let _cadRouteComparisonKey: string | null = null;
+let _cadRouteComparisonNote: string | null = null;
+
+/**
+ * Every CAD report prints the route comparison and the volume ladder (report-route-compare.ts, Part1 review phase 3):
+ * when the screen holds none for this costing's inputs, the export runs the same comparison Compare routes runs and
+ * stores it where the screen, the PDF and the workbook read it; when it cannot, the reports print why.
+ */
+async function ensureRoutesForReport(): Promise<void> {
+  if (!lastResult || !lastInput) return;
+  const u = costedFromCAD() ? buildCadReportMeta().uncertainty : null;
+  const r = await ensureReportRouteComparison({
+    costedFromCad: costedFromCAD() && !!cadAnalysisResult,
+    have: { comparison: _cadRouteComparison, key: _cadRouteComparisonKey },
+    state: {
+      geometryHash: cadGeometryHash, filename: cadFile?.name ?? 'part.step', current: activeCommodity,
+      decisionAnswers: _cadDecisionAnswers, acknowledged: [..._cadSanityAcks], annualVolume: cadAnnualVolume(), region: _mfgRegion,
+      programmeYears: Number(programmeYearsValue()) || null, deliveryTerms: deliveryTerms() === 'EXW' ? 'EXW' : 'DAP',
+      material: _cadMaterialLocked && _cadPinnedMaterialId ? _cadPinnedMaterialId : null, blankHash: cadOCCTGeometry?.blank?.blankHash ?? null,
+      referenceBand: u ? { p10: u.p10, p50: u.p50, p90: u.p90, plusMinusPct: u.plusMinusPct, confidence: u.overallConfidence } : null,
+    },
+    blockingOpen: openCADDecisions().map(d => d.question),
+    headline: lastResult.total, labels: COMMODITY_REPORT_LABELS as Record<string, string>, authHeader: authHeader(),
+  });
+  if (r.comparison) { _cadRouteComparison = r.comparison; _cadRouteComparisonKey = r.key; }
+  _cadRouteComparisonNote = r.note;
+}
+
 async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Report not produced: ${why}`, 'error'); return; } }
+  await ensureRoutesForReport();
   await ensurePdfLibs();
   const notFromPhoto = pcbFormNotFromPhoto();
   if (notFromPhoto) {
@@ -18547,6 +18583,7 @@ async function openPDF(): Promise<void> {
 async function openAuditPack(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Audit pack not produced: ${why}`, 'error'); return; } }
+  await ensureRoutesForReport();
   await ensurePdfLibs();
   const notFromPhoto = pcbFormNotFromPhoto();
   printAuditPackPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), { ...buildCadReportMeta(), cadViews: reportCadViews() }, _baseLibrary, comparisonRows(lastInput, lastResult, false));

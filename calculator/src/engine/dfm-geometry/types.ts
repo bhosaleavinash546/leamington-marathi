@@ -141,7 +141,7 @@ export interface PartContext {
 export interface MachinedFaceSet {
   faceIds: number[];
   /** How many faces each source contributed (a face may come from more than one). */
-  counts: { faced: number; holes: number; turned: number; steps: number; blends: number };
+  counts: { faced: number; holes: number; turned: number; steps: number; blends: number; slits?: number };
   /** One sentence the report prints: what the costing machines and how the set was read. */
   basis: string;
 }

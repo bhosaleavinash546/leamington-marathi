@@ -12,6 +12,7 @@ import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/
 import { currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { buildExecutiveSummary, buildCoreReport, type ExecutiveSummary } from './executive-summary.js';
+import { formWeights } from './form-weights.js';
 import { renderCoreReport } from './core-report-pdf.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
@@ -28,7 +29,7 @@ import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
-import { localiseGbpText, localiseRuleValue } from './money-text.js';
+import { localiseGbpText, localiseRuleValue, coreMoneyText } from './money-text.js';
 import { rulePartWeightKg, isItemisedRouteMaterial, ITEMISED_MATERIAL_TEXT, traceRateIdText } from './excel.js';
 
 /** Minutes as the §4 tables print them: 2 dp, more where a non-zero time would read 0.00 (a die change per part). */
@@ -143,6 +144,10 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /** The measured geometry the costing read — page 1's part summary (envelope, machined features; Part1 review phase 3). */
+  partGeometry?: import('./executive-summary.js').CoreReportMeta['partGeometry'];
+  /** Why the route comparison is not in this report (the export tried to run it and could not) — printed in its place. */
+  routeComparisonNote?: string | null;
   /** Two isometric renders of the CAD model (front-right-top, back-left-top) captured from the viewer at export — printed
    *  under the summary on the cover (the Director's request, 30 Oct 2026). Absent on a costing not made from CAD. */
   cadViews?: ReportPhoto[] | null;
@@ -1213,6 +1218,15 @@ export function renderShouldCostSections(
     const residual = result.breakdown.rawMaterial - metalLine - consumables - energy - boughtIn;
     if (Math.abs(residual) >= 0.0005) matRows.push(['UNRECONCILED', c(residual), currency, 'The rows above do not add up to the material bucket — report this']);
     matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= bucket 1']);
+    // The £/kg figures the core report keeps off its page 2 (ONE £/kg there, the price as cast — Part1 review phase 3):
+    // the metal a kg on the same weight, and the price a kg (should-cost ÷ kg).
+    const fw = formWeights(cadMeta.checks?.ruleValues ?? [], input, commodityType ?? null);
+    if (fw && fw.asFormedKg > 0 && input.rawMaterial.directCost === undefined) {
+      matRows.push([`Metal a kg ${fw.form === 'forged' ? 'as forged' : 'as cast'}`, c(metalLine / fw.asFormedKg), `${currency}/kg`,
+        `the metal line ÷ ${fw.asFormedKg.toFixed(3)} kg, one ${fw.form === 'forged' ? 'forging' : 'casting'} ${fw.form === 'forged' ? 'as forged' : 'as cast'}`]);
+      matRows.push([`Should-cost a kg ${fw.form === 'forged' ? 'as forged' : 'as cast'}`, c(result.total / fw.asFormedKg), `${currency}/kg`,
+        `the should-cost ÷ ${fw.asFormedKg.toFixed(3)} kg (the core report prints the ${fw.form === 'forged' ? 'forging' : 'casting'}'s own price a kg)`]);
+    }
   }
   // A pass-through placeholder has no price of its own, so its date says nothing
   // about the cost: print the date of the library the commodity module priced from
@@ -2453,13 +2467,16 @@ export function printPDF(
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }), { fx: fxRate, sym });
   // A populated board costed from the PCB photo analysis gets its own body (pcba-report-data.ts).
   let pcba: PcbaReport | null = null;
   if (cadMeta.pcbAnalysis) {
     try { pcba = buildPcbaReport(cadMeta.pcbAnalysis, { partName: result.partName, annualVolume: cadMeta.annualVolume, qualityGrade: cadMeta.functionalSafety?.qualityGrade, fmt: money }); }
     catch (err) { console.warn('[pdf] PCBA report body unavailable:', err instanceof Error ? err.message : String(err)); }
   }
+  // The core report prints money in its text to the precision a reader needs (2 dp, `coreMoneyText`, Part1 review
+  // phase 3); the audit pack keeps the figures as recorded.
+  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }),
+    { fx: fxRate, sym, ...(profile === 'core' && !pcba ? { localise: coreMoneyText } : {}) });
 
   // ── Footer (added last) ──────────────────────────────────────────────────
   const footerTitle = profile === 'core' && !pcba ? 'Should-Cost Report' : pcba ? 'Should-Cost Analysis Report' : 'Should-Cost Audit Pack';

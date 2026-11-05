@@ -26,7 +26,10 @@ import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import { computeUniversalStack } from '../engine/core.js';
 import { computeCostUncertainty, overallConfidence } from '../engine/uncertainty.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
-import type { FeatureMachiningLine } from '../engine/feature-machining.js';
+import { defaultInclude, type FeatureMachiningLine } from '../engine/feature-machining.js';
+import type { FeatureRow } from '../engine/feature-ops.js';
+import { costedNearNetRows, machinedFeatureCount } from '../engine/machining-time.js';
+import { MACHINED_SET_COMMODITIES } from '../engine/dfm-geometry/machined-faces.js';
 import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { decisionAnswerLabel, decisionAnswerText } from './decision-text.js';
 import { decisionUsedValue, type DecisionForUsed, type DecisionUsedFacts } from './decision-used.js';
@@ -293,6 +296,18 @@ export interface CoreReportMeta {
    *  has, since it never holds a RuleContext. Used when `ruleContext` is absent, and only for the commodity they were
    *  made for. */
   reportNotes?: RuleReportNotes | null;
+  /**
+   * The measured geometry the costing read (Part1 review phase 3: page 1's part summary) — the envelope, the feature
+   * table and the kernel's narrow slits. The screen passes its CAD measurement; headless falls back to `ruleContext.geo`.
+   */
+  /** Why the route comparison is not in this report — the export tried to run it and could not (open blocking questions,
+   *  a server error, a timeout). The core report prints this one line in place of section 6a and section 4's volume. */
+  routeComparisonNote?: string | null;
+  partGeometry?: {
+    boundingBox?: { xMm: number; yMm: number; zMm: number } | null;
+    featureTable?: FeatureRow[] | null;
+    slits?: ReadonlyArray<unknown> | null;
+  } | null;
 }
 
 export interface CoreReportArgs {
@@ -357,9 +372,12 @@ export interface CorePrice {
   unsplitCountedUpfront: boolean;
 }
 
-export interface CoreMaterialLine { group: 'metal' | 'direct' | 'consumable' | 'energy' | 'boughtIn'; label: string; gbp: number; note?: string }
+export interface CoreMaterialLine { group: 'metal' | 'direct' | 'consumable' | 'energy' | 'boughtIn'; label: string; gbp: number; note?: string;
+  /** The core PDF's label: no price a kg (page 2 prints ONE £/kg, as cast — Part1 review phase 3); the workbook keeps `label`. */
+  short?: string }
 export interface CoreUnsourcedItem { label: string; value: string; basis: string; gbp: number | null; drives: string[] }
-export interface CoreAlert { kind: 'blocking' | 'route' | 'scope'; title: string; lines: string[] }
+/** 'costed': scope the costing found and prices as its own operation — a note to confirm, not a gap. */
+export interface CoreAlert { kind: 'blocking' | 'route' | 'scope' | 'costed'; title: string; lines: string[] }
 export interface CoreOperation {
   name: string; machine: string; bench: boolean; cycleMin: number; partsPerCycle: number;
   /** OEE the machine time is divided by (null on a bench operation). */
@@ -383,6 +401,14 @@ export interface CoreRouteRow {
   /** Tooling over the programme (first sets + replacements + perishables). */
   toolingProgrammeGbp: number | null;
   note: string | null;
+}
+/** One bar of page 1's cost waterfall: a bucket from where the previous one ended (or the headline, `total`). */
+export interface CoreWaterfallBar { label: string; startGbp: number; gbp: number; endGbp: number; total: boolean }
+/** Page 1's part summary: label / value rows read off the costing (no money). */
+export interface CorePartSummary {
+  rows: Array<{ label: string; value: string }>;
+  /** Machined features as pieces of work (`machinedFeatureCount`), or null when the costing machines nothing it counts. */
+  machinedFeatures: number | null;
 }
 export interface CoreCountryRow { name: string; total: number; vsBasePct: number; isBase: boolean; approx: boolean }
 export interface CoreDfmFinding { ruleId: string; severity: string; title: string; count: number; amount: string | null; fix: string }
@@ -446,6 +472,10 @@ export interface CoreReport {
   /** Costs the model does not carry that a supplier will charge (a gap in the cost model, not a scope item). */
   notModelled: string[];
   terms: string;
+  /** The 8 buckets as a waterfall building to the headline (page 1, Part1 review phase 3): each bar starts where the one
+   *  before it ended; the last bar is the should-cost itself. Read off `buckets` — the renderer draws it, adds nothing. */
+  waterfall: CoreWaterfallBar[];
+  partSummary: CorePartSummary;
   /** The 8 buckets; the material one carries its metal (net of scrap) £ and share of the price (`metalOfMaterial`). */
   buckets: Array<{ label: string; gbp: number; sharePct: number; metalGbp?: number; metalSharePct?: number; metalWord?: string }>;
   material: { lines: CoreMaterialLine[]; metalGbp: number; consumablesGbp: number; energyGbp: number; boughtInGbp: number; totalGbp: number };
@@ -463,6 +493,12 @@ export interface CoreReport {
   /** Movers left out: < 0.5 % of the price either way, or a zero base (nothing to vary). */
   sensitivityDropped: number;
   volumeLine: string | null;
+  /**
+   * When there is no route comparison: ONE line saying why — printed in place of section 6a and of section 4's volume
+   * line (Part1 review phase 3: the core printed "not run" when the user had not pressed Compare routes). Null when the
+   * comparison is in the report.
+   */
+  routesNote: string | null;
   negotiation: Array<{ driver: string; ours: string; question: string }>;
   quoteBreakdown: string[];
   levers: ExecutiveLever[];
@@ -661,8 +697,10 @@ export function materialSplit(result: PartCostResult, input: UniversalStackInput
     const scrapPrice = ov !== undefined && Number.isFinite(ov) && ov >= 0 ? ov : (mat?.scrapRecoveryPricePerKg ?? 0);
     const credit = rm.lossIsNotScrap ? 0 : (gross - rm.netWeightKg) * scrapPrice;
     metal = gross * price - credit;
-    lines.push({ group: 'metal', label: `${mat?.grade ?? 'Material'}: ${gross.toFixed(3)} kg bought × £${price.toFixed(4)}/kg`, gbp: gross * price });
-    if (credit > 0) lines.push({ group: 'metal', label: `Scrap credit: ${(gross - rm.netWeightKg).toFixed(3)} kg × £${scrapPrice.toFixed(4)}/kg`, gbp: -credit });
+    lines.push({ group: 'metal', label: `${mat?.grade ?? 'Material'}: ${gross.toFixed(3)} kg bought × £${price.toFixed(4)}/kg`, gbp: gross * price,
+      short: `${mat?.grade ?? 'Material'}: ${gross.toFixed(3)} kg bought (the price a kg is in section 5 and the audit pack)` });
+    if (credit > 0) lines.push({ group: 'metal', label: `Scrap credit: ${(gross - rm.netWeightKg).toFixed(3)} kg × £${scrapPrice.toFixed(4)}/kg`, gbp: -credit,
+      short: `Scrap credit: ${(gross - rm.netWeightKg).toFixed(3)} kg sold back` });
     else if (rm.lossIsNotScrap && gross > rm.netWeightKg) lines.push({ group: 'metal', label: `No scrap credit: the ${(gross - rm.netWeightKg).toFixed(3)} kg is metal lost, not scrap sold`, gbp: 0 });
   }
   const cons = rm.consumablesCostPerPart && rm.consumablesCostPerPart > 0 ? rm.consumablesCostPerPart : 0;
@@ -1050,15 +1088,29 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const not = meta.featureLines.filter(l => !l.included && !turned(l));
     if (not.length) alerts.push(uncostedScopeAlert(not, meta, result, library, annual, omFactor, M, MW));
   }
-  // A narrow slit (a clamp's saw cut) the feature table has no row for — found by the geometric DFM (slits.ts), never timed:
-  // the cutting data has no slitting-saw row (Part1 review, Nov 2026: two 3 mm clamp slits, neither costed nor flagged).
+  // A narrow slit (a clamp's saw cut): the costing cuts it as a slitting operation when its measurement carries the slit
+  // (kernel `slits`, Part1 review phase 3, Nov 2026) — page 1 then says what was costed and asks the supplier to confirm the
+  // method. A slit the DFM found that the costing does not carry stays uncosted scope (an older measurement).
+  const slitOpIdx = input.operations.findIndex(o => /^Slitting — /.test(o.operationName));
   const slit = (meta.geometricDFM?.grouped ?? []).find(x => x.ruleId === NARROW_SLIT_RULE_ID && dfmRuleApplies(commodity, x.ruleId));
-  if (slit) {
+  if (slitOpIdx >= 0) {
+    const op = input.operations[slitOpIdx];
+    const det = result.operationDetails?.[slitOpIdx];
+    const gbp = det ? (det.processCost ?? 0) + (det.labourCost ?? 0) : null;
+    const mach = library.machines.find(x => x.id === op.machineId);
+    alerts.push({ kind: 'costed', title: `Costed: ${shortOperationName(op.operationName).replace(/^Slitting — /, '')} as a slitting operation`,
+      lines: [
+        `${op.operationName.replace(/ \[geometry-measured\]$/, '')}: ${(op.cycleTimeHr * 60).toFixed(2)} min on the ${mach?.machineClass ?? 'machining centre'}`
+          + `${gbp != null ? `, ${M(gbp)} a part before overhead and margin` : ''} — a slitting saw on an arbor, one approach a slit, timed from the saw maker's published `
+          + 'cutting data (HSS — a carbide saw runs faster); the slit walls are no longer face-milled.',
+        'Question for the supplier: is the slit sawn (slitting saw), and its minutes a part?',
+      ] });
+  } else if (slit) {
     alerts.push({ kind: 'scope', title: `Uncosted scope: ${slit.count} narrow slit${slit.count === 1 ? '' : 's'} (saw cut) detected and NOT in this price`,
       lines: [
         ...(slit.worst?.detail ? [slit.worst.detail] : []),
         'Question for the supplier: how is the slit cut (slitting saw, wire EDM), and what are its minutes and tooling a part? '
-          + 'CostVision has no published cutting data for a slitting saw, so it does not time it — no figure is invented.',
+          + 'This measurement carries no slit for the costing, so it is not timed — no figure is invented.',
       ] });
   }
 
@@ -1143,7 +1195,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
         form: isForge ? 'Forging' : 'Casting', formGbp: form, kg: kgCostedOn, kgLabel: isForge ? 'as forged' : 'as cast', formPerKg: form / kgCostedOn,
         machiningGbp: machining, machiningDirectGbp: direct,
         machiningParts: [`${machOps.length} machining operation(s) ${M(opsGbp)}`, ...(wearGbp > 0 ? [`cutting-tool wear ${M(wearGbp)}`] : []),
-          ...(toolGbp > 0 ? [`fixtures and programming ${M(toolGbp, 4)} a part`] : [])],
+          ...(toolGbp > 0 ? [`fixtures and programming ${M(toolGbp)} a part`] : [])],
       };
     }
   }
@@ -1244,6 +1296,10 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   } catch { /* nothing to vary */ }
   const volumeLine = ref && ref.byVolume.length
     ? ref.byVolume.filter(p => p.total != null).map(p => `${M(p.total!)} at ${p.volume.toLocaleString('en-GB')}/yr`).join(' · ') : null;
+  const routesNote = routes ? null
+    : meta.routeComparisonNote ? meta.routeComparisonNote
+    : meta.geometrySource ? 'Other routes and the volume ladder are not in this report: the route comparison was not made for this costing.'
+    : 'Other routes and the volume ladder are not in this report: they are costed on a measured CAD part, and this costing was not made from one.';
 
   // Country rows: the screen's, or the part re-costed in each country's book, as §9 of the audit pack prints them.
   let countries: CoreReport['countries'] = { rows: [], note: '', basis: '' };
@@ -1300,6 +1356,16 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     + (openQuestions.length ? `. ${openQuestions.length} question${openQuestions.length === 1 ? '' : 's'} open` : '')
     + (askFirst.length ? `. Ask the supplier first for: ${askFirst.join(', ')}.` : '.');
 
+  // Page 1's visual summary (Part1 review phase 3): the buckets as a waterfall to the headline, and the part in brief.
+  const waterfall: CoreWaterfallBar[] = [];
+  {
+    let run = 0;
+    for (const b of buckets) { waterfall.push({ label: b.label.replace(/^\d+\.\s*/, '').replace(/\s*\(.*\)$/, ''), startGbp: run, gbp: b.gbp, endGbp: run + b.gbp, total: false }); run += b.gbp; }
+    waterfall.push({ label: 'Should-cost', startGbp: 0, gbp: total, endGbp: total, total: true });
+  }
+  const partSummary = corePartSummary({ result, input, library, commodity, meta, weights, castSubtype, annual, years,
+    country: exec.country, commodityLabel: exec.commodity });
+
   return {
     exec, part: result.partName, commodity: exec.commodity, commodityId: commodity, country: exec.country, region: regionCode,
     stamp: meta.stamp ?? null, total, verdict, annualVolume: annual, programmeYears: years, annualSpend: annual ? r4(total * annual) : null,
@@ -1320,9 +1386,62 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
         + 'reject rate, OEE, batch, weight) is listed without a figure.',
     },
     alerts, openQuestions, notIncluded, notModelled: std.notModelled ?? [], terms: deliveryTermsLine(input.deliveryTerms),
-    buckets, material, weights, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
-    sensitivity, sensitivityPct, sensitivityDropped, volumeLine, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
+    waterfall, partSummary, buckets, material, weights, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
+    sensitivity, sensitivityPct, sensitivityDropped, volumeLine, routesNote, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
     routes, countries, dfm,
+  };
+}
+
+/** Process words a casting subtype prints as (the rules' `cam-sub` / casting operation). */
+const CAST_SUBTYPE_WORDS: Record<string, string> = { gravity: 'gravity die', hpdc: 'high-pressure die', sand: 'sand', investment: 'investment', lpdc: 'low-pressure die' };
+
+/**
+ * Page 1's part summary — every value read off the costing and its measurement: weights (the report's ONE weight set),
+ * the measured envelope, material and grade, route, volume and life, country and terms, machined features. Nothing is
+ * estimated: a value the costing does not hold prints "—".
+ */
+export function corePartSummary(a: {
+  result: PartCostResult; input: UniversalStackInput; library: RateLibrary; commodity: CommodityType | null; meta: CoreReportMeta;
+  weights: CoreWeights | null; castSubtype: string; annual: number | null; years: number | null; country: string; commodityLabel: string | null;
+}): CorePartSummary {
+  const { input, library, meta } = a;
+  const geo = meta.partGeometry ?? (meta.ruleContext?.geo as CoreReportMeta['partGeometry']) ?? null;
+  const kg = (v: number) => `${v.toFixed(3)} kg`;
+  const w = a.weights;
+  const rm = input.rawMaterial;
+  const weight = w
+    ? [w.finishedKg != null ? `${kg(w.finishedKg)} finished` : null, `${kg(w.asFormedKg)} as ${w.form}`].filter(Boolean).join(' · ')
+    : rm.netWeightKg > 0 ? `${kg(rm.netWeightKg)} finished` : '—';
+  const bb = geo?.boundingBox;
+  const env = bb && bb.xMm > 0 ? [bb.xMm, bb.yMm, bb.zMm].sort((p, q) => q - p).map(d => d.toFixed(0)).join(' × ') + ' mm' : '—';
+  const mat = library.materials.find(m => m.id === rm.materialId);
+  const material = mat && !/^mat-virtual/.test(mat.id) ? `${mat.grade}${mat.category ? ` (${mat.category})` : ''}` : (rm.lines?.length ? 'priced by its itemised lines' : '—');
+  const sub = CAST_SUBTYPE_WORDS[a.castSubtype] ?? a.castSubtype;
+  const route = `${a.commodityLabel ?? '—'}${sub && /cast/.test(String(a.commodity ?? '')) ? ` — ${sub}` : ''}`;
+  const volume = a.annual ? `${a.annual.toLocaleString('en-GB')} a year${a.years ? ` × ${a.years} years = ${(a.annual * a.years).toLocaleString('en-GB')} parts` : ''}` : '—';
+  const terms = input.deliveryTerms === 'EXW' ? 'ex-works (EXW)' : 'delivered (DAP)';
+  // Machined features: the rows the costing machines — the form's ticked lines when they are the cost, else the default
+  // near-net rows (holes and measured faces) or every machinable row from solid — and the slits it saws.
+  const c = String(a.commodity ?? '');
+  const table = (geo?.featureTable ?? []) as FeatureRow[];
+  let rows: FeatureRow[] | null = null;
+  if (meta.featureLinesInCost && meta.featureLines?.length) {
+    rows = meta.featureLines.filter(l => l.included).map(l => ({ kind: l.kind, diaMm: l.diaMm, depthMm: l.depthMm, through: l.through, count: l.count, areaMm2: l.areaMm2 }));
+  } else if (table.length && MACHINED_SET_COMMODITIES.has(c as CommodityType)) rows = costedNearNetRows(table);
+  else if (table.length && c === 'machining') rows = table.filter(r => defaultInclude(r, 'solid_billet'));
+  const sawn = input.operations.some(o => /^Slitting — /.test(o.operationName)) ? (geo?.slits?.length ?? 0) : 0;
+  const mf = rows ? machinedFeatureCount(rows, sawn) : null;
+  return {
+    machinedFeatures: mf ? mf.total : null,
+    rows: [
+      { label: 'Weight', value: weight },
+      { label: 'Envelope (L × W × H)', value: env },
+      { label: 'Material and grade', value: material },
+      { label: 'Process route', value: route },
+      { label: 'Volume and life', value: volume },
+      { label: 'Country and terms', value: `${a.country} · ${terms}` },
+      { label: 'Machined features', value: mf ? (mf.total ? `${mf.total} — ${mf.text}` : 'none') : '—' },
+    ],
   };
 }
 

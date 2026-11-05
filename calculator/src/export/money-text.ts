@@ -377,3 +377,76 @@ export function localiseReportText(text: string, fx: number, sym: string): strin
     .replace(new RegExp(`${NOT_IN_SYMBOL}£ (?=/|per |a |an )`, 'g'), `${sym} `)
     .replace(new RegExp(`${NOT_IN_SYMBOL}£(?=M\\b|k\\b)`, 'g'), sym);
 }
+
+/**
+ * Money in the TEXT of the CORE report (Part1 review phase 3, Nov 2026): the precision a reader needs. Every £ figure is
+ * converted from its exact £ value and printed to 2 dp (a whole-unit figure keeps none; under 0.01 two significant
+ * figures, never a bare 0.00) — a China core report read "¥4.5945/kg", "¥0.3472 a part" and "¥21.4203/kg" beside 2-dp
+ * totals. An equation that re-added at its £ figures must still re-add at the figures printed here; where it needs a
+ * 4-dp input to close, the core prints its RESULT only (the arithmetic stays in the audit pack and the workbook, which
+ * print through `localiseGbpText`). A £ report goes through the same rounding (fx 1).
+ */
+export function coreMoneyText(text: string, fx: number, sym: string): string {
+  if (!text || !/£/.test(text)) return text;
+  const src = text.replace(new RegExp(`(${esc(sym)}\\s?\\d[\\d,]*(?:\\.\\d+)?) \\(£\\d[\\d,]*(?:\\.\\d+)?\\)`, 'g'), '$1');
+  const core = (x: string, single: boolean): string => {
+    const v = Number(x.replace(/,/g, '')) * fx;
+    const dp = dpOf(x);
+    if (dp <= 2) return fmtLike(x, v, single);
+    if (v !== 0 && Math.abs(v) < 0.01) return `${+v.toPrecision(2)}`;
+    return fmtDp(v, 2);
+  };
+  const toks: Array<{ start: number; end: number; a: string; b?: string; dash?: string; gbp: number; printed: string }> = [];
+  AMOUNT.lastIndex = 0;
+  for (let m = AMOUNT.exec(src); m; m = AMOUNT.exec(src)) {
+    const [, a, dash, b] = m;
+    toks.push({ start: m.index, end: m.index + m[0].length, a, dash, b, gbp: Number(a.replace(/,/g, '')),
+      printed: `${core(a, !b)}${b ? `${dash}${core(b, false)}` : ''}` });
+  }
+  const units = (t: string) => t.replace(new RegExp(`${NOT_IN_SYMBOL}£/`, 'g'), `${sym}/`).replace(/\(£\)/g, `(${sym})`);
+  if (!toks.length) return units(src);
+  // Equations: "… = £x" whose £ arithmetic holds must hold at the printed figures; else the arithmetic is cut.
+  const byAt = new Map(toks.map(t => [t.start, t]));
+  const cuts: Array<[number, number]> = [];
+  for (const res of toks) {
+    if (res.b) continue;
+    const before = src.slice(0, res.start);
+    const eq = /(=|→|->)\s*$/.exec(before);
+    if (!eq) continue;
+    const lex = lexEquation(src.slice(0, eq.index));
+    const seq = runBefore(lex, lex.length);
+    if (!seq || leavesOf(seq).length < 2) continue;
+    const leaves = leavesOf(seq);
+    if (leaves.some(t => t.text.startsWith('£') && byAt.get(t.at)?.b)) continue;
+    const gbpVal = (t: EqLeaf) => (byAt.has(t.at) ? byAt.get(t.at)!.gbp : plainVal(t.text));
+    const printedVal = (t: EqLeaf) => (byAt.has(t.at) ? numOf(byAt.get(t.at)!.printed) : plainVal(t.text));
+    const resPrinted = numOf(res.printed);
+    const holdsAt = (got: number | null, shown: number, shownText: string) => got != null
+      && Math.abs(got - shown) <= Math.max(0.5 * 10 ** -dpOf(shownText) * 1.0001, Math.abs(shown) * 1e-6);
+    let secToHr = false;
+    let gbpGot = evalRun(seq, gbpVal);
+    if (!holdsAt(gbpGot, res.gbp, res.a) && leaves.some(t => t.sec)) { secToHr = true; gbpGot = evalRun(seq, gbpVal, true); }
+    if (!holdsAt(gbpGot, res.gbp, res.a)) continue;                              // not an equation this converter owns
+    if (holdsAt(evalRun(seq, printedVal, secToHr), resPrinted, res.printed)) continue;
+    // cut from the run's first operand (and an opening bracket before it) to just after the "=" / "→"
+    let start = Math.min(...leaves.map(t => t.at));
+    // a run that opens with a group: its opening bracket(s) go with it
+    let depth = 0;
+    for (let it: EqItem | undefined = seq[0]; it?.kind === 'g'; it = it.run[0]) depth++;
+    for (; depth > 0; depth--) { const j = src.lastIndexOf('(', start - 1); if (j < 0) break; start = j; }
+    cuts.push([start, res.start]);
+  }
+  let out = '';
+  let at = 0;
+  const cutAt = cuts.sort((p, q) => p[0] - q[0]);
+  const inCut = (i: number) => cutAt.some(([s, e]) => i >= s && i < e);
+  for (const t of toks) {
+    if (inCut(t.start)) continue;
+    // text up to this token, without the cut spans
+    for (let i = at; i < t.start; i++) if (!inCut(i)) out += src[i];
+    out += `${sym}${t.printed}`;
+    at = t.end;
+  }
+  for (let i = at; i < src.length; i++) if (!inCut(i)) out += src[i];
+  return units(out);
+}

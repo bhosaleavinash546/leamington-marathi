@@ -49,6 +49,8 @@ export interface MachinedSetGeometry {
   turning?: { fraction: number; externalAreaMm2?: number; externalMaxDiaMm?: number; maxDiaMm?: number; axis: number[] | null } | null;
   boundingBox?: { xMm: number; yMm: number; zMm: number } | null;
   surfaceArea?: { cm2: number } | null;
+  /** The kernel's narrow slits — cut by the costing's slitting operation (root and walls). */
+  slits?: ReadonlyArray<{ rootFaceIds: number[]; wallFaceIds: number[] }> | null;
 }
 
 interface AxisLine { c: V3; a: V3 }
@@ -113,7 +115,9 @@ export function machinedFaceSet(
     if (f.kind === 'hole' && f.axis && f.positionMm && f.faceIds.some(id => holes.has(id))) lines.push({ c: f.positionMm, a: f.axis });
   }
 
-  const machined = new Set<number>([...faced, ...holes, ...turned]);
+  // the narrow slits the costing cuts with a slitting saw (kernel `slits`, Part1 review phase 3): root and both walls
+  const slit = new Set<number>((geo.slits ?? []).flatMap(x => [...x.rootFaceIds, ...x.wallFaceIds]));
+  const machined = new Set<number>([...faced, ...holes, ...turned, ...slit]);
   // a flat square to a machined axis and centred on it: a bore step, spot face or shoulder
   const steps = new Set<number>();
   for (const f of features) {
@@ -132,12 +136,14 @@ export function machinedFaceSet(
   blends.forEach(id => machined.add(id));
 
   const ids = [...machined].sort((a, b) => a - b);
-  const counts = { faced: faced.size, holes: holes.size, turned: turned.size, steps: steps.size, blends: blends.size };
+  const counts = { faced: faced.size, holes: holes.size, turned: turned.size, steps: steps.size, blends: blends.size,
+    ...(slit.size ? { slits: slit.size } : {}) };
   const route = commodity === 'forging' ? 'forging' : 'casting';
   const parts = [
     `${counts.faced} faced flat${counts.faced === 1 ? '' : 's'}`,
     `${counts.holes} hole and bore face${counts.holes === 1 ? '' : 's'}`,
     ...(counts.turned ? [`${counts.turned} face${counts.turned === 1 ? '' : 's'} of the turned axis`] : []),
+    ...(slit.size ? [`${slit.size} face${slit.size === 1 ? '' : 's'} of ${(geo.slits ?? []).length} narrow slit${(geo.slits ?? []).length === 1 ? '' : 's'} (slitting saw)`] : []),
   ];
   const inferred = [
     ...(counts.steps ? [`${counts.steps} flat${counts.steps === 1 ? '' : 's'} square to a machined bore or the turned axis and centred on it (its step, spot face or shoulder)`] : []),

@@ -44,7 +44,6 @@ export const CORE_SECTIONS = 7;
 
 export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions): void {
   const money = o.money;
-  const money4 = (gbp: number) => `${o.sym}${(gbp * o.fx).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
   const whole = (gbp: number) => `${o.sym}${Math.round(gbp * o.fx).toLocaleString('en-GB')}`;
   const signed = (gbp: number) => `${gbp < 0 ? '-' : '+'}${money(Math.abs(gbp))}`;
   const lastY = () => (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
@@ -192,6 +191,51 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   }
   if (pr.toolWearInMaterialGbp > 0) para(`Cutting-tool wear (inserts, drills and end mills worn in machining — a consumable, not a tool replacement set) ${money(pr.toolWearInMaterialGbp)} a part is costed in material (bucket 1), before overhead and margin — it is inside the piece price too.`, 6.6, GREY);
 
+  // Page 1's visual summary (Part1 review phase 3): the part in brief beside the 8 buckets as a waterfall to the price.
+  // Static vector shapes, every bar at its final value; every figure is the model's (`partSummary`, `waterfall`).
+  {
+    const gap = 6, leftW = 78, rightW = CW - leftW - gap;
+    const rowH = 3.55, labW = 27;
+    doc.setFontSize(6.3); doc.setFont('helvetica', 'normal');
+    const sumRows = m.partSummary.rows.map(r => ({ ...r, lines: doc.splitTextToSize(r.value, leftW - labW) as string[] }));
+    const sumH = 5 + sumRows.reduce((h, r) => h + Math.max(1, r.lines.length) * 2.9 + 0.75, 0);
+    const wfH = 5 + m.waterfall.length * rowH + 1;
+    const h = Math.max(sumH, wfH);
+    chk(h + 3);
+    const top = y;
+    // left: the part
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7.2); doc.setTextColor(...NAVY); doc.text('The part', MG, top + 3);
+    doc.setDrawColor(...ACCENT); doc.setLineWidth(0.25); doc.line(MG, top + 4.2, MG + leftW, top + 4.2);
+    let ry = top + 7.2;
+    for (const r of sumRows) {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(6); doc.setTextColor(...GREY); doc.text(r.label, MG, ry);
+      doc.setFontSize(6.3); doc.setTextColor(...SLATE); doc.text(r.lines, MG + labW, ry);
+      ry += Math.max(1, r.lines.length) * 2.9 + 0.75;
+    }
+    // right: the waterfall — each bar starts where the previous bucket ended; the last bar is the should-cost
+    const x0 = MG + leftW + gap;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7.2); doc.setTextColor(...NAVY); doc.text('Cost build-up to the price', x0, top + 3);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(5.6); doc.setTextColor(...GREY); doc.text('a part, the 8 buckets in order', x0 + rightW, top + 3, { align: 'right' });
+    doc.setDrawColor(...ACCENT); doc.line(x0, top + 4.2, x0 + rightW, top + 4.2);
+    const lab = 19, valW = 17, zx = x0 + lab, zw = rightW - lab - valW - 1;
+    const scale = m.total > 0 ? zw / m.total : 0;
+    let by = top + 6;
+    let prevEnd: number | null = null;
+    for (const b of m.waterfall) {
+      doc.setFontSize(5.9); doc.setFont('helvetica', b.total ? 'bold' : 'normal'); doc.setTextColor(...(b.total ? NAVY : SLATE));
+      doc.text(b.label, x0, by + rowH * 0.68);
+      const bx = zx + b.startGbp * scale, bw = Math.max(b.gbp * scale, 0);
+      if (prevEnd != null) { doc.setDrawColor(...GREY); doc.setLineWidth(0.12); doc.line(zx + prevEnd * scale, by - 0.4, zx + prevEnd * scale, by + 0.5); }
+      if (bw >= 0.25) { doc.setFillColor(...(b.total ? NAVY : ACCENT)); doc.rect(bx, by + 0.5, bw, rowH - 1.1, 'F'); }
+      else { doc.setDrawColor(...GREY); doc.setLineWidth(0.2); doc.line(bx, by + 0.5, bx, by + rowH - 0.6); }
+      doc.setFont('helvetica', b.total ? 'bold' : 'normal'); doc.setTextColor(...(b.total ? NAVY : SLATE));
+      doc.text(money(b.gbp), x0 + rightW, by + rowH * 0.68, { align: 'right' });
+      prevEnd = b.total ? null : b.endGbp;
+      by += rowH;
+    }
+    y = top + h + 2;
+  }
+
   // Confidence and the unsourced share
   const c = m.confidence;
   const confCol: RGB = c.grade === 'High' ? GN : c.grade === 'Medium' ? AM : RD;
@@ -202,7 +246,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   doc.text(cl, MG + 14, y + 2.5); y += 2.5 + cl.length * 3.1;
   if (c.gradeNote) para(c.gradeNote, 6.6, GREY, 'italic');
   if (c.lowInputs.length) {
-    para(`Low inputs: ${c.lowInputs.slice(0, 5).map(l => `${l.label} ${unitValue(l.value, l.unit, money, money4)}${l.operations > 1 ? ` (${l.operations} operations)` : ''}`).join('; ')}${c.lowInputs.length > 5 ? `; ${c.lowInputs.length - 5} more` : ''}.`, 7);
+    para(`Low inputs: ${c.lowInputs.slice(0, 5).map(l => `${l.label} ${unitValue(l.value, l.unit, money)}${l.operations > 1 ? ` (${l.operations} operations)` : ''}`).join('; ')}${c.lowInputs.length > 5 ? `; ${c.lowInputs.length - 5} more` : ''}.`, 7);
   }
   const u = m.unsourced;
   if (!u.ruleBasis) para('Not graded: this costing carries no rule values (it was not made from CAD), so the inputs typed or defaulted on the form are not labelled sourced or unsourced — confirm them against the audit pack\'s rate sources.', 7, AM, 'bold');
@@ -214,7 +258,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
 
   // Alerts
   for (const a of m.alerts) {
-    const look: [RGB, RGB] = a.kind === 'route' ? [ACCENT, [233, 240, 252]] : [RD, [252, 236, 236]];
+    const look: [RGB, RGB] = a.kind === 'route' || a.kind === 'costed' ? [ACCENT, [233, 240, 252]] : [RD, [252, 236, 236]];
     callout(a.title, a.lines, look[0], look[1]);
   }
   if (m.openQuestions.length) {
@@ -284,18 +328,24 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   const grpName: Record<string, string> = { metal: 'Metal / material', direct: 'Material', consumable: 'Consumables & bought services', energy: 'Energy', boughtIn: 'Bought-in' };
   const mat = m.material;
   table(['Group', 'Line', 'A part'],
-    [...mat.lines.map(l => [grpName[l.group], l.label, money(l.gbp)]),
+    [...mat.lines.map(l => [grpName[l.group], l.short ?? l.label, money(l.gbp)]),
       ['Totals', `metal ${money(mat.metalGbp)} · consumables & services ${money(mat.consumablesGbp)} · energy ${money(mat.energyGbp)}${mat.boughtInGbp > 0 ? ` · bought-in ${money(mat.boughtInGbp)}` : ''}`, money(mat.totalGbp)]],
     { 0: { cellWidth: 40, textColor: GREY }, 1: { cellWidth: 112 }, 2: { cellWidth: 30, halign: 'right' } },
     { fontSize: 6.8, bold: r => r === mat.lines.length, fill: r => (r === mat.lines.length ? HDR : null) });
   if (m.weights) para(m.weights.line, 6.8, GREY);
   const fm = m.formMachine;
+  // ONE £/kg on this page (Part1 review phase 3): the price a kg as cast / as forged. The metal a kg and the metal price
+  // a kg bought are in the audit pack (§3) and the workbook; the metal price is also section 5's first driver.
   if (fm) {
-    para(`${fm.form} ex-${fm.form === 'Casting' ? 'foundry' : 'forge'} ${money(fm.formGbp)} a part — ${money4(fm.formPerKg)}/kg ${fm.kgLabel} (${fm.kg.toFixed(3)} kg) · machining ${money(fm.machiningGbp)} a part · together ${money(m.total)}. `
-      + `Each carries its overhead and margin: machining = (${fm.machiningParts.join(' + ')}) ${money(fm.machiningDirectGbp)} × ${(fm.machiningGbp / Math.max(1e-9, fm.machiningDirectGbp)).toFixed(4)} (overhead and margin); the ${fm.form.toLowerCase()} is the rest (metal, melt / heating, forming, finishing, its tooling and packaging).`, 7.1, NAVY, 'bold');
-    if (m.perKg) para(`The metal ${money4(m.perKg.metalPerKg)}/kg ${m.perKg.kgLabel} (metal line ÷ kg).`, 6.8, GREY);
+    const omf = fm.machiningGbp / Math.max(1e-9, fm.machiningDirectGbp);
+    const closes = Math.abs(Math.round(fm.machiningDirectGbp * o.fx * 100) / 100 * Math.round(omf * 10_000) / 10_000 - Math.round(fm.machiningGbp * o.fx * 100) / 100) <= 0.005 * 1.0001;
+    para(`${fm.form} ex-${fm.form === 'Casting' ? 'foundry' : 'forge'} ${money(fm.formGbp)} a part — ${money(fm.formPerKg)}/kg ${fm.kgLabel} (${fm.kg.toFixed(3)} kg) · machining ${money(fm.machiningGbp)} a part · together ${money(m.total)}. `
+      + (closes
+        ? `Each carries its overhead and margin: machining = its direct cost ${money(fm.machiningDirectGbp)} × ${omf.toFixed(4)} (overhead and margin) = ${money(fm.machiningGbp)}; `
+        : `Each carries its overhead and margin: machining ${money(fm.machiningGbp)} is its direct cost ${money(fm.machiningDirectGbp)} with overhead and margin; `)
+      + `the direct cost is ${fm.machiningParts.join(', ')}; the ${fm.form.toLowerCase()} is the rest (metal, melt / heating, forming, finishing, its tooling and packaging).`, 7.1, NAVY, 'bold');
   } else if (m.perKg) {
-    para(`Per kg (${m.perKg.kgLabel}, ${m.perKg.kg.toFixed(3)} kg): the price ${money4(m.perKg.pricePerKg)}/kg (should-cost ÷ kg); the metal ${money4(m.perKg.metalPerKg)}/kg (metal line ÷ kg).`, 7.1, NAVY, 'bold');
+    para(`Per kg (${m.perKg.kgLabel}, ${m.perKg.kg.toFixed(3)} kg): the price ${money(m.perKg.pricePerKg)}/kg (should-cost ÷ kg).`, 7.1, NAVY, 'bold');
   }
   if (t.totalGbp > 0) {
     head('Tooling', t.mode === 'amortized' ? `over ${Math.round(t.amortisationVolume).toLocaleString('en-GB')} parts` : 'charged once, outside the piece price');
@@ -357,11 +407,13 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
   if (m.sensitivity.length) {
     head('Top movers', `each input ± ${m.sensitivityPct}% and the cost re-run${m.sensitivityDropped ? ' — inputs moving < 0.5 % or with a zero base left out' : ''}`);
     table(['Input', 'Base', `-${m.sensitivityPct}%`, `+${m.sensitivityPct}%`],
-      m.sensitivity.map(s => [s.label, unitValue(s.base, s.unit, money, money4), `${signed(s.minusGbp)} (${pct(s.minusGbp / m.total * 100)})`, `${signed(s.plusGbp)} (${pct(s.plusGbp / m.total * 100)})`]),
+      m.sensitivity.map(s => [s.label, unitValue(s.base, s.unit, money), `${signed(s.minusGbp)} (${pct(s.minusGbp / m.total * 100)})`, `${signed(s.plusGbp)} (${pct(s.plusGbp / m.total * 100)})`]),
       { 0: { cellWidth: 90 }, 1: { cellWidth: 32, halign: 'right' }, 2: { cellWidth: 30, halign: 'right' }, 3: { cellWidth: 30, halign: 'right' } });
   }
-  head('Volume');
-  para(m.volumeLine ? `This route re-costed at each volume (tooling, batches and cavitation follow it): ${m.volumeLine}.` : 'The volume ladder was not run for this costing (no route comparison).', 7);
+  if (m.volumeLine) {
+    head('Volume');
+    para(`This route re-costed at each volume (tooling, batches and cavitation follow it): ${m.volumeLine}.`, 7);
+  } else if (m.routesNote) para(m.routesNote, 6.8, GREY, 'italic');
 
   // ════════ 5. SUPPLIER NEGOTIATION ════════
   section(5, 'Supplier negotiation', 'our value and the question to ask');
@@ -377,7 +429,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
 
   // ════════ 6. ALTERNATIVES ════════
   section(6, 'Alternatives', 'other routes in the same material, and other countries');
-  head('Route Comparison', m.routes ? `reference: ${m.routes.reference} (this costing)` : 'not run on this costing');
+  if (m.routes) head('Route Comparison', `reference: ${m.routes.reference} (this costing)`);
   if (m.routes) {
     if (m.routes.rows.length) {
       table(['Route · process', 'A part', 'vs this costing', 'Band (P10–P90)', 'Up-front tooling'],
@@ -387,7 +439,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
         { fontSize: 6.4, fill: r => (m.routes!.rows[r].deltaPct <= -20 ? [220, 252, 231] : null) });
     } else para('No other feasible route is cheaper or within 50 % of this costing.', 7);
     para(`Shown: feasible routes cheaper than this costing or within +50 %; up-front tooling is the first set (as page 1), the programme total is in the audit pack. ${m.routes.notShown} other route(s) or process(es) are not feasible, need an answer, or cost more than +50 % — listed in the audit pack.`, 6.4, GREY, 'italic');
-  } else para('Run "Compare routes" on the CAD screen to see the other routes that can make this part.', 7, GREY);
+  } else if (m.routesNote) para(m.routesNote, 7, GREY, 'italic');
   if (m.countries.rows.length) {
     head('Countries', 'the part costed in each country');
     const base = m.countries.rows.find(r => r.isBase)?.name ?? 'base';
@@ -431,9 +483,9 @@ function machineClassShort(name: string): string {
   return name.split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim();
 }
 
-/** A value with its unit, money converted ("£27.95/hr", "0.62 min", "9.084 kg"). */
-function unitValue(v: number, unit: string, money: (n: number) => string, money4: (n: number) => string): string {
-  if (unit.includes('£')) return `${Math.abs(v) < 1 ? money4(v) : money(v)}${unit.replace('£', '')}`;
+/** A value with its unit, money converted ("£27.95/hr", "0.62 min", "9.084 kg") — money to 2 dp in the core (phase 3). */
+function unitValue(v: number, unit: string, money: (n: number) => string): string {
+  if (unit.includes('£')) return `${money(v)}${unit.replace('£', '')}`;
   if (unit === 'hr') return `${(v * 60).toFixed(2)} min`;
   if (unit === '%') return `${+v.toFixed(2)}%`;
   return `${+v.toFixed(4)}${unit ? ` ${unit}` : ''}`;

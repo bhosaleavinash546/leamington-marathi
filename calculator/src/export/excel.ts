@@ -13,6 +13,8 @@ import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
+import { addCharts, type ChartSpec } from './xlsx-charts.js';
+import { LOGO_PNG_BASE64 } from '../brand/logo-png.js';
 import { localiseGbpText, localiseRuleValue, directMaterialBasis } from './money-text.js';
 import { shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 
@@ -159,6 +161,7 @@ export async function exportToExcelBlob(
   sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });
 
   // ── Sheet 0: the CORE should-cost report — the same model as the core PDF (executive-summary.ts buildCoreReport), FIRST ──
+  let execChart: ChartSpec | null = null;
   try {
     const meta = { ...(extras?.cadMeta ?? {}), ...(band ? { uncertainty: band as never } : {}), ...(stamp ? { stamp } : {}),
       ...(routeComparison ? { routeComparison } : {}), checks: (extras?.cadMeta?.checks ?? checks) ?? null };
@@ -187,6 +190,13 @@ export async function exportToExcelBlob(
       ...(pr.mode === 'amortized' && pr.upfrontFactor != null ? [['  Re-add', `piece price + up-front ÷ ${Math.round(pr.amortisationVolume).toLocaleString('en-GB')} parts × ${pr.upfrontFactor.toFixed(4)} (its overhead and margin)`,
         m(pr.pieceAsQuotedGbp + pr.upfrontGbp / pr.amortisationVolume * pr.upfrontFactor), '= should-cost']] : []),
       ...(pr.toolWearInMaterialGbp > 0 ? [['  Cutting-tool wear (a consumable) in material (bucket 1)', m(pr.toolWearInMaterialGbp), 'inserts, drills and end mills worn in machining — not a tool replacement set; before overhead and margin, inside the piece price too']] : []),
+      [],
+      ['The part', 'Value'],
+      ...cr.partSummary.rows.map(r => [`  ${r.label}`, r.value]),
+      [],
+      [WATERFALL_HEAD, `Starts at (${currency})`, `A part (${currency})`, `Ends at (${currency})`],
+      ...cr.waterfall.map(w => [w.label, m(w.startGbp), m(w.gbp), m(w.endGbp)]),
+      [],
       ['Confidence', cr.confidence.grade, cr.confidence.sentence],
       ...(cr.confidence.gradeNote ? [['  Grade capped', cr.confidence.gradeNote]] : []),
       ...cr.confidence.lowInputs.map(l => ['  Low input', l.label, `${l.unit.includes('£') ? `${sym}${(l.value * fxRate).toFixed(4)}${l.unit.replace('£', '')}` : `${l.value} ${l.unit}`}${l.operations > 1 ? ` (${l.operations} operations)` : ''}`]),
@@ -242,7 +252,7 @@ export async function exportToExcelBlob(
       [],
       [`Top movers (± ${cr.sensitivityPct}%, the cost re-run; < 0.5 % or a zero base left out)`, `−${cr.sensitivityPct}% (${currency} a part)`, `+${cr.sensitivityPct}% (${currency} a part)`],
       ...cr.sensitivity.map(sv => [sv.label, m(sv.minusGbp), m(sv.plusGbp)]),
-      ...(cr.volumeLine ? [['Volume', cr.volumeLine]] : []),
+      ...(cr.volumeLine ? [['Volume', cr.volumeLine]] : cr.routesNote ? [[cr.routesNote]] : []),
       [],
       ['── 5. SUPPLIER NEGOTIATION ──'],
       ['Driver', 'Our value', 'Question to ask'],
@@ -255,7 +265,7 @@ export async function exportToExcelBlob(
       ['── 6. ALTERNATIVES ──'],
       ...(cr.routes ? [[`Route comparison — reference: ${cr.routes.reference}`, `A part (${currency})`, `vs this costing (${currency})`, 'vs this costing %', `Up-front tooling — first set (${currency})`, `Tooling over the programme (${currency})`],
         ...cr.routes.rows.map(r => [r.name, m(r.total), m(r.deltaGbp), pc(r.deltaPct), r.toolingGbp != null ? m(r.toolingGbp) : '—', r.toolingProgrammeGbp != null ? m(r.toolingProgrammeGbp) : '—']),
-        [`${cr.routes.notShown} other route(s) not feasible, needing an answer, or more than +50 % — see 8-Routes`]] : [['Route comparison not run on this costing']]),
+        [`${cr.routes.notShown} other route(s) not feasible, needing an answer, or more than +50 % — see 8-Routes`]] : cr.routesNote ? [[cr.routesNote]] : []),
       [],
       ['Country', `A part (${currency})`, 'vs base %'],
       ...cr.countries.rows.map(r => [r.name, m(r.total), r.isBase ? 'base' : pc(-r.vsBasePct)]),
@@ -269,6 +279,25 @@ export async function exportToExcelBlob(
       ['Prepared by', ''], ['Reviewed by', ''], ['Approved by', ''],
     ];
     sheets.unshift({ name: '0-Executive', rows: core, cols: [62, 22, 40, 16, 16, 22, 16, 16, 16] });
+    // the waterfall's cells, for its native chart (beside the table, added to the saved file below)
+    const at = core.findIndex(r => r[0] === WATERFALL_HEAD);
+    if (at >= 0) {
+      // buildWorkbook stamps two branding rows above every sheet's rows: the table's heading is sheet row at + 3 (1-based)
+      const head = at + 3;
+      const r0 = head + 1, r1 = head + cr.waterfall.length;    // 1-based sheet rows of the bars
+      const ref = (col: string) => `'0-Executive'!$${col}$${r0}:$${col}$${r1}`;
+      const cats = cr.waterfall.map(w => w.label);
+      execChart = {
+        sheet: '0-Executive', kind: 'bar', stacked: true, reverseCats: true, legend: 'none', labels: 'value',
+        title: `Cost build-up to the price (${currency} a part)`, numFmt: `"${sym}"#,##0.00`,
+        series: [
+          { name: 'Starts at', catRef: ref('A'), cats, valRef: ref('B'), vals: cr.waterfall.map(w => +(w.startGbp * fxRate).toFixed(6)), invisible: true },
+          { name: 'A part', catRef: ref('A'), cats, valRef: ref('C'), vals: cr.waterfall.map(w => +(w.gbp * fxRate).toFixed(6)),
+            colors: cr.waterfall.map(w => (w.total ? '16325C' : '1D6FB8')) },
+        ],
+        from: { col: 4, row: head - 1 }, to: { col: 10, row: head + cr.waterfall.length + 6 },
+      };
+    }
   } catch (e) { console.warn('[excel] core report sheet not built:', e); /* the workbook is unaffected */ }
 
   // ── Sheet 2: Material Detail — every row of the material line, adding up to bucket 1 ──
@@ -573,7 +602,36 @@ export async function exportToExcelBlob(
     for (const sh of sheets) sh.rows = sh.rows.map(row => row.map(c => (typeof c === 'string' ? localiseGbpText(c, fxRate, sym) : c))) as typeof sh.rows;
   }
   const blob = await workbookBlob(await buildWorkbook(sheets));
-  return cadViews?.length ? embedCadViews(blob, cadViews) : blob;
+  const withViews = cadViews?.length ? await embedCadViews(blob, cadViews) : blob;
+  return execChart ? embedExecutiveChart(withViews, execChart) : withViews;
+}
+
+/** The first cell of the 0-Executive waterfall table — the chart's anchor and the cells it reads. */
+export const WATERFALL_HEAD = 'Cost build-up to the price (waterfall)';
+
+/**
+ * 0-Executive's waterfall as a NATIVE chart (Part1 review phase 3): a stacked bar whose first series — "starts at" — is
+ * drawn with no fill, so each bucket sits where the one before it ended. The series point at the sheet's own cells. A
+ * chart needs a drawing on its sheet (xlsx-charts.ts), so the logo is placed first through the ExcelJS re-open path that
+ * embeds the CAD views. If anything fails the workbook is returned with the table alone.
+ */
+async function embedExecutiveChart(blob: Blob, spec: ChartSpec): Promise<Blob> {
+  try {
+    const mod = await import('exceljs');
+    const ExcelJS = (mod as unknown as { default?: typeof mod }).default ?? mod;
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await blob.arrayBuffer());
+    const ws = wb.getWorksheet(spec.sheet);
+    if (!ws) return blob;
+    const logo = wb.addImage({ base64: LOGO_PNG_BASE64, extension: 'png' });
+    ws.addImage(logo, { tl: { col: 4.1, row: 0.15 }, ext: { width: 150, height: 31 }, editAs: 'oneCell' });
+    const buf = await wb.xlsx.writeBuffer();
+    const out = await addCharts(buf as ArrayBuffer, [spec]);
+    return new Blob([out as Uint8Array<ArrayBuffer>], { type: blob.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  } catch (e) {
+    console.warn('[excel] waterfall chart not added:', e);
+    return blob;
+  }
 }
 
 /**

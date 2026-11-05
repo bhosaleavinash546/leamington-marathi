@@ -165,7 +165,9 @@ describe('(h) narrow slits and threads', () => {
     const g = dfmOf('cast_and_machine').grouped.find(x => x.ruleId === NARROW_SLIT_RULE_ID)!;
     expect(g.count).toBe(2);
     expect(g.totalCostGBP).toBe(0);
-    expect(g.costNotModelled).toMatch(/no slitting-saw/);
+    // an older measurement (no kernel `slits`): still flagged and never priced; since phase 3 the costing saws the slits
+    // when the measurement carries them (tests/part1-phase3.test.ts)
+    expect(g.costNotModelled).toMatch(/carries no slit for the costing/);
   });
 
   it('no false slit on the other DFM fixtures (bracket, knuckle, stub axle, manifold …)', () => {

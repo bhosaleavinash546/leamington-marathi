@@ -26,6 +26,8 @@ export interface ChartSeries {
   dash?: 'solid' | 'dash' | 'sysDot';
   /** Scatter charts: numeric x values (catRef / cats are ignored). */
   xRef?: string; xs?: number[];
+  /** Bar / column: a series drawn with no fill and no label — the offset a stacked waterfall's visible bars sit on. */
+  invisible?: boolean;
 }
 export interface ChartSpec {
   sheet: string;
@@ -89,11 +91,11 @@ function seriesXml(spec: ChartSpec, s: ChartSeries, i: number): string {
     const col = s.color ?? '1D6FB8';
     return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/><c:tx><c:v>${esc(s.name)}</c:v></c:tx><c:spPr><a:ln w="28575" cap="rnd">${solid(col)}<a:prstDash val="${s.dash ?? 'solid'}"/><a:round/></a:ln></c:spPr><c:marker><c:symbol val="circle"/><c:size val="6"/><c:spPr>${solid(col)}<a:ln>${solid('FFFFFF')}</a:ln></c:spPr></c:marker>${dLbls(spec, undefined, s)}<c:xVal>${numRef(s.xRef ?? '', s.xs ?? [], spec.xNumFmt ?? '#,##0')}</c:xVal><c:yVal>${numRef(s.valRef, s.vals, fmt)}</c:yVal><c:smooth val="0"/></c:ser>`;
   }
-  const sp = spec.kind === 'line'
+  const sp = s.invisible ? '<c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>' : spec.kind === 'line'
     ? `<c:spPr><a:ln w="28575" cap="rnd">${solid(s.color ?? '1D6FB8')}<a:prstDash val="${s.dash ?? 'solid'}"/><a:round/></a:ln></c:spPr><c:marker><c:symbol val="circle"/><c:size val="6"/><c:spPr>${solid(s.color ?? '1D6FB8')}<a:ln>${solid('FFFFFF')}</a:ln></c:spPr></c:marker>`
     : s.color ? `<c:spPr>${solid(s.color)}</c:spPr>` : '';
   const lblPos = spec.kind === 'bar' || spec.kind === 'column' ? (spec.stacked ? 'ctr' : 'outEnd') : spec.kind === 'line' ? 't' : undefined;
-  return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/><c:tx><c:v>${esc(s.name)}</c:v></c:tx>${sp}${spec.kind === 'bar' || spec.kind === 'column' ? '<c:invertIfNegative val="0"/>' : ''}${pts}${dLbls(spec, lblPos, s)}<c:cat>${strRef(s.catRef, s.cats)}</c:cat><c:val>${numRef(s.valRef, s.vals, fmt)}</c:val>${spec.kind === 'line' ? '<c:smooth val="0"/>' : ''}</c:ser>`;
+  return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/><c:tx><c:v>${esc(s.name)}</c:v></c:tx>${sp}${spec.kind === 'bar' || spec.kind === 'column' ? '<c:invertIfNegative val="0"/>' : ''}${pts}${s.invisible ? dLbls({ ...spec, labels: 'none' }) : dLbls(spec, lblPos, s)}<c:cat>${strRef(s.catRef, s.cats)}</c:cat><c:val>${numRef(s.valRef, s.vals, fmt)}</c:val>${spec.kind === 'line' ? '<c:smooth val="0"/>' : ''}</c:ser>`;
 }
 
 function axes(spec: ChartSpec): string {

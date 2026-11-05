@@ -36,6 +36,8 @@ export const CUTTING_SOURCES = {
   'DMG-NHX4000': { name: 'DMG MORI NHX 4000 2nd generation press release (2016)', rows: '#69' },
   'SANDVIK-MILLING': { name: 'Sandvik Coromant Metalcutting Technical Guide (D) Milling, worked examples (2006)', rows: '#5' },
   'GARANT-DIN338': { name: 'Hoffmann Group GARANT DIN 338 jobber drill product page', rows: '#43' },
+  // scripts/research/2026-11-slitting/data.json (Part1 review phase 3, Nov 2026)
+  'ZPS-SAW': { name: 'ZPS-FN HSS metal slitting saws DIN 1837 (type H) / DIN 1838 (type W), cutting conditions and bodies (product pages, read 5 Nov 2026)', rows: '#0–31 (scripts/research/2026-11-slitting/data.json)' },
 } as const;
 export type CuttingSourceId = keyof typeof CUTTING_SOURCES;
 /**
@@ -90,6 +92,8 @@ export interface CatalogueRow {
   tap: { vc: number; src: CuttingSourceId; note: string };
   /** Sandvik power constant K (Pc = Q·K / 100 kW, Q in cm³/min) — printed with the roughing, no machine cap applied. */
   k: number;
+  /** Slitting saw: the maker's vc and fz RANGES for the material group, and the saw type for its chips. */
+  slit: { group: string; vc: [number, number]; fz: [number, number]; type: 'W' | 'H'; src: CuttingSourceId };
 }
 
 const WSX_BODIES: CutterBody[] = [{ dc: 63, z: 5 }, { dc: 80, z: 6 }, { dc: 100, z: 7 }, { dc: 125, z: 8 }];
@@ -111,6 +115,7 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     turnRough: { vc: 350, fn: 0.4, src: 'SANDVIK-TURN' },
     tap: { vc: 15, src: 'OSG-ATAP', note: 'the low end of the S45C advisable band 15–50 m/min' },
     k: 5.1,
+    slit: { group: 'P.4 heat treatable steels ≤ 900 N/mm²', vc: [10, 20], fz: [0.02, 0.03], type: 'W', src: 'ZPS-SAW' },
   },
   'cast iron': {
     material: 'ductile iron GJS (the MVE < 450 MPa / WSX445 < 800 MPa / Sandvik 09.2 pearlitic rows)',
@@ -125,6 +130,7 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     turnRough: { vc: 215, fn: 0.3, src: 'SANDVIK-TURN' },
     tap: { vc: 15, src: 'OSG-ATAP', note: 'FCD has no advisable band, only "possible" 5–50 m/min — 15 m/min taken inside it' },
     k: 4.6,
+    slit: { group: 'K.1 cast iron ≤ 240 HB', vc: [15, 25], fz: [0.04, 0.05], type: 'H', src: 'ZPS-SAW' },
   },
   aluminium: {
     material: 'aluminium alloy (wrought 6xxx / cast Al-Si rows)',
@@ -141,6 +147,7 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     turnRough: { vc: 400, fn: 0.3, src: 'MMC-SVJD' },
     tap: { vc: 15, src: 'OSG-ATAP', note: 'AC / ADC has no advisable band, only "possible" 5–50 m/min — 15 m/min taken inside it' },
     k: 2.1,
+    slit: { group: 'N.1 aluminium, cast Al-Si ≤ 6 % Si', vc: [100, 150], fz: [0.03, 0.07], type: 'W', src: 'ZPS-SAW' },
   },
 };
 
@@ -273,8 +280,55 @@ export function turnRoughInCut(family: MaterialFamily | null | undefined): numbe
 export const millRoughEffective = (family: MaterialFamily | null | undefined) => r1(millRoughInCut(family).q / (1 + ROUGH_AIR_SHARE));
 export const turnRoughEffective = (family: MaterialFamily | null | undefined) => r1(turnRoughInCut(family) / (1 + ROUGH_AIR_SHARE));
 
+// ── Slitting saw (Part1 review phase 3, Nov 2026) ───────────────────────────────────────────────────────────────────
+/**
+ * The listed HSS slitting-saw bodies, by type, Ø and width: [Ø, bore, teeth] (ZPS-FN DIN 1837 type H / DIN 1838 type W,
+ * `scripts/research/2026-11-slitting/data.json` #12–29).
+ */
+export const SLIT_SAW_BODIES: Record<'W' | 'H', ReadonlyArray<{ dc: number; bore: number; z: Record<'2' | '2.5' | '3', number> }>> = {
+  W: [{ dc: 63, bore: 16, z: { '2': 40, '2.5': 32, '3': 32 } }, { dc: 80, bore: 22, z: { '2': 40, '2.5': 40, '3': 40 } }, { dc: 100, bore: 22, z: { '2': 48, '2.5': 48, '3': 40 } }],
+  H: [{ dc: 63, bore: 16, z: { '2': 80, '2.5': 64, '3': 64 } }, { dc: 80, bore: 22, z: { '2': 80, '2.5': 80, '3': 80 } }, { dc: 100, bore: 22, z: { '2': 100, '2.5': 100, '3': 80 } }],
+};
+/** Arbor collar Ø as a multiple of the saw's bore — what limits how deep a saw reaches. ASSUMED (engineering-typical, not sourced). */
+export const SAW_COLLAR_X_BORE = 2;
+
+/** A slit the kernel measured (`slits` in the geometry): width, the depth the saw passes through, its length in from the edge. */
+export interface SlitGeometry { widthMm: number; depthMm: number; lengthMm: number | null }
+
+/**
+ * One slit cut by a slitting saw, minutes: the saw is fed along the slit's root through the depth it crosses, at full
+ * radial depth = the slit's length; travel = depth + the entry chord √(ae·(D − ae)) + 2 × the face clearance; ÷ vf, vf =
+ * n·Z·fz, n = 1000·vc / (π·D). vc and fz are the MIDDLE of the maker's range (the point is engineering-typical); the saw
+ * type is the maker's by chip form; Ø the smallest listed whose radius less the collar reaches the length. Cutting only —
+ * the tool change is the caller's (one a slitting operation).
+ */
+export function slitMinutes(family: MaterialFamily | null | undefined, s: SlitGeometry): {
+  min: number; text: string; dc: number; z: number; vc: number; fz: number; vf: number; type: 'W' | 'H'; widthRow: string; reachShort: boolean;
+} {
+  const { row, scale } = catalogueFor(family);
+  const sl = row.slit;
+  const vc = (sl.vc[0] + sl.vc[1]) / 2, fz = Math.round((sl.fz[0] + sl.fz[1]) / 2 * 10_000) / 10_000;
+  const widthRow: '2' | '2.5' | '3' = s.widthMm > 2.75 ? '3' : s.widthMm > 2.25 ? '2.5' : '2';
+  const bodies = SLIT_SAW_BODIES[sl.type];
+  const reach = (b: { dc: number; bore: number }) => (b.dc - SAW_COLLAR_X_BORE * b.bore) / 2;
+  const L = s.lengthMm != null && s.lengthMm > 0 ? s.lengthMm : null;
+  const body = (L != null ? bodies.find(b => reach(b) >= L) : null) ?? bodies[bodies.length - 1];
+  const z = body.z[widthRow];
+  const n = rpm(vc, body.dc);
+  const vf = n * z * fz;
+  const ae = L != null ? Math.min(L, body.dc / 2) : body.dc / 2;
+  const chord = Math.sqrt(ae * (body.dc - ae));
+  const travel = Math.max(s.depthMm, 0) + chord + 2 * FACE_CLEARANCE_MM;
+  const min = travel / vf * scale;
+  const text = `(${f1(s.depthMm)} deep + √(${f1(ae)} × (${body.dc} − ${f1(ae)})) = ${f1(chord)} entry + 2 × ${FACE_CLEARANCE_MM} clearance) = ${f1(travel)} mm `
+    + `÷ ${vf.toFixed(1)} mm/min (Ø${body.dc} × ${widthRow} type ${sl.type} Z${z}, vc ${vc} m/min → n ${n.toFixed(1)}, fz ${fz})`
+    + (scale !== 1 ? ` × ${+scale.toFixed(3)}` : '') + ` = ${min.toFixed(3)} min`;
+  return { min, text, dc: body.dc, z, vc, fz, vf, type: sl.type, widthRow, reachShort: L != null && reach(body) < L };
+}
+const f1 = (n: number) => (Math.round(n * 10) / 10).toString();
+
 /** The sources a basis names for the operations it used. */
-export function sourcesLine(family: MaterialFamily | null | undefined, ops: Array<'face' | 'rough' | 'side' | 'drill' | 'bore' | 'tap' | 'turn'>): string {
+export function sourcesLine(family: MaterialFamily | null | undefined, ops: Array<'face' | 'rough' | 'side' | 'drill' | 'bore' | 'tap' | 'turn' | 'slit'>): string {
   const { row, note } = catalogueFor(family);
   const parts: string[] = [];
   const add = (label: string, id: CuttingSourceId, extra?: string) => parts.push(`${label} ${sourceName(id)}${extra ? ` (${extra})` : ''}`);
@@ -285,6 +339,7 @@ export function sourcesLine(family: MaterialFamily | null | undefined, ops: Arra
     if (op === 'drill') add(`drilling n·f at Ø${row.drill.pts[0].d} (n ${row.drill.pts[0].n}, f ${row.drill.pts[0].f}) and Ø${row.drill.pts[1].d} (n ${row.drill.pts[1].n}, f ${row.drill.pts[1].f}) —`, row.drill.src, row.drill.note);
     if (op === 'bore') add(`boring vc ${row.bore.vc} m/min, f ${row.bore.f} mm/rev —`, row.bore.src, row.bore.note);
     if (op === 'tap') add(`tapping ${row.tap.vc} m/min —`, row.tap.src, `${row.tap.note}; pitch ISO 261 coarse`);
+    if (op === 'slit') add(`slitting saw ${row.slit.group}: vc ${row.slit.vc[0]}–${row.slit.vc[1]} m/min, fz ${row.slit.fz[0]}–${row.slit.fz[1]} mm (the middle taken — ${ASSUMED}), HSS type ${row.slit.type} bodies —`, row.slit.src, `arbor collar ${SAW_COLLAR_X_BORE} × bore ${ASSUMED}`);
     if (op === 'turn') add(`turning finish vc ${row.turnFinish.vc} @ fn ${row.turnFinish.fn}, rough vc ${row.turnRough.vc} @ fn ${row.turnRough.fn} —`, row.turnFinish.src, row.turnFinish.note);
   }
   return `${row.material}: ${parts.join('; ')}${note ? `; ${note}` : ''}`;

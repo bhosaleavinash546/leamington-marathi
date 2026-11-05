@@ -1,0 +1,577 @@
+[
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "free-cutting / general construction steels ≤ 600 N/mm² (ISO P.1)",
+  "value": {
+   "vc_m_min": [
+    25,
+    50
+   ],
+   "fz_mm": [
+    0.03,
+    0.06
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.1 | Free-cutting steels, general constronstruction steels | ≤ 600 N/mm² | 1xS | 25 - 50 | 0,03 - 0,06"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "free-cutting / general construction steels ≤ 600 N/mm² (ISO P.1)",
+  "value": {
+   "vc_m_min": [
+    25,
+    50
+   ],
+   "fz_mm": [
+    0.03,
+    0.06
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.1 | Free-cutting steels, general constronstruction steels | ≤ 600 N/mm² | 1xS | 25 - 50 | 0,03 - 0,06"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "general construction steels, steel castings ≤ 850 N/mm² (ISO P.2)",
+  "value": {
+   "vc_m_min": [
+    15,
+    30
+   ],
+   "fz_mm": [
+    0.03,
+    0.04
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.2 | General construction steels, steel castings | ≤ 850 N/mm² | 1xS | 15 - 30 | 0,03 - 0,04"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "general construction steels, steel castings ≤ 850 N/mm² (ISO P.2)",
+  "value": {
+   "vc_m_min": [
+    15,
+    30
+   ],
+   "fz_mm": [
+    0.03,
+    0.04
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.2 | General construction steels, steel castings | ≤ 850 N/mm² | 1xS | 15 - 30 | 0,03 - 0,04"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "heat treatable steels ≤ 900 N/mm² (ISO P.4) — the C45 / 42CrMo4 class the steel catalogue row costs",
+  "value": {
+   "vc_m_min": [
+    10,
+    20
+   ],
+   "fz_mm": [
+    0.02,
+    0.03
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.4 | Heat treatable steels | ≤ 900 N/mm² | 1xS | 10 - 20 | 0,02 - 0,03"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "heat treatable steels ≤ 900 N/mm² (ISO P.4) — the C45 / 42CrMo4 class the steel catalogue row costs",
+  "value": {
+   "vc_m_min": [
+    10,
+    20
+   ],
+   "fz_mm": [
+    0.02,
+    0.03
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "P.4 | Heat treatable steels | ≤ 900 N/mm² | 1xS | 10 - 20 | 0,02 - 0,03"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "cast iron ≤ 240 HB (ISO K.1)",
+  "value": {
+   "vc_m_min": [
+    15,
+    25
+   ],
+   "fz_mm": [
+    0.04,
+    0.05
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "K.1 | Cast iron (≤ 240 HB) | ≤ 820 mm² | 1xS | 15 - 25 | 0,04 - 0,05   [the strength column reads 'mm²' on the page — a typo; the HB limit is in the material name]"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "cast iron ≤ 240 HB (ISO K.1)",
+  "value": {
+   "vc_m_min": [
+    15,
+    25
+   ],
+   "fz_mm": [
+    0.04,
+    0.05
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "K.1 | Cast iron (≤ 240 HB) | ≤ 820 mm² | 1xS | 15 - 25 | 0,04 - 0,05   [the strength column reads 'mm²' on the page — a typo; the HB limit is in the material name]"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "aluminium, aluminium cast alloys Si ≤ 6 % (ISO N.1)",
+  "value": {
+   "vc_m_min": [
+    100,
+    150
+   ],
+   "fz_mm": [
+    0.03,
+    0.07
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "N.1 | Aluminium, Aluminium cast alloys Si (Si ≤ 6%) | ≤ 400 N/mm² | 1xS | 100 - 150 | 0,03 - 0,07"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "aluminium, aluminium cast alloys Si ≤ 6 % (ISO N.1)",
+  "value": {
+   "vc_m_min": [
+    100,
+    150
+   ],
+   "fz_mm": [
+    0.03,
+    0.07
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "N.1 | Aluminium, Aluminium cast alloys Si (Si ≤ 6%) | ≤ 400 N/mm² | 1xS | 100 - 150 | 0,03 - 0,07"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "aluminium cast alloys Si ≤ 12 % (ISO N.2)",
+  "value": {
+   "vc_m_min": [
+    120,
+    200
+   ],
+   "fz_mm": [
+    0.03,
+    0.07
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type W; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "N.2 | Aluminium cast alloys Si (Si ≤ 12%) | ≤ 600 N/mm² | 1xS | 120 - 200 | 0,03 - 0,07"
+ },
+ {
+  "quantity": "slitting saw cutting speed vc and feed per tooth fz",
+  "material": "aluminium cast alloys Si ≤ 12 % (ISO N.2)",
+  "value": {
+   "vc_m_min": [
+    120,
+    200
+   ],
+   "fz_mm": [
+    0.03,
+    0.07
+   ]
+  },
+  "unit": "m/min; mm/tooth",
+  "conditions": "HSS metal slitting saw type H; ae column '1xS'; the same table is printed on the type H and type W pages",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "N.2 | Aluminium cast alloys Si (Si ≤ 12%) | ≤ 600 N/mm² | 1xS | 120 - 200 | 0,03 - 0,07"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 2,
+   "d_mm": 16,
+   "Z": 40
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 2 | 16 | 40 | 722913.0063200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 2.5,
+   "d_mm": 16,
+   "Z": 32
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 2,5 | 16 | 32 | 722913.0063250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 3,
+   "d_mm": 16,
+   "Z": 32
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 3 | 16 | 32 | 722913.0063300"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 2,
+   "d_mm": 22,
+   "Z": 40
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 2 | 22 | 40 | 722913.0080200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 2.5,
+   "d_mm": 22,
+   "Z": 40
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 2,5 | 22 | 40 | 722913.0080250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 3,
+   "d_mm": 22,
+   "Z": 40
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 3 | 22 | 40 | 722913.0080300"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 2,
+   "d_mm": 22,
+   "Z": 48
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 2 | 22 | 48 | 722913.0100200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 2.5,
+   "d_mm": 22,
+   "Z": 48
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 2,5 | 22 | 48 | 722913.0100250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 3,
+   "d_mm": 22,
+   "Z": 40
+  },
+  "unit": "mm; teeth",
+  "conditions": "type W DIN 1838 coarse teeth — for long-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 3 | 22 | 40 | 722913.0100300"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 2,
+   "d_mm": 16,
+   "Z": 80
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 2 | 16 | 80 | 722910.0063200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 2.5,
+   "d_mm": 16,
+   "Z": 64
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 2,5 | 16 | 64 | 722910.0063250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 63,
+   "S_mm": 3,
+   "d_mm": 16,
+   "Z": 64
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "63 | 3 | 16 | 64 | 722910.0063300"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 2,
+   "d_mm": 22,
+   "Z": 80
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 2 | 22 | 80 | 722910.0080200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 2.5,
+   "d_mm": 22,
+   "Z": 80
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 2,5 | 22 | 80 | 722910.0080250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 3,
+   "d_mm": 22,
+   "Z": 80
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "80 | 3 | 22 | 80 | 722910.0080300"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 2,
+   "d_mm": 22,
+   "Z": 100
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 2 | 22 | 100 | 722910.0100200"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 2.5,
+   "d_mm": 22,
+   "Z": 100
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 2,5 | 22 | 100 | 722910.0100250"
+ },
+ {
+  "quantity": "slitting saw body: diameter D, width S, bore d, teeth Z",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 100,
+   "S_mm": 3,
+   "d_mm": 22,
+   "Z": 80
+  },
+  "unit": "mm; teeth",
+  "conditions": "type H DIN 1837 fine teeth — for short-chipping materials",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "100 | 3 | 22 | 80 | 722910.0100300"
+ },
+ {
+  "quantity": "saw type by chip form (maker's guidance)",
+  "material": "(tool)",
+  "value": null,
+  "unit": "",
+  "conditions": "type W for long-chipping materials (steel, aluminium); type H for short-chipping materials (cast iron)",
+  "source": "ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type W, DIN 1838, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table / ZPS-FN a.s. (Czech HSS cutter maker), Metal slitting saws type H, DIN 1837, HSS — product page, \"Cutting conditions\" table and \"Product attributes\" table",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-din-1838,-high-speed-steel-hss/ ; https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-h,-din-1837,-high-speed-steel-hss/",
+  "date": "2026-11-05",
+  "quote": "Type W — Recommended for deeper cuts and for productive cutting of materials (in general for materials with longer chips). / Type H — Recommended for lower depth cuts and slots or cutting of thin-walled profile materials (in general for materials with small chips)."
+ },
+ {
+  "quantity": "single-saw page cross-check (Ø80 × 3 type W)",
+  "material": "(tool)",
+  "value": {
+   "D_mm": 80,
+   "S_mm": 3,
+   "d_mm": 22,
+   "Z": 40
+  },
+  "unit": "",
+  "conditions": "same cutting-conditions table as the family page",
+  "source": "ZPS-FN a.s., Metal slitting saws, type W, code 722913, diameter 80 mm, width 3 mm",
+  "url": "https://www.zps-fn.cz/en/saws/detail/metal-slitting-saws,-type-w,-code-722913,-diameter-80-mm,-width-3-mm/",
+  "date": "2026-11-05",
+  "quote": "80 | 3 | 22 | 40 | 722913.0800300 | Yes"
+ },
+ {
+  "quantity": "carbide saw cutting speed (cross-check only — NOT used: no fz, no teeth)",
+  "material": "aluminium alloys cast / gray cast irons",
+  "value": {
+   "Al_cast_m_min": [
+    640,
+    1615
+   ],
+   "gray_CI_m_min": [
+    35,
+    145
+   ]
+  },
+  "unit": "m/min",
+  "conditions": "KYOCERA SGS carbide saws, general recommendations (2015 PDF)",
+  "source": "KYOCERA SGS Precision Tools, 'Recommended cutting conditions' (Kyocera_Slitting_Saw_Parameters.pdf)",
+  "url": "https://cdn.shopify.com/s/files/1/0612/0733/files/Kyocera_Slitting_Saw_Parameters.pdf",
+  "date": "2026-11-05",
+  "quote": "Aluminum Alloys-Cast 40-125 2125-5315 (640-1615) · Gray Cast Irons 120-320 105-470 (35-145)   [hardness Bhn, SFM, (m/min)]"
+ }
+]

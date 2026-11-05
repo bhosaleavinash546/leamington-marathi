@@ -8,8 +8,13 @@
  * ~180° (a slot end, not a blend) whose two adjacent planes face each other at 2R.
  *
  * Measured or silent: every number here is the kernel's (radius, sweep, the planes' normals and centroids, the depth
- * along the root's axis). The cost is NOT modelled: the cutting catalogue holds no slitting-saw or wire-EDM data, so no
- * minutes are invented — the finding says so and the core report lists it on page 1 as uncosted scope with a question.
+ * along the root's axis).
+ *
+ * Costed since phase 3 (Nov 2026): the kernel measures the same slits for the costing (`slits` in the geometry,
+ * `_narrow_slits`), the near-net costing cuts them as a slitting operation from the catalogue's slitting-saw row
+ * (cutting-catalogue.ts `slitMinutes`, ZPS-FN HSS saws) and leaves their walls out of the face milling. When the costing
+ * carries the slit (its faces are in the machined set), the finding is information: costed, confirm the method. When it
+ * does not (an older measurement, a route that does not machine), it stays the uncosted-scope risk it was.
  */
 import type { GeometricFinding, ManufacturingFeature, PartContext } from '../types.js';
 import { onMachinedFace } from '../types.js';
@@ -31,6 +36,8 @@ export interface NarrowSlit {
   root: ManufacturingFeature; walls: [ManufacturingFeature, ManufacturingFeature]; widthMm: number; depthMm: number; lengthMm: number | null;
   /** The costing's feature table carries the walls as faced flats (face-milled by area) — the saw cut is still not costed. */
   wallsInCosting: boolean;
+  /** The costing cuts this slit as a slitting operation (its root is in the machined set — kernel `slits`). */
+  costed: boolean;
 }
 
 export function narrowSlits(part: PartContext): NarrowSlit[] {
@@ -58,26 +65,40 @@ export function narrowSlits(part: PartContext): NarrowSlit[] {
       lengthMm: depth > 0 && area > 0 ? Math.round(area / depth * 10) / 10 : null,
       // The feature table can read the two walls as FACED FLATS: the costing then face-mills them by area — a face mill
       // cannot enter a 3 mm slit, and the saw cut itself is still not costed (Part1: walls 695 / 698 mm² as face rows).
-      wallsInCosting: onMachinedFace({ faceIds: [...pair[0].faceIds, ...pair[1].faceIds] }, part) });
+      wallsInCosting: onMachinedFace({ faceIds: [...pair[0].faceIds, ...pair[1].faceIds] }, part),
+      costed: (part.machined?.counts.slits ?? 0) > 0 && onMachinedFace({ faceIds: f.faceIds }, part) });
   }
   return out;
 }
 
-/** The findings: one a slit, 'risk' (scope the costing does not price), never priced (cost-impact.ts NOT_MODELLED). */
+/** Title of a slit the costing cuts (`costed`) — and of one it does not. */
+export const SLIT_COSTED_TITLE = 'Narrow slit (saw cut) — costed as a slitting operation';
+export const SLIT_UNCOSTED_TITLE = 'Narrow slit (saw cut) — not in the feature table, NOT costed';
+
+/**
+ * The findings: one a slit. Costed by the costing (its root in the machined set) → 'info', the operation named; else
+ * 'risk' — scope the costing does not price — never priced (cost-impact.ts NOT_MODELLED).
+ */
 export function narrowSlitFindings(part: PartContext): GeometricFinding[] {
   return narrowSlits(part).map(s => ({
-    ruleId: NARROW_SLIT_RULE_ID, commodity: part.commodity, severity: 'risk' as const,
-    title: 'Narrow slit (saw cut) — not in the feature table, NOT costed',
+    ruleId: NARROW_SLIT_RULE_ID, commodity: part.commodity, severity: s.costed ? 'info' as const : 'risk' as const,
+    title: s.costed ? SLIT_COSTED_TITLE : SLIT_UNCOSTED_TITLE,
     detail: `A ${s.widthMm.toFixed(1)} mm slit, ${s.depthMm.toFixed(1)} mm deep${s.lengthMm ? ` and about ${s.lengthMm.toFixed(0)} mm long` : ''}: `
       + `faces ${s.walls[0].faceIds[0]} and ${s.walls[1].faceIds[0]} face each other ${s.widthMm.toFixed(2)} mm apart, closed by an R${s.root.radiusMm!.toFixed(1)} `
-      + `root sweeping ${s.root.sweepDeg!.toFixed(0)}°. It is cut after the part is made; the saw cut is NOT in this price`
-      + (s.wallsInCosting ? ' — the feature table reads its two walls as faced flats, so the costing face-mills them by area, which a face mill '
-        + 'cannot do in a slit this narrow.' : '.'),
+      + `root sweeping ${s.root.sweepDeg!.toFixed(0)}°. It is cut after the part is made`
+      + (s.costed ? ' — costed as a slitting operation (a slitting saw, one approach a slit, from the maker\'s published cutting data); '
+        + 'its walls are not face-milled.'
+        : '; the saw cut is NOT in this price'
+        + (s.wallsInCosting ? ' — the feature table reads its two walls as faced flats, so the costing face-mills them by area, which a face mill '
+          + 'cannot do in a slit this narrow.' : '.')),
     featureId: s.root.id, faceIds: [...new Set([...s.root.faceIds, ...s.walls[0].faceIds, ...s.walls[1].faceIds])].sort((a, b) => a - b),
     measured: { field: 'widthMm', value: s.widthMm, unit: 'mm' },
     threshold: { value: NARROW_SLIT_MAX_WIDTH_MM, unit: 'mm', comparator: '<=' as const },
-    recommendation: 'Ask the supplier how the slit is cut (slitting saw, wire EDM) and the minutes and tooling a part, and add it to '
-      + 'the costing as an operation; the cutting data has no slitting-saw row, so CostVision does not time it.',
+    recommendation: s.costed
+      ? 'Confirm with the supplier that the slit is sawn (slitting saw on an arbor) and its minutes a part; the costing times it '
+        + 'on HSS saw data (the slow end of what a carbide saw runs).'
+      : 'Ask the supplier how the slit is cut (slitting saw, wire EDM) and the minutes and tooling a part, and add it to '
+        + 'the costing as an operation; this measurement carries no slit for the costing, so CostVision does not time it.',
     source: SOURCE,
     ...(s.root.positionMm ? { positionMm: s.root.positionMm } : {}),
     areaMm2: s.root.areaMm2,

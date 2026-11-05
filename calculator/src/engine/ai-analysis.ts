@@ -235,6 +235,16 @@ export interface OCCTGeometry {
     /** Per instance: its axis line (no radius) and axial span — coaxial touching holes are one stepped bore (FeatureRow). */
     axes?: Array<{ line: string; s0: number; s1: number }>;
   }>;
+  /**
+   * Narrow slits (≤ 3 mm saw cuts — a clamp's slit), measured by the kernel (`_narrow_slits`, kernel since Nov 2026): the
+   * walls' gap, the depth the saw passes through, the length in from the edge, the root and wall face ids. Their walls are
+   * NOT in the feature table's `face` rows (a face mill cannot enter the slit); the near-net costing times them as a
+   * slitting operation (`nearNetCut`). Absent on older recorded geometry and on meshes.
+   */
+  slits?: Array<{
+    widthMm: number; depthMm: number; lengthMm: number | null; radiusMm: number; sweepDeg: number;
+    rootFaceIds: number[]; wallFaceIds: number[]; wallAreaMm2?: number; axis?: number[]; normal?: number[];
+  }>;
   /** What the CAD file says about itself — product names, the header path, the authoring
    *  system, declared materials (server/utils/cad-metadata.ts). Evidence for the process
    *  and material questions; attached at the measurement boundary. */

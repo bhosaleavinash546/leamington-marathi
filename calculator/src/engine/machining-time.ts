@@ -454,6 +454,30 @@ export function machinedFaceCount(rows: FeatureRow[]): number {
   return ids.size + unnamed;
 }
 
+/**
+ * The machined features of a costing, counted as pieces of work (report page 1's part summary, Part1 review phase 3):
+ * holes and bores (a stepped bore — coaxial touching steps — is ONE), faced flats (one an instance), other ticked rows
+ * (pockets, slots, bosses — one an instance) and narrow slits (kernel `slits`). `rows` are the rows the costing machines
+ * (`costedNearNetRows` on a near-net part; every machinable row from solid). Pure arithmetic on the feature table.
+ */
+export function machinedFeatureCount(rows: FeatureRow[], slits: number): {
+  total: number; holes: number; stepped: number; faces: number; other: number; slits: number; text: string;
+} {
+  const work = holeWork(rows, 'aluminium');
+  const holes = work.reduce((s, w) => s + w.count, 0);
+  const stepped = work.filter(w => w.kind === 'stepped').reduce((s, w) => s + w.count, 0);
+  const faces = rows.filter(r => r.kind === 'face').reduce((s, r) => s + r.count, 0);
+  const other = rows.filter(r => r.kind !== 'face' && r.kind !== 'hole').reduce((s, r) => s + r.count, 0);
+  const total = holes + faces + other + slits;
+  const parts = [
+    ...(holes ? [`${holes} hole${holes === 1 ? '' : 's'} and bore${holes === 1 ? '' : 's'}${stepped ? ` (${stepped} stepped)` : ''}`] : []),
+    ...(faces ? [`${faces} faced flat${faces === 1 ? '' : 's'}`] : []),
+    ...(other ? [`${other} pocket / slot / boss feature${other === 1 ? '' : 's'}`] : []),
+    ...(slits ? [`${slits} narrow slit${slits === 1 ? '' : 's'}`] : []),
+  ];
+  return { total, holes, stepped, faces, other, slits, text: parts.join(', ') };
+}
+
 /** Below this outside area on the turned axis there is nothing a lathe operation is worth setting up for. */
 export const MIN_NEAR_NET_TURNED_CM2 = 20;
 /**

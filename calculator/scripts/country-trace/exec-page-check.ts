@@ -16,7 +16,12 @@ import { execFileSync } from 'node:child_process';
 import { jsPDF } from 'jspdf';
 import { printPDF, printAuditPackPDF, type CADReportMeta } from '../../src/export/pdf.js';
 import { recomputeMachineRates, DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
-import { buildRegionalLibrary, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { BASELINE } from '../real-parts-baseline.js';
+
+/** The recorded geometry of each part — page 1's part summary reads its envelope, feature table and slits (phase 3). */
+const GEOMETRY = new Map((JSON.parse(readFileSync(process.env.CV_BASELINE_FILE ?? BASELINE, 'utf8')) as Array<{ part: string; geometry: Record<string, unknown> }>)
+  .map(p => [p.part.replace(/\.(stp|step)$/i, ''), p.geometry]));
 
 const dir = process.argv[2];
 const out = process.argv[3] ?? '/tmp/exec-page-check';
@@ -51,8 +56,10 @@ for (const f of readdirSync(dir).filter(x => x.endsWith('.json') && x !== 'index
   const routesFile = join(dir, 'features-reports', `${part}.routes.json`);
   const routes = existsSync(routesFile) ? JSON.parse(readFileSync(routesFile, 'utf8')) : null;
   const castOrForge = /cast|forg/.test(String(d.commodity));
+  const g = GEOMETRY.get(part) as { boundingBox?: never; featureTable?: never; slits?: never } | undefined;
   const meta: CADReportMeta = {
     geometrySource: 'occt', annualVolume: si.annualVolume ?? d.annual,
+    ...(g ? { partGeometry: { boundingBox: g.boundingBox ?? null, featureTable: g.featureTable ?? null, slits: g.slits ?? null } } : {}),
     uncertainty: { p10: res.total * 0.9, p90: res.total * 1.1, plusMinusPct: 10 } as never,
     stamp: `${region} rate book · rules v8 · kernel test · 3 Nov 2026`,
     routeComparison: routes ? { ...routes, current: d.commodity, currentLabel: d.commodity, labels: {}, headline: res.total } : null,
@@ -86,8 +93,11 @@ for (const f of readdirSync(dir).filter(x => x.endsWith('.json') && x !== 'index
     } : {}),
   };
   const corePdf = join(out, `${part}.core.pdf`), auditPdf = join(out, `${part}.audit.pdf`);
-  writeFileSync(corePdf, capture(() => printPDF(res, si, book, 'GBP', 1, d.commodity, null, region, [], meta, base)));
-  writeFileSync(auditPdf, capture(() => printAuditPackPDF(res, si, book, 'GBP', 1, d.commodity, null, region, [], meta, base)));
+  // CV_LOCAL_CURRENCY=1: in the country's own currency (the money-in-text checks read the converted figures)
+  const local = process.env.CV_LOCAL_CURRENCY === '1' && region !== 'UK';
+  const cur = local ? REGIONAL_DATA[region].currency : 'GBP', fx = local ? REGIONAL_DATA[region].fxToGBP : 1;
+  writeFileSync(corePdf, capture(() => printPDF(res, si, book, cur, fx, d.commodity, null, region, [], meta, base)));
+  writeFileSync(auditPdf, capture(() => printAuditPackPDF(res, si, book, cur, fx, d.commodity, null, region, [], meta, base)));
   const core = pagesOf(corePdf), audit = pagesOf(auditPdf);
   let at = 0;
   for (let p = 1; p <= audit && !at; p++) if (pageText(auditPdf, p).includes('Executive Summary')) at = p;

@@ -38,14 +38,14 @@ import {
   CORED_ABOVE_MM, HOURS_STATUS, CUTTING_DATA_STATUS,
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, turnedPartFacts, type CuttingTime,
-  costedNearNetRows, machinedFaceCount, TOOL_CHANGE_SEC,
+  costedNearNetRows, machinedFaceCount, TOOL_CHANGE_SEC, TOOL_CHANGE_STATUS,
 } from '../../machining-time.js';
 import {
   optimiseMachiningRouting, standardBatchSize, type RoutingChoice, CUTTING_MANNING, PALLET_CHANGE_SEC, PALLET_CHANGE_SOURCE,
 } from '../../routing-optimiser.js';
 import { tappedThread } from '../../feature-ops.js';
 import { costedOperation, holeWork, isLandRow, ALLOWANCE_STATUS, type HoleWork } from '../../feature-machining.js';
-import { sourcesLine } from '../../cutting-catalogue.js';
+import { sourcesLine, slitMinutes } from '../../cutting-catalogue.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef, type RuleOutcome } from '../types.js';
 import { holeRows, bRepFaceCount, MESH_DEBURR_FACE_ALLOWANCE } from '../derive/facts.js';
 import { materialFacts, DENSITY_KG_PER_CM3, representativeMaterialId, materialGradeName } from '../derive/material.js';
@@ -169,6 +169,10 @@ export interface MachiningCut {
   handlingMin: number;
   /** The weight handled (stock or casting), kg. */
   handledKg: number;
+  /** Near-net: the narrow slits (kernel `slits`) cut with a slitting saw on the machining centre, min — cutting + one tool
+   *  change (Part1 review phase 3, Nov 2026: the slits were face-milled by their wall area, which a face mill cannot do). */
+  slitMin?: number;
+  slits?: SlitWork[];
   /** Near-net: the feature rows the cut machines (`costedNearNetRows`) — the drilling, programming and deburr read these,
    *  not every row of the table (a cast-in pocket is not programmed or deburred). Absent: every row (from solid). */
   rows?: FeatureRow[];
@@ -223,6 +227,26 @@ export interface NearNetCutOptions {
   finishFactor?: number;
 }
 
+/** Narrow slits of one size, cut by one saw. */
+export interface SlitWork { count: number; widthMm: number; depthMm: number; lengthMm: number | null; minEach: number; calc: string; faceIds: number[]; reachShort: boolean }
+
+/**
+ * The narrow slits the kernel measured (`geo.slits`), grouped by size, each timed by the slitting-saw row of the cutting
+ * catalogue (`slitMinutes`). Empty when the geometry has none (older recorded geometry, a mesh).
+ */
+export function slitWork(geo: RuleContext['geo'], family: MaterialFamily): SlitWork[] {
+  const out: SlitWork[] = [];
+  for (const s of geo.slits ?? []) {
+    if (!(s.widthMm > 0) || !(s.depthMm > 0)) continue;
+    const hit = out.find(w => w.widthMm === s.widthMm && w.depthMm === s.depthMm && w.lengthMm === s.lengthMm);
+    const ids = [...s.rootFaceIds, ...s.wallFaceIds];
+    if (hit) { hit.count++; hit.faceIds.push(...ids); continue; }
+    const t = slitMinutes(family, s);
+    out.push({ count: 1, widthMm: s.widthMm, depthMm: s.depthMm, lengthMm: s.lengthMm, minEach: t.min, calc: t.text, faceIds: ids, reachShort: t.reachShort });
+  }
+  return out;
+}
+
 /**
  * Near-net (cast / forged) finish machining: the machined faces and the holes, nothing roughed. ONE cut for the cast +
  * machine route and for the casting and forging routes' secondary machining (`nearNetSecondaryMachining`) — they used to
@@ -246,6 +270,10 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
   // machining centre — the same minutes nearNetMachiningTime counted, split by where they are cut.
   // A stepped bore goes where its largest step is cut: finish-bored when a step is above the cored size (holeWork).
   const boreMin = Math.round(holeWork(rows, family, cored).filter(w => w.bored).reduce((s, w) => s + w.minEach * w.count, 0) * ff * 100) / 100;
+  // Narrow slits: one slitting saw, one approach a slit, one tool change for the operation.
+  const slits = slitWork(ctx.geo, family);
+  const slitMin = slits.length
+    ? Math.round((slits.reduce((s, w) => s + w.minEach * w.count, 0) * ff + TOOL_CHANGE_SEC / 60) * 100) / 100 : 0;
   return {
     kind: 'near-net', family, handledKg, handlingMin: handlingMinPerFixturing(handledKg),
     // a turned part's faces are in the lathe's time; its tool changes are the lathe's three (a ticked pocket / boss is
@@ -253,6 +281,7 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
     millMin: tp ? (nn.otherMin > 0 ? Math.round((nn.otherMin + nn.otherTools * TOOL_CHANGE_SEC / 60) * 100) / 100 : 0) : nn.finishMin + nn.toolChangeMin,
     holeMin: Math.max(0, Math.round((nn.holeMin - boreMin) * 100) / 100), boreMin, coredAboveMm: cored,
     turned: null, spindle, turnedPart: !!tp, detail: nn, surfaced: false, kernelHr: kernelCuttingHr(ctx), rows,
+    ...(slits.length ? { slits, slitMin } : {}),
   };
 }
 
@@ -307,7 +336,7 @@ export interface OperationPlan {
  */
 export function routingFor(ctx: RuleContext, cut: MachiningCut): RoutingChoice {
   return optimiseMachiningRouting({
-    millingHr: (cut.millMin + (cut.boreMin ?? 0)) / 60,   // cored bores are bored on the machining centre
+    millingHr: (cut.millMin + (cut.boreMin ?? 0) + (cut.slitMin ?? 0)) / 60,   // cored bores and slits are cut on the machining centre
     drillHr: cut.holeMin / 60,
     principalDirections: cut.turnedPart ? 1 : principalDirections(ctx).count,
     axisymmetric: cut.kind === 'from-solid' && !ctx.geo.turning && isAxisymmetric(ctx),
@@ -436,6 +465,19 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
           + `${stepNote(boreWork)}a land shallower than ¼ Ø is skimmed at 0.004 min/mm Ø, + 0.2 min when it stands alone; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(fam, ['bore'])}; ${CUTTING_DATA_STATUS})`,
         faceIds: boreWork.flatMap(w => w.faceIds) });
     }
+    if ((cut.slitMin ?? 0) > 0 && cut.slits?.length) {
+      const sl = cut.slits;
+      const n = sl.reduce((s, w) => s + w.count, 0);
+      ops.push({ ...machine, name: `Slitting — ${n} narrow slit${n === 1 ? '' : 's'} (${sl.map(w => `${w.count}× ${fmt(w.widthMm, 1)} wide × ${fmt(w.depthMm, 1)} deep${w.lengthMm != null ? ` × ${fmt(w.lengthMm, 1)} long` : ''}`).join(', ')}) [geometry-measured]`,
+        type: 'milling_3ax', machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.slitMin!),
+        basis: `${n} slit(s) measured off the B-rep (two facing walls ${sl.map(w => fmt(w.widthMm, 2)).join(' / ')} mm apart closed by a half-round root), `
+          + `cut with a slitting saw on an arbor, one approach a slit, ${fmt(cut.slitMin!, 2)} min: `
+          + sl.map(w => `${w.count}× ${w.calc}`).join('; ')
+          + ` + 1 tool change × ${TOOL_CHANGE_SEC} s (${TOOL_CHANGE_STATUS})`
+          + (sl.some(w => w.reachShort) ? '; the slit is longer than the largest listed saw reaches — costed on it, confirm the cutter' : '')
+          + `; the slit walls are not face-milled (sources — ${sourcesLine(fam, ['slit'])}; ${CUTTING_DATA_STATUS})`,
+        faceIds: sl.flatMap(w => w.faceIds) });
+    }
   }
   // Near-net with a turned axis: the spindle on the CNC lathe, in its own fixture, loaded once.
   if (cut.kind === 'near-net' && cut.spindle) {
@@ -476,7 +518,8 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
   // faces of its costed features — an as-cast / as-forged face leaves no machined edge (it read all 230 B-rep faces of a
   // bracket that machines 28; secondary-machining parity, Nov 2026).
   const bRepFaces = bRepFaceCount(ctx);
-  const machinedFaces = cut.kind === 'near-net' && cut.rows && bRepFaces !== null ? machinedFaceCount(cut.rows) : null;
+  const machinedFaces = cut.kind === 'near-net' && cut.rows && bRepFaces !== null
+    ? machinedFaceCount(cut.rows) + new Set((cut.slits ?? []).flatMap(w => w.faceIds)).size : null;
   const deburr = deburrInspectMinutes(machinedFaces ?? bRepFaces ?? MESH_DEBURR_FACE_ALLOWANCE);
   ops.push({ name: 'Deburr and gauge check (bench)', type: 'milling_3ax', machineId: chosen.primaryMachineId,
     cycleTimeHr: hr4(deburr), partsPerCycle: 1, labourId: 'lab-uk-semiskilled', manning: 1, oee: 1, benchOperation: true,
@@ -555,7 +598,7 @@ export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: Routi
   };
   // From solid every feature row is programmed; near-net only the rows it machines (a cast-in pocket is not programmed —
   // secondary-machining parity, Nov 2026).
-  const rows = cut.kind === 'near-net' && cut.rows ? cut.rows.length : (ctx.geo.featureTable ?? []).length;
+  const rows = cut.kind === 'near-net' && cut.rows ? cut.rows.length + (cut.slits?.length ?? 0) : (ctx.geo.featureTable ?? []).length;
   const hrs = programmingHours(routing.chosen.setups + lathe, rows, cut.surfaced);
   const rate = activeLabourRate('lab-uk-engineer');   // the costed country's engineer
   return {
