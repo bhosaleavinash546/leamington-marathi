@@ -182,6 +182,15 @@
     "confidence": "Low"
    },
    {
+    "id": "gravity-tilt-domestic",
+    "match": "^grav-die-cast-std$",
+    "refId": "grav-die-cast-std",
+    "refCapexLocal": 131762.59,
+    "basis": "Quanzhou Jingda tilting aluminium gravity die-casting machine \"with robot pouring\", US$19,800 (1–4 sets; Made-in-China list price, grade C; whether the robot is in the price is not stated) ÷ 1.3344 $/£ × ¥8.88/£ = ¥131,763; the JD-700 machine-only listing is US$14,700. ESTIMATE: machine only — holding furnace, ladle / robot and die cooling NOT included (no price read)",
+    "source": "Made-in-China.com product page, Quanzhou Jingda Machinery — https://qzjdjx.en.made-in-china.com/product/JXmnChUVOLkI/China-Tilting-Aluminum-Metal-Good-Quality-Gravity-Die-Casting-Machine-with-Robot-Pouring.html (also https://qzjdjx.en.made-in-china.com/product/qLpUPMgXYxkW/China-Jd-700-Tiltable-Gravity-Casting-Machine-for-Aluminum-Alloy.html)",
+    "confidence": "Low"
+   },
+   {
     "id": "cnc-5axis-domestic",
     "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
     "refId": "mach-vmc5",

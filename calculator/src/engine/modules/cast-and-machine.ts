@@ -20,7 +20,7 @@ export interface CastAndMachineInputs {
   // Subtype-specific (same as CastingInputs)
   hpdc?: { machineId: string; cycleTimeSec: number; cavities: number; dieCost: number; dieLife: number; };
   sand?: { mouldLineId: string; cycleTimeHr: number; patternCost: number; patternLife: number; coreCostPerPart: number; };
-  gravity?: { machineId: string; cycleTimeHr: number; mouldCost: number; mouldLife: number; };
+  gravity?: { machineId: string; cycleTimeHr: number; mouldCost: number; mouldLife: number; impressions?: number; };
   investment?: { waxCostPerPart: number; shellBuildCostPerPart: number; pourLabourId: string; pourCycleHr: number; pourMachineId: string; waxDieCost: number; };
 
   // === MACHINING ===
@@ -44,8 +44,10 @@ export interface CastAndMachineInputs {
   amortizationVolume: number;
 
   // === POST-CASTING SECONDARY OPERATIONS (optional) ===
-  /** T5/T6/T4 heat treatment cost per kg (0 or undefined = none) */
+  /** A heat treater's £/kg (normalise, T5, T6 …), 0 or undefined = none — a figure > 0 replaces the aluminium station. */
   heatTreatmentCostPerKg?: number;
+  /** The aluminium heat-treat station (T6 / T5 / F) — see CastingInputs.heatTreatment; priced on the as-cast weight. */
+  heatTreatment?: CastingInputs['heatTreatment'];
   /** Shot blast / surface prep cost per part (0 or undefined = none) */
   shotBlastCostPerPart?: number;
   /** Impregnation (porosity sealing) cost per part — common for pressure-critical HPDC */
@@ -134,6 +136,10 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     ...(inputs.foundry ? { foundry: inputs.foundry } : {}),
     ...(inputs.leakTestSec ? { leakTestSec: inputs.leakTestSec } : {}),
     ...(inputs.surfaceFinishing ? { surfaceFinishing: inputs.surfaceFinishing } : {}),
+    // Heat treatment on the AS-CAST weight, in the casting half: a typed £/kg, or the aluminium station (gravity research
+    // round, Nov 2026 — the station's kWh, furnace operator and capital; one place for both routes).
+    ...(inputs.heatTreatmentCostPerKg ? { heatTreatCostPerKg: inputs.heatTreatmentCostPerKg } : {}),
+    ...(inputs.heatTreatment ? { heatTreatment: inputs.heatTreatment } : {}),
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)
@@ -152,8 +158,8 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   };
 
   // 4. Aggregate post-casting consumable costs into material line
+  // Heat treatment is costed in the casting half (above).
   const postCastCost =
-    (inputs.heatTreatmentCostPerKg ?? 0) * inputs.castPartWeightKg +
     (inputs.hipCostPerKg ?? 0) * inputs.castPartWeightKg +
     (inputs.shotBlastCostPerPart ?? 0) +
     (inputs.impregnationCostPerPart ?? 0) +
@@ -162,7 +168,6 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     (inputs.machiningToolWearCostPerPart ?? 0);
 
   const postItems = ([
-    ['heat treatment', (inputs.heatTreatmentCostPerKg ?? 0) * inputs.castPartWeightKg],
     ['HIP', (inputs.hipCostPerKg ?? 0) * inputs.castPartWeightKg],
     ['shot blast', inputs.shotBlastCostPerPart ?? 0],
     ['impregnation', inputs.impregnationCostPerPart ?? 0],

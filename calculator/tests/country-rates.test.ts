@@ -411,8 +411,14 @@ describe('10. errors the LIVE India run of the PRCR002 aluminium housing exposed
     const inp = { alloyFamily: 'aluminium', partWeightKg: 2, heatTreat: 't6', ndt: 'xray', impregnation: true, shotBlast: true } as never;
     const uk = estimateCastingSecondaryAdders(inp).adders, ind = withRates(IN, () => estimateCastingSecondaryAdders(inp)).adders;
     const by = (a: typeof uk, re: RegExp) => a.find(x => re.test(x.label))!.unitCostGbp;
-    expect(by(uk, /heat/i)).toBe(1.1);
-    expect(by(ind, /heat/i)).toBeCloseTo(1.1 * heatTreatServiceFactor('IN'), 3);
+    // Gravity research round (5 Nov 2026): T6 is the heat-treat STATION priced in each book (kWh × its tariff + operator h ×
+    // its furnace rate + the furnace capital at par) — no longer £1.10/kg × a steel quench-and-temper factor.
+    const { alHeatTreatStation, alHeatTreatGbpPerKg } = await import('../src/engine/al-heat-treat.js');
+    const st = alHeatTreatStation('T6');
+    const inUnit = alHeatTreatGbpPerKg(st, IN.energy[0].electricityPerKwh, IN.labour.find(l => l.id === 'lab-uk-furnace')!.fullyLoadedRatePerHr);
+    expect(by(uk, /heat/i)).toBeCloseTo(alHeatTreatGbpPerKg(st, 0.182, 24.6), 4);
+    expect(by(ind, /heat/i)).toBeCloseTo(inUnit, 4);
+    expect(by(ind, /heat/i)).not.toBeCloseTo(by(uk, /heat/i) * heatTreatServiceFactor('IN'), 3);
     expect(by(ind, /x-ray|ndt|radiograph/i)).toBeCloseTo(5 * ndtServiceFactor('IN'), 2);
     expect(heatTreatServiceFactor('UK')).toBe(1);
     expect(heatTreatServiceFactor('IN')).toBeLessThan(0.6);

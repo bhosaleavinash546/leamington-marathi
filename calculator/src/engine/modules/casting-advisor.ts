@@ -5,7 +5,8 @@
  * indicative and override with real quotes via the admin Rate Library.
  */
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor } from '../regional-services.js';
-import { activeLabourRate, gbpFigure } from '../rate-context.js';
+import { activeLabourRate, activeRates, gbpFigure } from '../rate-context.js';
+import { alHeatTreatStation, alHeatTreatGbpPerKg } from '../al-heat-treat.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
 
@@ -467,10 +468,10 @@ export const HIP_COST_PER_KG: Record<AlloyFamily, number> = {
 };
 
 /** UK £/kg of charge — engineering-typical, NOT sourced (arithmetic audit, Oct 2026): the rules print that wherever they
- *  charge one. 'stress-relieve' is also the rate the casting rules charge for normalising cast steel. */
-export const HEAT_TREAT_COST_PER_KG: Record<'t5' | 't6' | 'stress-relieve', number> = {
-  t5: 0.55,             // age only
-  t6: 1.10,             // solution + quench + age
+ *  charge one. 'stress-relieve' is also the rate the casting rules charge for normalising cast steel. The aluminium T6 /
+ *  T5 (£1.10 / £0.55 a kg × a STEEL quench-and-temper country factor) were replaced by the heat-treat station
+ *  (al-heat-treat.ts — gravity research round, Nov 2026), priced in each country's own book. */
+export const HEAT_TREAT_COST_PER_KG: Record<'stress-relieve', number> = {
   'stress-relieve': 0.35,
 };
 
@@ -680,7 +681,12 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   const wt = Math.max(inputs.partWeightKg, 0);
 
   if (inputs.heatTreat && inputs.heatTreat !== 'none') {
-    const unit = Math.round(HEAT_TREAT_COST_PER_KG[inputs.heatTreat] * heatTreatServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
+    // T6 / T5: the heat-treat station in the costed country's book (kWh × its tariff + operator h × its furnace rate +
+    // the furnace capital at par — al-heat-treat.ts); stress relief: the UK £/kg × the heat-treat service factor.
+    const st = inputs.heatTreat === 't6' || inputs.heatTreat === 't5' ? alHeatTreatStation(inputs.heatTreat === 't6' ? 'T6' : 'T5') : null;
+    const unit = st
+      ? Math.round(alHeatTreatGbpPerKg(st, activeRates().energy?.[0]?.electricityPerKwh ?? 0, activeLabourRate(st.labourId)) * 10_000) / 10_000
+      : Math.round(HEAT_TREAT_COST_PER_KG['stress-relieve'] * heatTreatServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
     adders.push({
       label: `Heat treat (${inputs.heatTreat.toUpperCase()})`,
       basis: 'per-kg', unitCostGbp: unit, costPerPartGbp: unit * wt,

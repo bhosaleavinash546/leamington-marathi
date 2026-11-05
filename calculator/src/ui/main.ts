@@ -4655,7 +4655,8 @@ function renderCastingForm(): string {
     <div class="field-row">
       <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, foundry labour. Light 2, medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cast-fettle-min" step="0.5" min="0" value="0"/></div>
       <div class="field-group"><label title="Fettling on a robotic grinding cell instead of the bench, seconds per casting (the cell's machine time plus half an operator). Set by the CAD rules for a ferrous casting up to 30 kg off the automatic moulding line: 40 s (published time study). 0 = bench fettling.">Fettling cell (s/part) ⓘ</label><input type="number" id="cast-fettle-cell-sec" step="1" min="0" value="0"/></div>
-      <div class="field-group"><label title="Normalise / T5 / T6 £ per kg of casting. Engine defaults: normalise £0.35/kg, T5 £0.55/kg, T6 £1.10/kg.">Heat Treat (£/kg) ⓘ</label><input type="number" id="cast-ht-cost" step="0.05" min="0" value="0"/></div>
+      <div class="field-group"><label for="cast-ht-route" title="Aluminium heat treatment costed as a station (ESTIMATE, built up from a published T6 furnace set): the furnace kWh at the country tariff, the furnace operator at its rate, the furnace capital. A heat-treat £/kg typed in the next field replaces it.">Al heat treatment ⓘ</label><select id="cast-ht-route"><option value="none">None / a typed £/kg</option><option value="T6">T6 — solution + quench + age</option><option value="T5">T5 — age only</option><option value="F">F — as cast</option></select></div>
+      <div class="field-group"><label title="A heat treater's £ per kg of casting (normalise, or a T5 / T6 toll price). Engine default: normalise £0.35/kg (steel). Aluminium T6 / T5 is costed as a station (the field before) unless a £/kg is typed here.">Heat Treat (£/kg) ⓘ</label><input type="number" id="cast-ht-cost" step="0.05" min="0" value="0"/></div>
       <div class="field-group"><label title="Shot blast to remove sand, scale or flash. Engine default £0.35/part.">Shot Blast (£/part) ⓘ</label><input type="number" id="cast-shot-blast" step="0.05" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -4706,11 +4707,12 @@ function renderCastingForm(): string {
       <div class="section-title" style="margin-top:8px">Gravity Die Casting</div>
       <div class="field-row">
         <div class="field-group"><label>Machine</label><select id="cast-grav-mach" class="machine-select"></select></div>
-        <div class="field-group"><label title="Tilt/gravity die cycle: load + pour + solidify + tilt + extract. Al: 2–6 min (0.033–0.1hr). Fe/Cu alloys: longer due to thermal mass.">Cycle Time (hr) ⓘ</label><input type="number" id="cast-grav-ct" step="0.01" min="0.01" value="0.083" title="Gravity die cycle. Al small: 0.03–0.06hr. Medium: 0.07–0.12hr. Large: 0.12–0.25hr."/></div>
+        <div class="field-group"><label title="One die opening: close + pour + solidify + tilt + open + extract + spray. It makes one casting an impression. A single tilt machine runs 12–30 die cycles an hour (2–5 min; FMT 2009). CAD rules: by the metal poured and the section 2·V/S.">Die cycle (hr) ⓘ</label><input type="number" id="cast-grav-ct" step="0.01" min="0.01" value="0.083" title="Hours a die opening. Al small: 0.03–0.06hr. Medium: 0.07–0.12hr. Large: 0.12–0.25hr."/></div>
+        <div class="field-group"><label for="cast-grav-imp" title="Castings a die opening. The die cost and its life follow the impressions.">Impressions ⓘ</label><input type="number" id="cast-grav-imp" step="1" min="1" max="4" value="1"/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="cast-grav-mould-cost" step="1000" min="0" value="20000" title="Permanent mould (gravity die) cost. Simple: £8–20k. Complex with slides: £20–60k."/></div>
-        <div class="field-group"><label title="Castings before mould refurbishment. Al alloys: 30,000–100,000. Mould replacements calculated automatically from volume ÷ life.">Mould Life (casts) ⓘ</label><input type="number" id="cast-grav-mould-life" step="1000" min="0" value="50000" title="Castings per mould. Al: 30k–100k. Mould sets = ceil(volume ÷ mould life)."/></div>
+        <div class="field-group"><label title="Castings before the die is replaced (die cycles × impressions). Permanent moulds last 10,000–120,000 cycles (Degarmo); CAD rules: H13, 100,000 die cycles a cavity. Mould replacements calculated automatically from volume ÷ life.">Mould Life (casts) ⓘ</label><input type="number" id="cast-grav-mould-life" step="1000" min="0" value="100000" title="Castings per die (die cycles × impressions). H13: 100,000 die cycles a cavity (10k–120k published). Mould sets = ceil(volume ÷ mould life)."/></div>
       </div>
     </div>
     <!-- Investment -->
@@ -5510,11 +5512,12 @@ function renderCastAndMachineForm(): string {
       <div class="section-title" style="margin-top:8px">Gravity Die</div>
       <div class="field-row">
         <div class="field-group"><label>Machine</label><select id="cam-grav-mach" class="machine-select"></select></div>
-        <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="cam-grav-ct" step="0.01" min="0.01" value="0.083"/></div>
+        <div class="field-group"><label>Die cycle (hr)</label><input type="number" id="cam-grav-ct" step="0.01" min="0.01" value="0.083"/></div>
+        <div class="field-group"><label for="cam-grav-imp">Impressions</label><input type="number" id="cam-grav-imp" step="1" min="1" max="4" value="1"/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="cam-grav-mould-cost" step="1000" min="0" value="20000"/></div>
-        <div class="field-group"><label>Mould Life (casts)</label><input type="number" id="cam-grav-mould-life" step="1000" min="0" value="50000"/></div>
+        <div class="field-group"><label>Mould Life (casts)</label><input type="number" id="cam-grav-mould-life" step="1000" min="0" value="100000"/></div>
       </div>
     </div>
     <!-- Investment subtype -->
@@ -5569,7 +5572,8 @@ function renderCastAndMachineForm(): string {
     <div class="section-title" style="margin-top:8px">Post-Casting Secondary Operations</div>
     <div style="font-size:0.7rem;color:#888;margin-bottom:4px">These costs are added to the material cost line. Leave at 0 if not applicable. Check specification for mandatory operations.</div>
     <div class="field-row">
-      <div class="field-group"><label title="T5 (artificial ageing only) or T6 (solution treat + ageing) heat treatment. Structural Al castings (EDU housings, brackets, knuckles) typically REQUIRE T6. Engine defaults (advisor rates): T5 £0.55/kg, T6 £1.10/kg, normalise / stress-relieve £0.35/kg — replace with a heat-treater quote. Enter 0 if not required.">Heat Treatment (£/kg) ⓘ</label><input type="number" id="cam-ht-cost" step="0.1" min="0" value="0" title="Engine defaults (advisor rates): T5 £0.55/kg, T6 £1.10/kg, normalise / stress-relieve £0.35/kg — replace with a heat-treater quote. Leave 0 if not required."/></div>
+      <div class="field-group"><label for="cam-ht-route" title="Aluminium heat treatment costed as a station (ESTIMATE, built up from a published T6 furnace set): the furnace kWh at the country tariff, the furnace operator at its rate, the furnace capital. A heat-treat £/kg typed in the next field replaces it.">Al heat treatment ⓘ</label><select id="cam-ht-route"><option value="none">None / a typed £/kg</option><option value="T6">T6 — solution + quench + age</option><option value="T5">T5 — age only</option><option value="F">F — as cast</option></select></div>
+      <div class="field-group"><label title="A heat treater's £ per kg of casting (normalise, or a T5 / T6 toll price). Structural Al castings (EDU housings, brackets, knuckles) typically REQUIRE T6, costed as a station (the field before) unless a £/kg is typed here. Engine default: normalise / stress-relieve £0.35/kg (steel). Enter 0 if not required.">Heat Treatment (£/kg) ⓘ</label><input type="number" id="cam-ht-cost" step="0.1" min="0" value="0" title="A heat treater's quote replaces the aluminium station. Leave 0 if not required."/></div>
       <div class="field-group"><label title="Shot blast, vibratory deburr, or tumbling. Mandatory for most OEM castings to remove flash and improve surface finish. Typical: £0.15–0.40/part for small, £0.30–0.80 for large. Enter 0 if surface as-cast is acceptable.">Shot Blast / Deburr (£/part) ⓘ</label><input type="number" id="cam-shot-blast" step="0.05" min="0" value="0" title="Shot blast / vibratory deburr. Typical: £0.15–0.40/part small, £0.30–0.80 large."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -11741,6 +11745,7 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
             setNumericField('cast-grav-ct', cast.cycleTimeSandGravHr, 4);
             setNumericField('cast-grav-mould-cost', cast.dieMouldCostGBP, 0);
             setNumericField('cast-grav-mould-life', cast.dieMouldLife, 0);
+            if (cast.impressions) setNumericField('cast-grav-imp', cast.impressions, 0);
             setMachineSelect('cast-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (cast.subtype === 'investment') {
             setNumericField('cast-inv-ct', cast.cycleTimeSandGravHr, 4);
@@ -11782,6 +11787,7 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
             setNumericField('cam-grav-ct', castCAM.cycleTimeSandGravHr, 4);
             setNumericField('cam-grav-mould-cost', castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-grav-mould-life', castCAM.dieMouldLife, 0);
+            if (castCAM.impressions) setNumericField('cam-grav-imp', castCAM.impressions, 0);
             setMachineSelect('cam-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (castCAM.subtype === 'investment') {
             setNumericField('cam-inv-ct', castCAM.cycleTimeSandGravHr, 4);
@@ -13305,6 +13311,12 @@ function syncImmCoolFactor(): void {
   coolEl.value = String(autoCoolFactorForMaterial(matId));
 }
 
+/** The aluminium heat-treat station picked on a casting form (T6 / T5), or none (F / none / a typed £/kg). */
+function alHeatTreatmentSel(id: string): 'T6' | 'T5' | undefined {
+  const v = sel(id);
+  return v === 'T6' || v === 'T5' ? v : undefined;
+}
+
 function collectCastingInput(): UniversalStackInput {
   const subtype = validSel<CastingSubtype>('cast-subtype', ['hpdc', 'sand', 'gravity', 'investment'], 'hpdc');
   const common = {
@@ -13322,7 +13334,7 @@ function collectCastingInput(): UniversalStackInput {
   let extra = {};
   if (subtype === 'hpdc') extra = { hpdc: { machineId: sel('cast-hpdc-mach'), cycleTimeSec: num('cast-hpdc-ct'), cavities: num('cast-hpdc-cav') || 1, dieCost: num('cast-hpdc-die-cost'), dieLife: num('cast-hpdc-die-life') } };
   else if (subtype === 'sand') extra = { sand: { mouldLineId: sel('cast-sand-line'), cycleTimeHr: num('cast-sand-ct'), patternCost: num('cast-sand-pat-cost'), patternLife: num('cast-sand-pat-life'), coreCostPerPart: num('cast-sand-core') } };
-  else if (subtype === 'gravity') extra = { gravity: { machineId: sel('cast-grav-mach'), cycleTimeHr: num('cast-grav-ct'), mouldCost: num('cast-grav-mould-cost'), mouldLife: num('cast-grav-mould-life') } };
+  else if (subtype === 'gravity') extra = { gravity: { machineId: sel('cast-grav-mach'), cycleTimeHr: num('cast-grav-ct'), mouldCost: num('cast-grav-mould-cost'), mouldLife: num('cast-grav-mould-life'), impressions: num('cast-grav-imp') || 1 } };
   else if (subtype === 'investment') extra = { investment: { pourMachineId: sel('cast-inv-mach'), pourLabourId: sel('cast-inv-lab') || sel('cast-lab'), pourCycleHr: num('cast-inv-ct'), waxCostPerPart: num('cast-inv-wax'), shellBuildCostPerPart: num('cast-inv-shell'), waxRecoveryFraction: num('cast-inv-wax-rec') } };
 
   // C17: Warn when casting yield and reject rate appear to double-count losses
@@ -13365,6 +13377,8 @@ function collectCastingInput(): UniversalStackInput {
     foundry: foundryInput({ newSandGbpPerTPoured: num('cast-new-sand'), ladlePreheatKwhPerT: num('cast-ladle-kwh'),
       dustExtractionKwhPerT: num('cast-dust-kwh'), plantElectricityKwhPerT: num('cast-plant-kwh') }),
     heatTreatCostPerKg: num('cast-ht-cost') || undefined,
+    // the aluminium heat-treat station (gravity research round, Nov 2026) — headless reads the same rule
+    heatTreatment: alHeatTreatmentSel('cast-ht-route'),
     shotBlastCostPerPart: num('cast-shot-blast') || undefined,
     impregnationCostPerPart: num('cast-impreg') || undefined,
     ndtCostPerPart: num('cast-ndt') || undefined,
@@ -14318,7 +14332,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
   } else if (subtype === 'sand') {
     subtypeExtra = { sand: { mouldLineId: sel('cam-sand-line'), cycleTimeHr: num('cam-sand-ct'), patternCost: num('cam-sand-pat-cost'), patternLife: num('cam-sand-pat-life'), coreCostPerPart: num('cam-sand-core') } };
   } else if (subtype === 'gravity') {
-    subtypeExtra = { gravity: { machineId: sel('cam-grav-mach'), cycleTimeHr: num('cam-grav-ct'), mouldCost: num('cam-grav-mould-cost'), mouldLife: num('cam-grav-mould-life') } };
+    subtypeExtra = { gravity: { machineId: sel('cam-grav-mach'), cycleTimeHr: num('cam-grav-ct'), mouldCost: num('cam-grav-mould-cost'), mouldLife: num('cam-grav-mould-life'), impressions: num('cam-grav-imp') || 1 } };
   } else if (subtype === 'investment') {
     subtypeExtra = { investment: { pourMachineId: sel('cam-inv-mach'), pourLabourId: sel('cam-inv-lab') || sel('cam-cast-lab'), pourCycleHr: num('cam-inv-ct'), waxCostPerPart: num('cam-inv-wax'), shellBuildCostPerPart: num('cam-inv-shell'), waxDieCost: num('cam-inv-wax-die') } };
   }
@@ -14347,6 +14361,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     amortizationVolume: num('cam-amort') || num('annual-volume') || 100000,
     // Post-casting secondary operations
     heatTreatmentCostPerKg: num('cam-ht-cost') || undefined,
+    heatTreatment: alHeatTreatmentSel('cam-ht-route'),
     shotBlastCostPerPart: num('cam-shot-blast') || undefined,
     impregnationCostPerPart: num('cam-impreg') || undefined,
     deburringCostPerPart: num('cam-fettle') || undefined,

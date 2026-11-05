@@ -990,6 +990,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   HSLA = base CR + the published extra, advisory sheet grade question (`sheetGrade`, unanswered = Assumed); forge saw +
   induction heater (ESTIMATE capex) and draft metal from the kernel's zero-draft faces (IS 3469). Still open from that review:
   Phase C (£ beside each option, cost card led by piece price, PDF page-1 alerts on screen, DFM on the answered route).
+- Part1 review (5 Nov 2026, user's live gravity-die triple clamp, China 200k): AI-led mode never assumes the service
+  answers (`assumeLeanings` false everywhere); shop defaults follow the country unless typed (`overheadTyped`); casting
+  report text is keyed by process and metal (`CASTING_FORM_DRIVERS`, `FOUNDRY_NOT_COSTED_ITEMS`); fixtures = one set per
+  machine the capacity implies (`machineSetsFor`); narrow slits are found (`dfm-geometry/commodities/slits.ts`) and shown
+  as uncosted scope. Gravity die (research `scripts/research/2026-11-gravity-lpdc/`): die cycle from poured mass and
+  section (`casting-gravity.ts`), crew by cell type (≥ 50k/yr multi-machine ¼, judgement), H13 die with 100k life and
+  slides priced, China tilt-machine capex, T6 / T5 a STATION build-up labelled ESTIMATE (`al-heat-treat.ts`, energy as kWh,
+  every country its own book) with an advisory heat-treat question, gravity impressions an advisory question (1 or 2).
+  LPDC is not modelled (deferred). Part1 CN ¥70.45 → ¥57.72. `tests/part1-review.test.ts`, `tests/gravity-die-review.test.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

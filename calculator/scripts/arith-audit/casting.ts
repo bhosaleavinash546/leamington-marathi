@@ -30,6 +30,14 @@
  * Review round (4 Nov 2026): impressions are the smallest of the free fit, the 60 % plate rule and (iron) sand : iron ≥ 5 : 1;
  * the foundry indirect lines — new sand + disposal (£/t poured), ladle preheat (gas kWh/t poured), dust extraction and other
  * plant electricity (kWh/t good casting) — are written out again below from their bases.
+ *
+ * Gravity research round (5 Nov 2026, scripts/research/2026-11-gravity-lpdc): Part1 as an aluminium (LM25) GRAVITY cast +
+ * machine is checked too, always run live through the product chain in the UK at the dump's (or the default) volume,
+ * years and terms — the baseline costs Part1 as machining, so no dump holds it. Written out again from the bases: the die
+ * cycle = min(9, max(3.0 → 4.8 min on 3 → 7.5 kg poured, 3.0 × (2·V/S ÷ 10)²)) a die opening ÷ impressions, the cell crew
+ * (½ manual below 50,000 castings a year, ¼ the multi-machine cell at or above), the H13 die build-up with slides
+ * (catalogue cylinder + bench hours each), its life 100,000 die cycles × impressions, and the T6 station (0.9483 kWh/kg of
+ * electricity, 0.0085 furnace-operator h/kg, £0.007782/kg capital) on the as-cast weight; once more with two impressions.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -45,10 +53,11 @@ const verbose = process.argv.includes('--verbose');
 const DUMP = process.argv.slice(2).find(a => !a.startsWith('--'));
 const DC = DUMP ? dumpContext(DUMP) : null;
 if (DC) console.log(contextLine(DC));
-if (DC && DC.region !== 'UK') {
-  console.log(`SKIP: the casting model checks UK dumps only (this dump is ${DC.region}) — 0 checks: 0 PASS, 0 FAIL`);
-  process.exit(0);
-}
+// The sand cases check UK dumps only (the country factors on the core / NDT constants are not restated); the gravity
+// case (gravity research round, Nov 2026) runs in the dump's country, its toolroom and process-service factors from
+// dump-context.ts.
+const SAND_IN_THIS_DUMP = !DC || DC.region === 'UK';
+if (!SAND_IN_THIS_DUMP) console.log(`the sand cases check UK dumps only (this dump is ${DC!.region}) — the gravity case runs in ${DC!.region}`);
 
 const book = DC ? DC.book : recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const machineRate = (id: string) => (book.machines.find(m => m.id === id) as { computedRatePerHr: number }).computedRatePerHr;
@@ -59,7 +68,11 @@ const tariff = book.energy[0];
 // ── The stated constants, as each basis line prints them (the register in casting.md says where each lives) ──
 const ANNUAL = DC?.annual ?? 50_000, YEARS = DC?.years ?? 5, AMORT = ANNUAL * YEARS;
 const REJECT = 0.03, OEE = 0.8, LAB_EFF = 0.92;               // SHOP_DEFAULTS (to-cost-params.ts)
-const OVERHEAD = 0.12, MARGIN = 0.08;
+const OVERHEAD = DC?.overheadPct ?? 0.12, MARGIN = 0.08;
+const REGION = (DC?.region ?? 'UK') as 'UK';
+const TOOLROOM = DC?.toolroom ?? TOOLROOM_RATES_UK;            // the costed country's toolroom £/h (UK × its toolroom factor)
+const TF = DC?.toolroomFactor ?? 1;
+const PROCESS_F = DC ? DC.factor('process') : 1;
 const YIELD_BAND: Record<string, [number, number]> = { steel: [0.45, 0.60], 'ductile-iron': [0.55, 0.70] };
 const MELT: Record<string, { loss: number; kwh: number }> = { steel: { loss: 0.03, kwh: 0.70 }, 'ductile-iron': { loss: 0.03, kwh: 0.62 } };
 const MELT_LABOUR_H_PER_T = 1.5;
@@ -93,7 +106,7 @@ const CASES: Case[] = [
   { part: 'Casting_Braket.stp', commodity: 'cast_and_machine', alloy: 'steel', safety: false },
   { part: 'Casting_Braket.stp', commodity: 'casting', alloy: 'steel', safety: false },
   { part: 'PRCR002.stp', commodity: 'cast_and_machine', alloy: 'ductile-iron', safety: true },
-].filter(c => !DC || c.commodity === 'cast_and_machine') as Case[];   // a dump costs each part on its baseline route
+].filter(c => SAND_IN_THIS_DUMP && (!DC || c.commodity === 'cast_and_machine')) as Case[];   // a dump costs each part on its baseline route
 
 let pass = 0, fail = 0;
 const failures: string[] = [];
@@ -344,6 +357,121 @@ for (const c of CASES) {
   check('TOTAL', res.total, factory + oh + pack + logi + mg);
   totals.set(`${c.part}|${c.commodity}`, res.total);
   if (verbose) console.log(`  shadow: cast ${castKg.toFixed(4)} kg, pour ${pour.toFixed(4)} kg, lost ${lost.toFixed(4)} kg, metal £${metalGbp.toFixed(4)}, energy £${energyGbp.toFixed(4)}, impressions ${imps}, pattern £${pattern} × ${sets}`);
+}
+
+// ── Gravity die (research round, 5 Nov 2026): Part1 as an aluminium LM25 gravity cast + machine, run live (UK) ──
+const GRAV = {
+  smallKg: 3.0, smallMin: 3.0, largeKg: 7.5, largeMin: 4.8, refMm: 10, refMin: 3.0, maxMin: 9.0,        // the die-cycle anchors
+  manualCrew: 0.5, autoCrew: 0.25, autoMin: 50_000,                                                       // the cell
+  lifeCycles: 100_000, yield: (0.50 + 0.70) / 2, fettleLightMin: 2,
+  meltKwh: 0.65, meltLoss: 0.04,
+  // T6 station: (163 kW × (2.5 + 6) h + 30 kW × (1.5 + 5) h) × 0.6 ÷ 1,000 kg; operator 8.5 h ÷ 1,000 kg;
+  // capital (US$50,000 ÷ 1.3344 = £37,470) ÷ 10 yr + 3.5 % a year, ÷ (650 × 1,000 kg)
+  t6Kwh: ((150 + 7.5 + 5.5) * (2.5 + 6) + 30 * (1.5 + 5)) * 0.6 / 1000, t6Hr: 8.5 / 1000,
+  t6Cap: (Math.round(50_000 / 1.3344) / 10 + Math.round(50_000 / 1.3344) * 0.035) / (650 * 1000),
+  cylinder: 1450,
+};
+for (const imps of [1, 2]) {
+  const part = 'Part1.stp';
+  const geo = base.find(p => p.part === part)!.geometry as OCCTGeometry & Record<string, any>;
+  const answers = { 'material.family': 'aluminium', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
+    'service.toleranceClass': 'standard', 'service.safetyCritical': 'no', 'material.grade': 'mat-lm25', ...(imps === 2 ? { 'casting.impressions': '2' } : {}) };
+  const res = await costMeasuredPart({ ...geo, status: 'success' } as never, part,
+    { partNumber: part, file: part, annualVolume: ANNUAL, commodity: 'cast_and_machine' } as never, answers, REGION,
+    { annualVolume: ANNUAL, programmeYears: YEARS, ...(DC?.terms ? { deliveryTerms: DC.terms } : {}) } as never, DC ? DC.ukBook : book,
+    { partNumber: part, file: part, status: 'error' } as never) as any;
+  console.log(`\n${part} as an aluminium gravity cast + machine (${REGION}), ${imps} impression${imps > 1 ? 's' : ''}${imps === 1 ? ' (unanswered — one)' : ' answered'}: product total £${res.total?.toFixed(4)}`);
+  const P = res.params, T = res.trace, prov = res.provenance as Record<string, { value: unknown; basis: string }>;
+  const pv = (id: string) => Number(prov[id]?.value);
+  const mat = material(String(P.materialId));
+  check('grade LM25 (answered)', P.materialId === 'mat-lm25' ? 1 : 0, 1, { abs: 0 });
+  const castKg = Number(P.castPartWeightKg);                      // the as-cast rule is the machining audit's — an input here
+  check('yield = gravity aluminium band midpoint 0.6', pv('cam-cast-yield'), GRAV.yield, { abs: 1e-9 });
+  // die cycle a die opening
+  const section = Math.round(2 * geo.volume.mm3 / geo.surfaceArea.mm2 * 10) / 10;
+  const pourOpen = imps * castKg / GRAV.yield;
+  const f = Math.min(1, Math.max(0, (pourOpen - GRAV.smallKg) / (GRAV.largeKg - GRAV.smallKg)));
+  const tMass = GRAV.smallMin + (GRAV.largeMin - GRAV.smallMin) * f;
+  const tSec = GRAV.refMin * (section / GRAV.refMm) ** 2;
+  const dieMin = Math.min(GRAV.maxMin, Math.max(tMass, tSec));
+  check(`die cycle h (min(9, max(${tMass.toFixed(3)}, ${tSec.toFixed(3)})) min ÷ 60)`, pv('cam-sand-ct'), dieMin / 60, { abs: 1e-6 });
+  check('impressions costed', pv('cam-grav-imp'), imps, { abs: 0 });
+  const crew = ANNUAL >= GRAV.autoMin ? GRAV.autoCrew : GRAV.manualCrew;
+  check(`cell crew (${ANNUAL >= GRAV.autoMin ? 'multi-machine ¼' : 'manual ½'})`, pv('cam-cast-manning'), crew, { abs: 0 });
+  // the gravity op: a die opening × reject uplift, machine ÷ OEE and crew × labour ÷ efficiency, ÷ impressions
+  const uplift = 1 / (1 - REJECT);
+  const ops = T.operations as Array<any>;
+  const gop = ops.find(o => o.operationName === 'Gravity Die Casting');
+  const cyc = Number(P.gravity.cycleTimeHr) * uplift;
+  check('gravity op parts a cycle = impressions', gop.partsPerCycle, imps, { abs: 0 });
+  check('gravity op machine £ (die cycle × uplift × rate ÷ OEE ÷ impressions)', gop.processCost, cyc * machineRate('grav-die-cast-std') / OEE / imps);
+  check('gravity op labour £ (× crew × foundry rate ÷ efficiency ÷ impressions)', gop.labourCost, cyc * crew * labourRate('lab-uk-foundry') / LAB_EFF / imps);
+  // the H13 die build-up, slides as the moulding build-up's side action
+  const area = Math.round(geo.projectedArea.alongDrawMm2 / 100 * 10) / 10;
+  const a = Math.max(10, area);
+  const dCm = Math.min(45, Math.max(3, 0.4 * Math.sqrt(a)));
+  const H = (12 + 3.4 * Math.pow(a, 0.72)) * 0.55;
+  const nEcon = Math.pow(imps, 0.9);
+  const slides = Math.ceil((geo.draftAnalysis?.undercutFaceCount ?? 0) / 6) * imps;
+  const steelKg = a * (dCm + 10) * 2 * 1.25 * 7.85e-3 * 1.3 * nEcon;
+  // toolroom hours at the costed country's toolroom rates; H13 and the catalogue cylinders are traded (£ everywhere)
+  const dieLines = [
+    r0((20 + 0.15 * H) * TOOLROOM.design), r0(steelKg * TOOL_MATERIAL_GBP_PER_KG.h13), r0(H * nEcon * TOOLROOM.cnc),
+    r0(0.2 * H * nEcon * TOOLROOM.fitting), r0(16 * TOOLROOM.tryoutPress),
+    slides > 0 ? r0(slides * GRAV.cylinder) : 0, slides > 0 ? r0(slides * (28 + a / 200) * TOOLROOM.fitting) : 0,
+  ];
+  const dieSub = dieLines.reduce((x, y) => x + y, 0);
+  const die = Math.min(90_000 * TF, Math.max(8_000 * TF, r0(dieSub + r0(dieSub * SHOP_OVERHEAD_PROFIT))));
+  check(`H13 die £ (build-up, ${slides} slide(s), ${imps} cavit${imps > 1 ? 'ies' : 'y'})`, pv('cam-hpdc-die-cost'), die, { abs: 1 });
+  const life = GRAV.lifeCycles * imps;
+  check('die life, castings (100,000 die cycles × impressions)', pv('cam-hpdc-die-life'), life, { abs: 0 });
+  const sets = Math.ceil(AMORT * uplift / life - 1e-9);
+  const dieItems = (T.drivers.tooling.items as Array<{ label: string; gbp: number }>).filter(i => /^Permanent mould/.test(i.label));
+  check('die sets × £ (castings poured ÷ life)', dieItems.reduce((x, i) => x + i.gbp, 0), sets * die, { abs: 0.5 });
+  // metal, melt + T6 energy, the T6 station
+  const pour = castKg * uplift / GRAV.yield;
+  const lost = (pour - castKg) * GRAV.meltLoss;
+  const rm = T.drivers.rawMaterial;
+  check('material utilisation', rm.materialUtilization, castKg / (castKg + lost), { rel: 0.0001 });
+  const elec = pour * GRAV.meltKwh + castKg * GRAV.t6Kwh;
+  check('electricity kWh (melt on the pour + T6 0.9483 kWh/kg on the as-cast kg)', rm.energyKwh.electricity, elec, { rel: 0.0001 });
+  check('no gas (no ladle preheat on aluminium)', rm.energyKwh.gas ?? 0, 0, { abs: 0 });
+  const htOp = ops.find(o => /^Heat treatment T6/.test(o.operationName));
+  check('T6 furnace operator £ (as-cast kg × 0.0085 h × furnace rate ÷ efficiency)', htOp.labourCost, castKg * GRAV.t6Hr * labourRate('lab-uk-furnace') / LAB_EFF);
+  check('T6 operator is bench (no machine £)', htOp.processCost, 0, { abs: 0 });
+  const items = new Map<string, number>((rm.consumablesItems ?? []).map((i: { label: string; gbp: number }) => [i.label.replace(/ \(.*$/, ''), i.gbp]));
+  const cap = [...items.entries()].find(([k]) => /furnace capital/.test(k))?.[1] ?? NaN;
+  check('T6 furnace capital £ (as-cast kg × £0.007782)', cap, castKg * GRAV.t6Cap, { abs: 0.000005 });
+  check('no £/kg heat treatment beside the station', items.get('heat treatment') ?? 0, 0, { abs: 0 });
+  const blastFloor = Math.round(BLAST_MIN * PROCESS_F * 10_000) / 10_000;   // the UK £0.10 floor × the process-service factor
+  const blast = Math.max(blastFloor, Math.round(castKg / BLAST_KG_PER_HR * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000);
+  check('shot blast £ (as-cast kg ÷ 600 kg/h, floor £0.10 × the process factor)', items.get('shot blast') ?? 0, blast);
+  const fettle = ops.find(o => /^Fettling \(gate/.test(o.operationName));
+  check('fettling labour £ (light, 2 min × uplift)', fettle.labourCost, GRAV.fettleLightMin / 60 * uplift * labourRate('lab-uk-foundry') / LAB_EFF);
+  const meltOp = ops.find(o => /^Melt shop/.test(o.operationName));
+  check('melt-shop labour £ (1.5 h/t poured)', meltOp.labourCost, pour / 1000 * MELT_LABOUR_H_PER_T * labourRate('lab-uk-furnace') / LAB_EFF);
+  // machining half: £ from the costed times
+  let machProc = 0, machLab = 0;
+  for (const o of ops.filter(o => !/^Gravity Die Casting|^Fettling|^Melt shop|^Heat treatment/.test(o.operationName))) {
+    const ppc = o.partsPerCycle || 1;
+    machProc += o.benchOperation ? 0 : o.cycleTimeHr * machineRate(o.machineId) / o.oee / ppc;
+    machLab += o.labourTimeHr * o.manning * labourRate(o.labourId) / o.labourEfficiency / ppc;
+  }
+  const toolWear = items.get('cutting-tool wear') ?? 0;
+  const metalGbp = (castKg + lost) * mat.pricePerKg;
+  const matB = metalGbp + elec * tariff.electricityPerKwh + cap + blast + toolWear;
+  const procB = gop.processCost + machProc;
+  const labB = gop.labourCost + fettle.labourCost + meltOp.labourCost + htOp.labourCost + machLab;
+  const toolB = (sets * die + Number(P.machiningToolingCost) + Number(P.machiningProgrammingNRE)) / AMORT;
+  const pack = Number(T.stackInput.packagingPerPart), logi = Number(T.stackInput.logisticsPerPart);
+  const factory = matB + procB + labB + toolB;
+  const oh = factory * OVERHEAD, mg = (factory + oh + pack + logi) * MARGIN;
+  check('bucket material', T.result.breakdown.rawMaterial, matB);
+  check('bucket process', T.result.breakdown.process, procB);
+  check('bucket labour', T.result.breakdown.labour, labB);
+  check('bucket tooling', T.result.breakdown.tooling, toolB, { abs: 0.00005 });
+  check('TOTAL', res.total, factory + oh + pack + logi + mg);
+  if (verbose) console.log(`  shadow: cast ${castKg.toFixed(4)} kg, section ${section} mm, die ${dieMin.toFixed(3)} min, crew ${crew}, die £${die} × ${sets}, T6 kWh ${(castKg * GRAV.t6Kwh).toFixed(4)}`);
 }
 
 // Secondary-machining parity: the same part on the casting route (machined features costed) and cast + machine, same total.

@@ -391,6 +391,8 @@ export function toCostParams(
           cycleTimeHr: num(c.cycleTimeSandGravHr, 0.08),
           mouldCost: num(c.dieMouldCostGBP),
           mouldLife: num(c.dieMouldLife, 50_000),
+          // castings a die opening (gravity research round, Nov 2026) — the screen reads the same rule (cast-grav-imp)
+          impressions: num(c.impressions, 1),
         },
       };
     }
@@ -422,6 +424,7 @@ export function toCostParams(
     const fi = foundryIndirectInput(c);
     if (fi) out.foundry = fi;
     if (num(c.heatTreatCostPerKg) > 0) out.heatTreatCostPerKg = num(c.heatTreatCostPerKg);
+    if (c.heatTreatment === 'T6' || c.heatTreatment === 'T5') out.heatTreatment = c.heatTreatment;
     if (num(c.shotBlastCostPerPart) > 0) out.shotBlastCostPerPart = num(c.shotBlastCostPerPart);
     if (num(c.impregnationCostPerPart) > 0) out.impregnationCostPerPart = num(c.impregnationCostPerPart);
     if (num(c.ndtCostPerPart) > 0) out.ndtCostPerPart = num(c.ndtCostPerPart);
@@ -516,6 +519,7 @@ export function toCostParams(
           ...(fettlingCellInput(num(c.fettlingCellSec)) ? { fettlingCell: fettlingCellInput(num(c.fettlingCellSec)) } : {}),
           ...(foundryIndirectInput(c) ? { foundry: foundryIndirectInput(c) } : {}),
           ...(num(c.heatTreatCostPerKg) > 0 ? { heatTreatmentCostPerKg: num(c.heatTreatCostPerKg) } : {}),
+          ...(c.heatTreatment === 'T6' || c.heatTreatment === 'T5' ? { heatTreatment: c.heatTreatment } : {}),
           ...(num(c.shotBlastCostPerPart) > 0 ? { shotBlastCostPerPart: num(c.shotBlastCostPerPart) } : {}),
           ...(num(c.impregnationCostPerPart) > 0 ? { impregnationCostPerPart: num(c.impregnationCostPerPart) } : {}),
           ...(num(c.ndtCostPerPart) > 0 ? { ndtCostPerPart: num(c.ndtCostPerPart) } : {}),

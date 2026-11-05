@@ -22,8 +22,9 @@ import { countryFactor, countryNote } from './regional-services.js';
 import {
   TOOLROOM_RATES, EDM_FRACTION, FITTING_FRACTION,
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
-  boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine,
+  boughtOutLine, BOUGHT_OUT_GBP, type ToolComplexity, type ToolCostDetail, type ToolCostLine,
 } from './toolmaking.js';
+import { GRAVITY_DIE } from './casting-gravity.js';
 import { estimateMouldCost } from './modules/injection-moulding.js';
 
 export interface CastingToolInputs {
@@ -79,20 +80,41 @@ export function estimateHPDCDieCost(p: CastingToolInputs): CastingToolEstimate {
   return clampTotal(composeTool(lines), 35_000, 320_000);
 }
 
-/** Gravity/permanent mould: iron or steel mould, far simpler than HPDC. */
-export function estimateGravityMouldCost(p: CastingToolInputs): CastingToolEstimate {
+/**
+ * Gravity / permanent mould, far simpler than HPDC. The cavity blocks are H13 — the material and the life are ONE decision
+ * (gravity research round, Nov 2026: the build-up priced cast-iron blocks while the life was set at 50,000 on its own).
+ * H13 lasts the 100,000 die cycles a cavity the rules cost (casting-gravity.ts GRAVITY_DIE); grey iron lasts a fraction of
+ * that (Degarmo via Wikipedia, row D3) and is not offered. Slides are priced as the moulding build-up prices a side action
+ * (a catalogue core-pull cylinder + bench hours a mechanism, modules/injection-moulding.ts) — the only slide figure the
+ * tooling build-up holds; no gravity-die slide price was read.
+ */
+export function estimateGravityMouldCost(p: CastingToolInputs & { slidesPerCavity?: number }): CastingToolEstimate {
   const n = Math.max(1, Math.floor(p.cavities ?? 1));
   const area = Math.max(10, p.projectedAreaCm2);
   const H = cavityCncHours(area) * 0.55;
   const nEcon = Math.pow(n, 0.9);
+  const slides = Math.max(0, Math.floor(p.slidesPerCavity ?? 0)) * n;
   const lines: ToolCostLine[] = [
     labourLine('Mould design', 'design', 20 + 0.15 * H, TOOLROOM_RATES.design, 'gravity die, simple parting'),
-    materialLine(`Cast-iron mould blocks × ${n}`, cavitySteelKg(area) * 1.3 * nEcon, 'cast-iron', 'thick-walled iron halves'),
+    materialLine(`H13 die blocks × ${n}`, gravityDieSteelKg(area, n), GRAVITY_DIE.material,
+      'thick-walled die halves (the cavity block × 1.3); H13 for the 100,000-cycle life costed'),
     labourLine(`CNC cavity machining × ${n}`, 'machining', H * nEcon, TOOLROOM_RATES.cnc, '0.55× the mould-cavity law — no pressure, coarse finish'),
     labourLine('Fitting + coat prep', 'fitting', 0.2 * H * nEcon, TOOLROOM_RATES.fitting, 'bench + refractory coating preparation'),
     labourLine('Tryout pours', 'tryout', 16, TOOLROOM_RATES.tryoutPress, 'two pour sessions'),
   ];
+  if (slides > 0) {
+    lines.push(boughtOutLine(`Core-pull cylinders × ${slides}`, slides, BOUGHT_OUT_GBP.corePullCylinder,
+      'hydraulic side-action cylinders, catalogue — the moulding build-up\'s side-action figure (no gravity-die slide price read)'));
+    lines.push(labourLine(`Slide machining & fitting × ${slides}`, 'fitting', slides * (28 + area / 200), TOOLROOM_RATES.fitting,
+      '28 h + footprint-scaled bench work a mechanism (the moulding build-up\'s figure)'));
+  }
   return clampTotal(composeTool(lines), 8_000, 90_000);
+}
+
+/** The gravity die's steel, kg — both halves of every cavity block (× 1.3 for the thick-walled die), n^0.9 economy. */
+export function gravityDieSteelKg(areaPerCavityCm2: number, cavities = 1): number {
+  const n = Math.max(1, Math.floor(cavities));
+  return cavitySteelKg(Math.max(10, areaPerCavityCm2)) * 1.3 * Math.pow(n, 0.9);
 }
 
 /** Sand pattern: pattern plate + coreboxes — aluminium, one-sided machining. */

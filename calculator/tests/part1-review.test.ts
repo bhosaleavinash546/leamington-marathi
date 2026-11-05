@@ -121,17 +121,19 @@ describe('(d) the capacity warning says which minutes are sourced', () => {
 });
 
 describe('(e) the line rate and the costed cycle reconcile, both labelled', () => {
-  it('4.80 min line rate ÷ (1 − 3 % reject) = 4.95 min costed, in the negotiation and operations tables', async () => {
+  // Gravity research round (5 Nov 2026): the die cycle is no longer the flat 0.08 h (4.80 min) — it is 3 min × (2·V/S ÷ 10 mm)²
+  // on Part1's 10.4 mm section (the section term governs a 2.25 kg pour), one impression; the reconciliation is unchanged.
+  it('3.24 min line rate ÷ (1 − 3 % reject) = 3.35 min costed, in the negotiation and operations tables', async () => {
     const { input, result, rvs } = await part1();
     const lr = castingLineRate(rvs, result.operationDetails)!;
     expect(lr).not.toBeNull();
-    expect(lr.lineMin).toBeCloseTo(4.8, 6);
+    expect(lr.lineMin).toBeCloseTo(3 * 1.04 ** 2, 6);
     expect(lr.rejectPct).toBe(3);
-    expect(lr.costedMin).toBeCloseTo(4.8 / 0.97, 3);
+    expect(lr.costedMin).toBeCloseTo(3 * 1.04 ** 2 / 0.97, 3);
     const core = buildCoreReport({ result, input, library: CN, commodity: 'cast_and_machine', region: 'CN', cadMeta: { checks: { decisions: [], ruleValues: rvs } } as never, regionalRows: [] } as never);
     expect(core.negotiation.find(n => n.driver === 'Die casting cell rate')?.ours)
-      .toBe('4.80 min line rate (12.5 an hour); 4.95 min costed = 4.80 ÷ (1 - 3 % reject)');
-    expect(core.operations.find(o => /^Gravity Die Casting/.test(o.name))?.name).toBe('Gravity Die Casting — 4.80 min line rate ÷ (1 - 3 % reject)');
+      .toBe('3.24 min line rate (18.49 an hour); 3.35 min costed = 3.24 ÷ (1 - 3 % reject)');
+    expect(core.operations.find(o => /^Gravity Die Casting/.test(o.name))?.name).toBe('Gravity Die Casting — 3.24 min line rate ÷ (1 - 3 % reject)');
   }, 60_000);
 });
 

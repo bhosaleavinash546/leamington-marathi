@@ -495,6 +495,10 @@ export interface CADAnalysisResult {
       dustExtractionKwhPerT?: number;
       plantElectricityKwhPerT?: number;
       heatTreatCostPerKg?: number;
+      /** The aluminium heat-treat station (gravity research round, Nov 2026): 'T6' | 'T5' | 'F' | 'none'. */
+      heatTreatment?: string;
+      /** Impressions a gravity die (castings a die opening). */
+      impressions?: number;
       shotBlastCostPerPart?: number;
       impregnationCostPerPart?: number;
       ndtCostPerPart?: number;

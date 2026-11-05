@@ -238,11 +238,11 @@ describe('B. melt energy is priced at the region the part is costed in', () => {
 });
 
 describe('C. a sand line is run by a crew', () => {
-  it('manning 4 on sand, 1 on a die-casting cell', () => {
+  it('manning 4 on sand; a gravity die cell by its type (gravity research round, Nov 2026: ¼ on the multi-machine cell at 50,000 a year)', () => {
     const sand = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
     expect((sand.suggestions.casting as Record<string, number>).manning).toBe(3);   // the automatic line's crew (review-round impressions)
     const grav = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('PRCR002.stp', { ...ANSWERS, 'material.family': 'aluminium' }));
-    expect((grav.suggestions.casting as Record<string, number>).manning).toBe(1);
+    expect((grav.suggestions.casting as Record<string, number>).manning).toBe(0.25);
   });
 });
 

@@ -244,6 +244,9 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'casting.dustExtractionKwhPerT': { to: 'casting.dustExtractionKwhPerT' },
   'casting.plantElectricityKwhPerT': { to: 'casting.plantElectricityKwhPerT' },
   'casting.heatTreatCostPerKg': { to: 'casting.heatTreatCostPerKg' },
+  // Gravity research round (5 Nov 2026): the aluminium heat-treat station (T6 / T5 / F) and the gravity die's impressions.
+  'casting.heatTreatment': { to: 'casting.heatTreatment' },
+  'casting.gravityImpressions': { to: 'casting.impressions' },
   'casting.shotBlastCostPerPart': { to: 'casting.shotBlastCostPerPart' },
   'casting.impregnationCostPerPart': { to: 'casting.impregnationCostPerPart' },
   'casting.ndtCostPerPart': { to: 'casting.ndtCostPerPart' },
@@ -513,6 +516,8 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'forging.q.toleranceClass': 'blocking question asked up front — its answer reaches both paths through the forging advisor',
   'forging.q.safetyCritical': 'blocking question asked up front — its answer reaches both paths through the forging advisor',
   'casting.q.impregnation': 'advisory question — its answer reaches both paths through casting.impregnationCostPerPart',
+  'casting.q.heatTreat': 'advisory question (gravity research round, Nov 2026) — its answer reaches both paths through casting.heatTreatment',
+  'casting.q.impressions': 'advisory question (gravity research round, Nov 2026) — its answer reaches both paths through casting.gravityImpressions',
   'extrusion.colourChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',
   'extrusion.dieChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',
   'extrusion.specificEnergyKwhPerKg': 'report only — the module derives it from the family',

@@ -708,7 +708,7 @@ export function capacityImplied(input: UniversalStackInput, library: RateLibrary
  * takes its line time too), so the reject is read off the reject field when the costing carries one, else off the two
  * figures themselves (1 - line ÷ costed), and accepted only between 0 and 50 %. Null when there is no such pair.
  */
-export function castingLineRate<O extends { operationName: string; cycleTimeHr: number; benchOperation?: boolean }>(
+export function castingLineRate<O extends { operationName: string; cycleTimeHr: number; benchOperation?: boolean; partsPerCycle?: number }>(
   rvs: ReadonlyArray<{ label: string; fieldId?: string; value: unknown }>, ops: readonly O[],
 ): { rv: { label: string; fieldId?: string; value: unknown }; op: O; lineMin: number; costedMin: number; rejectPct: number } | null {
   const rv = rvs.find(r => /sand[\s-]?ct\b|cycle time/i.test(ruleKey(r)) && /cast|cam-|sand|grav/i.test(ruleKey(r)));
@@ -1203,8 +1203,14 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     let shown = paramDisplay(rvs[i].label, String(rvs[i].value));
     shown = lifeInCastings(d.name, shown);
     if (lineRate && d.match.test(ruleKey(lineRate.rv)) && rvs[i] === lineRate.rv) {
-      shown = `${lineRate.lineMin.toFixed(2)} min line rate (${fmtNum(60 / lineRate.lineMin)} an hour); ${lineRate.costedMin.toFixed(2)} min costed = `
-        + `${lineRate.lineMin.toFixed(2)} ÷ (1 - ${lineRate.rejectPct} % reject)`;
+      // A gravity die with more than one impression: the rate is a DIE CYCLE making that many castings (gravity research
+      // round, Nov 2026 — the castings an hour are the die cycles × impressions).
+      const n = (lineRate.op.partsPerCycle ?? 1) > 1 ? lineRate.op.partsPerCycle! : 1;
+      shown = n > 1
+        ? `${lineRate.lineMin.toFixed(2)} min a die cycle × ${n} impressions (${fmtNum(60 / lineRate.lineMin * n)} castings an hour); `
+          + `${lineRate.costedMin.toFixed(2)} min costed = ${lineRate.lineMin.toFixed(2)} ÷ (1 - ${lineRate.rejectPct} % reject), ÷ ${n} a casting`
+        : `${lineRate.lineMin.toFixed(2)} min line rate (${fmtNum(60 / lineRate.lineMin)} an hour); ${lineRate.costedMin.toFixed(2)} min costed = `
+          + `${lineRate.lineMin.toFixed(2)} ÷ (1 - ${lineRate.rejectPct} % reject)`;
     }
     // the forging weights under the names page 2 uses (formWeights)
     if (weights?.billetKg && /^Stock yield/.test(d.name)) shown = `${shown} — billet ${weights.billetKg.toFixed(3)} kg a forging = (as forged ${weights.asFormedKg.toFixed(3)} kg + flash ${(weights.flashKg ?? 0).toFixed(3)} kg) ÷ ${weights.yieldFraction!.toFixed(3)}`;

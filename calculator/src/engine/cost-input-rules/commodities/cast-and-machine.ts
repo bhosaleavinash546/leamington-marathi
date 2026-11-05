@@ -59,6 +59,9 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-fettle-cell-sec': 'cam-fettle-cell-sec',
   'cast-sand-line': 'cam-sand-line',
   'cast-ht-cost': 'cam-ht-cost',
+  // gravity research round (Nov 2026): the aluminium heat-treat station and the gravity die's impressions
+  'cast-ht-route': 'cam-ht-route',
+  'cast-grav-imp': 'cam-grav-imp',
   'cast-shot-blast': 'cam-shot-blast',
   'cast-impreg': 'cam-impreg',
   'cast-ndt': 'cam-ndt',

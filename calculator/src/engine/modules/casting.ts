@@ -3,6 +3,7 @@ import { finishingForCommodity, type CommodityFinishingInput } from './surface-f
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
 import { moduleEnergy, addEnergy } from '../module-energy.js';
 import { toolSetItems, machiningNreItems, CUTTING_TOOL_WEAR_LABEL } from '../tooling-split.js';
+import { alHeatTreatStation, type AlHeatTreatment } from '../al-heat-treat.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -50,9 +51,12 @@ export interface CastingInputs {
   // Gravity / permanent mould
   gravity?: {
     machineId: string;
+    /** Hours a DIE CYCLE (one die opening) — the castings it makes are `impressions` (gravity research round, Nov 2026). */
     cycleTimeHr: number;
     mouldCost: number;
-    mouldLife: number;       // castings per mould (informational)
+    mouldLife: number;       // castings per mould = die cycles × impressions
+    /** Impressions a die (castings a die opening). Absent = 1. */
+    impressions?: number;
   };
   /**
    * The melt shop. Runners, risers and overflows are remelted in-house, so only
@@ -92,8 +96,14 @@ export interface CastingInputs {
    * crew share, seconds a casting. Absent = the bench minutes above (or none).
    */
   fettlingCell?: { machineId: string; secPerCasting: number; manning: number };
-  /** Heat treatment £/kg of casting (normalise, T5, T6 …). */
+  /** Heat treatment £/kg of casting (normalise, or a heat treater's T5 / T6 price). A figure > 0 replaces the station. */
   heatTreatCostPerKg?: number;
+  /**
+   * Aluminium heat treatment costed as a STATION (al-heat-treat.ts — gravity research round, Nov 2026): the furnace kWh to
+   * the core (the costed country's tariff), the furnace operator as an operation (its labour rate), the furnace capital as
+   * a £ a kg. 'F' / 'none' / absent = as-cast. Ignored when `heatTreatCostPerKg` > 0 (a typed toll price).
+   */
+  heatTreatment?: AlHeatTreatment | 'F' | 'none';
   shotBlastCostPerPart?: number;
   impregnationCostPerPart?: number;
   ndtCostPerPart?: number;
@@ -135,7 +145,9 @@ export function getCastingInputSchema(): Record<string, string> {
     'gravity.machineId': 'string — gravity/tilt machine ID (required when subtype=gravity)',
     'gravity.cycleTimeHr': 'number — cycle time hr',
     'gravity.mouldCost': 'number — permanent mould cost £',
-    'gravity.mouldLife': 'number — castings per mould (informational)',
+    'gravity.mouldLife': 'number — castings per mould (die cycles × impressions)',
+    'gravity.impressions': 'number? — impressions a die (castings a die opening); default 1',
+    heatTreatment: "'T6' | 'T5' | 'F' — aluminium heat-treat station (ignored when heatTreatCostPerKg > 0)",
     'investment.waxCostPerPart': 'number — wax pattern cost per part £ (required when subtype=investment)',
     'investment.shellBuildCostPerPart': 'number — ceramic shell cost per part £',
     'investment.pourLabourId': 'string — labour rate ID for pour/casting operation',
@@ -271,12 +283,14 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     case 'gravity': {
       if (!inputs.gravity) throw new Error('gravity config required when subtype is gravity');
       const gravCycleEff = inputs.gravity.cycleTimeHr * rejectUplift;
+      // The cycle is a die opening; it makes one casting an impression (it was hard-coded to one).
+      const imps = Math.max(1, Math.floor(inputs.gravity.impressions ?? 1));
       operations.push({
         operationName: 'Gravity Die Casting',
         machineId: inputs.gravity.machineId,
         labourId: inputs.labourId,
         cycleTimeHr: gravCycleEff,
-        partsPerCycle: 1,
+        partsPerCycle: imps,
         oee: inputs.oee,
         manning: inputs.manning,
         labourTimeHr: gravCycleEff,
@@ -289,7 +303,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         : 1;
       tooling = {
         items: toolSetItems('Permanent mould', inputs.gravity.mouldCost, gravNumMoulds,
-          inputs.gravity.mouldLife > 0 ? `life ${inputs.gravity.mouldLife.toLocaleString('en-GB')} castings each` : undefined),
+          inputs.gravity.mouldLife > 0 ? `life ${inputs.gravity.mouldLife.toLocaleString('en-GB')} castings each`
+            + (imps > 1 ? ` (${Math.round(inputs.gravity.mouldLife / imps).toLocaleString('en-GB')} die cycles × ${imps} impressions)` : '') : undefined),
         totalToolingCost: inputs.gravity.mouldCost * gravNumMoulds,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -409,6 +424,29 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     });
   }
   item('heat treatment', (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg);
+  // The aluminium heat-treat station (gravity research round, Nov 2026) — only when no toll price was typed.
+  const htT = inputs.heatTreatment;
+  const station = !((inputs.heatTreatCostPerKg ?? 0) > 0) && (htT === 'T6' || htT === 'T5') ? alHeatTreatStation(htT) : null;
+  let htEnergyKwh: ReturnType<typeof addEnergy> = undefined;
+  if (station && inputs.partWeightKg > 0) {
+    const kg = inputs.partWeightKg;
+    const hr = station.labourHrPerKg * kg;
+    operations.push({
+      operationName: `Heat treatment ${station.treatment} (${station.treatment === 'T6' ? 'solution + quench + age' : 'age'}) — furnace operator, `
+        + `${kg.toFixed(3)} kg × ${station.labourHrPerKg} h/kg (ESTIMATE)`,
+      machineId: operations[0].machineId,
+      labourId: station.labourId,
+      cycleTimeHr: 0, partsPerCycle: 1, oee: 1, manning: 1,
+      labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
+      benchOperation: true,
+    });
+    item(`heat treatment ${station.treatment} — furnace capital + maintenance (${kg.toFixed(3)} kg × £${station.capitalGbpPerKg}/kg, ESTIMATE)`,
+      station.capitalGbpPerKg * kg);
+    const e = moduleEnergy(station.kwhPerKg * kg, 'electricity', inputs.melt?.energyPricePerKwh,
+      `heat treatment ${station.treatment}: ${kg.toFixed(3)} kg × ${station.kwhPerKg} kWh/kg = ${(station.kwhPerKg * kg).toFixed(4)} kWh (ESTIMATE)`);
+    if (e.gbp > 0) item('heat treatment energy (typed tariff)', e.gbp);
+    htEnergyKwh = e.kwh;
+  }
   item('shot blast', inputs.shotBlastCostPerPart ?? 0);
   item('impregnation', inputs.impregnationCostPerPart ?? 0);
   item('NDT', inputs.ndtCostPerPart ?? 0);
@@ -443,7 +481,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     rawMaterial: {
       ...rawMaterial,
       ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables, consumablesItems: items } : {}),
-      ...(addEnergy(meltEnergy.kwh, foundryEnergyKwh) ? { energyKwh: addEnergy(meltEnergy.kwh, foundryEnergyKwh) } : {}),
+      ...(addEnergy(addEnergy(meltEnergy.kwh, foundryEnergyKwh), htEnergyKwh) ? { energyKwh: addEnergy(addEnergy(meltEnergy.kwh, foundryEnergyKwh), htEnergyKwh) } : {}),
     },
     operations,
     tooling,

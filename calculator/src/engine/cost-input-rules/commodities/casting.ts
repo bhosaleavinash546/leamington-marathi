@@ -41,8 +41,13 @@ import { answeredNumber, decided, ask, fmt, type CommodityRuleSpec, type RuleCon
 import { asCastWeight, costedNearNetRows, DRILLED_FROM_SOLID_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import {
-  estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
+  estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost, gravityDieSteelKg,
 } from '../../casting-tooling.js';
+import {
+  gravityDieCycle, gravityCellFor, gravityImpressionsFit, GRAVITY_DIE, GRAVITY_AUTO_CELL_NOT_PRICED, GRAVITY_SOURCES,
+  type GravityDieCycle, type GravityImpressionFit,
+} from '../../casting-gravity.js';
+import { alHeatTreatStation, alHeatTreatGbpPerKg, type AlHeatTreatment } from '../../al-heat-treat.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
 import { toCastingAlloyFamily, representativeMaterialId, materialGradeName } from '../derive/material.js';
 import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, BRITTLE_IRON, castIronDefaultGrade, namedGradeNote } from '../derive/grade.js';
@@ -459,6 +464,91 @@ function fettlingOnCell(ctx: RuleContext, a: Pick<Advice, 'subtype' | 'alloy' | 
   return `a ${a.massKg.toFixed(1)} kg ${a.alloy.replace('-', ' ')} casting off the ${plan.line.label} is fettled on a robotic grinding cell`;
 }
 
+// ── Gravity die (research round, 5 Nov 2026 — casting-gravity.ts) ──────────────────────────────────────────────────
+/** The engineer's impressions a gravity die (advisory; one is costed until answered). */
+export const GRAVITY_IMPRESSIONS_DECISION_ID = 'casting.impressions';
+/** The aluminium casting's heat treatment (advisory; T6 costed until answered, as before). */
+export const AL_HEAT_TREAT_DECISION_ID = 'casting.heatTreat';
+
+export interface GravityPlan {
+  /** Impressions costed. */
+  n: number;
+  /** What the engineer answered (null = not answered — one costed). */
+  answered: number | null;
+  /** Whether two impressions fit the die (null when no footprint / area measured). */
+  twoUp: GravityImpressionFit | null;
+  /** Metal poured a die opening: impressions × as-cast kg ÷ yield. */
+  pourKg: number;
+  castKg: number;
+  yieldFraction: number;
+  cycle: GravityDieCycle;
+  /** One sentence: the impressions and why. */
+  impressionsText: string;
+}
+
+/** The gravity die's plan: impressions, the metal a die opening pours, the die cycle. Null unless the advisor chose gravity. */
+export function gravityPlan(ctx: RuleContext): GravityPlan | null {
+  const r = advise(ctx);
+  if ('blocked' in r || r.advice.subtype !== 'gravity') return null;
+  const fp = mouldFootprintMm(ctx);
+  const area = projectedAreaCm2(ctx);
+  const twoUp = fp && area != null && area > 0 ? gravityImpressionsFit(2, fp, gravityDieSteelKg(area, 2)) : null;
+  const raw = ctx.answers[GRAVITY_IMPRESSIONS_DECISION_ID];
+  const answered = raw === undefined || raw === null || raw === '' ? null : Math.max(1, Math.floor(Number(raw)) || 1);
+  const n = answered === 2 && twoUp?.fits ? 2 : 1;
+  const impressionsText = answered == null
+    ? `one impression (not answered — one costed; ${twoUp ? `two would ${twoUp.fits ? '' : 'not '}fit: ${twoUp.text}` : 'no footprint measured to check two'})`
+    : answered === 2
+      ? (n === 2 ? `two impressions (answered): ${twoUp!.text}` : `two answered but ${twoUp ? twoUp.text : 'no footprint measured'} — one costed`)
+      : `${answered} impression${answered === 1 ? '' : 's'} answered${answered > 2 ? ' — more than two is not checked; one costed' : ''}`;
+  const castKg = asCastFacts(ctx)?.kg ?? r.advice.massKg;
+  const yieldFraction = bandMid(SAND_GRAVITY_YIELD_BY_ALLOY[r.advice.alloy] ?? CASTING_PROCESS_REFERENCE.gravity.yieldBand);
+  const pourKg = n * castKg / yieldFraction;
+  return { n, answered, twoUp, pourKg, castKg, yieldFraction, cycle: gravityDieCycle(pourKg, castingSectionMm(ctx)), impressionsText };
+}
+
+/** The aluminium heat treatment costed: the answer, else T6 (the advisor's route — as before). Null when it does not apply. */
+function alHeatTreatmentFor(ctx: RuleContext, a: Pick<Advice, 'alloy' | 'process'>): { t: AlHeatTreatment | 'F'; answered: boolean } | null {
+  if (a.alloy !== 'aluminium' || a.process === 'hpdc') return null;
+  const v = ctx.answers[AL_HEAT_TREAT_DECISION_ID];
+  if (v === 'T6' || v === 'T5' || v === 'F') return { t: v, answered: true };
+  return { t: 'T6', answered: false };
+}
+
+function alHeatTreatDecision(megacasting: boolean): Decision {
+  return {
+    id: AL_HEAT_TREAT_DECISION_ID,
+    kind: 'process_choice',
+    question: 'Which heat treatment does the drawing call for on this aluminium casting?',
+    why: 'The casting\'s temper is on the drawing, not in the geometry. A gravity or sand aluminium casting is usually solution '
+      + 'treated and aged (T6) for strength; some are only aged (T5) or supplied as cast (F). T6 is costed until answered.',
+    options: [
+      { value: 'T6', label: megacasting ? 'T7 / T6 — solution + quench + age' : 'T6 — solution + quench + age', costed: true,
+        consequence: 'the T6 station: solution + ageing furnace kWh, the furnace operator and the furnace capital (ESTIMATE)' },
+      { value: 'T5', label: 'T5 — artificial age only', consequence: 'the ageing furnace only (ESTIMATE)' },
+      { value: 'F', label: 'F — as cast, no heat treatment', consequence: 'no heat treatment costed' },
+    ],
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
+  };
+}
+
+function gravityImpressionsDecision(plan: GravityPlan): Decision {
+  return {
+    id: GRAVITY_IMPRESSIONS_DECISION_ID,
+    kind: 'process_choice',
+    question: 'How many impressions does the gravity die carry?',
+    why: 'No source gives a rule for one, two or four impressions on a gravity die; it is the foundry\'s choice (die size, '
+      + 'pouring from one ladle, thermal balance). One is costed until answered.',
+    options: [
+      { value: '1', label: 'One impression', costed: true, consequence: 'one casting a die opening' },
+      { value: '2', label: 'Two impressions', consequence: plan.twoUp
+        ? (plan.twoUp.fits ? `two castings a die opening on a two-cavity die (${plan.twoUp.text})` : `two do not fit — one stays costed (${plan.twoUp.text})`)
+        : 'not checked — no footprint measured; one stays costed' },
+    ],
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
+  };
+}
+
 /** Minimum wall, guarding the known ray-cast artefact on sparse shells. */
 /**
  * Shot blast of the CASTING, by the mass blasted. The casting route blasts the part as cast; cast + machine blasts the
@@ -826,10 +916,23 @@ export const CASTING_RULES: CommodityRuleSpec = {
           const slides = Math.ceil(under / 6);
           const complexity: ToolComplexity = slides >= 3 ? 'complex' : slides >= 1 ? 'moderate' : 'simple';
           const cores = ctx.geo.topology?.enclosesSealedVoid ? 2 : under >= 20 ? 2 : under >= 1 ? 1 : 0;
-          // A sand pattern plate carries every impression the chosen line's mould face holds.
-          const imps = r.advice.subtype === 'sand' ? Math.max(1, sandLinePlan(ctx)?.impressions ?? 0) : 1;
+          // A sand pattern plate carries every impression the chosen line's mould face holds; a gravity die its impressions.
+          const imps = r.advice.subtype === 'sand' ? Math.max(1, sandLinePlan(ctx)?.impressions ?? 0)
+            : r.advice.subtype === 'gravity' ? (gravityPlan(ctx)?.n ?? 1) : 1;
+          if (r.advice.subtype === 'gravity') {
+            // H13 for the life costed, impressions and slides priced (gravity research round, Nov 2026 — casting-tooling.ts).
+            const est = estimateGravityMouldCost({ projectedAreaCm2: area, cavities: imps, slidesPerCavity: slides });
+            const line = (re: RegExp) => est.detail.lines.find(l => re.test(l.item));
+            const steel = line(/H13 die blocks/);
+            return decided('casting.dieMouldCostGBP', est.total, 'advisor',
+              `gravity die, toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours + ${steel?.kg ?? 0} kg of H13 `
+              + `(the die material is chosen with its life — ${GRAVITY_DIE.lifeBasis}) + bought-outs from a ${Math.round(area)} cm² parting footprint`
+              + `${imps > 1 ? ` × ${imps} impressions` : ''}; ${under} undercut face(s) ≈ ${slides} slide(s) a cavity `
+              + (slides > 0 ? `priced as the moulding build-up prices a side action (a catalogue core-pull cylinder + bench hours a mechanism — no gravity-die slide price was read)`
+                : '(no slide priced)')
+              + `. Cross-check: ${GRAVITY_SOURCES.D1}. H13 hardening / nitriding is not itemised; ${GRAVITY_DIE.maintenanceNotPriced} — a quotation overrides this`, 0.6);
+          }
           const est = r.advice.subtype === 'hpdc' ? estimateHPDCDieCost({ projectedAreaCm2: area, complexity })
-            : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area, complexity })
             : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area * imps, coreCount: cores })
             : estimateInvestmentToolCost({ projectedAreaCm2: area, complexity, coreCount: cores });
           return decided('casting.dieMouldCostGBP', est.total, 'advisor',
@@ -882,6 +985,14 @@ export const CASTING_RULES: CommodityRuleSpec = {
             + `${plan ? ` on the ${plan.line.label}` : ''} = ${(pl.moulds * imps).toLocaleString('en-GB')} castings — `
             + `the pattern priced is an aluminium plate, so its life is ${pl.basis}. A steel plate lasts up to 500,000 moulds `
             + '(DISA, said of an aluminium-casting foundry) but none is priced; a foundry\'s pattern life replaces this', 0.5);
+        }
+        if (r.advice.subtype === 'gravity') {
+          // ONE decision with the die priced: H13 blocks, 100,000 die cycles a cavity (gravity research round, Nov 2026).
+          const n = gravityPlan(ctx)?.n ?? 1;
+          const v = GRAVITY_DIE.lifeDieCycles * n;
+          return decided('casting.dieMouldLife', v, 'library',
+            `${GRAVITY_DIE.lifeBasis} × ${n} impression${n > 1 ? 's' : ''} = ${v.toLocaleString('en-GB')} castings a die (the die priced is H13); `
+            + `${GRAVITY_DIE.maintenanceNotPriced}. It was 50,000 castings (engineering-typical) on a die priced in cast iron`, 0.5);
         }
         return decided('casting.dieMouldLife', life[r.advice.subtype], 'library',
           `${r.advice.subtype} tool life band ${life[r.advice.subtype].toLocaleString()} ${r.advice.subtype === 'hpdc' ? 'shots' : 'castings'} (engineering-typical, not sourced)`, 0.6);
@@ -955,6 +1066,15 @@ export const CASTING_RULES: CommodityRuleSpec = {
           return decided('casting.cycleTimeSandGravHr', Math.round(INVESTMENT_TREE.HR_PER_TREE / n * 10_000) / 10_000, 'rule',
             `${INVESTMENT_TREE.HR_PER_TREE} h pour / knockout a tree ÷ ${n} part(s) on a ${INVESTMENT_TREE.POUR_KG} kg tree `
             + `at ${y} yield (${r.advice.massKg.toFixed(2)} kg part)`, 0.45);
+        }
+        if (r.advice.subtype === 'gravity') {
+          // The die cycle from the metal poured a die opening and the governing section (gravity research round, Nov 2026 —
+          // casting-gravity.ts). It replaced a flat 0.08 h a casting. The value is a DIE OPENING; the module makes
+          // `impressions` castings a cycle.
+          const g = gravityPlan(ctx)!;
+          return decided('casting.cycleTimeSandGravHr', g.cycle.hr, 'geometry',
+            `${g.n} impression${g.n > 1 ? 's' : ''} × ${fmt(g.castKg, 3)} kg as cast ÷ ${g.yieldFraction} yield = ${fmt(g.pourKg, 3)} kg poured a die opening; `
+            + `${g.cycle.text}${g.n > 1 ? ` ÷ ${g.n} impressions = ${fmt(g.cycle.hr / g.n, 6)} h a casting` : ''}. Replace with the foundry's cycle sheet`, 0.5);
         }
         const band: Record<CastingSubtype, number> = {
           hpdc: 0.02, gravity: 0.08, sand: 0.5, investment: 0.40,
@@ -1119,14 +1239,90 @@ export const CASTING_RULES: CommodityRuleSpec = {
                 + 'foundry unless the order says otherwise; none costed — add a stress relief if the drawing calls for one', 0.6,
             [SAFETY_CRITICAL_DECISION_ID]);
         }
-        if (al && r.advice.process !== 'hpdc') {
-          const t = r.advice.process === 'megacasting' ? 'T7 (priced at the T6 rate)' : 'T6';
-          return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG.t6), 'library',
-            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg × the as-cast kg (advisor rate, UK; engineering-typical, not sourced)${fNote}`, 0.55);
+        const alHt = alHeatTreatmentFor(ctx, r.advice);
+        if (alHt) {
+          // Aluminium heat treatment is a STATION (al-heat-treat.ts, gravity research round, Nov 2026) — see the heat
+          // treatment rule. It was £1.10/kg × a steel quench-and-temper country factor.
+          return decided('casting.heatTreatCostPerKg', 0, 'rule',
+            alHt.t === 'F' ? `${r.advice.process} aluminium supplied as cast (F, answered) — no heat treatment`
+              : `${r.advice.process} aluminium ${alHt.t}: costed as a station (furnace kWh, operator and capital — see the heat treatment line), `
+                + 'no £/kg here; a heat treater\'s £/kg typed here replaces the station', 0.55, [AL_HEAT_TREAT_DECISION_ID]);
         }
         return decided('casting.heatTreatCostPerKg', 0, 'rule',
           al ? 'conventional HPDC is not solution treated (entrapped gas blisters) — none; enter a T5 age if specified'
             : `${a} cast as-cast — none unless the drawing calls for it`, 0.6);
+      },
+    },
+    {
+      // The aluminium heat treatment costed (gravity research round, Nov 2026): T6 / T5 a station, F none. Advisory question.
+      id: 'casting.heatTreatment',
+      path: 'casting.heatTreatment',
+      fieldId: 'cast-ht-route',
+      label: 'heatTreatment',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const ht = alHeatTreatmentFor(ctx, r.advice);
+        if (!ht) {
+          return decided('casting.heatTreatment', 'none', 'rule', r.advice.alloy === 'aluminium'
+            ? 'conventional HPDC aluminium is not solution treated — no heat-treat station (see the heat-treat cost)'
+            : `${r.advice.alloy.replace('-', ' ')} — the aluminium heat-treat station does not apply (see the heat-treat cost)`, 0.6);
+        }
+        if (ht.t === 'F') return decided('casting.heatTreatment', 'F', 'engineer', 'answered: F — as cast, no heat treatment', 1, [AL_HEAT_TREAT_DECISION_ID]);
+        const st = alHeatTreatStation(ht.t);
+        const book = ctx.rates ?? activeRates();
+        const tariff = book.energy?.[0]?.electricityPerKwh ?? 0;
+        const lab = activeLabourRate(st.labourId);
+        const perKg = alHeatTreatGbpPerKg(st, tariff, lab);
+        const mega = r.advice.process === 'megacasting' && ht.t === 'T6' ? ' (a megacasting\'s T7, costed as the T6 station)' : '';
+        return decided('casting.heatTreatment', ht.t, ht.answered ? 'engineer' : 'rule',
+          `${ht.answered ? `answered: ${ht.t}` : `${r.advice.process} aluminium is solution treated and aged — T6 costed until the heat-treat question is answered`}${mega}. `
+          + `${st.basis}. In this book: ${st.kwhPerKg} kWh/kg × £${tariff}/kWh + ${st.labourHrPerKg} h/kg × £${lab}/h + £${st.capitalGbpPerKg}/kg = `
+          + `£${perKg.toFixed(4)}/kg before labour efficiency, × the as-cast kg`, 0.45, [AL_HEAT_TREAT_DECISION_ID]);
+      },
+    },
+    {
+      id: 'casting.q.heatTreat', path: 'casting.q.heatTreat', label: 'heat-treat question',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const ht = alHeatTreatmentFor(ctx, r.advice);
+        if (!ht) return decided('casting.q.heatTreat', 'n/a', 'rule', 'not an aluminium sand / gravity / investment casting — not asked', 1);
+        if (ht.answered) return decided('casting.q.heatTreat', ht.t, 'engineer', 'answered', 1, [AL_HEAT_TREAT_DECISION_ID]);
+        return ask(alHeatTreatDecision(r.advice.process === 'megacasting'));
+      },
+    },
+    {
+      // Impressions a gravity die (gravity research round, Nov 2026): one costed until the advisory question is answered.
+      id: 'casting.gravityImpressions',
+      path: 'casting.gravityImpressions',
+      fieldId: 'cast-grav-imp',
+      label: 'gravityImpressions',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'gravity';
+      },
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const g = gravityPlan(ctx)!;
+        return decided('casting.gravityImpressions', g.n, g.answered == null ? 'rule' : 'engineer',
+          `${g.impressionsText}. Castings a die opening = impressions: the cycle is a die opening, the die is priced for `
+          + `${g.n} cavit${g.n > 1 ? 'ies' : 'y'} and its life is ${GRAVITY_DIE.lifeDieCycles.toLocaleString('en-GB')} die cycles × ${g.n}`,
+          g.answered == null ? 0.5 : 0.9, [GRAVITY_IMPRESSIONS_DECISION_ID]);
+      },
+    },
+    {
+      id: 'casting.q.impressions', path: 'casting.q.impressions', label: 'impressions question',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'gravity';
+      },
+      evaluate: (ctx) => {
+        const g = gravityPlan(ctx);
+        if (!g) return decided('casting.q.impressions', 'n/a', 'rule', 'not a gravity die casting — not asked', 1);
+        if (g.answered != null) return decided('casting.q.impressions', String(g.answered), 'engineer', 'answered', 1, [GRAVITY_IMPRESSIONS_DECISION_ID]);
+        return ask(gravityImpressionsDecision(g));
       },
     },
     {
@@ -1270,6 +1466,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
           // semi-automatic line's fourth hand closes and handles moulds.
           const L = sandLinePlan(ctx)?.line ?? SAND_LINE_CLASSES['semi-auto'];
           return decided('casting.manning', L.crew, 'rule', `${L.label} crew of ${L.crew}: ${L.crewBasis}`, L.id === 'semi-auto' ? 0.5 : 0.6);
+        }
+        if (r.advice.subtype === 'gravity') {
+          // The cell by annual volume (gravity research round, Nov 2026 — casting-gravity.ts); it was one operator a machine.
+          const { cell, why } = gravityCellFor(ctx.annualVolume);
+          return decided('casting.manning', cell.crew, 'rule',
+            `${why}: crew ${cell.crew} operator a machine — ${cell.crewBasis}`
+            + (cell.id === 'automated' ? `; ${GRAVITY_AUTO_CELL_NOT_PRICED}` : ''), 0.5);
         }
         return decided('casting.manning', 1, 'rule',
           `one operator to a ${r.advice.subtype} cell`, 0.6);

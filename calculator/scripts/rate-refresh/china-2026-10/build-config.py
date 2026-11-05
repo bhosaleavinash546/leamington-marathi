@@ -198,6 +198,14 @@ energy = {
     'sources': [src('energy.gas.clusterAvg'), src('energy.gas.national36CityIndustrial'), src('energy.electricity.clusterAvg'), src('energy.electricity.Chongqing')],
 }
 
+# Gravity research round (5 Nov 2026): the Chinese tilting gravity machine listings (rows K4, K5), quotes asserted.
+GRAV = {r['id']: r for r in json.load(open(os.path.join(HERE, '..', '..', 'research', '2026-11-gravity-lpdc', 'data.json')))}
+for k, n in (('K5', 'US$19,800.00'), ('K4', 'US$14,700.00')):
+    assert n in GRAV[k]['quote'], (k, n)
+GRAV_USD_PER_GBP = 1.3344                        # the research's book FX (data.json gbp_at_book_fx)
+assert abs(GRAV['K5']['gbp_at_book_fx'] - 19800 / GRAV_USD_PER_GBP) < 0.01
+GRAV_CNY = round(19800 / GRAV_USD_PER_GBP * FX, 2)
+
 # ── MACHINES ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 rent = (v('rent.shanghaiSuzhou') + 19.0) / 2
 machines = {
@@ -230,6 +238,16 @@ machines = {
         {'id': 'cnc-lathe-domestic', 'match': '^(mach-lathe-cnc|mach-mazak-qt200)$', 'refId': 'mach-lathe-cnc', 'refCapexLocal': v('capex.mach-lathe-cnc'),
          'basis': 'Headman 浙海德曼 2025 slant-bed CNC lathe ¥215,423 (¥609M ÷ 2,827 units produced — an approximation)',
          'source': R['capex.mach-lathe-cnc']['source'], 'confidence': 'Low'},
+        # Gravity research round (5 Nov 2026, scripts/research/2026-11-gravity-lpdc/data.json rows K4, K5): a Chinese tilting
+        # gravity die-casting machine is listed at US$14,700 (Jingda JD-700, machine only) to US$19,800 (Jingda "with robot
+        # pouring", 1–4 sets; robot in or out not stated). The upper listing is taken (the nearer scope to a production cell),
+        # at the research's book FX. MACHINE ONLY: the holding furnace, ladle / robot and die cooling are not in it (no price
+        # was read) — the UK figure it replaces at par (£82,769) is a research cell award whose inclusions are not shown.
+        {'id': 'gravity-tilt-domestic', 'match': '^grav-die-cast-std$', 'refId': 'grav-die-cast-std', 'refCapexLocal': GRAV_CNY,
+         'basis': f'Quanzhou Jingda tilting aluminium gravity die-casting machine "with robot pouring", US$19,800 (1–4 sets; Made-in-China list price, grade C; '
+                  f'whether the robot is in the price is not stated) ÷ {GRAV_USD_PER_GBP} $/£ × ¥{FX}/£ = ¥{GRAV_CNY:,.0f}; the JD-700 machine-only listing is US$14,700. '
+                  'ESTIMATE: machine only — holding furnace, ladle / robot and die cooling NOT included (no price read)',
+         'source': f"{GRAV['K5']['source']} — {GRAV['K5']['url']} (also {GRAV['K4']['url']})", 'confidence': 'Low'},
         {'id': 'cnc-5axis-domestic', 'match': '^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$', 'refId': 'mach-vmc5', 'refCapexLocal': v('capex.mach-vmc5'),
          'basis': 'KEDE 科德数控 2024 five-axis average transaction price ¥2.4251M ex-VAT (its mix runs to large machines — top of range; Nawi IPO ¥2.0M)',
          'source': R['capex.mach-vmc5']['source'], 'confidence': 'Low'},

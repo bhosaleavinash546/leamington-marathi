@@ -143,6 +143,8 @@ const ANSWER_NAMES: Record<string, string> = {
   'gear.teethEntry': 'Teeth',
   'gear.faceWidthEntry': 'Face width',
   'casting.processChoice': 'Casting process',
+  'casting.impressions': 'Impressions',
+  'casting.heatTreat': 'Heat treatment',
   'forging.processChoice': 'Forging process',
   'al.route': 'Press route',
   'al.temper': 'Temper',
