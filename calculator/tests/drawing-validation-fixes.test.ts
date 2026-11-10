@@ -96,3 +96,104 @@ describe('F10 — on a route with no grade question the drawing grade is listed 
     expect(forge.notCosted.filter(n => n.parameterId === 'drawing:material.designation:1')).toEqual([]);
   });
 });
+
+describe('D08 (validation) — a "PP-" / "PC-" part-number prefix is not polypropylene / polycarbonate', () => {
+  it('reads the prefix as a part number, keeps real polymer names', async () => {
+    const { familyFromFilename } = await import('../src/engine/material-family');
+    expect(familyFromFilename('PP-MP0108-bed-plate.step')).toBeNull();
+    expect(familyFromFilename('PP-MP0110_electronics_chassis.STEP')).toBeNull();
+    expect(familyFromFilename('PC_A12_bracket_6061.step')).toBe('aluminium');
+    expect(familyFromFilename('PP-GF30_cover.step')).toBe('plastic');
+    expect(familyFromFilename('housing_PP_T20.step')).toBe('plastic');
+    expect(familyFromFilename('PP_cover.stp')).toBe('plastic');
+    expect(familyFromFilename('clip-PC.stp')).toBe('plastic');
+  });
+});
+
+describe('D04 (validation) — correcting a designation withdraws the reader\'s own family read from the old text', () => {
+  it('"30W9" (an OCR misread) corrected to "5052": the reader\'s "steel" is superseded, nothing stale is offered', async () => {
+    const { consolidate, correct, answersFromEngineeringData } = await import('../src/engine/engineering-data/index');
+    const loc = { sheet: 1, bbox: [500, 700, 560, 712] as [number, number, number, number], region: 'title-block' as const };
+    const base = { source: 'drawing' as const, sourceFile: 'cover.pdf', location: loc, method: 'ocr' as const };
+    const drawing = { schemaVersion: 1 as const, readerVersion: 't', sourceFile: 'cover.pdf', fileKind: 'pdf' as const, sheets: [], text: [], warnings: [],
+      parameters: [
+        { ...base, id: 'drawing:material.designation:1', name: 'material.designation', value: '30W9', rawText: '30W9', kind: 'extracted' as const, status: 'needs-validation' as const },
+        { ...base, id: 'drawing:material.family:1', name: 'material.family', value: 'steel', rawText: '30W9', kind: 'interpreted' as const, status: 'needs-validation' as const },
+      ] };
+    const data = consolidate({ drawing, commodity: 'machining' });
+    expect(answersFromEngineeringData(data).leanings.some(l => l.decisionId === 'material.family' && l.value === 'steel')).toBe(true);
+    const after = correct(data, 'drawing:material.designation:1', '5052', { by: 'qa', at: '2026-11-10T00:00:00Z' });
+    const live = after.parameters.filter(p => p.name === 'material.family' && p.status !== 'rejected');
+    expect(live.map(p => p.value)).not.toContain('steel');
+    const old = after.parameters.find(p => p.id === 'drawing:material.family:1')!;
+    expect(old).toMatchObject({ status: 'rejected' });
+    expect(old.note).toMatch(/superseded/);
+    expect(answersFromEngineeringData(after).leanings.filter(l => l.decisionId === 'material.family').map(l => l.value)).not.toContain('steel');
+  });
+});
+
+describe('validation — a material reading names its family by its standard\'s numbering', () => {
+  it('AA / EN / GB / JIS designations give the family; a bare 4-digit number needs checking; never a grade by itself', async () => {
+    const { interpretParameters } = await import('../src/engine/engineering-data/interpret');
+    const fam = (t: string) => interpretParameters([{ id: 'd:1', name: 'material.designation', value: t, rawText: t, source: 'drawing',
+      method: 'pdf-text', kind: 'extracted', status: 'extracted' }], { commodity: 'machining' }).parameters.find(p => p.name === 'material.family');
+    for (const t of ['5052-H32', 'AL 5052-H32', '6063-T5', 'EN AW 5754 H22', '6061铝']) expect(fam(t), t).toMatchObject({ value: 'aluminium', status: 'extracted' });
+    for (const t of ['S235JR', 'S355J2+N', 'DC04', 'Q235', 'Q345B', '45#', '45钢', '40Cr', 'SS400', 'S45C', 'SPCC']) expect(fam(t)?.value, t).toBe('steel');
+    expect(fam('5052')).toMatchObject({ value: 'aluminium', status: 'needs-validation' });
+    expect(fam('ACME-SPEC-12')).toBeUndefined();
+    expect(fam('9999')).toBeUndefined();
+  });
+});
+
+describe('D11 (validation) — split hole callouts are summed before they are compared with the model', () => {
+  const cadHole = (id: string, dia: number, count: number) => ({ id, name: 'hole.diameter', value: { diameter: dia, count }, unit: 'mm',
+    source: 'cad' as const, method: 'kernel' as const, kind: 'extracted' as const, status: 'extracted' as const, appliesTo: { featureId: id } });
+  const callout = (n: number, dia: number, count?: number) => ({ id: `drawing:hole.diameter:${n}`, name: 'hole.diameter',
+    value: { diameter: dia, ...(count ? { count } : {}) }, unit: 'mm', rawText: `${count ? `${count}X ` : ''}Ø${dia}`,
+    source: 'drawing' as const, method: 'pdf-text' as const, kind: 'extracted' as const, status: 'extracted' as const });
+  const cadTable = { id: 'cad:feature.count.holes', name: 'feature.count.holes', value: 2, source: 'cad' as const, method: 'kernel' as const, kind: 'extracted' as const, status: 'extracted' as const };
+  const run = async (calls: ReturnType<typeof callout>[]) => {
+    const { consolidate } = await import('../src/engine/engineering-data/index');
+    return consolidate({ cad: [cadHole('f1', 6.35, 8), cadHole('f2', 15.0876, 4), cadTable],
+      drawing: { schemaVersion: 1, readerVersion: 't', sourceFile: 'd.pdf', fileKind: 'pdf', sheets: [], text: [], warnings: [], parameters: calls } });
+  };
+  it('1 + 2X + 4X + 1 = the model\'s 8: no conflict', async () => {
+    const d = await run([callout(1, 6.35), callout(2, 6.35, 2), callout(3, 6.35, 4), callout(4, 6.35)]);
+    expect(d.conflicts).toEqual([]);
+  });
+  it('callouts that sum to MORE than the model are a conflict, stated as the sum, with a rounded diameter', async () => {
+    const d = await run([callout(1, 15.0876, 4), callout(2, 15.0876, 2)]);
+    // the 4X callout matches the model's 4 exactly; the extra 2X is the conflict, stated as the sum
+    expect(d.conflicts).toHaveLength(1);
+    expect(d.conflicts[0].why).toMatch(/calls 6 \(over 2 callouts\) × Ø15\.0876 and the 3D model has 4/);
+  });
+  it('callouts that sum to fewer than the model need checking, not a conflict', async () => {
+    const d = await run([callout(1, 6.35, 2), callout(2, 6.35, 4)]);
+    expect(d.conflicts).toEqual([]);
+    expect(d.parameters.find(p => p.id === 'drawing:hole.diameter:1')!.status).toBe('needs-validation');
+  });
+});
+
+describe('D05 (validation) — the reports say who decided, when and why', () => {
+  it('a corrected reading carries "Corrected by … on … (was …) — reason"; a confirmed one "Confirmed by …"', async () => {
+    const { decisionText } = await import('../src/export/drawing-spec-report');
+    expect(decisionText([
+      { by: 'reader@x', at: '2026-11-10T09:00:00Z', from: {}, to: {}, action: 'confirm' },
+      { by: 'qa@jlr', at: '2026-11-10T14:05:00Z', from: '30W9', to: '5052', action: 'correct', reason: 'OCR misread of the title block' },
+    ])).toBe('Corrected by qa@jlr on 10 Nov 2026 14:05 UTC (was "30W9") — OCR misread of the title block');
+    expect(decisionText([{ by: 'qa@jlr', at: '2026-11-10T14:05:00Z', from: {}, to: {}, action: 'confirm' }])).toBe('Confirmed by qa@jlr on 10 Nov 2026 14:05 UTC');
+    expect(decisionText(undefined)).toBe('');
+  });
+});
+
+describe('validation — US spelling, stainless abbreviations and GB material words name the family', () => {
+  it('Aluminum, SST, CRES, 303, Q235, 钢 / 铝 / 黄铜 / 铸铁', async () => {
+    const { familyFromFilename } = await import('../src/engine/material-family');
+    expect(familyFromFilename('5052 H-32 Aluminum')).toBe('aluminium');
+    expect(familyFromFilename('bracket_aluminum.step')).toBe('aluminium');
+    for (const t of ['303 SST', 'CRES 304', 'Q235B', '45钢']) expect(familyFromFilename(t), t).toBe('steel');
+    expect(familyFromFilename('6061铝')).toBe('aluminium');
+    expect(familyFromFilename('H62黄铜')).toBe('copper alloy');
+    expect(familyFromFilename('HT250铸铁')).toBe('cast iron');
+  });
+});

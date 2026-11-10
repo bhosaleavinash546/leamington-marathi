@@ -41,7 +41,7 @@ const drawing: DrawingSpecReport = {
   file: 'real-casting-bracket.pdf', hashShort: '6f1a98cf', readerVersion: '1.0.0', sheets: 1, ocrReadings: 0,
   summary: 'real-casting-bracket.pdf (1 sheet), read offline', usedCount: 5, conflicts: [], missing: [], skipped: [], warnings: [], notes: [],
   rows: [
-    { group: 'Material', parameter: 'Material designation', value: 'A356-T6', source: 'Drawing — real-casting-bracket.pdf · Sheet 1 · zone F7', status: 'Confirmed', used: true, usedText: 'Yes' },
+    { group: 'Material', parameter: 'Material designation', value: 'A356-T6', source: 'Drawing — real-casting-bracket.pdf · Sheet 1 · zone F7', status: 'Confirmed', used: true, usedText: 'Yes', decision: '' },
   ],
   notCosted: [
     { parameter: 'Thread', value: 'M6x1-6H ↧ 12', source: 'Drawing — real-casting-bracket.pdf · Sheet 1 · zone C4 · exact text', status: 'Read', why: 'specified on the drawing — not in the cost model yet' },

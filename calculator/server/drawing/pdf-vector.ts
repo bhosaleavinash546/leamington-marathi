@@ -21,7 +21,11 @@ const MAX_SEGMENTS = 250_000;
 const MIN_SEG = 3;
 
 interface Contour { x: number; y: number; s: number }
-interface LineWork { h: Segment[]; v: Segment[]; o: Segment[]; pathOps: number; contours: Contour[]; imageCoverage: number }
+interface LineWork {
+  h: Segment[]; v: Segment[]; o: Segment[]; pathOps: number; contours: Contour[]; strokes: Contour[]; imageCoverage: number;
+  /** Characters the page's text operators show, and how many of them no one can see (D02). */
+  textShown: number; textHidden: number;
+}
 
 /** Walk the page's operator list for straight segments and image placements, in top-left page points. */
 async function lineWork(page: PdfPage, OPS: Record<string, number>, vpT: M6, pageW: number, pageH: number): Promise<LineWork> {
@@ -30,7 +34,13 @@ async function lineWork(page: PdfPage, OPS: Record<string, number>, vpT: M6, pag
   let ctm: M6 = [1, 0, 0, 1, 0, 0];
   const stack: M6[] = [];
   let pathOps = 0, imgArea = 0, total = 0, annotationDepth = 0;
+  // Text that is shown but not seen: render mode 3 / 7 (invisible — what a scanner's "searchable PDF" layer uses), or
+  // painted before an image that covers most of the page. Such a layer is the scanner's OCR, not the drawing's text.
+  let textMode = 0, textShown = 0, textHidden = 0, visibleUncovered = 0;
+  const modeStack: number[] = [];
   const contours: Contour[] = [];
+  /** Small STROKED sub-paths with a turn or a curve in them: the letters of a stroke ("single-line") font (D01). */
+  const strokes: Contour[] = [];
   const push = (x0: number, y0: number, x1: number, y1: number): void => {
     if (total >= MAX_SEGMENTS) return;
     const dx = x1 - x0, dy = y1 - y0;
@@ -44,8 +54,17 @@ async function lineWork(page: PdfPage, OPS: Record<string, number>, vpT: M6, pag
   const n = ops.fnArray.length;
   for (let i = 0; i < n; i++) {
     const fn = ops.fnArray[i]; const args = ops.argsArray[i];
-    if (fn === OPS.save) stack.push(ctm);
-    else if (fn === OPS.restore) { const t = stack.pop(); if (t) ctm = t; }
+    if (fn === OPS.save) { stack.push(ctm); modeStack.push(textMode); }
+    else if (fn === OPS.restore) { const t = stack.pop(); if (t) ctm = t; const tm = modeStack.pop(); if (tm !== undefined) textMode = tm; }
+    else if (fn === OPS.setTextRenderingMode) textMode = Number(args?.[0]) || 0;
+    else if (fn === OPS.showText || fn === OPS.showSpacedText) {
+      if (annotationDepth) continue;
+      const glyphs = args?.[0] as Array<{ unicode?: string; isSpace?: boolean } | number> | undefined;
+      let n = 0;
+      if (Array.isArray(glyphs)) for (const g of glyphs) if (g && typeof g === 'object' && !g.isSpace && g.unicode && g.unicode.trim()) n++;
+      textShown += n;
+      if (textMode === 3 || textMode === 7) textHidden += n; else visibleUncovered += n;
+    }
     else if (fn === OPS.transform) ctm = mul(ctm, args as M6);
     else if (fn === OPS.paintFormXObjectBegin) { stack.push(ctm); if (args?.[0]) ctm = mul(ctm, Array.from(args[0] as number[]) as M6); }
     else if (fn === OPS.paintFormXObjectEnd) { const t = stack.pop(); if (t) ctm = t; }
@@ -61,20 +80,25 @@ async function lineWork(page: PdfPage, OPS: Record<string, number>, vpT: M6, pag
       const m = mul(vpT, ctm);
       const filled = paint !== OPS.stroke && paint !== OPS.closeStroke;
       let cx = 0, cy = 0, sx = 0, sy = 0, has = false;
-      let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity, pieces = 0;
+      let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity, pieces = 0, curved = false;
       const see = (x: number, y: number): void => { if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y; };
       const endContour = (): void => {
         // A glyph drawn as geometry: a small contour made of several pieces (an arrowhead has three, a dash one).
         const w = bx1 - bx0, hh = by1 - by0, big = Math.max(w, hh);
         if (pieces >= 5 && filled && big <= 30 && big >= 2.5 && contours.length < 60_000) contours.push({ x: (bx0 + bx1) / 2, y: (by0 + by1) / 2, s: big });
-        bx0 = Infinity; by0 = Infinity; bx1 = -Infinity; by1 = -Infinity; pieces = 0;
+        // A stroke-font letter is an open polyline (or arc) of letter size. A lone straight piece (a hatch line, a dash
+        // of a hidden line, one arm of a centre mark) is never counted itself: hatching and dashed lines come in runs.
+        // A small closed round outline (a hole or a bolt-circle drawn as a polygon or arcs) is not a letter either.
+        else if (!filled && (pieces >= 2 || curved) && big <= 16 && big >= 1.2 && strokes.length < 60_000
+          && !(Math.hypot(cx - sx, cy - sy) <= 0.05 * big && pieces >= 8 && Math.min(w, hh) >= 0.85 * big)) strokes.push({ x: (bx0 + bx1) / 2, y: (by0 + by1) / 2, s: big });
+        bx0 = Infinity; by0 = Infinity; bx1 = -Infinity; by1 = -Infinity; pieces = 0; curved = false;
       };
       for (let k = 0; k < data.length;) {
         const op = data[k++];
         if (op === 0) { if (has) endContour(); [cx, cy] = apply(m, data[k], data[k + 1]); k += 2; sx = cx; sy = cy; has = true; see(cx, cy); }
         else if (op === 1) { const [x, y] = apply(m, data[k], data[k + 1]); k += 2; if (has) push(cx, cy, x, y); cx = x; cy = y; has = true; see(x, y); pieces++; }
-        else if (op === 2) { see(...apply(m, data[k], data[k + 1])); see(...apply(m, data[k + 2], data[k + 3])); [cx, cy] = apply(m, data[k + 4], data[k + 5]); k += 6; see(cx, cy); pieces += 2; }
-        else if (op === 3) { see(...apply(m, data[k], data[k + 1])); [cx, cy] = apply(m, data[k + 2], data[k + 3]); k += 4; see(cx, cy); pieces += 2; }
+        else if (op === 2) { see(...apply(m, data[k], data[k + 1])); see(...apply(m, data[k + 2], data[k + 3])); [cx, cy] = apply(m, data[k + 4], data[k + 5]); k += 6; see(cx, cy); pieces += 2; curved = true; }
+        else if (op === 3) { see(...apply(m, data[k], data[k + 1])); [cx, cy] = apply(m, data[k + 2], data[k + 3]); k += 4; see(cx, cy); pieces += 2; curved = true; }
         else if (op === 4) { if (has) push(cx, cy, sx, sy); cx = sx; cy = sy; pieces++; }
         else break;                                             // unknown opcode: stop reading this path
       }
@@ -85,12 +109,16 @@ async function lineWork(page: PdfPage, OPS: Record<string, number>, vpT: M6, pag
       const pts = [apply(m, 0, 0), apply(m, 1, 0), apply(m, 0, 1), apply(m, 1, 1)];
       const x0 = Math.max(0, Math.min(...pts.map(p => p[0]))), x1 = Math.min(pageW, Math.max(...pts.map(p => p[0])));
       const y0 = Math.max(0, Math.min(...pts.map(p => p[1]))), y1 = Math.min(pageH, Math.max(...pts.map(p => p[1])));
-      if (x1 > x0 && y1 > y0) imgArea += (x1 - x0) * (y1 - y0);
+      if (x1 > x0 && y1 > y0) {
+        imgArea += (x1 - x0) * (y1 - y0);
+        // an opaque image over most of the page hides the text painted before it
+        if (fn === OPS.paintImageXObject && (x1 - x0) * (y1 - y0) >= 0.8 * pageW * pageH) { textHidden += visibleUncovered; visibleUncovered = 0; }
+      }
     }
   }
   return {
     h: mergeAxisSegments(h, true), v: mergeAxisSegments(v, false), o,
-    pathOps, contours, imageCoverage: Math.min(1, imgArea / Math.max(1, pageW * pageH)),
+    pathOps, contours, strokes, imageCoverage: Math.min(1, imgArea / Math.max(1, pageW * pageH)), textShown, textHidden,
   };
 }
 
@@ -184,7 +212,12 @@ export async function readPdfPage(doc: PdfDocument, pageNumber: number, startLin
   const items = await textRuns(page, vpT, pageNumber);
   const textChars = items.reduce((s, it) => s + it.text.replace(/\s/g, '').length, 0);
   const lines = assembleLines(items, lw, startLineId);
-  const stats = { pathOps: lw.pathOps, glyphLikePaths: glyphRuns(lw.contours, lines.map(l => l.bbox)), imageCoverage: r2(lw.imageCoverage), textChars };
+  const boxes = lines.map(l => l.bbox);
+  const stats = {
+    pathOps: lw.pathOps, glyphLikePaths: glyphRuns(lw.contours, boxes), strokeGlyphPaths: glyphRuns(lw.strokes, boxes),
+    imageCoverage: r2(lw.imageCoverage), textChars,
+    hiddenTextShare: lw.textShown ? r2(lw.textHidden / lw.textShown) : 0,
+  };
   page.cleanup();
   return {
     pageNumber,

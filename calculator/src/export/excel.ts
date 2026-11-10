@@ -607,8 +607,8 @@ export async function exportToExcelBlob(
       ...ds.notes.map(n => [n]),
       [],
       ['READINGS THAT ANSWER A COSTING QUESTION, OR CROSS-CHECK THE 3D MODEL'],
-      ['Group', 'Parameter', 'Value', 'Source (file, sheet, zone, how read)', 'Status', 'Used in the costing', 'How'],
-      ...(ds.rows.length ? ds.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.used ? 'Yes' : 'No', r.usedText]) : [['none on this route']]),
+      ['Group', 'Parameter', 'Value', 'Source (file, sheet, zone, how read)', 'Status', 'Used in the costing', 'How', 'Decision (who, when, why)'],
+      ...(ds.rows.length ? ds.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.used ? 'Yes' : 'No', r.usedText, r.decision]) : [['none on this route']]),
       [],
       ['CONFLICTS BETWEEN SOURCES — nothing is chosen without the engineer'],
       ['Parameter', 'Sources', 'Suggested (never applied by itself)', 'Outcome'],
@@ -623,7 +623,7 @@ export async function exportToExcelBlob(
       ...(ds.notCosted.length ? ds.notCosted.map(n => [n.parameter, n.value, n.source, n.status, n.why]) : [['none']]),
       ...(ds.skipped.length || ds.warnings.length ? [[], ['NOTES FROM THE READER AND THE REVIEW'], ...ds.skipped.map(x => [`Earlier decision not applied: ${x}`]), ...ds.warnings.map(w => [w])] : []),
     ];
-    sheets.push({ name: '10-Drawing', rows: dr, cols: [26, 34, 40, 60, 16, 14, 80] });
+    sheets.push({ name: '10-Drawing', rows: dr, cols: [26, 34, 40, 60, 16, 14, 80, 60] });
   }
 
   // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency

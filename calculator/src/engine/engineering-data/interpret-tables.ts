@@ -290,3 +290,24 @@ export const CAST_AL_DESIGNATIONS: ReadonlyArray<{ pattern: RegExp; gradeId: str
   { pattern: /\bEN\s*AC\s*-?\s*42100\b|\bAlSi7Mg0[.,]3\b/i, gradeId: 'mat-lm25', written: 'EN AC-42100 (AlSi7Mg0.3) = A356' },
   { pattern: /\bEN\s*AC\s*-?\s*42200\b|\bAlSi7Mg0[.,]6\b/i, gradeId: 'mat-a357', written: 'EN AC-42200 (AlSi7Mg0.6) = A357' },
 ];
+
+// ─── A designation's family by its standard's own numbering (the text is a material reading, not a file name) ─────
+
+/**
+ * Designation systems whose FORM names the family, read only from a material reading (a material cell or a material
+ * note), never from a file name or free text. Added by the independent validation (10 Nov 2026): "5052", "S235JR", "Q235",
+ * "45#" named no family, so a correct reading answered nothing. Each row is the standard's own numbering:
+ * - Aluminium Association / EN 573 wrought 4-digit numbers 1xxx–8xxx (optional A, temper H/T/O/F), cast 3-digit.x ("356.0");
+ * - EN 10025 / EN 10027 structural and engineering steel names (S235JR, S355J2, E295, P265GH, DC01…DC06, DX51D, C45E, 42CrMo4);
+ * - GB / T 700 & 1591 carbon and low-alloy steels (Q195–Q690), GB/T 699 "45#" / "45钢", GB/T 3077 40Cr;
+ * - JIS G 3101 / 4051 (SS400, S45C, SPCC, SPHC);
+ * - copper alloys by name (CuZn…, CW…N, C2xxxx brass numbers are NOT read — they collide with part numbers).
+ * Certainty 'by-name': the numbering is the standard's; the row names a family only, never a grade.
+ */
+export const DESIGNATION_FAMILY_RULES: ReadonlyArray<{ pattern: RegExp; family: 'aluminium' | 'steel' | 'copper alloy'; system: string }> = [
+  { pattern: /^(?:(?:AL|ALU|ALUMINIUM|ALUMINUM|AA|EN\s*AW)\s*[-\s]?)?[1-8]\d{3}A?(?:\s*[-\s]?\s*(?:[HT]\s*-?\s*\d{1,4}|O|F))?(?:\s*(?:铝|ALLOY|ALUMINIUM|ALUMINUM|AL))?$/i, family: 'aluminium', system: 'Aluminium Association / EN 573 wrought 4-digit number' },
+  { pattern: /^(?:S|E|P)\d{3}(?:[A-Z]{1,3}\d?)?(?:\+[A-Z]+)?$|^D[CDX]\d{2}[A-Z]?(?:\+[A-Z]+)?$/i, family: 'steel', system: 'EN 10027-1 steel name' },
+  { pattern: /^Q(?:195|215|235|275|295|345|355|390|420|460|500|550|620|690)[A-E]?$/i, family: 'steel', system: 'GB/T 700 / GB/T 1591 steel grade' },
+  { pattern: /^(?:10|15|20|25|30|35|40|45|50|55|60|65)\s*(?:#|钢)$|^\d{2}(?:Cr|Mn|CrMo|CrNiMo|MnB)\d?(?:钢)?$/i, family: 'steel', system: 'GB/T 699 / GB/T 3077 steel grade' },
+  { pattern: /^(?:SS[34]00|S\d{2}C|SPCC|SPHC|SPCD|SPCE|SCM\d{3}|SUS\d{3}L?)$/i, family: 'steel', system: 'JIS steel grade' },
+];

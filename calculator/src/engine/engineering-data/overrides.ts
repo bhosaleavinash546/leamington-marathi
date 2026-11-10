@@ -65,6 +65,13 @@ function refresh(data: ConsolidatedEngineeringData, keepMissing: ConsolidatedEng
   return { ...data, missing: [...expected, ...notes], notCosted: computeNotCosted(data.parameters, data.commodity) };
 }
 
+/** What the drawing READER interprets beside a reading, in the same text, with no derivedFrom link (server/drawing/extract). */
+const READER_SIBLINGS: Readonly<Record<string, readonly string[]>> = {
+  'material.designation': ['material.family', 'material.condition'],
+  'tolerance.general': ['tolerance.generalClass'],
+  'finish.coating': ['finish.coatingRoute'],
+};
+
 const descendants = (data: ConsolidatedEngineeringData, id: string): EngineeringParameter[] => {
   const out: EngineeringParameter[] = []; const seen = new Set<string>([id]);
   for (let grew = true; grew;) {
@@ -103,6 +110,24 @@ export function correct(data: ConsolidatedEngineeringData, parameterId: string, 
 
   // Re-interpret from the corrected value (a derived value that is corrected is the engineer's own figure: nothing follows from it).
   if (p.source !== 'derived') {
+    // The READER's own interpretations of the same text (it writes material.family / material.condition beside the
+    // designation with no derivedFrom link) are superseded too: a corrected "30W9" → "5052" left the reader's "steel" on the
+    // panel as the family leaning (independent validation, 10 Nov 2026). Matched by the reading's own text and position.
+    const sameText = (q: EngineeringParameter) => (q.rawText ?? '').trim() !== '' && (q.rawText ?? '').trim() === (p.rawText ?? (typeof p.value === 'string' ? p.value : '')).trim();
+    const samePlace = (q: EngineeringParameter) => !!q.location && !!p.location && q.location.sheet === p.location.sheet
+      && q.location.bbox.every((v, i) => Math.abs(v - p.location!.bbox[i]) < 0.5);
+    const superseded = next.parameters.filter(q => q.id !== parameterId && q.source === p.source && q.sourceFile === p.sourceFile
+      && q.kind === 'interpreted' && (READER_SIBLINGS[p.name] ?? []).includes(q.name) && (sameText(q) || samePlace(q))
+      && q.status !== 'confirmed' && q.status !== 'corrected' && q.status !== 'rejected');
+    if (superseded.length) {
+      const ids = new Set(superseded.map(q => q.id));
+      next = { ...next, parameters: next.parameters.map(q => ids.has(q.id) ? {
+        ...q, status: 'rejected' as const,
+        note: `${q.note ? `${q.note}; ` : ''}superseded: it was read from "${q.rawText ?? ''}", which the engineer corrected to "${String(typed.value)}" — re-read from the correction`,
+        history: [...(q.history ?? []), { by: who.by, at: who.at, from: snapshot(q), to: { status: 'rejected' }, action: 'reject' as const,
+          reason: 'its source reading was corrected' }],
+      } : q), conflicts: next.conflicts.filter(c => !c.sides.some(sd => ids.has(sd.parameterId))) };
+    }
     const old = descendants(next, parameterId);
     const oldIds = new Set(old.map(o => o.id));
     const corrected = next.parameters.find(x => x.id === parameterId)!;

@@ -218,7 +218,7 @@ describe('a conflict requires a choice', () => {
     const { model, html, costing } = view(wrongGear, forDrawing);
     const c = model.conflicts.find(x => x.name === 'gear.teeth')!;
     expect(c.open).toBe(false);
-    expect(c.resolution).toBe('Settled by A. Engineer: 40 (the drawing)');
+    expect(c.resolution).toBe('Settled by A. Engineer on 10 Nov 2026 10:00 UTC: 40 (the drawing)');
     expect(html).toMatch(/Conflicts settled/);
     expect(html).toContain('aria-label="Reopen the conflict on Number of teeth"');
     expect(costing.answers).toEqual({});

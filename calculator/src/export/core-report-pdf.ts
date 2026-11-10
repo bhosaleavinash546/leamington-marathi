@@ -374,7 +374,7 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
     const shown = d.rows.filter(r => r.used || r.status === 'Confirmed' || r.status === 'Corrected');
     if (shown.length) {
       table(['Parameter', 'Value', 'Read from', 'Status', 'Used in this costing'],
-        shown.map(r => [r.parameter, r.value, r.source, r.status, r.usedText]),
+        shown.map(r => [r.parameter, r.value, r.source, r.status, r.decision ? `${r.decision}. ${r.usedText}` : r.usedText]),
         { 0: { cellWidth: 30, fontStyle: 'bold' }, 1: { cellWidth: 30 }, 2: { cellWidth: 44, textColor: GREY }, 3: { cellWidth: 17 }, 4: { cellWidth: 61 } }, { fontSize: 6.1 });
     } else para('No reading of the drawing was confirmed: the costing uses none of it (the 3D model and the answers given).', 6.8);
     if (d.conflicts.length) {

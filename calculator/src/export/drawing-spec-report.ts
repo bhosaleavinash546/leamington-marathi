@@ -9,7 +9,7 @@
  * model is null and every report is exactly what it was.
  */
 import type { ConsolidatedEngineeringData, StatusWord } from '../engine/engineering-data/index.js';
-import { buildReviewPanel, type DrawingCostingView, type DrawingInfoView } from '../ui/drawing-review.js';
+import { buildReviewPanel, dayOf, type DrawingCostingView, type DrawingInfoView } from '../ui/drawing-review.js';
 
 export interface DrawingSpecRow {
   group: string;
@@ -22,6 +22,8 @@ export interface DrawingSpecRow {
   used: boolean;
   /** "Yes — answers "…" with …" / "No — not confirmed" / "No — cross-check of the 3D model". */
   usedText: string;
+  /** The engineer's last decision on it, as the server stamped it: "Corrected by a@b on 10 Nov 2026 14:05 UTC (was "30W9") — reason"; '' when none. */
+  decision: string;
 }
 
 export interface DrawingSpecConflict { parameter: string; sides: string; suggested: string; resolution: string; open: boolean }
@@ -56,6 +58,17 @@ export interface DrawingSpecInput {
   questionText?: (decisionId: string) => string | undefined;
 }
 
+const ACTION_WORD: Record<string, string> = { confirm: 'Confirmed', correct: 'Corrected', reject: 'Rejected', 'resolve-conflict': 'Chosen in a conflict', reopen: 'Reopened' };
+
+/** Who decided, when and why — the last decision in a reading's history (the server stamps who and when). */
+export function decisionText(history: ConsolidatedEngineeringData['parameters'][number]['history']): string {
+  const h = [...(history ?? [])].reverse().find(e => ACTION_WORD[e.action]);
+  if (!h) return '';
+  const was = h.action === 'correct' && h.from !== undefined && h.from !== null
+    ? ` (was "${typeof h.from === 'object' ? String((h.from as { value?: unknown }).value ?? JSON.stringify(h.from)) : String(h.from)}")` : '';
+  return `${ACTION_WORD[h.action]} by ${h.by}${dayOf(h.at) ? ` on ${dayOf(h.at)}` : ''}${was}${h.reason ? ` — ${h.reason}` : ''}`;
+}
+
 const SOURCE_NAME: Record<string, string> = { CAD: '3D model', Drawing: 'Drawing', Derived: 'Interpreted', Typed: 'Typed by the engineer' };
 
 /** The report's model of the attached drawing, or null when the costing has none. */
@@ -73,7 +86,8 @@ export function buildDrawingSpecReport(i: DrawingSpecInput | null | undefined): 
       : r.effect.kind === 'cross-check' ? `No — ${r.effect.text.replace(/^A cross-check/, 'a cross-check').replace(/\.$/, '')}`
       : r.rawStatus === 'confirmed' || r.rawStatus === 'corrected' ? 'No — confirmed; no question on this route takes it directly'
       : 'No — not confirmed';
-    return { group: g.title, parameter: r.label, value: r.value, source: src(r.source, r.where), status: r.status, used, usedText };
+    return { group: g.title, parameter: r.label, value: r.value, source: src(r.source, r.where), status: r.status, used, usedText,
+      decision: decisionText(i.data.parameters.find(p => p.id === r.id)?.history) };
   }));
   const conflicts: DrawingSpecConflict[] = [
     ...m.conflicts.map(c => ({

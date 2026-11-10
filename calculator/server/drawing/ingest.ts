@@ -70,31 +70,62 @@ export async function openPdf(buf: Uint8Array): Promise<{ doc: PdfDocument; encr
   return { doc, encrypted };
 }
 
-export interface SheetStats { pathOps: number; glyphLikePaths: number; imageCoverage: number; textChars: number; textItems: number }
+export interface SheetStats {
+  pathOps: number; glyphLikePaths: number; imageCoverage: number; textChars: number; textItems: number;
+  /** Letter-sized stroked polylines in runs away from the text (pdf-vector.ts): a stroke ("single-line") font. */
+  strokeGlyphPaths?: number;
+  /** Share of the shown characters that cannot be seen: invisible render mode, or under a full-page image. */
+  hiddenTextShare?: number;
+}
+
+/**
+ * Does the text layer carry the drawing's words? (independent validation D01, 10 Nov 2026.) Two ways it does not:
+ * - the annotation is in a stroke font — letters drawn as short stroked polylines in runs, more of them than there are
+ *   selectable characters (Siemens NX "NIST D2MI" sheets: 320 stroke letters beside a 67-character plot stamp; on
+ *   every vector-text public fixture the count is under half the characters);
+ * - heavy line work with next to no text: at least 1,000 path operators, at most 8 text runs, and 30 path operators or
+ *   more a character (the stamp of a plotter, a sheet number). A sheet like that whose annotation IS text is rare —
+ *   then OCR only adds a pass over a sheet that has little to read.
+ */
+export function textLayerIsThin(s: SheetStats): boolean {
+  const strokes = s.strokeGlyphPaths ?? 0;
+  if (strokes >= 40 && strokes >= s.textChars) return true;
+  return s.pathOps >= 1000 && s.textItems <= 8 && s.pathOps >= 30 * s.textChars;
+}
 
 /**
  * What a sheet is made of.
- * - `scanned`: an image covers most of the page. A text layer under a full-page image is the scanner's own OCR, not
- *   exact text, and is not trusted (see `hasScannerTextLayer`).
+ * - `scanned`: an image covers most of the page. A text layer under a full-page image, or one written invisible, is
+ *   the scanner's own OCR, not exact text, and is not trusted (see `hasScannerTextLayer`).
  * - `vector-text`: selectable text, and few glyph-sized outlines away from it.
  * - `text-as-curves`: line work whose annotation is drawn as outlines (runs of glyph-sized filled contours with no
- *   text beside them), or line work with no text at all.
+ *   text beside them) or as strokes (`textLayerIsThin`), or line work with no text at all.
  * - `empty`: nothing to read.
  * `glyphLikePaths` counts glyph-sized contours in runs AWAY from selectable text (pdf-vector.ts). On the public
  * fixtures it is 0 on every sheet whose annotation is real text and 25–377 on every sheet whose annotation is curves.
  */
 export function classifySheet(s: SheetStats): DrawingSheetInfo['content'] {
   if (s.imageCoverage >= 0.5 && (s.textChars < 60 || hasScannerTextLayer(s))) return 'scanned';
-  if (s.textChars >= 25) return s.glyphLikePaths >= 20 && s.glyphLikePaths >= 0.5 * s.textChars ? 'text-as-curves' : 'vector-text';
+  if (s.textChars >= 25) {
+    if (s.glyphLikePaths >= 20 && s.glyphLikePaths >= 0.5 * s.textChars) return 'text-as-curves';
+    return textLayerIsThin(s) ? 'text-as-curves' : 'vector-text';
+  }
   if (s.glyphLikePaths >= 20 || s.pathOps >= 150) return 'text-as-curves';
   if (s.imageCoverage >= 0.15) return 'scanned';
   if (s.textChars > 0) return 'vector-text';
   return s.pathOps > 0 ? 'text-as-curves' : 'empty';
 }
 
-/** A full-page image with text and next to no line work: a scan that a scanner made "searchable". */
+/**
+ * A full-page image whose text layer is the scanner's OCR ("searchable PDF"): next to no line work (the old test), or
+ * — whatever line work the scanner or a later stamp added — text that is invisible (render mode 3) or painted under
+ * the image (D02: NTRS report pages with 28–120 path operators had their scanner layer taken as exact text). Such a
+ * layer is OCR of unknown quality with no confidence per word: it is set aside and the sheet is OCR'd by the reader,
+ * so every reading from it carries the OCR method, the engine's confidence and "needs validation".
+ */
 export function hasScannerTextLayer(s: SheetStats): boolean {
-  return s.imageCoverage >= 0.8 && s.textChars >= 60 && s.pathOps < 20;
+  if (s.imageCoverage >= 0.8 && s.textChars >= 60 && s.pathOps < 20) return true;
+  return s.imageCoverage >= 0.5 && s.textChars >= 25 && (s.hiddenTextShare ?? 0) >= 0.8;
 }
 
 /**

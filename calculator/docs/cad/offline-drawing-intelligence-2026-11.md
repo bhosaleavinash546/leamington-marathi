@@ -131,7 +131,7 @@ One model, `src/export/drawing-spec-report.ts`, built from the review **as appli
 - audit pack, §9c — every reading with source (file, sheet, zone, how read), status and use; conflicts and how each
   was settled; what the route expected and the drawing does not state; the not-costed list; the reader's notes;
 - workbook, sheet `10-Drawing` — the same tables;
-- the reproducibility stamp gains `drawing reader v1.0.0 · <file> <first 8 of its hash>`.
+- the reproducibility stamp gains `drawing reader v1.1.0 · <file> <first 8 of its hash>`.
 
 No drawing: no section, no sheet, the stamp as before.
 

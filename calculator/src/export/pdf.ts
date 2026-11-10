@@ -2094,7 +2094,7 @@ export function renderShouldCostSections(
     const sub = (t: string) => { y = chk(doc, y, 16); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...NAVY); doc.text(t, MG, y + 3); y += 5; };
     sub('Readings that answer a costing question, or cross-check the 3D model');
     if (d.rows.length) tbl(['Group', 'Parameter', 'Value', 'Source (file, sheet, zone, how read)', 'Status', 'Used in the costing'],
-      d.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.usedText]), [18, 28, 30, 44, 16, 46]);
+      d.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.decision ? `${r.decision}. ${r.usedText}` : r.usedText]), [18, 28, 30, 44, 16, 46]);
     else { doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY); doc.text('None on this route.', MG, y + 3); y += 6; }
     if (d.conflicts.length) {
       sub('Conflicts between sources, and how each was settled');

@@ -50,6 +50,8 @@ export interface TextLine {
   zone?: string;
   /** Index of the numbered note this line belongs to, when it sits in a notes block. */
   noteNo?: string;
+  /** The line is a flag-note number drawn inside its own small outline (a reference to a note, never a value). */
+  flagNote?: boolean;
 }
 
 /** A straight piece of line work. */
@@ -64,7 +66,13 @@ export interface SheetData {
   vSegs: Segment[];
   /** Every other straight segment of at least 3 pt (rotated frames, leaders, hatching). */
   oSegs: Segment[];
-  stats: { pathOps: number; glyphLikePaths: number; imageCoverage: number; textChars: number };
+  stats: {
+    pathOps: number; glyphLikePaths: number; imageCoverage: number; textChars: number;
+    /** Letter-sized STROKED polylines in runs away from the text: annotation in a stroke ("single-line") font. */
+    strokeGlyphPaths?: number;
+    /** Share of the shown characters nobody can see (invisible render mode, or under a full-page image). */
+    hiddenTextShare?: number;
+  };
 }
 
 export interface NoteEntry { no: string; text: string; bbox: BBox; lineIds: number[]; sheet: number }

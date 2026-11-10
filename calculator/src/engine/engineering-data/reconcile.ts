@@ -175,7 +175,7 @@ function flagConflict(w: Work, name: string, sides: EngineeringParameter[], why:
 
 interface CadHole { p: EngineeringParameter; h: HoleValue; featureId: string }
 
-const holeLabel = (c: CadHole): string => c.p.appliesTo?.description ?? `${c.h.count ?? 1} × Ø${c.h.diameterMm}`;
+const holeLabel = (c: CadHole): string => c.p.appliesTo?.description ?? `${c.h.count ?? 1} × Ø${mm(c.h.diameterMm)}`;
 const candidateOf = (c: CadHole): ParameterCandidate => ({ value: c.h.diameterMm, label: holeLabel(c), featureId: c.featureId });
 
 function link(callout: EngineeringParameter, rows: CadHole[], how: string): void {
@@ -199,6 +199,9 @@ function byCount(rows: CadHole[], count: number | undefined): { rows: CadHole[] 
   return rows.length === 1 ? { countDiffers: total } : { ambiguous: true };
 }
 
+/** A diameter for a message: an inch callout converted to mm prints 15.0876, not 15.087600000000002. */
+const mm = (x: number): number => Math.round(x * 1e4) / 1e4;
+
 function matchFeatures(w: Work): void {
   const hasTable = w.params.some(p => p.source === 'cad' && p.name === 'feature.count.holes');
   const cad: CadHole[] = w.params.filter(p => p.source === 'cad' && p.name === 'hole.diameter')
@@ -219,7 +222,7 @@ function matchFeatures(w: Work): void {
     const m = byCount(atDia, h.count);
     if (m && 'rows' in m) {
       m.rows.forEach(r => claimed.add(r.featureId));
-      link(p, m.rows, `Ø${h.diameterMm}${h.count ? ` × ${h.count}` : ''} by diameter and count`);
+      link(p, m.rows, `Ø${mm(h.diameterMm)}${h.count ? ` × ${h.count}` : ''} by diameter and count`);
       // A callout that says no more than the model does is the same fact twice: one parameter, both provenances.
       if (isHole && !h.toleranced && m.rows.length === 1) merge(w, m.rows[0].p, [p]);
     } else if (!isHole) {
@@ -227,11 +230,23 @@ function matchFeatures(w: Work): void {
     } else if (m && 'countDiffers' in m) {
       claimed.add(atDia[0].featureId);
       link(p, atDia, 'by diameter');
-      flagConflict(w, 'hole.diameter', [atDia[0].p, p],
-        `the drawing calls ${h.count} × Ø${h.diameterMm} and the 3D model has ${m.countDiffers} × Ø${atDia[0].h.diameterMm}.`, p.appliesTo);
+      // A drawing often calls the same size in several places ("2X Ø6.35" here, "4X Ø6.35" there). Compare the SUM of the
+      // hole callouts of this size with the model, not each callout (independent validation, 10 Nov 2026: 1 + 2X + 4X + 1
+      // = 8 raised three false conflicts against the model's 8).
+      const sameSize = callouts.filter(q => q.name === 'hole.diameter' && (() => { const k = holeOf(q); return !!k && withinTolerance(k.diameterMm, h.diameterMm, tol); })());
+      const stated = sameSize.reduce((n, q) => n + (holeOf(q)?.count ?? 1), 0);
+      if (sameSize.length > 1 && stated === m.countDiffers) {
+        addNote(p, `one of ${sameSize.length} callouts of Ø${mm(h.diameterMm)} that together state ${stated} — the 3D model has ${m.countDiffers}`);
+      } else if (sameSize.length > 1 && stated < m.countDiffers) {
+        p.status = 'needs-validation';
+        addNote(p, `the ${sameSize.length} callouts of Ø${mm(h.diameterMm)} state ${stated} holes and the 3D model has ${m.countDiffers} — a callout may be drawn without its count; check`);
+      } else {
+        flagConflict(w, 'hole.diameter', [atDia[0].p, p],
+          `the drawing calls ${sameSize.length > 1 ? `${stated} (over ${sameSize.length} callouts)` : h.count} × Ø${mm(h.diameterMm)} and the 3D model has ${m.countDiffers} × Ø${mm(atDia[0].h.diameterMm)}.`, p.appliesTo);
+      }
     } else if (m && 'ambiguous' in m) {
       p.status = 'needs-validation'; p.candidates = atDia.map(candidateOf);
-      addNote(p, `Ø${h.diameterMm}${h.count ? ` × ${h.count}` : ''} fits more than one group of holes in the 3D model (${atDia.map(holeLabel).join('; ')}) — say which`);
+      addNote(p, `Ø${mm(h.diameterMm)}${h.count ? ` × ${h.count}` : ''} fits more than one group of holes in the 3D model (${atDia.map(holeLabel).join('; ')}) — say which`);
     } else {
       near.push({ p, h });
     }
@@ -244,14 +259,14 @@ function matchFeatures(w: Work): void {
       claimed.add(free[0].featureId);
       link(p, free, 'the only hole of that count near that size');
       flagConflict(w, 'hole.diameter', [free[0].p, p],
-        `the drawing states Ø${h.diameterMm} and the 3D model measures Ø${free[0].h.diameterMm} on the same ${(h.count ?? 1) > 1 ? `${h.count} holes` : 'hole'}.`, p.appliesTo);
+        `the drawing states Ø${mm(h.diameterMm)} and the 3D model measures Ø${mm(free[0].h.diameterMm)} on the same ${(h.count ?? 1) > 1 ? `${h.count} holes` : 'hole'}.`, p.appliesTo);
     } else {
       const nearest = [...cad].sort((a, b) => Math.abs(a.h.diameterMm - h.diameterMm) - Math.abs(b.h.diameterMm - h.diameterMm)).slice(0, 3);
       p.status = 'needs-validation';
       if (nearest.length) p.candidates = nearest.map(candidateOf);
       addNote(p, nearest.length
-        ? `no hole of Ø${h.diameterMm}${h.count ? ` × ${h.count}` : ''} in the 3D model — the nearest are ${nearest.map(holeLabel).join('; ')}`
-        : `no hole of Ø${h.diameterMm} in the 3D model — it has no holes`);
+        ? `no hole of Ø${mm(h.diameterMm)}${h.count ? ` × ${h.count}` : ''} in the 3D model — the nearest are ${nearest.map(holeLabel).join('; ')}`
+        : `no hole of Ø${mm(h.diameterMm)} in the 3D model — it has no holes`);
     }
   }
 

@@ -7,9 +7,16 @@
  * text after "MATERIAL:" / "WERKSTOFF:"): "C45", "S355" or "PP" alone in a note prove nothing.
  */
 import type { DraftParameter, ExtractContext } from '../types.js';
-import { buildUnits, draft, type TextUnit } from './common.js';
+import { buildUnits, draft, num, type TextUnit } from './common.js';
+import { drawingUnit } from './dimensions.js';
 
-export interface Grammar { family: string; re: RegExp; weak?: boolean }
+export interface Grammar {
+  family: string; re: RegExp; weak?: boolean;
+  /** A family word, not a designation ("Steel", "Brass", "铝"): it names the family and never a grade. Always `weak`. */
+  generic?: boolean;
+  /** The form is ambiguous on its own: the reading is kept for validation with this note. */
+  check?: string;
+}
 
 const TEMPER = String.raw`(?:T\d{1,5}|H\d{2,3}|O|F)`;
 const POLYMER = String.raw`PA\s?6[./]6|PA\s?66|PA\s?6\/66|PA\s?6T|PA\s?9T|PA\s?46|PA\s?12|PA\s?11|PA\s?6|PPA|PPSU|PPS|PPE|PPO|PP[+/]EPDM|PP|PE-HD|PE-LD|PE-UHMW|HDPE|LDPE|UHMWPE|PE|PC\s?[+/]\s?ABS|PC\s?[+/]\s?PBT|PC|ABS|ASA|SAN|PBT\s?[+/]\s?ASA|PBT|PET|POM-[CH]|POM|PMMA|PEEK|PEI|PSU|PES|PS|PVC-[UP]|PVC|TPE-[EUVSOA]|TPE|TPU|TPV|TPO|TPC|LCP|PTFE|PVDF|PUR`;
@@ -46,6 +53,18 @@ export const MATERIAL_GRAMMARS: Grammar[] = [
   { family: 'aluminium (cast)', re: /\bLM\s?\d{1,2}(?:[-\s]?(?:TF|TE|TB7?|TS|M|T\d))?\b/ },
   { family: 'aluminium (cast)', re: /\bADC\s?\d{1,2}\b/ },
   { family: 'aluminium (cast)', re: /\bAC\d[A-Z](?:-T\d)?\b/ },
+  // Aluminum Association number (+ temper, the temper also written "H-32" / "T-6") followed by the metal's name:
+  // "5052 H-32 Aluminum", "5052 H32 AL", "6061-T6 Aluminium" (independent validation D03, 10 Nov 2026 — LulzBot notes)
+  { family: 'aluminium (wrought)', re: /\b[1-8]\d{3}[A-Z]?(?:[-\s]?(?:T-?\d{1,5}|H-?\d{2,3}|O|F))?[\s,]+(?:ALUMINI?UM|ALU|AL)\b(?![-.]?\d)/i },
+  { family: 'aluminium (wrought)', re: /\b[1-8]\d{3}[A-Z]?(?:[-\s]?T\d{1,5}|[-\s]?H\d{2,3})?\s?铝(?:合金)?/ },
+  // Stainless by its AISI / SAE number with the word (either order): "304 Stainless Steel", "303 SST", "STAINLESS
+  // STEEL 304", "SS 316L" — the number alone is a material only in a material cell (below)
+  { family: 'steel', re: /\b(?:(?:AISI|SAE|TYPE)\s?)?(?:20[1-2]|30[1-9]|31[0-9]|32[1-9]|34[07]|4[0-4]\d)(?:L|H|Ti)?[\s-]*(?:STAINLESS(?:\s?STEEL)?|SST|S\/S|CRES|INOX)\b/i },
+  { family: 'steel', re: /\b(?:STAINLESS\s?STEEL|STAINLESS|SST|S\/S|CRES|INOX|SS)[\s,-]*(?:(?:AISI|SAE|TYPE)\s?)?(?:20[1-2]|30[1-9]|31[0-9]|32[1-9]|34[07]|4[0-4]\d)(?:L|H|Ti)?\b(?![.,]\d)/i },
+  { family: 'steel', re: /(?:\b(?:20[1-2]|30[1-9]|31[0-9]|32[1-9]|4[0-4]\d)(?:L|H|Ti)?\s?)不锈钢/ },
+  // GB/T 699 quality carbon steel "45钢", Swedish SIS numbers
+  { family: 'steel', re: /\b\d{2}(?:Mn)?\s?(?:#\s?)?钢/ },
+  { family: 'steel', re: /\bSIS\s?\d{4}(?:-\d{2})?\b/ },
   // Steels — EN 10027-1 names, EN 10027-2 numbers, VDA 239-100 sheet, SAE J403 / J404 / AISI, JIS G, BS 970
   { family: 'steel', re: /\bX\d{1,3}(?:Cr|Ni|Mo|Ti|Mn|Nb|Al|Cu|Co|Si|N|V|W|S){1,6}\d[\d-]*\b/ },
   { family: 'steel', re: /\b\d{2,3}(?:Cr|Mn|Ni|Mo|Si|Al|Pb|Ti|V|S|B|W){1,5}\d{1,2}(?:-\d{1,2})*(?:\+(?:QT|N|A|C|AC|SH|S|U|HH|HL|FP))?\b/ },
@@ -80,6 +99,26 @@ export const MATERIAL_GRAMMARS: Grammar[] = [
   { family: 'elastomer', re: new RegExp(String.raw`\b(?:${ELASTOMER_WEAK})\b`), weak: true },
   // Composites — named, not graded
   { family: 'composite', re: /\b(?:CFRP|GFRP|CFK|GFK|SMC|BMC|GMT|CARBON\s?FIB(?:RE|ER)[\w\s/-]{0,30}?(?:PREPREG|EPOXY|LAMINATE)|PREPREG)\b/i, weak: true },
+  // GB/T 700 / 1591 structural steels: only in a material cell
+  { family: 'steel', re: /\bQ(?:195|215|235|255|275|295|345|355|390|420|460|500|550|620|690)[A-E]?\b/, weak: true },
+  // A bare Aluminum Association number in a MATERIAL cell / after a material label ("6061", "6061-T6", "5052 H-32").
+  // Never read out of free text: on its own it can be a dimension or a part number. The SAE steel numbers above win a
+  // tie (same span); 1xxx / 4xxx / 8xxx are left out because SAE uses them for steels.
+  { family: 'aluminium (wrought)', re: /\b[235-7]\d{3}[A-Z]?[-\s]?(?:T-?\d{1,5}|H-?\d{2,3})\b/, weak: true },
+  { family: 'aluminium (wrought)', re: /\b[235-7]\d{3}(?![\d.,]\d)(?![A-Z\d])/, weak: true,
+    check: 'A bare four-digit number where the material is stated: read as an Aluminum Association wrought alloy number (no temper or metal named) — check.' },
+  // AISI stainless number alone in a material cell ("MATERIAL: 304")
+  { family: 'steel', re: /\b(?:30[1-9]|31[0-9]|32[1-9])L?\b(?![.,]\d)/, weak: true,
+    check: 'A bare three-digit number where the material is stated: read as an AISI 300-series stainless steel — check.' },
+  // Family words — a family, never a grade, and only where the drawing says it is the material
+  { family: 'steel', re: /\b(?:STAINLESS(?:\s?STEEL)?|SST|CRES|(?:CARBON|MILD|TOOL|SPRING|ALLOY)\s?STEEL|STEEL|STAHL)\b|不锈钢|碳钢|钢/i, weak: true, generic: true },
+  { family: 'aluminium', re: /\b(?:ALUMINI?UM(?:\s?ALLOY)?|ALUMINIUMLEGIERUNG|ALU)\b|铝合金|铝/i, weak: true, generic: true },
+  { family: 'copper alloy', re: /\b(?:BRASS|BRONZE|PHOSPHOR\s?BRONZE|MESSING|BRONZE)\b|黄铜|青铜/i, weak: true, generic: true },
+  { family: 'copper', re: /\b(?:COPPER|KUPFER)\b|紫铜/i, weak: true, generic: true },
+  { family: 'cast iron', re: /\b(?:CAST\s?IRON|DUCTILE\s?IRON|GREY\s?IRON|GRAY\s?IRON)\b|铸铁/i, weak: true, generic: true },
+  { family: 'titanium', re: /\bTITANIUM\b|钛合金/i, weak: true, generic: true },
+  { family: 'magnesium', re: /\bMAGNESIUM\b/i, weak: true, generic: true },
+  { family: 'thermoplastic', re: /\b(?:NYLON|ACETAL|POLYCARBONATE|POLYPROPYLENE|POLYETHYLENE)\b/i, weak: true, generic: true },
 ];
 
 /** A standard written beside a material ("EN 1563", "DIN EN 10083-3", "ASTM A536", "ISO 1043"). */
@@ -103,7 +142,7 @@ export const SPEC_CODE_RES: RegExp[] = [
   /\bHES\s?[A-Z]\s?\d{3,4}(?:-\d{2})?\b/g,
 ];
 
-export interface DesignationHit { designation: string; family: string; index: number; weak: boolean }
+export interface DesignationHit { designation: string; family: string; index: number; weak: boolean; generic?: boolean; check?: string }
 
 /** Every designation in a piece of text. Overlapping matches keep the longest; `allowWeak` admits the weak grammars. */
 export function findDesignations(text: string, allowWeak: boolean): DesignationHit[] {
@@ -115,7 +154,7 @@ export function findDesignations(text: string, allowWeak: boolean): DesignationH
     while ((m = re.exec(text))) {
       if (!m[0]) { re.lastIndex++; continue; }
       const d = m[0].trim().replace(/[\s,;.]+$/, '');
-      hits.push({ designation: d, family: g.family, index: m.index, weak: !!g.weak });
+      hits.push({ designation: d, family: g.family, index: m.index, weak: !!g.weak, ...(g.generic ? { generic: true } : {}), ...(g.check ? { check: g.check } : {}) });
     }
   }
   // drop a hit that lies inside a longer one, and exact repeats
@@ -128,22 +167,30 @@ export function findDesignations(text: string, allowWeak: boolean): DesignationH
     if (swallowed >= 0) kept.splice(swallowed, 1);
     kept.push(h);
   }
-  return kept.sort((a, b) => Number(a.weak) - Number(b.weak) || a.index - b.index);
+  return kept.sort((a, b) => Number(a.weak) - Number(b.weak) || Number(!!a.generic) - Number(!!b.generic) || a.index - b.index);
 }
 
 /** The temper or delivery condition a designation carries ("6082-T6" → T6, "42CrMo4+QT" → +QT). */
 export function conditionOf(designation: string): string | undefined {
   const t = /(?:^|[-\s])(T\d{1,5}|H\d{2,3})$/.exec(designation);
   if (t) return t[1];
+  // an Aluminum Association number with its temper inside a longer designation ("5052 H-32 Aluminum", "AL 5052-H32")
+  const aa = /(?:^|[^\d.])[1-8]\d{3}[A-Z]?[-\s]?(T|H)-?(\d{1,5})\b/.exec(designation);
+  if (aa && (aa[1] === 'T' || aa[2].length <= 3)) return `${aa[1]}${aa[2]}`;
   const s = /(\+(?:QT|N|A|C|AC|SH|S|U|AR|M))\b/.exec(designation);
   if (s) return s[1];
   const lm = /^LM\s?\d{1,2}[-\s]?(TF|TE|TB7?|TS|M)$/.exec(designation);
   return lm ? lm[1] : undefined;
 }
 
-const MATERIAL_LABEL = /\b(?:MATERIAL|MAT'?L|WERKSTOFF|HALBZEUG)\b\.?\s*(?:SPEC(?:IFICATION)?\s*)?[:=-]?\s*/i;
+/** "MATERIAL", "MAT'L", "MATL", "Mat:" / "Mat.:" (the short form only with its colon), "WERKSTOFF", GB "材料" / "材质". */
+const MATERIAL_LABEL = /(?:\b(?:MATERIAL|MAT'?L|MATL|WERKSTOFF|HALBZEUG)\b\.?|\bMAT\b\.?(?=\s*[:=：])|材料(?:牌号)?|材质)\s*(?:SPEC(?:IFICATION)?\s*)?[:=：-]?\s*/i;
 const SEE_NOTE = /\b(?:SEE|SIEHE|S\.)\s*(?:NOTE|ANMERKUNG|HINWEIS)\s*(\d{1,2})\b/i;
+/** A material cell that only points at the notes ("See Notes.") holds no designation of its own. */
+const SEE_NOTES = /^\W*(?:SEE|SIEHE|REFER\s+TO)\s+(?:THE\s+)?(?:NOTES?|ANMERKUNGEN|HINWEISE?)\W*$/i;
 const key = (d: string): string => d.toUpperCase().replace(/[\s-]/g, '');
+/** Length of the first clause of a text: up to a sentence end, a semicolon or a comma. */
+const firstClause = (t: string): number => { const m = /[;,]|\.(?=\s|$)/.exec(t); return m ? m.index : t.length; };
 
 export function extractMaterial(ctx: ExtractContext): DraftParameter[] {
   const units = buildUnits(ctx);
@@ -151,23 +198,35 @@ export function extractMaterial(ctx: ExtractContext): DraftParameter[] {
   interface Cand { hit: DesignationHit; unit: TextUnit; rank: number }
   const cands: Cand[] = [];
   const cell = units.filter(u => u.context === 'title:material');
-  const scan = (u: TextUnit, text: string, rank: number, allowWeak: boolean): void => {
-    for (const h of findDesignations(text, allowWeak)) cands.push({ hit: h, unit: u, rank });
+  /**
+   * `looseUpTo`: where a family word ("Steel") or a bare number ("6061") may stand and still be the material — the whole
+   * of a material cell, or the first clause after a material label WITH its colon ("Mat: Brass", "MATERIAL: 6061-T6").
+   * "MATERIAL TO BE FREE OF STEEL CHIPS" names no material.
+   */
+  const scan = (u: TextUnit, text: string, rank: number, allowWeak: boolean, looseUpTo = allowWeak ? Infinity : -1): void => {
+    for (const h of findDesignations(text, allowWeak)) {
+      if ((h.generic || h.check) && h.index >= looseUpTo) continue;
+      cands.push({ hit: h, unit: u, rank });
+    }
   };
   for (const u of cell) {
+    if (SEE_NOTES.test(u.text)) continue;
     scan(u, u.text, 0, true);
     const ref = SEE_NOTE.exec(u.text);
-    if (ref) for (const n of units.filter(x => x.context === 'note' && x.noteNo === ref[1])) scan(n, n.text, 0, true);
+    if (ref) for (const n of units.filter(x => x.context === 'note' && x.noteNo === ref[1])) scan(n, n.text, 0, true, firstClause(n.text));
   }
   for (const u of units) {
     if (u.context === 'title:material') continue;
     const lab = MATERIAL_LABEL.exec(u.text);
-    if (lab && !/^title:/.test(u.context)) scan(u, u.text.slice(lab.index + lab[0].length), 1, true);
+    if (lab && !/^title:/.test(u.context)) {
+      const after = u.text.slice(lab.index + lab[0].length);
+      scan(u, after, 1, true, /[:=：]/.test(lab[0]) ? firstClause(after) : -1);
+    }
     else if (u.context === 'note') scan(u, u.text, 2, false);
     else if (u.context === 'free' && u.region !== 'title-block') scan(u, u.text, 3, false);
     else if (u.context === 'free' && u.region === 'title-block') scan(u, u.text, 2, false);
   }
-  cands.sort((a, b) => a.rank - b.rank || Number(a.hit.weak) - Number(b.hit.weak) || a.unit.sheet - b.unit.sheet || a.unit.bbox[1] - b.unit.bbox[1] || a.hit.index - b.hit.index);
+  cands.sort((a, b) => a.rank - b.rank || Number(a.hit.weak) - Number(b.hit.weak) || Number(!!a.hit.generic) - Number(!!b.hit.generic) || a.unit.sheet - b.unit.sheet || a.unit.bbox[1] - b.unit.bbox[1] || a.hit.index - b.hit.index);
 
   const best = cands[0];
   if (best) {
@@ -175,13 +234,15 @@ export function extractMaterial(ctx: ExtractContext): DraftParameter[] {
     const sameRank = cands.some(c => c.rank === best.rank && key(c.hit.designation) !== key(best.hit.designation) && c.hit.family !== best.hit.family);
     const where = best.rank === 0 ? 'the title block\'s material cell' : best.rank === 1 ? 'text labelled as the material' : best.rank === 2 ? 'a note' : 'free text on the sheet';
     const note = [`Found in ${where}.`, others.length ? `Other designations on the drawing: ${others.slice(0, 6).join('; ')}.` : ''].filter(Boolean).join(' ');
-    const status = sameRank || best.rank === 3 ? 'needs-validation' as const : undefined;
-    out.push(draft('material.designation', best.hit.designation, best.unit, { raw: best.unit.text, at: best.hit.designation, note, ...(status ? { status } : {}) }));
+    const status = sameRank || best.rank === 3 || best.hit.check ? 'needs-validation' as const : undefined;
+    const desNote = [note, best.hit.check ?? '', best.hit.generic ? 'A family word, not a grade: no grade is read from it.' : ''].filter(Boolean).join(' ');
+    out.push(draft('material.designation', best.hit.designation, best.unit, { raw: best.unit.text, at: best.hit.designation, note: desNote, ...(status ? { status } : {}) }));
     out.push(draft('material.family', best.hit.family, best.unit, {
       raw: best.hit.designation, at: best.hit.designation, kind: 'interpreted', ...(status ? { status } : {}),
-      note: `From the form of the designation "${best.hit.designation}" (designation grammar), not from a grade list.`,
+      note: best.hit.generic ? `The drawing names the family "${best.hit.designation}" and no grade.`
+        : `From the form of the designation "${best.hit.designation}" (designation grammar), not from a grade list.`,
     }));
-    const cond = conditionOf(best.hit.designation);
+    const cond = best.hit.generic ? undefined : conditionOf(best.hit.designation);
     if (cond) out.push(draft('material.condition', cond, best.unit, { raw: best.hit.designation, at: best.hit.designation, ...(status ? { status } : {}) }));
     STANDARD_RE.lastIndex = 0;
     const stds = best.unit.text.match(STANDARD_RE) ?? [];
@@ -203,9 +264,31 @@ export function extractMaterial(ctx: ExtractContext): DraftParameter[] {
     const m = /(\d+(?:[.,]\d+)?)\s?(mm|MM)?/.exec(thk.text);
     if (m) out.push(draft('material.stockThickness', Number(m[1].replace(',', '.')), thk, { unit: 'mm', raw: thk.text, ...(m[2] ? {} : { status: 'needs-validation' as const, note: 'The thickness cell gives a number with no unit: millimetres not confirmed.' }) }));
   } else {
+    let found = false;
     for (const u of [...cell, ...units.filter(x => MATERIAL_LABEL.test(x.text) && !x.context.startsWith('title:'))]) {
       const m = /\b(?:t|THK\.?|THICKNESS|BLECHDICKE|DICKE|s)\s?[=:]\s?(\d+(?:[.,]\d+)?)\s?(?:mm|MM)?\b/.exec(u.text);
-      if (m) { out.push(draft('material.stockThickness', Number(m[1].replace(',', '.')), u, { unit: 'mm', raw: u.text, at: m[0] })); break; }
+      if (m) { out.push(draft('material.stockThickness', Number(m[1].replace(',', '.')), u, { unit: 'mm', raw: u.text, at: m[0] })); found = true; break; }
+    }
+    // "2.03 MM THICK" / "(.1195 THICK)" in the material statement, or a stock dimension "3.175 STK" anywhere (D03):
+    // the unit as written, else the drawing's own unit (stated or not — then the reading is for validation)
+    if (!found) {
+      const inMaterial = [...cell, ...units.filter(x => MATERIAL_LABEL.test(x.text) && !x.context.startsWith('title:'))];
+      const pick = (re: RegExp, list: TextUnit[]): { u: TextUnit; m: RegExpExecArray } | undefined => {
+        for (const u of list) { const m = re.exec(u.text); if (m) return { u, m }; }
+        return undefined;
+      };
+      const hit = pick(/(?<![\d.,])((?:\d+)?[.,]?\d+)\s?(MM|mm|IN\b|in\b|")?\s?(?:THICK(?:NESS)?|THK)\b(?!\s?(?:OF|COATING|PLAT|PAINT))/i, inMaterial)
+        ?? pick(/(?<![\d.,])((?:\d+)?[.,]?\d+)\s?(MM|mm|")?\s?(?:STK|STOCK)\b/, units);
+      if (hit) {
+        const du = drawingUnit(ctx);
+        const w = hit.m[2]?.toLowerCase();
+        const unit = w === 'mm' ? 'mm' : w === 'in' || w === '"' ? 'in' : du.unit;
+        const stated = !!w || du.stated;
+        out.push(draft('material.stockThickness', num(hit.m[1]), hit.u, {
+          unit, raw: hit.u.text, at: hit.m[0],
+          ...(stated ? {} : { status: 'needs-validation' as const, note: `No unit written beside the thickness; the drawing's unit is ${du.unit} (${du.basis}).` }),
+        }));
+      }
     }
   }
   // company specification codes, wherever they are written

@@ -178,7 +178,8 @@ export function extractDimensions(ctx: ExtractContext, opts: DimensionOptions = 
   const du = drawingUnit(ctx);
   const sheets = new Map(ctx.sheets.map(s => [s.info.sheet, s]));
   const borderOf = new Map(ctx.layouts.map(l => [l.sheet, l.border]));
-  const cand = ctx.lines.filter(l => (l.region === 'view' || l.region === 'other') && !opts.skipLineIds?.has(l.id));
+  // a flag-note number in its own outline (text-lines.ts) refers to a note: it is not a dimension (D12)
+  const cand = ctx.lines.filter(l => (l.region === 'view' || l.region === 'other') && !opts.skipLineIds?.has(l.id) && !l.flagNote);
   const used = new Set<number>();
   const bySheet = new Map<number, TextLine[]>();
   for (const l of cand) { const g = bySheet.get(l.sheet); if (g) g.push(l); else bySheet.set(l.sheet, [l]); }

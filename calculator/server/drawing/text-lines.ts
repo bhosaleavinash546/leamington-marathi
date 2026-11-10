@@ -76,6 +76,56 @@ export function countSeparators(seps: Sep[], lo: number, hi: number, v: number, 
 
 const WS = /^[\s ]*$/;
 
+/** A short straight piece of line work in a text frame: its ends as (u, v). */
+interface FrameSeg { ua: number; va: number; ub: number; vb: number; umin: number; umax: number; cross: boolean }
+
+/** The short line work of a sheet in one text frame, sorted by `umin` (a flag outline is a few short edges). */
+function shortSegsFor(rotation: number, h: Segment[], v: Segment[], o: Segment[]): FrameSeg[] {
+  const f = frame(rotation);
+  const out: FrameSeg[] = [];
+  for (const sg of [h, v, o]) for (const s of sg ?? []) {
+    const ex = s.x1 - s.x0, ey = s.y1 - s.y0;
+    const len = Math.hypot(ex, ey);
+    if (len < 1.5 || len > 60) continue;
+    const ua = s.x0 * f.dx + s.y0 * f.dy, ub = s.x1 * f.dx + s.y1 * f.dy;
+    const va = s.x0 * f.mx + s.y0 * f.my, vb = s.x1 * f.mx + s.y1 * f.my;
+    out.push({ ua, va, ub, vb, umin: Math.min(ua, ub), umax: Math.max(ua, ub), cross: Math.abs((ex * f.dx + ey * f.dy) / len) <= 0.87 });
+  }
+  out.sort((a, b) => a.umin - b.umin);
+  return out;
+}
+
+/**
+ * Is a one- or two-character run drawn inside its own small outline — a flag-note triangle or flag (ASME Y14.5
+ * flag note), a datum box? Then it refers to a note and is not a digit of the value beside it (independent validation
+ * D12, 10 Nov 2026: "8X Ø2.5 ±0.15" with flag note 4 was read "±0.154"). The outline must stand within a letter of the
+ * glyph on its left and on its right, and close above or below it.
+ */
+function inOwnOutline(segs: FrameSeg[], u0: number, u1: number, v: number, size: number): boolean {
+  const uc = (u0 + u1) / 2, vc = v - 0.35 * size, reach = 0.9 * size;
+  let left = false, right = false, rail = false;
+  let a = 0, b = segs.length;
+  const from = uc - reach - 60;
+  while (a < b) { const m = (a + b) >> 1; if (segs[m].umin < from) a = m + 1; else b = m; }
+  for (let i = a; i < segs.length && segs[i].umin <= uc + reach; i++) {
+    const s = segs[i];
+    if (s.umax < uc - reach) continue;
+    if (s.cross) {
+      const lo = Math.min(s.va, s.vb), hi = Math.max(s.va, s.vb);
+      if (vc < lo || vc > hi || hi - lo < 1e-6) continue;
+      const u = s.ua + (s.ub - s.ua) * (vc - s.va) / (s.vb - s.va);
+      if (u >= uc - reach && u <= uc - 0.2 * size) left = true;
+      else if (u >= uc + 0.2 * size && u <= uc + reach) right = true;
+    } else {
+      if (s.umin > uc || s.umax < uc) continue;
+      const vv = s.va + (s.vb - s.va) * (uc - s.ua) / Math.max(1e-6, s.ub - s.ua);
+      if (Math.abs(vv - vc) <= reach && Math.abs(vv - vc) >= 0.25 * size) rail = true;
+    }
+    if (left && right && rail) return true;
+  }
+  return false;
+}
+
 /** Assemble the runs of ONE sheet into lines. `startId` keeps ids unique across sheets. */
 export function assembleLines(items: RawTextItem[], segs: { h: Segment[]; v: Segment[]; o: Segment[] }, startId = 0): TextLine[] {
   // Drop empties and exact duplicates (bold drawn as the same string twice).
@@ -96,6 +146,22 @@ export function assembleLines(items: RawTextItem[], segs: { h: Segment[]; v: Seg
   for (const rot of [...groups.keys()].sort((a, b) => a - b)) {
     const f = frame(rot);
     const seps = separatorsFor(rot, segs.h, segs.v, segs.o);
+    let shortSegs: FrameSeg[] | undefined;
+    const flagged = new Map<RawTextItem, boolean>();
+    /** Runs split off their neighbour because they sit in their own outline: only these are marked as flag notes. */
+    const splitAsFlag = new Set<RawTextItem>();
+    /** A one- or two-character run inside its own outline (a flag note) — worked out only when a merge asks. */
+    const isFlag = (c: { it: RawTextItem; u0: number; u1: number; v: number }): boolean => {
+      // exact text only: OCR word boxes are loose, and on a sheet of text-as-curves the letters' own outlines are line work
+      if (c.it.method === 'ocr' || !/^[A-Z0-9]{1,2}$/i.test(c.it.text.trim())) return false;
+      let fl = flagged.get(c.it);
+      if (fl === undefined) {
+        shortSegs ??= shortSegsFor(rot, segs.h, segs.v, segs.o);
+        fl = inOwnOutline(shortSegs, c.u0, c.u1, c.v, c.it.size);
+        flagged.set(c.it, fl);
+      }
+      return fl;
+    };
     const g = groups.get(rot)!.map(it => {
       const u0 = it.ox * f.dx + it.oy * f.dy;
       return { it, u0, u1: u0 + it.width, v: it.ox * f.mx + it.oy * f.my };
@@ -134,6 +200,7 @@ export function assembleLines(items: RawTextItem[], segs: { h: Segment[]; v: Seg
             text, sheet: cur[0].it.sheet, bbox, size: r2(size), rotation: rot, method: cur[0].it.method,
             ...(hasRel && relN ? { reliability: r2(relSum / relN) } : {}),
             u0: r2(u0), u1: r2(u1), v: r2(v), ...(cur[0].it.font ? { font: cur[0].it.font } : {}),
+            ...(cur.length === 1 && splitAsFlag.has(cur[0].it) ? { flagNote: true } : {}),
           });
         }
         cur = [];
@@ -146,9 +213,16 @@ export function assembleLines(items: RawTextItem[], segs: { h: Segment[]; v: Seg
           const ratio = c.it.size / p.it.size;
           // a symbol-font glyph (depth, diameter, a modifier) belongs to the value beside it whatever its size
           const sym = !!c.it.symbol || !!p.it.symbol;
-          const split = gap > 1.5 * size || gap < -0.6 * size || (!sym && (ratio < 0.8 || ratio > 1.25))
+          let split = gap > 1.5 * size || gap < -0.6 * size || (!sym && (ratio < 0.8 || ratio > 1.25))
             || c.it.method !== p.it.method
             || (gap > -0.2 * size && hasSeparator(seps, p.u1, c.u0, (p.v + c.v) / 2, size));
+          // a flag-note number in its own outline is never part of the value beside it
+          if (!split) {
+            const fc = isFlag(c), fp = !fc && cur.length === 1 && isFlag(p);
+            if (fc) splitAsFlag.add(c.it);
+            if (fp) splitAsFlag.add(p.it);
+            split = fc || fp;
+          }
           if (split) flush();
         }
         cur.push(c);

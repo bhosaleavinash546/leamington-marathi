@@ -15,18 +15,23 @@ export type MaterialFamily = 'plastic' | 'aluminium' | 'magnesium' | 'titanium' 
  *  normalised to spaces first — '_' is a regex word char, so "steel_axle" would
  *  otherwise defeat a \bsteel\b anchor. */
 export function familyFromFilename(filename: string): MaterialFamily | null {
-  const n = (filename || '').toLowerCase().replace(/[_\-.]+/g, ' ');
+  const n0 = (filename || '').toLowerCase();
+  // A two-letter polymer abbreviation that STARTS the name and is joined to a coded token ("PP-MP0108", "PC_A12") is a
+  // part-number prefix, not polypropylene / polycarbonate — unless that token is a filler code ("PP-GF30", "PC-GF10")
+  // (independent validation, 10 Nov 2026: LulzBot aluminium plates "PP-MP0108" were costed in POM-C acetal).
+  const prefixed = /^(pp|pc)[-_](?!(?:gf|cf|mf|gb|td|t)\d)[a-z]{0,4}\d/.test(n0);
+  const n = (prefixed ? n0.replace(/^(pp|pc)(?=[-_])/, '') : n0).replace(/[_\-.]+/g, ' ');
   if (!n.trim()) return null;
   if (/nylon|\bpa6|pa66|\babs|polycarb|\bpc\b|polyprop|\bpp\b|\bpeek|\bpom|acetal|delrin|plastic|resin|glass ?filled/.test(n)) return 'plastic';
   // Wrought (6061, 6082, 5083, 5754, 7075), cast (LM25/LM6, A356/A357/A380, ADC12, AlSi…, EN AC-4xxxx) and trade names.
-  if (/alumini|\balu\b|\bal ?si ?\d|6061|7075|6082|\b5083|\b5754|\blm ?(25|6|24)\b|adc ?12|\ba3[5-8]\d|\ben ?ac ?4\d{4}|silafont|aural|castasil/.test(n)) return 'aluminium';
+  if (/alumini|aluminum|\balu\b|铝|\bal ?si ?\d|6061|7075|6082|\b5083|\b5754|\blm ?(25|6|24)\b|adc ?12|\ba3[5-8]\d|\ben ?ac ?4\d{4}|silafont|aural|castasil/.test(n)) return 'aluminium';
   if (/magnesium|az91|am60/.test(n)) return 'magnesium';
   if (/zamak|\bzinc|\bza ?(8|12|27)\b|zl0?4\d\d/.test(n)) return 'zinc';
   if (/inconel|\bin ?7(13|18)\b|waspaloy|hastelloy|monel|nimonic|superalloy|nickel alloy/.test(n)) return 'nickel alloy';
   if (/titanium|ti ?6al|grade ?5/.test(n)) return 'titanium';
-  if (/cast ?iron|ductile|\bgjl|\bgjs|sg ?iron|nodular/.test(n)) return 'cast iron';
-  if (/\bsteel|\b1045|\b4140|\bc45|s45c|\ben8|42crmo|scm440|16mncr|20mncr|stainless|\b316|\b304|17 ?4ph|\bhss\b|\bhsla|\bdp[0-9]{3}|\bdc0[1-9]/.test(n)) return 'steel';
-  if (/brass|bronze|copper|cuzn|phosphor/.test(n)) return 'copper alloy';
+  if (/cast ?iron|铸铁|球墨|灰铁|ductile|\bgjl|\bgjs|sg ?iron|nodular/.test(n)) return 'cast iron';
+  if (/\bsteel|钢|\bsst\b|\bcres\b|\b30[34]l?\b|\bq(?:235|345|355)|\b1045|\b4140|\bc45|s45c|\ben8|42crmo|scm440|16mncr|20mncr|stainless|\b316|\b304|17 ?4ph|\bhss\b|\bhsla|\bdp[0-9]{3}|\bdc0[1-9]/.test(n)) return 'steel';
+  if (/brass|bronze|copper|cuzn|phosphor|黄铜|青铜|铜/.test(n)) return 'copper alloy';
   return null;
 }
 

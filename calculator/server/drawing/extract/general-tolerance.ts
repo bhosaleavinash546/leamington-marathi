@@ -40,7 +40,8 @@ export function findGeneralTolerances(text: string): GeneralToleranceRead[] {
     [/\bDIN\s?1688\b(?:[\s:,-]*GT[AB]?\s?\d{1,2}(?:\/\d)?)?/g, 'DIN 1688'],
   ];
   // ASME model-based practice: one profile tolerance "applies to all untoleranced surfaces"
-  const untol = /(?:[.,]\d+\s)?[^.;]*\b(?:APPLIES\s+TO\s+ALL\s+UNTOLERANCED|ALL\s+UNTOLERANCED\s+(?:SURFACES|FEATURES|DIMENSIONS))[^.;]*/gi;
+  // a leading value keeps its integer part: "1.5 A B C APPLIES TO ALL …" (D12 — the "1" used to be cut off)
+  const untol = /(?:(?<![\d.,])\d*[.,]\d+\s)?[^.;]*\b(?:APPLIES\s+TO\s+ALL\s+UNTOLERANCED|ALL\s+UNTOLERANCED\s+(?:SURFACES|FEATURES|DIMENSIONS))[^.;]*/gi;
   while ((m = untol.exec(text))) out.push({ written: m[0].trim(), index: m.index, standard: 'ASME Y14.5 general profile' });
   for (const [re, standard] of others) while ((m = re.exec(text))) out.push({ written: m[0].trim().replace(/[\s,:-]+$/, ''), index: m.index, standard });
   return out.sort((a, b) => a.index - b.index);

@@ -16,7 +16,7 @@ import { createHash } from 'node:crypto';
 import type { DrawingExtraction, DrawingSheetInfo, DrawingTextItem, EngineeringParameter } from '../../src/engine/engineering-data/model.js';
 import { isKnownParameter } from '../../src/engine/engineering-data/dictionary.js';
 import { DrawingReadError, type BBox, type ExtractContext, type OcrEngine, type RawTextItem, type ReadOptions, type Segment, type SheetData, type SheetLayout } from './types.js';
-import { detectFileKind, checkSize, openPdf, closePdf, classifySheet, isMixedSheet, hasScannerTextLayer, DEFAULT_MAX_BYTES, DEFAULT_MAX_PAGES } from './ingest.js';
+import { detectFileKind, checkSize, openPdf, closePdf, classifySheet, isMixedSheet, hasScannerTextLayer, textLayerIsThin, DEFAULT_MAX_BYTES, DEFAULT_MAX_PAGES } from './ingest.js';
 import { readPdfPage } from './pdf-vector.js';
 import { assembleLines } from './text-lines.js';
 import { analyseLayout } from './layout.js';
@@ -30,7 +30,7 @@ import type { Grey } from './raster/preprocess.js';
 import { containsPoint, roundBox, r2 } from './geom.js';
 
 /** Bumped whenever extraction logic changes a result. Part of every cache key that holds an extraction. */
-export const READER_VERSION = '1.0.0';
+export const READER_VERSION = '1.1.0';
 
 /** English and German: measured on the fixtures, the pair reads German title blocks and notes without costing English accuracy. */
 export const DEFAULT_OCR_LANGUAGES = ['eng', 'deu'];
@@ -112,14 +112,19 @@ export async function readDrawing(buffer: Uint8Array | ArrayBuffer | Buffer, fil
         let items = s.items;
         const st = { ...s.stats, textItems: s.items.length };
         if (s.info.content === 'scanned' && hasScannerTextLayer(st)) {
-          warnings.push(`Sheet ${p} is a scan with a text layer added by a scanner. That layer is the scanner's own OCR, not exact text: it was ignored and the sheet read again.`);
+          const hidden = (st.hiddenTextShare ?? 0) >= 0.8 ? ' (its text is invisible or lies under the scanned image)' : '';
+          warnings.push(`Sheet ${p} is a scan with a text layer added by a scanner${hidden}. That layer is the scanner's own OCR, not exact text: it was ignored and the sheet read again.`);
           items = [];
         }
         const mixed = s.info.content === 'vector-text' && isMixedSheet(st);
         const ocr: Work['ocr'] = ocrMode === 'off' ? 'none' : ocrMode === 'force' ? (s.info.content === 'vector-text' ? 'supplement' : 'full')
           : s.info.content === 'scanned' ? 'full' : s.info.content === 'text-as-curves' ? (items.length ? 'supplement' : 'full') : mixed ? 'supplement' : 'none';
         if (s.info.content === 'empty') warnings.push(`Sheet ${p} is empty: nothing to read.`);
-        if (mixed || (s.info.content === 'text-as-curves' && items.length)) {
+        if (s.info.content === 'text-as-curves' && items.length && textLayerIsThin(st) && !(st.glyphLikePaths >= 20 && st.glyphLikePaths >= 0.5 * st.textChars)) {
+          // D01: a stroke-font sheet (or heavy line work beside a plot stamp) — its few text runs are not its annotation
+          warnings.push(`Sheet ${p} has only ${s.stats.textChars} characters of selectable text (${st.textItems} runs) beside ${s.stats.pathOps} pieces of line work`
+            + `${st.strokeGlyphPaths ? ` and ${st.strokeGlyphPaths} letter-sized stroked shapes` : ''}: ${PARTLY_CURVES} or strokes, so the text layer is not the drawing's annotation.`);
+        } else if (mixed || (s.info.content === 'text-as-curves' && items.length)) {
           warnings.push(`Sheet ${p} has selectable text (${s.stats.textChars} characters) but ${PARTLY_CURVES} (${s.stats.glyphLikePaths} glyph-sized outlines away from any text).`);
         }
         work.push({
@@ -213,6 +218,13 @@ export async function readDrawing(buffer: Uint8Array | ArrayBuffer | Buffer, fil
       timings.ocr = Date.now() - tOcr;
     }
     for (const w of work) {
+      // D01: a sheet with line work from which (almost) no words were read is said so — never an empty panel and no reason
+      const chars = w.items.reduce((n, it) => n + it.text.replace(/\s/g, '').length, 0);
+      const ran = w.ocr !== 'none' && ocrMode !== 'off';
+      if (w.stats.pathOps >= 150 && chars < 80 && (ran || w.ocr === 'none') && !(ocrMode === 'off' && w.info.content !== 'vector-text')) {
+        warnings.push(`Sheet ${w.info.sheet} has line work (${w.stats.pathOps} pieces) but almost no text was read from it (${chars} characters`
+          + `${ran ? ', OCR included' : ''}): its annotation may be drawn in a way this reader cannot read. Check the drawing by eye — what is not read is missing, not absent.`);
+      }
       if (w.ocr === 'none' && ocrMode === 'off' && (w.info.content === 'scanned' || w.info.content === 'text-as-curves')) {
         warnings.push(`Sheet ${w.info.sheet} is ${SHEET_WORD[w.info.content]} and OCR was switched off: ${w.items.length ? 'only its selectable text was read' : 'nothing was read from it'}.`);
       }

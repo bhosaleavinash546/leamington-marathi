@@ -39,7 +39,7 @@ import type { EngineeringParameter, ParameterCandidate, ParameterKind, Parameter
 import { comparisonKey, convertUnit, designationTokens, parseNumber } from './normalise.js';
 import { flagOf, textOf } from './values.js';
 import {
-  TOLERANCE_RULES, GENERAL_TOLERANCE_NOT_MAPPED, TIGHT_LABEL_MAX_MM, classOfCastingGrade, CAST_AL_DESIGNATIONS,
+  TOLERANCE_RULES, GENERAL_TOLERANCE_NOT_MAPPED, TIGHT_LABEL_MAX_MM, classOfCastingGrade, CAST_AL_DESIGNATIONS, DESIGNATION_FAMILY_RULES,
   COATING_RULES, COATING_NOT_MAPPED, AL_TEMPER_RULES, AL_TEMPER_NOT_MAPPED, HARDENING_RULES,
   GEAR_QUALITY_RULES, GEAR_CLASS_RANGE, LEAK_NOTE_RE, LEAK_NEGATION_RE, SAFETY_NOTE_RE, IMPREGNATION_RE, IMPREGNATION_NEGATION_RE,
   type Certainty, type SpecLookup,
@@ -221,7 +221,10 @@ function interpretDesignation(origin: EngineeringParameter, opts: InterpretOptio
   }
 
   // ── The family: the designation's own word, else the family of the grade it resolved to ──
-  const named = familyFromFilename(text);
+  // A material READING names its family by its standard's numbering too ("5052-H32", "S235JR", "Q235") — never applied
+  // to a file name (familyFromFilename) because a bare number there may be a part number.
+  const byNumbering = DESIGNATION_FAMILY_RULES.find(r => r.pattern.test(text.replace(/\s+/g, ' ').trim()));
+  const named = familyFromFilename(text) ?? byNumbering?.family ?? null;
   const fromGrade = gradeId ? familyFromMaterialId(gradeId) : null;
   // A route that only needs the family (machining, gear) is read through its material scope.
   let fromScope: MaterialFamily | null = null;
@@ -238,13 +241,17 @@ function interpretDesignation(origin: EngineeringParameter, opts: InterpretOptio
   }
   const offered = commodity ? COMMODITY_FAMILIES[commodity] : undefined;
   const disagree = named && fromGrade && named !== fromGrade;
+  // A bare 4-digit number in a material cell may be a company code: named by the numbering alone, it needs checking.
+  const bareNumber = !familyFromFilename(text) && !!byNumbering && /^\d{4}A?$/.test(text.trim());
   const notOffered = !!offered && !offered.includes(family);
   out.push(derive(origin, 'material.family', family,
     (named ? `${quoted} is ${family} by the engine's designation → family reader (material-family.ts)`
       : `${quoted} is ${family}: the library category of ${gradeLabel(gradeId ?? '') || 'the grade it names'} (the designation itself carries no family word the reader knows)`)
     + (disagree ? `; but the grade it resolves to, ${gradeLabel(gradeId!)}, is filed as ${fromGrade} — check` : '')
-    + (notOffered ? `; ${family} is not a material the ${commodity!.replace(/_/g, ' ')} route offers` : ''),
-    { status: disagree || notOffered ? 'needs-validation' : 'extracted' }));
+    + (notOffered ? `; ${family} is not a material the ${commodity!.replace(/_/g, ' ')} route offers` : '')
+    + (byNumbering && !familyFromFilename(text) ? ` (by the ${byNumbering.system})` : '')
+    + (bareNumber ? '; a bare number with no alloy word or temper — check it is the alloy, not a company code' : ''),
+    { status: disagree || notOffered || bareNumber ? 'needs-validation' : 'extracted' }));
 }
 
 function interpretResin(origin: EngineeringParameter, text: string, commodity: string, out: EngineeringParameter[], unresolved: Unresolved[]): void {

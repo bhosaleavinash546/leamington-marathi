@@ -18,6 +18,15 @@ import { answerName } from './cad-workspace.js';
 const esc = (s: unknown): string => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+/** A history time as a person reads it ("10 Nov 2026 14:05 UTC"); '' when absent or unreadable. */
+export function dayOf(at: string | undefined): string {
+  const d = at ? new Date(at) : null;
+  if (!d || Number.isNaN(d.getTime())) return '';
+  const p = (n: number) => String(n).padStart(2, '0');
+  const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getUTCMonth()];
+  return `${d.getUTCDate()} ${mon} ${d.getUTCFullYear()} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())} UTC`;
+}
+
 /** The one line the upload control and the panel both say. */
 export const DRAWING_OFFLINE_LINE = 'Read on this server — no AI, nothing leaves it';
 
@@ -258,7 +267,7 @@ export function buildReviewPanel(i: ReviewPanelInput): ReviewPanelModel {
         return { parameterId: s.parameterId, source: sourceWord(s), value: valueText({ ...s, name: c.name }), where: p ? whereText(p) : '', suggested: c.suggested === s.parameterId, chosen: c.resolution?.parameterId === s.parameterId };
       }),
       resolution: c.resolution
-        ? `Settled by ${c.resolution.by}: ${chosen ? `${valueText(chosen)} (${SOURCE_PLACE[sourceWord(chosen)]})` : 'a typed value'}${c.resolution.reason ? ` — ${c.resolution.reason}` : ''}`
+        ? `Settled by ${c.resolution.by}${dayOf(c.resolution.at) ? ` on ${dayOf(c.resolution.at)}` : ''}: ${chosen ? `${valueText(chosen)} (${SOURCE_PLACE[sourceWord(chosen)]})` : 'a typed value'}${c.resolution.reason ? ` — ${c.resolution.reason}` : ''}`
         : '',
       undoId: c.resolution?.parameterId ?? '',
     };
