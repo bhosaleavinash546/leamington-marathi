@@ -84,6 +84,39 @@ export interface EngineeringParameter {
   /** Why the status is what it is, in words an engineer can act on. */
   note?: string;
   history?: OverrideEntry[];
+  /**
+   * Layer 3 only (optional, absent on a reader's output). Ids of the parameters this one was worked out from: an
+   * interpreted or inferred value always names what it was read from.
+   */
+  derivedFrom?: string[];
+  /**
+   * Layer 3 only. Other sources that state the SAME value: two sources agreeing are one parameter with both
+   * provenances, not two rows.
+   */
+  alsoFrom?: ParameterProvenance[];
+  /**
+   * Layer 3 only. The choices behind a `needs-validation` status when the reading fits several (rate-book grades a
+   * designation names, CAD holes a callout could be) — for the review screen to offer; never applied.
+   */
+  candidates?: ParameterCandidate[];
+}
+
+/** Where an agreeing reading came from (see `EngineeringParameter.alsoFrom`). */
+export interface ParameterProvenance {
+  parameterId: string;
+  source: ParameterSource;
+  method: ExtractionMethod;
+  sourceFile?: string;
+  rawText?: string;
+  location?: DrawingLocation;
+}
+
+/** One choice a `needs-validation` reading could mean (see `EngineeringParameter.candidates`). */
+export interface ParameterCandidate {
+  value: ParameterValue;
+  label?: string;
+  /** The CAD feature a candidate is, when the choice is between features. */
+  featureId?: string;
 }
 
 /** A piece of text on a drawing with its position — the raw material every extractor works from. */
@@ -137,6 +170,8 @@ export interface ParameterConflict {
   /** Absolute and relative difference when both sides are numbers. */
   difference?: { abs: number; rel: number };
   why: string;
+  /** Layer 3 only: set once the engineer has chosen (overrides.ts). Absent = open. */
+  resolution?: { parameterId: string; by: string; at: string; reason?: string };
 }
 
 /** What the unified layer (Layer 3) hands on. */

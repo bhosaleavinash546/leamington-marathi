@@ -1,0 +1,17 @@
+{
+  "$comment": "Company specification lookup for the offline 2D drawing reader. EMPTY ON PURPOSE: the company supplies the rows. A drawing often states a material or a finish as a company specification code instead of a standard designation; this table says what each code means. A code that is not in the table is NEVER given a meaning - the drawing reading is shown as 'needs a specification lookup' and the material questions stay open.",
+  "schemaVersion": 1,
+  "schema": {
+    "entries": "an object: specification code -> row. The code is matched ignoring case, spaces and punctuation (\"STJLR.50.5021\" = \"stjlr 50 5021\").",
+    "row": {
+      "designation": "REQUIRED. The material designation the code stands for, written as its standard writes it (e.g. \"EN-GJS-500-7\", \"EN AC-46000\", \"42CrMo4\", \">PA66-GF30<\"). It is then read exactly as a designation written on the drawing would be.",
+      "standard": "optional. The standard that designation belongs to (e.g. \"EN 1563\").",
+      "note": "optional. Anything the engineer should see (a condition, a restriction, a superseded code).",
+      "source": "REQUIRED. Who says so and when (e.g. \"Materials Engineering specification register, rev 12, 2026-11\"). A row without a source is ignored."
+    },
+    "example": {
+      "EXAMPLE.CODE.0001": { "designation": "EN-GJS-500-7", "standard": "EN 1563", "note": "illustration only - not a real code", "source": "example row in the schema, not used" }
+    }
+  },
+  "entries": {}
+}
