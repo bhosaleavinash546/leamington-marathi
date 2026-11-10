@@ -155,6 +155,11 @@ const ANSWER_NAMES: Record<string, string> = {
 
 export interface AnswerChip { id: string; name: string; value: string }
 
+/** The short name of a question on a chip ("Material", "Tolerance"), or its wording when it has none. */
+export function answerName(id: string, asked: Record<string, { question: string } | undefined> = {}): string {
+  return ANSWER_NAMES[id] ?? asked[id]?.question ?? id;
+}
+
 /** The engineer's answers as chips, each with its option label (not the code). */
 export function answerChips(answers: Record<string, string>,
   asked: Record<string, { question: string; options?: Array<{ value: string; label: string }> }>): AnswerChip[] {
@@ -440,9 +445,11 @@ export function cadCostCardHtml(m: CostCardModel): string {
 }
 
 /** "UK rate book 2026-10-10 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026" — on screen and in every export. */
-export function cadStamp(o: { rateBook: string; rules: number | string | null; kernel: string | null; date: Date }): string {
+export function cadStamp(o: { rateBook: string; rules: number | string | null; kernel: string | null; date: Date;
+  /** With a drawing attached: the reader's version, the drawing's file name and the first 8 characters of its hash. */
+  drawing?: string | null }): string {
   const d = o.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-  return [o.rateBook, o.rules != null ? `rules v${o.rules}` : null, o.kernel ? `kernel ${o.kernel}` : null, d]
+  return [o.rateBook, o.rules != null ? `rules v${o.rules}` : null, o.kernel ? `kernel ${o.kernel}` : null, o.drawing || null, d]
     .filter(Boolean).join(' · ');
 }
 

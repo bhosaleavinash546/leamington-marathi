@@ -18,7 +18,7 @@ export interface TruthRow {
   partial?: Record<string, unknown>;
 }
 export interface TruthFile {
-  drawing: string; origin: 'public' | 'generated'; commodity?: string; source?: string; checked?: string;
+  drawing: string; origin: 'public' | 'generated' | 'real-part'; commodity?: string; source?: string; checked?: string;
   /** Groups whose rows are the complete list of what the drawing states: an extra reading there is wrong. */
   complete: string[];
   expect: TruthRow[];

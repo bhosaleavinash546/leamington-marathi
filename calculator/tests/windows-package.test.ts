@@ -104,6 +104,46 @@ describe('the package does not need a compiler or a download at install time', (
   });
 });
 
+describe('the offline drawing reader ships with the package, with nothing to compile or download', () => {
+  const pkg = JSON.parse(readFileSync(join(APP, 'package.json'), 'utf8')) as { dependencies: Record<string, string>; devDependencies: Record<string, string> };
+  const lock = JSON.parse(readFileSync(join(APP, 'package-lock.json'), 'utf8')) as { packages: Record<string, { optionalDependencies?: Record<string, string>; hasInstallScript?: boolean; cpu?: string[]; os?: string[] }> };
+
+  it('its libraries are RUNTIME dependencies (the package is pruned to them with npm prune --omit=dev)', () => {
+    // pdfjs-dist reads vector PDFs, @napi-rs/canvas renders and decodes, tesseract.js-core is the OCR engine with its
+    // English and German data, utif2 decodes TIFF. A devDependency would be pruned out of the folder that is copied.
+    for (const k of ['pdfjs-dist', '@napi-rs/canvas', 'tesseract.js-core', '@tesseract.js-data/eng', '@tesseract.js-data/deu', 'utif2']) {
+      expect(pkg.dependencies, `${k} must be a runtime dependency`).toHaveProperty(k);
+      expect(lock.packages[`node_modules/${k}`], `${k} is in the lockfile`).toBeTruthy();
+    }
+  });
+
+  it('the image library comes as a prebuilt binary for Windows x64 and for both Linux images — no compiler', () => {
+    const canvas = lock.packages['node_modules/@napi-rs/canvas'];
+    for (const k of ['@napi-rs/canvas-win32-x64-msvc', '@napi-rs/canvas-linux-x64-gnu', '@napi-rs/canvas-linux-x64-musl']) {
+      expect(canvas.optionalDependencies, k).toHaveProperty(k);
+    }
+    expect(lock.packages['node_modules/@napi-rs/canvas-win32-x64-msvc']).toMatchObject({ cpu: ['x64'], os: ['win32'] });
+    // none of them runs a script at install (a script would be a download or a compile on the laptop)
+    for (const k of ['pdfjs-dist', '@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc', 'tesseract.js-core', '@tesseract.js-data/eng', '@tesseract.js-data/deu', 'utif2']) {
+      expect(lock.packages[`node_modules/${k}`]?.hasInstallScript ?? false, `${k} has an install script`).toBe(false);
+    }
+  });
+
+  it('does not ship tesseract.js, whose default language source is a CDN', () => {
+    expect(pkg.dependencies).not.toHaveProperty('tesseract.js');
+    expect(pkg.devDependencies).not.toHaveProperty('tesseract.js');
+    expect(lock.packages['node_modules/tesseract.js']).toBeUndefined();
+  });
+
+  it('keeps its working files where the user can write (the install folder is not writable on Windows)', () => {
+    const svc = readFileSync(join(APP, 'server', 'services', 'drawing-service.ts'), 'utf8');
+    expect(svc).toMatch(/process\.env\.CV_DRAWING_FILE_DIR \?\? join\(tmpdir\(\), 'cv-drawing-files'\)/);
+    const ctx = readFileSync(join(APP, 'server', 'services', 'drawing-context.ts'), 'utf8');
+    expect(ctx).toMatch(/CV_SPEC_LOOKUP_FILE/);            // the company specification table can live outside the install folder
+    expect(ctx).toMatch(/CV_DATA_DIR/);
+  });
+});
+
 describe('the geometry kernel is pinned to what it was measured with', () => {
   const req = readFileSync(join(REPO, 'requirements.txt'), 'utf8');
 

@@ -5,7 +5,8 @@
  *
  * For every `<drawing>.truth.json` in the folder (default tests/fixtures/drawings) it reads each file of that drawing
  * and prints, per field group and per content class (vector / curves / scan): found, correct, wrong, missed,
- * precision and recall — public drawings and generated drawings apart, because the generated ones were written by us.
+ * precision and recall — public drawings and generated drawings apart, because the generated ones were written by us
+ * (so are the `real-*` sheets, drawn for real parts of cad-audit/parts and reported as their own group).
  * Point it at a folder of your own drawings with truth files in the same format to measure on them.
  */
 import { readdirSync, readFileSync } from 'node:fs';
@@ -51,7 +52,8 @@ async function main(): Promise<void> {
     }
   }
   if (args.includes('--json')) { console.log(JSON.stringify({ table: Object.fromEntries(table), perFile }, null, 1)); return; }
-  for (const origin of ['public', 'generated']) for (const cls of ['vector', 'curves', 'scan']) {
+  // 'real-part': drawings written by us FOR real parts of cad-audit/parts (combined-flow tests) — circular for text reading, like 'generated'.
+  for (const origin of ['public', 'generated', 'real-part']) for (const cls of ['vector', 'curves', 'scan']) {
     const g = table.get(`${origin}|${cls}`);
     if (!g) continue;
     const n = perFile.filter(f => f.origin === origin && f.cls === cls).length;

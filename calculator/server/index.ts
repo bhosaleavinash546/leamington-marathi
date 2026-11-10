@@ -18,6 +18,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { hasUsableServerKey } from './utils/api-key.js';
 import { isOriginAllowed } from './utils/cors-policy.js';
 import cadRouter from './routes/cad.js';
+import drawingRouter from './routes/drawing.js';
 import { kernelStatus } from './utils/geometry-bridge.js';
 import syncRouter from './routes/sync.js';
 import agentRouter from './routes/agent.js';
@@ -100,6 +101,7 @@ app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
 //   GET  /api/share/:id  a share link exists to be opened without an account
 app.use('/api/auth', authRouter);
 app.use('/api/cad', cadRouter);                         // guards each route itself
+app.use('/api/drawing', drawingRouter);                 // the offline drawing reader — guards each route itself
 app.use('/api/pcb', requireAuth, pcbRouter);
 app.use('/api/projects', projectsRouter);               // router-wide guard inside
 app.use('/api/rate-library', rateLibraryRouter);        // router-wide guard inside, admin below

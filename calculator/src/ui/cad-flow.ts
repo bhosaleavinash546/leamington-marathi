@@ -39,6 +39,12 @@ export interface FlowState {
    * answered last, Get cost pressed, the bracket costed bare at £1.25 against £1.77 coated).
    */
   appliedAnswers?: Readonly<Record<string, unknown>>;
+  /**
+   * The engineer changed their review of the attached drawing (confirmed, corrected, rejected, settled a conflict)
+   * since the analysis was run. A confirmed reading answers a question exactly as a click does, so the rules must see
+   * it before anything is applied — and before a blocking question the drawing may now answer is asked again.
+   */
+  reviewChanged?: boolean;
 }
 
 /** Answers that differ from the ones the analysis was run with (blank and absent are the same). */
@@ -66,8 +72,10 @@ export function nextCostStep(s: FlowState): CostStep {
   if (!s.hasAnalysis) return { kind: 'analyse' };
   const open = blockingQuestions(s.decisions);
   if (!open.length) {
-    return s.appliedAnswers && answersChangedSince(s.answers, s.appliedAnswers).length ? { kind: 'reanalyse' } : { kind: 'apply' };
+    return s.reviewChanged || (s.appliedAnswers && answersChangedSince(s.answers, s.appliedAnswers).length) ? { kind: 'reanalyse' } : { kind: 'apply' };
   }
+  // The drawing review changed: the confirmed readings may settle a question still listed — re-run before asking.
+  if (s.reviewChanged) return { kind: 'reanalyse' };
   const missing = open.filter(d => !answered(s.answers[d.id]));
   return missing.length ? { kind: 'answer', missing } : { kind: 'reanalyse' };
 }

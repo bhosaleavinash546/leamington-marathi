@@ -15,9 +15,15 @@
  * The truth for these sheets is circular for TEXT READING (we wrote the text), so the accuracy report prints them
  * apart from the public drawings. What they do prove is layout, grammar and re-assembly on controlled content.
  *
- * Fonts (read from the system at generation time, embedded as subsets by jsPDF; nothing is added to the product):
- *   DejaVu Sans (Bitstream Vera licence) for text; GNU FreeSerif (GPLv3 with the font-embedding exception) for the
- *   ISO 1101 symbols DejaVu lacks. Override with CV_FIXTURE_FONT / CV_FIXTURE_SYMBOL_FONT.
+ * Fonts (embedded as subsets by jsPDF; nothing is added to the product):
+ *   DejaVu Sans (Bitstream Vera licence, read from the system) for text, and scripts/drawings/fonts/cv-drawing-symbols.ttf
+ *   for the three ISO 1101 symbols DejaVu Sans lacks — position ⌖, the maximum-material modifier Ⓜ and perpendicularity
+ *   ⟂. That font is drawn by scripts/drawings/make-symbol-font.py (our own outlines, CC0): no GPL-licensed font is read
+ *   or embedded. Override with CV_FIXTURE_FONT / CV_FIXTURE_SYMBOL_FONT.
+ *
+ * The `real-*` sheets are drawings written for real parts of cad-audit/parts (the same envelope, holes and gauge the
+ * kernel measures), with a material, tolerance, heat treatment and finish that differ from the costing's defaults —
+ * the combined-flow tests cost those parts with them. Vector PDF only.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -38,7 +44,7 @@ const canvasLib: any = require('@napi-rs/canvas');
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = process.argv[2] ?? join(HERE, '..', '..', 'tests', 'fixtures', 'drawings');
 const TEXT_FONT = process.env.CV_FIXTURE_FONT ?? '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
-const SYM_FONT = process.env.CV_FIXTURE_SYMBOL_FONT ?? '/usr/share/fonts/truetype/freefont/FreeSerif.ttf';
+const SYM_FONT = process.env.CV_FIXTURE_SYMBOL_FONT ?? join(HERE, 'fonts', 'cv-drawing-symbols.ttf');
 
 const MM = 72 / 25.4;
 
@@ -344,6 +350,10 @@ function revTable(p: Pen, f: { x1: number; y0: number }, heads: string[], rows: 
 interface TruthRow { name: string; value?: unknown; match?: Record<string, unknown>; contains?: string }
 interface Spec {
   name: string; commodity: string; size: 'A3' | 'A2'; turned?: boolean;
+  /** File prefix: 'gen' (a controlled sheet per commodity family) or 'real' (a drawing written for a real part). */
+  prefix?: 'gen' | 'real';
+  /** The cad-audit part a 'real' drawing is for. */
+  forPart?: string;
   draw: (p: Pen) => void;
   /** Groups whose truth rows below are the complete list of what the sheet states for that group. */
   complete: string[];
@@ -360,6 +370,95 @@ function plateViews(p: Pen, x: number, y: number, w: number, h: number, holes: A
   p.text('A-A', sx + secW / 2, y + h + 16, DIM, { align: 'center' });
   return { sx };
 }
+
+// ── Drawings for REAL parts (cad-audit/parts) ────────────────────────────────────────────────────────────────────
+
+/**
+ * Casting_Braket.stp — 132 × 120 × 125 mm, 320 cm³, four Ø13 through holes. Drawn as an aluminium gravity casting,
+ * T6, leak-tested, safety-critical, e-coated with three masked bores: every one of those differs from what the
+ * costing assumes with no drawing. `withMaterial: false` is the same sheet with the material left off (test E).
+ */
+function castingBracket(withMaterial: boolean): Spec {
+  return {
+    name: withMaterial ? 'casting-bracket' : 'casting-bracket-nomaterial', prefix: 'real', forPart: 'Casting_Braket.stp', commodity: 'cast and machine', size: 'A3',
+    draw: p => {
+      const f = frame(p, true);
+      titleBlock(p, f, 'cell', [
+        [['TITLE', 'CASTING BRACKET'], ['MATERIAL', withMaterial ? 'A356-T6  ASTM B108' : '']],
+        [['PART NO.', 'CB-2207-11'], ['DRAWING NO.', 'D-2207-11'], ['REV', 'B']],
+        [['GENERAL TOLERANCE', 'ISO 8062-3 DCTG 6'], ['SURFACE ROUGHNESS', 'Ra 6.3'], ['MASS', withMaterial ? '0.86 kg' : '']],
+        [['SCALE', '1:1'], ['DATE', '2026-09-18'], ['SHEET', '1 OF 1'], ['DRAWN', 'R. PATIL']],
+      ]);
+      const x = 130, y = 130, w = 264, h = 240;
+      const v = plateViews(p, x, y, w, h, [[56, 60, 13], [208, 60, 13], [56, 180, 13], [208, 180, 13]]);
+      hdim(p, x, x + w, y, y - 40, '132');
+      vdim(p, y, y + h, x, x - 42, '120');
+      hdim(p, v.sx, v.sx + 70, y, y - 40, '125');
+      leader(p, x + 56 + 9, y + 60 - 9, x + 96, y - 8, ['4x Ø13 THRU']);
+      leader(p, x + 132, y + 120, x + 150, y + 290, ['M6x1-6H ↧ 12']);
+      roughness(p, v.sx + 8, y - 12, 'Ra 3.2');
+      datum(p, x + 20, y + h, 'A');
+      notesBlock(p, f.x0 + 14, 470, 'NOTES', [
+        'CASTING TOLERANCES TO ISO 8062-3 DCTG 6.',
+        'MACHINED DIMENSIONS WITHOUT TOLERANCE: ISO 2768-mK.',
+        ...(withMaterial ? ['HEAT TREATMENT T6: SOLUTION TREATED AND ARTIFICIALLY AGED.'] : []),
+        'PRESSURE TEST AT 3 bar AIR FOR 20 s, NO LEAKAGE ALLOWED.',
+        'SAFETY CRITICAL PART.',
+        'CATHODIC E-COAT 20-35 µm, BLACK. MASK 3x Ø13 BORES.',
+        'BREAK ALL SHARP EDGES ISO 13715 -0.3.',
+      ], 520);
+    },
+    complete: [],
+    truth: [
+      { name: 'title.partName', value: 'CASTING BRACKET' }, { name: 'title.partNumber', value: 'CB-2207-11' }, { name: 'title.revision', value: 'B' },
+      ...(withMaterial ? [{ name: 'material.designation', value: 'A356-T6' }, { name: 'part.mass', value: 0.86 }] : []),
+      { name: 'tolerance.castingGrade', value: 'DCTG 6' },
+      { name: 'finish.coatingRoute', value: 'e-coat' }, { name: 'finish.maskedFeatures', value: 3 },
+      { name: 'quality.pressureTight', value: true }, { name: 'quality.safetyCritical', value: true },
+      { name: 'hole.diameter', match: { diameter: 13, count: 4, through: true } },
+      { name: 'thread', match: { designation: 'M6x1-6H', depth: 12 } },
+    ],
+  };
+}
+
+/**
+ * Seat_Locking_Bracket.stp — a 1.6 mm pressing, 255.8 × 226.1 mm. Drawn in HSLA S420MC, zinc plated 12 µm, safety
+ * critical: the grade, the finish and its deposit thickness all differ from the costing's defaults.
+ */
+const SEAT_BRACKET: Spec = {
+  name: 'seat-bracket', prefix: 'real', forPart: 'Seat_Locking_Bracket.stp', commodity: 'sheet metal', size: 'A3',
+  draw: p => {
+    const f = frame(p, true);
+    titleBlock(p, f, 'header', [
+      [['TITLE', 'SEAT BASE MOUNT'], ['PART NO.', 'SLB-3310'], ['DWG NO.', 'SLB-3310-01'], ['REV', 'A']],
+      [['MATERIAL', 'S420MC  EN 10149-2'], ['THICKNESS', '1.6 mm'], ['GENERAL TOLERANCE', 'ISO 2768-mK']],
+      [['SCALE', '1:2'], ['DATE', '2026-10-02'], ['SHEET', '1 OF 1'], ['MASS', '0.56 kg']],
+    ], 190 * MM);
+    const x = 130, y = 150;
+    const pts: Array<[number, number]> = [[0, 0], [340, 0], [340, 80], [280, 80], [280, 150], [340, 150], [340, 230], [0, 230]];
+    for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; p.line(x + a[0], y + a[1], x + b[0], y + b[1], 1.0); }
+    p.line(x + 110, y, x + 110, y + 230, 0.3); p.line(x + 225, y, x + 225, y + 230, 0.3);
+    hdim(p, x, x + 340, y, y - 44, '255.8');
+    vdim(p, y, y + 230, x, x - 40, '226.1');
+    leader(p, x + 110, y + 200, x + 60, y + 270, ['R2']);
+    notesBlock(p, 640, 120, 'NOTES', [
+      'ZINC PLATE 12 µm, Fe//Zn12//A PER ISO 2081.',
+      'INSIDE BEND RADII R2 UNLESS STATED. BURR SIDE AS SHOWN.',
+      'SAFETY CRITICAL PART.',
+      'BREAK ALL SHARP EDGES.',
+    ], 430);
+  },
+  complete: [],
+  truth: [
+    { name: 'title.partName', value: 'SEAT BASE MOUNT' }, { name: 'title.partNumber', value: 'SLB-3310' },
+    { name: 'material.designation', value: 'S420MC' }, { name: 'material.standard', value: 'EN 10149-2' }, { name: 'material.stockThickness', value: 1.6 },
+    { name: 'tolerance.general', contains: 'ISO 2768-mK' },
+    { name: 'finish.coatingRoute', value: 'zinc-plate' }, { name: 'finish.coatingThickness', match: { nominal: 12 } },
+    { name: 'quality.safetyCritical', value: true },
+  ],
+};
+
+const REAL_SPECS: Spec[] = [castingBracket(true), castingBracket(false), SEAT_BRACKET];
 
 const SPECS: Spec[] = [
   {
@@ -844,6 +943,7 @@ const SPECS: Spec[] = [
       { name: 'quality.ndt', contains: 'ULTRASONIC C-SCAN' },
     ],
   },
+  ...REAL_SPECS,
 ];
 
 // ── Scans ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -907,6 +1007,20 @@ async function main(): Promise<void> {
   for (const spec of SPECS) {
     const [W, H] = SIZES[spec.size];
     const files: Record<string, Buffer> = {};
+    if (spec.prefix === 'real') {
+      // A drawing for a real part: the vector sheet and what it states. No curves / scan variants.
+      const pen = new Pen(W, H, 'text', !!spec.turned, tf, sf, tB64, sB64);
+      spec.draw(pen);
+      files[`real-${spec.name}.pdf`] = pen.bytes();
+      files[`real-${spec.name}.truth.json`] = Buffer.from(JSON.stringify({
+        drawing: `real-${spec.name}`, commodity: spec.commodity, origin: 'real-part', forPart: spec.forPart,
+        source: 'scripts/drawings/make-fixture-drawings.ts',
+        checked: 'Typed by hand beside the drawing content in the generator; not produced by the reader.',
+        complete: spec.complete, expect: spec.truth,
+      }, null, 1) + '\n');
+      for (const [name, buf] of Object.entries(files)) { writeFileSync(join(OUT, name), buf); console.log(`${name.padEnd(34)} ${(buf.length / 1024).toFixed(0).padStart(6)} KB`); }
+      continue;
+    }
     for (const mode of ['text', 'curves'] as const) {
       const pen = new Pen(W, H, mode, !!spec.turned, tf, sf, tB64, sB64);
       spec.draw(pen);

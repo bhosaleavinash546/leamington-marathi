@@ -32,4 +32,12 @@ export {
   answersFromEngineeringData, ANSWER_CODECS,
   type CostingAnswers, type AnswerEvidence, type CostingLeaning, type DroppedAnswer, type FormFieldValue, type NotCostedItem, type AdapterOptions,
 } from './to-costing.js';
+export {
+  parseReviewState, replayReview, applyReviewOp, reviewStateKey, EMPTY_REVIEW, MAX_REVIEW_OPS,
+  type ReviewOp, type DrawingReviewState, type SkippedOp,
+} from './review-state.js';
+export {
+  statusWord, sourceWord, parameterLabel, valueText, codeLabel, methodText, locationText, whereText, rootOf, exactlyRead, reviewGroupOf, reviewCounts, REVIEW_GROUPS,
+  type StatusWord, type SourceWord, type ReviewGroupKey,
+} from './present.js';
 export { packFor, allPacks, registerCommodityPack, type CommodityPack, type DecisionBinding, type ExpectedParameter, type FormFieldBinding, type AnswerCodec } from './commodity/index.js';

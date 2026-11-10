@@ -341,6 +341,9 @@ export function toCostParams(
       // The load the rules sized from the measured part; the form's own defaults only if the rule could not run.
       partsPerRack: num(ci.surfaceFinish?.partsPerRack) || FINISH_RACK_DEFAULTS.partsPerRack,
       racksPerHour: num(ci.surfaceFinish?.racksPerHour) || FINISH_RACK_DEFAULTS.racksPerHour,
+      // Confirmed off the drawing and bounded (coating-drawing-read.ts): the same two figures the screen writes into the
+      // surface-treatment block. Absent (no drawing, or nothing confirmed) the spec is exactly what it was.
+      depositThicknessUm: num(ci.surfaceFinish?.depositThicknessUm), maskedFeatures: num(ci.surfaceFinish?.maskedFeatures),
       region: activeRates().regional?.code ?? 'UK',
     });
     if (!spec) return r;

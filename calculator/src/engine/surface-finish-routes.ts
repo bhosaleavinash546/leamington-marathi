@@ -154,6 +154,37 @@ export function finishSpec(i: FinishSpecInput): CommodityFinishingInput | undefi
   };
 }
 
+/** The finish figures an engineer confirmed off a drawing, as the costing takes them. */
+export interface DrawingFinishFields { depositThicknessUm?: number; maskedFeatures?: number }
+
+/**
+ * The confirmed drawing values that reach the costing through the surface-treatment block's two fields (no question
+ * exists for them): field id "<prefix>-sf-um" → deposit thickness, "<prefix>-sf-mask" → masked features. The values
+ * arrive already bounded (the engineering-data adapter runs `boundDrawingCoating`).
+ */
+export function drawingFinishFields(formFields: ReadonlyArray<{ fieldId: string; value: number }> | null | undefined): DrawingFinishFields {
+  const out: DrawingFinishFields = {};
+  for (const f of formFields ?? []) {
+    if (!(f.value > 0)) continue;
+    if (f.fieldId.endsWith('-sf-um')) out.depositThicknessUm = f.value;
+    else if (f.fieldId.endsWith('-sf-mask')) out.maskedFeatures = f.value;
+  }
+  return out;
+}
+
+/**
+ * Write those two figures onto the analysis's finish block — ONLY when the costing carries a finish route (the finish
+ * question is answered). One function for the screen's response and the headless chain, so both cost the same finish.
+ */
+export function applyDrawingFinishFields(ci: { surfaceFinish?: { route?: string; depositThicknessUm?: number; maskedFeatures?: number } } | null | undefined,
+  fields: DrawingFinishFields | null | undefined): boolean {
+  if (!ci?.surfaceFinish?.route || !fields) return false;
+  let wrote = false;
+  if (fields.depositThicknessUm && fields.depositThicknessUm > 0) { ci.surfaceFinish.depositThicknessUm = fields.depositThicknessUm; wrote = true; }
+  if (fields.maskedFeatures && fields.maskedFeatures > 0) { ci.surfaceFinish.maskedFeatures = fields.maskedFeatures; wrote = true; }
+  return wrote;
+}
+
 /** The measured surface as the form holds it: m², 4 decimals (setNumericField rounds the CAD fill the same way). */
 export function measuredFinishAreaM2(surfaceCm2: number | null | undefined): number {
   return typeof surfaceCm2 === 'number' && surfaceCm2 > 0 ? Number((surfaceCm2 / 10_000).toFixed(4)) : 0;

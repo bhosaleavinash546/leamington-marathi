@@ -53,15 +53,33 @@ portrait page. For each:
 layout, grammar and re-assembly work on controlled content, not how well real drawings are read.
 
 Fonts embedded as subsets in the generated PDFs: DejaVu Sans (Bitstream Vera Fonts licence — free to embed and
-redistribute) for text; GNU FreeSerif for the ISO 1101 symbols DejaVu lacks (GPLv3 with the GNU font-embedding
-exception: "if you create a document which uses this font, and embed this font or unaltered portions of this font into
-the document, this font does not by itself cause the resulting document to be covered by the GNU General Public
-License"). The fonts are read from the system by the generator; neither is part of the product.
+redistribute) for text, and `scripts/drawings/fonts/cv-drawing-symbols.ttf` for the three ISO 1101 symbols DejaVu Sans
+lacks (position ⌖, the maximum-material modifier Ⓜ, perpendicularity ⟂). That font is drawn by
+`scripts/drawings/make-symbol-font.py` from circles and bars — our own outlines, public domain (CC0), no glyph from any
+other font. **No GPL-licensed font is embedded** (the first set used GNU FreeSerif for those three symbols; it was
+regenerated on 10 Nov 2026 and the measured accuracy did not move: vector 341 / 341, curves 250 correct of 274 found,
+scans 301 of 342 — the same counts as before). Neither font is part of the product.
+
+## Drawings for real parts (`real-*`)
+
+Written by the same generator for real parts of `cad-audit/parts/`, so the combined flow (3D model + drawing → review →
+cost) can be tested end to end. Each states the envelope, holes and gauge the kernel measures on that part, and a
+material, tolerance, heat treatment and finish that DIFFER from what the costing assumes with no drawing. Vector PDF
+only; truth typed by hand in the generator (`origin: "real-part"`, reported apart by the accuracy script).
+
+| File | Part | States |
+|---|---|---|
+| `real-casting-bracket.pdf` | `Casting_Braket.stp` | A356-T6 to ASTM B108, ISO 8062-3 DCTG 6, pressure test, safety critical, cathodic e-coat 20–35 µm with 3 masked bores, 4 × Ø13 through, M6 |
+| `real-casting-bracket-nomaterial.pdf` | `Casting_Braket.stp` | the same sheet with the material cell, the mass and the heat-treatment note left empty (the "missing" test) |
+| `real-seat-bracket.pdf` | `Seat_Locking_Bracket.stp` | S420MC to EN 10149-2, 1.6 mm, ISO 2768-mK, zinc plate 12 µm Fe//Zn12//A, safety critical |
+
+The gear pair (`cad-audit/parts/gear-drawing-m3-z38.pdf`, and `gear-drawing-WRONG-z40.pdf` whose tooth count disagrees
+with the model) predates the reader and is used as it is.
 
 ## Truth file format
 
 ```json
-{ "drawing": "gen-casting", "origin": "generated" | "public",
+{ "drawing": "gen-casting", "origin": "generated" | "public" | "real-part",
   "complete": ["title block", "material", …],   // groups listed in full: an extra reading there is WRONG
   "sheets": [1],                                  // optional: only these sheets were checked
   "files": { "x.pdf": "vector" | "curves" | "scan" },   // optional, else from the file name

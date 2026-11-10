@@ -1,0 +1,49 @@
+{
+ "drawing": "real-seat-bracket",
+ "commodity": "sheet metal",
+ "origin": "real-part",
+ "forPart": "Seat_Locking_Bracket.stp",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "SEAT BASE MOUNT"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "SLB-3310"
+  },
+  {
+   "name": "material.designation",
+   "value": "S420MC"
+  },
+  {
+   "name": "material.standard",
+   "value": "EN 10149-2"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 1.6
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-mK"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "zinc-plate"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "match": {
+    "nominal": 12
+   }
+  },
+  {
+   "name": "quality.safetyCritical",
+   "value": true
+  }
+ ]
+}

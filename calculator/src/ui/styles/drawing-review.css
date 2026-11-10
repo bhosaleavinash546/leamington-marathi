@@ -1,0 +1,104 @@
+/*
+ * "From the drawing" — the review panel of the CAD to COST Confirm step (offline 2D drawing intelligence, Nov 2026).
+ * Theme tokens only (both themes follow). A status is a WORD in a badge; the tint beside it is decoration, never the
+ * message. Motion: hover is a colour change only (the app's motion policy) — nothing here animates a value.
+ */
+.dr-panel {
+  container-type: inline-size;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+.dr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.dr-title { margin: 0; font-size: 0.86rem; font-weight: 700; color: var(--text-primary); }
+.dr-file { margin: 0; font-size: 0.72rem; color: var(--text-secondary); overflow-wrap: anywhere; }
+.dr-summary { margin: 6px 0 0; font-size: 0.74rem; color: var(--text-secondary); line-height: 1.5; }
+.dr-top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.dr-pending { font-size: 0.72rem; color: var(--text-secondary); }
+.dr-restored, .dr-skipped, .dr-failed, .dr-reading {
+  margin: 8px 0 0; padding: 7px 10px; font-size: 0.73rem; line-height: 1.5;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text-primary);
+}
+.dr-skipped ul, .dr-warnings ul { margin: 4px 0 0; padding-left: 18px; }
+.dr-failed { border-left: 3px solid var(--danger); }
+.dr-reading-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.dr-reading-elapsed { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.dr-warnings, .dr-notcosted { margin-top: 8px; font-size: 0.73rem; color: var(--text-secondary); }
+.dr-warnings > summary, .dr-notcosted > summary { cursor: pointer; font-weight: 600; color: var(--text-primary); }
+
+.dr-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 8px; }
+.dr-groups { min-width: 0; }
+/* A wide panel: the readings beside the sheet. A narrow one (the two-pane costing workspace): the sheet stays on top. */
+@container (min-width: 900px) {
+  .dr-body:has(.dr-sheet) { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .dr-body .dr-sheet { order: 2; }
+  .dr-body .dr-sheet-frame { width: 100%; }
+}
+.dr-block { margin-top: 10px; }
+.dr-block:first-child { margin-top: 0; }
+.dr-block--conflicts { margin-top: 10px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--border-strong); border-left: 3px solid var(--warning); border-radius: 6px; }
+.dr-group-title { margin: 0 0 4px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+.dr-rows { list-style: none; margin: 0; padding: 0; }
+.dr-row, .dr-conflict { padding: 7px 8px; border-top: 1px solid var(--border); border-radius: 4px; }
+.dr-row:focus, .dr-row:focus-within { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--surface); }
+.dr-row:hover { background: var(--surface); }
+.dr-row--derived { margin-left: 18px; border-left: 2px solid var(--border-strong); border-radius: 0 4px 4px 0; }
+.dr-row[data-status="rejected"] .dr-value { text-decoration: line-through; color: var(--text-secondary); }
+.dr-row-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.dr-label { font-size: 0.72rem; color: var(--text-secondary); }
+.dr-value { font-size: 0.78rem; font-weight: 600; color: var(--text-primary); overflow-wrap: anywhere; }
+.dr-also { font-size: 0.68rem; color: var(--text-secondary); }
+.dr-where, .dr-note, .dr-effect { margin-top: 2px; font-size: 0.7rem; line-height: 1.45; color: var(--text-secondary); overflow-wrap: anywhere; }
+.dr-why { margin-top: 2px; font-size: 0.7rem; color: var(--text-secondary); }
+.dr-why > summary { cursor: pointer; }
+.dr-effect { color: var(--text-primary); }
+.dr-effect[data-effect="would-answer"], .dr-effect[data-effect="none"], .dr-effect[data-effect="cross-check"] { color: var(--text-secondary); }
+
+/* Badges: the word is the message; the border tint only helps the eye find it. */
+.dr-badge {
+  display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 0.66rem; font-weight: 700; line-height: 1.5;
+  color: var(--text-primary); background: var(--surface); border: 1px solid var(--border-strong); white-space: nowrap;
+}
+.dr-status[data-k="confirmed"], .dr-status[data-k="corrected"] { border-color: var(--success); }
+.dr-status[data-k="conflict"], .dr-status[data-k="check"], .dr-status[data-k="inferred"] { border-color: var(--warning); }
+.dr-status[data-k="rejected"], .dr-status[data-k="missing"] { border-color: var(--danger); }
+.dr-suggested, .dr-chip-tag {
+  font-size: 0.66rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; color: var(--text-primary);
+  background: var(--surface); border: 1px dashed var(--border-strong);
+}
+
+.dr-row-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.dr-btn { padding: 2px 9px; font-size: 0.7rem; }
+.dr-sides { list-style: none; margin: 6px 0 0; padding: 0; }
+.dr-side { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 4px 0; }
+.dr-correct { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-top: 6px; padding: 7px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+.dr-correct[hidden] { display: none; }
+.dr-correct--inline { background: transparent; border: 0; padding: 0; }
+.dr-field { display: flex; flex-direction: column; gap: 2px; font-size: 0.68rem; color: var(--text-secondary); }
+.dr-input { width: 170px; padding: 3px 6px; font-size: 0.74rem; }
+.dr-input--wide { width: 240px; }
+.dr-unit { font-size: 0.7rem; color: var(--text-secondary); }
+
+/* The sheet, with the focused reading outlined. */
+.dr-sheet { margin: 0; min-width: 0; align-self: start; position: sticky; top: 0; z-index: 2; padding: 6px 0; background: var(--surface-elevated); }
+/* The frame has the sheet's own proportions (--dr-ar = width / height), so a reading's outline is placed in % of it. */
+.dr-sheet-frame { position: relative; width: min(100%, calc(250px * var(--dr-ar, 1.414))); aspect-ratio: var(--dr-ar, 1.414); margin: 0 auto;
+  border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--surface); line-height: 0; }
+.dr-sheet-frame img { display: block; width: 100%; height: 100%; }
+.dr-sheet-wait { margin: 0; padding: 18px 10px; font-size: 0.72rem; line-height: 1.4; color: var(--text-secondary); }
+.dr-hi { position: absolute; border: 2px solid var(--accent); background: var(--accent-light); opacity: 0.85; border-radius: 2px; pointer-events: none; mix-blend-mode: multiply; }
+.dr-hi[hidden] { display: none; }
+.dr-sheet-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; margin-top: 4px; font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4; }
+
+/* On the question cards and the upload control. */
+.dr-leaning { margin: 2px 0 6px; padding: 5px 8px; font-size: 0.7rem; line-height: 1.45; color: var(--text-primary); background: var(--surface); border: 1px dashed var(--border-strong); border-radius: 6px; }
+.dr-leaning-link { background: none; border: 0; padding: 0; color: var(--accent-ink, var(--accent)); font-size: inherit; text-decoration: underline; cursor: pointer; }
+.cad-drawing-attach { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; }
+.cad-drawing-attach-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+.cad-drawing-attach-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+.cad-drawing-offline { margin: 5px 0 0; font-size: 0.7rem; color: var(--text-secondary); }
+.dr-leaning--confirmed { border-style: solid; border-left: 3px solid var(--success); }

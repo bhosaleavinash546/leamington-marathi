@@ -2,6 +2,14 @@ import { defineConfig } from 'vite';
 
 const isMobile = process.env.BUILD_TARGET === 'mobile';
 
+/** Test files that run the OCR engine on whole sheets (see `test.projects` below). */
+const OCR_HEAVY_TESTS = [
+  'tests/drawing-reader.test.ts',
+  'tests/drawing-offline.test.ts',
+  'tests/drawing-integration-routes.test.ts',
+  'tests/drawing-integration-offline.test.ts',
+];
+
 export default defineConfig({
   root: '.',
   // Capacitor's WebView loads from the file system root, so base must be '/'
@@ -42,6 +50,13 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['tests/**/*.test.ts'],
+    // Two groups, run one after the other (sequence.groupOrder). The drawing reader's OCR tests are CPU-bound for
+    // tens of seconds each (Tesseract, rendering at 300 dpi); run beside the other 350 files they starved them — a
+    // test that imports a large route module timed out at 5 s once (rates-flow-r1, Nov 2026). So the main suite runs
+    // first with the machine to itself, then the OCR-heavy files. `npm test -- <substr>` still filters across both.
+    projects: [
+      { extends: true, test: { name: 'unit', include: ['tests/**/*.test.ts'], exclude: OCR_HEAVY_TESTS, sequence: { groupOrder: 0 } } },
+      { extends: true, test: { name: 'ocr', include: OCR_HEAVY_TESTS, sequence: { groupOrder: 1 } } },
+    ],
   },
 });

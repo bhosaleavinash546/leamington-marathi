@@ -63,6 +63,7 @@ import { recomputeMachineRates } from '../../src/engine/rate-library.js';
 import type { RateLibrary, DeliveryTerms } from '../../src/engine/types.js';
 import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
+import { applyDrawingFinishFields, type DrawingFinishFields } from '../../src/engine/surface-finish-routes.js';
 
 /** One line of the part list. Extra `a.b` keys are per-part decision answers. */
 export interface BulkPartInput {
@@ -191,6 +192,11 @@ export interface BulkRunOptions {
   timeoutMs?: number;
   /** Progress for a CLI; the record is unaffected. */
   onProgress?: (done: number, total: number, part: BulkPartResult) => void;
+  /**
+   * Finish figures the engineer confirmed off the drawing (deposit thickness, masked features) — the two values the
+   * screen writes into the surface-treatment block, which no question carries. Absent: the finish is costed as today.
+   */
+  finishFields?: DrawingFinishFields;
 }
 
 /**
@@ -355,6 +361,8 @@ export async function costMeasuredPart(
   // cost the uncapped time. This is the order cad.ts uses on its own
   // deterministic branch.
   const warnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(answers));
+  // The confirmed drawing finish figures, on the finish the rules chose — as the CAD route writes them for the screen.
+  applyDrawingFinishFields(analysis.costInputSuggestions, opts.finishFields);
   if (!isCostable([], warnings, opts.acknowledge ?? [])) {
     const blocking = warnings.filter(w => w.blocking && !(opts.acknowledge ?? []).includes(w.code));
     return { ...base, status: 'refused', commodity, commoditySource, geometry, warnings,

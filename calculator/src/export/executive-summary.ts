@@ -261,6 +261,8 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
 
 /** The parts of the CAD report metadata the core report reads (structurally the same as pdf.ts's CADReportMeta). */
 export interface CoreReportMeta {
+  /** The attached drawing as the costing holds it (drawing-spec-report.ts) — null / absent without a drawing. */
+  drawingSpec?: import('./drawing-spec-report.js').DrawingSpecReport | null;
   routeComparison?: RouteComparisonExport | null;
   stamp?: string | null;
   uncertainty?: { p10: number; p90: number; plusMinusPct: number } | null;
@@ -427,6 +429,8 @@ export interface CoreFormMachineSplit {
 }
 
 export interface CoreReport {
+  /** The attached drawing's specification table (section 3) — null when the costing has no drawing: nothing is printed. */
+  drawing: import('./drawing-spec-report.js').DrawingSpecReport | null;
   exec: ExecutiveSummary;
   part: string;
   commodity: string | null;
@@ -1368,6 +1372,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     country: exec.country, commodityLabel: exec.commodity });
 
   return {
+    drawing: meta.drawingSpec ?? null,
     exec, part: result.partName, commodity: exec.commodity, commodityId: commodity, country: exec.country, region: regionCode,
     stamp: meta.stamp ?? null, total, verdict, annualVolume: annual, programmeYears: years, annualSpend: annual ? r4(total * annual) : null,
     pieceExToolingGbp: pieceEx, price, tooling,

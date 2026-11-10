@@ -1034,6 +1034,27 @@ what is true** — nothing here has been compared with a price JLR paid.
   `server/services/option-costs.ts` — the figure equals Get cost with that option, to the penny); the step-3 cost card
   is led by the piece price from `buildCoreReport` (the same model as PDF page 1, alerts included). `tests/part1-phase3`,
   `tests/c2c-phase-c`. Part1 CN ¥56.52.
+- Offline 2D drawing intelligence (10 Nov 2026, `calculator/docs/cad/offline-drawing-intelligence-2026-11.md`, plan in
+  `docs/plans/`): four layers — kernel → `server/drawing/` (the reader: PDF text, OCR, DXF; NO AI, NO network, imports
+  only the engineering-data types) → `src/engine/engineering-data/` (consolidate, conflicts, review, packs) → the adapter
+  `answersFromEngineeringData`, the ONLY bridge: confirmed / corrected parameters become answers to EXISTING questions.
+  - Server: `services/drawing-service.ts` reads once per file hash (exact text first; an OCR pass is queued ONE at a time
+    and the costing answers `drawing.status: 'reading'` + a job, `GET /api/drawing/jobs/:id`); `services/drawing-context.ts`
+    (`drawingContextFor`) is the one join — /analyze, /reanalyze, compare-routes, option-costs all call it, so headline and
+    rows cost on the same answers. `POST /api/drawing/read` = drawing only, no costing.
+  - The client sends DECISIONS (`drawingReview.ops`, review-state.ts), never a dataset: the server replays them on its own
+    consolidation; a decision that no longer applies is skipped and listed. An engineer's own answer always wins
+    (`overridden`); nothing unconfirmed is used; missing stays missing. Cache keys carry drawing hash + `READER_VERSION` +
+    review + spec table (`drawingCacheKey`); a drawing the server no longer holds is `DRAWING_GONE` (409), never dropped.
+  - Finish thickness / masked features have no question: `applyDrawingFinishFields` writes them on `surfaceFinish` for
+    screen and headless (`BulkRunOptions.finishFields`). No drawing → no key in any response, reports and stamp as before.
+  - Screen: `src/ui/drawing-review.ts` (pure builders, word badges) + `drawing-review-ui.ts` (state, clicks; a review
+    change is applied at Get cost — `nextCostStep({ reviewChanged })` — or "Apply the review", never a re-run a click).
+    Codes print through `codeLabel` (no `mat-…` on screen or report). Reports: ONE model `src/export/drawing-spec-report.ts`
+    (core §3, audit §9c, workbook `10-Drawing`), from the APPLIED state. The review is saved as a `cad_drawing_review` project.
+  - Tests: `tests/drawing-integration-*.test.ts`, `drawing-review-*.test.ts`, `drawing-service-queue.test.ts`; live
+    `npm run test:e2e:drawing`. OCR-heavy files run in their own vitest group AFTER the main suite (`vite.config.ts`).
+    Accuracy on real production drawings is UNMEASURED — the customer runs `scripts/drawings/accuracy.ts` on their own.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

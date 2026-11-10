@@ -31,6 +31,9 @@ export interface RouteCompareState {
   blankHash: string | null;
   /** The band the cost card shows — the reference row prints it. */
   referenceBand: { p10: number; p50: number; p90: number; plusMinusPct: number; confidence: string } | null;
+  /** The drawing behind the costing (its hash and the review decisions on it) — every row is costed with its confirmed
+   *  answers, as the headline is. Absent when no drawing is attached: the request is then exactly what it was. */
+  drawing?: Record<string, unknown> | null;
 }
 
 /** The request body, field for field as the screen's Compare routes builds it. */
@@ -44,6 +47,7 @@ export function routeCompareBody(s: RouteCompareState): Record<string, unknown> 
   if (s.material) body['material'] = s.material;
   if (s.blankHash) body['blankHash'] = s.blankHash;
   if (s.referenceBand) body['referenceBand'] = s.referenceBand;
+  if (s.drawing && Object.keys(s.drawing).length) Object.assign(body, s.drawing);
   return body;
 }
 

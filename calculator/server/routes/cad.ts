@@ -44,6 +44,14 @@ import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/
 import { applyRuleDecisions, toRuleFields, suppressAIForUndecided, type AISuppression } from '../../src/engine/cost-input-rules/apply.js';
 import { RULE_ENGINE_VERSION, type RuleContext, type Decision, type CommodityRuleSpec } from '../../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RC_REGIONS } from '../../src/engine/regional-rates.js';
+import { applyDrawingFinishFields, type DrawingFinishFields } from '../../src/engine/surface-finish-routes.js';
+import { parseReviewState } from '../../src/engine/engineering-data/index.js';
+import { DrawingReadError } from '../drawing/index.js';
+import { startDrawingRead, drawingErrorStatus, MAX_DRAWING_BYTES, DRAWING_ACCEPT, type DrawingHandle } from '../services/drawing-service.js';
+import {
+  drawingContextFor, mergeDrawingAnswers, drawingResponse, drawingFromBody, drawingCacheKey, DRAWING_GONE,
+  type DrawingContext, type DrawingRequest,
+} from '../services/drawing-context.js';
 
 const router = Router();
 
@@ -95,7 +103,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_UPLOAD_BYTES, fieldSize: 8 * 1024 * 1024, files: 2, fields: 40, parts: 60 },
 });
-const MAX_DRAWING_PDF_BYTES = 30 * 1024 * 1024;
+const MAX_DRAWING_PDF_BYTES = MAX_DRAWING_BYTES;
 /** A blank profile is a handful of curves. Anything this big is not one. */
 const MAX_BLANK_DXF_BYTES = 20 * 1024 * 1024;
 sweepUploadFiles();
@@ -736,6 +744,8 @@ router.get('/limits', asyncRoute(async (_req, res): Promise<void> => {
   res.json({
     maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576,
     maxBlankDxfMb: MAX_BLANK_DXF_BYTES / 1048576, accept: CAD_ACCEPT,
+    // The drawing is read on this server (no AI): PDF, an image or an ASCII DXF.
+    drawingAccept: DRAWING_ACCEPT,
     kernel: { available: k.available },
   });
 }));
@@ -787,16 +797,24 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       return;
     }
   }
+  // The drawing is READ ON THIS SERVER on every path (offline 2D drawing intelligence, Nov 2026): the reader starts now,
+  // in a worker thread, beside the geometry measurement. A file it does not take (DWG, a binary DXF, something that is
+  // not a drawing) is refused here, in its own words, before the kernel runs.
+  let drawingHandle: DrawingHandle | null = null;
   if (drawingUpload) {
     if (drawingUpload.size > MAX_DRAWING_PDF_BYTES) {
-      res.status(413).json({ error: `Drawing PDF is ${(drawingUpload.size / 1048576).toFixed(0)} MB; the limit is 30 MB.` });
+      res.status(413).json({ error: `Drawing is ${(drawingUpload.size / 1048576).toFixed(0)} MB; the limit is 30 MB.` });
       return;
     }
-    if (drawingUpload.buffer.subarray(0, 5).toString('latin1') !== '%PDF-') {
-      res.status(415).json({ error: 'The drawing must be a PDF (file does not start with %PDF-).' });
-      return;
+    try { drawingHandle = startDrawingRead(drawingUpload.buffer, drawingUpload.originalname); }
+    catch (e) {
+      if (e instanceof DrawingReadError) { res.status(drawingErrorStatus(e.code)).json({ error: `The drawing cannot be read: ${e.message}`, code: `drawing_${e.code}` }); return; }
+      throw e;
     }
   }
+  // Only a PDF is ever handed to a model, and only on the AI path — exactly as before. An image or DXF drawing is read
+  // by the offline reader alone.
+  const drawingForModel = drawingUpload && drawingUpload.buffer.subarray(0, 1024).toString('latin1').includes('%PDF-') ? drawingUpload : null;
   // Units are the one decision that changes the MEASUREMENT, so it has to be
   // read before the geometry engine runs, not with the rest of the answers.
   const earlyAnswers = parseDecisionAnswers(
@@ -1071,11 +1089,28 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     if (Array.isArray(rv)) renderViews = rv.filter((x): x is string => typeof x === 'string' && x.length > 0 && x.length < 800_000).slice(0, 4);
   } catch { /* views are an enhancement — ignore malformed input */ }
 
+  // The drawing's reading: complete for a CAD-exported PDF (exact text, about a second); 'reading' when a sheet needs
+  // the OCR pass, which runs one at a time behind this request — the costing never waits on it.
+  let drawingReq: DrawingRequest | null = null;
+  if (drawingHandle) {
+    const rec = await drawingHandle.settled();
+    if (rec.status === 'failed' && (rec.errorCode || rec.busy)) {
+      res.status(drawingErrorStatus(rec)).json({ error: `The drawing cannot be read: ${rec.error}`, code: rec.busy ? 'drawing_busy' : `drawing_${rec.errorCode}` });
+      return;
+    }
+    drawingReq = { record: rec, review: parseReviewState(req.body?.drawingReview) };
+  }
+  // A costing is cached only against a COMPLETE reading: a response that says "still reading" carries a job to poll.
+  const drawingCacheable = !drawingReq || drawingReq.record.status === 'ready';
+
   const bookPrint = rateBookPrint(userOverrides.region);
   const cacheKey = cadCache.buildKey([
     Buffer.from(`${uploadHash}:${unitScale}`),
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
+    // The reader's version, the engineer's review decisions and the specification table: a cached costing is never
+    // served for a different drawing, reader or review state. (No drawing: the key is byte-for-byte what it was.)
+    ...(drawingReq ? [Buffer.from(drawingCacheKey(drawingReq))] : []),
     ...renderViews.map(v => Buffer.from(v)),
     Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV, meshRev: MESH_REV,
       // Inputs that change the result and were missing (360 review, Oct 2026): the file NAME (it carries
@@ -1089,7 +1124,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // for any A/B or variance measurement: without it a second run of the same
   // part returns the first run's response and the model is never called again.
   // The write still happens below, so the run stays inspectable afterwards.
-  const cached = noCache ? null : cadCache.get(cacheKey);
+  const cached = noCache || !drawingCacheable ? null : cadCache.get(cacheKey);
   if (cached) {
     console.log(`[CAD] Cache HIT: ${cacheKey.slice(0, 12)}`);
     res.json(cached);
@@ -1168,7 +1203,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   } else {
     const s1 = await stage1Identify(anthropic!, geo, originalname, deepAnalysis,
       partPhotoBase64 ? { data: partPhotoBase64, mediaType: partPhotoMime } : null,
-      renderViews, drawingUpload ? drawingUpload.buffer.toString('base64') : null, '[CAD]');
+      renderViews, drawingForModel ? drawingForModel.buffer.toString('base64') : null, '[CAD]');
     identification = s1.identification;
     if (s1.selection) { stage1Selection = s1.selection; selectedCommodity = s1.selection.primary; }
     // Stage-1 may say 'gear' — that is a real commodity now, with its own rule
@@ -1197,9 +1232,16 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers, analysisMode);
-  if (commodityDecision) ruleCtx.routeCandidates = commodityDecision.options.map(o => String(o.value));
+  const bareCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers, analysisMode);
+  if (commodityDecision) bareCtx.routeCandidates = commodityDecision.options.map(o => String(o.value));
   const ruleSpec = specForCommodity(selectedCommodity);
+  // The drawing, joined to the measured part for THIS route: the engineer's review decisions replayed on the server's
+  // own consolidation, and the answers they give — confirmed readings only, under the engineer's own answers. With no
+  // drawing, or nothing confirmed, `effectiveAnswers` IS `decisionAnswers` and the rules run exactly as before.
+  const drawingCtx = drawingContextOf(drawingReq, geo, originalname, selectedCommodity, ruleSpec, bareCtx, forcedMaterial, decisionAnswers);
+  const effectiveAnswers = mergeDrawingAnswers(decisionAnswers, drawingCtx);
+  const ruleCtx = withDrawingAnswers(bareCtx, effectiveAnswers, decisionAnswers, forcedMaterial, originalname);
+  if (commodityDecision) ruleCtx.routeCandidates = commodityDecision.options.map(o => String(o.value));
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
   let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
@@ -1231,12 +1273,12 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     }
     console.log(`[CAD] ${renderViews.length} rendered view(s) attached`);
   }
-  if (drawingUpload) {
+  if (drawingForModel) {
     userContent.push(
-      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingUpload.buffer.toString('base64') } },
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingForModel.buffer.toString('base64') } },
       { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade, the heat-treatment callout (carburise / harden+temper / nitride / induction) and case depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently. SURFACE TREATMENT / COATING is a drawing note and changes the OPERATION LIST, not just a rate — read it and return it in costInputSuggestions.surfaceTreatment: the finish callout (zinc plate, zinc-nickel, e-coat/KTL, powder coat, hot dip galvanise, anodise, zinc flake, phosphate, shot blast), the deposit or film THICKNESS in microns, the salt-spray requirement in HOURS (e.g. "720 h NSS"), the number of MASKED features (threads, bores, sealing or earth faces marked "no coating"/"mask"), and the substrate tensile strength or hardness if stated. Masking is charged per feature and applied twice, and a plated steel part above ~1000 MPa needs a hydrogen de-embrittlement bake — so the masked count and the strength are cost-bearing, not decoration. Say which drawing field each value came from, and return null for anything the drawing does not state rather than inferring it from the material.' },
     );
-    console.log(`[CAD] Engineering drawing attached: ${drawingUpload.originalname} (${(drawingUpload.size / 1024).toFixed(0)} KB)`);
+    console.log(`[CAD] Engineering drawing attached: ${drawingForModel.originalname} (${(drawingForModel.size / 1024).toFixed(0)} KB)`);
   }
 
   let analysis: unknown;
@@ -1270,7 +1312,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || originalname);
     const detWarnings = runAllGuards(det.analysis, geo,
       geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null),
-      statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecision });
+      statedFromAnswers(effectiveAnswers), { routeOpen: !!commodityDecision });
+    // Deposit thickness and masked features confirmed off the drawing: no question carries them, so they are written
+    // onto the finish the rules chose — the screen fills its two fields from here and headless costs the same.
+    applyDrawingFinishFields(det.analysis.costInputSuggestions, drawingCtx?.finishFields);
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions];
     const detPayload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -1294,7 +1339,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       reportNotes: ruleReportNotes(selectedCommodity, ruleCtx),
       // The part in each comparison country — a row IS the costing selecting that country gives.
       analysisByRegion: analysisByRegion(ruleSpec!, ruleCtx, geo, geo.partName || originalname,
-        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null), statedFromAnswers(decisionAnswers)),
+        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null), statedFromAnswers(effectiveAnswers), drawingCtx?.finishFields),
       decisions: detDecisions,
       mode: analysisMode,
       fromCache: false,
@@ -1311,6 +1356,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         boundingBoxEstMm: preprocessed.boundingBoxEstMm,
         entityStats: preprocessed.entityStats,
       },
+      // The drawing as read on this server, the consolidated engineering data and what its confirmed readings answer.
+      // Absent — not null — when no drawing was attached: the response is then exactly what it was.
+      ...drawingResponse(drawingReq, drawingCtx),
     };
     // The job is fed what the RULES decided, not what the form happened to
     // hold: the answered material family, the chosen casting/moulding route,
@@ -1320,12 +1368,12 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     const detJobId = await queueGeometricDFM(
       buffer, originalname, selectedCommodity,
       preprocessed.partName,
-      forcedMaterial || confirmedFamily(decisionAnswers),
+      forcedMaterial || confirmedFamily(effectiveAnswers),
       forcedProcess || decidedRoute(det.result.suggestions),
       annualVolume, requestRegion(req), costedMachineIds(det.result.suggestions));
     // Cached WITH the job id, so re-analysing the same part returns the same
     // job rather than silently losing its findings on a cache hit.
-    cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
+    if (drawingCacheable) cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
     res.json({ ...detPayload, dfmJobId: detJobId });
     return;
   }
@@ -1393,6 +1441,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       { ruleWritten: (ruleOverrides?.overridden ?? []).map(o => o.field), geo });
     const unruledNote = unruledLimitation(aiUnruled);
     if (unruledNote) ((analysis as { analysisLimitations: string[] }).analysisLimitations).push(unruledNote);
+    applyDrawingFinishFields((analysis as { costInputSuggestions?: CADAnalysisResult['costInputSuggestions'] }).costInputSuggestions, drawingCtx?.finishFields);
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -1402,7 +1451,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // volume.cm3 or the ground-truth volume check never fires on the STEP/IGES path.
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
-  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecision });
+  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(effectiveAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecision });
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const aiDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
@@ -1468,6 +1517,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       boundingBoxEstMm: preprocessed.boundingBoxEstMm,
       entityStats: preprocessed.entityStats,
     },
+    // The offline reading of the drawing, attached on the AI path too (nothing new is sent to the model).
+    ...drawingResponse(drawingReq, drawingCtx),
   };
   // Cache set AFTER the queue so a cache hit replays the same job id.
 
@@ -1482,11 +1533,11 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   const dfmJobId = await queueGeometricDFM(
     buffer, originalname, selectedCommodity,
     preprocessed.partName,
-    forcedMaterial || confirmedFamily(decisionAnswers),
+    forcedMaterial || confirmedFamily(effectiveAnswers),
     forcedProcess || decidedRoute((analysis as { costInputSuggestions?: Record<string, unknown> })?.costInputSuggestions),
     annualVolume, requestRegion(req),
     costedMachineIds((analysis as { costInputSuggestions?: Record<string, unknown> })?.costInputSuggestions));
-  cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
+  if (drawingCacheable) cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
 
   res.json({ ...payload, dfmJobId });
 }));
@@ -2341,6 +2392,8 @@ export type AnalysisMode = 'deterministic' | 'ai' | 'both';
 function analysisByRegion(
   spec: CommodityRuleSpec, ctx: RuleContext, geo: OCCTGeometry, partName: string,
   volumeCm3: number | null, stated: ReturnType<typeof statedFromAnswers>,
+  /** Finish figures confirmed off the drawing — written on every country's analysis as on the costed one. */
+  finishFields?: DrawingFinishFields,
 ): Record<string, { analysis: unknown; ruleFields: unknown }> {
   const src = ctx.rates?.regional?.code ?? 'UK';
   const out: Record<string, { analysis: unknown; ruleFields: unknown }> = {};
@@ -2348,6 +2401,7 @@ function analysisByRegion(
     if (X === src) continue;
     const det = buildDeterministicAnalysis(spec, { ...ctx, rates: rateBookForRegion(X) }, partName);
     runAllGuards(det.analysis, geo, volumeCm3, stated);   // the guards mutate (near-net machining cap), as for the costed country
+    applyDrawingFinishFields(det.analysis.costInputSuggestions, finishFields);
     out[X] = { analysis: det.analysis, ruleFields: det.ruleFields };
   }
   return out;
@@ -2412,6 +2466,40 @@ export function parseDecisionAnswers(raw: unknown): Record<string, unknown> {
 const rateRegionOf = regionOf;
 /** The rate book the rules price in for a region (services/rate-book.ts). */
 const rateBookFor = rateBookForRegion;
+
+/** The engineer's own answers as the drawing adapter must respect them: what they clicked or typed, and a pinned material. */
+export function explicitAnswersOf(forcedMaterial: string, decisionAnswers: Record<string, unknown>): Record<string, unknown> {
+  return { ...(forcedMaterial ? answersFromContext(forcedMaterial, '') : {}), ...decisionAnswers };
+}
+
+/**
+ * The drawing joined to the measured part on a route (services/drawing-context.ts), or null when the request has no
+ * drawing or its reading is not complete yet. The engine's open questions handed to the adapter are built from
+ * `bareCtx` — the engineer's own answers only, nothing from the drawing.
+ */
+export function drawingContextOf(
+  drawingReq: DrawingRequest | null, geo: OCCTGeometry, filename: string, commodity: string,
+  spec: CommodityRuleSpec | null | undefined, bareCtx: RuleContext, forcedMaterial: string, decisionAnswers: Record<string, unknown>,
+): DrawingContext | null {
+  const extraction = drawingReq?.record.extraction;
+  if (!drawingReq || !extraction || geo.status !== 'success') return null;
+  return drawingContextFor({
+    geo, filename, commodity, extraction, review: drawingReq.review,
+    explicitAnswers: explicitAnswersOf(forcedMaterial, decisionAnswers),
+    bareDecisions: spec ? runCostInputRules(spec, bareCtx).decisions : [],
+  });
+}
+
+/**
+ * The rule context with the drawing's confirmed answers under the engineer's own. A confirmed drawing reading outranks
+ * the family a FILE NAME suggests (a prior, not a decision); it never outranks a pinned material or a clicked answer —
+ * the adapter was handed those and gives no answer for a question they settle. Nothing from the drawing: `bareCtx` itself.
+ */
+export function withDrawingAnswers(bareCtx: RuleContext, effectiveAnswers: Record<string, unknown>, decisionAnswers: Record<string, unknown>,
+  forcedMaterial: string, filename: string): RuleContext {
+  if (effectiveAnswers === decisionAnswers) return bareCtx;
+  return { ...bareCtx, answers: { ...answersFromContext(forcedMaterial, filename), ...effectiveAnswers } };
+}
 
 export function ruleContextFor(
   commodity: string,
@@ -2889,10 +2977,16 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
   const forcedMaterial = typeof req.body?.material === 'string' ? req.body.material.trim() : '';
   const programmeYears = parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body.programmeYears) : undefined;
   const region = rateRegionOf(requestRegion(req));
+  // The drawing the headline was costed with (by hash) and the engineer's review of it: every row is costed on the
+  // same drawing-derived answers as the headline. A drawing the server no longer holds is refused, never dropped.
+  const drawing = headlessDrawing(req.body, geo, filename, current, forcedMaterial, answersIn,
+    { annualVolume: parseFloat(req.body?.annualVolume) || 100000, programmeYears: programmeYears ?? null, region });
+  if (drawing === 'gone') { res.status(409).json({ error: DRAWING_GONE, code: 'DRAWING_GONE' }); return; }
   const { compareRoutes } = await import('../services/route-compare.js');
   const comparison = await compareRoutes({
     geo, filename, current,
-    answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
+    answers: { ...answersFromContext(forcedMaterial, filename), ...mergeDrawingAnswers(answersIn, drawing) },
+    ...(drawing && Object.keys(drawing.finishFields).length ? { finishFields: drawing.finishFields } : {}),
     region, annualVolume: parseFloat(req.body?.annualVolume) || 100000,
     ...(programmeYears ? { programmeYears } : {}),
     ...(req.body?.deliveryTerms === 'EXW' ? { deliveryTerms: 'EXW' as const } : {}),
@@ -2907,6 +3001,25 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
   });
   res.json({ region, comparison, rows: comparison.rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));
+
+/**
+ * The drawing behind a headless re-cost (compare-routes, option £): the drawing named by hash, the review decisions
+ * replayed, and the adapter run for the costing's own route with the rule context the headless chain itself builds
+ * (`costMeasuredPart`: the commodity is given). null — no drawing, or its reading is not complete; 'gone' — the request
+ * names a drawing this server no longer holds.
+ */
+function headlessDrawing(
+  body: Record<string, unknown> | undefined, geo: OCCTGeometry, filename: string, commodity: string, forcedMaterial: string,
+  answersIn: Record<string, unknown>, o: { annualVolume: number; programmeYears: number | null; region: string },
+): DrawingContext | null | 'gone' {
+  const drawingIn = drawingFromBody(body);
+  if (!drawingIn) return null;
+  if ('gone' in drawingIn) return 'gone';
+  const spec = specForCommodity(commodity);
+  const bareCtx = ruleContextFor(commodity, geo, filename,
+    { annualVolume: o.annualVolume, programmeYears: o.programmeYears, forcedCommodity: commodity, forcedMaterial, region: o.region }, answersIn, 'deterministic');
+  return drawingContextOf(drawingIn, geo, filename, commodity, spec, bareCtx, forcedMaterial, answersIn);
+}
 
 /** Single re-costs of the option £ (CAD to COST Phase C), by (part, answers, route, region, volume, terms, versions, book). */
 const OPTION_COST_CACHE = new Map<string, import('../services/option-costs.js').OneCost>();
@@ -2955,15 +3068,21 @@ router.post('/option-costs', requireAuth, optionCostsLimiter, asyncRoute(async (
   const baseBook = recomputeMachineRates(resolveActiveRateBook());
   const { fingerprintRateLibrary } = await import('../utils/rate-library-fingerprint.js');
   const bookPrint = fingerprintRateLibrary(baseBook);
+  // The drawing behind the headline, as on compare-routes: each option is re-costed with its confirmed answers too.
+  const drawing = headlessDrawing(req.body, geo, filename, current || 'machining', forcedMaterial, answersIn,
+    { annualVolume, programmeYears: programmeYears ?? null, region });
+  if (drawing === 'gone') { res.status(409).json({ error: DRAWING_GONE, code: 'DRAWING_GONE' }); return; }
+  const finishFields = drawing && Object.keys(drawing.finishFields).length ? drawing.finishFields : null;
+  // The merged answers are in the key already; the finish figures confirmed off the drawing are not answers, so they join it.
   const keyOf = (route: string, answers: Record<string, unknown>) => JSON.stringify([geometryHash, blankHash, unitScale, filename, route,
     Object.keys(answers).sort().map(k => [k, answers[k]]), region, annualVolume, programmeYears ?? null, deliveryTerms ?? 'DAP',
-    [...acknowledge].sort(), RULE_ENGINE_VERSION, KERNEL_REV, bookPrint]);
+    [...acknowledge].sort(), RULE_ENGINE_VERSION, KERNEL_REV, bookPrint, ...(finishFields ? [finishFields] : [])]);
   if (OPTION_COST_CACHE.size > OPTION_COST_CACHE_MAX) OPTION_COST_CACHE.clear();
   const result = await costOptions({
     geo, filename, current: current || 'machining',
-    answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
+    answers: { ...answersFromContext(forcedMaterial, filename), ...mergeDrawingAnswers(answersIn, drawing) },
     region, annualVolume, ...(programmeYears ? { programmeYears } : {}), ...(deliveryTerms ? { deliveryTerms } : {}),
-    acknowledge, baseBook, questions,
+    acknowledge, baseBook, questions, ...(finishFields ? { finishFields } : {}),
   }, OPTION_COST_CACHE, keyOf);
   res.json({ region, questions: result, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));
@@ -3049,6 +3168,13 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     anthropic = createAnthropic(apiKey);
   }
 
+  // The drawing read with the first analysis, named by its hash (never readings from the body), and the engineer's
+  // review of it. A drawing this server no longer holds is refused — the part is not costed without it silently.
+  const drawingIn = drawingFromBody(req.body as Record<string, unknown>);
+  if (drawingIn && 'gone' in drawingIn) { res.status(409).json({ error: DRAWING_GONE, code: 'DRAWING_GONE' }); return; }
+  const drawingReq: DrawingRequest | null = drawingIn;
+  const drawingCacheable = !drawingReq || drawingReq.record.status === 'ready';
+
   const deepAnalysis = isDeepReq(req);
   // Keyed on the RESOLVED book (company merge + overrides + country): this key carried no book at all, so after an
   // upload, switch or override every answered step-2/3 re-run replayed the old book's rule £ (rates flow review R1).
@@ -3056,13 +3182,15 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
+    // The drawing's bytes (by hash), the reader's version and the review decisions — absent without a drawing.
+    ...(drawingReq ? [Buffer.from(drawingCacheKey(drawingReq))] : []),
     Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV, rateBook: bookPrint.key })),
   ]);
   // `noCache` re-samples the model instead of serving the stored answer. Needed
   // for any A/B or variance measurement: without it a second run of the same
   // part returns the first run's response and the model is never called again.
   // The write still happens below, so the run stays inspectable afterwards.
-  const cached = noCache ? null : cadCache.get(cacheKey);
+  const cached = noCache || !drawingCacheable ? null : cadCache.get(cacheKey);
   if (cached) {
     console.log(`[CAD/reanalyze] Cache HIT: ${cacheKey.slice(0, 12)}`);
     res.json(cached);
@@ -3144,9 +3272,15 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
 
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers, analysisMode);
-  if (commodityDecisionRe) ruleCtx.routeCandidates = commodityDecisionRe.options.map(o => String(o.value));
+  const bareCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers, analysisMode);
+  if (commodityDecisionRe) bareCtx.routeCandidates = commodityDecisionRe.options.map(o => String(o.value));
   const ruleSpec = specForCommodity(selectedCommodity);
+  // As on /analyze: the review decisions replayed on the server's own consolidation, confirmed readings as answers
+  // under the engineer's own. Nothing confirmed (or no drawing): the rules run on `decisionAnswers` exactly as before.
+  const drawingCtx = drawingContextOf(drawingReq, geo, filename, selectedCommodity, ruleSpec, bareCtx, forcedMaterial, decisionAnswers);
+  const effectiveAnswers = mergeDrawingAnswers(decisionAnswers, drawingCtx);
+  const ruleCtx = withDrawingAnswers(bareCtx, effectiveAnswers, decisionAnswers, forcedMaterial, filename);
+  if (commodityDecisionRe) ruleCtx.routeCandidates = commodityDecisionRe.options.map(o => String(o.value));
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
   let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
@@ -3196,7 +3330,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The route the client posts decision answers to. Re-running the rules with
     // them is the whole round-trip: no re-upload, no model, no key.
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || filename);
-    const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecisionRe });
+    const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(effectiveAnswers), { routeOpen: !!commodityDecisionRe });
+    applyDrawingFinishFields(det.analysis.costInputSuggestions, drawingCtx?.finishFields);
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecisionRe ? [commodityDecisionRe] : []), ...det.result.decisions];
     const detPayload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -3220,7 +3355,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       reportNotes: ruleReportNotes(selectedCommodity, ruleCtx),
       // The part in each comparison country — a row IS the costing selecting that country gives.
       analysisByRegion: analysisByRegion(ruleSpec!, ruleCtx, geo, geo.partName || filename,
-        geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers)),
+        geo.volume?.cm3 ?? null, statedFromAnswers(effectiveAnswers), drawingCtx?.finishFields),
       decisions: detDecisions,
       geometryHash,
       mode: analysisMode,
@@ -3236,11 +3371,12 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
         : await requeueGeometricDFMWithAnswers(geometryHash, filename, selectedCommodity, geo.partName || filename,
           // a moulding answers the RESIN, not the family: without this the upload's job (run while the route was still
           // guessed as machining) stood, and an ECU cover's report priced a drill-reach finding at 14% of the part
-          forcedMaterial || String(decisionAnswers['material.family'] ?? '') || (decisionAnswers['material.resin'] ? 'plastic' : ''),
+          forcedMaterial || String(effectiveAnswers['material.family'] ?? '') || (effectiveAnswers['material.resin'] ? 'plastic' : ''),
           forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req),
           costedMachineIds(det.result.suggestions)),
+      ...drawingResponse(drawingReq, drawingCtx),
     };
-    cadCache.set(cacheKey, detPayload);
+    if (drawingCacheable) cadCache.set(cacheKey, detPayload);
     res.json(detPayload);
     return;
   }
@@ -3308,12 +3444,13 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       { ruleWritten: (ruleOverrides?.overridden ?? []).map(o => o.field), geo });
     const unruledNote = unruledLimitation(aiUnruled);
     if (unruledNote) ((analysis as { analysisLimitations: string[] }).analysisLimitations).push(unruledNote);
+    applyDrawingFinishFields((analysis as { costInputSuggestions?: CADAnalysisResult['costInputSuggestions'] }).costInputSuggestions, drawingCtx?.finishFields);
   } catch (err) {
     respondAIError(res, err);
     return;
   }
 
-  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecisionRe });
+  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(effectiveAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecisionRe });
   const reDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -3358,8 +3495,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     annualVolume,
     occtGeometry: geo,
     preprocessed: { format: 'STEP', partName: filename },
+    ...drawingResponse(drawingReq, drawingCtx),
   };
-  cadCache.set(cacheKey, { ...payload, fromCache: true });
+  if (drawingCacheable) cadCache.set(cacheKey, { ...payload, fromCache: true });
   res.json(payload);
 }));
 

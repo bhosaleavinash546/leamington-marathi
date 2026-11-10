@@ -365,6 +365,29 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
     head('Specification costed to');
     table(['Question', 'Answer'], m.spec.map(s => [s.question, s.answer]), { 0: { cellWidth: 100 }, 1: { cellWidth: 82, fontStyle: 'bold' } }, { fontSize: 6.6 });
   }
+  if (m.drawing) {
+    // The attached drawing: what the engineer confirmed and the costing used, the conflicts, and what is specified but
+    // not priced. The full table (every reading, with its place on the sheet) is in the audit pack and the workbook.
+    const d = m.drawing;
+    head('Drawing specification', `${d.usedCount} used in this costing`);
+    para(d.summary, 6.6, GREY);
+    const shown = d.rows.filter(r => r.used || r.status === 'Confirmed' || r.status === 'Corrected');
+    if (shown.length) {
+      table(['Parameter', 'Value', 'Read from', 'Status', 'Used in this costing'],
+        shown.map(r => [r.parameter, r.value, r.source, r.status, r.usedText]),
+        { 0: { cellWidth: 30, fontStyle: 'bold' }, 1: { cellWidth: 30 }, 2: { cellWidth: 44, textColor: GREY }, 3: { cellWidth: 17 }, 4: { cellWidth: 61 } }, { fontSize: 6.1 });
+    } else para('No reading of the drawing was confirmed: the costing uses none of it (the 3D model and the answers given).', 6.8);
+    if (d.conflicts.length) {
+      table(['Conflict', 'Sources', 'Outcome'], d.conflicts.map(c => [c.parameter, c.sides, c.resolution]),
+        { 0: { cellWidth: 36, fontStyle: 'bold' }, 1: { cellWidth: 76 }, 2: { cellWidth: 70 } }, { fontSize: 6.1, fill: r => (d.conflicts[r].open ? [254, 243, 199] : null) });
+    }
+    const rest = d.rows.length - shown.length;
+    para([
+      rest > 0 ? `${rest} other reading${rest === 1 ? ' was' : 's were'} not confirmed and not used.` : '',
+      d.missing.length ? `Expected on the drawing and not found (nothing assumed): ${d.missing.map(x => x.parameter).join(', ')}.` : '',
+      d.notCosted.length ? `Specified on the drawing — not in the cost model yet (${d.notCosted.length}): ${[...new Set(d.notCosted.map(n => n.parameter))].slice(0, 8).join(', ')}${new Set(d.notCosted.map(n => n.parameter)).size > 8 ? ' …' : ''}. None of these is priced.` : '',
+    ].filter(Boolean).join(' '), 6.4, GREY, 'italic');
+  }
   head('Operations', 'before overhead and margin');
   table(['Operation', 'Machine class', 'Cycle min', 'Parts / cycle', 'OEE', 'Crew charged', 'Machine / h', 'Labour / h', 'A part'],
     m.operations.map(op => [op.name, machineClassShort(op.machine), `${op.cycleMin.toFixed(2)}${op.bench ? ' (labour)' : ''}`,

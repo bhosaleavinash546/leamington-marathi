@@ -596,6 +596,35 @@ export async function exportToExcelBlob(
     sheets.push({ name: '9-DFM', rows: dfmRows, cols: [34, 10, 40, 10, 16, 40, 18, 14, 50, 30, 30, 30] });
   }
 
+  // ── Sheet 10: the attached drawing — every reading, its source, its status and whether the costing used it ──
+  const ds = extras?.cadMeta?.drawingSpec;
+  if (ds) {
+    const dr: unknown[][] = [
+      ['DRAWING SPECIFICATION — the attached drawing, read offline (no AI) and reviewed by the engineer'],
+      ['Drawing', ds.file], ['Short hash', ds.hashShort], ['Drawing reader', `v${ds.readerVersion}`], ['Sheets', ds.sheets], ['Readings by OCR', ds.ocrReadings],
+      [ds.summary],
+      ...ds.notes.map(n => [n]),
+      [],
+      ['READINGS THAT ANSWER A COSTING QUESTION, OR CROSS-CHECK THE 3D MODEL'],
+      ['Group', 'Parameter', 'Value', 'Source (file, sheet, zone, how read)', 'Status', 'Used in the costing', 'How'],
+      ...(ds.rows.length ? ds.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.used ? 'Yes' : 'No', r.usedText]) : [['none on this route']]),
+      [],
+      ['CONFLICTS BETWEEN SOURCES — nothing is chosen without the engineer'],
+      ['Parameter', 'Sources', 'Suggested (never applied by itself)', 'Outcome'],
+      ...(ds.conflicts.length ? ds.conflicts.map(c => [c.parameter, c.sides, c.suggested, c.resolution]) : [['none']]),
+      [],
+      ['EXPECTED ON A DRAWING FOR THIS ROUTE — NOT FOUND (nothing was assumed)'],
+      ['Parameter', 'Why it matters'],
+      ...(ds.missing.length ? ds.missing.map(x => [x.parameter, x.why]) : [['none']]),
+      [],
+      [`SPECIFIED ON THE DRAWING — NOT IN THE COST MODEL YET (${ds.notCosted.length}; none is priced)`],
+      ['Parameter', 'Value', 'Source', 'Status', 'Why it is not costed'],
+      ...(ds.notCosted.length ? ds.notCosted.map(n => [n.parameter, n.value, n.source, n.status, n.why]) : [['none']]),
+      ...(ds.skipped.length || ds.warnings.length ? [[], ['NOTES FROM THE READER AND THE REVIEW'], ...ds.skipped.map(x => [`Earlier decision not applied: ${x}`]), ...ds.warnings.map(w => [w])] : []),
+    ];
+    sheets.push({ name: '10-Drawing', rows: dr, cols: [26, 34, 40, 60, 16, 14, 80] });
+  }
+
   // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency
   // (demo review 2026-10-10: a China workbook read "die £3,056" and "capex £22,394" beside ¥ totals).
   if (currency !== 'GBP') {

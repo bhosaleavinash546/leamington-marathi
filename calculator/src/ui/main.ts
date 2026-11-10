@@ -13,7 +13,7 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage, questionsToStopOn, newQuestionsMessage, GET_COST_AFTER_STOP_LABEL } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, optionCostSlotHtml, optionCostHtml, optionCostNoteText, pricedQuestionsReady, PRICED_QUESTION_IDS, cardLeadHtml, routeAlternativesHtml, type QuestionCosts, type CardPage1, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerName, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, optionCostSlotHtml, optionCostHtml, optionCostNoteText, pricedQuestionsReady, PRICED_QUESTION_IDS, cardLeadHtml, routeAlternativesHtml, type QuestionCosts, type CardPage1, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
 // Phase C: the cost card reads page 1 of the core report from its own model (already in this bundle via excel.ts).
 import { buildCoreReport } from '../export/executive-summary.js';
 import { fieldLabel } from './field-labels.js';
@@ -28,6 +28,7 @@ import './styles/brand.css';
 import './styles/saas-polish.css';
 import './styles/dark-green.css';   // dark theme only: black + green (every rule scoped to not-light)
 import './styles/cad-viewer.css';  // 3D viewer (theme-aware, --v-* tokens)
+import './styles/drawing-review.css';  // "From the drawing" review panel (theme tokens only)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { installPageActions } from './page-actions.js';
 import { watchActionBarHeight } from './sticky-cta.js';
@@ -83,6 +84,9 @@ import {
   SURFACE_FINISH_ROUTES, SURFACE_ROUTE_LABELS, FINISH_PREFIX_BY_COMMODITY, finishSpec,
 } from '../engine/surface-finish-routes.js';
 import { boundDrawingCoating } from '../engine/coating-drawing-read.js';
+import { DRAWING_OFFLINE_LINE, drawingChipsHtml, questionNoteHtml } from './drawing-review.js';
+import * as drawingReview from './drawing-review-ui.js';
+import { buildDrawingSpecReport } from '../export/drawing-spec-report.js';
 import { startLongTask, fmtAllowance } from './long-task-progress.js';
 import { ensureReportRouteComparison } from './report-route-compare.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
@@ -5803,8 +5807,19 @@ function renderCADAnalysisForm(): string {
         <p id="cad-life-line" class="cad-life-line" role="status"></p>
         <p id="cad-country-line" class="cad-country-line"></p>
 
+        <div class="cad-drawing-attach">
+          <div class="cad-drawing-attach-title">Engineering drawing <span style="font-weight:400;color:var(--text-muted)">(optional — material, tolerances, finish and heat treatment are on the drawing, not in the 3D model)</span></div>
+          <div class="cad-drawing-attach-row">
+            <label class="btn btn-secondary btn-sm" for="cad-drawing-input" style="cursor:pointer">Attach drawing</label>
+            <input type="file" id="cad-drawing-input" accept="${escHtml(cadLimits.drawingAccept.join(','))},application/pdf,image/png,image/jpeg,image/tiff" style="display:none" aria-describedby="cad-drawing-offline"/>
+            <span id="cad-drawing-info" style="font-size:0.72rem;color:var(--text-muted)">${cadDrawingFile ? `${escHtml(cadDrawingFile.name)} (${(cadDrawingFile.size / 1024).toFixed(0)} KB)` : 'No drawing attached'}</span>
+            <button class="btn btn-secondary btn-sm" id="cad-drawing-clear" style="${cadDrawingFile ? '' : 'display:none;'}padding:1px 8px">✕ Remove</button>
+          </div>
+          <p class="cad-drawing-offline" id="cad-drawing-offline">PDF, PNG, JPEG, TIFF or DXF. ${DRAWING_OFFLINE_LINE}. You confirm each reading before it is used in the cost.</p>
+        </div>
+
         <details id="cad-more-options" class="cad-more">
-          <summary>More options — a process or material you already know, drawing, photo, blank DXF, analysis mode</summary>
+          <summary>More options — a process or material you already know, photo, blank DXF, analysis mode</summary>
           <div class="cad-more-body">
     <!-- Process + Material overrides -->
     <div class="field-row" style="margin-top:10px">
@@ -5893,14 +5908,9 @@ function renderCADAnalysisForm(): string {
         <button class="btn btn-secondary btn-sm" id="cad-photo-clear" style="display:none;padding:1px 8px">✕ Remove</button>
       </div>
       <div style="margin-top:8px;font-size:0.75rem;font-weight:600;color:var(--text-secondary)">
-        Engineering drawing <span style="font-weight:400;color:var(--text-muted)">(optional PDF — tolerances, GD&amp;T &amp; finishes drive cost more than shape)</span>
+        Developed blank <span style="font-weight:400;color:var(--text-muted)">(optional, sheet metal only)</span>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <label class="btn btn-secondary btn-sm" for="cad-drawing-input" style="cursor:pointer">Attach Drawing PDF</label>
-        <input type="file" id="cad-drawing-input" accept="application/pdf,.pdf" style="display:none"/>
-        <span id="cad-drawing-info" style="font-size:0.72rem;color:var(--text-muted)">No drawing attached</span>
-        <button class="btn btn-secondary btn-sm" id="cad-drawing-clear" style="display:none;padding:1px 8px">✕ Remove</button>
-        <span style="margin-left:10px"></span>
         <label class="btn btn-secondary btn-sm" for="cad-blank-input" style="padding:1px 8px;cursor:pointer" title="The flat blank CAPPe develops in FASTBLANK, exported as DXF. Sheet metal only. Without it the tool unfolds the part itself.">Developed blank (DXF)</label>
         <input type="file" id="cad-blank-input" accept=".dxf,application/dxf,image/vnd.dxf" style="display:none"/>
         <span id="cad-blank-info" style="font-size:0.72rem;color:var(--text-muted)">No blank attached — the tool unfolds the part</span>
@@ -6081,6 +6091,7 @@ function wireCADEvents(): void {
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null; cadMeshFaces = null;
+    drawingReview.resetDrawingReview();
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
     _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null; _cadReportNotes = null;
     unmountCADViewer();
@@ -6109,18 +6120,28 @@ function wireCADEvents(): void {
   const drawingInput = document.getElementById('cad-drawing-input') as HTMLInputElement | null;
   const drawingInfo  = document.getElementById('cad-drawing-info');
   const drawingClear = document.getElementById('cad-drawing-clear') as HTMLButtonElement | null;
+  // The drawing is read on the server by the offline reader (no AI) and reviewed on the Confirm step. Attaching,
+  // replacing or removing it after the part was measured measures the part again with the new state: the costing must
+  // never rest on a drawing that is no longer attached.
+  const drawingChanged = (): void => {
+    drawingReview.resetDrawingReview();
+    if (cadFile && cadAnalysisResult) void analyzeCAD();
+  };
   drawingInput?.addEventListener('change', () => {
     const f = drawingInput.files?.[0] ?? null;
-    if (f && f.size > 30 * 1024 * 1024) { showToast('Drawing PDF is over 30 MB — attach a smaller export.', 'warning'); drawingInput.value = ''; return; }
+    if (f && f.size > cadLimits.maxDrawingPdfMb * 1024 * 1024) { showToast(`The drawing is over ${cadLimits.maxDrawingPdfMb} MB — attach a smaller export.`, 'warning'); drawingInput.value = ''; return; }
+    if (f && /\.dwg$/i.test(f.name)) { showToast('A DWG cannot be read offline — export the drawing as PDF or DXF.', 'warning'); drawingInput.value = ''; return; }
     cadDrawingFile = f;
     if (drawingInfo) drawingInfo.textContent = f ? `${f.name} (${(f.size / 1024).toFixed(0)} KB)` : 'No drawing attached';
     if (drawingClear) drawingClear.style.display = f ? '' : 'none';
+    drawingChanged();
   });
   drawingClear?.addEventListener('click', () => {
     cadDrawingFile = null;
     if (drawingInput) drawingInput.value = '';
     if (drawingInfo) drawingInfo.textContent = 'No drawing attached';
     if (drawingClear) drawingClear.style.display = 'none';
+    drawingChanged();
   });
 
   // Developed blank (FASTBLANK DXF) — sheet metal only; beats the tool's own unfold.
@@ -6211,7 +6232,7 @@ function setCadQualityBadge(isClosedSolid: boolean | null, freeEdges: number | n
 }
 
 /** One accept list for every CAD input, from the server when it answers, else the built-in default. */
-let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[]; kernel?: { available: boolean; unknown?: boolean } } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
+let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[]; drawingAccept: string[]; kernel?: { available: boolean; unknown?: boolean } } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'], drawingAccept: ['.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff', '.dxf'] };
 
 /**
  * Before the upload: can this install read STEP / IGES? Without the CAD kernel the upload "worked", the viewer said
@@ -6236,7 +6257,7 @@ void (async () => {
   try {
     const r = await fetch('/api/cad/limits');
     if (r.ok) {
-      cadLimits = await r.json() as typeof cadLimits;
+      cadLimits = { ...cadLimits, ...(await r.json() as Partial<typeof cadLimits>) };
       document.querySelectorAll<HTMLInputElement>('#cad-file-input, #cad-inline-input, #viewer-file-input').forEach(i => { i.accept = cadLimits.accept.join(','); });
       showCADKernelNotice();
     }
@@ -6434,6 +6455,7 @@ function setCADFile(f: File): void {
   }
   cadFile = f;
   setCadQualityBadge(null, null);
+  drawingReview.resetDrawingReview();   // the last part's review is not this part's
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
   _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null; _cadReportNotes = null;
@@ -6572,6 +6594,9 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     // Clear). The server's /analyze applies them just as /reanalyze does.
     const sentAnswers = { ..._cadDecisionAnswers };
     if (Object.keys(sentAnswers).length) formData.append('decisionAnswers', JSON.stringify(sentAnswers));
+    // The engineer's review decisions on the attached drawing, replayed by the server on its own reading.
+    const sentReview = cadDrawingFile ? drawingReview.reviewForRequest() : { ops: [] };
+    if (sentReview.ops.length) formData.append('drawingReview', JSON.stringify(sentReview));
 
     const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -6634,6 +6659,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadDfmJobId = (data as { dfmJobId?: string | null }).dfmJobId ?? null;
     cadGeometricDFM = null;
     if (cadDfmJobId) void pollGeometricDFM(cadDfmJobId);
+    drawingReview.onDrawingResponse(data as drawingReview.DrawingResponseBlock, sentReview.ops, cadDrawingPartContext());
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -6722,6 +6748,88 @@ function otherChoiceHtml(d: CADDecision): string {
     <button type="button" class="cad-other-link" data-focus="${target.id}" style="background:none;border:0;padding:0;color:var(--accent-ink);font-size:inherit;text-decoration:underline;cursor:pointer">Not listed? Choose ${target.what}</button> — the part is re-measured as that.</div>`;
 }
 
+// ─── The attached drawing (offline 2D drawing reader) — glue to src/ui/drawing-review-ui.ts ──────────────────────────
+
+/** The answers the costing ran on, for DISPLAY: the engineer's own, plus those they confirmed off the drawing. */
+function cadAnswersShown(): Record<string, string> {
+  return { ...drawingReview.appliedDrawingAnswers(), ..._cadDecisionAnswers };
+}
+/** Was this question answered — by a click or by a confirmed drawing reading? */
+function cadAnswered(id: string): boolean {
+  const v = cadAnswersShown()[id];
+  return v !== undefined && v !== '';
+}
+function cadAnswerName(id: string): string {
+  return answerName(id, _cadDecisionsAsked);
+}
+/** Which part the review of the drawing belongs to, and the route it was consolidated for. */
+function cadDrawingPartContext(): { commodity: string; partKey: string; partFile: string } {
+  return {
+    commodity: String(cadAnalysisResult?.costInputSuggestions?.recommendedCommodity ?? ''),
+    partKey: cadGeometryHash ?? `${cadFile?.name ?? 'part'}-${cadFile?.size ?? 0}`,
+    partFile: cadFile?.name ?? '',
+  };
+}
+/** "review" on a drawing chip and the link on a question card open the drawing panel on that reading (one delegated listener). */
+function wireDrawingLinks(): void {
+  const host = document.getElementById('cad-results') as (HTMLElement & { _drLinks?: boolean }) | null;
+  if (!host || host._drLinks) return;
+  host._drLinks = true;
+  host.addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-dr-open]');
+    if (b && host.contains(b)) drawingReview.openDrawingRow(b.dataset.drOpen ?? '');
+  });
+}
+/** After a review decision: what each open question says about the drawing, and the "x of y answered" line. */
+function refreshDrawingQuestionNotes(): void {
+  document.querySelectorAll<HTMLElement>('#cad-decisions-panel .dr-q-note').forEach(n => {
+    const id = n.dataset.drQ ?? '';
+    n.innerHTML = questionNoteHtml(drawingReview.pendingDrawingAnswer(id), drawingReview.drawingLeaning(id));
+  });
+  const st = document.getElementById('cad-decisions-status');
+  if (st && _cadDecisions.some(d => d.severity === 'blocking')) {
+    const { ready, total } = readyBlockingCount();
+    st.textContent = `${ready} of ${total} answered`;
+  }
+  scheduleOptionCosts();
+}
+/** Hooks the drawing panel calls back through. Set once; reads the page's live state. */
+function installDrawingReviewHooks(): void {
+  drawingReview.setDrawingReviewHooks({
+    who: () => {
+      try {
+        const u = JSON.parse(localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user') || '{}') as { fullName?: string; email?: string };
+        return (u.fullName || u.email || 'engineer').slice(0, 120);
+      } catch { return 'engineer'; }
+    },
+    authHeaders: () => authHeader(),
+    handAnswers: () => ({
+      ..._cadDecisionAnswers,
+      ...(_cadMaterialLocked && _cadPinnedMaterialId
+        ? { 'material.grade': _cadPinnedMaterialId, ...(familyFromMaterialId(_cadPinnedMaterialId) ? { 'material.family': familyFromMaterialId(_cadPinnedMaterialId)! } : {}) } : {}),
+    }),
+    questionText: id => _cadDecisionsAsked[id]?.question,
+    measuredMaskable: () => {
+      const ft = cadOCCTGeometry?.featureTable;
+      return ft ? ft.filter(f => f.kind === 'hole' || f.kind === 'boss').reduce((n, f) => n + (f.count || 1), 0) : undefined;
+    },
+    onChange: () => {
+      // The row changes at once; the COSTING changes when the rules are re-run with the review — at Get cost (cad-flow:
+      // a changed review is re-run before anything is applied) or "Apply the review". No automatic re-run a click: a
+      // sheet has dozens of rows, and on the AI-led mode every re-run is a model call.
+      drawingReview.redrawDrawingPanel();
+      refreshDrawingQuestionNotes();
+    },
+    rerun: () => (cadAnalysisResult ? reanalyzeCAD() : Promise.resolve(false)),
+    dropHandAnswer: (id: string) => {
+      delete _cadDecisionAnswers[id];
+      setCADFlowNotice('Using the drawing\'s value…', 'busy');
+      void reanalyzeCAD().then(ok => { if (ok) setCADFlowNotice('', 'clear'); });
+    },
+  });
+}
+installDrawingReviewHooks();
+
 /** Above this many options a question is a drop-down. */
 const CAD_DECISION_SELECT_OVER = 12;
 
@@ -6739,11 +6847,13 @@ function renderCADDecisionsPanel(): string {
   // Answers already applied, as chips the engineer can reopen (proposal v2, M3): a question the rules no longer list
   // used to vanish with its answer.
   const chipsHtml = answerChipsHtml(answerChips(_cadDecisionAnswers, _cadDecisionsAsked), true)
+    // Answers the engineer confirmed off the drawing: tagged, and their button reopens the drawing panel.
+    + drawingChipsHtml(drawingReview.drawingChips(id => cadAnswerName(id)))
     // Phase C: the process answered — each route offered, re-costed (refreshOptionCosts fills it)
     + routeAlternativesHtml(_cadDecisionsAsked['commodity.route'], _cadDecisionAnswers['commodity.route']);
   if (!open.length && !advisory.length) {
     return chipsHtml + `<div id="cad-decisions-panel" class="cad-ready" style="margin-bottom:12px;padding:11px 13px;background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span style="font-size:0.78rem;color:var(--text-primary);flex:1;min-width:220px"><strong>Nothing left to answer.</strong> The geometry${Object.keys(_cadDecisionAnswers).length ? ' and your answers' : ''} settle the route and the material.</span>
+      <span style="font-size:0.78rem;color:var(--text-primary);flex:1;min-width:220px"><strong>Nothing left to answer.</strong> The geometry${Object.keys(_cadDecisionAnswers).length || Object.keys(drawingReview.appliedDrawingAnswers()).length ? ' and your answers' : ''} settle the route and the material.</span>
       <button class="btn btn-primary" id="cad-get-cost-btn" style="font-size:0.78rem;padding:6px 14px">Get cost →</button>
       <span id="cad-decisions-status" role="status" class="sr-only"></span>
     </div>`;
@@ -6754,6 +6864,9 @@ function renderCADDecisionsPanel(): string {
     <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid ${accent}">
       <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
       <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(_inCurText(d.why))}</div>
+      ${/* What the attached drawing says about this question — a confirmed reading waiting for the next run, or an
+           unconfirmed one. Said beside the question, never ticked (offline drawing reader). */ ''}
+      <div class="dr-q-note" data-dr-q="${escHtml(d.id)}">${questionNoteHtml(drawingReview.pendingDrawingAnswer(d.id), drawingReview.drawingLeaning(d.id))}</div>
       ${d.entry && d.options.length > 1
         // A figure WITH choices (gear helix, ISO 1328 class): the options as radios, the suggestion ticked, and a box
         // for a value not on the list — it drew one box labelled with the first option (cad-workspace.ts).
@@ -6855,6 +6968,9 @@ function readCADDecisionPanel(): void {
     // on it once (B3). Answering ANOTHER question used to send it with the re-run, and it came back a chip unseen — the
     // stub axle's leak-tight "No" in the live walk (fresh review, Nov 2026).
     if (_cadNewQuestions.has(id) && !_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined) continue;
+    // A reading the engineer just confirmed on the drawing panel answers this question at the next run: the pre-ticked
+    // suggestion they did not touch must not be recorded as THEIR answer over it.
+    if (!_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined && drawingReview.pendingDrawingAnswerIds().has(id)) continue;
     const v = pickedDecisionValue(block, _cadDecisions.find(d => d.id === id));
     if (v) _cadDecisionAnswers[id] = v;
   }
@@ -6980,6 +7096,7 @@ function getCostAnswersPreview(): Record<string, string> {
     if (!id || !d || out[id] !== undefined) continue;
     if (d.severity !== 'blocking' && !_cadTouchedDecisions.has(id)) continue;
     if (_cadNewQuestions.has(id) && !_cadTouchedDecisions.has(id)) continue;
+    if (!_cadTouchedDecisions.has(id) && drawingReview.pendingDrawingAnswerIds().has(id)) continue;
     const v = pickedDecisionValue(block, d);
     if (v) out[id] = v;
   }
@@ -7050,6 +7167,8 @@ async function refreshOptionCosts(): Promise<void> {
     current: String(cadAnalysisResult.costInputSuggestions.recommendedCommodity ?? ''),
     decisionAnswers: preview, acknowledged: [..._cadSanityAcks], annualVolume: cadAnnualVolume(), region: _mfgRegion,
     questions,
+    // The drawing behind the headline and the review of it: each option is re-costed with its confirmed answers too.
+    ...drawingReview.drawingRequestFields(),
   };
   if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
   if (deliveryTerms() === 'EXW') body['deliveryTerms'] = 'EXW';
@@ -7163,12 +7282,14 @@ async function cadGetCost(calculate = true): Promise<void> {
       return;
     }
     readCADDecisionPanel();
-    let step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied });
+    let step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied,
+      reviewChanged: drawingReview.reviewChanged() });
     if (step.kind === 'reanalyse') {
       setCADFlowNotice(costStepMessage(step), 'busy');
       const before = new Set(_cadDecisions.map(d => d.id));
       if (!(await reanalyzeCAD())) { setCADFlowNotice('Applying your answers failed — see the message on the panel.', 'error'); return; }
-      step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied });
+      step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied,
+        reviewChanged: drawingReview.reviewChanged() });
       // New questions the answers opened are shown, not accepted on the engineer's behalf.
       const opened = _cadDecisions.filter(d => d.severity === 'blocking' && !before.has(d.id));
       if (step.kind !== 'apply' && opened.length) {
@@ -7356,6 +7477,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       </div>`;
     })()}
 
+    ${drawingReview.drawingPanelHtml()}
     ${renderCADDecisionsPanel()}
     <div class="cad-next-row">
       <button class="btn btn-ghost btn-sm" id="cad-apply-btn" data-commodity="${escHtml(recommendedCommodity)}" title="Open the ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} form filled from this analysis, without calculating">Edit inputs first</button>
@@ -7638,6 +7760,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 
   // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
   wireCADDecisionsPanel();
+  drawingReview.wireDrawingPanel();
+  wireDrawingLinks();
   document.getElementById('cad-reanalyze-btn')?.addEventListener('click', () => { void reanalyzeCAD(); });
 
   // Live alloy↔process compatibility hint as the engineer picks overrides.
@@ -7833,6 +7957,9 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     const sentAnswers = { ..._cadDecisionAnswers };
     body['decisionAnswers'] = sentAnswers;
     body['mode'] = selectedAnalysisMode();
+    // The drawing read with the first analysis (by its hash) and the review decisions on it.
+    const sentReview = drawingReview.reviewForRequest();
+    Object.assign(body, drawingReview.drawingRequestFields());
 
     const res = await fetch('/api/cad/reanalyze', {
       method: 'POST',
@@ -7849,6 +7976,11 @@ async function reanalyzeCADOnce(): Promise<boolean> {
       error?: string;
     };
 
+    if (res.status === 409 && (data as { code?: string }).code === 'DRAWING_GONE' && cadFile && cadDrawingFile) {
+      // The server no longer holds the drawing's reading (a restart, or a week passed): send both files again.
+      await analyzeCAD();
+      return !!cadAnalysisResult;
+    }
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     cadAnalysisResult = data.analysis!;
@@ -7868,6 +8000,7 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
       return Array.isArray(ro) ? ro as typeof _cadRuleOverrides : ((ro as { applied?: typeof _cadRuleOverrides } | undefined)?.applied ?? []); })();
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
+    if (drawingReview.hasDrawing()) drawingReview.onDrawingResponse(data as drawingReview.DrawingResponseBlock, sentReview.ops, cadDrawingPartContext());
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
     renderCADResults(cadAnalysisResult, false, resolvedVol);
     return true;
@@ -14034,13 +14167,21 @@ function applyCADSurfaceFinishing(
   // ── The finish question's answer (CAD to COST D4) — the rules' route and the load they sized from the measured
   //    part. Same values headless costs (toCostParams reads costInputSuggestions.surfaceFinish).
   const sf = r.costInputSuggestions?.surfaceFinish as { route?: string; partsPerRack?: number; racksPerHour?: number } | undefined;
-  const finishAnswered = _cadDecisionAnswers['service.finish'] !== undefined;
+  const sfx = sf as { depositThicknessUm?: number; maskedFeatures?: number } | undefined;
+  const finishAnswered = cadAnswered('service.finish');
   if (finishAnswered) {
     const routeEl = document.getElementById(`${prefix}-sf-route`) as HTMLSelectElement | null;
     const route = sf?.route ?? '';
     if (routeEl && Array.from(routeEl.options).some(o => o.value === route)) routeEl.value = route;
     if (sf?.partsPerRack) setNumericField(`${prefix}-sf-rack`, sf.partsPerRack, 0);
     if (sf?.racksPerHour) setNumericField(`${prefix}-sf-racks`, sf.racksPerHour, 0);
+    // Deposit thickness and masked features the engineer CONFIRMED off the drawing (offline reader): bounded by the
+    // server with `boundDrawingCoating` and written on the analysis — the same two values headless costs with.
+    if (sfx?.depositThicknessUm) setNumericField(`${prefix}-sf-um`, sfx.depositThicknessUm, 0);
+    if (sfx?.maskedFeatures) setNumericField(`${prefix}-sf-mask`, sfx.maskedFeatures, 0);
+    const fromDrawing = drawingReview.drawingFormFields();
+    for (const f of fromDrawing.fields) if (f.fieldId.startsWith(`${prefix}-`)) _smExtraWarnings.push(`Surface treatment: ${f.note}.`);
+    for (const n of fromDrawing.notes) _smExtraWarnings.push(`Surface treatment: ${n}.`);
     return;   // the engineer's answer stands over a drawing read
   }
 
@@ -18537,6 +18678,10 @@ function buildChecksApplied(): CADReportMeta['checks'] {
   const unacked = cadSanityWarnings.some(w => w.blocking && sanityStillApplies(w.code) && !_cadSanityAcks.has(w.code));
   const asked = { ..._cadDecisionsAsked };
   for (const d of _cadDecisions) asked[d.id] = { question: d.question, severity: d.severity, options: d.options.map(o => ({ value: o.value, label: o.label })) };
+  // Questions a confirmed drawing reading answered: listed with their answer and where it came from.
+  const fromDrawing = costedFromCAD() ? drawingReview.appliedDrawingState() : null;
+  const drawingAnswers = fromDrawing ? drawingReview.appliedDrawingAnswers() : {};
+  for (const q of fromDrawing?.costing.questions ?? []) if (drawingAnswers[q.id] !== undefined && !asked[q.id]) asked[q.id] = { question: q.question, severity: q.severity, options: q.options };
   // An answer prints as the option the engineer chose ("Carbon prepreg, autoclave"), never its value ("prepreg-cf")
   // — the reports printed the internal value (7-country review, 3 Nov 2026).
   const optionLabel = (id: string, v: string | undefined) => (v && asked[id]?.options?.find(o => o.value === v)?.label) || v;
@@ -18558,6 +18703,7 @@ function buildChecksApplied(): CADReportMeta['checks'] {
     // family) — it printed "OPEN" under a "COSTABLE — no blocking decision is open" status (Poland live review)
     decisions: Object.entries(asked).map(([id, d]) => {
       const answer = optionLabel(id, _cadDecisionAnswers[id])
+        ?? (drawingAnswers[id] !== undefined ? `${optionLabel(id, drawingAnswers[id])} — confirmed from the drawing (${fromDrawing!.info.file})` : undefined)
         ?? pinnedGradeAnswer(id, _cadMaterialLocked ? _cadPinnedMaterialId : '', library.materials)
         ?? (_cadDecisions.some(c => c.id === id) ? null
         : id === 'material.family' && _cadDecisionAnswers['material.resin']
@@ -18605,6 +18751,10 @@ function exportBlockedReason(): string | null {
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     stamp: costedFromCAD() ? currentCADStamp() : null,
+    // The attached drawing as the costing ON SCREEN holds it (the decisions the server applied — never an unapplied
+    // local preview): the reports print its table, conflicts and "specified, not costed" list. Null without a drawing.
+    drawingSpec: costedFromCAD() ? buildDrawingSpecReport(drawingReview.appliedDrawingState() ? {
+      ...drawingReview.appliedDrawingState()!, questionText: (id: string) => _cadDecisionsAsked[id]?.question } : null) : null,
     routeComparison: costedFromCAD() ? _cadRouteComparison : null,
     routeComparisonNote: costedFromCAD() && !_cadRouteComparison ? _cadRouteComparisonNote : null,
     // page 1's part summary: the envelope, the feature table and the slits the costing read (Part1 review phase 3)
@@ -18723,6 +18873,7 @@ async function ensureRoutesForReport(): Promise<void> {
       programmeYears: Number(programmeYearsValue()) || null, deliveryTerms: deliveryTerms() === 'EXW' ? 'EXW' : 'DAP',
       material: _cadMaterialLocked && _cadPinnedMaterialId ? _cadPinnedMaterialId : null, blankHash: cadOCCTGeometry?.blank?.blankHash ?? null,
       referenceBand: u ? { p10: u.p10, p50: u.p50, p90: u.p90, plusMinusPct: u.plusMinusPct, confidence: u.overallConfidence } : null,
+      drawing: drawingReview.drawingRequestFields(),
     },
     blockingOpen: openCADDecisions().map(d => d.question),
     headline: lastResult.total, labels: COMMODITY_REPORT_LABELS as Record<string, string>, authHeader: authHeader(),
@@ -21672,13 +21823,16 @@ function currentCADStamp(): string {
   const country = REGIONAL_DATA[_mfgRegion]?.name ?? (sel?.selectedOptions[0]?.textContent?.trim() || 'UK');
   // Which book: the label and the fingerprint of the server book the result was costed on (rate-book-sync.ts, R1).
   return cadStamp({ rateBook: rateBookStampLabel(country, library.version, _resultBook ?? _serverBook), rules: _cadVersions?.rules ?? null,
-    kernel: _cadVersions?.kernel ?? null, date: new Date() });
+    kernel: _cadVersions?.kernel ?? null, date: new Date(),
+    // The drawing the costing was reviewed against: the reader that read it, its file name and short hash.
+    drawing: costedFromCAD() ? drawingReview.drawingStampPart() : null });
 }
 
 /** Every input of the costing, by how it was set — read off the form the engine costed, never recomputed. */
 function collectCADBasis(): BasisRow[] {
   const rows: BasisRow[] = [];
   for (const c of answerChips(_cadDecisionAnswers, _cadDecisionsAsked)) rows.push({ grade: 'Answered', what: c.name, value: c.value });
+  for (const c of drawingReview.drawingChips(id => cadAnswerName(id))) rows.push({ grade: 'Answered', what: c.name, value: `${c.value} — confirmed from the drawing` });
   const years = programmeYearsValue();
   if (years) rows.push({ grade: 'Typed', what: 'Programme life', value: `${years} years` });
   // Every value the rules set, by its source, read off the analysis the form was filled from — the DOM markers are
@@ -21705,7 +21859,7 @@ function collectCADBasis(): BasisRow[] {
     const typed = String(rf.value ?? '') !== '' && now !== String(rf.value) && !(Number.isFinite(+now) && Math.abs(+now - Number(rf.value)) < 1e-9);
     // The grade field holds an assumed grade until the grade question is answered — never "Measured" (basisGradeFor).
     const grade: BasisRow['grade'] = basisGradeFor({ typed, source: rf.source, gradeField: /-mat$/.test(id),
-      gradeAnswered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin']) });
+      gradeAnswered: cadAnswered('material.grade') || cadAnswered('material.resin') });
     rows.push({ grade, what: labelOf(id), value });
   }
   // Measured fields the fill wrote outside the rule set (weights, envelope).
@@ -21824,7 +21978,8 @@ function renderCADCostCard(): void {
   const focusId = (document.activeElement as HTMLElement | null)?.closest?.('#cad-cost-card') ? (document.activeElement as HTMLElement).dataset.commercial : undefined;
   host.innerHTML = cadCostCardHtml({
     commodityLabel: COMMODITY_LABELS[activeCommodity] ?? activeCommodity,
-    chips: answerChips(_cadDecisionAnswers, _cadDecisionsAsked),
+    chips: [...answerChips(_cadDecisionAnswers, _cadDecisionsAsked),
+      ...drawingReview.drawingChips(id => cadAnswerName(id)).map(c => ({ id: c.id, name: c.name, value: `${c.value} (from drawing)` }))],
     country: (document.getElementById('costing-country-sel') as HTMLSelectElement | null)?.selectedOptions[0]?.textContent?.trim() ?? 'UK',
     annualVolume: input.annualVolume ?? 0,
     programmeYears: input.programmeYears ?? null,
@@ -21839,7 +21994,7 @@ function renderCADCostCard(): void {
     // A laminate is two materials priced per kg (a direct cost on the placeholder id): the Laminate chip names it and
     // the costed weight is the cured part weight the form holds — "Grade Virtual / Pass-through (default)" and no
     // weight is what the hat stiffener printed (parity sweep, Oct 2026).
-    grade: mat && !/^mat-virtual/.test(input.rawMaterial.materialId) ? { label: mat.grade, answered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin'] || _cadDecisionAnswers['material.elastomer'] || _cadDecisionAnswers['material.alAlloy'] || _cadDecisionAnswers['gear.materialClass'] || _cadMaterialLocked) } : null,
+    grade: mat && !/^mat-virtual/.test(input.rawMaterial.materialId) ? { label: mat.grade, answered: ['material.grade', 'material.resin', 'material.elastomer', 'material.alAlloy', 'gear.materialClass'].some(cadAnswered) || _cadMaterialLocked } : null,
     weights: (() => {
       // the same weight set the PDF and workbook print (formWeights), read off the form the engine costed
       const rvs = Object.values(_cadRuleFields).filter(rf => rf.fieldId).map(rf => {
@@ -21930,6 +22085,7 @@ async function loadRouteComparison(): Promise<void> {
     acknowledged: [..._cadSanityAcks],
     annualVolume: cadAnnualVolume(),   // the CAD screen is not drawn at step 3 — the field read 100,000 (3 Nov 2026)
     region: _mfgRegion,
+    ...drawingReview.drawingRequestFields(),   // the drawing behind the headline: every row is costed with its confirmed answers
   };
   if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
   if (deliveryTerms() === 'EXW') body['deliveryTerms'] = 'EXW';

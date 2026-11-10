@@ -1,0 +1,66 @@
+{
+ "drawing": "real-casting-bracket",
+ "commodity": "cast and machine",
+ "origin": "real-part",
+ "forPart": "Casting_Braket.stp",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "CASTING BRACKET"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "CB-2207-11"
+  },
+  {
+   "name": "title.revision",
+   "value": "B"
+  },
+  {
+   "name": "material.designation",
+   "value": "A356-T6"
+  },
+  {
+   "name": "part.mass",
+   "value": 0.86
+  },
+  {
+   "name": "tolerance.castingGrade",
+   "value": "DCTG 6"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "e-coat"
+  },
+  {
+   "name": "finish.maskedFeatures",
+   "value": 3
+  },
+  {
+   "name": "quality.pressureTight",
+   "value": true
+  },
+  {
+   "name": "quality.safetyCritical",
+   "value": true
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 13,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M6x1-6H",
+    "depth": 12
+   }
+  }
+ ]
+}

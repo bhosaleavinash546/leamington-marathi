@@ -35,6 +35,20 @@ export const READER_VERSION = '1.0.0';
 /** English and German: measured on the fixtures, the pair reads German title blocks and notes without costing English accuracy. */
 export const DEFAULT_OCR_LANGUAGES = ['eng', 'deu'];
 
+/** The words of the warning on a sheet that is selectable text with part of its annotation as outlines (see `ocrWouldRead`). */
+const PARTLY_CURVES = 'part of its annotation is drawn as curves';
+
+/**
+ * Would OCR add anything to this extraction? True for an image, for a sheet that is a scan or text drawn as curves,
+ * and for a sheet whose annotation is partly outlines. A server reads with `ocr: 'off'` first (exact text, fast) and
+ * only queues the slow OCR pass when this says so. Pure: it looks only at what the extraction itself reports.
+ */
+export function ocrWouldRead(e: DrawingExtraction): boolean {
+  if (e.fileKind === 'image') return true;
+  if (e.sheets.some(s => s.content === 'scanned' || s.content === 'text-as-curves')) return true;
+  return e.warnings.some(w => w.includes(PARTLY_CURVES));
+}
+
 export { DrawingReadError } from './types.js';
 export type { ReadOptions } from './types.js';
 
@@ -96,7 +110,7 @@ export async function readDrawing(buffer: Uint8Array | ArrayBuffer | Buffer, fil
           : s.info.content === 'scanned' ? 'full' : s.info.content === 'text-as-curves' ? (items.length ? 'supplement' : 'full') : mixed ? 'supplement' : 'none';
         if (s.info.content === 'empty') warnings.push(`Sheet ${p} is empty: nothing to read.`);
         if (mixed || (s.info.content === 'text-as-curves' && items.length)) {
-          warnings.push(`Sheet ${p} has selectable text (${s.stats.textChars} characters) but part of its annotation is drawn as curves (${s.stats.glyphLikePaths} glyph-sized outlines away from any text).`);
+          warnings.push(`Sheet ${p} has selectable text (${s.stats.textChars} characters) but ${PARTLY_CURVES} (${s.stats.glyphLikePaths} glyph-sized outlines away from any text).`);
         }
         work.push({
           info: s.info, items, h: s.hSegs, v: s.vSegs, o: s.oSegs, stats: s.stats, ocr,

@@ -345,11 +345,11 @@ describe('fixtures', () => {
   it('every drawing with a truth file has its files, and the folder stays under 15 MB', () => {
     const all = readdirSync(FIX);
     const truths = all.filter(f => f.endsWith('.truth.json'));
-    expect(truths).toHaveLength(12);
+    expect(truths).toHaveLength(15);   // 3 public, 9 generated, 3 written for real parts (the combined-flow tests)
     for (const t of truths) {
       const tr = JSON.parse(readFileSync(join(FIX, t), 'utf8')) as TruthFile;
-      expect(['public', 'generated']).toContain(tr.origin); expect(tr.checked, t).toBeTruthy(); expect(tr.source, t).toBeTruthy();
-      expect(tr.expect.length, t).toBeGreaterThan(10);
+      expect(['public', 'generated', 'real-part']).toContain(tr.origin); expect(tr.checked, t).toBeTruthy(); expect(tr.source, t).toBeTruthy();
+      expect(tr.expect.length, t).toBeGreaterThan(tr.origin === 'real-part' ? 6 : 10);
       expect(all, t).toContain(`${t.replace('.truth.json', '')}.pdf`);
     }
     const bytes = all.reduce((s, f) => s + readFileSync(join(FIX, f)).length, 0);

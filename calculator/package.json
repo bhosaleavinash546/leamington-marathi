@@ -28,7 +28,8 @@
     "test:e2e:country": "tsx e2e/country-live.ts",
     "test:e2e:pcb-camera": "tsx e2e/pcb-camera-live.ts",
     "test:e2e:cad-to-cost": "tsx e2e/cad-to-cost-live.ts",
-    "test:e2e:stl-dfm": "tsx e2e/stl-dfm-live.ts"
+    "test:e2e:stl-dfm": "tsx e2e/stl-dfm-live.ts",
+    "test:e2e:drawing": "tsx e2e/drawing-live.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",

@@ -263,6 +263,8 @@ export interface CompareRoutesInput {
   bands?: boolean;
   /** The costing's own band as the screen shows it — printed on the reference row, so one costing has one band. */
   referenceBand?: RouteBand | null;
+  /** Finish figures confirmed off the drawing (deposit thickness, masked features) — costed on every route that carries the finish, as on the headline. */
+  finishFields?: import('../../src/engine/surface-finish-routes.js').DrawingFinishFields;
 }
 
 type ScreenArgs = Pick<CompareRoutesInput, 'geo' | 'filename' | 'current' | 'answers' | 'annualVolume' | 'baseBook'>;
@@ -581,7 +583,8 @@ export async function costRoute(
       i.geo, i.filename,
       { partNumber: i.filename, file: i.filename, commodity: route, annualVolume },
       answers, i.region,
-      { annualVolume, ...(i.programmeYears ? { programmeYears: i.programmeYears } : {}), ...(i.deliveryTerms ? { deliveryTerms: i.deliveryTerms } : {}), acknowledge: i.acknowledge ?? [] },
+      { annualVolume, ...(i.programmeYears ? { programmeYears: i.programmeYears } : {}), ...(i.deliveryTerms ? { deliveryTerms: i.deliveryTerms } : {}), acknowledge: i.acknowledge ?? [],
+        ...(i.finishFields ? { finishFields: i.finishFields } : {}) },
       i.baseBook,
       { partNumber: i.filename, file: i.filename, status: 'error' },
     );

@@ -1,7 +1,13 @@
 # Offline 2D drawing intelligence — architecture assessment and plan (9 Nov 2026)
 
-**Status: assessment and design only. No code has been changed.** This is the Stage 1–2 deliverable the brief asks for
-before implementation. Everything under "Existing" was read in the code on 9 Nov 2026; nothing is assumed from file names.
+**Status (10 Nov 2026): built.** Layer 3 (unified engineering data), Layer 2 (the offline reader) and the integration
+(server routes, review panel, reports, tests, packaging checks) are in the code — see
+`docs/cad/offline-drawing-intelligence-2026-11.md` for what was built, the measured accuracy and its limits. Phases 1–10
+of §11 are done; what stays open is listed in that document (accuracy on real production drawings is unmeasured, and
+the drawing readings that are specified but not costed still need their cost rules, one at a time).
+
+*Below: the assessment and design as written on 9 Nov 2026, before any code — kept as the record of what was agreed.*
+Everything under "Existing" was read in the code on 9 Nov 2026; nothing is assumed from file names.
 
 **The constraint:** drawings are read on the server with no AI, no model call and no network. The cost stays the existing
 engine's arithmetic. Nothing here needs an API key.

@@ -144,6 +144,9 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /** The attached drawing as the costing holds it — its readings, the engineer's decisions, what was used, the conflicts
+   *  and what is specified but not costed (drawing-spec-report.ts). Absent without a drawing: nothing is printed. */
+  drawingSpec?: import('./drawing-spec-report.js').DrawingSpecReport | null;
   /** The measured geometry the costing read — page 1's part summary (envelope, machined features; Part1 review phase 3). */
   partGeometry?: import('./executive-summary.js').CoreReportMeta['partGeometry'];
   /** Why the route comparison is not in this report (the export tried to run it and could not) — printed in its place. */
@@ -2022,6 +2025,49 @@ export function renderShouldCostSections(
         columnStyles: { 0: { cellWidth: 26, fontStyle: 'bold' }, 1: { cellWidth: 22 }, 2: { cellWidth: 40 }, 3: { cellWidth: 30 } },
       });
       y = lastFinalY(doc) + 6;
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §9c — Drawing specification (the attached drawing, read offline, as the engineer reviewed it)
+  // ════════════════════════════════════════════════════════════════════════
+  if (cadMeta.drawingSpec) {
+    const d = cadMeta.drawingSpec;
+    y = chk(doc, y, 50);
+    y = secBar(doc, y, '§9c — Drawing specification', `${d.file}  ·  ${d.hashShort}  ·  drawing reader v${d.readerVersion}`);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+    const intro = doc.splitTextToSize(`${d.summary} ${d.notes.join(' ')}`, CW) as string[];
+    doc.text(intro, MG, y + 3); y += intro.length * 3.1 + 5;
+    const tbl = (head: string[], body: string[][], widths: number[], hi?: (row: number) => boolean) => {
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG }, theme: 'grid', head: [head], body,
+        headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6 },
+        bodyStyles: { fontSize: 6, textColor: SLATE as RGB, cellPadding: 1, overflow: 'linebreak' },
+        columnStyles: Object.fromEntries(widths.map((w, k) => [k, { cellWidth: w }])),
+        didParseCell: (c) => { if (c.section === 'body' && hi?.(c.row.index)) c.cell.styles.fillColor = [254, 243, 199]; },
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 4;
+    };
+    const sub = (t: string) => { y = chk(doc, y, 16); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...NAVY); doc.text(t, MG, y + 3); y += 5; };
+    sub('Readings that answer a costing question, or cross-check the 3D model');
+    if (d.rows.length) tbl(['Group', 'Parameter', 'Value', 'Source (file, sheet, zone, how read)', 'Status', 'Used in the costing'],
+      d.rows.map(r => [r.group, r.parameter, r.value, r.source, r.status, r.usedText]), [18, 28, 30, 44, 16, 46]);
+    else { doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY); doc.text('None on this route.', MG, y + 3); y += 6; }
+    if (d.conflicts.length) {
+      sub('Conflicts between sources, and how each was settled');
+      tbl(['Parameter', 'Sources', 'Suggested (never applied by itself)', 'Outcome'], d.conflicts.map(c => [c.parameter, c.sides, c.suggested || '—', c.resolution]), [30, 60, 36, 56], r => d.conflicts[r].open);
+    }
+    if (d.missing.length) {
+      sub('Expected on a drawing for this route — not found (nothing was assumed)');
+      tbl(['Parameter', 'Why it matters'], d.missing.map(x => [x.parameter, x.why]), [50, 132]);
+    }
+    if (d.notCosted.length) {
+      sub(`Specified on the drawing — not in the cost model yet (${d.notCosted.length}; none is priced)`);
+      tbl(['Parameter', 'Value', 'Source', 'Status', 'Why it is not costed'], d.notCosted.map(n => [n.parameter, n.value, n.source, n.status, n.why]), [30, 42, 42, 16, 52]);
+    }
+    if (d.skipped.length || d.warnings.length) {
+      sub('Notes from the reader and the review');
+      tbl(['Note'], [...d.skipped.map(x => [`Earlier decision not applied: ${x}`]), ...d.warnings.map(w => [w])], [182]);
     }
   }
 

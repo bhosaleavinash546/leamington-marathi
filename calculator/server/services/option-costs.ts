@@ -53,6 +53,8 @@ export interface OptionCostRequest {
   acknowledge?: string[];
   baseBook: RateLibrary;
   questions: OptionCostQuestion[];
+  /** Finish figures confirmed off the drawing — costed on every option as on the headline. */
+  finishFields?: CompareRoutesInput['finishFields'];
 }
 
 export interface ProcessCost { process: string; label: string; total: number | null; reason: string | null; chosen: boolean }
@@ -100,6 +102,7 @@ async function costOnce(req: OptionCostRequest, route: string, answers: Record<s
     ...(req.programmeYears ? { programmeYears: req.programmeYears } : {}),
     ...(req.deliveryTerms ? { deliveryTerms: req.deliveryTerms } : {}),
     acknowledge: req.acknowledge ?? [], baseBook: req.baseBook,
+    ...(req.finishFields ? { finishFields: req.finishFields } : {}),
   };
   const assumed: string[] = [];
   const a = { ...answers };
