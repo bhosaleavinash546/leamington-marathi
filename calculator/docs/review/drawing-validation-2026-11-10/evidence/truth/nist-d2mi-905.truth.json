@@ -1,0 +1,323 @@
+{
+ "drawing": "nist-d2mi-905",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-d2mi-modelszip",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read zone by zone on screen; the reader was not run and its code and earlier truth files were not opened. Inch values recorded as printed (no conversion).",
+ "files": {
+  "827-9999-905.pdf": "curves",
+  "nist-d2mi-905.pdf": "curves"
+ },
+ "complete": [
+  "general tolerance",
+  "roughness",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.003
+   }
+  },
+  {
+   "name": "title.partName",
+   "value": "SPACER, SHOULDERED"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "827-9999-905"
+  },
+  {
+   "name": "title.revision",
+   "value": "-"
+  },
+  {
+   "name": "title.date",
+   "value": "2015-01-27"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 OF 1"
+  },
+  {
+   "name": "title.units",
+   "value": "in"
+  },
+  {
+   "name": "material.designation",
+   "value": "6061-T6"
+  },
+  {
+   "name": "material.standard",
+   "value": "ASTM B211"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "CHROMATE CONVERSION COATING"
+  },
+  {
+   "name": "quality.marking",
+   "contains": "MIL-STD-130"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.085,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.085
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.91,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.91
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.075,
+    "upper": 0.015,
+    "lower": -0.015
+   },
+   "partial": {
+    "nominal": 0.075
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "max": 0.005
+   },
+   "partial": {
+    "max": 0.005
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.164,
+    "max": 0.167
+   },
+   "partial": {
+    "min": 0.164,
+    "max": 0.167
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.139,
+    "max": 0.142
+   },
+   "partial": {
+    "min": 0.139,
+    "max": 0.142
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.214,
+    "max": 0.224
+   },
+   "partial": {
+    "min": 0.214,
+    "max": 0.224
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.156,
+    "max": 0.166
+   },
+   "partial": {
+    "min": 0.156,
+    "max": 0.166
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "cylindricity",
+    "tolerance": 0.005,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.002,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.002,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.002,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.002,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.01,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.01,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "total run-out",
+    "tolerance": 0.002,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.002,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.006,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.006,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.008,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.008,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "note.general",
+   "contains": "MATERIAL: ALUMINUM, ROUND, 6061-T6, IN ACCORDANCE WITH ASTM B211"
+  },
+  {
+   "name": "note.general",
+   "contains": "FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS 1A, TYPE II"
+  },
+  {
+   "name": "note.general",
+   "contains": "SPACE OR USAGE PRECLUDES IDENTIFICATION MARKING, MARK CONTAINER OR TAG IN ACCORDANCE WITH MIL-STD-130"
+  },
+  {
+   "name": "note.general",
+   "contains": "INFORMATION ENCLOSED IN PARENTHESES IS FOR REFERENCE ONLY"
+  },
+  {
+   "name": "note.general",
+   "contains": "DIMENSIONS AND TOLERANCES ARE EXPRESSED IN INCHES"
+  },
+  {
+   "name": "note.general",
+   "contains": "DRILL POINT OPTIONAL, BREAKTHROUGH PROHIBITED"
+  },
+  {
+   "name": "note.general",
+   "contains": "MECHANICAL REFERENCE DATASET"
+  }
+ ],
+ "notes": "tolerance.tightest is a hand-computed check (narrowest stated tolerance band among the toleranced dimensions; general-tolerance block not counted). Title block: DESC ATTRIBUTE 'SPACER, SHOULDERED', PREP 2015-01-27 T.A.MATUSKA, ENG ON FILE 'J.MPISARIK' (printed without the second point), DWG NO 827-9999-905, REV printed as a single dash '-' (recorded as '-'), SHEET 1 OF 1. No company, scale field or projection symbol; plot-stamp 'Scale=0.5000:1' is a plot scale (not recorded) — title block not complete. Material / coating not complete (reader vocabulary words). Note 6 is a flag note in a hexagon, attached to Ø.156-.166. Same part family as -903 but this sheet is a full drawing: end view + SECTION D-D. Dimensions (8, complete): .085 and .910 boxed basic, '.075 ±.015' with a dimension-origin circle, 'R.005 MAX', four limit diameters. GD&T (complete): cylindricity .005 A on Ø.214-.224 (that feature also carries datum A), position Ø.002 A B on Ø.164-.167 and Ø.139-.142, profile of a surface .010 A B (end face), total runout .002 A (no Ø; datum B attached to that frame — double-arrow symbol read as TOTAL runout), profile of a surface .006 A B (far end face), position Ø.008 A B on Ø.156-.166. No material-condition modifiers. Notes not complete (stamp 'MECHANICAL REFERENCE DATASET / SEE PDM FOR DEFINING DATA')."
+}

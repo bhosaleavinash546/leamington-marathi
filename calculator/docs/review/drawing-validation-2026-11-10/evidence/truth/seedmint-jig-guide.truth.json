@@ -1,0 +1,201 @@
+{
+ "drawing": "seedmint-jig-guide",
+ "origin": "public",
+ "source": "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/PDF",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet ('Guide Drawing.pdf') rendered at 300 dpi (pdftoppm) and read in zooms on screen; pdftotext -layout used only as a typing aid, every value checked on the image; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "Guide Drawing.pdf": "vector",
+  "seedmint-jig-guide.pdf": "vector"
+ },
+ "complete": [
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "Guide"
+  },
+  {
+   "name": "title.revision",
+   "value": "V17"
+  },
+  {
+   "name": "title.date",
+   "value": "02.08.21"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "material.designation",
+   "value": "1.2510"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "2768-f"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "contains": "F"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 2,
+    "count": 2,
+    "fit": "H7"
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 2
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.01,
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 19.97,
+    "max": 20.02
+   },
+   "partial": {
+    "min": 19.97,
+    "max": 20.02
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14
+   },
+   "partial": {
+    "nominal": 14
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20
+   },
+   "partial": {
+    "nominal": 20
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "min": 6.1,
+    "max": 6.15
+   },
+   "partial": {
+    "min": 6.1,
+    "max": 6.15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6.46
+   },
+   "partial": {
+    "nominal": 6.46
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 0.3,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 8.83
+   },
+   "partial": {
+    "nominal": 8.83
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "min": 8.1,
+    "max": 8.15
+   },
+   "partial": {
+    "min": 8.1,
+    "max": 8.15
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "General tolerances as per DIN ISO 2768-f"
+  }
+ ],
+ "notes": "Autodesk Inventor ISO sheet (A4 portrait), selectable text. Title block: Technical reference 'Mat: 1.2510' (a DIN material number, recorded as designation), Created by 'Seed Mint' 02.08.21, Title 'Guide', DWG No. blank, Rev. V17, Sheet 1/1; no scale, projection symbol or units statement. 'General tolerances as per DIN ISO 2768-f.' Fit: '2x Ø2H7' (no limits printed) as hole.diameter; tolerance.tightest = band 0.010 at Ø2 (ISO 286 IT7 0–3 mm, hand-looked-up; the printed limit dimensions are 0.05 wide). Dimensions (13 + the fit, complete): section A-A 'Ø 20.02 / 19.97' (limit diameter), 14, 20, 10; end view '6.15 / 6.1' (limit), 6.46, 30°, 15°, R10, '4xR.3' (R0.3, written without the leading zero), 8.83, '8.15 / 8.1' (limit). Title block, material, general tolerance, notes and quality not complete."
+}

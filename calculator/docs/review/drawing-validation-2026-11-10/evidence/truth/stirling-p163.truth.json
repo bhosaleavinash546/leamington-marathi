@@ -1,0 +1,186 @@
+{
+ "drawing": "stirling-p163",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 163 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p163.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "DOM NEDRE DEL"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "3-17117"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "80-02-04"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "title.company",
+   "contains": "UNITED STIRLING"
+  },
+  {
+   "name": "material.designation",
+   "contains": "NIMONIC 80A"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "value": 6.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 63.5
+   },
+   "partial": {
+    "nominal": 63.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 60.5
+   },
+   "partial": {
+    "nominal": 60.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 40.4
+   },
+   "partial": {
+    "nominal": 40.4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 42.5
+   },
+   "partial": {
+    "nominal": 42.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 48
+   },
+   "partial": {
+    "nominal": 48
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 61
+   },
+   "partial": {
+    "nominal": 61
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 63
+   },
+   "partial": {
+    "nominal": 63
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 62.5,
+    "fit": "h7"
+   },
+   "partial": {
+    "nominal": 62.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 59
+   },
+   "partial": {
+    "nominal": 59
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 38
+   },
+   "partial": {
+    "nominal": 38
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 8
+   },
+   "partial": {
+    "nominal": 8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 5
+   },
+   "partial": {
+    "nominal": 5
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M3"
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  }
+ ],
+ "notes": "United Stirling (Sweden) title block template: printed (not hand-filled) labels include 'Då ej annat anges gäller / To be valid unless otherwise specified', 'Toleranser SS 715 medel / Tolerances SS 715 medium', 'Inv. hörnradier 0,5 / Fillet radii 0,5', 'Skarpa kanter brutna / Remove sharp corners', 'Europ. proj.' with the first-angle symbol, 'Ytjämnhet / Surface roughness Ra µ max', 'Toleranssystem / Tolerance system', 'KOMMANDITBOLAGET UNITED STIRLING (SWEDEN) AB & Co'. PDF page 163: title in two lines 'DOM NEDRE DEL' (Swedish) / 'DOME-LOWER PART' (English) — title.partName recorded as the first line; drawing no 3-17117, revision letter A, sheet 1/1, scale 1:1, Ritad 80-02-04, material 'NIMONIC 80A', general roughness Ra 6,3. Dimensions read with certainty: Ø63,5, Ø60,5, Ø40,4, Ø42,5, Ø48, Ø61, Ø63, 'Ø62,5 h7' (with a hand-written deviation, read as -0,03 — limits not in the row), 59, 38, R8, R5; thread 'M3' at the dome top; datum A. Not recorded (uncertain): overall height (56,5 or 58,5), R2,5 / R2 / 1,2 / 3 / 10 / 5 small values, angles 52° and 45°, the chamfer '0,3/45°', and the runout-type frame next to the detail (tolerance reads 0,02 or 0,03, datum A)."
+}

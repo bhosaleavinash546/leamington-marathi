@@ -1,0 +1,1513 @@
+[
+ {
+  "timeMs": 2656,
+  "peakRssMb": 1008,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A01-read.json"
+  ],
+  "id": "A01-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: valid vector PDF",
+  "input": "/home/user/leamington-marathi/calculator/tests/fixtures/drawings/real-casting-bracket.pdf (64734 B)",
+  "expected": "200, status ready, exact text, all 6 key readings",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"\",\"material.designation\":\"\\\"A356-T6\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"true\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 435,
+  "peakRssMb": 686,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A01-analyze.json"
+  ],
+  "id": "A01-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: valid vector PDF",
+  "input": "Casting_Braket.stp + real-casting-bracket.pdf",
+  "expected": "200 with drawing ready",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 14411,
+  "peakRssMb": 1540,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A02-read.json"
+  ],
+  "id": "A02-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: scanned PDF (200 dpi)",
+  "input": "/home/user/leamington-marathi/calculator/tests/fixtures/drawings/gen-casting.scan200.pdf (389832 B)",
+  "expected": "202 then job done; OCR readings, every one needs-validation",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:scanned\"],\"readings\":34,\"ocrReadings\":34,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 300 dpi: 154 words, mean engine confidence 90 %, straightened by 0.50°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\"]}; key readings 3/6 {\"title.partNumber\":\"\\\"CV-100-2231\\\"(ocr )\",\"material.designation\":\"\\\"EN-GJS-500-7\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 9\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 34 (all needs-validation: true) || QA review: this is a different sheet (gen-casting), so the bracket key list does not apply; 34 OCR readings, all needs-validation, straightened 0.5°.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 494,
+  "peakRssMb": 1103,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A02-analyze.json"
+  ],
+  "id": "A02-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: scanned PDF (200 dpi)",
+  "input": "Casting_Braket.stp + gen-casting.scan200.pdf",
+  "expected": "200, drawing reading or ready, costing not blocked",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:scanned\"],\"readings\":34,\"ocrReadings\":34,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 300 dpi: 154 words, mean engine confidence 90 %, straightened by 0.50°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 3857,
+  "peakRssMb": 1082,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A03-read.json"
+  ],
+  "id": "A03-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PNG (200 dpi render of the bracket sheet)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-200dpi.png (102486 B)",
+  "expected": "OCR job done; key readings found",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 103 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"(ocr )\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 37 (all needs-validation: true) || QA review: harness judged on job state; the read finished inside the 20 s wait (HTTP 200, no job). Key readings 6/6, all 37 OCR readings needs-validation. Note: \"4× Ø13\" also read as a dimension 913 (×4) — see D11.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 371,
+  "peakRssMb": 869,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A03-analyze.json"
+  ],
+  "id": "A03-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PNG (200 dpi render of the bracket sheet)",
+  "input": "Casting_Braket.stp + casting-bracket-200dpi.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 103 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 3983,
+  "peakRssMb": 1056,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A04-read.json"
+  ],
+  "id": "A04-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: JPEG",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-200dpi.jpg (271374 B)",
+  "expected": "OCR job done; key readings found",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 198 dpi: 103 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 198 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"(ocr )\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 37 (all needs-validation: true) || QA review: harness judging error as A03; key readings 6/6, all OCR readings needs-validation.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 320,
+  "peakRssMb": 895,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A04-analyze.json"
+  ],
+  "id": "A04-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: JPEG",
+  "input": "Casting_Braket.stp + casting-bracket-200dpi.jpg",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 198 dpi: 103 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 198 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 4255,
+  "peakRssMb": 1038,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A05-read.json"
+  ],
+  "id": "A05-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: TIFF (LZW)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-200dpi.tif (181232 B)",
+  "expected": "OCR job done; key readings found",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1: the image does not state its resolution; 300 dpi assumed for positions and text size.\",\"Sheet 1 (a scanned image) was read by OCR at 300 dpi: 105 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"(ocr )\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 37 (all needs-validation: true) || QA review: harness judging error as A03; key readings 6/6; TIFF carries no dpi, 300 dpi assumed (warning shown).",
+  "status": "pass"
+ },
+ {
+  "timeMs": 399,
+  "peakRssMb": 900,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A05-analyze.json"
+  ],
+  "id": "A05-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: TIFF (LZW)",
+  "input": "Casting_Braket.stp + casting-bracket-200dpi.tif",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":37,\"ocrReadings\":37,\"warnings\":[\"Sheet 1: the image does not state its resolution; 300 dpi assumed for positions and text size.\",\"Sheet 1 (a scanned image) was read by OCR at 300 dpi: 105 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 506,
+  "peakRssMb": 941,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A06-read.json"
+  ],
+  "id": "A06-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: ASCII DXF with title-block TEXT entities",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/bracket.dxf (861 B)",
+  "expected": "200 ready, DXF text readings (material A356)",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"dxf\",\"sheets\":[\"1:vector-text\"],\"readings\":13,\"ocrReadings\":0,\"warnings\":[\"DXF text positions are exact; string widths are estimated from the text height (a DXF does not store them).\"]}; key readings 3/6 {\"title.partNumber\":\"—\",\"material.designation\":\"\\\"EN AC-42100\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 %%mØ\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"—\"}; OCR readings 0 || QA review: 3/6 key readings; leak spec picked up the next note number \"2.\" and \"PART No.\" was not read (D15).",
+  "status": "pass"
+ },
+ {
+  "timeMs": 372,
+  "peakRssMb": 909,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A06-analyze.json"
+  ],
+  "id": "A06-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: ASCII DXF with title-block TEXT entities",
+  "input": "Casting_Braket.stp + bracket.dxf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"dxf\",\"sheets\":[\"1:vector-text\"],\"readings\":13,\"ocrReadings\":0,\"warnings\":[\"DXF text positions are exact; string widths are estimated from the text height (a DXF does not store them).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 9,
+  "peakRssMb": 912,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07-read.json"
+  ],
+  "id": "A07-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: DWG (AC1032 header)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/fake.dwg (20012 B)",
+  "expected": "415 naming DWG and PDF/DXF",
+  "actual": "HTTP 415; {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a DWG file. DWG cannot be read offline: export the drawing as PDF or DXF.\",\"code\":\"drawing_unsupported-type\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 8,
+  "peakRssMb": 911,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07-analyze.json"
+  ],
+  "id": "A07-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: DWG (AC1032 header)",
+  "input": "Casting_Braket.stp + fake.dwg",
+  "expected": "415 before kernel runs",
+  "actual": "HTTP 415; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a DWG file. DWG cannot be read offline: export the drawing as PDF or DXF.\",\"code\":\"drawing_unsupported-type\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 5,
+  "peakRssMb": 911,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07b-read.json"
+  ],
+  "id": "A07b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: DWG renamed .pdf",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/dwg-renamed.pdf (20012 B)",
+  "expected": "415 DWG (type by bytes, not name)",
+  "actual": "HTTP 415; {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a DWG file. DWG cannot be read offline: export the drawing as PDF or DXF.\",\"code\":\"drawing_unsupported-type\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 30,
+  "peakRssMb": 914,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07b-analyze.json"
+  ],
+  "id": "A07b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: DWG renamed .pdf",
+  "input": "Casting_Braket.stp + dwg-renamed.pdf",
+  "expected": "415",
+  "actual": "HTTP 415; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a DWG file. DWG cannot be read offline: export the drawing as PDF or DXF.\",\"code\":\"drawing_unsupported-type\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 3,
+  "peakRssMb": 914,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07c-read.json"
+  ],
+  "id": "A07c-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: binary DXF",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/binary.dxf (5022 B)",
+  "expected": "415 naming binary DXF",
+  "actual": "HTTP 415; {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a binary DXF. Save the drawing as ASCII DXF or export it as PDF.\",\"code\":\"drawing_unsupported-type\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 5,
+  "peakRssMb": 914,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A07c-analyze.json"
+  ],
+  "id": "A07c-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: binary DXF",
+  "input": "Casting_Braket.stp + binary.dxf",
+  "expected": "415",
+  "actual": "HTTP 415; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: This is a binary DXF. Save the drawing as ASCII DXF or export it as PDF.\",\"code\":\"drawing_unsupported-type\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 4,
+  "peakRssMb": 914,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A08-read.json"
+  ],
+  "id": "A08-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: empty file (0 bytes)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/empty.pdf (0 B)",
+  "expected": "4xx \"The file is empty\"",
+  "actual": "HTTP 422; {\"sheets\":[],\"error\":\"The drawing cannot be read: The file is empty.\",\"code\":\"drawing_empty\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 6,
+  "peakRssMb": 914,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A08-analyze.json"
+  ],
+  "id": "A08-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: empty file (0 bytes)",
+  "input": "Casting_Braket.stp + empty.pdf",
+  "expected": "4xx, no costing",
+  "actual": "HTTP 422; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: The file is empty.\",\"code\":\"drawing_empty\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1697,
+  "peakRssMb": 1260,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A09-read.json"
+  ],
+  "id": "A09-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: truncated PDF (first half of real-casting-bracket.pdf)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/truncated-half.pdf (32367 B)",
+  "expected": "422 corrupt, or partial reading clearly flagged",
+  "actual": "HTTP 422; {\"sheets\":[],\"error\":\"The drawing cannot be read: This PDF cannot be opened (Invalid PDF structure.). Export the drawing again.\",\"code\":\"drawing_corrupt\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1705,
+  "peakRssMb": 1252,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A09-analyze.json"
+  ],
+  "id": "A09-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: truncated PDF (first half of real-casting-bracket.pdf)",
+  "input": "Casting_Braket.stp + truncated-half.pdf",
+  "expected": "422 or costing with drawing failed stated",
+  "actual": "HTTP 422; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: This PDF cannot be opened (Invalid PDF structure.). Export the drawing again.\",\"code\":\"drawing_corrupt\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1672,
+  "peakRssMb": 1266,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A10-read.json"
+  ],
+  "id": "A10-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PDF that is not a drawing (a letter)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/not-a-drawing-letter.pdf (949 B)",
+  "expected": "200 with ~0 engineering readings, or a warning that it is not a drawing",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":0,\"ocrReadings\":0,\"warnings\":[]}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0 || QA review: no warning that the file does not look like a drawing; 0 readings.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 434,
+  "peakRssMb": 959,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A10-analyze.json"
+  ],
+  "id": "A10-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PDF that is not a drawing (a letter)",
+  "input": "Casting_Braket.stp + not-a-drawing-letter.pdf",
+  "expected": "200, nothing answered from it",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":0,\"ocrReadings\":0,\"warnings\":[]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 8,
+  "peakRssMb": 949,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A11-read.json"
+  ],
+  "id": "A11-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: ELF binary renamed .pdf",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/binary-elf.pdf (142312 B)",
+  "expected": "415 not recognised",
+  "actual": "HTTP 415; {\"sheets\":[],\"error\":\"The drawing cannot be read: File type not recognised. The drawing reader accepts PDF, PNG, JPEG, TIFF and ASCII DXF.\",\"code\":\"drawing_unsupported-type\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 6,
+  "peakRssMb": 948,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A11-analyze.json"
+  ],
+  "id": "A11-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: ELF binary renamed .pdf",
+  "input": "Casting_Braket.stp + binary-elf.pdf",
+  "expected": "415",
+  "actual": "HTTP 415; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: File type not recognised. The drawing reader accepts PDF, PNG, JPEG, TIFF and ASCII DXF.\",\"code\":\"drawing_unsupported-type\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 4,
+  "peakRssMb": 948,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A11b-read.json"
+  ],
+  "id": "A11b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: MZ (Windows exe) bytes renamed .pdf",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/fake-exe-mz.pdf (50005 B)",
+  "expected": "415 not recognised",
+  "actual": "HTTP 415; {\"sheets\":[],\"error\":\"The drawing cannot be read: File type not recognised. The drawing reader accepts PDF, PNG, JPEG, TIFF and ASCII DXF.\",\"code\":\"drawing_unsupported-type\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 7,
+  "peakRssMb": 948,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A11b-analyze.json"
+  ],
+  "id": "A11b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: MZ (Windows exe) bytes renamed .pdf",
+  "input": "Casting_Braket.stp + fake-exe-mz.pdf",
+  "expected": "415",
+  "actual": "HTTP 415; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: File type not recognised. The drawing reader accepts PDF, PNG, JPEG, TIFF and ASCII DXF.\",\"code\":\"drawing_unsupported-type\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1993,
+  "peakRssMb": 1279,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A12-read.json"
+  ],
+  "id": "A12-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: password-protected PDF (user password, AES-256)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/password-user.pdf (65477 B)",
+  "expected": "422 encrypted, message says export without password",
+  "actual": "HTTP 422; {\"sheets\":[],\"error\":\"The drawing cannot be read: This PDF is password-protected and cannot be read. Export the drawing without a password.\",\"code\":\"drawing_encrypted\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1846,
+  "peakRssMb": 1297,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A12-analyze.json"
+  ],
+  "id": "A12-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: password-protected PDF (user password, AES-256)",
+  "input": "Casting_Braket.stp + password-user.pdf",
+  "expected": "422",
+  "actual": "HTTP 422; success undefined; drawing {\"sheets\":[],\"error\":\"The drawing cannot be read: This PDF is password-protected and cannot be read. Export the drawing without a password.\",\"code\":\"drawing_encrypted\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2154,
+  "peakRssMb": 1305,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A12b-read.json"
+  ],
+  "id": "A12b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: owner-password only PDF (opens without a password)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/password-owner-only.pdf (65480 B)",
+  "expected": "200 read normally (or warned)",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"This PDF is encrypted with owner restrictions but opens without a password: it was read.\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"\",\"material.designation\":\"\\\"A356-T6\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"true\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 440,
+  "peakRssMb": 1153,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A12b-analyze.json"
+  ],
+  "id": "A12b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: owner-password only PDF (opens without a password)",
+  "input": "Casting_Braket.stp + password-owner-only.pdf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"This PDF is encrypted with owner restrictions but opens without a password: it was read.\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2584,
+  "peakRssMb": 1430,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A13-read.json"
+  ],
+  "id": "A13-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PDF padded to 30 MB − 1 KB (just under limit)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/size-under-limit.pdf (31456256 B)",
+  "expected": "200 read",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"\",\"material.designation\":\"\\\"A356-T6\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"true\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 664,
+  "peakRssMb": 1105,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A13-analyze.json"
+  ],
+  "id": "A13-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PDF padded to 30 MB − 1 KB (just under limit)",
+  "input": "Casting_Braket.stp + size-under-limit.pdf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 229,
+  "peakRssMb": 1105,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A13b-read.json"
+  ],
+  "id": "A13b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PDF padded to exactly 30 MB (31,457,280 B)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/size-exact-limit.pdf (31457280 B)",
+  "expected": "200 (limit inclusive) or 413 consistently",
+  "actual": "HTTP 413; {\"sheets\":[],\"error\":\"The drawing is over the 30 MB limit.\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0 || QA review: the same file is accepted by /api/cad/analyze (A13b-analyze 200) — inconsistent limit (D07).",
+  "status": "fail"
+ },
+ {
+  "timeMs": 4605,
+  "peakRssMb": 1488,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A13b-analyze.json"
+  ],
+  "id": "A13b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PDF padded to exactly 30 MB (31,457,280 B)",
+  "input": "Casting_Braket.stp + size-exact-limit.pdf",
+  "expected": "same as read",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[]}; answers {} || QA review: accepted here, refused by /api/drawing/read (D07).",
+  "status": "fail"
+ },
+ {
+  "timeMs": 234,
+  "peakRssMb": 1056,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A14-read.json"
+  ],
+  "id": "A14-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PDF 30 MB + 1 byte (just over limit)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/size-over-limit.pdf (31457281 B)",
+  "expected": "413 naming the 30 MB limit",
+  "actual": "HTTP 413; {\"sheets\":[],\"error\":\"The drawing is over the 30 MB limit.\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 274,
+  "peakRssMb": 1039,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A14-analyze.json"
+  ],
+  "id": "A14-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PDF 30 MB + 1 byte (just over limit)",
+  "input": "Casting_Braket.stp + size-over-limit.pdf",
+  "expected": "413",
+  "actual": "HTTP 413; success undefined; drawing {\"sheets\":[],\"error\":\"Drawing is 30 MB; the limit is 30 MB.\"}; answers null || QA review: message \"Drawing is 30 MB; the limit is 30 MB.\" (D08).",
+  "status": "pass"
+ },
+ {
+  "timeMs": 291,
+  "peakRssMb": 1069,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A14b-read.json"
+  ],
+  "id": "A14b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: PDF 35 MB",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/size-over-limit-big.pdf (36700160 B)",
+  "expected": "413",
+  "actual": "HTTP 413; {\"sheets\":[],\"error\":\"The drawing is over the 30 MB limit.\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 229,
+  "peakRssMb": 1069,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A14b-analyze.json"
+  ],
+  "id": "A14b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: PDF 35 MB",
+  "input": "Casting_Braket.stp + size-over-limit-big.pdf",
+  "expected": "413",
+  "actual": "HTTP 413; success undefined; drawing {\"sheets\":[],\"error\":\"Drawing is 35 MB; the limit is 30 MB.\"}; answers null",
+  "status": "pass"
+ },
+ {
+  "timeMs": 27693,
+  "peakRssMb": 1670,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A15-read.json"
+  ],
+  "id": "A15-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: multi-page drawing (3 sheets, mixed text/curves)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/nist-ctc-02.pdf (210564 B)",
+  "expected": "3 sheets reported, readings carry sheet numbers",
+  "actual": "HTTP 202 → job done after 1 poll(s); {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@270\",\"2:text-as-curves@270\",\"3:vector-text@270\"],\"readings\":13,\"ocrReadings\":4,\"warnings\":[\"Sheet 1 has selectable text (597 characters) but part of its annotation is drawn as curves (74 glyph-sized outlines away from any text).\",\"Sheet 2 has selectable text (202 characters) but part of its annotation is drawn as curves (111 glyph-sized outlines away from any text).\",\"Sheet 3 has selectable text (753 characters) but part of its annotation is drawn as curves (168 glyph-sized outlines away from any text).\",\"Sheet 1 (selectable text) was read by OCR at 300 dpi: 19 words, mean engine confidence 62 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 2 (text drawn as curves) was read by OCR at 300 dpi: 19 words, mean engine confidence 61 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 3 (selectable text) was read by OCR at 300 dpi: 38 words, mean engine confidence 64 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\"],\"jobStatus\":\"done\"}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"—\",\"finish.coating\":\"\\\"Optional: The geometric tolerances applied to datum features D, E, F, G, H, and J are not required for the test case.\\\" | \\\"However, the geometric tolerances applied to\\\" | \\\"datum features E, F, H, and J help to legitimize the modifiers applied to the datum feature references in the geometric tolerances related to D|E|F and G|H|J.\\\" | \\\"The geometric tolerances specified at LMC for\\\" | \\\"datum features H and J are particularly important, as they also make it easier to understand the LMC virtual condition of the datum features, as a geometric tolerance\\\"\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 4 (all needs-validation: true) || QA review: 3 sheets reported (pass on structure), but 5 note sentences about \"geometric tolerances\" were read as finish.coating plus a zinc-flake coating route, all exact-text \"extracted\" (D01).",
+  "status": "fail"
+ },
+ {
+  "timeMs": 451,
+  "peakRssMb": 1212,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A15-analyze.json"
+  ],
+  "id": "A15-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: multi-page drawing (3 sheets, mixed text/curves)",
+  "input": "Casting_Braket.stp + nist-ctc-02.pdf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@270\",\"2:text-as-curves@270\",\"3:vector-text@270\"],\"readings\":13,\"ocrReadings\":4,\"warnings\":[\"Sheet 1 has selectable text (597 characters) but part of its annotation is drawn as curves (74 glyph-sized outlines away from any text).\",\"Sheet 2 has selectable text (202 characters) but part of its annotation is drawn as curves (111 glyph-sized outlines away from any text).\",\"Sheet 3 has selectable text (753 characters) but part of its annotation is drawn as curves (168 glyph-sized outlines away from any text).\",\"Sheet 1 (selectable text) was read by OCR at 300 dpi: 19 words, mean engine confidence 62 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 2 (text drawn as curves) was read by OCR at 300 dpi: 19 words, mean engine confidence 61 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 3 (selectable text) was read by OCR at 300 dpi: 38 words, mean engine confidence 64 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2276,
+  "peakRssMb": 1410,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16-read.json"
+  ],
+  "id": "A16-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: vector PDF page /Rotate 90",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/rotated90-real-casting-bracket.pdf (64347 B)",
+  "expected": "200, same key readings as unrotated",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@90\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"Sheet 1: the drawing is turned 270° on its page; it was read upright and every location is given on the page as supplied.\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"\",\"material.designation\":\"\\\"A356-T6\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"true\"}; OCR readings 0 || QA review: sheet rotationDeg 90 while the warning says \"turned 270°\" (D10).",
+  "status": "pass"
+ },
+ {
+  "timeMs": 554,
+  "peakRssMb": 1089,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16-analyze.json"
+  ],
+  "id": "A16-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: vector PDF page /Rotate 90",
+  "input": "Casting_Braket.stp + rotated90-real-casting-bracket.pdf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@90\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"Sheet 1: the drawing is turned 270° on its page; it was read upright and every location is given on the page as supplied.\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2086,
+  "peakRssMb": 1449,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16b-read.json"
+  ],
+  "id": "A16b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: vector PDF page /Rotate 180",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/rotated180-real-casting-bracket.pdf (64348 B)",
+  "expected": "200, same key readings as unrotated",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@180\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"Sheet 1: the drawing is turned 180° on its page; it was read upright and every location is given on the page as supplied.\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"\",\"material.designation\":\"\\\"A356-T6\\\"\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"\",\"quality.pressureTight\":\"true\",\"quality.safetyCritical\":\"true\"}; OCR readings 0",
+  "status": "pass"
+ },
+ {
+  "timeMs": 422,
+  "peakRssMb": 1117,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16b-analyze.json"
+  ],
+  "id": "A16b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: vector PDF page /Rotate 180",
+  "input": "Casting_Braket.stp + rotated180-real-casting-bracket.pdf",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"pdf\",\"sheets\":[\"1:vector-text@180\"],\"readings\":42,\"ocrReadings\":0,\"warnings\":[\"Sheet 1: the drawing is turned 180° on its page; it was read upright and every location is given on the page as supplied.\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 5174,
+  "peakRssMb": 1257,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16c-read.json"
+  ],
+  "id": "A16c-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: raster sheet turned 90°",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-rot90.png (115382 B)",
+  "expected": "OCR detects orientation; key readings found",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":3,\"ocrReadings\":3,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 52 words, mean engine confidence 72 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"Sheet 1: the drawing is turned 90° on its page; it was read upright and every location is given on the page as supplied.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 0/6 {\"title.partNumber\":\"—\",\"material.designation\":\"\\\"S310N\\\"(ocr )\",\"tolerance.general\":\"—\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"—\"}; OCR readings 3 (all needs-validation: true) || QA review: read finished (200). Only 3 readings, material read as S310N / steel on an A356-T6 aluminium sheet (D09); warning says the sheet was read upright.",
+  "status": "fail"
+ },
+ {
+  "timeMs": 383,
+  "peakRssMb": 1110,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A16c-analyze.json"
+  ],
+  "id": "A16c-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: raster sheet turned 90°",
+  "input": "Casting_Braket.stp + casting-bracket-rot90.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":3,\"ocrReadings\":3,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 52 words, mean engine confidence 72 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"Sheet 1: the drawing is turned 90° on its page; it was read upright and every location is given on the page as supplied.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 6658,
+  "peakRssMb": 1336,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A17-read.json"
+  ],
+  "id": "A17-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: skewed scan 3°",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-skew3.png (300053 B)",
+  "expected": "deskewed; key readings found",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":34,\"ocrReadings\":34,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 115 words, mean engine confidence 91 %, straightened by 3.00°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 5/6 {\"title.partNumber\":\"\\\"CASTING BRACKET\\\"(ocr )\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 34 (all needs-validation: true) || QA review: read finished (200). 5/6 key readings; title.partNumber = \"CASTING BRACKET\" and title.scale = \"ISO 8062-3 DCTG 6\" (wrong cells, D11); all needs-validation; skew corrected by 3.00°.",
+  "status": "partial"
+ },
+ {
+  "timeMs": 359,
+  "peakRssMb": 1127,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A17-analyze.json"
+  ],
+  "id": "A17-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: skewed scan 3°",
+  "input": "Casting_Braket.stp + casting-bracket-skew3.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":34,\"ocrReadings\":34,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 115 words, mean engine confidence 91 %, straightened by 3.00°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 7569,
+  "peakRssMb": 1373,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A17b-read.json"
+  ],
+  "id": "A17b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: skewed scan 7°",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-skew7.png (364410 B)",
+  "expected": "deskewed or readings flagged; no crash",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":29,\"ocrReadings\":29,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 119 words, mean engine confidence 92 %, straightened by 6.60°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 3/6 {\"title.partNumber\":\"—\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 2768-mK\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 BREAK um, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"—\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 29 (all needs-validation: true) || QA review: read finished (200). 3/6 key readings; tolerance.general read as ISO 2768-mK instead of DCTG 6 (D11); skew corrected by 6.60°.",
+  "status": "partial"
+ },
+ {
+  "timeMs": 352,
+  "peakRssMb": 1162,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A17b-analyze.json"
+  ],
+  "id": "A17b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: skewed scan 7°",
+  "input": "Casting_Braket.stp + casting-bracket-skew7.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":29,\"ocrReadings\":29,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 200 dpi: 119 words, mean engine confidence 92 %, straightened by 6.60°. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 200 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2648,
+  "peakRssMb": 1249,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A18-read.json"
+  ],
+  "id": "A18-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: low resolution 72 dpi",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-72dpi.png (26428 B)",
+  "expected": "readings flagged low confidence or few; no false certainty",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":20,\"ocrReadings\":20,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 72 dpi: 79 words, mean engine confidence 77 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 72 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 3/6 {\"title.partNumber\":\"—\",\"material.designation\":\"—\",\"tolerance.general\":\"\\\"DCTG 6\\\"(ocr )\",\"finish.coating\":\"—\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 20 (all needs-validation: true) || QA review: read finished (200). 3/6 key readings; Ra 63 for Ra 6.3, dimensions 1081 / 122 / 112 (D11); all needs-validation; no low-resolution warning.",
+  "status": "partial"
+ },
+ {
+  "timeMs": 322,
+  "peakRssMb": 1167,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A18-analyze.json"
+  ],
+  "id": "A18-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: low resolution 72 dpi",
+  "input": "Casting_Braket.stp + casting-bracket-72dpi.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":20,\"ocrReadings\":20,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 72 dpi: 79 words, mean engine confidence 77 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 72 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 3142,
+  "peakRssMb": 1264,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A18b-read.json"
+  ],
+  "id": "A18b-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: low resolution 100 dpi",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-100dpi.png (45010 B)",
+  "expected": "readings found or flagged",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":29,\"ocrReadings\":29,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 100 dpi: 94 words, mean engine confidence 85 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 100 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 5/6 {\"title.partNumber\":\"—\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 29 (all needs-validation: true) || QA review: read finished (200). 5/6 key readings (part number missing); all needs-validation.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 360,
+  "peakRssMb": 1169,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A18b-analyze.json"
+  ],
+  "id": "A18b-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: low resolution 100 dpi",
+  "input": "Casting_Braket.stp + casting-bracket-100dpi.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":29,\"ocrReadings\":29,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 100 dpi: 94 words, mean engine confidence 85 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"Sheet 1 is large: it was rendered at 100 dpi instead of 300 to stay within the image limit; small text may be misread.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 16780,
+  "peakRssMb": 2019,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A19-read.json"
+  ],
+  "id": "A19-read",
+  "area": "input",
+  "scenario": "/api/drawing/read: very large image (14039×9928 px, A0 at 300 dpi)",
+  "input": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/inputs/casting-bracket-A0-300dpi.png (623935 B)",
+  "expected": "read or refused cleanly; RSS bounded (VM has 2 GB)",
+  "actual": "HTTP 200; {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":41,\"ocrReadings\":41,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 455 dpi: 108 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; key readings 6/6 {\"title.partNumber\":\"\\\"CB-2207-11\\\"(ocr )\",\"material.designation\":\"\\\"A356-T6\\\"(ocr )\",\"tolerance.general\":\"\\\"ISO 8062-3 DCTG 6\\\"(ocr )\",\"finish.coating\":\"\\\"CATHODIC E-COAT 20-35 µm, BLACK.\\\"(ocr )\",\"quality.pressureTight\":\"true(ocr )\",\"quality.safetyCritical\":\"true(ocr )\"}; OCR readings 41 (all needs-validation: true) || QA review: read finished (200) in 16.8 s, 6/6 key readings, but peak process-group RSS 2,019 MB (D12).",
+  "status": "partial"
+ },
+ {
+  "timeMs": 587,
+  "peakRssMb": 1172,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/A19-analyze.json"
+  ],
+  "id": "A19-analyze",
+  "area": "input",
+  "scenario": "/api/cad/analyze + drawing: very large image (14039×9928 px, A0 at 300 dpi)",
+  "input": "Casting_Braket.stp + casting-bracket-A0-300dpi.png",
+  "expected": "200",
+  "actual": "HTTP 200; success true; drawing {\"status\":\"ready\",\"fileKind\":\"image\",\"sheets\":[\"1:scanned\"],\"readings\":41,\"ocrReadings\":41,\"warnings\":[\"Sheet 1 (a scanned image) was read by OCR at 455 dpi: 108 words, mean engine confidence 93 %. Every value from OCR needs validation; symbols (Ø, geometric-tolerance, roughness and weld symbols) are not read from pixels.\",\"OCR engine: tesseract-5-lstm (tesseract.js-core, WebAssembly).\"]}; answers {}",
+  "status": "pass"
+ },
+ {
+  "timeMs": 72318,
+  "peakRssMb": 1797,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/concurrency-evidence.json"
+  ],
+  "id": "A20",
+  "area": "input",
+  "scenario": "5 concurrent scanned-drawing reads (wait=0)",
+  "input": "gen-casting.scan200.pdf, gen-forging.scan200.pdf, gen-gear.scan200.pdf, gen-machined.scan200.pdf, gen-rubber.scan200.pdf",
+  "expected": "all accepted (202); OCR strictly one at a time; all done; no 429",
+  "actual": "statuses 202,202,202,202,202; max running at once 1; all finished in 72318 ms: [\"done\",\"done\",\"done\",\"done\",\"done\"]",
+  "status": "pass"
+ },
+ {
+  "timeMs": 32499,
+  "peakRssMb": 1567,
+  "evidence": [],
+  "id": "A21",
+  "area": "input",
+  "scenario": "9 concurrent image reads — queue limit (1 running + 6 waiting)",
+  "input": "casting-bracket-200dpi.png, casting-bracket-200dpi.jpg, casting-bracket-200dpi.tif, casting-bracket-skew3.png, casting-bracket-skew7.png, casting-bracket-72dpi.png, casting-bracket-100dpi.png, casting-bracket-rot90.png, casting-bracket-A0-300dpi.png",
+  "expected": "7 accepted, 2 refused 429 \"busy, try again\"; no 5xx",
+  "actual": "statuses 202,202,202,202,429,202,202,202,429 (2 × 429: The drawing cannot be read: The drawing reader is busy: 6 scanned drawings are waiting to be read. Try again in a minute.); accepted jobs finished [\"done\",\"done\",\"done\",\"done\",\"done\",\"done\",\"done\"] in 9043 ms; max running 1",
+  "status": "pass"
+ },
+ {
+  "timeMs": 20926,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "A22",
+  "area": "input",
+  "scenario": "/api/cad/analyze with a new scan while the OCR queue is full",
+  "input": "Casting_Braket.stp + gen-sheetmetal.scan200.pdf",
+  "expected": "429 drawing_busy (or costing answered with drawing reading)",
+  "actual": "HTTP 429 drawing_busy The drawing cannot be read: The drawing reader is busy: 6 scanned drawings are waiting to be read. Try again in a minute. || QA review: the whole costing is refused while the OCR queue is full (documented: a seventh scan is told to try again); the CAD part cannot be costed without first dropping the drawing.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2468,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "A23",
+  "area": "input",
+  "scenario": "vector PDF read while the OCR queue is full",
+  "input": "real-seat-bracket.pdf",
+  "expected": "200 ready in a few seconds (exact-text lane is separate)",
+  "actual": "HTTP 200 ready in 2468 ms",
+  "status": "pass"
+ },
+ {
+  "timeMs": 2185,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "A24",
+  "area": "input",
+  "scenario": "client aborts mid-upload",
+  "input": "30 MB PDF, socket destroyed after 15 MB",
+  "expected": "server unaffected; next read works",
+  "actual": "client error after abort: socket hang up; health 200; next read HTTP 200 ready in 2185 ms; RSS 1515 MB",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "A25",
+  "area": "input",
+  "scenario": "client aborts while its scan is being OCR-read; same file sent again",
+  "input": "gen-composite.scan200.pdf, abort after 3 s, re-send with wait=0",
+  "expected": "the job keeps running (or is reused); re-send returns the same job / the finished reading; no duplicate OCR; server healthy",
+  "actual": "aborted: \"AbortError\"; re-send HTTP 202 drawing reading; job {\"status\":\"done\",\"error\":null,\"elapsedMs\":8592}; third send HTTP 200 ready (21 readings); health 200",
+  "status": "pass"
+ },
+ {
+  "timeMs": 85163,
+  "peakRssMb": 2366,
+  "evidence": [],
+  "id": "A26",
+  "area": "input",
+  "scenario": "client aborts /api/cad/analyze (with drawing) mid-request; the same request again",
+  "input": "Seat_Locking_Bracket.stp + real-seat-bracket.pdf, abort at 1.5 s",
+  "expected": "server healthy; the repeat answers 200 with drawing ready",
+  "actual": "repeat HTTP 200, drawing ready, 85163 ms || QA review: 85 s: Seat_Locking_Bracket geometry + blank unfold run again because the aborted request had not cached it.",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/concurrency-evidence.json"
+  ],
+  "id": "A27",
+  "area": "input",
+  "scenario": "auxiliary drawing routes: sheet picture, jobs, auth, missing / wrong field, two files",
+  "input": "see evidence",
+  "expected": "sheet 1 PNG 200; bad sheet / hash / job 404; no session 401; no file 400; DXF sheet refused cleanly; second file / wrong field refused 400",
+  "actual": "{\"sh1\":[200,\"<image/png 179723 bytes>\"],\"sh0\":[404,{\"error\":\"No such sheet.\"}],\"sh9\":[404,{\"error\":\"This drawing has no sheet 9.\"}],\"shBad\":[404,{\"error\":\"No such sheet.\"}],\"shUnknown\":[404,{\"error\":\"The drawing file is no longer held on this server — attach it again to see the sheet.\"}],\"shDxf\":[415,{\"error\":\"A DXF drawing has no page picture: its readings are listed without a view of the sheet.\"}],\"jobBad\":[404,{\"error\":\"No such drawing job on this server — attach the drawing again.\"}],\"noAuthJobs\":401,\"noAuthRead\":401,\"noAuthSheet\":401,\"noFile\":[400,{\"error\":\"No drawing uploaded. Attach a .pdf, .png, .jpg, .jpeg, .tif, .tiff, .dxf file as \\\"drawing\\\".\"}],\"wrongField\":[400,{\"error\":\"Upload error: Unexpected field\"}],\"twoFiles\":[400,\"Upload error: Too many files\"],\"commodityBad\":[200,null],\"fractionalSheet\":[404,{\"error\":\"No such sheet.\"}]}",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B01",
+  "area": "reprocess",
+  "scenario": "drawing attached, nothing reviewed = no-drawing cost",
+  "input": "Casting_Braket.stp + real-casting-bracket.pdf, review {ops:[]}, answers route cast_and_machine / aluminium / not pressure-tight / standard / not safety-critical, 50k/yr, 5 yr",
+  "expected": "drawing answers {}; headless total equal to the no-drawing total to the penny",
+  "actual": "drawing answers {}; with drawing £11.033029146264196 (costed) v without £11.033029146264196 (costed) || QA review: re-run in reprocess2 with the blocking questions answered (the first run left material.family open, so no total).",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1686,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B02",
+  "area": "reprocess",
+  "scenario": "confirm + correct via drawingReview on /analyze",
+  "input": "R1: 10 ops (confirm 9, correct part number)",
+  "expected": "confirmed values become answers (family aluminium, grade, finish e_coat, pressure-tight, safety-critical); part number Corrected = CB-2207-11-B; nothing skipped",
+  "actual": "HTTP 200; answers {\"material.family\":\"aluminium\",\"material.grade\":\"mat-lm25\",\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\",\"casting.heatTreat\":\"T6\"}; part number \"CB-2207-11-B\" [corrected]; skipped []; ids not present []",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B03",
+  "area": "reprocess",
+  "scenario": "confirmed drawing answers cost the same as the same answers typed by hand",
+  "input": "compare-routes with drawingHash + R1 v no drawing + answers typed",
+  "expected": "equal to the penny",
+  "actual": "drawing+R1 £15.20832547587712 v typed £13.129002130698172 (no drawing £null) || QA review: not like-for-like: R1 also confirms the 3 masked features (a finish-block form field, cam-sf-mask = 3), which typed answers cannot carry; the £2.08 difference is masking labour £1.51 + material £0.21 + overhead/margin. Like-for-like check B03b passes to the penny.",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1586,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B04",
+  "area": "reprocess",
+  "scenario": "/reanalyze with the same review: corrected value persists, answers identical",
+  "input": "reanalyze geometryHash + drawingHash + R1",
+  "expected": "same answers as /analyze; part number still CB-2207-11-B Corrected",
+  "actual": "HTTP 200; answers {\"material.family\":\"aluminium\",\"material.grade\":\"mat-lm25\",\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\",\"casting.heatTreat\":\"T6\"}; part number \"CB-2207-11-B\" [corrected]",
+  "status": "pass"
+ },
+ {
+  "timeMs": 171,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B05",
+  "area": "reprocess",
+  "scenario": "same /analyze + same review again → cache hit, identical response",
+  "input": "repeat of B02",
+  "expected": "fromCache true; body identical (minus timings)",
+  "actual": "fromCache false; identical true; 171 ms v 1686 ms || QA review: the deterministic /analyze path never caches its response (cad.ts returns fromCache:false and does not call cadCache.set on that path); the repeat was recomputed and is identical field by field. Not a drawing defect.",
+  "status": "partial"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B06",
+  "area": "reprocess",
+  "scenario": "repeat headless cost with the same review",
+  "input": "compare-routes R1 twice",
+  "expected": "same total",
+  "actual": "£15.20832547587712 then £15.20832547587712",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1281,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B07",
+  "area": "reprocess",
+  "scenario": "changing the review changes the cache key and the answers",
+  "input": "R1 without the material.family confirm",
+  "expected": "fromCache false; material.family not answered",
+  "actual": "fromCache false; answers {\"material.grade\":\"mat-lm25\",\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\",\"casting.heatTreat\":\"T6\"}; cost £null (R1 £15.20832547587712)",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1962,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B08",
+  "area": "reprocess",
+  "scenario": "same decisions re-sent with later timestamps",
+  "input": "R1 with every op.at +5 min",
+  "expected": "same answers and cost; cache hit or a documented miss",
+  "actual": "fromCache false; answers equal true || QA review: deterministic path is not cached, so fromCache false is not evidence by itself; the key difference is shown directly in D16.",
+  "status": "partial"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B09",
+  "area": "reprocess",
+  "scenario": "decisions for parameters not present are skipped and listed",
+  "input": "R1 + confirm gear.teeth + confirm does.not.exist + resolve gear.teeth (not on this drawing)",
+  "expected": "3 skipped with reasons; the rest applied (answers = R1 answers)",
+  "actual": "skipped 3: #10 confirm drawing:gear.teeth:1: no parameter \"drawing:gear.teeth:1\" in this dataset | #11 confirm drawing:does.not.exist:9: no parameter \"drawing:does.not.exist:9\" in this dataset | #12 resolve gear.teeth: no such open conflict in this dataset; answers equal R1 true",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B10",
+  "area": "reprocess",
+  "scenario": "correct material designation then confirm its re-interpreted family/grade; persists through /reanalyze",
+  "input": "correct A356-T6 → EN AC-46200, then confirm derived ids",
+  "expected": "derived grade follows the corrected designation (an LM24/46200 grade, not LM25); /reanalyze gives same answers; cost moves from R1",
+  "actual": "derived after correct: drawing:material.designation:1=\"EN AC-46200\"[corrected]; drawing:material.standard:1=\"ASTM B108\"[extracted]; drawing:material.designation:1>material.grade=\"mat-en-ac-46200\"[extracted]; drawing:material.designation:1>material.family=\"aluminium\"[extracted]; answers {\"material.family\":\"aluminium\",\"material.grade\":\"mat-en-ac-46200\"}; reanalyze same true; cost £null (R1 £15.20832547587712)",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B11",
+  "area": "reprocess",
+  "scenario": "engineer's typed answer beats a confirmed drawing value",
+  "input": "answers material.family=steel + R1 (drawing aluminium confirmed)",
+  "expected": "material.family stays steel; overridden lists the drawing value",
+  "actual": "drawing answers {\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\",\"casting.heatTreat\":\"T6\"}; overridden [{\"decisionId\":\"material.family\",\"parameterId\":\"drawing:material.designation:1>material.family\",\"drawingValue\":\"aluminium\",\"handValue\":\"steel\",\"why\":\"the engineer already answered this question by hand (\\\"steel\\\") — that answer stands\"}]; cost £66.54348278316074",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B12",
+  "area": "reprocess",
+  "scenario": "a different drawing (no material) with the old review",
+  "input": "Casting_Braket + real-casting-bracket-nomaterial.pdf + R1",
+  "expected": "material ops skipped and listed; no material answer; material listed as missing",
+  "actual": "skipped 4: drawing:material.designation:1>material.family: no parameter \"drawing:material.designation:1>material.family\" in this dataset | drawing:material.designation:1>material.grade: no parameter \"drawing:material.designation:1>material.grade\" in this dataset | drawing:material.designation:1>material.condition: no parameter \"drawing:material.designation:1>material.condition\" in this dataset | drawing:material.designation:1: no parameter \"drawing:material.designation:1\" in this dataset; answers {\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\"}; missing [\"material.designation\"]",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B13",
+  "area": "reprocess",
+  "scenario": "an unrelated drawing (the gear's) on the bracket with the bracket's review",
+  "input": "Casting_Braket + gear-drawing-m3-z38.pdf + R1",
+  "expected": "all R1 ops skipped (ids name readings that are not there); no answers applied from the bracket review",
+  "actual": "skipped 8/10; answers {\"material.family\":\"steel\"} || QA review: 2 of the 10 ops applied to the gear drawing's readings with a different value (material family steel) — D02.",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B14",
+  "area": "reprocess",
+  "scenario": "/reanalyze naming a different (held) drawing hash with the old review",
+  "input": "bracket geometryHash + gear drawingHash + R1",
+  "expected": "drawing of that hash used; bracket ops skipped",
+  "actual": "HTTP 200; drawing gear-drawing-m3-z38.pdf 0f0353d9; skipped 8; answers {\"material.family\":\"steel\"} || QA review: D02.",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B15",
+  "area": "reprocess",
+  "scenario": "a drawing hash the server does not hold",
+  "input": "/reanalyze + compare-routes with drawingHash aaaa… / bbbb… / \"not-a-hash\"",
+  "expected": "409 DRAWING_GONE on every route; never costed without it",
+  "actual": "reanalyze 409 DRAWING_GONE; compare-routes 409 DRAWING_GONE; malformed hash 409 DRAWING_GONE",
+  "status": "pass"
+ },
+ {
+  "timeMs": 1124,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B16",
+  "area": "reprocess",
+  "scenario": "malformed / hostile reviews",
+  "input": "review = \"not json\"; ops with bad date, unknown op, nested object value; 3000 ops",
+  "expected": "no 500; bad ops dropped; 3000 ops capped at 2000 and replayed",
+  "actual": "{\"bad1\":{\"s\":200,\"a\":{}},\"bad2\":{\"s\":200,\"a\":{},\"sk\":[]},\"bad3\":{\"s\":200,\"ms\":1124,\"a\":{}}}",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B17",
+  "area": "reprocess",
+  "scenario": "gear with WRONG drawing: conflict open, then resolved to CAD; cost unchanged",
+  "input": "test-gear-m3-z38.step + gear-drawing-WRONG-z40.pdf; resolve gear.teeth choose CAD",
+  "expected": "teeth conflict listed (38 v 40); resolve accepted (not skipped); cost equal to no-drawing cost before and after",
+  "actual": "conflicts gear.teeth; resolve skipped []; no drawing £17.89005602780367, unresolved £17.89005602780367, resolved £17.89005602780367",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B18",
+  "area": "reprocess",
+  "scenario": "a drawing whose only \"coating\" text is the note \"GEOMETRIC TOLERANCES TO ISO 1101.\"",
+  "input": "real-casting-bracket.pdf with note 6 replaced by \"GEOMETRIC TOLERANCES TO ISO 1101.\" (inputs/geometric-note-bracket.pdf)",
+  "expected": "no coating reading (GEOMETRIC is not the trade name GEOMET); finish question untouched",
+  "actual": "readings: finish.coating=\"GEOMETRIC TOLERANCES TO ISO 1101.\" [extracted, pdf-text]; finish.coatingRoute=\"zinc_flake\" [extracted, rule]; after confirming the derived route: answers {}; cost £null v no drawing £null || QA review: first run left material.family open; B18b / B18c repeat it with the blocking questions answered.",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B03b",
+  "area": "reprocess",
+  "scenario": "confirmed drawing answers (no finish-block fields) cost the same as the same answers typed",
+  "input": "confirm 7 question-answering readings; then the same 7 answers typed with no drawing",
+  "expected": "equal to the penny",
+  "actual": "drawing £13.129002130698172 v typed £13.129002130698172; answers {\"material.family\":\"aluminium\",\"material.grade\":\"mat-lm25\",\"service.pressureTight\":\"yes\",\"service.toleranceClass\":\"tight\",\"service.safetyCritical\":\"yes\",\"service.finish\":\"e_coat\",\"casting.heatTreat\":\"T6\"}; formFields []",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B18b",
+  "area": "reprocess",
+  "scenario": "\"GEOMETRIC TOLERANCES TO ISO 1101.\" note read as a zinc-flake coating — effect on the cost when confirmed",
+  "input": "inputs/geometric-note-bracket.pdf, blocking questions answered (aluminium, cast + machine)",
+  "expected": "no coating reading at all; finish question untouched",
+  "actual": "coatingRoute \"zinc_flake\" [extracted]; leaning on [] (so \"Confirm all read exactly\" offers it); after confirm: answers {}; cost £11.033029146264196 v no drawing £11.033029146264196",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [],
+  "id": "B18c",
+  "area": "reprocess",
+  "scenario": "\"GEOMETRIC TOLERANCES\" note on a steel cast + machine costing (zinc flake is a finish option there)",
+  "input": "Casting_Braket.stp + inputs/geometric-note-bracket.pdf, material.family typed steel",
+  "expected": "no coating reading; finish question untouched; cost = no-drawing cost",
+  "actual": "finish options [\"none\",\"e_coat\",\"powder_coat\",\"zinc_flake\"]; coatingRoute \"zinc_flake\" [extracted]; leanings on it [\"service.finish\"]; after one confirm: answers {\"service.finish\":\"zinc_flake\"}; cost £10.552570080474485 v no drawing £10.16957642576645",
+  "status": "fail"
+ },
+ {
+  "id": "C01",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: Casting_Braket.stp (cast_and_machine)",
+  "input": "Casting_Braket.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £10.718251, 36f6f7d3 £10.718251, recorded baseline £10.72; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 21438 ms",
+  "status": "pass",
+  "timeMs": 21438,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C02",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: Seat_Locking_Bracket.stp (sheet_metal)",
+  "input": "Seat_Locking_Bracket.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £3.691106, 36f6f7d3 £3.691106, recorded baseline £3.69; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 111761 ms",
+  "status": "pass",
+  "timeMs": 111761,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C03",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: MACH_Hydraulic_Manifold.stp (machining)",
+  "input": "MACH_Hydraulic_Manifold.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £17.491892, 36f6f7d3 £17.491892, recorded baseline £17.49; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 3365 ms",
+  "status": "pass",
+  "timeMs": 3365,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C04",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: IM_ECU_Cover.stp (injection_moulding)",
+  "input": "IM_ECU_Cover.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £1.969958, 36f6f7d3 £1.969958, recorded baseline £1.97; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 7259 ms",
+  "status": "pass",
+  "timeMs": 7259,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C05",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: FORGE_Hub_Flange.stp (forging)",
+  "input": "FORGE_Hub_Flange.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £13.847285, 36f6f7d3 £13.847285, recorded baseline £13.85; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 1942 ms",
+  "status": "pass",
+  "timeMs": 1942,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C06",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: test-gear-m3-z38.step (gear)",
+  "input": "test-gear-m3-z38.step, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £18.248098, 36f6f7d3 £18.248098, recorded baseline £18.25; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 69724 ms",
+  "status": "pass",
+  "timeMs": 69724,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C07",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: PRCR002.stp (cast_and_machine)",
+  "input": "PRCR002.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £27.444126, 36f6f7d3 £27.444126, recorded baseline £27.44; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 42602 ms",
+  "status": "pass",
+  "timeMs": 42602,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C08",
+  "area": "regression",
+  "scenario": "CAD-only /api/cad/analyze + compare-routes reference row, current build v commit 36f6f7d3 v recorded baseline: RUB_Grommet.stp (rubber)",
+  "input": "RUB_Grommet.stp, mode deterministic, 50,000/yr, UK, answers as scripts/real-parts-baseline.ts ANSWERS; no drawing",
+  "expected": "identical to the penny with 36f6f7d3 and with the recorded baseline; no drawing keys in the response",
+  "actual": "current £0.660844, 36f6f7d3 £0.660844, recorded baseline £0.66; every route row total equal: True; /analyze responses identical field by field (timings/fromCache/dfmJobId excluded): True; drawing keys in response: none; analyze 751 ms",
+  "status": "pass",
+  "timeMs": 751,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-current.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regress-pre-36f6f7d3.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/outputs/regression-compare.json"
+  ]
+ },
+ {
+  "id": "C09",
+  "area": "regression",
+  "scenario": "project real-parts baseline re-measured with OCP on the current build (npx tsx scripts/real-parts-baseline.ts)",
+  "input": "all 40 STEP parts in cad-audit/parts, AIR_GAPPED, own CV_DATA_DIR",
+  "expected": "\"No drift\" against tests/fixtures/real-parts-baseline.json",
+  "actual": "40 parts measured and costed; script printed \"No drift.\"; e.g. Casting_Braket £10.72, Seat_Locking_Bracket £3.69, test-gear £18.25, steering_knuckle £19.47",
+  "status": "pass",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/reliability/logs/real-parts-baseline.log"
+  ]
+ },
+ {
+  "id": "D-casting-bracket-money",
+  "area": "export",
+  "scenario": "screen = PDF = Excel = headless to the penny: casting bracket + real-casting-bracket.pdf, review confirmed (Confirm all read exactly + tolerance + masks + part number corrected)",
+  "input": "casting bracket + real-casting-bracket.pdf, review confirmed (Confirm all read exactly + tolerance + masks + part number corrected)",
+  "expected": "one figure to the penny on screen, core PDF, audit pack, workbook and the comparison reference row",
+  "actual": "screen £15.20; core PDF page 1 £15.20 (text check); audit pack cover £15.20; workbook 1-Summary TOTAL 15.199446 (→ £15.20); compare-routes reference row 15.200090; screen stamp \"United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · drawing reader v1.0.0 · real-casting-bracket.pdf 6f1a98cf · 10 Nov 2026\"; page errors []",
+  "status": "pass",
+  "timeMs": 115000,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-core.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-audit.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-xlsx.xlsx",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-screen.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/captured.json"
+  ]
+ },
+ {
+  "id": "D-gear-wrong-drawing-money",
+  "area": "export",
+  "scenario": "screen = PDF = Excel = headless to the penny: gear + gear-drawing-WRONG-z40.pdf, teeth conflict settled to the 3D model",
+  "input": "gear + gear-drawing-WRONG-z40.pdf, teeth conflict settled to the 3D model",
+  "expected": "one figure to the penny on screen, core PDF, audit pack, workbook and the comparison reference row",
+  "actual": "screen £17.80; core PDF page 1 £17.80 (text check); audit pack cover £17.80; workbook 1-Summary TOTAL 17.795588 (→ £17.80); compare-routes reference row 17.795588; screen stamp \"United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · drawing reader v1.0.0 · gear-drawing-WRONG-z40.pdf c58b93dd · 10 Nov 2026\"; page errors []",
+  "status": "pass",
+  "timeMs": 75000,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/gear-wrong-drawing-core.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/gear-wrong-drawing-audit.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/gear-wrong-drawing-xlsx.xlsx",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/gear-wrong-drawing-screen.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/captured.json"
+  ]
+ },
+ {
+  "id": "D-no-drawing-gear-money",
+  "area": "export",
+  "scenario": "screen = PDF = Excel = headless to the penny: gear, no drawing",
+  "input": "gear, no drawing",
+  "expected": "one figure to the penny on screen, core PDF, audit pack, workbook and the comparison reference row",
+  "actual": "screen £17.80; core PDF page 1 £17.80 (text check); audit pack cover £17.80; workbook 1-Summary TOTAL 17.795588 (→ £17.80); compare-routes reference row 17.795588; screen stamp \"United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 10 Nov 2026\"; page errors []",
+  "status": "pass",
+  "timeMs": 22000,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-core.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-audit.pdf",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-xlsx.xlsx",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-screen.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/captured.json"
+  ]
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/montage",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/renders",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/zoom-p4-lines.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/zoom-cb-audit-p22-thread.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/zoom-cb-audit-p18-header.png",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/inspection.json"
+  ],
+  "id": "D-pdf-pages",
+  "area": "export",
+  "scenario": "every PDF page rendered (pdftoppm 70 dpi + zooms) and looked at; text extracted; blank pages, replacement glyphs, NaN/undefined/null scanned",
+  "input": "casting-bracket-audit (23 p), casting-bracket-core (8 p), gear-wrong-drawing-audit (17 p), gear-wrong-drawing-core (6 p), no-drawing-gear-audit (16 p), no-drawing-gear-core (6 p)",
+  "expected": "no blank page, no broken glyph, no clipped or overlapping text, symbols Ø ± ° µm render",
+  "actual": "0 blank pages, 0 replacement / NaN / undefined strings in any PDF; Ø, ±, °, µm render in every report (counts in inspection.json). Found: audit §1 reproducibility stamp clipped at the page edge with a drawing (D04); ↧ dropped from the thread value in §9c (D05); §9b heading overlap on the casting audit pack (D14). GD&T symbols ⌖ ⟂ Ⓜ do not occur: none of these drawings states a GD&T frame, so their rendering was not exercised.",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/inspection.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/recalc"
+  ],
+  "id": "D-xlsx",
+  "area": "export",
+  "scenario": "every worksheet opened with openpyxl, every populated cell scanned; recalculated with LibreOffice headless and cached v recalculated values compared",
+  "input": "casting-bracket-xlsx: 11 sheets, gear-wrong-drawing-xlsx: 11 sheets, no-drawing-gear-xlsx: 10 sheets",
+  "expected": "no formula errors, no broken references, no hidden sheets / rows, no NaN / undefined text; money numeric; drawing workbooks carry 10-Drawing, the no-drawing workbook does not",
+  "actual": "0 formula errors after recalculation; the CAD workbooks hold NO live formulas (cells beginning \"= …\" are text labels such as \"= should-cost\", stored as strings), so recalculation cannot disagree; 0 hidden sheets, rows or columns; 0 suspicious strings. 10-Drawing present on both drawing workbooks and absent on the no-drawing one. Workbook disagrees with itself on the confidence grade: 0-Executive!A41 Medium v 1-Summary!A24 \"Model confidence\" Low (D06); 0-Executive!A235 \"(no drawing is read)\" (D03).",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/rerun-panel/captured.json",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/rerun-panel"
+  ],
+  "id": "D-drawing-table",
+  "area": "export",
+  "scenario": "workbook 10-Drawing rows = the review panel rows (label, value, status), and the conflict outcome",
+  "input": "casting bracket and gear WRONG drawing, panel captured before Get cost on a second identical run (exports/rerun-panel)",
+  "expected": "same rows, values and status words; conflict outcome as settled on the panel",
+  "actual": "casting bracket: 24 + 20 not-costed rows on the panel = 24 + 20 in 10-Drawing, 0 differences in label/value/status. Gear: 9 + 3 = 9 + 3, 0 differences; conflict row \"Number of teeth | 3D model: 38 v Drawing: 40 | 3D model (38) | Settled by QA Engineer: 38 (the 3D model)\" = panel \"Settled by QA Engineer: 38 (the 3D model)\". Core PDF lists the 9 decided rows and the counts; audit pack §9c lists all rows (text compared). Second run gave the same headline (£15.20 / £17.80).",
+  "status": "pass"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-core.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-audit.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/captured.json"
+  ],
+  "id": "D-confidence",
+  "area": "export",
+  "scenario": "one confidence grade across screen, core PDF, audit pack and workbook",
+  "input": "all three costings",
+  "expected": "same grade everywhere",
+  "actual": "screen / core / 0-Executive: Medium; audit pack cover, executive summary, §7 and 1-Summary: Low — on all three costings, including the one with no drawing (D06).",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/casting-bracket-core.txt"
+  ],
+  "id": "D-stale-text",
+  "area": "export",
+  "scenario": "report text consistent with a drawing being attached",
+  "input": "casting bracket and gear drawing reports",
+  "expected": "no statement that no drawing is read; thread note consistent with the drawing",
+  "actual": "core §7 and 0-Executive say \"(no drawing is read)\" (D03); core page 1 says the CAD model shows no thread while the drawing states M6x1-6H (D13).",
+  "status": "fail"
+ },
+ {
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-core.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/validation/exports/no-drawing-gear-audit.txt"
+  ],
+  "id": "D-no-drawing",
+  "area": "export",
+  "scenario": "no-drawing costing reports carry no drawing content",
+  "input": "gear, no drawing",
+  "expected": "no §9c, no 10-Drawing, stamp without reader",
+  "actual": "no \"Drawing specification\" / \"§9c\" / \"drawing reader\" text in core or audit; workbook sheets 0-Executive … 9-DFM (no 10-Drawing); stamp \"United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 10 Nov 2026\". Audit pack text equals the wrong-drawing gear audit pack apart from the drawing section, the stamp, page count and one open question.",
+  "status": "pass"
+ },
+ {
+  "id": "NT1",
+  "area": "export",
+  "scenario": "GD&T symbols (⌖ ⟂ Ⓜ) in the PDF / workbook drawing tables",
+  "input": "-",
+  "expected": "-",
+  "actual": "none of the three drawings exported carries a GD&T frame (the generated gen-* sheets do, but no CAD part is paired with them), so the rendering of these glyphs in reports was not exercised",
+  "status": "not-tested",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": []
+ },
+ {
+  "id": "NT2",
+  "area": "input",
+  "scenario": "a genuine DWG file",
+  "input": "-",
+  "expected": "-",
+  "actual": "no DWG writer available; a file with the AC1032 magic header was used (refused 415 correctly)",
+  "status": "not-tested",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": []
+ },
+ {
+  "id": "NT3",
+  "area": "input",
+  "scenario": "peak memory inside the 2 GB Docker image (Dockerfile.cad)",
+  "input": "-",
+  "expected": "-",
+  "actual": "tests ran natively on a 16 GB host; /usr/bin/time is not installed, so peak RSS was sampled with ps every 150 ms over the server process group",
+  "status": "not-tested",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": []
+ },
+ {
+  "id": "NT4",
+  "area": "reprocess",
+  "scenario": "cache behaviour of the review key on the AI path",
+  "input": "-",
+  "expected": "-",
+  "actual": "AI is off (AIR_GAPPED=1, no key); the deterministic /analyze path does not cache its response, so cache hits were only observable indirectly (D16 shown at function level)",
+  "status": "not-tested",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": []
+ },
+ {
+  "id": "NT5",
+  "area": "input",
+  "scenario": "client abort during an /api/cad/analyze whose drawing is waiting for OCR",
+  "input": "-",
+  "expected": "-",
+  "actual": "abort mid-OCR was tested on /api/drawing/read only (A25)",
+  "status": "not-tested",
+  "timeMs": null,
+  "peakRssMb": null,
+  "evidence": []
+ }
+]

@@ -1,0 +1,4477 @@
+{
+ "generated": "2026-11-10T11:40:15.149422Z",
+ "accuracy": "NOT VALIDATED \u2014 no real price exists for any of these parts (scripts/actuals/cad-actuals-input.csv holds no values). Every figure is the tool's own indicative should-cost; C is not claimed to be more accurate than A \u2014 only which inputs are stated rather than assumed.",
+ "conditions": "UK, 10,000 a year, 5 years, DAP (default terms), rate book at HEAD e8328c23, 10 Nov 2026; AI off (AIR_GAPPED=1, no key); headless cost = /api/cad/compare-routes reference row (the server's costMeasuredPart with the same answers, drawing hash and review)",
+ "answerPolicyA": "every BLOCKING question answered with: the option the tool marks as its leaning; else the option it costs until answered; else (route only) the route the server is already costing as placeholder; else the first option offered. Advisory questions left at the tool's costed default. Route-matched \"@sheet\" variants: the route is a stated engineering assumption (sheet_metal) in BOTH A and C.",
+ "reviewPolicyC": "from the independent truth file: a drawing reading equal to a truth row (scorer rowAccepts) is confirmed; a scalar reading whose parameter the truth gives ONE value for is corrected to it; any other reading in a group the truth lists as complete is rejected (not on the drawing); readings in groups the truth does not list completely are left unreviewed; an interpreted value is confirmed once its source is confirmed/corrected (checked by hand: one stale interpretation rejected, see manual-review.json); conflicts settled to the side equal to the truth. Other blocking questions answered as in A (same id) unless the drawing answers them. Note: on the screen only readings outside the \"not in the cost model\" list can be decided \u2014 the API accepts decisions on all.",
+ "parts": [
+  {
+   "pair": "nist-d2mi-904",
+   "cad": "827-9999-904 rev c.stp",
+   "drawing": "827-9999-904 rev c.pdf",
+   "truthFile": "nist-d2mi-904",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "no leaning shown; the route the server costs as placeholder while the question is open (\"Machined from solid\"); register likely commodity: undefined",
+     "options": [
+      "sheet_metal",
+      "injection_moulding",
+      "machining"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 48,
+    "confirmed": 10,
+    "corrected": 0,
+    "rejected": 38,
+    "resolved": 0,
+    "leftUnreviewed": 1,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS 1A, TYPE",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "finish.coatingRoute",
+      "value": "conversion-coat",
+      "basis": "group \"coating\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "reject",
+      "name": "tolerance.tightest",
+      "value": {
+       "band": 0.02,
+       "nominal": 0.032,
+       "type": "radius"
+      },
+      "basis": "not on the drawing (group \"dimensions\" is complete in the truth)"
+     },
+     {
+      "action": "confirm",
+      "name": "quality.marking",
+      "value": "IDENTIFICATION MARKING SHALL BE LOCATED APPROXIMATELY WHERE SHOWN IN ACCORDANCE WITH MIL-STD-130.",
+      "basis": "equals a truth row"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {},
+    "evidence": {},
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 11,
+    "notCostedSample": [
+     "finish.coating = \"FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS 1A,  \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coatingRoute = \"conversion-coat\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "dimension = {\"type\":\"linear\",\"nominal\":1.75,\"count\":2,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":4.037,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":3.912,\"count\":5,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":0.032,\"count\":4,\"upper\":0.01,\"lower\":-0.01} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":2.928,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":1.785,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 25630,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 7.9594,
+    "buckets": {
+     "material": 1.8809,
+     "process": 1.2672,
+     "labour": 3.1719,
+     "tooling": 0.2077,
+     "packaging": 0.031,
+     "logistics": 0.028,
+     "overhead": 0.7833,
+     "margin": 0.5896
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.063,
+     "netLabel": "net",
+     "grossKg": 0.567,
+     "utilisation": 0.112
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Y (73 faces) [HAAS VF-2 (3-axis Mill)] 1.904 min, process \u00a30.3590, labour \u00a30.4821",
+     "Milling \u2014 +X (27 faces) [HAAS VF-2 (3-axis Mill)] 0.704 min, process \u00a30.1328, labour \u00a30.1783",
+     "Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.441 min, process \u00a30.0831, labour \u00a30.1116",
+     "Drilling \u2014 6 holes [CNC Drilling Centre] 1.273 min, process \u00a30.1762, labour \u00a30.3224",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6698"
+    ],
+    "tooling": {
+     "investment": 10383,
+     "amortisedOver": 50000,
+     "perPart": 0.20766
+    },
+    "finish": null,
+    "spec": []
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 7.9594,
+    "buckets": {
+     "material": 1.8809,
+     "process": 1.2672,
+     "labour": 3.1719,
+     "tooling": 0.2077,
+     "packaging": 0.031,
+     "logistics": 0.028,
+     "overhead": 0.7833,
+     "margin": 0.5896
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.063,
+     "netLabel": "net",
+     "grossKg": 0.567,
+     "utilisation": 0.112
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Y (73 faces) [HAAS VF-2 (3-axis Mill)] 1.904 min, process \u00a30.3590, labour \u00a30.4821",
+     "Milling \u2014 +X (27 faces) [HAAS VF-2 (3-axis Mill)] 0.704 min, process \u00a30.1328, labour \u00a30.1783",
+     "Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.441 min, process \u00a30.0831, labour \u00a30.1116",
+     "Drilling \u2014 6 holes [CNC Drilling Centre] 1.273 min, process \u00a30.1762, labour \u00a30.3224",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6698"
+    ],
+    "tooling": {
+     "investment": 10383,
+     "amortisedOver": 50000,
+     "perPart": 0.20766
+    },
+    "finish": null,
+    "spec": []
+   },
+   "delta": {
+    "total": 0,
+    "totalPct": 0,
+    "buckets": {
+     "material": 0.0,
+     "process": 0.0,
+     "labour": 0.0,
+     "tooling": 0.0,
+     "packaging": 0.0,
+     "logistics": 0.0,
+     "overhead": 0.0,
+     "margin": 0.0
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "no answer differs between A and C"
+   ],
+   "specDiff": [],
+   "classification": "no change \u2014 the drawing answered no costing question on this route (nothing cost-relevant read, or read but no question takes it)",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing title block: 6061-T651 ASTM B209 (truth file) \u2014 not read by the reader"
+     }
+    ],
+    "total": 7.9594,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 1.8809,
+     "process": 1.2672,
+     "labour": 3.1719,
+     "tooling": 0.2077,
+     "packaging": 0.031,
+     "logistics": 0.028,
+     "overhead": 0.7833,
+     "margin": 0.5896
+    },
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.063,
+     "netLabel": "net",
+     "grossKg": 0.567,
+     "utilisation": 0.112
+    },
+    "deltaVsA": {
+     "total": 0,
+     "totalPct": 0
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "nist-d2mi-906",
+   "cad": "827-9999-906.stp",
+   "drawing": "827-9999-906.pdf",
+   "truthFile": "nist-d2mi-906",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "no leaning shown; the route the server costs as placeholder while the question is open (\"Machined from solid\"); register likely commodity: undefined",
+     "options": [
+      "sheet_metal",
+      "injection_moulding",
+      "machining"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "plastic",
+     "why": "no leaning, no costed default: first offered option (\"Plastic\")",
+     "options": [
+      "plastic",
+      "aluminium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 50,
+    "confirmed": 9,
+    "corrected": 0,
+    "rejected": 41,
+    "resolved": 0,
+    "leftUnreviewed": 2,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "6061-T6",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "T6",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "material.standard",
+      "value": "ASTM B205",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS LA, TYPE II",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "finish.coatingRoute",
+      "value": "conversion-coat",
+      "basis": "group \"coating\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "quality.marking",
+      "value": "IDENTIFICATION MARKING SHALL BE LOCATED APPROXIMATELY WHERE SHOWN IN ACCORDANCE WITH MIL-STD-130.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERTAL: ALUMINUM, PLATE, 6061-T6, IN ACCORDANCE WITH ASTM B205.",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        74.4,
+        35.34,
+        453.84,
+        43.16
+       ],
+       "region": "view"
+      },
+      "sourceFile": "827-9999-906.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 9,
+    "notCostedSample": [
+     "material.condition = \"T6\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coating = \"FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS LA,  \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coatingRoute = \"conversion-coat\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "dimension = {\"type\":\"linear\",\"nominal\":4.037,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":3.495,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":1.785,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":2.632,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "quality.marking = \"IDENTIFICATION MARKING SHALL BE LOCATED APPROXIMATELY WHERE SHOWN IN ACCORDANCE \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 23465,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 5.1199,
+    "buckets": {
+     "material": 0.7372,
+     "process": 0.9091,
+     "labour": 2.3306,
+     "tooling": 0.2077,
+     "packaging": 0.029,
+     "logistics": 0.025,
+     "overhead": 0.5021,
+     "margin": 0.3793
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.024,
+     "netLabel": "net",
+     "grossKg": 0.221,
+     "utilisation": 0.111
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (52 faces) [HAAS VF-2 (3-axis Mill)] 1.396 min, process \u00a30.2632, labour \u00a30.3534",
+     "Milling \u2014 +Y (20 faces) [HAAS VF-2 (3-axis Mill)] 0.539 min, process \u00a30.1016, labour \u00a30.1364",
+     "Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.453 min, process \u00a30.0854, labour \u00a30.1147",
+     "Drilling \u2014 6 holes [CNC Drilling Centre] 1.255 min, process \u00a30.1737, labour \u00a30.3178",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6206"
+    ],
+    "tooling": {
+     "investment": 10383,
+     "amortisedOver": 50000,
+     "perPart": 0.20766
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 7.825,
+    "buckets": {
+     "material": 1.8758,
+     "process": 1.2429,
+     "labour": 3.0901,
+     "tooling": 0.2077,
+     "packaging": 0.031,
+     "logistics": 0.028,
+     "overhead": 0.77,
+     "margin": 0.5796
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.063,
+     "netLabel": "net",
+     "grossKg": 0.567,
+     "utilisation": 0.112
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (52 faces) [HAAS VF-2 (3-axis Mill)] 1.708 min, process \u00a30.3221, labour \u00a30.4325",
+     "Milling \u2014 +Y (20 faces) [HAAS VF-2 (3-axis Mill)] 0.655 min, process \u00a30.1235, labour \u00a30.1659",
+     "Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.557 min, process \u00a30.1051, labour \u00a30.1411",
+     "Drilling \u2014 6 holes [CNC Drilling Centre] 1.273 min, process \u00a30.1762, labour \u00a30.3224",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6206"
+    ],
+    "tooling": {
+     "investment": 10383,
+     "amortisedOver": 50000,
+     "perPart": 0.20766
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 2.7051,
+    "totalPct": 52.84,
+    "buckets": {
+     "material": 1.1386,
+     "process": 0.3338,
+     "labour": 0.7595,
+     "tooling": 0.0,
+     "packaging": 0.002,
+     "logistics": 0.003,
+     "overhead": 0.2679,
+     "margin": 0.2003
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 0.7372,
+     "C": 1.8758,
+     "delta": 1.1386
+    },
+    {
+     "bucket": "process",
+     "A": 0.9091,
+     "C": 1.2429,
+     "delta": 0.3338
+    },
+    {
+     "bucket": "labour",
+     "A": 2.3306,
+     "C": 3.0901,
+     "delta": 0.7595
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.029,
+     "C": 0.031,
+     "delta": 0.002
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.025,
+     "C": 0.028,
+     "delta": 0.003
+    },
+    {
+     "bucket": "overhead",
+     "A": 0.5021,
+     "C": 0.77,
+     "delta": 0.2679
+    },
+    {
+     "bucket": "margin",
+     "A": 0.3793,
+     "C": 0.5796,
+     "delta": 0.2003
+    }
+   ],
+   "why": [
+    "material.family: A plastic -> C aluminium (from drawing (confirmed, \"MATERTAL: ALUMINUM, PLATE, 6061-T6, IN ACCORDANCE WITH ASTM B205.\"))",
+    "operations added in C: Milling \u2014 +X (52 faces) [HAAS VF-2 (3-axis Mill)] 1.708 min, process \u00a30.3221, labour \u00a30.4325; Milling \u2014 +Y (20 faces) [HAAS VF-2 (3-axis Mill)] 0.655 min, process \u00a30.1235, labour \u00a30.1659; Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.557 min, process \u00a30.1051, labour \u00a30.1411; Drilling \u2014 6 holes [CNC Drilling Centre] 1.273 min, process \u00a30.1762, labour \u00a30.3224; Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+    "operations removed in C: Milling \u2014 +X (52 faces) [HAAS VF-2 (3-axis Mill)] 1.396 min, process \u00a30.2632, labour \u00a30.3534; Milling \u2014 +Y (20 faces) [HAAS VF-2 (3-axis Mill)] 0.539 min, process \u00a30.1016, labour \u00a30.1364; Milling \u2014 +Z (17 faces) [HAAS VF-2 (3-axis Mill)] 0.453 min, process \u00a30.0854, labour \u00a30.1147; Drilling \u2014 6 holes [CNC Drilling Centre] 1.255 min, process \u00a30.1737, labour \u00a30.3178; Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+    "material-bucket line 'tool wear (inserts, end mills, drills)': A \u00a30.0729 -> C \u00a30.1678"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "aluminium [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing: 6061-T6 ASTM B205 (truth file) \u2014 not read by the reader"
+     }
+    ],
+    "total": 7.825,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 1.8758,
+     "process": 1.2429,
+     "labour": 3.0901,
+     "tooling": 0.2077,
+     "packaging": 0.031,
+     "logistics": 0.028,
+     "overhead": 0.77,
+     "margin": 0.5796
+    },
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.063,
+     "netLabel": "net",
+     "grossKg": 0.567,
+     "utilisation": 0.112
+    },
+    "deltaVsA": {
+     "total": 2.7051,
+     "totalPct": 52.84
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-bed-plate",
+   "cad": "bed_plate_v4.5_PP-MP0108.step",
+   "drawing": "300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf",
+   "truthFile": "lulzbot-taz6-bed-plate",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "the tool's leaning (\"Machined from solid\")",
+     "options": [
+      "aluminium_extrusion",
+      "extrusion",
+      "rubber",
+      "machining (leaning)"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 40,
+    "confirmed": 33,
+    "corrected": 2,
+    "rejected": 4,
+    "resolved": 1,
+    "leftUnreviewed": 1,
+    "costRelevantDecisions": [
+     {
+      "action": "resolve",
+      "conflict": "title.partName",
+      "chosen": "drawing:title.partName:1",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "5052 H-32 Aluminum",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "H32",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "material.stockThickness",
+      "value": 3.175,
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "Break all sharp edges prior to powder coat Part is to be powder coated with Cardinal color C241-BK109.5.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "Mask all threads prior to coating.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "Break all sharp edges prior to powder coat Part is to be powder coated with Cardinal color C241-BK109.5.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "Material: 5052 H-32 Aluminum",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        564.96,
+        172.51,
+        701.28,
+        181.69
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [
+     {
+      "name": "title.partName",
+      "resolved": true,
+      "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says 300mm Bed Plate v4.5. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses."
+     }
+    ],
+    "missingAfter": [],
+    "notCostedCount": 26,
+    "notCostedSample": [
+     "material.condition = \"H32\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coating = \"Break all sharp edges prior to powder coat Part is to be powder coated with Car \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.masking = \"Mask all threads prior to coating.\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "thread = {\"designation\":\"M3x0.5\",\"system\":\"ISO metric\",\"nominal\":3,\"pitch\":0.5,\"pitchSour \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":10,\"count\":2} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":140} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":66} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":138.5} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 9790,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 17.2984,
+    "buckets": {
+     "material": 2.6149,
+     "process": 4.1292,
+     "labour": 7.0359,
+     "tooling": 0.4048,
+     "packaging": 0.06,
+     "logistics": 0.07,
+     "overhead": 1.7022,
+     "margin": 1.2814
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.34,
+     "netLabel": "net",
+     "grossKg": 0.728,
+     "utilisation": 0.467
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (49 faces) [HAAS VF-2 (3-axis Mill)] 10.702 min, process \u00a32.0179, labour \u00a32.7094",
+     "Milling \u2014 +Y (28 faces) [HAAS VF-2 (3-axis Mill)] 6.116 min, process \u00a31.1532, labour \u00a31.5485",
+     "Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.435 min, process \u00a30.0820, labour \u00a30.1101",
+     "Drilling \u2014 37 holes [CNC Drilling Centre] 2.602 min, process \u00a30.3600, labour \u00a30.6588",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6015"
+    ],
+    "tooling": {
+     "investment": 20241,
+     "amortisedOver": 50000,
+     "perPart": 0.40482
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 24.9246,
+    "buckets": {
+     "material": 6.9602,
+     "process": 4.9381,
+     "labour": 8.124,
+     "tooling": 0.4048,
+     "packaging": 0.08,
+     "logistics": 0.12,
+     "overhead": 2.4512,
+     "margin": 1.8463
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.873,
+     "netLabel": "net",
+     "grossKg": 1.872,
+     "utilisation": 0.467
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (49 faces) [HAAS VF-2 (3-axis Mill)] 13.347 min, process \u00a32.5166, labour \u00a33.3790",
+     "Milling \u2014 +Y (28 faces) [HAAS VF-2 (3-axis Mill)] 7.629 min, process \u00a31.4384, labour \u00a31.9313",
+     "Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.545 min, process \u00a30.1027, labour \u00a30.1380",
+     "Drilling \u2014 37 holes [CNC Drilling Centre] 2.633 min, process \u00a30.3643, labour \u00a30.6665",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.6015"
+    ],
+    "tooling": {
+     "investment": 20241,
+     "amortisedOver": 50000,
+     "perPart": 0.40482
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 7.6262,
+    "totalPct": 44.09,
+    "buckets": {
+     "material": 4.3453,
+     "process": 0.8089,
+     "labour": 1.0881,
+     "tooling": 0.0,
+     "packaging": 0.02,
+     "logistics": 0.05,
+     "overhead": 0.749,
+     "margin": 0.5649
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 2.6149,
+     "C": 6.9602,
+     "delta": 4.3453
+    },
+    {
+     "bucket": "process",
+     "A": 4.1292,
+     "C": 4.9381,
+     "delta": 0.8089
+    },
+    {
+     "bucket": "labour",
+     "A": 7.0359,
+     "C": 8.124,
+     "delta": 1.0881
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.06,
+     "C": 0.08,
+     "delta": 0.02
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.07,
+     "C": 0.12,
+     "delta": 0.05
+    },
+    {
+     "bucket": "overhead",
+     "A": 1.7022,
+     "C": 2.4512,
+     "delta": 0.749
+    },
+    {
+     "bucket": "margin",
+     "A": 1.2814,
+     "C": 1.8463,
+     "delta": 0.5649
+    }
+   ],
+   "why": [
+    "material.family: A (not answered \u2014 costed default / leaning) -> C aluminium (from drawing (confirmed, \"Material: 5052 H-32 Aluminum\"))",
+    "operations added in C: Milling \u2014 +X (49 faces) [HAAS VF-2 (3-axis Mill)] 13.347 min, process \u00a32.5166, labour \u00a33.3790; Milling \u2014 +Y (28 faces) [HAAS VF-2 (3-axis Mill)] 7.629 min, process \u00a31.4384, labour \u00a31.9313; Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.545 min, process \u00a30.1027, labour \u00a30.1380; Drilling \u2014 37 holes [CNC Drilling Centre] 2.633 min, process \u00a30.3643, labour \u00a30.6665",
+    "operations removed in C: Milling \u2014 +X (49 faces) [HAAS VF-2 (3-axis Mill)] 10.702 min, process \u00a32.0179, labour \u00a32.7094; Milling \u2014 +Y (28 faces) [HAAS VF-2 (3-axis Mill)] 6.116 min, process \u00a31.1532, labour \u00a31.5485; Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.435 min, process \u00a30.0820, labour \u00a30.1101; Drilling \u2014 37 holes [CNC Drilling Centre] 2.602 min, process \u00a30.3600, labour \u00a30.6588",
+    "material-bucket line 'tool wear (inserts, end mills, drills)': A \u00a30.3971 -> C \u00a30.9661"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "aluminium [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing note \"Material: 5052 H-32 Aluminum\" (read only as a general note)"
+     }
+    ],
+    "total": 24.9246,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 6.9602,
+     "process": 4.9381,
+     "labour": 8.124,
+     "tooling": 0.4048,
+     "packaging": 0.08,
+     "logistics": 0.12,
+     "overhead": 2.4512,
+     "margin": 1.8463
+    },
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.873,
+     "netLabel": "net",
+     "grossKg": 1.872,
+     "utilisation": 0.467
+    },
+    "deltaVsA": {
+     "total": 7.6262,
+     "totalPct": 44.09
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-corner-bracket",
+   "cad": "corner_bracket_v2.0_PP-MP0106.step",
+   "drawing": "corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+   "truthFile": "lulzbot-taz6-corner-bracket",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "the tool's leaning (\"Machined from solid\")",
+     "options": [
+      "machining (leaning)",
+      "forging",
+      "casting",
+      "cast_and_machine",
+      "sheet_metal"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 23,
+    "confirmed": 20,
+    "corrected": 0,
+    "rejected": 3,
+    "resolved": 0,
+    "leftUnreviewed": 2,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "5052 H-32 Aluminum",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "H32",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "material.stockThickness",
+      "value": 3.175,
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "Break all sharp edges prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "Part is to be powder coated with Cardinal color C241-BK109.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "Break all sharp edges prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "Material: 5052 H-32 Aluminum",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        510,
+        131.28,
+        646.32,
+        140.46
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "corner_bracket_v2.0_REV1_PP-MP0106.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 18,
+    "notCostedSample": [
+     "material.condition = \"H32\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coating = \"Break all sharp edges prior to powder coat\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coating = \"Part is to be powder coated with Cardinal color C241-BK109.\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "dimension = {\"type\":\"linear\",\"nominal\":38.6} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":62} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":1,\"count\":5} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":95} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":30} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 5365,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 3.4967,
+    "buckets": {
+     "material": 0.6453,
+     "process": 0.8394,
+     "labour": 1.2976,
+     "tooling": 0.1023,
+     "packaging": 0.004,
+     "logistics": 0.003,
+     "overhead": 0.3461,
+     "margin": 0.259
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.01,
+     "netLabel": "net",
+     "grossKg": 0.204,
+     "utilisation": 0.05
+    },
+    "operations": [
+     "Setup (amortised) [HAAS UMC-500 (5-axis Mill)] 0.180 min, process \u00a30.0512, labour \u00a30.0838",
+     "Milling \u2014 +X (16 faces) [HAAS UMC-500 (5-axis Mill)] 0.980 min, process \u00a30.3484, labour \u00a30.2480",
+     "Milling \u2014 +Z (4 faces) [HAAS UMC-500 (5-axis Mill)] 0.245 min, process \u00a30.0871, labour \u00a30.0620",
+     "Milling \u2014 +Y (2 faces) [HAAS UMC-500 (5-axis Mill)] 0.122 min, process \u00a30.0435, labour \u00a30.0310",
+     "Drilling \u2014 4 holes [HAAS UMC-500 (5-axis Mill)] 0.257 min, process \u00a30.0914, labour \u00a30.0651",
+     "Load / clamp / unload \u2014 2 fixturing(s) [HAAS UMC-500 (5-axis Mill)] 0.612 min, process \u00a30.2177, labour \u00a30.3100",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.4976"
+    ],
+    "tooling": {
+     "investment": 5116,
+     "amortisedOver": 50000,
+     "perPart": 0.10232
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 5.5069,
+    "buckets": {
+     "material": 1.595,
+     "process": 1.1638,
+     "labour": 1.6835,
+     "tooling": 0.1023,
+     "packaging": 0.004,
+     "logistics": 0.005,
+     "overhead": 0.5454,
+     "margin": 0.4079
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.026,
+     "netLabel": "net",
+     "grossKg": 0.51,
+     "utilisation": 0.05
+    },
+    "operations": [
+     "Setup (amortised) [HAAS UMC-500 (5-axis Mill)] 0.180 min, process \u00a30.0512, labour \u00a30.0838",
+     "Milling \u2014 +X (16 faces) [HAAS UMC-500 (5-axis Mill)] 1.194 min, process \u00a30.4246, labour \u00a30.3023",
+     "Milling \u2014 +Z (4 faces) [HAAS UMC-500 (5-axis Mill)] 0.300 min, process \u00a30.1067, labour \u00a30.0760",
+     "Milling \u2014 +Y (2 faces) [HAAS UMC-500 (5-axis Mill)] 0.147 min, process \u00a30.0523, labour \u00a30.0372",
+     "Drilling \u2014 4 holes [HAAS UMC-500 (5-axis Mill)] 0.263 min, process \u00a30.0936, labour \u00a30.0667",
+     "Load / clamp / unload \u2014 2 fixturing(s) [HAAS UMC-500 (5-axis Mill)] 1.224 min, process \u00a30.4355, labour \u00a30.6200",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.4976"
+    ],
+    "tooling": {
+     "investment": 5116,
+     "amortisedOver": 50000,
+     "perPart": 0.10232
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 2.0102,
+    "totalPct": 57.49,
+    "buckets": {
+     "material": 0.9497,
+     "process": 0.3244,
+     "labour": 0.3859,
+     "tooling": 0.0,
+     "packaging": 0.0,
+     "logistics": 0.002,
+     "overhead": 0.1993,
+     "margin": 0.1489
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 0.6453,
+     "C": 1.595,
+     "delta": 0.9497
+    },
+    {
+     "bucket": "process",
+     "A": 0.8394,
+     "C": 1.1638,
+     "delta": 0.3244
+    },
+    {
+     "bucket": "labour",
+     "A": 1.2976,
+     "C": 1.6835,
+     "delta": 0.3859
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.003,
+     "C": 0.005,
+     "delta": 0.002
+    },
+    {
+     "bucket": "overhead",
+     "A": 0.3461,
+     "C": 0.5454,
+     "delta": 0.1993
+    },
+    {
+     "bucket": "margin",
+     "A": 0.259,
+     "C": 0.4079,
+     "delta": 0.1489
+    }
+   ],
+   "why": [
+    "material.family: A (not answered \u2014 costed default / leaning) -> C aluminium (from drawing (confirmed, \"Material: 5052 H-32 Aluminum\"))",
+    "operations added in C: Milling \u2014 +X (16 faces) [HAAS UMC-500 (5-axis Mill)] 1.194 min, process \u00a30.4246, labour \u00a30.3023; Milling \u2014 +Z (4 faces) [HAAS UMC-500 (5-axis Mill)] 0.300 min, process \u00a30.1067, labour \u00a30.0760; Milling \u2014 +Y (2 faces) [HAAS UMC-500 (5-axis Mill)] 0.147 min, process \u00a30.0523, labour \u00a30.0372; Drilling \u2014 4 holes [HAAS UMC-500 (5-axis Mill)] 0.263 min, process \u00a30.0936, labour \u00a30.0667; Load / clamp / unload \u2014 2 fixturing(s) [HAAS UMC-500 (5-axis Mill)] 1.224 min, process \u00a30.4355, labour \u00a30.6200",
+    "operations removed in C: Milling \u2014 +X (16 faces) [HAAS UMC-500 (5-axis Mill)] 0.980 min, process \u00a30.3484, labour \u00a30.2480; Milling \u2014 +Z (4 faces) [HAAS UMC-500 (5-axis Mill)] 0.245 min, process \u00a30.0871, labour \u00a30.0620; Milling \u2014 +Y (2 faces) [HAAS UMC-500 (5-axis Mill)] 0.122 min, process \u00a30.0435, labour \u00a30.0310; Drilling \u2014 4 holes [HAAS UMC-500 (5-axis Mill)] 0.257 min, process \u00a30.0914, labour \u00a30.0651; Load / clamp / unload \u2014 2 fixturing(s) [HAAS UMC-500 (5-axis Mill)] 0.612 min, process \u00a30.2177, labour \u00a30.3100",
+    "material-bucket line 'tool wear (inserts, end mills, drills)': A \u00a30.032 -> C \u00a30.0761"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "aluminium [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing note \"Material: 5052 H-32 Aluminum\" (read only as a general note)"
+     }
+    ],
+    "total": 5.5069,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 1.595,
+     "process": 1.1638,
+     "labour": 1.6835,
+     "tooling": 0.1023,
+     "packaging": 0.004,
+     "logistics": 0.005,
+     "overhead": 0.5454,
+     "margin": 0.4079
+    },
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.026,
+     "netLabel": "net",
+     "grossKg": 0.51,
+     "utilisation": 0.05
+    },
+    "deltaVsA": {
+     "total": 2.0102,
+     "totalPct": 57.49
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-cover",
+   "cad": "electronics_cover_revA.step",
+   "drawing": "electronics_cover_reva.pdf",
+   "truthFile": "lulzbot-taz6-electronics-cover",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "the tool's leaning (\"Machined from solid\")",
+     "options": [
+      "aluminium_extrusion",
+      "extrusion",
+      "rubber",
+      "machining (leaning)"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "plastic",
+     "why": "no leaning, no costed default: first offered option (\"Plastic\")",
+     "options": [
+      "plastic",
+      "aluminium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "yes"
+    }
+   ],
+   "reviewC": {
+    "ops": 41,
+    "confirmed": 32,
+    "corrected": 3,
+    "rejected": 4,
+    "resolved": 2,
+    "leftUnreviewed": 6,
+    "costRelevantDecisions": [
+     {
+      "action": "resolve",
+      "conflict": "hole.diameter",
+      "chosen": "drawing:hole.diameter:1",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "resolve",
+      "conflict": "title.partName",
+      "chosen": "drawing:title.partName:1",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.designation",
+      "value": "Aluminum",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "A Ad Part is to be powder coated A with Cardinal color C241-BK109.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "Mask entire outward facing surface",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "shown to the left prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "Mask this side as indicated in Note 6",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "finish.masking",
+      "value": "Masking callout added",
+      "basis": "group \"coating\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "Break all sharp edges prior to coating.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [
+     {
+      "id": "material.family",
+      "question": "What is this part made of?",
+      "value": "plastic",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "aluminium",
+       "steel",
+       "cast iron",
+       "titanium",
+       "copper alloy",
+       "plastic"
+      ]
+     }
+    ],
+    "drawingAnswers": {},
+    "evidence": {},
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [
+     {
+      "name": "hole.diameter",
+      "resolved": true,
+      "why": "the drawing states \u00d83.4 and the 3D model measures \u00d83.3 on the same 14 holes. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses."
+     },
+     {
+      "name": "title.partName",
+      "resolved": true,
+      "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says ELECTRONICS COVER. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses."
+     }
+    ],
+    "missingAfter": [],
+    "notCostedCount": 35,
+    "notCostedSample": [
+     "finish.coating = \"A Ad Part is to be powder coated A with Cardinal color C241-BK109.\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.masking = \"Mask entire outward facing surface\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.coating = \"shown to the left prior to powder coat\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.masking = \"Mask this side as indicated in Note 6\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.masking = \"Masking callout added\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":307.5} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":27.5,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":52.5,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 9039,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 11.9862,
+    "buckets": {
+     "material": 1.63,
+     "process": 2.9852,
+     "labour": 5.0179,
+     "tooling": 0.2047,
+     "packaging": 0.039,
+     "logistics": 0.041,
+     "overhead": 1.1805,
+     "margin": 0.8879
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.169,
+     "netLabel": "net",
+     "grossKg": 0.44,
+     "utilisation": 0.385
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (26 faces) [HAAS VF-2 (3-axis Mill)] 10.237 min, process \u00a31.9302, labour \u00a32.5916",
+     "Milling \u2014 +Y (6 faces) [HAAS VF-2 (3-axis Mill)] 2.363 min, process \u00a30.4456, labour \u00a30.5983",
+     "Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.790 min, process \u00a30.1489, labour \u00a30.2000",
+     "Drilling \u2014 20 holes [CNC Drilling Centre] 1.267 min, process \u00a30.1754, labour \u00a30.3209",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.5195"
+    ],
+    "tooling": {
+     "investment": 10233,
+     "amortisedOver": 50000,
+     "perPart": 0.20466
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 11.9862,
+    "buckets": {
+     "material": 1.63,
+     "process": 2.9852,
+     "labour": 5.0179,
+     "tooling": 0.2047,
+     "packaging": 0.039,
+     "logistics": 0.041,
+     "overhead": 1.1805,
+     "margin": 0.8879
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.169,
+     "netLabel": "net",
+     "grossKg": 0.44,
+     "utilisation": 0.385
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +X (26 faces) [HAAS VF-2 (3-axis Mill)] 10.237 min, process \u00a31.9302, labour \u00a32.5916",
+     "Milling \u2014 +Y (6 faces) [HAAS VF-2 (3-axis Mill)] 2.363 min, process \u00a30.4456, labour \u00a30.5983",
+     "Milling \u2014 +Z (2 faces) [HAAS VF-2 (3-axis Mill)] 0.790 min, process \u00a30.1489, labour \u00a30.2000",
+     "Drilling \u2014 20 holes [CNC Drilling Centre] 1.267 min, process \u00a30.1754, labour \u00a30.3209",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.5195"
+    ],
+    "tooling": {
+     "investment": 10233,
+     "amortisedOver": 50000,
+     "perPart": 0.20466
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 0,
+    "totalPct": 0,
+    "buckets": {
+     "material": 0.0,
+     "process": 0.0,
+     "labour": 0.0,
+     "tooling": 0.0,
+     "packaging": 0.0,
+     "logistics": 0.0,
+     "overhead": 0.0,
+     "margin": 0.0
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "no answer differs between A and C"
+   ],
+   "specDiff": [],
+   "classification": "no change \u2014 the drawing answered no costing question on this route (nothing cost-relevant read, or read but no question takes it)",
+   "Chand": null,
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-chassis",
+   "cad": "electronics_chassis_reva.step",
+   "drawing": "electronics_chassis_revA_sheet1.pdf",
+   "truthFile": "lulzbot-taz6-electronics-chassis-sheet1",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "the tool's leaning (\"Machined from solid\")",
+     "options": [
+      "injection_moulding",
+      "sheet_metal",
+      "thermoforming",
+      "machining (leaning)"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "plastic",
+     "why": "no leaning, no costed default: first offered option (\"Plastic\")",
+     "options": [
+      "plastic",
+      "aluminium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 15,
+    "confirmed": 12,
+    "corrected": 1,
+    "rejected": 2,
+    "resolved": 0,
+    "leftUnreviewed": 1,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "5052 H32 AL",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "H32",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "BREAK ALL CORNERS PRIOR TO POWDER COATING",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "MASK ALL THREADS PRIOR TO POWDER COATING AND SEE PAGE 6 FOR FURTHER MASKING DETAILS AND WHERE OVERSPRAY IS ALLOWED",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "correct",
+      "name": "finish.masking",
+      "value": "front switch opening, pg 3, changed blind standoffs, pg. 3, added standoffs, pg. 4, added pem stud, pgs 4 and 5, added sheet 6, painting and masking instructions",
+      "to": "MASK ALL THREADS PRIOR TO POWDER COATING",
+      "basis": "truth value for this parameter"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERIAL: 5052 H32 AL, 2.03 MM THICK",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        610.32,
+        381.57,
+        861.84,
+        394.15
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "electronics_chassis_revA_sheet1.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 11,
+    "notCostedSample": [
+     "material.condition = \"H32\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.coating = \"BREAK ALL CORNERS PRIOR TO POWDER COATING\" \u2014 specified on the drawing \u2014 no question on the machining route takes it",
+     "finish.masking = \"MASK ALL THREADS PRIOR TO POWDER COATING AND SEE PAGE 6 FOR FURTHER MASKING DET \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.masking = \"MASK ALL THREADS PRIOR TO POWDER COATING\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.edges = \"BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"ALL COMPONENTS Rohs COMPLIANT\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"3D MODEL GOVERNS DIMENSIONS NOT SHOWN ON PRINT\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"MATERIAL: 5052 H32 AL, 2.03 MM THICK\" \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A 2.0 mm wall at 5% fill is unusual for \"machining\" \u2014 a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A 2.0 mm wall at 5% fill is unusual for \"machining\" \u2014 a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": null,
+    "totalPct": null,
+    "buckets": {
+     "material": null,
+     "process": null,
+     "labour": null,
+     "tooling": null,
+     "packaging": null,
+     "logistics": null,
+     "overhead": null,
+     "margin": null
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "material.family: A plastic -> C aluminium (from drawing (confirmed, \"MATERIAL: 5052 H32 AL, 2.03 MM THICK\"))"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "aluminium [answered]"
+    }
+   ],
+   "classification": "not costed (the tool refused the route in A and C: blocked by process_geometry_implausible \u2014 A 2.0 mm wall at 5% fill is unusual for \"machining\" \u2014 a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.)",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing: 5052 (OCR read 30W9; corrected) \u2014 the correction answers no question"
+     }
+    ],
+    "total": null,
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A 2.0 mm wall at 5% fill is unusual for \"machining\" \u2014 a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.",
+    "buckets": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "deltaVsA": null
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "openeai-arm-jxs-01-02",
+   "cad": "JXS-01-02.STEP",
+   "drawing": "JXS-01-02.pdf",
+   "truthFile": "openeai-arm-jxs-01-02",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "no leaning shown; the route the server costs as placeholder while the question is open (\"Machined from solid\"); register likely commodity: undefined",
+     "options": [
+      "sheet_metal",
+      "injection_moulding",
+      "machining"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "plastic",
+     "why": "no leaning, no costed default: first offered option (\"Plastic\")",
+     "options": [
+      "plastic",
+      "aluminium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 34,
+    "confirmed": 24,
+    "corrected": 0,
+    "rejected": 10,
+    "resolved": 0,
+    "leftUnreviewed": 1,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "6061\u94dd",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "finish.roughnessGeneral",
+      "value": {
+       "parameter": "Ra",
+       "value": 1.6
+      },
+      "basis": "group \"roughness\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "6061\u94dd 1\u4ef6",
+      "location": {
+       "sheet": 1,
+       "zone": "F9",
+       "bbox": [
+        728.41,
+        499.39,
+        798.39,
+        519.79
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "JXS-01-02.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 24,
+    "notCostedSample": [
+     "finish.roughnessGeneral = {\"parameter\":\"Ra\",\"value\":1.6} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":11} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":17} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":34} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":7.5} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":5.7} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":85} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":3.4} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 9.1362,
+    "buckets": {
+     "material": 1.8807,
+     "process": 1.5261,
+     "labour": 3.8542,
+     "tooling": 0.2073,
+     "packaging": 0.05,
+     "logistics": 0.045,
+     "overhead": 0.8962,
+     "margin": 0.6768
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.055,
+     "netLabel": "net",
+     "grossKg": 0.583,
+     "utilisation": 0.095
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Y (86 faces) [HAAS VF-2 (3-axis Mill)] 1.102 min, process \u00a30.2078, labour \u00a30.2790",
+     "Milling \u2014 +X (84 faces) [HAAS VF-2 (3-axis Mill)] 1.071 min, process \u00a30.2020, labour \u00a30.2713",
+     "Milling \u2014 +Z (47 faces) [HAAS VF-2 (3-axis Mill)] 0.600 min, process \u00a30.1131, labour \u00a30.1519",
+     "Drilling \u2014 11 holes [CNC Drilling Centre] 3.520 min, process \u00a30.4871, labour \u00a30.8913",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.8530"
+    ],
+    "tooling": {
+     "investment": 10366,
+     "amortisedOver": 50000,
+     "perPart": 0.20732
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 13.2768,
+    "buckets": {
+     "material": 4.7988,
+     "process": 1.7201,
+     "labour": 4.1518,
+     "tooling": 0.2073,
+     "packaging": 0.06,
+     "logistics": 0.05,
+     "overhead": 1.3054,
+     "margin": 0.9835
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.141,
+     "netLabel": "net",
+     "grossKg": 1.5,
+     "utilisation": 0.094
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Y (86 faces) [HAAS VF-2 (3-axis Mill)] 1.347 min, process \u00a30.2540, labour \u00a30.3410",
+     "Milling \u2014 +X (84 faces) [HAAS VF-2 (3-axis Mill)] 1.316 min, process \u00a30.2482, labour \u00a30.3333",
+     "Milling \u2014 +Z (47 faces) [HAAS VF-2 (3-axis Mill)] 0.735 min, process \u00a30.1385, labour \u00a30.1860",
+     "Drilling \u2014 11 holes [CNC Drilling Centre] 4.071 min, process \u00a30.5633, labour \u00a31.0308",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.8530"
+    ],
+    "tooling": {
+     "investment": 10366,
+     "amortisedOver": 50000,
+     "perPart": 0.20732
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 4.1405,
+    "totalPct": 45.32,
+    "buckets": {
+     "material": 2.9181,
+     "process": 0.194,
+     "labour": 0.2976,
+     "tooling": 0.0,
+     "packaging": 0.01,
+     "logistics": 0.005,
+     "overhead": 0.4092,
+     "margin": 0.3067
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 1.8807,
+     "C": 4.7988,
+     "delta": 2.9181
+    },
+    {
+     "bucket": "process",
+     "A": 1.5261,
+     "C": 1.7201,
+     "delta": 0.194
+    },
+    {
+     "bucket": "labour",
+     "A": 3.8542,
+     "C": 4.1518,
+     "delta": 0.2976
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.05,
+     "C": 0.06,
+     "delta": 0.01
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.045,
+     "C": 0.05,
+     "delta": 0.005
+    },
+    {
+     "bucket": "overhead",
+     "A": 0.8962,
+     "C": 1.3054,
+     "delta": 0.4092
+    },
+    {
+     "bucket": "margin",
+     "A": 0.6768,
+     "C": 0.9835,
+     "delta": 0.3067
+    }
+   ],
+   "why": [
+    "material.family: A plastic -> C aluminium (from drawing (confirmed, \"6061\u94dd 1\u4ef6\"))",
+    "operations added in C: Milling \u2014 +Y (86 faces) [HAAS VF-2 (3-axis Mill)] 1.347 min, process \u00a30.2540, labour \u00a30.3410; Milling \u2014 +X (84 faces) [HAAS VF-2 (3-axis Mill)] 1.316 min, process \u00a30.2482, labour \u00a30.3333; Milling \u2014 +Z (47 faces) [HAAS VF-2 (3-axis Mill)] 0.735 min, process \u00a30.1385, labour \u00a30.1860; Drilling \u2014 11 holes [CNC Drilling Centre] 4.071 min, process \u00a30.5633, labour \u00a31.0308",
+    "operations removed in C: Milling \u2014 +Y (86 faces) [HAAS VF-2 (3-axis Mill)] 1.102 min, process \u00a30.2078, labour \u00a30.2790; Milling \u2014 +X (84 faces) [HAAS VF-2 (3-axis Mill)] 1.071 min, process \u00a30.2020, labour \u00a30.2713; Milling \u2014 +Z (47 faces) [HAAS VF-2 (3-axis Mill)] 0.600 min, process \u00a30.1131, labour \u00a30.1519; Drilling \u2014 11 holes [CNC Drilling Centre] 3.520 min, process \u00a30.4871, labour \u00a30.8913",
+    "material-bucket line 'tool wear (inserts, end mills, drills)': A \u00a30.1259 -> C \u00a30.2988"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "aluminium [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing title block: 6061 (truth file) \u2014 not read by the reader"
+     }
+    ],
+    "total": 13.2768,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 4.7988,
+     "process": 1.7201,
+     "labour": 4.1518,
+     "tooling": 0.2073,
+     "packaging": 0.06,
+     "logistics": 0.05,
+     "overhead": 1.3054,
+     "margin": 0.9835
+    },
+    "weights": {
+     "grade": "6082-T6 Aluminium Bar",
+     "materialId": "mat-al6082-bar",
+     "netKg": 0.141,
+     "netLabel": "net",
+     "grossKg": 1.5,
+     "utilisation": 0.094
+    },
+    "deltaVsA": {
+     "total": 4.1405,
+     "totalPct": 45.32
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "nist-ftc-09",
+   "cad": "nist_ftc_09_asme1_rd.stp",
+   "drawing": "nist_ftc_09_asme1_rd.pdf",
+   "truthFile": "nist-ftc-09",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "route": {
+    "A": "machining",
+    "C": "machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "machining",
+     "why": "no leaning shown; the route the server costs as placeholder while the question is open (\"Machined from solid\"); register likely commodity: undefined",
+     "options": [
+      "aluminium_extrusion",
+      "extrusion",
+      "rubber",
+      "machining"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "plastic",
+     "why": "no leaning, no costed default: first offered option (\"Plastic\")",
+     "options": [
+      "plastic",
+      "aluminium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    },
+    {
+     "id": "service.pressureTight",
+     "costed": null,
+     "leaning": "no"
+    }
+   ],
+   "reviewC": {
+    "ops": 15,
+    "confirmed": 11,
+    "corrected": 0,
+    "rejected": 4,
+    "resolved": 0,
+    "leftUnreviewed": 0,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "304 SST",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "material.standard",
+      "value": "ASTM A240",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "material.stockThickness",
+      "value": 3.0353,
+      "basis": "equals the truth value written in inches (\u00d7 25.4)"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "steel",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "steel"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A240. 08",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        43.62,
+        280.32,
+        291.84,
+        301.95
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "nist_ftc_09_asme1_rd.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 7,
+    "notCostedSample": [
+     "note.general = \"CAD MODEL ___________ REV. __ IS REQUIRED TO COMPLETE PRODUCT DEFINITION.\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"DIRECTLY-TOLERANCED DIMENSIONS AND BASIC DIMENSIONS DEFINED ON THE DRAWING TAKE \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"APPLICABLE STANDARDS: ASME Y14.41-2003 APPLIES TO DATASET. ASME Y14.5M-1994 APP \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"DIMENSION AND TOLERANCE VALUES SHOWN IN SQUARE BRACKETS [XXX] ARE MILLIMETERS.\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A240. 08\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"UNITS: INCHES\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "material.designation = \"304 SST\" \u2014 the material family is taken from it; the grade it names is not costed \u2014 the machining route has no grade question and costs the family's representative grade"
+    ],
+    "ocrJob": {
+     "status": "done",
+     "ms": 15903,
+     "error": null
+    }
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 10.3438,
+    "buckets": {
+     "material": 1.3382,
+     "process": 2.3677,
+     "labour": 4.571,
+     "tooling": 0.2058,
+     "packaging": 0.038,
+     "logistics": 0.039,
+     "overhead": 1.0179,
+     "margin": 0.7662
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "POM-C (Acetal / Delrin Stock)",
+     "materialId": "mat-pom-c",
+     "netKg": 0.146,
+     "netLabel": "net",
+     "grossKg": 0.361,
+     "utilisation": 0.404
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Z (110 faces) [HAAS VF-2 (3-axis Mill)] 5.841 min, process \u00a31.1013, labour \u00a31.4787",
+     "Milling \u2014 +X (44 faces) [HAAS VF-2 (3-axis Mill)] 2.339 min, process \u00a30.4410, labour \u00a30.5921",
+     "Milling \u2014 +Y (4 faces) [HAAS VF-2 (3-axis Mill)] 0.214 min, process \u00a30.0404, labour \u00a30.0543",
+     "Drilling \u2014 30 holes [CNC Drilling Centre] 3.612 min, process \u00a30.4998, labour \u00a30.9145",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.7437"
+    ],
+    "tooling": {
+     "investment": 10291,
+     "amortisedOver": 50000,
+     "perPart": 0.20582
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Plastic",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 16.2899,
+    "buckets": {
+     "material": 4.067,
+     "process": 3.1211,
+     "labour": 5.8947,
+     "tooling": 0.2058,
+     "packaging": 0.08,
+     "logistics": 0.12,
+     "overhead": 1.5946,
+     "margin": 1.2067
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "EN8 / 080M40 (Medium Carbon)",
+     "materialId": "mat-en8",
+     "netKg": 1.093,
+     "netLabel": "net",
+     "grossKg": 2.7,
+     "utilisation": 0.405
+    },
+    "operations": [
+     "Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Milling \u2014 +Z (110 faces) [HAAS VF-2 (3-axis Mill)] 7.757 min, process \u00a31.4626, labour \u00a31.9639",
+     "Milling \u2014 +X (44 faces) [HAAS VF-2 (3-axis Mill)] 3.104 min, process \u00a30.5853, labour \u00a30.7859",
+     "Milling \u2014 +Y (4 faces) [HAAS VF-2 (3-axis Mill)] 0.282 min, process \u00a30.0531, labour \u00a30.0713",
+     "Drilling \u2014 30 holes [CNC Drilling Centre] 3.643 min, process \u00a30.5040, labour \u00a30.9223",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.7437"
+    ],
+    "tooling": {
+     "investment": 10291,
+     "amortisedOver": 50000,
+     "perPart": 0.20582
+    },
+    "finish": null,
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 5.9461,
+    "totalPct": 57.48,
+    "buckets": {
+     "material": 2.7288,
+     "process": 0.7534,
+     "labour": 1.3237,
+     "tooling": 0.0,
+     "packaging": 0.042,
+     "logistics": 0.081,
+     "overhead": 0.5767,
+     "margin": 0.4405
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 1.3382,
+     "C": 4.067,
+     "delta": 2.7288
+    },
+    {
+     "bucket": "process",
+     "A": 2.3677,
+     "C": 3.1211,
+     "delta": 0.7534
+    },
+    {
+     "bucket": "labour",
+     "A": 4.571,
+     "C": 5.8947,
+     "delta": 1.3237
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.038,
+     "C": 0.08,
+     "delta": 0.042
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.039,
+     "C": 0.12,
+     "delta": 0.081
+    },
+    {
+     "bucket": "overhead",
+     "A": 1.0179,
+     "C": 1.5946,
+     "delta": 0.5767
+    },
+    {
+     "bucket": "margin",
+     "A": 0.7662,
+     "C": 1.2067,
+     "delta": 0.4405
+    }
+   ],
+   "why": [
+    "material.family: A plastic -> C steel (from drawing (confirmed, \"MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A240. 08\"))",
+    "operations added in C: Milling \u2014 +Z (110 faces) [HAAS VF-2 (3-axis Mill)] 7.757 min, process \u00a31.4626, labour \u00a31.9639; Milling \u2014 +X (44 faces) [HAAS VF-2 (3-axis Mill)] 3.104 min, process \u00a30.5853, labour \u00a30.7859; Milling \u2014 +Y (4 faces) [HAAS VF-2 (3-axis Mill)] 0.282 min, process \u00a30.0531, labour \u00a30.0713; Drilling \u2014 30 holes [CNC Drilling Centre] 3.643 min, process \u00a30.5040, labour \u00a30.9223; Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.449 min, process \u00a30.4618, labour \u00a31.2400",
+    "operations removed in C: Milling \u2014 +Z (110 faces) [HAAS VF-2 (3-axis Mill)] 5.841 min, process \u00a31.1013, labour \u00a31.4787; Milling \u2014 +X (44 faces) [HAAS VF-2 (3-axis Mill)] 2.339 min, process \u00a30.4410, labour \u00a30.5921; Milling \u2014 +Y (4 faces) [HAAS VF-2 (3-axis Mill)] 0.214 min, process \u00a30.0404, labour \u00a30.0543; Drilling \u2014 30 holes [CNC Drilling Centre] 3.612 min, process \u00a30.4998, labour \u00a30.9145; Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 1.224 min, process \u00a30.2309, labour \u00a30.6200",
+    "material-bucket line 'tool wear (inserts, end mills, drills)': A \u00a30.2401 -> C \u00a31.7743"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Plastic [answered]",
+     "C": "Steel [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = steel); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "steel",
+      "why": "by hand from the drawing: drawing note \"(.1195 THICK) 11 GA 304 SST SHT, ASTM A240\" \u2014 not read by the reader"
+     }
+    ],
+    "total": 16.2899,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 4.067,
+     "process": 3.1211,
+     "labour": 5.8947,
+     "tooling": 0.2058,
+     "packaging": 0.08,
+     "logistics": 0.12,
+     "overhead": 1.5946,
+     "margin": 1.2067
+    },
+    "weights": {
+     "grade": "EN8 / 080M40 (Medium Carbon)",
+     "materialId": "mat-en8",
+     "netKg": 1.093,
+     "netLabel": "net",
+     "grossKg": 2.7,
+     "utilisation": 0.405
+    },
+    "deltaVsA": {
+     "total": 5.9461,
+     "totalPct": 57.48
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "nist-ftc-10",
+   "cad": "nist_ftc_10_asme1_rb.stp",
+   "drawing": "nist_ftc_10_asme1_rb.pdf",
+   "truthFile": "nist-ftc-10",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "cast_and_machine",
+    "C": "cast_and_machine"
+   },
+   "route": {
+    "A": "Gravity die casting + machining",
+    "C": "Gravity die casting + machining"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "question": "Which process makes this part?",
+     "value": "cast_and_machine",
+     "why": "the tool's leaning (\"Cast then machined\")",
+     "options": [
+      "forging",
+      "casting",
+      "cast_and_machine (leaning)"
+     ]
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "aluminium",
+     "why": "no leaning, no costed default: first offered option (\"Aluminium\")",
+     "options": [
+      "aluminium",
+      "magnesium",
+      "titanium",
+      "cast iron",
+      "steel",
+      "copper alloy",
+      "zinc",
+      "nickel alloy"
+     ]
+    },
+    {
+     "id": "service.pressureTight",
+     "question": "Does this part have to hold pressure or be leak-tight?",
+     "value": "no",
+     "why": "the tool's leaning (\"No \u2014 structural or cosmetic only\")",
+     "options": [
+      "yes",
+      "no (leaning)"
+     ]
+    },
+    {
+     "id": "service.toleranceClass",
+     "question": "What tolerance class does the drawing call for?",
+     "value": "loose",
+     "why": "no leaning, no costed default: first offered option (\"Loose \u2014 general as-cast\")",
+     "options": [
+      "loose",
+      "standard",
+      "tight"
+     ]
+    },
+    {
+     "id": "service.safetyCritical",
+     "question": "Is this part safety-critical or fatigue-loaded?",
+     "value": "yes",
+     "why": "no leaning, no costed default: first offered option (\"Yes \u2014 safety-critical\")",
+     "options": [
+      "yes",
+      "no"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "material.grade",
+     "costed": "mat-lm25",
+     "leaning": "mat-lm25"
+    },
+    {
+     "id": "casting.heatTreat",
+     "costed": "T6",
+     "leaning": null
+    },
+    {
+     "id": "casting.impressions",
+     "costed": "1",
+     "leaning": null
+    },
+    {
+     "id": "service.finish",
+     "costed": "none",
+     "leaning": null
+    }
+   ],
+   "reviewC": {
+    "ops": 41,
+    "confirmed": 34,
+    "corrected": 0,
+    "rejected": 6,
+    "resolved": 1,
+    "leftUnreviewed": 21,
+    "costRelevantDecisions": [
+     {
+      "action": "resolve",
+      "conflict": "hole.diameter",
+      "chosen": "drawing:hole.diameter:2",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "confirm",
+      "name": "tolerance.general",
+      "value": "1.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "tolerance.tightest",
+      "value": {
+       "band": 0.008,
+       "nominal": 3.5,
+       "type": "diameter"
+      },
+      "basis": "equals a truth row"
+     }
+    ],
+    "otherAnswersC": [
+     {
+      "id": "material.family",
+      "question": "What is this part made of?",
+      "value": "aluminium",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "aluminium",
+       "magnesium",
+       "zinc",
+       "cast iron",
+       "steel",
+       "copper alloy",
+       "nickel alloy"
+      ]
+     },
+     {
+      "id": "service.pressureTight",
+      "question": "Does this part have to hold pressure or be leak-tight?",
+      "value": "no",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "yes",
+       "no (leaning)"
+      ]
+     },
+     {
+      "id": "service.toleranceClass",
+      "question": "What tolerance class does the drawing call for?",
+      "value": "loose",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "loose",
+       "standard",
+       "tight"
+      ]
+     },
+     {
+      "id": "service.safetyCritical",
+      "question": "Is this part safety-critical or fatigue-loaded?",
+      "value": "yes",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "yes",
+       "no"
+      ]
+     }
+    ],
+    "drawingAnswers": {},
+    "evidence": {},
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [
+     {
+      "name": "hole.diameter",
+      "resolved": true,
+      "why": "the drawing calls 2 \u00d7 \u00d86 and the 3D model has 4 \u00d7 \u00d86. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses."
+     }
+    ],
+    "missingAfter": [
+     {
+      "name": "material.designation",
+      "why": "the material sets the weight and the \u00a3/kg \u2014 no source states it"
+     },
+     {
+      "name": "tolerance.generalClass",
+      "why": "\"1.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES\" is not a general-tolerance notation the mapping table reads \u2014 the tolerance-class question stays open"
+     }
+    ],
+    "notCostedCount": 55,
+    "notCostedSample": [
+     "tolerance.general = \"1.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES\" \u2014 specified on the drawing \u2014 not readable into the question this route asks; the question stays open",
+     "thread = {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\"nominal\":3,\"pitch\":0.5,\"pitchS \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "thread = {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\"nominal\":3,\"pitch\":0.5,\"pitchS \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "thread = {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\"nominal\":3,\"pitch\":0.5,\"pitchS \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "hole.diameter = {\"diameter\":2.5,\"count\":8,\"upper\":0.15,\"lower\":-0.15} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "hole.diameter = {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 14.3942,
+    "buckets": {
+     "material": 2.8979,
+     "process": 2.6525,
+     "labour": 5.6157,
+     "tooling": 0.5909,
+     "packaging": 0.07,
+     "logistics": 0.09,
+     "overhead": 1.4109,
+     "margin": 1.0662
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "LM25 / A356",
+     "materialId": "mat-lm25",
+     "netKg": 0.642,
+     "netLabel": "as cast",
+     "grossKg": 0.66,
+     "utilisation": 0.972
+    },
+    "operations": [
+     "Gravity Die Casting [Gravity Die Casting Machine] 3.093 min, process \u00a30.9869, labour \u00a30.6892",
+     "Melt shop (charge, melt, treat, ladle) \u2014 1.10 kg poured \u00d7 1.5 operator-h/t (engineering-typical) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.0442",
+     "Fettling (gate / riser removal, grind) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.9189",
+     "Heat treatment T6 (solution + quench + age) \u2014 furnace operator, 0.642 kg \u00d7 0.0085 h/kg (ESTIMATE) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.1459",
+     "Machining Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Finish machining \u2014 +Y side [HAAS VF-2 (3-axis Mill)] 1.050 min, process \u00a30.1980, labour \u00a30.2658",
+     "Finish machining \u2014 +X side [HAAS VF-2 (3-axis Mill)] 1.026 min, process \u00a30.1935, labour \u00a30.2598",
+     "Finish machining \u2014 +Z side [HAAS VF-2 (3-axis Mill)] 0.336 min, process \u00a30.0634, labour \u00a30.0851",
+     "Drilling \u2014 30 holes [CNC Drilling Centre] 5.088 min, process \u00a30.7040, labour \u00a31.2881",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.400 min, process \u00a30.4525, labour \u00a31.2152",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.5359"
+    ],
+    "tooling": {
+     "investment": 29547,
+     "amortisedOver": 50000,
+     "perPart": 0.59094
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.0485
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "service.pressureTight",
+      "label": "Leak-tight / pressure",
+      "value": "No \u2014 structural or cosmetic only",
+      "source": "answered"
+     },
+     {
+      "id": "service.toleranceClass",
+      "label": "Tolerance class",
+      "value": "Loose \u2014 general as-cast",
+      "source": "answered"
+     },
+     {
+      "id": "service.safetyCritical",
+      "label": "Safety-critical",
+      "value": "Yes \u2014 safety-critical",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 14.3942,
+    "buckets": {
+     "material": 2.8979,
+     "process": 2.6525,
+     "labour": 5.6157,
+     "tooling": 0.5909,
+     "packaging": 0.07,
+     "logistics": 0.09,
+     "overhead": 1.4109,
+     "margin": 1.0662
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "LM25 / A356",
+     "materialId": "mat-lm25",
+     "netKg": 0.642,
+     "netLabel": "as cast",
+     "grossKg": 0.66,
+     "utilisation": 0.972
+    },
+    "operations": [
+     "Gravity Die Casting [Gravity Die Casting Machine] 3.093 min, process \u00a30.9869, labour \u00a30.6892",
+     "Melt shop (charge, melt, treat, ladle) \u2014 1.10 kg poured \u00d7 1.5 operator-h/t (engineering-typical) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.0442",
+     "Fettling (gate / riser removal, grind) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.9189",
+     "Heat treatment T6 (solution + quench + age) \u2014 furnace operator, 0.642 kg \u00d7 0.0085 h/kg (ESTIMATE) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.1459",
+     "Machining Setup (amortised) [HAAS VF-2 (3-axis Mill)] 0.360 min, process \u00a30.0543, labour \u00a30.1677",
+     "Finish machining \u2014 +Y side [HAAS VF-2 (3-axis Mill)] 1.050 min, process \u00a30.1980, labour \u00a30.2658",
+     "Finish machining \u2014 +X side [HAAS VF-2 (3-axis Mill)] 1.026 min, process \u00a30.1935, labour \u00a30.2598",
+     "Finish machining \u2014 +Z side [HAAS VF-2 (3-axis Mill)] 0.336 min, process \u00a30.0634, labour \u00a30.0851",
+     "Drilling \u2014 30 holes [CNC Drilling Centre] 5.088 min, process \u00a30.7040, labour \u00a31.2881",
+     "Load / clamp / unload \u2014 4 fixturing(s) [HAAS VF-2 (3-axis Mill)] 2.400 min, process \u00a30.4525, labour \u00a31.2152",
+     "Deburr and gauge check (bench) [bench] 0.000 min, process \u00a30.0000, labour \u00a30.5359"
+    ],
+    "tooling": {
+     "investment": 29547,
+     "amortisedOver": 50000,
+     "perPart": 0.59094
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.0485
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "service.pressureTight",
+      "label": "Leak-tight / pressure",
+      "value": "No \u2014 structural or cosmetic only",
+      "source": "answered"
+     },
+     {
+      "id": "service.toleranceClass",
+      "label": "Tolerance class",
+      "value": "Loose \u2014 general as-cast",
+      "source": "answered"
+     },
+     {
+      "id": "service.safetyCritical",
+      "label": "Safety-critical",
+      "value": "Yes \u2014 safety-critical",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 0,
+    "totalPct": 0,
+    "buckets": {
+     "material": 0.0,
+     "process": 0.0,
+     "labour": 0.0,
+     "tooling": 0.0,
+     "packaging": 0.0,
+     "logistics": 0.0,
+     "overhead": 0.0,
+     "margin": 0.0
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "no answer differs between A and C"
+   ],
+   "specDiff": [],
+   "classification": "no change \u2014 the drawing answered no costing question on this route (nothing cost-relevant read, or read but no question takes it)",
+   "Chand": null,
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-corner-bracket@sheet",
+   "cad": "corner_bracket_v2.0_PP-MP0106.step",
+   "drawing": "corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+   "truthFile": "lulzbot-taz6-corner-bracket",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "sheet_metal_fab",
+    "C": "sheet_metal_fab"
+   },
+   "route": {
+    "A": "sheet metal fab",
+    "C": "sheet metal fab"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "value": "sheet_metal",
+     "why": "stated engineering assumption: the model is a bent sheet of one gauge (register: sheet metal); the same in A and C"
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "steel",
+     "why": "no leaning, no costed default: first offered option (\"Steel\")",
+     "options": [
+      "steel",
+      "aluminium"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "material.grade",
+     "costed": "mat-dc04",
+     "leaning": "mat-dc04"
+    },
+    {
+     "id": "service.finish",
+     "costed": "none",
+     "leaning": null
+    },
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    }
+   ],
+   "reviewC": {
+    "ops": 23,
+    "confirmed": 20,
+    "corrected": 0,
+    "rejected": 3,
+    "resolved": 0,
+    "leftUnreviewed": 2,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "5052 H-32 Aluminum",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "H32",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "material.stockThickness",
+      "value": 3.175,
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "Break all sharp edges prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "Part is to be powder coated with Cardinal color C241-BK109.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "Break all sharp edges prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium",
+     "service.finish": "powder_coat"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "Material: 5052 H-32 Aluminum",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        510,
+        131.28,
+        646.32,
+        140.46
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "corner_bracket_v2.0_REV1_PP-MP0106.pdf"
+     },
+     "service.finish": {
+      "parameterId": "drawing:finish.coating:1>finish.coatingRoute",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "Break all sharp edges prior to powder coat",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        510,
+        144.96,
+        696,
+        154.14
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "corner_bracket_v2.0_REV1_PP-MP0106.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [
+     {
+      "name": "material.grade",
+      "why": "\"5052 H-32 Aluminum\" names no grade the sheet metal grade question offers \u2014 the grade question stays open"
+     }
+    ],
+    "notCostedCount": 16,
+    "notCostedSample": [
+     "material.condition = \"H32\" \u2014 specified on the drawing \u2014 no question on the sheet metal route takes it",
+     "finish.coating = \"Part is to be powder coated with Cardinal color C241-BK109.\" \u2014 specified on the drawing \u2014 not readable into the question this route asks; the question stays open",
+     "dimension = {\"type\":\"linear\",\"nominal\":38.6} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":62} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":1,\"count\":5} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"radius\",\"nominal\":95} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":30} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":62} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 0.5019,
+    "buckets": {
+     "material": 0.0714,
+     "process": 0.171,
+     "labour": 0.1292,
+     "tooling": 0.03,
+     "packaging": 0.006,
+     "logistics": 0.009,
+     "overhead": 0.0482,
+     "margin": 0.0372
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "DC04 (CR4 Deep-Drawing)",
+     "materialId": "mat-dc04",
+     "netKg": 0.072,
+     "netLabel": "net",
+     "grossKg": 0.087,
+     "utilisation": 0.83
+    },
+    "operations": [
+     "Laser Cutting [Trumpf TruLaser 3030 (6kW Fiber)] 0.289 min, process \u00a30.1710, labour \u00a30.1292"
+    ],
+    "tooling": {
+     "investment": 1500,
+     "amortisedOver": 50000,
+     "perPart": 0.03
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.007
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 0.651,
+    "buckets": {
+     "material": 0.1594,
+     "process": 0.1942,
+     "labour": 0.1465,
+     "tooling": 0.03,
+     "packaging": 0.004,
+     "logistics": 0.005,
+     "overhead": 0.0636,
+     "margin": 0.0482
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "AA5754-H22 Sheet",
+     "materialId": "mat-aa5754-sheet",
+     "netKg": 0.025,
+     "netLabel": "net",
+     "grossKg": 0.031,
+     "utilisation": 0.83
+    },
+    "operations": [
+     "Laser Cutting [Trumpf TruLaser 3030 (6kW Fiber)] 0.327 min, process \u00a30.1930, labour \u00a30.1458",
+     "Powder Coat Line (paint-line rate as proxy) [Standard Paint Line (E-coat + Topcoat)] 0.001 min, process \u00a30.0013, labour \u00a30.0006"
+    ],
+    "tooling": {
+     "investment": 1500,
+     "amortisedOver": 50000,
+     "perPart": 0.03
+    },
+    "finish": {
+     "route": "powder_coat",
+     "partsPerRack": 4536,
+     "racksPerHour": 20,
+     "areaM2": 0.007
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "service.finish",
+      "label": "Finish",
+      "value": "Powder coat (iron phosphate pre-treat)",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 0.149,
+    "totalPct": 29.7,
+    "buckets": {
+     "material": 0.088,
+     "process": 0.0232,
+     "labour": 0.0173,
+     "tooling": 0.0,
+     "packaging": -0.002,
+     "logistics": -0.004,
+     "overhead": 0.0154,
+     "margin": 0.011
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 0.0714,
+     "C": 0.1594,
+     "delta": 0.088
+    },
+    {
+     "bucket": "process",
+     "A": 0.171,
+     "C": 0.1942,
+     "delta": 0.0232
+    },
+    {
+     "bucket": "labour",
+     "A": 0.1292,
+     "C": 0.1465,
+     "delta": 0.0173
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.006,
+     "C": 0.004,
+     "delta": -0.002
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.009,
+     "C": 0.005,
+     "delta": -0.004
+    },
+    {
+     "bucket": "overhead",
+     "A": 0.0482,
+     "C": 0.0636,
+     "delta": 0.0154
+    },
+    {
+     "bucket": "margin",
+     "A": 0.0372,
+     "C": 0.0482,
+     "delta": 0.011
+    }
+   ],
+   "why": [
+    "material.family: A steel -> C aluminium (from drawing (confirmed, \"Material: 5052 H-32 Aluminum\"))",
+    "service.finish: A (not answered \u2014 costed default / leaning) -> C powder_coat (from drawing (confirmed, \"Break all sharp edges prior to powder coat\"))",
+    "operations added in C: Laser Cutting [Trumpf TruLaser 3030 (6kW Fiber)] 0.327 min, process \u00a30.1930, labour \u00a30.1458; Powder Coat Line (paint-line rate as proxy) [Standard Paint Line (E-coat + Topcoat)] 0.001 min, process \u00a30.0013, labour \u00a30.0006",
+    "operations removed in C: Laser Cutting [Trumpf TruLaser 3030 (6kW Fiber)] 0.289 min, process \u00a30.1710, labour \u00a30.1292",
+    "material-bucket line 'consumables (not itemised by the route's module)': A \u00a30.0087 -> C \u00a30.0605"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Steel [answered]",
+     "C": "aluminium [answered]"
+    },
+    {
+     "id": "service.finish",
+     "A": null,
+     "C": "Powder coat (iron phosphate pre-treat) [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium, service.finish = powder_coat); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing note \"Material: 5052 H-32 Aluminum\" (read only as a general note)"
+     }
+    ],
+    "total": 0.651,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 0.1594,
+     "process": 0.1942,
+     "labour": 0.1465,
+     "tooling": 0.03,
+     "packaging": 0.004,
+     "logistics": 0.005,
+     "overhead": 0.0636,
+     "margin": 0.0482
+    },
+    "weights": {
+     "grade": "AA5754-H22 Sheet",
+     "materialId": "mat-aa5754-sheet",
+     "netKg": 0.025,
+     "netLabel": "net",
+     "grossKg": 0.031,
+     "utilisation": 0.83
+    },
+    "deltaVsA": {
+     "total": 0.149,
+     "totalPct": 29.7
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-cover@sheet",
+   "cad": "electronics_cover_revA.step",
+   "drawing": "electronics_cover_reva.pdf",
+   "truthFile": "lulzbot-taz6-electronics-cover",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "sheet_metal_fab",
+    "C": "sheet_metal_fab"
+   },
+   "route": {
+    "A": "sheet metal fab",
+    "C": "sheet metal fab"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "value": "sheet_metal",
+     "why": "stated engineering assumption: the model is a bent sheet of one gauge (register: sheet metal); the same in A and C"
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "steel",
+     "why": "no leaning, no costed default: first offered option (\"Steel\")",
+     "options": [
+      "steel",
+      "aluminium"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "material.grade",
+     "costed": "mat-dc04",
+     "leaning": "mat-dc04"
+    },
+    {
+     "id": "service.finish",
+     "costed": "none",
+     "leaning": null
+    },
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    }
+   ],
+   "reviewC": {
+    "ops": 41,
+    "confirmed": 32,
+    "corrected": 3,
+    "rejected": 4,
+    "resolved": 2,
+    "leftUnreviewed": 6,
+    "costRelevantDecisions": [
+     {
+      "action": "resolve",
+      "conflict": "hole.diameter",
+      "chosen": "drawing:hole.diameter:1",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "resolve",
+      "conflict": "title.partName",
+      "chosen": "drawing:title.partName:1",
+      "basis": "the side that equals the truth"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.designation",
+      "value": "Aluminum",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "A Ad Part is to be powder coated A with Cardinal color C241-BK109.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "Mask entire outward facing surface",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "shown to the left prior to powder coat",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "Mask this side as indicated in Note 6",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "finish.masking",
+      "value": "Masking callout added",
+      "basis": "group \"coating\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "Break all sharp edges prior to coating.",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [
+     {
+      "id": "material.family",
+      "question": "What is this part made of?",
+      "value": "steel",
+      "why": "as answered in A (the drawing does not answer it)",
+      "options": [
+       "steel",
+       "aluminium"
+      ]
+     }
+    ],
+    "drawingAnswers": {
+     "service.finish": "powder_coat"
+    },
+    "evidence": {
+     "service.finish": {
+      "parameterId": "drawing:finish.coating:1>finish.coatingRoute",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "A Ad Part is to be powder coated A with Cardinal color C241-BK109.",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        570,
+        142.05,
+        754.32,
+        182.63
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "electronics_cover_reva.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [
+     {
+      "name": "hole.diameter",
+      "resolved": true,
+      "why": "the drawing states \u00d83.4 and the 3D model measures \u00d83.3 on the same 14 holes. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses."
+     },
+     {
+      "name": "title.partName",
+      "resolved": true,
+      "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says ELECTRONICS COVER. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses."
+     }
+    ],
+    "missingAfter": [
+     {
+      "name": "material.stockThickness",
+      "why": "the gauge sets the blank weight and the press force \u2014 no source states it"
+     },
+     {
+      "name": "material.grade",
+      "why": "\"Aluminum\" names no grade the sheet metal grade question offers \u2014 the grade question stays open"
+     }
+    ],
+    "notCostedCount": 33,
+    "notCostedSample": [
+     "finish.masking = \"Mask entire outward facing surface\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.coating = \"shown to the left prior to powder coat\" \u2014 specified on the drawing \u2014 not readable into the question this route asks; the question stays open",
+     "finish.masking = \"Mask this side as indicated in Note 6\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.masking = \"Masking callout added\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":307.5} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":27.5,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":52.5,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "dimension = {\"type\":\"linear\",\"nominal\":55.675,\"basic\":true} \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A near-solid part (99% fill) is inconsistent with the thin-wall process \"sheet_metal_fab\" \u2014 this looks machined, cast or forged. Confirm the process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.1591
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A near-solid part (99% fill) is inconsistent with the thin-wall process \"sheet_metal_fab\" \u2014 this looks machined, cast or forged. Confirm the process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": {
+     "route": "powder_coat",
+     "partsPerRack": 91,
+     "racksPerHour": 20,
+     "areaM2": 0.1591
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     },
+     {
+      "id": "service.finish",
+      "label": "Finish",
+      "value": "Powder coat (iron phosphate pre-treat)",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": null,
+    "totalPct": null,
+    "buckets": {
+     "material": null,
+     "process": null,
+     "labour": null,
+     "tooling": null,
+     "packaging": null,
+     "logistics": null,
+     "overhead": null,
+     "margin": null
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "service.finish: A (not answered \u2014 costed default / leaning) -> C powder_coat (from drawing (confirmed, \"A Ad Part is to be powder coated A with Cardinal color C241-BK109.\"))"
+   ],
+   "specDiff": [
+    {
+     "id": "service.finish",
+     "A": null,
+     "C": "Powder coat (iron phosphate pre-treat) [answered]"
+    }
+   ],
+   "classification": "not costed (the tool refused the route in A and C: blocked by process_geometry_implausible \u2014 A near-solid part (99% fill) is inconsistent with the thin-wall process \"sheet_metal_fab\" \u2014 this looks machined, cast or forged. Confirm the process.)",
+   "Chand": null,
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-chassis@sheet",
+   "cad": "electronics_chassis_reva.step",
+   "drawing": "electronics_chassis_revA_sheet1.pdf",
+   "truthFile": "lulzbot-taz6-electronics-chassis-sheet1",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "sheet_metal",
+    "C": "sheet_metal"
+   },
+   "route": {
+    "A": "sheet metal",
+    "C": "sheet metal"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "value": "sheet_metal",
+     "why": "stated engineering assumption: the model is a bent sheet of one gauge (register: sheet metal); the same in A and C"
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "steel",
+     "why": "no leaning, no costed default: first offered option (\"Steel\")",
+     "options": [
+      "steel",
+      "aluminium"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "material.grade",
+     "costed": "mat-dc04",
+     "leaning": "mat-dc04"
+    },
+    {
+     "id": "service.finish",
+     "costed": "none",
+     "leaning": null
+    },
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    }
+   ],
+   "reviewC": {
+    "ops": 16,
+    "confirmed": 13,
+    "corrected": 1,
+    "rejected": 2,
+    "resolved": 0,
+    "leftUnreviewed": 1,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "5052 H32 AL",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "left unreviewed",
+      "name": "material.condition",
+      "value": "H32",
+      "basis": "group \"material\" not complete in the truth \u2014 cannot judge"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.coating",
+      "value": "BREAK ALL CORNERS PRIOR TO POWDER COATING",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.masking",
+      "value": "MASK ALL THREADS PRIOR TO POWDER COATING AND SEE PAGE 6 FOR FURTHER MASKING DETAILS AND WHERE OVERSPRAY IS ALLOWED",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "correct",
+      "name": "finish.masking",
+      "value": "front switch opening, pg 3, changed blind standoffs, pg. 3, added standoffs, pg. 4, added pem stud, pgs 4 and 5, added sheet 6, painting and masking instructions",
+      "to": "MASK ALL THREADS PRIOR TO POWDER COATING",
+      "basis": "truth value for this parameter"
+     },
+     {
+      "action": "confirm",
+      "name": "finish.edges",
+      "value": "BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.grade",
+      "value": "mat-aa5052",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "aluminium",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "finish.coatingRoute",
+      "value": "powder_coat",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "aluminium",
+     "material.grade": "mat-aa5052",
+     "service.finish": "powder_coat"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERIAL: 5052 H32 AL, 2.03 MM THICK",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        610.32,
+        381.57,
+        861.84,
+        394.15
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "electronics_chassis_revA_sheet1.pdf"
+     },
+     "material.grade": {
+      "parameterId": "drawing:material.designation:1>material.grade",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERIAL: 5052 H32 AL, 2.03 MM THICK",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        610.32,
+        381.57,
+        861.84,
+        394.15
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "electronics_chassis_revA_sheet1.pdf"
+     },
+     "service.finish": {
+      "parameterId": "drawing:finish.coating:1>finish.coatingRoute",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "BREAK ALL CORNERS PRIOR TO POWDER COATING",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        610.8,
+        402.48,
+        920.88,
+        414.72
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "electronics_chassis_revA_sheet1.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [],
+    "notCostedCount": 9,
+    "notCostedSample": [
+     "material.condition = \"H32\" \u2014 specified on the drawing \u2014 no question on the sheet metal route takes it",
+     "finish.masking = \"MASK ALL THREADS PRIOR TO POWDER COATING AND SEE PAGE 6 FOR FURTHER MASKING DET \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.masking = \"MASK ALL THREADS PRIOR TO POWDER COATING\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "finish.edges = \"BREAK EDGES 0.1/0.5 FILLET RADIUS 0.1/0.5\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"ALL COMPONENTS Rohs COMPLIANT\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"3D MODEL GOVERNS DIMENSIONS NOT SHOWN ON PRINT\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"MATERIAL: 5052 H32 AL, 2.03 MM THICK\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"BREAK ALL CORNERS PRIOR TO POWDER COATING\" \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "costed",
+    "refusal": null,
+    "total": 17.0248,
+    "buckets": {
+     "material": 4.3288,
+     "process": 1.3717,
+     "labour": 0.4173,
+     "tooling": 7.4836,
+     "packaging": 0.19,
+     "logistics": 0.34,
+     "overhead": 1.6322,
+     "margin": 1.2611
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "DC04 (CR4 Deep-Drawing)",
+     "materialId": "mat-dc04",
+     "netKg": 3.287,
+     "netLabel": "net",
+     "grossKg": 6.603,
+     "utilisation": 0.498
+    },
+    "operations": [
+     "Laser blanking line [Trumpf TruLaser 5030 (10kW Fiber)] 0.051 min, process \u00a30.0406, labour \u00a30.0220",
+     "Tandem press line (5 presses) [1000T Mechanical Press (general press shop)] 0.508 min, process \u00a30.8860, labour \u00a30.2195",
+     "Die change (amortised over the batch) [1000T Mechanical Press (general press shop)] 0.300 min, process \u00a30.4451, labour \u00a30.1759"
+    ],
+    "tooling": {
+     "investment": 374181.25,
+     "amortisedOver": 50000,
+     "perPart": 7.483625
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.4184
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "costed",
+    "refusal": null,
+    "total": 19.9137,
+    "buckets": {
+     "material": 7.3217,
+     "process": 0.9829,
+     "labour": 0.4428,
+     "tooling": 7.4836,
+     "packaging": 0.11,
+     "logistics": 0.15,
+     "overhead": 1.9477,
+     "margin": 1.4751
+    },
+    "reconciles": true,
+    "auditCloses": true,
+    "weights": {
+     "grade": "AA5052-H32 Sheet",
+     "materialId": "mat-aa5052",
+     "netKg": 1.122,
+     "netLabel": "net",
+     "grossKg": 2.254,
+     "utilisation": 0.498
+    },
+    "operations": [
+     "Laser blanking line [Trumpf TruLaser 5030 (10kW Fiber)] 0.051 min, process \u00a30.0406, labour \u00a30.0220",
+     "Tandem press line (5 presses) [630T Mechanical Press (general press shop)] 0.508 min, process \u00a30.5896, labour \u00a30.2195",
+     "Die change (amortised over the batch) [630T Mechanical Press (general press shop)] 0.300 min, process \u00a30.2962, labour \u00a30.1759",
+     "Powder Coat Line (paint-line rate as proxy) [Standard Paint Line (E-coat + Topcoat)] 0.029 min, process \u00a30.0564, labour \u00a30.0254"
+    ],
+    "tooling": {
+     "investment": 374181.25,
+     "amortisedOver": 50000,
+     "perPart": 7.483625
+    },
+    "finish": {
+     "route": "powder_coat",
+     "partsPerRack": 102,
+     "racksPerHour": 20,
+     "areaM2": 0.4184
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "material.grade",
+      "label": "Grade",
+      "value": "AA5052-H32 Sheet",
+      "source": "answered"
+     },
+     {
+      "id": "service.finish",
+      "label": "Finish",
+      "value": "Powder coat (iron phosphate pre-treat)",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": 2.889,
+    "totalPct": 16.97,
+    "buckets": {
+     "material": 2.9929,
+     "process": -0.3888,
+     "labour": 0.0255,
+     "tooling": 0.0,
+     "packaging": -0.08,
+     "logistics": -0.19,
+     "overhead": 0.3155,
+     "margin": 0.214
+    }
+   },
+   "driversMoved": [
+    {
+     "bucket": "material",
+     "A": 4.3288,
+     "C": 7.3217,
+     "delta": 2.9929
+    },
+    {
+     "bucket": "process",
+     "A": 1.3717,
+     "C": 0.9829,
+     "delta": -0.3888
+    },
+    {
+     "bucket": "labour",
+     "A": 0.4173,
+     "C": 0.4428,
+     "delta": 0.0255
+    },
+    {
+     "bucket": "packaging",
+     "A": 0.19,
+     "C": 0.11,
+     "delta": -0.08
+    },
+    {
+     "bucket": "logistics",
+     "A": 0.34,
+     "C": 0.15,
+     "delta": -0.19
+    },
+    {
+     "bucket": "overhead",
+     "A": 1.6322,
+     "C": 1.9477,
+     "delta": 0.3155
+    },
+    {
+     "bucket": "margin",
+     "A": 1.2611,
+     "C": 1.4751,
+     "delta": 0.214
+    }
+   ],
+   "why": [
+    "material.family: A steel -> C aluminium (from drawing (confirmed, \"MATERIAL: 5052 H32 AL, 2.03 MM THICK\"))",
+    "material.grade: A (not answered \u2014 costed default / leaning) -> C mat-aa5052 (from drawing (confirmed, \"MATERIAL: 5052 H32 AL, 2.03 MM THICK\"))",
+    "service.finish: A (not answered \u2014 costed default / leaning) -> C powder_coat (from drawing (confirmed, \"BREAK ALL CORNERS PRIOR TO POWDER COATING\"))",
+    "operations added in C: Tandem press line (5 presses) [630T Mechanical Press (general press shop)] 0.508 min, process \u00a30.5896, labour \u00a30.2195; Die change (amortised over the batch) [630T Mechanical Press (general press shop)] 0.300 min, process \u00a30.2962, labour \u00a30.1759; Powder Coat Line (paint-line rate as proxy) [Standard Paint Line (E-coat + Topcoat)] 0.029 min, process \u00a30.0564, labour \u00a30.0254",
+    "operations removed in C: Tandem press line (5 presses) [1000T Mechanical Press (general press shop)] 0.508 min, process \u00a30.8860, labour \u00a30.2195; Die change (amortised over the batch) [1000T Mechanical Press (general press shop)] 0.300 min, process \u00a30.4451, labour \u00a30.1759",
+    "material-bucket line 'consumables (not itemised by the route's module)': A \u00a30 -> C \u00a30.6853"
+   ],
+   "specDiff": [
+    {
+     "id": "material.family",
+     "A": "Steel [answered]",
+     "C": "aluminium [answered]"
+    },
+    {
+     "id": "material.grade",
+     "A": null,
+     "C": "AA5052-H32 Sheet [answered]"
+    },
+    {
+     "id": "service.finish",
+     "A": null,
+     "C": "Powder coat (iron phosphate pre-treat) [answered]"
+    }
+   ],
+   "classification": "improved inputs \u2014 a stated fact from the drawing replaced an assumption (material.family = aluminium, material.grade = mat-aa5052, service.finish = powder_coat); every drawing answer was confirmed by the reviewer against the truth file",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "aluminium",
+      "why": "by hand from the drawing: drawing: 5052 (OCR read 30W9; corrected) \u2014 the correction answers no question"
+     }
+    ],
+    "total": 19.9137,
+    "status": "costed",
+    "refusal": null,
+    "buckets": {
+     "material": 7.3217,
+     "process": 0.9829,
+     "labour": 0.4428,
+     "tooling": 7.4836,
+     "packaging": 0.11,
+     "logistics": 0.15,
+     "overhead": 1.9477,
+     "margin": 1.4751
+    },
+    "weights": {
+     "grade": "AA5052-H32 Sheet",
+     "materialId": "mat-aa5052",
+     "netKg": 1.122,
+     "netLabel": "net",
+     "grossKg": 2.254,
+     "utilisation": 0.498
+    },
+    "deltaVsA": {
+     "total": 2.889,
+     "totalPct": 16.97
+    }
+   },
+   "connectionResetsRetried": []
+  },
+  {
+   "pair": "nist-ftc-09@sheet",
+   "cad": "nist_ftc_09_asme1_rd.stp",
+   "drawing": "nist_ftc_09_asme1_rd.pdf",
+   "truthFile": "nist-ftc-09",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "terms": "DAP (default)"
+   },
+   "commodity": {
+    "A": "sheet_metal",
+    "C": "sheet_metal"
+   },
+   "route": {
+    "A": "sheet metal",
+    "C": "sheet metal"
+   },
+   "assumptionsA": [
+    {
+     "id": "commodity.route",
+     "value": "sheet_metal",
+     "why": "stated engineering assumption: the model is a bent sheet of one gauge (register: sheet metal); the same in A and C"
+    },
+    {
+     "id": "material.family",
+     "question": "What is this part made of?",
+     "value": "steel",
+     "why": "no leaning, no costed default: first offered option (\"Steel\")",
+     "options": [
+      "steel",
+      "aluminium"
+     ]
+    }
+   ],
+   "advisoryLeftAtCostedDefaultA": [
+    {
+     "id": "material.grade",
+     "costed": "mat-dc04",
+     "leaning": "mat-dc04"
+    },
+    {
+     "id": "service.finish",
+     "costed": "none",
+     "leaning": null
+    },
+    {
+     "id": "service.safetyCritical",
+     "costed": null,
+     "leaning": null
+    }
+   ],
+   "reviewC": {
+    "ops": 15,
+    "confirmed": 11,
+    "corrected": 0,
+    "rejected": 4,
+    "resolved": 0,
+    "leftUnreviewed": 0,
+    "costRelevantDecisions": [
+     {
+      "action": "confirm",
+      "name": "material.designation",
+      "value": "304 SST",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "material.standard",
+      "value": "ASTM A240",
+      "basis": "equals a truth row"
+     },
+     {
+      "action": "confirm",
+      "name": "material.stockThickness",
+      "value": 3.0353,
+      "basis": "equals the truth value written in inches (\u00d7 25.4)"
+     },
+     {
+      "action": "confirm (interpretation)",
+      "name": "material.family",
+      "value": "steel",
+      "basis": "its source reading is confirmed/corrected; interpretation checked by hand below"
+     }
+    ],
+    "otherAnswersC": [],
+    "drawingAnswers": {
+     "material.family": "steel"
+    },
+    "evidence": {
+     "material.family": {
+      "parameterId": "drawing:material.designation:1>material.family",
+      "status": "confirmed",
+      "source": "derived",
+      "sourceText": "MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A240. 08",
+      "location": {
+       "sheet": 1,
+       "bbox": [
+        43.62,
+        280.32,
+        291.84,
+        301.95
+       ],
+       "region": "notes"
+      },
+      "sourceFile": "nist_ftc_09_asme1_rd.pdf"
+     }
+    },
+    "dropped": [],
+    "skipped": [],
+    "overridden": [],
+    "formFields": [],
+    "formNotes": [],
+    "conflictsAfter": [],
+    "missingAfter": [
+     {
+      "name": "material.grade",
+      "why": "\"304 SST\" names no grade the sheet metal grade question offers \u2014 the grade question stays open"
+     }
+    ],
+    "notCostedCount": 6,
+    "notCostedSample": [
+     "note.general = \"CAD MODEL ___________ REV. __ IS REQUIRED TO COMPLETE PRODUCT DEFINITION.\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"DIRECTLY-TOLERANCED DIMENSIONS AND BASIC DIMENSIONS DEFINED ON THE DRAWING TAKE \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"APPLICABLE STANDARDS: ASME Y14.41-2003 APPLIES TO DATASET. ASME Y14.5M-1994 APP \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"DIMENSION AND TOLERANCE VALUES SHOWN IN SQUARE BRACKETS [XXX] ARE MILLIMETERS.\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.manufacturing = \"MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A240. 08\" \u2014 specified on the drawing \u2014 not in the cost model yet",
+     "note.general = \"UNITS: INCHES\" \u2014 specified on the drawing \u2014 not in the cost model yet"
+    ],
+    "ocrJob": null
+   },
+   "A": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A near-solid part (84% fill) is inconsistent with the thin-wall process \"sheet_metal\" \u2014 this looks machined, cast or forged. Confirm the process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.0966
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "C": {
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A near-solid part (84% fill) is inconsistent with the thin-wall process \"sheet_metal\" \u2014 this looks machined, cast or forged. Confirm the process.",
+    "total": null,
+    "buckets": null,
+    "reconciles": null,
+    "auditCloses": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "operations": null,
+    "tooling": {
+     "perPart": null
+    },
+    "finish": {
+     "route": "",
+     "areaM2": 0.0966
+    },
+    "spec": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Steel",
+      "source": "answered"
+     }
+    ]
+   },
+   "delta": {
+    "total": null,
+    "totalPct": null,
+    "buckets": {
+     "material": null,
+     "process": null,
+     "labour": null,
+     "tooling": null,
+     "packaging": null,
+     "logistics": null,
+     "overhead": null,
+     "margin": null
+    }
+   },
+   "driversMoved": [],
+   "why": [
+    "no answer differs between A and C"
+   ],
+   "specDiff": [],
+   "classification": "not costed (the tool refused the route in A and C: blocked by process_geometry_implausible \u2014 A near-solid part (84% fill) is inconsistent with the thin-wall process \"sheet_metal\" \u2014 this looks machined, cast or forged. Confirm the process.)",
+   "Chand": {
+    "note": "NOT the reader's effect: the engineer answers the material family BY HAND from the drawing where the reader did not turn the stated material into an answer",
+    "answers": [
+     {
+      "id": "material.family",
+      "value": "steel",
+      "why": "by hand from the drawing: drawing note \"(.1195 THICK) 11 GA 304 SST SHT, ASTM A240\" \u2014 not read by the reader"
+     }
+    ],
+    "total": null,
+    "status": "refused",
+    "refusal": "blocked by process_geometry_implausible \u2014 A near-solid part (84% fill) is inconsistent with the thin-wall process \"sheet_metal\" \u2014 this looks machined, cast or forged. Confirm the process.",
+    "buckets": null,
+    "weights": {
+     "grade": null,
+     "materialId": null,
+     "netKg": null,
+     "netLabel": null,
+     "grossKg": null,
+     "utilisation": null
+    },
+    "deltaVsA": null
+   },
+   "connectionResetsRetried": []
+  }
+ ],
+ "beforeAfter": [
+  {
+   "pair": "nist-d2mi-904",
+   "A_before": 7.9594,
+   "A_after": 7.9594,
+   "C_before": 7.9594,
+   "C_after": 7.9594,
+   "deltaPct_before": 0,
+   "deltaPct_after": 0
+  },
+  {
+   "pair": "nist-d2mi-906",
+   "A_before": 5.1199,
+   "A_after": 5.1199,
+   "C_before": 5.1199,
+   "C_after": 7.825,
+   "deltaPct_before": 0,
+   "deltaPct_after": 52.84
+  },
+  {
+   "pair": "lulzbot-taz6-bed-plate",
+   "A_before": 17.2984,
+   "A_after": 17.2984,
+   "C_before": 17.2984,
+   "C_after": 24.9246,
+   "deltaPct_before": 0,
+   "deltaPct_after": 44.09
+  },
+  {
+   "pair": "lulzbot-taz6-corner-bracket",
+   "A_before": 3.4967,
+   "A_after": 3.4967,
+   "C_before": 3.4967,
+   "C_after": 5.5069,
+   "deltaPct_before": 0,
+   "deltaPct_after": 57.49
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-cover",
+   "A_before": 11.9862,
+   "A_after": 11.9862,
+   "C_before": 11.9862,
+   "C_after": 11.9862,
+   "deltaPct_before": 0,
+   "deltaPct_after": 0
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-chassis",
+   "A_before": null,
+   "A_after": null,
+   "C_before": null,
+   "C_after": null,
+   "deltaPct_before": null,
+   "deltaPct_after": null
+  },
+  {
+   "pair": "openeai-arm-jxs-01-02",
+   "A_before": 9.1362,
+   "A_after": 9.1362,
+   "C_before": 9.1362,
+   "C_after": 13.2768,
+   "deltaPct_before": 0,
+   "deltaPct_after": 45.32
+  },
+  {
+   "pair": "nist-ftc-09",
+   "A_before": 10.3438,
+   "A_after": 10.3438,
+   "C_before": 10.3438,
+   "C_after": 16.2899,
+   "deltaPct_before": 0,
+   "deltaPct_after": 57.48
+  },
+  {
+   "pair": "nist-ftc-10",
+   "A_before": 14.3942,
+   "A_after": 14.3942,
+   "C_before": 14.3942,
+   "C_after": 14.3942,
+   "deltaPct_before": 0,
+   "deltaPct_after": 0
+  },
+  {
+   "pair": "lulzbot-taz6-corner-bracket@sheet",
+   "A_before": 0.5019,
+   "A_after": 0.5019,
+   "C_before": 0.5224,
+   "C_after": 0.651,
+   "deltaPct_before": 4.08,
+   "deltaPct_after": 29.7
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-cover@sheet",
+   "A_before": null,
+   "A_after": null,
+   "C_before": null,
+   "C_after": null,
+   "deltaPct_before": null,
+   "deltaPct_after": null
+  },
+  {
+   "pair": "lulzbot-taz6-electronics-chassis@sheet",
+   "A_before": 17.0248,
+   "A_after": 17.0248,
+   "C_before": 18.1422,
+   "C_after": 19.9137,
+   "deltaPct_before": 6.56,
+   "deltaPct_after": 16.97
+  },
+  {
+   "pair": "nist-ftc-09@sheet",
+   "A_before": null,
+   "A_after": null,
+   "C_before": null,
+   "C_after": null,
+   "deltaPct_before": null,
+   "deltaPct_after": null
+  }
+ ],
+ "findings": {
+  "materialConfirmed": "On 8 of the 13 rows the reviewer confirmed a correct material reading (designation equal to the truth, then the interpreted family). It answered material.family on 7 costed rows (D2MI 906, bed plate, corner bracket, OpenEAI 01-02, FTC-09, corner bracket @sheet, chassis @sheet) and, on the chassis @sheet, material.grade = AA5052-H32 Sheet. Each of these C totals equals the before run's C-hand total (the engineer typing the family by hand), except the chassis @sheet: \u00a319.9137 v \u00a320.2170, because the drawing now also answers the grade (AA5052-H32) where the hand answer left the default AA5754-H22.",
+  "gradeNotCarried": "On the machining route only the FAMILY is answered: 6061-T6, 5052 H-32 and 6061 are costed as the representative 6082-T6 bar; \"304 SST\" as EN8 / 080M40 medium-carbon steel (the stated stainless grade is not costed \u2014 the panel says so: \"the grade it names is not costed \u2014 the machining route has no grade question\"). On sheet metal, \"5052 H32 AL\" maps to AA5052-H32 Sheet but \"5052 H-32 Aluminum\" (corner bracket) maps to no grade, so the advisory grade question stays at the costed default AA5754-H22.",
+  "ppPrefixEffectOnA": "None. The LulzBot files (bed_plate_v4.5_PP-MP0108.step, corner_bracket_v2.0_PP-MP0106.step) still pre-answer material.family = plastic (spec source \"answered\", POM-C) at HEAD: A \u00a317.2984 and \u00a33.4967, identical before and after. The fix only strips a prefix at the start of the file name (regression-final.json). With the drawing confirmed, C overrides it (the confirmed drawing reading outranks the file-name family, by design).",
+  "unchangedC": "D2MI 904 (title-block material still not read from the stroke-font sheet; the STEP declares 6061-T651 itself), electronics cover (truth records no designation; reader reads \"Aluminum\", left unreviewed), FTC-10 (no material on the sheet); chassis (machining), cover @sheet and FTC-09 @sheet refused by the route guard in A and C.",
+  "reviewRuleFix": "FTC-09 was re-run after correcting this script's review rule for inch drawings: the first final run \"corrected\" the consolidated 3.0353 mm stock thickness to the inch figure 0.1195 (a unit error in the reviewer emulation, not in the tool); now confirmed. Totals unchanged (stock thickness answers no question on the machining route)."
+ }
+}

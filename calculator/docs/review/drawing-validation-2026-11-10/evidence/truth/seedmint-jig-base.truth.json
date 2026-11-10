@@ -1,0 +1,309 @@
+{
+ "drawing": "seedmint-jig-base",
+ "origin": "public",
+ "source": "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/PDF",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet ('Base Drawing.pdf') rendered at 300 dpi (pdftoppm) and read in zooms on screen; pdftotext -layout used only as a typing aid, every value checked on the image; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "Base Drawing.pdf": "vector",
+  "seedmint-jig-base.pdf": "vector"
+ },
+ "complete": [
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "Base"
+  },
+  {
+   "name": "title.revision",
+   "value": "V10"
+  },
+  {
+   "name": "title.date",
+   "value": "19.06.21"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "material.family",
+   "value": "steel"
+  },
+  {
+   "name": "material.designation",
+   "contains": "Steel"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "2768-f"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "contains": "F"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "count": 2,
+    "pitch": 0.8,
+    "toleranceClass": "6H"
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "count": 6,
+    "pitch": 0.7,
+    "toleranceClass": "6H"
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 8
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3,
+    "fit": "H7"
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 1
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.01,
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.13
+   },
+   "partial": {
+    "nominal": 1.13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 18
+   },
+   "partial": {
+    "nominal": 18
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 35
+   },
+   "partial": {
+    "nominal": 35
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 17.5
+   },
+   "partial": {
+    "nominal": 17.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 11
+   },
+   "partial": {
+    "nominal": 11
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80
+   },
+   "partial": {
+    "nominal": 80
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 66
+   },
+   "partial": {
+    "nominal": 66
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50
+   },
+   "partial": {
+    "nominal": 50
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 35
+   },
+   "partial": {
+    "nominal": 35
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "min": 30.08,
+    "max": 30.13
+   },
+   "partial": {
+    "min": 30.08,
+    "max": 30.13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 12
+   },
+   "partial": {
+    "nominal": 12
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80
+   },
+   "partial": {
+    "nominal": 80
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 12
+   },
+   "partial": {
+    "nominal": 12
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 73
+   },
+   "partial": {
+    "nominal": 73
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 57
+   },
+   "partial": {
+    "nominal": 57
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 17.5
+   },
+   "partial": {
+    "nominal": 17.5
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "General tolerances as per DIN ISO 2768-f"
+  }
+ ],
+ "notes": "Autodesk Inventor ISO sheet (A3), selectable text. Title block: Dept. (blank), Technical reference 'Mat: Steel', Created by 'Seed Mint' 19.06.21 (the only date — recorded as title.date; 'Seed Mint' is the author, not recorded as company), Document type / status blank, Title 'Base', DWG No. BLANK (no drawing / part number), Rev. V10, Date of issue blank, Sheet 1/1. No scale, no projection symbol, no units statement on the sheet (units not recorded). Material: only 'Steel' (recorded as family steel and designation contains 'Steel'; the register's 'AISI 1045' is NOT on this sheet). General tolerance: 'General tolerances as per DIN ISO 2768-f.' Threads: '2x M5x0.8 6H' (section B-B) and '6x M4x0.7 6H' (front view) — matched on count, pitch and class (designation spelling left open); feature.count.threads = 8. Fit: 'Ø3 H7' (no limits printed) as hole.diameter {diameter 3, fit H7}; tolerance.tightest = band 0.010 at Ø3 (ISO 286 IT7, 0–3 mm range, hand-looked-up — the only stated narrower band is the limit dimension 30.08/30.13 = 0.05). Dimensions (21, complete): B-B 15, 1, 1.13, 18, 35, 17.5, 3, 11; front 80, 66, 50, 35, '30.13 / 30.08' (limit dimension), Ø12, 80 (vertical); A-A 30, 15, 12, 73, 57, 17.5. feature.count.holes = 1 (the one hole callout, Ø3 H7; the Ø12 bore is a plain diameter dimension). Title block, material, general tolerance, notes and quality not complete."
+}

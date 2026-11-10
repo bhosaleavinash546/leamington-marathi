@@ -1,0 +1,113 @@
+{
+ "drawing": "stirling-p170",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 170 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p170.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "STUD-BOLT"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "4-17108"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "800208"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "title.company",
+   "contains": "UNITED STIRLING"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "SS 715"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "value": 6.3
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 2,
+    "toleranceClass": "6g"
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 2,
+    "toleranceClass": "6g"
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 147,
+    "upper": 0.3,
+    "lower": -0.3
+   },
+   "partial": {
+    "nominal": 147
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  }
+ ],
+ "notes": "United Stirling (Sweden) title block template: printed (not hand-filled) labels include 'Då ej annat anges gäller / To be valid unless otherwise specified', 'Toleranser SS 715 medel / Tolerances SS 715 medium', 'Inv. hörnradier 0,5 / Fillet radii 0,5', 'Skarpa kanter brutna / Remove sharp corners', 'Europ. proj.' with the first-angle symbol, 'Ytjämnhet / Surface roughness Ra µ max', 'Toleranssystem / Tolerance system', 'KOMMANDITBOLAGET UNITED STIRLING (SWEDEN) AB & Co'. PDF page 170 (portrait): STUD-BOLT, drawing no 4-17108, Ritad 800208, MATERIAL cell EMPTY, scale 1:1, general roughness Ra 6,3 (with check mark); the printed general tolerance 'Tolerances SS 715 medium' is legible here (contains 'SS 715'). Threads 'M14x2-6g' at both ends (two callouts). Dimensions read: '147 ±0,3', 'R10 ±1' twice (tolerance ±1 read, kept out of the rows), 30 twice (thread lengths with a hand-written tolerance not legible), the waist diameter 'Ø10 …' is not legible enough (not recorded); local roughness marks '1' on the waist not recorded."
+}

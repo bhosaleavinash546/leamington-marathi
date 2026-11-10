@@ -1,0 +1,78 @@
+{
+ "drawing": "stirling-p161",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 161 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p161.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "RING"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "3-17113"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "800222"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "title.company",
+   "contains": "UNITED STIRLING"
+  },
+  {
+   "name": "material.designation",
+   "contains": "SIS 2541"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "value": 6.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 77
+   },
+   "partial": {
+    "nominal": 77
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13
+   },
+   "partial": {
+    "nominal": 13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "chamfer",
+    "nominal": 2,
+    "chamferAngle": 45
+   },
+   "partial": {
+    "nominal": 2
+   }
+  }
+ ],
+ "notes": "United Stirling (Sweden) title block template: printed (not hand-filled) labels include 'Då ej annat anges gäller / To be valid unless otherwise specified', 'Toleranser SS 715 medel / Tolerances SS 715 medium', 'Inv. hörnradier 0,5 / Fillet radii 0,5', 'Skarpa kanter brutna / Remove sharp corners', 'Europ. proj.' with the first-angle symbol, 'Ytjämnhet / Surface roughness Ra µ max', 'Toleranssystem / Tolerance system', 'KOMMANDITBOLAGET UNITED STIRLING (SWEDEN) AB & Co'. PDF page 161: RING, drawing no 3-17113, Ritad/Drawn 800222, material 'SIS 2541 03' (contains 'SIS 2541' recorded), scale 1:1, tolerance system ISO, general roughness Ra 6,3. Dimensions read: 77 and 13 (each with a hand-written tolerance that is not legible — recorded by nominal only), '2x45°' chamfer. Not recorded: the outer diameter (reads 92 with an overwritten digit) and its tolerance; the note '2 kapas' (Swedish 'cut 2' — ring split at two places) is described here only (not a row); two local roughness marks unreadable."
+}

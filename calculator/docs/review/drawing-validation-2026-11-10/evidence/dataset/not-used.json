@@ -1,0 +1,127 @@
+[
+ {
+  "source": "GrabCAD library (grabcad.com)",
+  "url": "https://www.grabcad.com/library",
+  "reason": "not accessible without account (downloads need sign-in; site answered 403 to a plain request) - not attempted further"
+ },
+ {
+  "source": "TraceParts",
+  "url": "https://www.traceparts.com/en",
+  "reason": "not accessible without account (CAD downloads need sign-in; site answered 403) - not attempted further"
+ },
+ {
+  "source": "CADENAS PARTcommunity",
+  "url": "https://b2b.partcommunity.com/community/",
+  "reason": "not accessible without account (downloads need sign-in) - not attempted further"
+ },
+ {
+  "source": "3D ContentCentral",
+  "url": "https://www.3dcontentcentral.com/",
+  "reason": "not accessible without account; connection also failed from this environment"
+ },
+ {
+  "source": "NHTSA biomechanics / THOR-50M and test-device drawing packages (automotive)",
+  "url": "https://www.nhtsa.gov/biomechanics-trauma/thor-50m",
+  "reason": "site returned 'Access Denied' (Akamai bot protection, HTTP 403) to a plain request; not bypassed (no user-agent spoofing)"
+ },
+ {
+  "source": "NIST Smart Manufacturing Systems test bed TDP (MTC box assembly drawings)",
+  "url": "https://smstestbed.nist.gov/tdp/mtc/",
+  "reason": "host unreachable from this environment (proxy: gateway 502 CONNECT). The NIST-MTC-Assembly.zip from nist.gov was downloaded but holds only native NX/SolidWorks/SAT files and images - no STEP and no 2D drawing"
+ },
+ {
+  "source": "NIST STC (simplified test cases) NIST-STC-PMI-v4.zip",
+  "url": "https://www.nist.gov/document/nist-stc-pmi-v4",
+  "reason": "same geometry as FTC-06..10 (already in the set); the zip holds STC_0x.pdf definition documents rather than separate part drawings; AP242 STC STEP files exist in NIST-PMI-STEP-Files.zip but add no new part"
+ },
+ {
+  "source": "NIST CTC/ATC combined drawing nist_atc_all_asme1.pdf",
+  "url": "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+  "reason": "atomic test-case sheets (58 pages) duplicate the CTC set and have no separate CAD; not a production drawing"
+ },
+ {
+  "source": "NIST D2MI 827-9999-903 pair",
+  "url": "https://www.nist.gov/document/nist-d2mi-modelszip",
+  "reason": "no STEP in the zip for -903 (native NX .prt only) - kept as drawing-only (nist-d2mi-903)"
+ },
+ {
+  "source": "Bosch Motorsport product downloads (offer drawings PDF + 3D STEP, automotive)",
+  "url": "https://www.bosch-motorsport.com/content/downloads/Raceparts/en-GB/",
+  "reason": "terms: site states '(c) 2026 Robert Bosch GmbH, all rights reserved'; no licence granting redistribution - skipped"
+ },
+ {
+  "source": "McMaster-Carr / Misumi / other catalogue CAD",
+  "url": "https://www.mcmaster.com/",
+  "reason": "not tried: catalogue CAD is provided for design use only (or behind login) with no redistribution grant; skipped on licence grounds"
+ },
+ {
+  "source": "nasa-jpl/open-source-rover",
+  "url": "https://github.com/nasa-jpl/open-source-rover",
+  "reason": "Apache-2.0 but no 2D manufacturing drawings for mechanical parts (only DXF laser-cut profiles and PCB STEP models)"
+ },
+ {
+  "source": "whitequark/mechanical-parts",
+  "url": "https://github.com/whitequark/mechanical-parts",
+  "reason": "genuine PDF shop drawings but models are SolveSpace .slvs (no STEP/IGES/STL per part) and the repo has no licence file"
+ },
+ {
+  "source": "platypusllc/mechanical",
+  "url": "https://github.com/platypusllc/mechanical",
+  "reason": "no licence; only SLDDRW/PDF, no STEP"
+ },
+ {
+  "source": "alanzjl/AlkaidMount (GPL-3.0)",
+  "url": "https://github.com/alanzjl/AlkaidMount",
+  "reason": "PDF drawings are assembly/plate drawings; matching parts are STL shells or DXF only - no reliable part-to-drawing pair"
+ },
+ {
+  "source": "Sahil-Miah/formula-student-brake-pedal (MIT, FSAE)",
+  "url": "https://github.com/Sahil-Miah/formula-student-brake-pedal",
+  "reason": "STEP only, no 2D drawing"
+ },
+ {
+  "source": "jan-moreno-feldkamper/Formula-Student-Firewall-Utron (FSAE)",
+  "url": "https://github.com/jan-moreno-feldkamper/Formula-Student-Firewall-Utron",
+  "reason": "report PDFs only, no CAD and no manufacturing drawing"
+ },
+ {
+  "source": "lulvinnekenvictoria-ship-it/formula-student-composite-paddle-shifter (FSAE)",
+  "url": "https://github.com/lulvinnekenvictoria-ship-it/formula-student-composite-paddle-shifter",
+  "reason": "coursework PDF only, no CAD file or drawing"
+ },
+ {
+  "source": "Other FSAE / Baja GitHub repos from repository search (e.g. mabeljlu/FSAE_2023_Suspension, DrushSubbaiah/fsae-upright-design, Josiah-Mechy/BAJA-SAE-Drivetrain-Engineering)",
+  "url": "https://github.com/search?q=fsae+cad&type=repositories",
+  "reason": "no licence declared (GitHub API licence = none) - redistribution not granted; not downloaded"
+ },
+ {
+  "source": "augcog/roar_kart (Apache-2.0, EV kart)",
+  "url": "https://github.com/augcog/roar_kart",
+  "reason": "no STEP/IGES and no drawing PDFs in the repository"
+ },
+ {
+  "source": "dweggg/inverter (SiC traction inverter)",
+  "url": "https://github.com/dweggg/inverter",
+  "reason": "only PCB outputs (schematic PDFs, board STEP) - no mechanical drawing; licence not declared to the API"
+ },
+ {
+  "source": "longpxt/Turntable_carwash (CERN-OHL-W)",
+  "url": "https://github.com/longpxt/Turntable_carwash",
+  "reason": "only electrical drawings; no mechanical part drawing + CAD pair found"
+ },
+ {
+  "source": "LulzBot TAZ 6 y_end_plate (PP-MP0111) and interconnect cover (PP-MP0107)",
+  "url": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/",
+  "reason": "genuine CC BY-SA pairs, left out only to avoid five near-identical flat aluminium plates; downloadable the same way if wanted"
+ },
+ {
+  "source": "Wikimedia Commons search for engineering drawings",
+  "url": "https://commons.wikimedia.org/",
+  "reason": "search returned mostly scanned drawing textbooks; API rate-limited mid-search; no part drawing with a matching CAD by the same author found"
+ },
+ {
+  "source": "Other NASA NTRS automotive reports (ETV-1 electric test vehicle, automotive gas turbine)",
+  "url": "https://ntrs.nasa.gov/",
+  "reason": "test/analysis reports, not drawing sets"
+ }
+]

@@ -1,0 +1,116 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet2",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet2.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet2.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet2.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS V0.4"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP-0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.sheet",
+   "value": "2 of 6"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140.0
+   },
+   "partial": {
+    "nominal": 140.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 12.0
+   },
+   "partial": {
+    "nominal": 12.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 470.0
+   },
+   "partial": {
+    "nominal": 470.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 12.0
+   },
+   "partial": {
+    "nominal": 12.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 100.6
+   },
+   "partial": {
+    "nominal": 100.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 480.0
+   },
+   "partial": {
+    "nominal": 480.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 170.0
+   },
+   "partial": {
+    "nominal": 170.0
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheets 2-6 carry only a short title block (TITLE, SIZE A, DWG NO., REV., SCALE holding the literal word 'Scale', 'DO NOT SCALE DRAWING', SHEET) and the 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' line; no date, material, tolerance block or units statement — title.units, scale and company are NOT recorded and the title block is not complete. Sheet 2 title: 'ELECTRONICS CHASSIS V0.4', DWG NO 'PP-MP-0110' (with a hyphen, unlike sheets 1/4/5/6), REV IR, SHEET 2 of 6 — the sheet's own title block disagrees with sheet 1 (REV A); recorded as printed. Four orthographic views of the chassis, 7 dimensions (complete): 140.0, 12.0 (top flange), 470.0, 12.0 (bottom), 100.6, 480.0, 170.0. Nothing else stated."
+}

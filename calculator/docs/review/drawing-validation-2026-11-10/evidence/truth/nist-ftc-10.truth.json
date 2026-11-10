@@ -1,0 +1,1106 @@
+{
+ "drawing": "nist-ftc-10",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-cad-model-ftc-10",
+ "checked": "Hand-checked by an independent reviewer (Claude, 10 Nov 2026): rendered with pdftoppm at 100/300/400 dpi, every annotation read off the image (pdftotext used only as a typing aid for the notes); reader output and reader code not consulted.",
+ "files": {
+  "nist_ftc_10_asme1_rb.pdf": "vector"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "notes",
+  "quality",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.drawingNumber",
+   "value": "nist_ftc_10_asme1_rb"
+  },
+  {
+   "name": "title.revision",
+   "value": "B"
+  },
+  {
+   "name": "title.company",
+   "contains": "NIST"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "note.general",
+   "contains": "IS REQUIRED TO COMPLETE PRODUCT DEFINITION"
+  },
+  {
+   "name": "note.general",
+   "contains": "DIRECTLY-TOLERANCED DIMENSIONS AND BASIC DIMENSIONS DEFINED ON THE DRAWING TAKE PRECEDENCE OVER DIMENSIONAL DATA DEFINED BY THE MODEL. OBTAIN ALL OTHER DIMENSIONAL DATA FROM THE MODEL. THE MODEL REPRESENTS BASIC DIMENSIONAL DATA UNLESS OTHERWISE SPECIFIED."
+  },
+  {
+   "name": "note.general",
+   "contains": "ASME Y14.41-2003 APPLIES TO DATASET AND MOVABLE DATUM TARGETS."
+  },
+  {
+   "name": "note.general",
+   "contains": "FULL DIAMETER OF EACH INDICATED HOLE MUST INTERSECT WITH THE CROSS-DRILLED HOLE AT ITS BOTTOM. INDICATED HOLES MUST NOT CONTACT FAR SIDE OF CROSS- DRILLED HOLES."
+  },
+  {
+   "name": "note.general",
+   "contains": "APPLIES TO ALL UNTOLERANCED SURFACES"
+  },
+  {
+   "name": "note.general",
+   "contains": "UNITS: MILLIMETERS"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "APPLIES TO ALL UNTOLERANCED SURFACES"
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.5,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.5,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 2.5,
+    "upper": 0.15,
+    "lower": -0.15,
+    "count": 8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 6,
+    "upper": 0.15,
+    "lower": -0.15,
+    "count": 2
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.5,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.5,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.75,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 0.2
+   },
+   "partial": {
+    "tolerance": 0.2
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.25,
+    "diameterZone": true,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.25,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.65,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.65,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 10,
+    "upper": 0.25,
+    "lower": -0.25,
+    "count": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 5.5,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 35,
+    "upper": 1,
+    "lower": -1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 5.5,
+    "upper": 0.08,
+    "lower": -0.08
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 10,
+    "upper": 0.25,
+    "lower": -0.25,
+    "count": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 5,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "max": 0.15,
+    "count": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "max": 0.2,
+    "count": 4
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 1.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness",
+    "tolerance": 0.2
+   },
+   "partial": {
+    "tolerance": 0.2
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.2,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "E-F-G"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "E-F-G"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 1,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ],
+    "modifiers": [
+     "MMC"
+    ]
+   },
+   "partial": {
+    "tolerance": 1,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.25,
+    "datums": [
+     "H"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.25,
+    "datums": [
+     "H"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.5,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.5,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "symmetry",
+    "tolerance": 0.5,
+    "datums": [
+     "A",
+     "J"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.5,
+    "datums": [
+     "A",
+     "J"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 1,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.1,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.1,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "D"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "J"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.5,
+    "upper": 0.2,
+    "lower": -0.2,
+    "count": 3
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 5.5,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 27.5,
+    "upper": 1,
+    "lower": -1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 5.5,
+    "upper": 0.08,
+    "lower": -0.08
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 10,
+    "upper": 0.25,
+    "lower": -0.25,
+    "count": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.5,
+    "fit": "G6"
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.5,
+    "fit": "G6"
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.5,
+    "fit": "G6"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0,
+    "diameterZone": true,
+    "datums": [
+     "H",
+     "K",
+     "L"
+    ],
+    "modifiers": [
+     "LMC"
+    ]
+   },
+   "partial": {
+    "tolerance": 0,
+    "datums": [
+     "H",
+     "K",
+     "L"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "cylindricity",
+    "tolerance": 0.1
+   },
+   "partial": {
+    "tolerance": 0.1
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "H",
+     "K",
+     "L"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "H",
+     "K",
+     "L"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 1.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.12,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.12,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.12,
+    "diameterZone": true,
+    "datums": [
+     "D"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.12,
+    "datums": [
+     "D"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.12,
+    "diameterZone": true,
+    "datums": [
+     "D"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.12,
+    "datums": [
+     "D"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.12,
+    "diameterZone": true,
+    "datums": [
+     "D"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.12,
+    "datums": [
+     "D"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "E"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "F"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "G"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M3x0.5-6g",
+    "count": 2,
+    "pitch": 0.5
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M3x0.5-6g",
+    "count": 2,
+    "pitch": 0.5
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M3x0.5-6g",
+    "count": 2,
+    "pitch": 0.5
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 6
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "E",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "E",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "F",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "F",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.8,
+    "diameterZone": true,
+    "datums": [
+     "D",
+     "G",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.8,
+    "datums": [
+     "D",
+     "G",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.15,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.15,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "H"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 7,
+    "upper": 0.25,
+    "lower": -0.25,
+    "count": 4
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ],
+    "modifiers": [
+     "MMC"
+    ]
+   },
+   "partial": {
+    "tolerance": 0,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "cylindricity",
+    "tolerance": 0.1
+   },
+   "partial": {
+    "tolerance": 0.1
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "nominal": 3.5
+   }
+  }
+ ],
+ "notes": "5 sheets (Views A-E), all checked. Units: note 6 'UNITS: MILLIMETERS'. Callout text is selectable (rotated) text, frame symbols geometry - file class 'vector'. Notes 1-6 on sheet 1 (note 3: 'APPLICABLE STANDARDS: ASME Y14.41-2003 APPLIES TO DATASET AND MOVABLE DATUM TARGETS. ASME Y14.5M-1994 APPLIES TO DIMENSIONING AND TOLERANCING.'; note 4 is a flag note, number in a flag, referenced by flags on '8X Ø2.5 ±0.15', '3X Ø3.5 ±0.2' and the three 'Ø3.5 G6' callouts; note 5 = profile 1.5 A B C frame + 'APPLIES TO ALL UNTOLERANCED SURFACES.' recorded as note, tolerance.general and gdt.frame). Callout qualifiers ('ALL SURFACES INSIDE POCKET', 'AT SURFACE F65'/'F81', 'AT BOTTOM OF COUNTERBORES', 'INDICATED AREA', 'EACH LINE ELEMENT', 'n COPLANAR SURFACES') and surface labels F65 / F81 are not notes. GD&T NOT complete: sheet 4 has movable datum TARGETS K1, K2, L1, L2 (not recorded as gdt.datum). Fits: three 'Ø3.5 G6' holes (sheet 3) - fit only, no limits printed (none recorded). Threads: three '2X M3x0.5-6g' callouts (sheet 4) each with position Ø0.8 (P) 3.2 D E B / D F B / D G B (projected zone not encoded); feature.count.threads = 6 (3 x 2X). Counterbores '4X (cbore) Ø10 ±0.25 (depth) 10 ±0.2' (sheet 2 and sheet 3, each with two position frames Ø0.8 A B C AT SURFACE and Ø1.2 A B C AT BOTTOM OF COUNTERBORES) and '4X (cbore) Ø10 ±0.25 (depth) 2 ±0.15' (sheet 2, position Ø1(M) A B C) - cbore Ø recorded as a diameter dimension with count 4, depth as linear. Cross-drilled holes 'Ø5.5 ±0.2 (depth) 35 ±1 / Ø5.5 ±0.08 INDICATED AREA' (sheet 2, position Ø0.8 D E(M)-F(M)-G(M)) and 'Ø5.5 ±0.2 (depth) 27.5 ±1 / Ø5.5 ±0.08 INDICATED AREA' (sheet 3, position Ø0.8 H K L). '4X R0.15 MAX' and '4X R0.2 MAX' recorded as radius with max only. Two-row frames recorded as two frames: profile 1.2 A B C / 0.2 A (sheet 2, datum D), position 1 A B C / perpendicularity 0.1 A on '15 ±0.2' (datum J), position Ø0(L) H K L / cylindricity 0.1 on '3X Ø3.5 ±0.2', profile 1 A B C / 0.12 A, the three 'Ø3.5 G6' position Ø0.8 D B C / perpendicularity Ø0.12 D (datums E, F, G), profile 1.2 A B C / 0.15 A (sheet 4, datum H), sheet 5 '4X Ø7 ±0.25' position Ø0(M) A B C / cylindricity 0.1. Straightness '0.2 / 15' is per unit length (tolerance 0.2 recorded). Symmetry 0.5 A J on '5 ±0.2'. tolerance.tightest: the Ø3.5 G6 fit (IT6) - matched on nominal only because no limits are printed (the tightest ± band is Ø5.5 ±0.08). Naming rule used for Ø callouts: a callout with an 'nX' count, THRU / depth, or an uppercase (hole) fit is recorded as hole.diameter {diameter, count, upper, lower}; any other Ø size is a dimension {type:'diameter'}. Tolerances are recorded as signed deviations upper/lower; limit dimensions as max/min. GD&T: characteristic in words, datums = the datum letters in order (datum-reference modifiers not encoded), modifiers 'MMC' / 'LMC' = circled M / L after the tolerance value, diameterZone true only where Ø precedes the tolerance."
+}

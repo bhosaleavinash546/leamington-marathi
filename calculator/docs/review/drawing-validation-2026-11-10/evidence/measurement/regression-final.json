@@ -1,0 +1,523 @@
+{
+ "generated": "2026-11-10T11:39:58.412Z",
+ "head": "e8328c23",
+ "base": "36f6f7d3 (git worktree, node_modules symlinked)",
+ "conditions": "UK, 10,000 a year, 5 years, DAP; CAD-only /api/cad/analyze (mode deterministic) then /api/cad/compare-routes reference row; each commit its own server started the same way",
+ "mode1_sameAnswers": {
+  "method": "the A answers of costing-final.json sent up front on both commits",
+  "rows": [
+   {
+    "id": "nist-d2mi-904",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 7.959439161359617,
+    "totalBase": 7.959439161359617,
+    "costingJsonA": 7.959439161359617,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "6082-T6 Aluminium Bar",
+     "base": "6082-T6 Aluminium Bar"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [],
+    "specBase": [],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "lulzbot-taz6-bed-plate",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 17.298387664810328,
+    "totalBase": 17.298387664810328,
+    "costingJsonA": 17.298387664810328,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "POM-C (Acetal / Delrin Stock)",
+     "base": "POM-C (Acetal / Delrin Stock)"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "lulzbot-taz6-corner-bracket",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 3.4967366716024846,
+    "totalBase": 3.4967366716024846,
+    "costingJsonA": 3.4967366716024846,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "POM-C (Acetal / Delrin Stock)",
+     "base": "POM-C (Acetal / Delrin Stock)"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "openeai-arm-jxs-01-02",
+    "answers": {
+     "commodity.route": "machining",
+     "material.family": "plastic"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 9.13624134049166,
+    "totalBase": 9.13624134049166,
+    "costingJsonA": 9.13624134049166,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "POM-C (Acetal / Delrin Stock)",
+     "base": "POM-C (Acetal / Delrin Stock)"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "nist-ftc-10",
+    "answers": {
+     "commodity.route": "cast_and_machine",
+     "material.family": "aluminium",
+     "service.pressureTight": "no",
+     "service.toleranceClass": "loose",
+     "service.safetyCritical": "yes"
+    },
+    "commodityHead": "cast_and_machine",
+    "commodityBase": "cast_and_machine",
+    "totalHead": 14.394203845803927,
+    "totalBase": 14.394203845803927,
+    "costingJsonA": 14.394203845803927,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "LM25 / A356",
+     "base": "LM25 / A356"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "service.pressureTight",
+      "label": "Leak-tight / pressure",
+      "value": "No \u2014 structural or cosmetic only",
+      "source": "answered"
+     },
+     {
+      "id": "service.toleranceClass",
+      "label": "Tolerance class",
+      "value": "Loose \u2014 general as-cast",
+      "source": "answered"
+     },
+     {
+      "id": "service.safetyCritical",
+      "label": "Safety-critical",
+      "value": "Yes \u2014 safety-critical",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "Aluminium",
+      "source": "answered"
+     },
+     {
+      "id": "service.pressureTight",
+      "label": "Leak-tight / pressure",
+      "value": "No \u2014 structural or cosmetic only",
+      "source": "answered"
+     },
+     {
+      "id": "service.toleranceClass",
+      "label": "Tolerance class",
+      "value": "Loose \u2014 general as-cast",
+      "source": "answered"
+     },
+     {
+      "id": "service.safetyCritical",
+      "label": "Safety-critical",
+      "value": "Yes \u2014 safety-critical",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   }
+  ]
+ },
+ "mode2_routeOnly": {
+  "method": "ONLY the route answer sent (the CAD-only default flow, where a file-name family can pre-answer the material) \u2014 the mode in which the PP- fix was expected to change the LulzBot parts",
+  "rows": [
+   {
+    "id": "lulzbot-taz6-bed-plate",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 17.298387664810328,
+    "totalBase": 17.298387664810328,
+    "costingJsonA": 17.298387664810328,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "POM-C (Acetal / Delrin Stock)",
+     "base": "POM-C (Acetal / Delrin Stock)"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "lulzbot-taz6-corner-bracket",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 3.4967366716024846,
+    "totalBase": 3.4967366716024846,
+    "costingJsonA": 3.4967366716024846,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "POM-C (Acetal / Delrin Stock)",
+     "base": "POM-C (Acetal / Delrin Stock)"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "specBase": [
+     {
+      "id": "material.family",
+      "label": "Material family",
+      "value": "plastic",
+      "source": "answered"
+     }
+    ],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   },
+   {
+    "id": "nist-d2mi-904",
+    "answers": {
+     "commodity.route": "machining"
+    },
+    "commodityHead": "machining",
+    "commodityBase": "machining",
+    "totalHead": 7.959439161359617,
+    "totalBase": 7.959439161359617,
+    "costingJsonA": 7.959439161359617,
+    "equalToThePenny": true,
+    "exactlyEqual": true,
+    "bucketsEqual": true,
+    "costInputSuggestionsEqual": true,
+    "decisionsEqual": true,
+    "headHasNoDrawingKey": true,
+    "material": {
+     "head": "6082-T6 Aluminium Bar",
+     "base": "6082-T6 Aluminium Bar"
+    },
+    "rowStatus": {
+     "head": "costed",
+     "base": "costed"
+    },
+    "openQuestions": {
+     "head": [],
+     "base": []
+    },
+    "specHead": [],
+    "specBase": [],
+    "versions": {
+     "head": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     },
+     "base": {
+      "rules": 9,
+      "kernel": "67caebef99ba",
+      "rateBook": "9b7aee68771e8014",
+      "rateBookRegional": "9b7aee68771e8014"
+     }
+    },
+    "status": "PASS"
+   }
+  ]
+ },
+ "ppPrefix": {
+  "expected": "intended change on files named \u2026PP-\u2026: material family no longer pre-answered \"plastic\"",
+  "observed": "NO change: bed_plate_v4.5_PP-MP0108.step and corner_bracket_v2.0_PP-MP0106.step still pre-answer material.family = plastic (spec source \"answered\") and cost in POM-C at HEAD exactly as at 36f6f7d3 (\u00a317.2984 / \u00a33.4967). The fix in src/engine/material-family.ts only strips a \"PP-\"/\"PC-\" prefix at the START of the file name (/^(pp|pc)[-_]/); in the LulzBot names the part number comes after the description.",
+  "familyFromFilename_at_HEAD": [
+   "bed_plate_v4.5_PP-MP0108.step                      plastic",
+   "corner_bracket_v2.0_PP-MP0106.step                 plastic",
+   "PP-MP0108.step                                     null",
+   "bed_leveling_washer_v2.0_PP-MP0082_rev_IR.step     plastic",
+   "electronics_chassis_reva.step                      null",
+   "cover_PP-GF30.step                                 plastic",
+   "housing_pp.step                                    plastic"
+  ]
+ },
+ "verdict": "No part moved (5 parts, mode 1; 3 parts, mode 2): totals, all 8 buckets, cost inputs and questions identical to the last decimal; rate book, rules and kernel versions identical. The intended PP- change did not occur on the real LulzBot file names (defect D08 still open)."
+}

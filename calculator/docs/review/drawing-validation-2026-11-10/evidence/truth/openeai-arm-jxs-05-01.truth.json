@@ -1,0 +1,326 @@
+{
+ "drawing": "openeai-arm-jxs-05-01",
+ "origin": "public",
+ "source": "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP5/JXS-05-01.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 400 dpi (pdftoppm) and read in zooms on screen; pdftotext -layout used only as a typing aid, every value checked on the image; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "JXS-05-01.pdf": "vector",
+  "openeai-arm-jxs-05-01.pdf": "vector"
+ },
+ "complete": [
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "JXS-05-01"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "material.designation",
+   "contains": "6061"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "contains": "M"
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Ra",
+    "value": 1.6
+   }
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Ra",
+    "value": 1.6
+   }
+  },
+  {
+   "name": "finish.edges",
+   "contains": "去毛刺飞边"
+  },
+  {
+   "name": "quality.inspection",
+   "contains": "所有标注公差尺寸为必检尺寸"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 35
+   },
+   "partial": {
+    "nominal": 35
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 16
+   },
+   "partial": {
+    "nominal": 16
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 34.5
+   },
+   "partial": {
+    "nominal": 34.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 24.5
+   },
+   "partial": {
+    "nominal": 24.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 14
+   },
+   "partial": {
+    "nominal": 14
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 38
+   },
+   "partial": {
+    "nominal": 38
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 30.5
+   },
+   "partial": {
+    "nominal": 30.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 17.5
+   },
+   "partial": {
+    "nominal": 17.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 27.5
+   },
+   "partial": {
+    "nominal": 27.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 120
+   },
+   "partial": {
+    "nominal": 120
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 5
+   },
+   "partial": {
+    "nominal": 5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 8.5
+   },
+   "partial": {
+    "nominal": 8.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 4
+   },
+   "partial": {
+    "nominal": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 2.5,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.4,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 3.4
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.4,
+    "count": 5,
+    "through": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 3.4
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 13
+  },
+  {
+   "name": "note.general",
+   "contains": "未标注倒角均为C0.5，未标注圆角为R1"
+  },
+  {
+   "name": "note.general",
+   "contains": "所有标注公差尺寸为必检尺寸"
+  },
+  {
+   "name": "note.general",
+   "contains": "未注尺寸/形位公差按钣金设计加工标准执行"
+  },
+  {
+   "name": "note.general",
+   "contains": "钣金加工严禁采用划深槽折弯加工方式"
+  },
+  {
+   "name": "note.general",
+   "contains": "去毛刺飞边，尖角倒钝"
+  },
+  {
+   "name": "note.general",
+   "contains": "保证孔与面的垂直度"
+  },
+  {
+   "name": "note.general",
+   "contains": "保证孔与面的垂直度"
+  },
+  {
+   "name": "note.general",
+   "contains": "尽可能让孔道干净"
+  },
+  {
+   "name": "note.general",
+   "contains": "尽可能让孔道干净"
+  },
+  {
+   "name": "note.general",
+   "contains": "与孔垂直的平面粗糙度都为Ra1.6"
+  },
+  {
+   "name": "note.general",
+   "contains": "与孔垂直的平面粗糙度都为Ra1.6"
+  }
+ ],
+ "notes": "Chinese GB-style SolidWorks sheet, A4, same template as JXS-01-02. Title block (glosses): 材料 (material) '6061'; large cell '6061铝 1件' (6061 aluminium, 1 piece); 名称 (name) 'JXS-05-01' (recorded as title.partName); 图号 / 版本 empty (no drawing number / revision); 单位 mm; 比例 1:1; 页码 1/1; 数量 1; first-angle projection symbol. General-tolerance table class 'm' (as JXS-01-02) — tolerance.generalClass contains 'M'. 技术要求: ☆1 '零件处理方式：' printed twice then '未标注倒角均为C0.5，未标注圆角为R1；；' (unmarked chamfers C0.5, unmarked fillets R1); ☆2 toleranced dimensions are mandatory inspection dimensions; ☆3 unspecified dimensions / geometric tolerances per the sheet-metal standard; ☆4 deep-groove bending prohibited; ☆5 deburr / blunt sharp corners. The three-item list (perpendicularity of holes, clean holes, 'faces perpendicular to holes Ra1.6') is printed twice — each recorded twice. Dimensions (22 rows, complete; none toleranced): 35, 16, 34.50, R2, '4x Ø2.5 贯穿' (贯穿 = THRU), R24.50, R14, 38, '4x Ø3.4 贯穿 / ⌴Ø6 ↧3.4', '5x Ø3.4 贯穿 / ⌴Ø6 ↧3.4' (counterbore Ø and depth as separate rows), R30.50, R17.50, R27.50, 120° (angle), 5, R8.50, and 4, 2 in section B-B. feature.count.holes = 13 (4 + 4 + 5). Title block, material, roughness, general tolerance, quality, notes not complete."
+}

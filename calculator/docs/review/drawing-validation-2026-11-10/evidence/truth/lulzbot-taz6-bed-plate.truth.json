@@ -1,0 +1,631 @@
+{
+ "drawing": "lulzbot-taz6-bed-plate",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_plate_v5.0/300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 400 dpi (pdftoppm) and read in zooms (vertical label stacks rotated and enlarged) on screen; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf": "curves",
+  "lulzbot-taz6-bed-plate.pdf": "curves"
+ },
+ "complete": [
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "300mm Bed Plate v4.5"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0108"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.date",
+   "value": "9/17/15"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:4"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.designation",
+   "contains": "5052"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 3.175
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "powder coat"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "contains": "0.08"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "Mask all threads"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "Break all sharp edges"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M3x0.5",
+    "count": 36,
+    "pitch": 0.5
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 36
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 1.0
+   },
+   "partial": {
+    "tolerance": 1.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 330.0
+   },
+   "partial": {
+    "nominal": 330.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 264.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 264.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 66.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 66.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14.0
+   },
+   "partial": {
+    "nominal": 14.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 8.0,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 8.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 6.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 10.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 10.0
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 20.0,
+    "through": true
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 1
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 45
+   },
+   "partial": {
+    "nominal": 45
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.175
+   },
+   "partial": {
+    "nominal": 3.175
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.125
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 2.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 2.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 5.5,
+    "count": 8
+   },
+   "partial": {
+    "nominal": 5.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 330.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 330.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 316.0
+   },
+   "partial": {
+    "nominal": 316.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 282.5
+   },
+   "partial": {
+    "nominal": 282.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 265.0
+   },
+   "partial": {
+    "nominal": 265.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 264.0
+   },
+   "partial": {
+    "nominal": 264.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 196.0
+   },
+   "partial": {
+    "nominal": 196.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 190.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 190.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 160.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 160.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140.0
+   },
+   "partial": {
+    "nominal": 140.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 66.0
+   },
+   "partial": {
+    "nominal": 66.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30.0
+   },
+   "partial": {
+    "nominal": 30.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14.0
+   },
+   "partial": {
+    "nominal": 14.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 11.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 11.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 72.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 72.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 108.0,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 108.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140.0
+   },
+   "partial": {
+    "nominal": 140.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 144.5,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 144.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 150.5
+   },
+   "partial": {
+    "nominal": 150.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 222.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 222.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 258.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 258.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 319.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 319.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 326.5,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 326.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 11.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 11.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 99.5
+   },
+   "partial": {
+    "nominal": 99.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 101.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 101.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 126.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 126.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 138.5
+   },
+   "partial": {
+    "nominal": 138.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 164.5
+   },
+   "partial": {
+    "nominal": 164.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 190.5
+   },
+   "partial": {
+    "nominal": 190.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 204.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 204.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 229.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 229.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 319.0,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 319.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 326.5,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 326.5
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "Parts must be RoHS compliant"
+  },
+  {
+   "name": "note.general",
+   "contains": "Material: 5052 H-32 Aluminum"
+  },
+  {
+   "name": "note.general",
+   "contains": "Break all sharp edges prior to powder coat"
+  },
+  {
+   "name": "note.general",
+   "contains": "Part is to be powder coated with Cardinal color C241-BK109.5"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "FreeCAD sheet, text as glyph outlines. Title block: DRAWN BY BAM, DATE 9/17/15, MATERIAL 'See Notes.', TITLE '300mm Bed Plate v4.5', SIZE A, DWG NO PP-MP0108, REV. IR, SCALE 1:4, SHEET 1 of 1; Aleph Objects logo / address; 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'. Notes: 1 RoHS, 2 'Material: 5052 H-32 Aluminum', 3 'Break all sharp edges prior to powder coat', 4 'Part is to be powder coated with Cardinal color C241-BK109.5. Mask all threads prior to coating. Thickness of coating must not exceed 0.08mm' (masking + thickness, contains '0.08'). Tolerance block as on the other Aleph sheets ('63' roughness mark without unit not recorded). Edge view: '3.175 STK' with '[.125\"]' above and 'Flatness: 1.0' written as text (no frame) — recorded as a flatness 1.0 GD&T row (if the reader keeps it as a note it is missed, not wrong). Thread: '36X M3 X 0.5 THRU' (designation written 'M3x0.5' — compared without spaces). Dimensions (49, complete; all general tolerance, none toleranced): top '330.0', '2X 264.0', '2X 66.0', '14.0', '5X 8.0', '2X 6.0', '2X R10.0', 'Ø20.0 THRU' (hole), '45° TYP' (angle), '4X R2.0 THRU' (slot end radii — recorded as radius rows), '8X R5.5', '3.175 STK', '[.125\"]'; left (vertical) stack '2X 330.0, 316.0, 282.5, 265.0, 264.0, 196.0, 2X 190.0, 2X 160.0, 140.0, 66.0, 30.0, 14.0'; bottom (horizontal) stack '2X 3.50, 4X 11.00, 4X 72.00, 5X 108.00, 140.00, 2X 144.50, 150.50, 4X 222.00, 4X 258.00, 4X 319.00, 2X 326.50'; right (vertical) stack '2X 3.50, 4X 11.00, 99.50, 4X 101.00, 4X 126.00, 138.50, 164.50, 190.50, 4X 204.00, 4X 229.00, 4X 319.00, 2X 326.50' (the 4X 229.00 and 4X 319.00 labels overlap slightly but are legible). feature.count.holes = 1 (the one Ø callout, Ø20.0 THRU; the 4X R2.0 THRU are slot ends, the 36 M3 holes are threads). Title block, material, coating, roughness, quality, general tolerance and notes not complete."
+}

@@ -1,0 +1,165 @@
+{
+ "drawing": "stirling-p159",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 159 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p159.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "FLANGE"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "3-17110"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "800212"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "title.company",
+   "contains": "UNITED STIRLING"
+  },
+  {
+   "name": "material.designation",
+   "contains": "SIS 2541"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "value": 6.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 52
+   },
+   "partial": {
+    "nominal": 52
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 44.8,
+    "upper": 0.1,
+    "lower": -0.1
+   },
+   "partial": {
+    "nominal": 44.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 44.8,
+    "upper": 0.1,
+    "lower": -0.1
+   },
+   "partial": {
+    "nominal": 44.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 33.55,
+    "upper": 0.1,
+    "lower": -0.1
+   },
+   "partial": {
+    "nominal": 33.55
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 33.55,
+    "upper": 0.1,
+    "lower": -0.1
+   },
+   "partial": {
+    "nominal": 33.55
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 25
+   },
+   "partial": {
+    "nominal": 25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13
+   },
+   "partial": {
+    "nominal": 13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 92
+   },
+   "partial": {
+    "nominal": 92
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 85
+   },
+   "partial": {
+    "nominal": 85
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  }
+ ],
+ "notes": "United Stirling (Sweden) title block template: printed (not hand-filled) labels include 'Då ej annat anges gäller / To be valid unless otherwise specified', 'Toleranser SS 715 medel / Tolerances SS 715 medium', 'Inv. hörnradier 0,5 / Fillet radii 0,5', 'Skarpa kanter brutna / Remove sharp corners', 'Europ. proj.' with the first-angle symbol, 'Ytjämnhet / Surface roughness Ra µ max', 'Toleranssystem / Tolerance system', 'KOMMANDITBOLAGET UNITED STIRLING (SWEDEN) AB & Co'. PDF page 159: FLANGE, drawing no 3-17110, Ritad/Drawn 800212 (YYMMDD, recorded as printed), material 'SIS 2541', scale 1:1, tolerance system 'ISO', general roughness 'Ra µ max 6,3' (recorded as value 6.3), revision cell empty. The template's 'SS 715 medium' general tolerance is printed but too blurred on this page to read with certainty — not recorded. Dimensions read (decimal commas): R52, '44,8 ±0,1' ×2, '33,55 ±0,1' ×2, 25, 13, Ø15 with '4 hål' (Swedish: 4 holes — the count is not put in the row), Ø92, Ø85, R1 (detail). Not recorded: the corner radius 'R14' (could be R16), the small dimension in the detail, and several local roughness marks reading '25'."
+}

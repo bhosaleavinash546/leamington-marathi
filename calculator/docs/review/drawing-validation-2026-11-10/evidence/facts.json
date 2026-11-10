@@ -1,0 +1,224 @@
+{
+ "date": "10 November 2026",
+ "dateIso": "2026-11-10T16:00:00Z",
+ "commitTested": "e8328c23 (measured); final fixes 90022108 / 1166766a",
+ "readiness": "Suitable for controlled internal testing",
+ "suite": "5,913 tests passed (362 files)",
+ "cadOnly": "HEAD v the build before the drawing feature (36f6f7d3): 8 parts identical to the last decimal; real-parts baseline (40 parts): no drift",
+ "overall": "The offline drawing reader is safe to put in front of engineers: no drawing leaves the machine, nothing it reads reaches a cost until an engineer confirms it, and CAD-only costing is unchanged. It is not yet an accurate reader. On 44 genuine public drawings it reads 30 % of what they state (58 % on CAD-exported PDFs with selectable text, 22 % on text drawn as curves, 5 % on scans); 69 % of what it reads is right (85 % on selectable-text PDFs). Material is now read on 32 of 37 drawings. Cost accuracy is NOT validated: no real price exists for any tested part.",
+ "keyFindings": [
+  "Data protection — PASS after fix. The audit found one Critical defect: in AI-led or Compare mode a PDF drawing was sent to the AI model while the screen said nothing leaves the server. Fixed: no drawing is sent to a model in any mode, and a model's reading of a drawing is discarded. Proven by tests with every outbound socket blocked.",
+  "Unconfirmed values never reach a cost — PASS. Across every costing run, an unreviewed drawing costs exactly what no drawing costs (£11.033029 v £11.033029); confirmed drawing answers cost exactly what the same answers typed by hand cost.",
+  "CAD-only regression — PASS. 8 real parts on 8 commodities are bit-identical to the build before the drawing feature; the 40-part real-parts baseline shows no drift; the full suite passes (5,913 tests passed (362 files)).",
+  "Extraction is selective, not complete. Strict precision / recall after the fixes: 69.1 % / 30.1 % overall (83.3 % / 26.6 % before). Reliable: material (100 % precision, 86.5 % recall), general tolerance, coating, notes, fits (6 of 7 right). Unreliable: title block (17 % recall), GD&T (4.7 % recall — symbols drawn as geometry are not read), dimensions on curves and scans, roughness.",
+  "The precision fall is one drawing family: NX stroke-font sheets now go through OCR (they read nothing before) and give 139 wrong dimension readings against 35 right. Every one is marked 'needs checking' and none can reach a cost, but the engineer has to reject them.",
+  "Reconciliation: 12 pass / 6 partial / 2 fail of 20 tests (6 / 8 / 5 before). Conflicts are raised and never settled for the engineer; corrections persist and are traced (who, when, why); a review sent with another drawing is skipped. Not detected: a drawing paired with the wrong CAD when no holes are read, and a revision mismatch (revisions are never compared).",
+  "Costing effect (indicative): where the drawing's material was confirmed, the cost moved by +17 % to +58 % on 7 of 13 rows — largely because the CAD-only run had assumed the wrong material (plastic from a 'PP-' part number in the file name, a defect now fixed). This shows the drawing replacing an assumption, not that either figure is accurate.",
+  "Exports — PASS after fixes. Screen = core PDF = audit pack = Excel to the penny on every costing checked (£15.20, £17.80, £24.92); drawing table matches the review panel row for row and now prints who decided, when and why. Fixed on the way: two different confidence grades for one costing, stale 'no drawing is read' text, a clipped stamp, a dropped depth symbol.",
+  "52 defects were found by three independent runs; 32 fixed with a test that failed first, 5 partly fixed, 15 open (none Critical or High; 8 Medium, 12 Low). The most consequential open items: machining costs the material FAMILY only (304 stainless is costed as EN8 carbon steel); blank development blocks the server for about 40 s (every user waits); revision and wrong-CAD pairing are not checked."
+ ],
+ "method": [
+  "Independence: the code audit was done by a reviewer who had not built the feature, against the original brief; the 44 truth files were written from rendered drawing images by two reviewers who never ran the reader and never saw its code; measurement and reliability runs are scripts that can be re-run.",
+  "Test material: 26 genuine public CAD + drawing pairs and 3 drawing-only sets, every one with its licence and the evidence that drawing and model are the same part (register in the workbook). Sources: NIST MBE PMI test cases and D2MI parts (public domain), LulzBot TAZ 6 (CC BY-SA 4.0), OpenEAI robot arm (BSD-3), SeedMint jig (GPL-3.0), the DOE/NASA Automotive Stirling Engine drawings (public use). The project's own generated drawings were NOT counted as evidence.",
+  "Not accessible: GrabCAD, TraceParts, PARTcommunity and 3D ContentCentral need an account; NHTSA blocks automated access; Bosch Motorsport and catalogue vendors' terms forbid it. No login wall, bot check or licence was worked around. Consequence: the only automotive drawings are the Stirling-engine scans.",
+  "Three workflows on identical inputs: A — CAD only (blocking questions answered with the tool's own leaning, recorded); B — drawing only (the reader, scored against truth); C — CAD + drawing reviewed as a careful engineer would from the truth file (confirm right readings, correct wrong ones, reject fabricated ones). UK, 10,000 a year, 5 years, DAP, the built-in rate book, 10 Nov 2026, AI switched off throughout.",
+  "Scoring: precision = correct ÷ (correct + wrong); recall = correct ÷ items stated on the drawing; a reading in a group the truth marks complete that is not on the drawing counts as wrong (fabricated); a missing value is never counted correct. Lenient scoring differs from strict only where the truth writer and the reader file the same diameter under two names (2 readings); no value is relaxed.",
+  "Fix and re-test in three rounds; every fix has a test that failed before it, and after each round the full suite, the real-parts baseline and a live browser run with AI off were repeated. The reader fixes were developed on half the drawing families and checked on the other half (held-out material recall 79 %, 15 of 19)."
+ ],
+ "coverageNote": "Coverage is by component type, judged from the part; the set is not automotive except for the Stirling-engine scans. Commodities the tool costs but which no genuine public pair covered are listed below; they are NOT validated.",
+ "coverageDepth": {
+  "machining": "extraction + reconciliation + costing A/C (D2MI, LulzBot plates, OpenEAI, FTC-09/10)",
+  "sheet metal": "extraction + reconciliation + costing A/C on the sheet route (LulzBot bracket and chassis)",
+  "casting": "extraction only (NIST CTC-02); no casting with a material stated",
+  "rubber": "extraction only (NIST FTC-11 ring)",
+  "other": "extraction only"
+ },
+ "notCovered": "suspension, axles and driveline; braking and steering; wheels and tyres; forgings; welded assemblies; plastic mouldings; electrical and electronic parts; battery, EDU and transmission parts. No genuine public CAD + drawing pair was found for these without an account or a licence restriction. The tool's 15 CAD routes were regression-tested CAD-only on the project's own 40 real parts, which is not a drawing validation.",
+ "extractionReading": "What improved: material (0 → 32 of 37), coating (53 → 84 % recall), quality marks (39 → 65 %). What did not: title block (17 % recall — most of these sheets have no conventional title block, and curve-text cells are not read), GD&T (5 % — symbols drawn as geometry), threads (39 %), dimensions (38 % recall, 57 % precision after stroke-font OCR). A reading's status is the safeguard: every OCR reading needs checking and nothing reaches a cost unconfirmed.",
+ "costingReading": "Every change from A to C is explained by an answer the drawing supplied (material family or grade, finish). No wrong reading reached a cost in any run. Machining asks the material family only, so a stated grade (304, 6061-T6) is costed as the family's representative grade and listed as not costed — a cost-model limitation the drawing exposes. The 'PP-' file-name defect made the CAD-only figure for two LulzBot parts plastic; it is fixed in 90022108 (proven by a unit test on the real file names), so those two A figures will move; they were not re-costed live after the fix.",
+ "accuracy": [
+  "Independent costing accuracy cannot be assessed: there is no purchase price, supplier quote or cycle-time sheet for any tested part, and none was invented. Every £ in this report is INDICATIVE.",
+  "What the comparison does show: on 7 of 13 cost rows the drawing replaced an assumed material (and on two a finish) with a stated one; on 3 it changed nothing; 3 were refused by the tool's own route check in both A and C; it never made a cost depend on an unconfirmed reading.",
+  "What it does not show: that the CAD + drawing figure is closer to what a part costs. A difference between A and C is a difference in inputs, not evidence of accuracy.",
+  "To measure accuracy: enter real prices for real parts in calculator/scripts/actuals/cad-actuals-input.csv (price, volume, life, country, finish, source) and run npx tsx scripts/cad-actuals.ts then npm run accuracy. Ten to twenty parts per commodity, with their drawings, would give a first error band per commodity."
+ ],
+ "accuracyRows": [
+  [
+   "Real purchase prices / quotes for tested parts",
+   "None available",
+   "No price exists for any of the 26 pairs; none was invented."
+  ],
+  [
+   "Accuracy of CAD-only costing",
+   "Not validated",
+   "0 actuals in npm run accuracy."
+  ],
+  [
+   "Accuracy of CAD + drawing costing",
+   "Not validated",
+   "Same reason."
+  ],
+  [
+   "Inputs stated rather than assumed (C v A)",
+   "7 of 13 rows",
+   "Material family / grade or finish now from the confirmed drawing."
+  ],
+  [
+   "Unconfirmed reading reached a cost",
+   "0 cases",
+   "In every run; proven by the A = unreviewed-C identity."
+  ],
+  [
+   "How to validate",
+   "Action for JLR",
+   "Prices paid → scripts/actuals/cad-actuals-input.csv → scripts/cad-actuals.ts → npm run accuracy; run scripts/drawings/accuracy.ts on JLR drawings with truth files inside JLR."
+  ]
+ ],
+ "exportsReading": "Exports were opened, every PDF page rendered and read (76 pages in the first run), every worksheet range scanned and recalculated in LibreOffice (0 formula errors; the CAD workbook holds values and a checks sheet by design). Four export defects were found and fixed (two confidence grades, stale drawing text, clipped stamp, dropped symbols); the final run on the bed plate with a corrected reading agrees screen = PDF = audit pack = Excel at £24.92 and prints who / when / why.",
+ "exportAfter": {
+  "D-pdf-pages": "Fixed: stamp wraps, depth / GD&T symbols print as words, §9b subtitle wraps (report-reliability-fixes.test.ts)",
+  "D-xlsx": "Fixed: one confidence grade; drawing-aware wording. 'No live formulas' is by design (values + 7-Checks)",
+  "D-confidence": "Fixed: costingConfidence on screen, core PDF, audit pack and workbook",
+  "D-stale-text": "Fixed: drawing-aware wording and threads stated on the drawing"
+ },
+ "exportFinalRows": [
+  [
+   "F-bedplate-money",
+   "Final: bed plate, CAD + reviewed drawing with a correction",
+   "screen = PDF = audit pack = Excel",
+   "£24.92 everywhere (Excel 24.924585, API 24.92458513564484)",
+   "",
+   "pass",
+   "runs/exports-final/check.json"
+  ],
+  [
+   "F-bedplate-who",
+   "Final: who / when / why on corrected and confirmed rows",
+   "printed in both PDFs and the workbook",
+   "e.g. 'Corrected by qa@test on 10 Nov 2026 11:37 UTC (was \"lofl\") — as written on the drawing'",
+   "",
+   "pass",
+   "runs/exports-final/check.json"
+  ]
+ ],
+ "regression": [
+  "Full suite after each fix round: 5,883 → 5,912 → 5,913 tests across the three fix rounds, all passing.",
+  "Real-parts baseline (40 real parts re-measured with the geometry kernel): no drift after every round.",
+  "CAD-only, current build v the build before the drawing feature (36f6f7d3), same answers: 8 parts identical to the last decimal on total, all 8 buckets, inputs and questions. The one intended CAD-only change is the round-3 'PP-' / 'PC-' part-number fix, which only affects file names carrying such a code.",
+  "After the final fix (90022108) the LulzBot 'PP-' part numbers no longer read as plastic (unit test on the real file names); the live CAD-only re-cost of those two parts was not repeated, so section 7 keeps their measured (plastic) A figures.",
+  "Live browser run with AI off (5 scenarios, 73 checks) after every round: 73 / 73.",
+  "Offline proof: the drawing path with every outbound connection blocked and AIR_GAPPED=1 — no connection attempted."
+ ],
+ "readinessWhy": "Controlled internal testing, not yet a Director demonstration of accuracy and not production. For: nothing leaves the machine; nothing unconfirmed reaches a cost; CAD-only costing is unchanged; every reading is traceable and every decision recorded; exports agree to the penny. Against: the reader finds 30 % of what a drawing states (58 % on CAD-exported PDFs); GD&T, title blocks and dimensions on curve-text or scanned sheets are weak; no automotive CAD + drawing pair could be tested; cost accuracy is unvalidated; four Medium defects remain open that matter in daily use (machining costs the family only, the server blocks for ~40 s during blank development, revision and wrong-CAD pairing unchecked).",
+ "beforeDirector": [
+  "Run the tool's own accuracy script inside JLR on 20–30 real JLR drawings with truth files (scripts/drawings/accuracy.ts) — the only extraction figure that matters, measured without the drawings leaving JLR.",
+  "Enter purchase prices for 10–20 parts that also have drawings (scripts/actuals/cad-actuals-input.csv) and report the error band, labelled per commodity.",
+  "Demonstrate on CAD-exported PDFs with selectable text (the class that reads 85 % right), and say plainly that scans and curve-text sheets are read poorly and always need checking.",
+  "Fix or disclose the open Medium items: grade on the machining route (304 costed as EN8), blank development blocking the server (multi-user deployment), revision and wrong-model checks.",
+  "Do not present the CAD + drawing cost change as an accuracy gain: it is an input change until real prices are compared."
+ ],
+ "answers": [
+  {
+   "q": "1. Does the reader genuinely interpret engineering information, or mainly OCR and text extraction?",
+   "a": "Both, with a clear line. It extracts text (exact PDF text, or OCR) and then interprets it with standards tables: ISO 286 fits into limits, ISO 8062-3 casting grades and EN 10243 forging grades into the tolerance class, material designations into a family and rate-book grade (EN / AA / EN 1706 / GB / JIS numbering), coating names and thicknesses into the finish routes, hole and thread callouts matched to the 3D model's holes, inch values converted. It does not interpret GD&T symbols drawn as geometry, weld symbols, roughness symbols or views and sections, and it does not decide the process."
+  },
+  {
+   "q": "2. Which parameters are reliable, which are not?",
+   "a": "Reliable (high precision; recall as stated): material 100 % / 86.5 %, general tolerance 100 % / 59 %, coating 100 % / 84 %, notes 99 % / 44 %, fits 86 % / 86 % (6 of 7). Unreliable: title block (100 % right but 17 % found), GD&T (4.7 % found), threads (69 % / 39 %), dimensions (57 % / 38 %, much worse on curves and scans), roughness (0 of 12)."
+  },
+  {
+   "q": "3. Does combining 2D drawings with 3D CAD improve engineering-data completeness?",
+   "a": "Yes, for what the 3D model cannot carry: on the costed pairs the drawing supplied material, temper, finish and coating, which the CAD-only run had to assume (and in two cases assumed wrongly). Measured: 7 of 13 cost rows had an assumed input replaced by a stated one. It adds nothing on drawings whose text it cannot read."
+  },
+  {
+   "q": "4. Does it demonstrably improve should-costing accuracy against independent reference data?",
+   "a": "Not demonstrated. There is no independent reference cost for any tested part, so accuracy is unmeasured. The tool's costs changed by +17 % to +58 % where the material was supplied — evidence that the drawing matters, not that the result is more accurate."
+  },
+  {
+   "q": "5. Which commodities and component types have actually been validated?",
+   "a": "Drawing extraction: machined aluminium and steel plates and blocks, bent and flat sheet-metal parts, a cast-like housing, a non-rigid ring and scanned engine parts — 44 drawings. Costing A v C: machining and sheet metal only. Not validated with drawings: castings with a stated material, forgings, mouldings, rubber, welded assemblies, brakes, steering, suspension, wheels, electrical, battery, EDU, transmission."
+  },
+  {
+   "q": "6. Has existing CAD-only functionality remained unaffected?",
+   "a": "Yes. Bit-identical costs on 8 real parts against the build before the feature, no drift on the 40-part baseline, the full suite passing. The only CAD-only change is deliberate: a 'PP-' / 'PC-' part number in a file name is no longer read as polypropylene / polycarbonate."
+  },
+  {
+   "q": "7. Are the PDF and Excel outputs technically reliable?",
+   "a": "Yes after the fixes: screen, core PDF, audit pack and workbook agree to the penny on every costing checked; the drawing table matches the review panel; engineering symbols print (Ø, ±, °, µm; GD&T and depth symbols as words in the PDF, Unicode in Excel); who / when / why are printed. Four export defects were found and fixed with tests."
+  },
+  {
+   "q": "8. What must be fixed before presenting to the Cost Engineering Director?",
+   "a": "Measure extraction on real JLR drawings inside JLR; enter real prices for a sample of parts; fix or disclose the open Medium defects (machining grade, blank development blocking the server, revision / wrong-model checks, stroke-font OCR noise); demonstrate on selectable-text PDFs and state the limits."
+  },
+  {
+   "q": "9. Ready for an internal trial, a Director demonstration or production?",
+   "a": "Suitable for controlled internal testing. It is safe and traceable enough for engineers to try on real JLR drawings inside JLR, which is also the step that produces the evidence a Director demonstration needs. Not yet production: accuracy is unmeasured on real drawings and real prices, and four Medium defects remain."
+  }
+ ],
+ "evidence": [
+  "Plan: validation/TEST-PLAN.md. Code audit: validation/audit/compliance.json (63 requirements), findings.json (19).",
+  "Dataset: validation/dataset/register.json (29 entries with licences), not-used.json (25 sources and why).",
+  "Truth files: validation/truth/*.truth.json (44, written from images, independent of the reader).",
+  "Reliability and export run: validation/reliability/results.json (110 cases), defects.json (16), validation/exports/ (renders).",
+  "Measurement before / after: validation/runs/extraction.json, extraction-final.json, reconciliation(-final).json, costing(-final).json, regression(-final).json, timings(-final).json, exports-final/, raw reader output raw/ and raw-final/.",
+  "Defect register: validation/deliverables/defect-register.json (52). Fixes: commits 59b0aa70, 2a4b54c2 and 90022108 on branch claude/new-session-ts4byp; tests drawing-validation-fixes, report-reliability-fixes, drawing-review-binding, drawing-access-scope, drawing-raster-limits, drawing-review-replay-route, drawing-reader-gaps."
+ ],
+ "complianceAfterFix": {
+  "C02": {
+   "verdict": "Pass",
+   "why": "F01 / F02 fixed (59b0aa70): no drawing reaches a model; the model's drawing reads are dropped; the drawing path meets the costing only through the engineering-data adapter."
+  },
+  "C03": {
+   "verdict": "Pass",
+   "why": "F01 fixed: no drawing is sent to a model in any mode; the drawing path is offline (tested with sockets blocked). AI mode (a separate, opt-in Phase 2 feature) still sends CAD renders and measurements, never the drawing."
+  },
+  "C28": {
+   "verdict": "Pass",
+   "why": "F03 fixed: a value derived from an OCR reading is needs-validation."
+  },
+  "C29": {
+   "verdict": "Pass",
+   "why": "F03, F09 fixed."
+  },
+  "C33": {
+   "verdict": "Partial",
+   "why": "F02 fixed; open: the file-name family is not a conflict source (F15, Low); revision and wrong-model pairing not detected (M-D06, M-D07)."
+  },
+  "C35": {
+   "verdict": "Partial",
+   "why": "F05 fixed (server stamps who / when); open: a client-supplied drawing file name can relabel the source (F16, Low)."
+  },
+  "C36": {
+   "verdict": "Pass",
+   "why": "F04 / F05 fixed: decisions bound to drawing and value, server-stamped, printed in reports."
+  },
+  "C46": {
+   "verdict": "Pass",
+   "why": "F03 fixed."
+  },
+  "C49": {
+   "verdict": "Pass",
+   "why": "F02 / F03 fixed; every run: unreviewed drawing = no drawing, to the penny."
+  },
+  "C56": {
+   "verdict": "Pass",
+   "why": "Full suite, real-parts baseline, HEAD v pre-feature comparison and the live browser run executed after every round."
+  },
+  "C59": {
+   "verdict": "Pass",
+   "why": "F06 / F07 fixed: drawings scoped to uploaders, hourly retention sweep; auth on every route; upload limits consistent."
+  },
+  "C60": {
+   "verdict": "Partial",
+   "why": "150 MP cap before decode, PNG decoded row-wise, OCR one at a time (A0 scan 910 → 433 MB); JPEG still decodes full size under the cap and the worker has no resourceLimits."
+  },
+  "C63": {
+   "verdict": "Partial",
+   "why": "By design most drawing specifications are shown and reported but not costed (no cost formula was changed); machining now lists a stated grade as not costed (F10)."
+  }
+ },
+ "regressionAfterRound3": [
+  "The PP- / PC- fix (90022108) moves only files whose name carries such a part code: proven by a unit test on the three real LulzBot file names (they no longer pre-answer 'plastic'); the live A re-cost of those two parts was NOT re-run after this fix, so their A figures in section 7 are the measured (plastic) ones.",
+  "Full suite 5,913 passed, real-parts baseline no drift and the live browser run 73 / 73 after 90022108: no other part moved."
+ ]
+}

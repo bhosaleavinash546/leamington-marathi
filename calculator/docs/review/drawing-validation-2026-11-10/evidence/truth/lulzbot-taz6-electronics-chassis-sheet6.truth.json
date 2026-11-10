@@ -1,0 +1,64 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet6",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet6.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet6.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet6.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "heat treatment",
+  "threads",
+  "fits",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS V0.4"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.sheet",
+   "value": "6 of 6"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "POWDER COAT OUTSIDE OF CHASSIS"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "MASK ALL FOUR TABS INSIDE EDGE TOWARD OUTSIDE"
+  },
+  {
+   "name": "note.general",
+   "contains": "MASK ALL FOUR TABS INSIDE EDGE TOWARD OUTSIDE 8.00 MM WIDE"
+  },
+  {
+   "name": "note.general",
+   "contains": "POWDER COAT OUTSIDE OF CHASSIS"
+  },
+  {
+   "name": "note.general",
+   "contains": "OVERSPRAY ALLOWED INSIDE"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheets 2-6 carry only a short title block (TITLE, SIZE A, DWG NO., REV., SCALE holding the literal word 'Scale', 'DO NOT SCALE DRAWING', SHEET) and the 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' line; no date, material, tolerance block or units statement — title.units, scale and company are NOT recorded and the title block is not complete. Sheet 6 title: 'ELECTRONICS CHASSIS V0.4', DWG NO PP-MP0110, REV IR, SHEET 6 of 6. Painting / masking sheet: leader notes 'MASK ALL FOUR TABS INSIDE EDGE TOWARD OUTSIDE 8.00 MM WIDE', 'POWDER COAT OUTSIDE OF CHASSIS', 'OVERSPRAY ALLOWED INSIDE'. No dimensions are drawn; the 8.00 MM is inside the masking note, so dimensions is left open (not complete) rather than penalise a reader that takes it as a width. Coating not complete (reader route vocabulary)."
+}

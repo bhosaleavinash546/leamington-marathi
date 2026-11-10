@@ -1,0 +1,132 @@
+{
+ "drawing": "lulzbot-taz6-8mm-rod",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/8_mm_rod/8mmx18.5mm_smooth_rod_v0.1.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "8mmx18.5mm_smooth_rod_v0.1.pdf": "curves",
+  "lulzbot-taz6-8mm-rod.pdf": "curves"
+ },
+ "complete": [
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.03,
+    "nominal": 8
+   }
+  },
+  {
+   "name": "title.partName",
+   "value": "8mm Smooth Rod, SS, 18-19mm"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "HD-RD0004"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.date",
+   "value": "4/25/16"
+  },
+  {
+   "name": "title.scale",
+   "value": "2:1"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.designation",
+   "contains": "304"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "parameter": "Ra",
+    "value": 0.3
+   }
+  },
+  {
+   "name": "finish.edges",
+   "contains": "free of burrs and sharp edges"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 8,
+    "upper": 0,
+    "lower": -0.03
+   },
+   "partial": {
+    "nominal": 8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 18.5,
+    "upper": 0.5,
+    "lower": -0.5
+   },
+   "partial": {
+    "nominal": 18.5
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "All parts must be RoHS compliant"
+  },
+  {
+   "name": "note.general",
+   "contains": "Material: 304 Stainless Steel"
+  },
+  {
+   "name": "note.general",
+   "contains": "Parts must be free of burrs and sharp edges"
+  },
+  {
+   "name": "note.general",
+   "contains": "Rods must be consistently smooth and not contain pits or gouges"
+  },
+  {
+   "name": "note.general",
+   "contains": "Surface finish Ra 0.3"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "tolerance.tightest is a hand-computed check (narrowest stated tolerance band among the toleranced dimensions; general-tolerance block not counted). FreeCAD sheet, every string drawn as glyph outlines. Title block (Aleph Objects, Inc., 626 West 66th Street, Loveland, Colorado 80538, USA): DRAWN BY bam, DATE 4/25/16, MATERIAL 'See Notes', TITLE '8mm Smooth Rod, SS, 18-19mm', SIZE A, DWG NO HD-RD0004, REV. IR, SCALE 2:1, 'DO NOT SCALE DRAWING', SHEET 1 of 1. Company recorded with contains 'ALEPH OBJECTS' (logo lettering 'ALEPH OBJECTS INCORPORATED'; the sheet also carries 'Copyright 2016, Aleph Objects, Inc. CC BY-SA 4.0' top left). No projection symbol. Tolerance block: 'UNLESS OTHERWISE SPECIFIED DIMENSIONS ARE IN MILLIMETERS. TOLERANCES ARE: DECIMALS .X ±.75, .XX ±.25, .XXX ±.125, .XXXX ±.050; ANGLES X° ±1°'; then a roughness check mark with '63' (no unit and no parameter printed — in a millimetre drawing this is the stock US 63 µin template value; NOT recorded because its unit is not stated), 'BREAK EDGES 0.1/0.5', 'FILLET RADIUS 0.1/0.5' (not recorded: no dictionary name fits). tolerance.general is checked with contains '.75' only (the whole block may be read as one value). Roughness: note 5 'Surface finish Ra 0.3' (no unit printed; mm drawing → µm assumed by the reader is the normal reading) recorded as general Ra 0.3; roughness group NOT complete because of the unlabelled '63' symbol. Material: note 2 '304 Stainless Steel' (MATERIAL field says 'See Notes') — contains '304'; material not complete. Dimensions (2, complete): 'Ø8 +0.0 / -0.03' and '18.5 +0.5 / -0.5'. Quality not complete (finish.edges recorded for note 3 and BREAK EDGES; note 4 'pits or gouges' could be read as an inspection requirement)."
+}

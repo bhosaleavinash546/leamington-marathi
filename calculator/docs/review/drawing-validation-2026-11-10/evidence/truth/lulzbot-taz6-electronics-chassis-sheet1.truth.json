@@ -1,0 +1,101 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet1",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet1.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet1.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet1.pdf": "curves"
+ },
+ "complete": [
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS REV A"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.date",
+   "value": "09.17.15"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 6"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.designation",
+   "contains": "5052"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 2.03
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "POWDER COAT"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "MASK ALL THREADS PRIOR TO POWDER COATING"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK ALL CORNERS PRIOR TO POWDER COATING"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "note.general",
+   "contains": "ALL COMPONENTS Rohs COMPLIANT"
+  },
+  {
+   "name": "note.general",
+   "contains": "3D MODEL GOVERNS DIMENSIONS NOT SHOWN ON PRINT"
+  },
+  {
+   "name": "note.general",
+   "contains": "MATERIAL: 5052 H32 AL, 2.03 MM THICK"
+  },
+  {
+   "name": "note.general",
+   "contains": "BREAK ALL CORNERS PRIOR TO POWDER COATING"
+  },
+  {
+   "name": "note.general",
+   "contains": "MASK ALL THREADS PRIOR TO POWDER COATING"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheet 1 of 6: two isometric views, version table, notes, full Aleph title block. Title block: DRAWN BY J PETTIT, DATE 09.17.15, MATERIAL '2.03 MM AL', TITLE 'ELECTRONICS CHASSIS REV A', SIZE A, DWG NO PP-MP0110, REV. A, SCALE field holds the word 'Scale' (no ratio — title.scale not recorded), SHEET 1 of 6; tolerance block .X ±.75 … angles ±1°, unlabelled '63' roughness check mark (not recorded), BREAK EDGES 0.1/0.5, FILLET RADIUS 0.1/0.5. Notes header 'NOTES(UNLESS OTHERWISE SPECIFIED):' — 1 'ALL COMPONENTS Rohs COMPLIANT', 2 '3D MODEL GOVERNS DIMENSIONS NOT SHOWN ON PRINT', 3 'MATERIAL: 5052 H32 AL, 2.03 MM THICK', 4 'BREAK ALL CORNERS PRIOR TO POWDER COATING', 5 'MASK ALL THREADS PRIOR TO POWDER COATING AND SEE PAGE 6 FOR FURTHER MASKING DETAILS AND WHERE OVERSPRAY IS ALLOWED'. Version table (Version / Date / Description): V0.2 Mangrove Build Release; V0.3 Nutmeg Build Release (front vent holes, switch opening, standoffs, pem stud, sheet 6 painting and masking instructions); V0.4 01.08.15 'Fan attach holes were R2.2 now R2.0, pg. 4 / Decreased power switch opening by 1.5mm, pg 3'; A 02.07.16 'Release as a Revision Level A' — not recorded (history; its 'R2.2 / R2.0 / 1.5mm' are not dimensions of this sheet, so a reader taking them as dimensions scores wrong). No dimensions on this sheet. Coating route words: notes say 'POWDER COATING'."
+}

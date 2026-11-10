@@ -1,0 +1,1163 @@
+{
+ "method": "reader v1.1.0 at HEAD e8328c23, one drawing per process (scripts/read-one.mts, default options); same machine and method as timings.json (the before).",
+ "byClass": {
+  "vector": {
+   "files": 11,
+   "wallMs": {
+    "median": 1532,
+    "max": 2235,
+    "min": 1327,
+    "sum": 17479
+   },
+   "maxRssMB": {
+    "median": 485.8,
+    "max": 531.3
+   }
+  },
+  "curves": {
+   "files": 26,
+   "wallMs": {
+    "median": 9567.5,
+    "max": 26894,
+    "min": 4437,
+    "sum": 306762
+   },
+   "maxRssMB": {
+    "median": 769.25,
+    "max": 946.9
+   }
+  },
+  "scan": {
+   "files": 7,
+   "wallMs": {
+    "median": 12311,
+    "max": 26733,
+    "min": 9323,
+    "sum": 103953
+   },
+   "maxRssMB": {
+    "median": 755.6,
+    "max": 776.9
+   }
+  }
+ },
+ "byContentRead": {
+  "no OCR": {
+   "files": 11,
+   "wallMs": {
+    "median": 1532,
+    "max": 2235,
+    "min": 1327,
+    "sum": 17479
+   },
+   "maxRssMB": {
+    "median": 485.8,
+    "max": 531.3
+   }
+  },
+  "OCR ran": {
+   "files": 33,
+   "wallMs": {
+    "median": 11689,
+    "max": 26894,
+    "min": 4437,
+    "sum": 410715
+   },
+   "maxRssMB": {
+    "median": 759.3,
+    "max": 946.9
+   }
+  }
+ },
+ "all": {
+  "files": 44,
+  "wallMs": {
+   "median": 8694.0,
+   "max": 26894,
+   "min": 1327,
+   "sum": 428194
+  },
+  "maxRssMB": {
+   "median": 751.4000000000001,
+   "max": 946.9
+  }
+ },
+ "before": {
+  "files": 44,
+  "wallMs": {
+   "median": 3951.0,
+   "max": 22705,
+   "min": 1284
+  },
+  "maxRssMB": {
+   "median": 713.0,
+   "max": 897.6
+  }
+ },
+ "perFile": [
+  {
+   "drawing": "lulzbot-taz6-8mm-rod",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 6363,
+   "readerTotalMs": 6361,
+   "ocrMs": 4919,
+   "maxRssMB": 746.2,
+   "userCpuMs": 8323,
+   "parameters": 10,
+   "warnings": 1,
+   "before": {
+    "wallMs": 5725,
+    "maxRssMB": 717.9,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-bed-leveling-washer",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 6245,
+   "readerTotalMs": 6243,
+   "ocrMs": 4800,
+   "maxRssMB": 741.8,
+   "userCpuMs": 8190,
+   "parameters": 9,
+   "warnings": 1,
+   "before": {
+    "wallMs": 5559,
+    "maxRssMB": 743.9,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-bed-plate",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 12114,
+   "readerTotalMs": 12113,
+   "ocrMs": 10311,
+   "maxRssMB": 757.9,
+   "userCpuMs": 14688,
+   "parameters": 42,
+   "warnings": 1,
+   "before": {
+    "wallMs": 11375,
+    "maxRssMB": 758.1,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-corner-bracket",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 7868,
+   "readerTotalMs": 7866,
+   "ocrMs": 6258,
+   "maxRssMB": 753.1,
+   "userCpuMs": 9987,
+   "parameters": 27,
+   "warnings": 1,
+   "before": {
+    "wallMs": 7606,
+    "maxRssMB": 728.5,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet1",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 10956,
+   "readerTotalMs": 10955,
+   "ocrMs": 9312,
+   "maxRssMB": 904.5,
+   "userCpuMs": 13313,
+   "parameters": 17,
+   "warnings": 1,
+   "before": {
+    "wallMs": 10047,
+    "maxRssMB": 897.6,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet2",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 9333,
+   "readerTotalMs": 9332,
+   "ocrMs": 7860,
+   "maxRssMB": 865.8,
+   "userCpuMs": 11381,
+   "parameters": 9,
+   "warnings": 1,
+   "before": {
+    "wallMs": 8227,
+    "maxRssMB": 873.0,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet3",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 7673,
+   "readerTotalMs": 7671,
+   "ocrMs": 6076,
+   "maxRssMB": 862.8,
+   "userCpuMs": 9741,
+   "parameters": 9,
+   "warnings": 1,
+   "before": {
+    "wallMs": 6718,
+    "maxRssMB": 861.6,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet4",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 7428,
+   "readerTotalMs": 7427,
+   "ocrMs": 5923,
+   "maxRssMB": 749.7,
+   "userCpuMs": 9477,
+   "parameters": 27,
+   "warnings": 1,
+   "before": {
+    "wallMs": 6183,
+    "maxRssMB": 739.3,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet5",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 9245,
+   "readerTotalMs": 9244,
+   "ocrMs": 7692,
+   "maxRssMB": 865.1,
+   "userCpuMs": 11592,
+   "parameters": 16,
+   "warnings": 1,
+   "before": {
+    "wallMs": 8031,
+    "maxRssMB": 889.3,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-chassis-sheet6",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 4561,
+   "readerTotalMs": 4560,
+   "ocrMs": 3090,
+   "maxRssMB": 713.4,
+   "userCpuMs": 6666,
+   "parameters": 8,
+   "warnings": 1,
+   "before": {
+    "wallMs": 4135,
+    "maxRssMB": 708.1,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "lulzbot-taz6-electronics-cover",
+   "class": "curves",
+   "family": "LulzBot TAZ 6",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 11769,
+   "readerTotalMs": 11767,
+   "ocrMs": 10045,
+   "maxRssMB": 759.7,
+   "userCpuMs": 14173,
+   "parameters": 48,
+   "warnings": 1,
+   "before": {
+    "wallMs": 11062,
+    "maxRssMB": 763.1,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-am-artifact",
+   "class": "scan",
+   "family": "NIST AM artifact",
+   "sheets": 2,
+   "sheetContent": [
+    "scanned",
+    "scanned"
+   ],
+   "wallMs": 26733,
+   "readerTotalMs": 26732,
+   "ocrMs": 25376,
+   "maxRssMB": 726.3,
+   "userCpuMs": 29549,
+   "parameters": 33,
+   "warnings": 4,
+   "before": {
+    "wallMs": 22705,
+    "maxRssMB": 741.4,
+    "sheetContent": [
+     "scanned",
+     "scanned"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ctc-01",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 4697,
+   "readerTotalMs": 4696,
+   "ocrMs": 3216,
+   "maxRssMB": 712.7,
+   "userCpuMs": 6806,
+   "parameters": 1,
+   "warnings": 2,
+   "before": {
+    "wallMs": 3824,
+    "maxRssMB": 723.7,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ctc-02",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 3,
+   "sheetContent": [
+    "vector-text",
+    "text-as-curves",
+    "vector-text"
+   ],
+   "wallMs": 16720,
+   "readerTotalMs": 16718,
+   "ocrMs": 15002,
+   "maxRssMB": 757.4,
+   "userCpuMs": 20338,
+   "parameters": 7,
+   "warnings": 6,
+   "before": {
+    "wallMs": 14125,
+    "maxRssMB": 760.6,
+    "sheetContent": [
+     "vector-text",
+     "text-as-curves",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ctc-03",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 6685,
+   "readerTotalMs": 6683,
+   "ocrMs": 5140,
+   "maxRssMB": 709.2,
+   "userCpuMs": 8816,
+   "parameters": 0,
+   "warnings": 2,
+   "before": {
+    "wallMs": 5098,
+    "maxRssMB": 718.3,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ctc-04",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 4437,
+   "readerTotalMs": 4436,
+   "ocrMs": 2920,
+   "maxRssMB": 715.3,
+   "userCpuMs": 6547,
+   "parameters": 0,
+   "warnings": 2,
+   "before": {
+    "wallMs": 4078,
+    "maxRssMB": 721.4,
+    "sheetContent": [
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ctc-05",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 2,
+   "sheetContent": [
+    "vector-text",
+    "vector-text"
+   ],
+   "wallMs": 8143,
+   "readerTotalMs": 8142,
+   "ocrMs": 6424,
+   "maxRssMB": 748.3,
+   "userCpuMs": 10470,
+   "parameters": 3,
+   "warnings": 4,
+   "before": {
+    "wallMs": 7383,
+    "maxRssMB": 729.9,
+    "sheetContent": [
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-903",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 12084,
+   "readerTotalMs": 12083,
+   "ocrMs": 10573,
+   "maxRssMB": 901.0,
+   "userCpuMs": 14623,
+   "parameters": 21,
+   "warnings": 2,
+   "before": {
+    "wallMs": 1470,
+    "maxRssMB": 480.9,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-904",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 3,
+   "sheetContent": [
+    "text-as-curves",
+    "text-as-curves",
+    "text-as-curves"
+   ],
+   "wallMs": 26066,
+   "readerTotalMs": 26065,
+   "ocrMs": 24305,
+   "maxRssMB": 946.9,
+   "userCpuMs": 29464,
+   "parameters": 49,
+   "warnings": 6,
+   "before": {
+    "wallMs": 1403,
+    "maxRssMB": 484.7,
+    "sheetContent": [
+     "vector-text",
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-905",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 9802,
+   "readerTotalMs": 9801,
+   "ocrMs": 8261,
+   "maxRssMB": 898.6,
+   "userCpuMs": 12291,
+   "parameters": 18,
+   "warnings": 2,
+   "before": {
+    "wallMs": 1288,
+    "maxRssMB": 480.1,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-906",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 3,
+   "sheetContent": [
+    "text-as-curves",
+    "text-as-curves",
+    "text-as-curves"
+   ],
+   "wallMs": 24602,
+   "readerTotalMs": 24601,
+   "ocrMs": 22709,
+   "maxRssMB": 907.4,
+   "userCpuMs": 28139,
+   "parameters": 52,
+   "warnings": 6,
+   "before": {
+    "wallMs": 1308,
+    "maxRssMB": 490.4,
+    "sheetContent": [
+     "vector-text",
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-907",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 1,
+   "sheetContent": [
+    "text-as-curves"
+   ],
+   "wallMs": 17223,
+   "readerTotalMs": 17222,
+   "ocrMs": 15574,
+   "maxRssMB": 890.2,
+   "userCpuMs": 19627,
+   "parameters": 23,
+   "warnings": 2,
+   "before": {
+    "wallMs": 1414,
+    "maxRssMB": 484.0,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-d2mi-908",
+   "class": "curves",
+   "family": "NIST D2MI",
+   "sheets": 3,
+   "sheetContent": [
+    "text-as-curves",
+    "text-as-curves",
+    "vector-text"
+   ],
+   "wallMs": 26894,
+   "readerTotalMs": 26894,
+   "ocrMs": 25150,
+   "maxRssMB": 906.4,
+   "userCpuMs": 30139,
+   "parameters": 31,
+   "warnings": 4,
+   "before": {
+    "wallMs": 1496,
+    "maxRssMB": 490.1,
+    "sheetContent": [
+     "vector-text",
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-06",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 3,
+   "sheetContent": [
+    "text-as-curves",
+    "text-as-curves",
+    "text-as-curves"
+   ],
+   "wallMs": 13539,
+   "readerTotalMs": 13538,
+   "ocrMs": 11925,
+   "maxRssMB": 779.1,
+   "userCpuMs": 16880,
+   "parameters": 19,
+   "warnings": 6,
+   "before": {
+    "wallMs": 13424,
+    "maxRssMB": 788.3,
+    "sheetContent": [
+     "text-as-curves",
+     "text-as-curves",
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-07",
+   "class": "vector",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 4,
+   "sheetContent": [
+    "vector-text",
+    "vector-text",
+    "vector-text",
+    "vector-text"
+   ],
+   "wallMs": 1753,
+   "readerTotalMs": 1752,
+   "ocrMs": 0,
+   "maxRssMB": 514.0,
+   "userCpuMs": 3184,
+   "parameters": 47,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1504,
+    "maxRssMB": 498.1,
+    "sheetContent": [
+     "vector-text",
+     "vector-text",
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-08",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 4,
+   "sheetContent": [
+    "vector-text",
+    "text-as-curves",
+    "text-as-curves",
+    "text-as-curves"
+   ],
+   "wallMs": 16552,
+   "readerTotalMs": 16551,
+   "ocrMs": 14639,
+   "maxRssMB": 774.6,
+   "userCpuMs": 20521,
+   "parameters": 17,
+   "warnings": 8,
+   "before": {
+    "wallMs": 13718,
+    "maxRssMB": 807.7,
+    "sheetContent": [
+     "vector-text",
+     "text-as-curves",
+     "text-as-curves",
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-09",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 4,
+   "sheetContent": [
+    "vector-text",
+    "text-as-curves",
+    "vector-text",
+    "text-as-curves"
+   ],
+   "wallMs": 19121,
+   "readerTotalMs": 19119,
+   "ocrMs": 17089,
+   "maxRssMB": 848.7,
+   "userCpuMs": 23121,
+   "parameters": 15,
+   "warnings": 8,
+   "before": {
+    "wallMs": 17343,
+    "maxRssMB": 814.6,
+    "sheetContent": [
+     "vector-text",
+     "text-as-curves",
+     "vector-text",
+     "text-as-curves"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-10",
+   "class": "vector",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 5,
+   "sheetContent": [
+    "vector-text",
+    "vector-text",
+    "vector-text",
+    "vector-text",
+    "vector-text"
+   ],
+   "wallMs": 2235,
+   "readerTotalMs": 2233,
+   "ocrMs": 0,
+   "maxRssMB": 531.3,
+   "userCpuMs": 4031,
+   "parameters": 73,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1791,
+    "maxRssMB": 500.2,
+    "sheetContent": [
+     "vector-text",
+     "vector-text",
+     "vector-text",
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "nist-ftc-11",
+   "class": "curves",
+   "family": "NIST PMI test cases (CTC/FTC)",
+   "sheets": 2,
+   "sheetContent": [
+    "vector-text",
+    "vector-text"
+   ],
+   "wallMs": 6642,
+   "readerTotalMs": 6641,
+   "ocrMs": 5237,
+   "maxRssMB": 763.9,
+   "userCpuMs": 9200,
+   "parameters": 7,
+   "warnings": 4,
+   "before": {
+    "wallMs": 6864,
+    "maxRssMB": 758.5,
+    "sheetContent": [
+     "vector-text",
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "openeai-arm-jxs-01-02",
+   "class": "vector",
+   "family": "OpenEAI arm (GB)",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1454,
+   "readerTotalMs": 1453,
+   "ocrMs": 0,
+   "maxRssMB": 496.5,
+   "userCpuMs": 2568,
+   "parameters": 37,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1487,
+    "maxRssMB": 497.8,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "openeai-arm-jxs-02-03",
+   "class": "vector",
+   "family": "OpenEAI arm (GB)",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1532,
+   "readerTotalMs": 1531,
+   "ocrMs": 0,
+   "maxRssMB": 499.0,
+   "userCpuMs": 2637,
+   "parameters": 34,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1376,
+    "maxRssMB": 500.5,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "openeai-arm-jxs-05-01",
+   "class": "vector",
+   "family": "OpenEAI arm (GB)",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1489,
+   "readerTotalMs": 1488,
+   "ocrMs": 0,
+   "maxRssMB": 498.8,
+   "userCpuMs": 2435,
+   "parameters": 34,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1645,
+    "maxRssMB": 498.4,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-base",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1415,
+   "readerTotalMs": 1414,
+   "ocrMs": 0,
+   "maxRssMB": 485.8,
+   "userCpuMs": 2394,
+   "parameters": 34,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1560,
+    "maxRssMB": 486.2,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-faceplate",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1628,
+   "readerTotalMs": 1626,
+   "ocrMs": 0,
+   "maxRssMB": 483.6,
+   "userCpuMs": 2596,
+   "parameters": 15,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1397,
+    "maxRssMB": 481.5,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-guide",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1557,
+   "readerTotalMs": 1556,
+   "ocrMs": 0,
+   "maxRssMB": 480.4,
+   "userCpuMs": 2538,
+   "parameters": 22,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1330,
+    "maxRssMB": 481.4,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-retainer",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1327,
+   "readerTotalMs": 1326,
+   "ocrMs": 0,
+   "maxRssMB": 481.6,
+   "userCpuMs": 2247,
+   "parameters": 23,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1375,
+    "maxRssMB": 481.4,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-slider-a3",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1564,
+   "readerTotalMs": 1563,
+   "ocrMs": 0,
+   "maxRssMB": 479.6,
+   "userCpuMs": 2551,
+   "parameters": 27,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1284,
+    "maxRssMB": 481.6,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "seedmint-jig-slider",
+   "class": "vector",
+   "family": "SeedMint jig",
+   "sheets": 1,
+   "sheetContent": [
+    "vector-text"
+   ],
+   "wallMs": 1525,
+   "readerTotalMs": 1524,
+   "ocrMs": 0,
+   "maxRssMB": 481.5,
+   "userCpuMs": 2387,
+   "parameters": 22,
+   "warnings": 0,
+   "before": {
+    "wallMs": 1362,
+    "maxRssMB": 483.0,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p159",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 11689,
+   "readerTotalMs": 11688,
+   "ocrMs": 9847,
+   "maxRssMB": 755.7,
+   "userCpuMs": 13987,
+   "parameters": 4,
+   "warnings": 3,
+   "before": {
+    "wallMs": 1616,
+    "maxRssMB": 511.6,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p161",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 11802,
+   "readerTotalMs": 11801,
+   "ocrMs": 10198,
+   "maxRssMB": 776.9,
+   "userCpuMs": 13873,
+   "parameters": 2,
+   "warnings": 3,
+   "before": {
+    "wallMs": 1580,
+    "maxRssMB": 514.1,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p163",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 12758,
+   "readerTotalMs": 12757,
+   "ocrMs": 11233,
+   "maxRssMB": 741.3,
+   "userCpuMs": 14982,
+   "parameters": 2,
+   "warnings": 3,
+   "before": {
+    "wallMs": 1670,
+    "maxRssMB": 512.4,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p170",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 12311,
+   "readerTotalMs": 12310,
+   "ocrMs": 10739,
+   "maxRssMB": 743.8,
+   "userCpuMs": 14487,
+   "parameters": 0,
+   "warnings": 3,
+   "before": {
+    "wallMs": 1655,
+    "maxRssMB": 521.4,
+    "sheetContent": [
+     "vector-text"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p172",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 9323,
+   "readerTotalMs": 9322,
+   "ocrMs": 7702,
+   "maxRssMB": 759.3,
+   "userCpuMs": 11676,
+   "parameters": 2,
+   "warnings": 3,
+   "before": {
+    "wallMs": 8001,
+    "maxRssMB": 755.2,
+    "sheetContent": [
+     "scanned"
+    ]
+   }
+  },
+  {
+   "drawing": "stirling-p200",
+   "class": "scan",
+   "family": "NTRS Stirling scans",
+   "sheets": 1,
+   "sheetContent": [
+    "scanned"
+   ],
+   "wallMs": 19337,
+   "readerTotalMs": 19336,
+   "ocrMs": 17449,
+   "maxRssMB": 755.6,
+   "userCpuMs": 21849,
+   "parameters": 2,
+   "warnings": 3,
+   "before": {
+    "wallMs": 17873,
+    "maxRssMB": 758.1,
+    "sheetContent": [
+     "scanned"
+    ]
+   }
+  }
+ ]
+}

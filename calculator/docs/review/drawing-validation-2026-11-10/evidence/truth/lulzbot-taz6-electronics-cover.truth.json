@@ -1,0 +1,380 @@
+{
+ "drawing": "lulzbot-taz6-electronics-cover",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_cover/electronics_cover_reva.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "electronics_cover_reva.pdf": "curves",
+  "lulzbot-taz6-electronics-cover.pdf": "curves"
+ },
+ "complete": [
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS COVER"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0109"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.date",
+   "value": "09.17.15"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 2.03
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "powder coat"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "contains": "0.08"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "Mask entire outward facing surface"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "Mask this side"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "Break all sharp edges"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.03
+   },
+   "partial": {
+    "nominal": 2.03
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 5,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 5
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 4.0,
+    "count": 6,
+    "through": true
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.4,
+    "count": 14,
+    "through": true
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 20
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 137.5
+   },
+   "partial": {
+    "nominal": 137.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 118
+   },
+   "partial": {
+    "nominal": 118
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 110
+   },
+   "partial": {
+    "nominal": 110
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 82.5
+   },
+   "partial": {
+    "nominal": 82.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 52
+   },
+   "partial": {
+    "nominal": 52
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 27.5
+   },
+   "partial": {
+    "nominal": 27.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 27.5
+   },
+   "partial": {
+    "nominal": 27.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 52.5
+   },
+   "partial": {
+    "nominal": 52.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 55.675
+   },
+   "partial": {
+    "nominal": 55.675
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 101.5
+   },
+   "partial": {
+    "nominal": 101.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 167.5
+   },
+   "partial": {
+    "nominal": 167.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 307.5
+   },
+   "partial": {
+    "nominal": 307.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 447.5
+   },
+   "partial": {
+    "nominal": 447.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 475
+   },
+   "partial": {
+    "nominal": 475
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.5
+   },
+   "partial": {
+    "nominal": 3.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 18.5
+   },
+   "partial": {
+    "nominal": 18.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 33.5
+   },
+   "partial": {
+    "nominal": 33.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 165
+   },
+   "partial": {
+    "nominal": 165
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "Parts must be RoHS compliant"
+  },
+  {
+   "name": "note.general",
+   "contains": "Material: 12AWG"
+  },
+  {
+   "name": "note.general",
+   "contains": "Break all sharp edges prior to coating"
+  },
+  {
+   "name": "note.general",
+   "contains": "Part is to be powder coated with Cardinal color C241-BK109"
+  },
+  {
+   "name": "note.general",
+   "contains": "3D model governs dimensions not shown on print"
+  },
+  {
+   "name": "note.general",
+   "contains": "Mask entire outward facing surface shown to the left prior to powder coat"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "FreeCAD sheet, text as glyph outlines. Title block: DRAWN BY J PETTIT, DATE 09.17.15, MATERIAL '2.03 AL', TITLE 'ELECTRONICS COVER', SIZE A, DWG NO PP-MP0109, REV. A, SCALE field holds the literal word 'Scale' (no ratio — title.scale NOT recorded), SHEET 1 of 1; Aleph Objects logo / address; 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'. Revision table (bottom left, 'Revision / Notes'): IR 'Mangrove build release'; 4.0 'Nutmeg build release. Masking callout added'; 4.1 'Was 480 x 170, now 478 x 168 / 5mm holes were 6mm to edge, now 5 mm to edge / SD slot moved 1mm to accommodate width change'; A 'Reverted to outline of 475 x 165' — not recorded (revision history, not requirements). Material: title field '2.03 AL' and note 2 'Material: 12AWG (0.8\") Aluminum.' (as printed — the inch figure is inconsistent with 2.03 mm); no alloy is stated, so material.designation is NOT recorded; material.stockThickness 2.03 (mm) recorded from the title field / the 2.03 thickness dimension. Coating: note 4 powder coat, Cardinal C241-BK109, 'Coating thickness not to exceed 0.08mm' (contains '0.08'); masking: note 6 'Mask entire outward facing surface shown to the left prior to powder coat' and the leader note 'Mask this side as indicated in Note 6'. Tolerance block as on the other Aleph sheets (unlabelled '63' roughness mark not recorded; BREAK EDGES 0.1/0.5; FILLET RADIUS 0.1/0.5). Dimensions (27, complete): '2.03' (edge view thickness), '4X R5', '6X Ø4.0 THRU', '14x Ø3.4 THRU', verticals 3.5, 137.5, 118, 110, 82.5, 52, 27.5, 3.5 (bottom-left), horizontals 3.5, 27.5, 52.5, 55.675, 101.5, 167.5, 307.5, 447.5, 475, 3.5 (bottom right), slot 18.5 / 30 / 33.5 / 6, overall 165. None toleranced. Title block, material, coating, roughness, quality, general tolerance and notes not complete."
+}

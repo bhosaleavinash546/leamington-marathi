@@ -1,0 +1,150 @@
+{
+ "generated": "2026-11-10",
+ "build": "HEAD e72adf46 (calculator/dist built), AI off (AIR_GAPPED=1, no key)",
+ "note": "Severity is for the drawing feature's purpose (what could put a wrong or unstated number in front of the Cost Engineering Director). Defects D08-D10 are CAD-only behaviour that pre-dates the drawing feature (identical at 36f6f7d3, regression.json) but they decided what the A v C comparison could show.",
+ "defects": [
+  {
+   "id": "D01",
+   "title": "Drawings whose annotation is stroke-font polylines (NIST D2MI, Siemens NX) are classed as vector text: no OCR runs, nothing is read, and no warning says so",
+   "module": "server/drawing/ingest.ts (classifySheet, isMixedSheet) -> server/drawing/index.ts ocrWouldRead",
+   "scenario": "Read the six NIST D2MI drawings (827-9999-903..908), alone (read-one.mts) and attached to their STEP on /api/cad/analyze",
+   "expected": "Sheets classed text-as-curves (or mixed) and OCR'd; failing that, a warning that the annotation was not read",
+   "actual": "Every sheet 'vector-text' (3 text runs: the NX plot stamp 'Scale= 0.5000:1', '20150310.1524 [NX8] File: …', 'tamatusk'); 0 parameters; warnings []; ocrWouldRead false so the server never queues OCR. 350 truth items (title block, 6061-T6/T651 material, ASTM standard, chromate conversion coating, dimensions, GD&T) - 0 found. The engineer sees a drawing with no readings and no reason.",
+   "evidence": ["runs/raw/nist-d2mi-90{3..8}.json", "runs/scripts/sheet-stats.mts output: {pathOps:2968, glyphLikePaths:0, imageCoverage:0, textChars:67, textItems:3} -> classify 'vector-text'", "runs/reconciliation.json pair:nist-d2mi-904 / 906 (FAIL)"],
+   "rootCause": "server/drawing/ingest.ts:88 — textChars >= 25 (the plot stamp alone) returns 'vector-text' unless glyphLikePaths >= 20; stroke-font text is short line segments, not glyph-sized closed outlines, so glyphLikePaths = 0 although pathOps = 2,968. isMixedSheet (ingest.ts:104-106) needs glyphLikePaths >= 20 too, so no 'partly curves' warning and ocrWouldRead (index.ts:46-50) is false.",
+   "severity": "High"
+  },
+  {
+   "id": "D02",
+   "title": "Scanned sheets carrying a scanner OCR text layer are read as EXACT text when the page has more than 20 path operators",
+   "module": "server/drawing/ingest.ts (hasScannerTextLayer, classifySheet)",
+   "scenario": "NTRS Stirling report pages 159, 161, 163, 170 (full-page image + invisible scanner OCR layer + 28-120 path ops); also on the original 359-page report pages",
+   "expected": "Classed 'scanned', the scanner layer ignored (index.ts:114 already does this when detected) and the page OCR'd by the reader with 'needs validation' readings",
+   "actual": "Classed 'vector-text'; scanner OCR garbage becomes method 'pdf-text', reliability 1, status 'extracted' (shown as exact text): thread 'M1' from 'M1 I.JlL-6a', dimensions 80020 from '80020~', 611 from '0611_..-', nominal 0 from '0 -' and '00'. Pages 172 / 200 (pathOps 0 / 11) are handled correctly. None of these readings answers a costing question, so no £ moved, but the provenance shown to the engineer is false.",
+   "evidence": ["runs/raw/stirling-p1{59,61,63,70}.json", "sheet-stats.mts: p159 {pathOps:28, imageCoverage:1, textChars:189} -> 'vector-text', scannerLayer false; p172 {pathOps:0} -> 'scanned'"],
+   "rootCause": "server/drawing/ingest.ts:96-98 hasScannerTextLayer requires pathOps < 20; ingest.ts:87 sends a full-page image with >= 60 text chars to 'scanned' only through that test.",
+   "severity": "Medium"
+  },
+  {
+   "id": "D03",
+   "title": "Material designation read on 0 of 24 genuine drawings that state one (recall 0/37 material facts); the drawing never answers the material question on any genuine pair",
+   "module": "server/drawing/extract/material.ts (MATERIAL_LABEL, MATERIAL_GRAMMARS / findDesignations)",
+   "scenario": "Extraction scoring (44 truth files) and the 9 costing pairs",
+   "expected": "Common real-world forms read: 'Material: 5052 H-32 Aluminum', '304 Stainless Steel', '303 SST', '(.1195 THICK) 11 GA 304 SST SHT, ASTM A240', 'Mat: 1.2510', 'Mat: Brass', 'Mat: Steel', '6061' in a GB title block",
+   "actual": "None read as material.designation. Probe (runs/scripts/probe-material.mts): '5052 H-32 Aluminum' -> [], '304 Stainless Steel' -> [], '303 SST' -> [], '6061' -> [], '6061铝' -> [], 'Brass' -> [], 'Steel' -> [], 'SIS 2541' -> []; '1.2510' only with weak hits allowed, but 'Mat:' is not a recognised label so weak hits are never allowed there. The text WAS read (exact text on SeedMint / OpenEAI; OCR on LulzBot, e.g. '2 Material: 5052 H-32 Aluminum' at 97 %). Consequence: every genuine pair keeps the CAD-only material assumption (POM-C acetal on three aluminium parts, steel DC04 on the 5052 sheet parts); answering the family by hand from the drawing moves the cost +29.7 % to +57.5 % (costing.json Chand).",
+   "evidence": ["runs/extraction.json totals.all.ALL.byGroup.material: correct 0, missed 37", "runs/scripts/probe-material.mts", "runs/costing.json parts[*].Chand"],
+   "rootCause": "server/drawing/extract/material.ts:144 MATERIAL_LABEL accepts MATERIAL / MAT'L / WERKSTOFF / HALBZEUG but not 'MAT:'; MATERIAL_GRAMMARS (from :22) require AA alloys with a temper written '-H32' / '-T6' (not 'H-32' or bare '6061'), AISI/SAE prefixes for 300-series stainless, and have no trade-name entries (brass, steel, aluminium).",
+   "severity": "High"
+  },
+  {
+   "id": "D04",
+   "title": "Correcting a misread material designation does not re-interpret the material family the reader derived from it: a stale 'steel' stays on the panel as a leaning for the material question",
+   "module": "server/drawing/extract/material.ts (material.family emitted with no derivedFrom) + src/engine/engineering-data/overrides.ts (correct)",
+   "scenario": "LulzBot electronics chassis sheet 1: OCR reads '5052' as '30W9'; the reviewer corrects the designation to 5052 (drawingReview correct op); /reanalyze",
+   "expected": "The family interpreted from '30W9' (steel) is withdrawn and re-interpreted from '5052' (aluminium), as the design states ('correcting a reading re-runs its interpretation')",
+   "actual": "drawing:material.designation:1 = '5052' status corrected; drawing:material.family:1 = 'steel' (rawText '30W9', 'From the form of the designation \"30W9\"') still needs-validation and still offered as the leaning for material.family; the corrected '5052' produces no family and answers no question (a careful reviewer has to reject the stale family and answer the family by hand).",
+   "evidence": ["runs/costing-raw/lulzbot-taz6-electronics-chassis@sheet-C-reanalyze.json engineeringData.parameters + drawingCosting.leanings", "runs/scripts/manual-review.json (the reject the reviewer had to add)"],
+   "rootCause": "server/drawing/extract/material.ts:180-183 pushes material.family (kind 'interpreted') with no derivedFrom link to the designation; src/engine/engineering-data/overrides.ts:105-117 re-interprets only parameters whose derivedFrom chain reaches the corrected id, so the reader's own family is neither replaced nor reopened (material.condition at :184 has the same shape).",
+   "severity": "Medium"
+  },
+  {
+   "id": "D05",
+   "title": "Reports do not say who confirmed or corrected a reading, or when; the correction reason is not printed",
+   "module": "src/export/drawing-spec-report.ts (DrawingSpecRow) -> core PDF §3, audit pack §9c, workbook 10-Drawing",
+   "scenario": "Bed plate C costing exported from the screen (runs/exports-c/): 2 corrections, 7 confirmations, 1 conflict settled",
+   "expected": "The drawing specification table shows each decision's status AND who / when (the history the server stamps: by = signed-in user, at = server clock), and the correction's reason",
+   "actual": "Rows carry group, parameter, value, source, status ('Corrected' / 'Confirmed'), used — no who, no when, no reason, in all three exports. Only the settled conflict prints 'Settled by qa@test' (no date). The server does hold by/at (engineeringData.parameters[].history).",
+   "evidence": ["runs/exports-c/lulzbot-taz6-bed-plate-check.json (checks 'who and when' FAIL)", "runs/exports-c/lulzbot-taz6-bed-plate-audit.txt lines ~952-1011", "runs/exports-c/lulzbot-taz6-bed-plate.xlsx sheet 10-Drawing"],
+   "rootCause": "src/export/drawing-spec-report.ts:14-24 — DrawingSpecRow has no by / at / reason fields; buildDrawingSpecReport (:60-77) never reads parameter.history.",
+   "severity": "Medium"
+  },
+  {
+   "id": "D06",
+   "title": "Model revision is never compared with the drawing revision",
+   "module": "src/engine/engineering-data/from-cad.ts (no title.revision from CAD), reconcile.ts",
+   "scenario": "SeedMint assembly STEP (PRODUCT 'Base v12', 'Slider v9') with Base Drawing (V10) and Slider Drawing A3 (V22); D2MI 904 (file 'rev c', title block A); LulzBot washer (STEP rev_IR = drawing IR)",
+   "expected": "The model's revision (STEP product version / file-name revision) set against the title-block revision; a mismatch raised as a conflict or warning",
+   "actual": "No CAD-side revision parameter on any case; only the drawing's own revision is listed (V10, V22). Nothing flags the mismatch.",
+   "evidence": ["runs/reconciliation.json revision-mismatch"],
+   "rootCause": "from-cad.ts emits identity from the STEP product name only (title.partName); no revision is taken from the STEP PRODUCT version string or file name, so reconcile.ts has nothing to compare.",
+   "severity": "Medium"
+  },
+  {
+   "id": "D07",
+   "title": "A drawing paired with the wrong model is not detected unless hole callouts were read; overall size / thickness are never compared",
+   "module": "src/engine/engineering-data/reconcile.ts",
+   "scenario": "(a) nist-ftc-09 drawing on the ftc-10 model; OpenEAI JXS-01-02 drawing on the JXS-05-01 model; also bed-plate drawing on D2MI 906, ftc-10 drawing on CTC-01",
+   "expected": "Identity, envelope / stock-thickness and feature mismatches flagged",
+   "actual": "ftc-09 -> ftc-10 and JXS-01-02 -> JXS-05-01: 0 conflicts, 0 callouts without a model feature (FAIL). bed-plate -> D2MI 906: 2 callouts not in the model + a thread-count conflict (PASS, but the part-name conflict also appears with the RIGHT model because the LulzBot STEPs declare 'ASSEMBLY', so it is not a pairing signal). ftc-10 -> CTC-01: 11 callouts 'no hole of Ø… in the 3D model', no identity conflict (PARTIAL). part.envelope from the kernel is never compared with anything; the drawing's stated stock thickness is not read (D03) so the bend-pair gauge is never cross-checked.",
+   "evidence": ["runs/reconciliation.json wrong-cad:*"],
+   "rootCause": "reconcile.ts compares only hole / thread callouts against the feature table (:174-297) and whole-part names; no drawing overall-size reading exists to set against part.envelope (from-cad.ts:49).",
+   "severity": "Medium"
+  },
+  {
+   "id": "D08",
+   "title": "(CAD-only, pre-existing) A part-number prefix 'PP-' is read as polypropylene and the material family is pre-answered 'plastic' and shown as ANSWERED",
+   "module": "src/engine/material-family.ts familyFromFilename; server/routes/cad.ts answersFromContext",
+   "scenario": "LulzBot bed_plate_v4.5_PP-MP0108.step and corner_bracket_v2.0_PP-MP0106.step, CAD only",
+   "expected": "No material assumed from a part number; the family question asked (or a name leaning shown, not an answer)",
+   "actual": "material.family = plastic with source 'answered' in the comparison spec; costed in POM-C acetal stock without any question; the aluminium plate costs £17.30 (bed plate) / £3.50 (bracket). The engineer answered nothing.",
+   "evidence": ["runs/costing.json parts lulzbot-taz6-bed-plate / corner-bracket A.spec = [{material.family: Plastic, answered}]", "regression.json: identical at 36f6f7d3"],
+   "rootCause": "src/engine/material-family.ts:20 matches \\bpp\\b in the file name ('PP-MP0108' -> 'pp mp0108'); server/routes/cad.ts:2192-2205 answersFromContext turns the filename family into answers['material.family'].",
+   "severity": "High"
+  },
+  {
+   "id": "D09",
+   "title": "(CAD-only, pre-existing) Blank development runs on the server's event loop for ~40 s: the server stops answering, and a client's next request on a kept-alive socket is reset (ECONNRESET)",
+   "module": "server/services/blank-development.ts (developBlank called synchronously)",
+   "scenario": "LulzBot electronics chassis (1.5 MB STEP, bent sheet) /api/cad/analyze and /reanalyze with the sheet route",
+   "expected": "Long geometry work off the event loop; other requests (health, other users) served",
+   "actual": "/api/health took 35.2 s and failed while the chassis was analysed (runs/logs/event-loop-probe.json); 'blank developed from the solid in 39-45 s' in the server log; three runs of the chassis C costing got ECONNRESET on the next /reanalyze until the client retried (costing.json connectionResetsRetried).",
+   "evidence": ["runs/logs/event-loop-probe.json", "runs/logs/costing-run3.log", "server.log lines '[cad] blank developed from the solid in 42497 ms'"],
+   "rootCause": "server/services/blank-development.ts:58 developed = developBlank(mesh.mesh) — synchronous Tutte/ARAP unfold + forming inverse (server/utils/blank-unfold.ts:605) in the request handler's thread.",
+   "severity": "Medium"
+  },
+  {
+   "id": "D10",
+   "title": "(CAD-only, pre-existing) Route leaning contradicts the tool's own plausibility guard on sheet parts",
+   "module": "route inference / process_geometry_implausible guard",
+   "scenario": "Electronics chassis (2 mm bent shell): leaning 'machining' -> refused 'thin shell rarely machined from solid'; sheet route on the flat 304 plate ftc-09 (84 % fill) and the electronics cover (99 % fill) -> refused 'near-solid part inconsistent with the thin-wall process'",
+   "expected": "The leaning is a route the guard accepts; a flat or bent constant-gauge plate is accepted for sheet metal",
+   "actual": "Chassis cannot be costed on the leaning route; ftc-09 and the cover cannot be costed as sheet metal at all (refused in A and C) — the drawing's stock thickness (2.03 mm, .1195 in) could not help.",
+   "evidence": ["runs/costing.json parts lulzbot-taz6-electronics-chassis (A refused), nist-ftc-09@sheet, lulzbot-taz6-electronics-cover@sheet"],
+   "rootCause": "not traced to a line (out of the drawing feature's scope); the 'near-solid' test uses bounding-box fill, which is high for any flat plate.",
+   "severity": "Low"
+  },
+  {
+   "id": "D11",
+   "title": "Split hole callouts raise false count conflicts: each callout's count is compared with the model's total for that diameter",
+   "module": "src/engine/engineering-data/reconcile.ts",
+   "scenario": "nist-ftc-07 (inch drawing, vector) with its STEP",
+   "expected": "Callouts of the same diameter summed (1 + 2X + 4X + 1 = 8) before comparing with the model's 8 × Ø6.35; no conflict",
+   "actual": "4 conflicts the engineer must settle: 'the drawing calls 2 × Ø6.35 and the 3D model has 8 × Ø6.35', '4 × Ø6.35 v 8', '2 × Ø15.0876 v 4 × Ø15.08' (twice). Units are handled correctly (inch converted to mm, exact factor, then matched); the converted value is printed unrounded (Ø15.0876, Ø7.137400000000001 in notes).",
+   "evidence": ["runs/reconcile-raw/pair-nist-ftc-07.json", "runs/reconciliation.json pair:nist-ftc-07"],
+   "rootCause": "src/engine/engineering-data/reconcile.ts:218-231 — byCount(atDia, h.count) per callout and flagConflict on countDiffers; no aggregation of callouts sharing a diameter.",
+   "severity": "Medium"
+  },
+  {
+   "id": "D12",
+   "title": "Reader attaches flag-note numbers to callouts and truncates a leading digit",
+   "module": "server/drawing/extract/dimensions.ts / general-tolerance.ts (text-line assembly)",
+   "scenario": "nist-ftc-10 (vector, mm)",
+   "expected": "'8X Ø2.5 ±0.15' (flag note 4 beside it); general tolerance 'profile 1.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES'",
+   "actual": "hole.diameter {diameter 2.5, count 8, upper 0.154, lower -0.154} from '8X Ø2.5 ±0.154' (the flag digit became a tolerance digit — a wrong VALUE, status extracted); 'Ø3.5 G6 4'; tolerance.general '.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES' (the '1' lost).",
+   "evidence": ["runs/raw/nist-ftc-10.json", "runs/extraction.json perDrawing nist-ftc-10 wrong[]"],
+   "rootCause": "not traced to a line; the flag number is a separate text run on the same baseline and is concatenated by line assembly (server/drawing/text-lines.ts).",
+   "severity": "Low"
+  },
+  {
+   "id": "D13",
+   "title": "Shipped accuracy script mislabels a file's content class when the truth's `files` map is keyed by another file name",
+   "module": "scripts/drawings/accuracy-lib.ts classOfFile",
+   "scenario": "Scoring NIST CTC/FTC truths beside a copy named <id>.pdf (truth `files` keyed 'nist_ftc_0x_asme1_rx.pdf')",
+   "expected": "Class 'curves' as the truth states",
+   "actual": "Falls back to 'vector' (name has no '.curves.'), so the shipped table puts 9 curves files in the vector row (per-file counts are unaffected; runs/scripts/score.mts takes the class from the truth's own value).",
+   "evidence": ["runs/logs/shipped-scorer.json table keys v runs/extraction.json totals.byClass"],
+   "rootCause": "scripts/drawings/accuracy-lib.ts:134-139 looks the class up by the scored file's name only.",
+   "severity": "Low"
+  }
+ ]
+}

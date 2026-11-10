@@ -1,0 +1,230 @@
+{
+ "drawing": "seedmint-jig-slider-a3",
+ "origin": "public",
+ "source": "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/PDF",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet ('Slider Drawing A3.pdf') rendered at 300 dpi (pdftoppm) and read in zooms on screen; pdftotext -layout used only as a typing aid, every value checked on the image; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "Slider Drawing A3.pdf": "vector",
+  "seedmint-jig-slider-a3.pdf": "vector"
+ },
+ "complete": [
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "Slider"
+  },
+  {
+   "name": "title.revision",
+   "value": "V22"
+  },
+  {
+   "name": "title.date",
+   "value": "19.06.21"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "material.designation",
+   "contains": "Brass"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "2768-f"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "contains": "F"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "count": 3,
+    "pitch": 0.5,
+    "toleranceClass": "6H"
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 3
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 18,
+    "fit": "P9"
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 1
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.043,
+    "nominal": 18
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 22
+   },
+   "partial": {
+    "nominal": 22
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 22
+   },
+   "partial": {
+    "nominal": 22
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80
+   },
+   "partial": {
+    "nominal": 80
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 64
+   },
+   "partial": {
+    "nominal": 64
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.8
+   },
+   "partial": {
+    "nominal": 1.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "chamfer",
+    "nominal": 0.5,
+    "chamferAngle": 45
+   },
+   "partial": {
+    "nominal": 0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 64
+   },
+   "partial": {
+    "nominal": 64
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 33
+   },
+   "partial": {
+    "nominal": 33
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 4
+   },
+   "partial": {
+    "nominal": 4
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "Begin with tapping the threads"
+  },
+  {
+   "name": "note.general",
+   "contains": "General tolerances as per DIN ISO 2768-f"
+  }
+ ],
+ "notes": "Autodesk Inventor ISO sheet (A3), selectable text. Title block: Technical reference 'Mat.: Brass', Created by 'Seed Mint' 19.06.21, Title 'Slider', DWG No. blank, Rev. V22, Sheet 1/1; no scale, projection or units statement. Notes: 'Note: Begin with tapping the threads.' and 'General tolerances as per DIN ISO 2768-f' (no full stop on this sheet). Thread '3x M3x0.5 6H' (count 3; feature.count.threads = 3). Fit 'Ø18P9' (hole; no limits printed) as hole.diameter {18, P9}; tolerance.tightest = band 0.043 at Ø18 (ISO 286 IT9, 10–18 mm, hand-looked-up). Dimensions (14 + fit, complete): front 30, 22, 'Ø 22', 80, 64; section A-A 3, 1.8, 2; rear view '0.5X45°' (chamfer), 64, 33, 15, 6, 4. This is a different revision of the Slider from 'Slider Drawing.pdf' (that one is dated 02.08.21) — see seedmint-jig-slider. Title block, material, general tolerance, notes, quality not complete."
+}

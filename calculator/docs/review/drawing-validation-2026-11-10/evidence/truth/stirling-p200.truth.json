@@ -1,0 +1,142 @@
+{
+ "drawing": "stirling-p200",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 200 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p200.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "BEDPLATE"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "1-61117"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "3274-117"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.sheet",
+   "contains": "4 OF 4"
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": [
+     "A",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": [
+     "A",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": [
+     "A",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 1.25,
+    "count": 4
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 1.25
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 1.75,
+    "count": 1
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 1.25,
+    "count": 2
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "FINISH MACHINE THESE DIMENSIONS ON ASSEMBLY WITH CRANKCASE"
+  }
+ ],
+ "notes": "PDF page 200 (printed page III-198): BEDPLATE, sheet 4 of 4 — the page named in the brief. Hand-lettered, poor scan, landscape; the reduced title block (MTI/United Stirling) reads 'SHEET 4 OF 4 SHEETS', a boxed number '3274-117' above the block, title 'BEDPLATE', drawing number '1-61117' (bottom right) and scale '1:1'; both numbers are recorded as title.drawingNumber (which is the MTI number and which the United Stirling number cannot be told from the illegible field labels). Other cells (size, weight, material, dates) are too small to read and are left out; projection symbol not legible. Note (legible): 'NOTE:- FINISH MACHINE THESE DIMENSIONS ON ASSEMBLY WITH CRANKCASE SEE DRG Nº 61108(3274-108)' (the referenced number partly uncertain). Thread callouts read with the tap-drill cross-check (Ø6.8 ↔ M8x1.25, Ø10.2 ↔ M12x1.75): '4 HOLES DRILL Ø6.8 x 20 DEEP TAP M8x1.25-6H x 15 DEEP' (view on arrow B), 'DRILL Ø6.8 x 16 DEEP TAP M8x1.25 6H x 15 DEEP' (no count), '1-HOLE TAP M12x1.75-6H x 12 DEEP / DRILL Ø10.2 x 200 DEEP / DRILL Ø35 x 33 DEEP', '2 HOLES DRILL Ø6.8 x 20 DEEP TAP M8x1.25 6H x 15 DEEP' (view on arrow C) — thread rows match on pitch and count only (class and depths not in the match; the depths 15 / 12 and Ø35 x 33 are not certain enough). Position frames read: Ø0.2 A C (three) and Ø0.2 A B C (one, under the M12 hole). Datum feature symbols A, B, C are present but their placement is too faint to list per occurrence — not recorded. The many hand-lettered dimensions (R-values, basic boxes, 224, 81, etc.) are NOT recorded: too many are ambiguous at this scan quality."
+}

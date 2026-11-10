@@ -1,0 +1,134 @@
+{
+ "drawing": "lulzbot-taz6-bed-leveling-washer",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_leveling_washer/bed_leveling_washer_v2.0_PP-MP0082.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "bed_leveling_washer_v2.0_PP-MP0082.pdf": "curves",
+  "lulzbot-taz6-bed-leveling-washer.pdf": "curves"
+ },
+ "complete": [
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.1,
+    "nominal": 1.5
+   }
+  },
+  {
+   "name": "title.partName",
+   "value": "Bed Leveling Washer v2.0"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0082"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.date",
+   "value": "11/17/15"
+  },
+  {
+   "name": "title.scale",
+   "value": "2:1"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.designation",
+   "contains": "303"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 22.0
+   },
+   "partial": {
+    "nominal": 22.0
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.4,
+    "through": true
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 1
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6.3
+   },
+   "partial": {
+    "nominal": 6.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 90
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.5,
+    "upper": 0.05,
+    "lower": -0.05
+   },
+   "partial": {
+    "nominal": 1.5
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "Parts must be RoHS compliant"
+  },
+  {
+   "name": "note.general",
+   "contains": "Material: 303 SST"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "tolerance.tightest is a hand-computed check (narrowest stated tolerance band among the toleranced dimensions; general-tolerance block not counted). FreeCAD sheet, text as glyph outlines. Title block: DRAWN BY BAM, DATE 11/17/15, MATERIAL 'See Notes', TITLE 'Bed Leveling Washer v2.0', SIZE A, DWG NO PP-MP0082, REV. IR, SCALE 2:1, SHEET 1 of 1; Aleph Objects Inc. logo and address; 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' top left. No projection symbol. Same tolerance block as the other Aleph sheets (.X ±.75, .XX ±.25, .XXX ±.125, .XXXX ±.050, angles ±1°; roughness check mark '63' with no unit/parameter — not recorded; BREAK EDGES 0.1/0.5; FILLET RADIUS 0.1/0.5). Material note 2 '303 SST' (contains '303'). Dimensions (complete): 'Ø22.0', 'Ø3.40 THRU' (hole.diameter, through), 'CSK Ø6.30 X 90DEG' (recorded as a Ø6.30 diameter row plus a separate 90° row without a type — a reader that keeps the countersink as one reading will match one of them), '1.50 +/- 0.05'. Roughness not complete (the unlabelled 63 symbol); quality not complete."
+}

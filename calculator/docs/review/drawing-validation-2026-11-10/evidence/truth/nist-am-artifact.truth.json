@@ -1,0 +1,651 @@
+{
+ "drawing": "nist-am-artifact",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/engineeringdrawingpdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from page 1 rendered at 300 dpi (pdftoppm; the page holds raster images only) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. Only sheet 1 was checked.",
+ "files": {
+  "EngineeringDrawing.pdf": "scan",
+  "nist-am-artifact.pdf": "scan"
+ },
+ "sheets": [
+  1
+ ],
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 60.0
+   },
+   "partial": {
+    "nominal": 60.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 60.0
+   },
+   "partial": {
+    "nominal": 60.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 60,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 60
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 50
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 40,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 40
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 20
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 7
+   },
+   "partial": {
+    "nominal": 7
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.5
+   },
+   "partial": {
+    "nominal": 2.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 25
+   },
+   "partial": {
+    "nominal": 25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.5
+   },
+   "partial": {
+    "nominal": 2.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.5
+   },
+   "partial": {
+    "nominal": 1.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.5
+   },
+   "partial": {
+    "nominal": 0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.25
+   },
+   "partial": {
+    "nominal": 0.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.5
+   },
+   "partial": {
+    "nominal": 1.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1
+   },
+   "partial": {
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.5
+   },
+   "partial": {
+    "nominal": 0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.25
+   },
+   "partial": {
+    "nominal": 0.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2
+   },
+   "partial": {
+    "nominal": 2
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "datums": [
+     "F"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "F"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "datums": [
+     "G"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "G"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "datums": [
+     "D"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "D"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "datums": [
+     "E"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "E"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "datums": [
+     "H"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "H"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "datums": [
+     "H"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "H"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "cylindricity"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "concentricity",
+    "datums": [
+     "B"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "concentricity",
+    "datums": [
+     "B"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circularity"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circularity"
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "datums": [
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "datums": [
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "datums": [
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "datums": [
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "datums": [
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "datums": [
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "D"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "E"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "F"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "G"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "H"
+  }
+ ],
+ "notes": "NIST AM test artifact, page 1 of the 2-page EngineeringDrawing.pdf (raster images in a PDF — treated as 'scan'). Page 1 is views only: no title block, no notes, no material, no general tolerance — those groups are complete with no rows. Every geometric tolerance VALUE is the placeholder 'xx' (by design in the source), so GD&T rows match on characteristic and datums only (no tolerance key); frames without datums have no partial. Frames (23): straightness 'xx' ×7 (one with each of datums F, G, D, E and H as their datum feature carriers, and the second row under the parallelism-H and perpendicularity-H composite frames); parallelism 'xx' to F, G, D, E and H; perpendicularity 'xx' H; cylindricity 'xx' on the centre boss; concentricity 'xx' B ×2, each stacked over a circularity 'xx' (so circularity ×2); position 'xx' B C ×5 in SECTION B-B on the basic 60 / 50 / 40 / 30 / 20. Datum feature symbols A–H, one each. Symbolic hole callouts 'Ød1 THRU x4' and 'Ød2 x16' carry NO numeric size and are not recorded. Section labels (A-A … D-D), view arrows and section letters are not recorded. Dimensions (34, complete; all grey reference-style text): SECTION A-A 3, 6, 3, 6, 60.00° ×2, 'Ø3 ↧3', 'Ø6 ↧5' (diameter + depth rows); SECTION B-B basic 60, 50, 40, 30, 20 (boxed) and 7, 10; SECTION C-C 2.50, 25, 2.50, 1, 1; SECTION D-D 2, 1.50, 1, 0.50, 0.25 (left), 2, 1.50, 1, 0.50, 0.25 (right), 2, 2 (heights). Units are not stated on the page. Notes group not complete."
+}

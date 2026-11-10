@@ -1,0 +1,54 @@
+{
+ "rules": "see scripts/score.mts header",
+ "count": 2,
+ "reclassifications": [
+  {
+   "drawing": "seedmint-jig-faceplate",
+   "truthGroup": "dimensions",
+   "truthRow": {
+    "name": "dimension",
+    "match": {
+     "type": "diameter",
+     "nominal": 6,
+     "count": 2
+    }
+   },
+   "reading": {
+    "id": "drawing:hole.diameter:1",
+    "name": "hole.diameter",
+    "value": {
+     "diameter": 6,
+     "count": 2
+    },
+    "rawText": "2xØ6",
+    "status": "extracted"
+   },
+   "strictWas": "missed + wrong (dimensions)",
+   "rule": "dimension <-> hole.diameter (same diameter and every listed field; the reading adds no tolerance the truth lacks)"
+  },
+  {
+   "drawing": "seedmint-jig-retainer",
+   "truthGroup": "dimensions",
+   "truthRow": {
+    "name": "dimension",
+    "match": {
+     "type": "diameter",
+     "nominal": 5,
+     "count": 4
+    }
+   },
+   "reading": {
+    "id": "drawing:hole.diameter:1",
+    "name": "hole.diameter",
+    "value": {
+     "diameter": 5,
+     "count": 4
+    },
+    "rawText": "4xØ5",
+    "status": "extracted"
+   },
+   "strictWas": "missed + wrong (dimensions)",
+   "rule": "dimension <-> hole.diameter (same diameter and every listed field; the reading adds no tolerance the truth lacks)"
+  }
+ ]
+}

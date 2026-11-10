@@ -1,0 +1,1015 @@
+{
+ "drawing": "nist-d2mi-904",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-d2mi-modelszip",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from all 3 sheets rendered at 300 dpi (pdftoppm) and read in overlapping zooms on screen; the reader was not run and its code and earlier truth files were not opened. Inch values recorded as printed (no conversion).",
+ "files": {
+  "827-9999-904 rev c.pdf": "curves",
+  "nist-d2mi-904.pdf": "curves"
+ },
+ "complete": [
+  "general tolerance",
+  "roughness",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.01
+   }
+  },
+  {
+   "name": "title.partName",
+   "value": "HEATSINK, TOP"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "827-9999-904"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "827-9999-904"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.date",
+   "value": "2014-12-11"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 OF 3"
+  },
+  {
+   "name": "title.units",
+   "value": "in"
+  },
+  {
+   "name": "material.designation",
+   "value": "6061-T651"
+  },
+  {
+   "name": "material.standard",
+   "value": "ASTM B205"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "CHROMATE CONVERSION COATING"
+  },
+  {
+   "name": "quality.marking",
+   "contains": "MIL-STD-130"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.5,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.825,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 0.825
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.25,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 0.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.37,
+    "max": 0.38,
+    "count": 2
+   },
+   "partial": {
+    "min": 0.37,
+    "max": 0.38
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.05,
+    "basic": true,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.05,
+    "basic": true,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.182,
+    "max": 0.192
+   },
+   "partial": {
+    "min": 0.182,
+    "max": 0.192
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.25,
+    "upper": 0.01,
+    "lower": -0.01
+   },
+   "partial": {
+    "nominal": 0.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.245,
+    "max": 0.255
+   },
+   "partial": {
+    "min": 0.245,
+    "max": 0.255
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.1,
+    "upper": 0.01,
+    "lower": -0.01
+   },
+   "partial": {
+    "nominal": 0.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.05,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.738,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.738
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.75,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 1.75
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.0,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 1.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 0.188,
+    "basic": true,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.188
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.672,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.672
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.008,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.008
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.344,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.344
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.68,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.68
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.016,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.016
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.145,
+    "max": 0.155
+   },
+   "partial": {
+    "min": 0.145,
+    "max": 0.155
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.1,
+    "upper": 0.01,
+    "lower": -0.01
+   },
+   "partial": {
+    "nominal": 0.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.245,
+    "max": 0.255
+   },
+   "partial": {
+    "min": 0.245,
+    "max": 0.255
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.125,
+    "upper": 0.01,
+    "lower": -0.01
+   },
+   "partial": {
+    "nominal": 0.125
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.375,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.375
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 4.037,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 4.037
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.912,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 3.912
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.412,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 1.412
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 45,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 45
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.05,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.05,
+    "basic": true,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.518,
+    "basic": true,
+    "count": 7
+   },
+   "partial": {
+    "nominal": 0.518
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.268,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.268
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.168,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.168
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.138,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.138
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.134,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.134
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.094,
+    "count": 4,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.094
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.768,
+    "basic": true,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.768
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 0.032,
+    "count": 4,
+    "upper": 0.01,
+    "lower": -0.01
+   },
+   "partial": {
+    "nominal": 0.032
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.869,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 3.869
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.928,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.928
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.257,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.257
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.785,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.785
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.785,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.785
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.168,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.168
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.806,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.806
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.806,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.806
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.168,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 0.168
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.209,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.209
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.459,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.459
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.713,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 1.713
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.57,
+    "basic": true,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 2.57
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.632,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 2.632
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 0.542,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 0.542
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.495,
+    "basic": true
+   },
+   "partial": {
+    "nominal": 3.495
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 0.135
+   },
+   "partial": {
+    "nominal": 0.135
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "min": 0.215,
+    "max": 0.225,
+    "count": 4
+   },
+   "partial": {
+    "min": 0.215,
+    "max": 0.225
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 0.125,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.125
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.016,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.016,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "angularity",
+    "tolerance": 0.008,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.008,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.01,
+    "datums": [
+     "A",
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.01,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.016
+   },
+   "partial": {
+    "tolerance": 0.016
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 0.005
+   },
+   "partial": {
+    "tolerance": 0.005
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.005,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.005,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  },
+  {
+   "name": "note.general",
+   "contains": "MATERIAL: ALUMINUM, PLATE, 6061-T651, IN ACCORDANCE WITH ASTM B205"
+  },
+  {
+   "name": "note.general",
+   "contains": "FINISH: CHROMATE CONVERSION COATING IN ACCORDANCE WITH MIL-DTL-5541, CLASS 1A, TYPE II"
+  },
+  {
+   "name": "note.general",
+   "contains": "IDENTIFICATION MARKING SHALL BE LOCATED APPROXIMATELY WHERE SHOWN IN ACCORDANCE WITH MIL-STD-130"
+  },
+  {
+   "name": "note.general",
+   "contains": "ALL BASIC DIMENSION SURFACES SHALL COMPLY WITH"
+  },
+  {
+   "name": "note.general",
+   "contains": "WHEN THE FLATNESS OF DATUM FEATURE A EXCEEDS THE STATED PROFILE TOLERANCE IN THE FREE STATE"
+  },
+  {
+   "name": "note.general",
+   "contains": "DIMENSIONS AND TOLERANCES ARE EXPRESSED IN INCHES"
+  },
+  {
+   "name": "note.general",
+   "contains": "INFORMATION ENCLOSED IN PARENTHESES IS FOR REFERENCE ONLY"
+  },
+  {
+   "name": "note.general",
+   "contains": "MECHANICAL REFERENCE DATASET"
+  }
+ ],
+ "notes": "tolerance.tightest is a hand-computed check (narrowest stated tolerance band among the toleranced dimensions; general-tolerance block not counted). Sheet 1: notes 1-7, reference isometric views, title block DESC ATTRIBUTE 'HEATSINK, TOP', PREP 2014-12-11 T.A.MATUSKA, ENG ON FILE J.M.PISARIK, DWG NO 827-9999-904, REV A (file name says 'rev c'), SHEET 1 OF 3. Sheets 2 and 3 carry a short block 'PART NO. 827-9999-904 / REV A / SHEET 2' (and 'SHEET 3'); title.partNumber is that field. No company, scale field or projection symbol is printed; the plot-stamp footer 'Scale=0.5000:1' is a plot scale, not recorded; title block therefore NOT complete. Material and coating not marked complete (a reader may add its own family / route words). Note 3 is a flag note (circled 3) pointing at a mark location on sheet 2. Note 4 carries a feature control frame: profile of a surface .016 A B C (recorded in GD&T). DIMENSIONS (58, all recorded, so the group is complete): almost all are boxed BASIC; toleranced ones are the limit Ø callouts, the four depth callouts '↧.250 ±.010', '↧.100 ±.010' (twice) and '↧.125 ±.010' (recorded as separate linear rows without a type, nominal with ±), and '4X R.032 ±.010'. The two hole callouts are 'Ø.182 - .192 ↧.250 ± .010' with counterbore '⌴ Ø.245 - .255 ↧.100 ± .010' and 'Ø.145 - .155 ↧.100 ± .010' with '⌴ Ø.245 - .255 ↧.125 ± .010' (the depth may be read into the hole reading — then the separate depth rows are missed). '4X SR.094' is a spherical radius (basic) — recorded without a type. '5X 45°' is a basic angle (type 'angle'). Sheet 3 has overlapping text: '4X Ø.125' is drawn on top of its position frame 'Ø.005Ⓜ A B C' (read as 4X Ø.125, no tolerance), and '±.010' stacked under 'R.135' overlaps the boxed basic '2.632' — I read it as R.135 ±.010 but the tolerance is left out of the row; 'R.135' and '2.632' are recorded by value only. GD&T: position frames carry material-condition modifiers — the 2X Ø.370-.380 and the 4X Ø.215-.225 frames are Ø.005 Ⓛ (LMC); the four counterbored-hole frames on sheet 2 and the 4X Ø.125 frame on sheet 3 are Ø.005 Ⓜ (MMC); modifiers are not in the match rows (no agreed field name). The profile .016 / flatness .005 pair is one stacked frame on the bottom boss faces with no datums. Perpendicularity .010 A B carries datum C. Datum feature symbols are listed per occurrence: A three times (side view, section F-F, section E-E), B twice (sheet 2 top view, sheet 3 view D-D), C once. '4 SURFACES' (under datum A in the side view) is an annotation, not recorded. Notes group not complete (stamp 'MECHANICAL REFERENCE DATASET / SEE PDM FOR DEFINING DATA', 'REFERENCE VIEWS', view labels)."
+}

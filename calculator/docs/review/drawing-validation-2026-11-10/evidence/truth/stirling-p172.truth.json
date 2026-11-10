@@ -1,0 +1,88 @@
+{
+ "drawing": "stirling-p172",
+ "origin": "public",
+ "source": "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from PDF page 172 of 19820026436.pdf (NASA CR-167937, ASE Mod I design review vol. III): the page's own 300 ppi scan image extracted with pdfimages and read in enlarged crops on screen; the poor NASA OCR text layer was NOT used. The reader was not run and its code and earlier truth files were not opened. Only values read with certainty are recorded; no group is marked complete.",
+ "files": {
+  "stirling-p172.pdf": "scan"
+ },
+ "complete": [],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "NUT"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "4-17122"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.scale",
+   "value": "2:1"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "title.company",
+   "contains": "UNITED STIRLING"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "SS 715"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "value": 6.3
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "pitch": 2,
+    "toleranceClass": "6H"
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "upper": 0.3,
+    "lower": -0.3
+   },
+   "partial": {
+    "nominal": 20
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 22
+   },
+   "partial": {
+    "nominal": 22
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "min": 14.05,
+    "max": 14.23
+   },
+   "partial": {
+    "min": 14.05,
+    "max": 14.23
+   }
+  }
+ ],
+ "notes": "United Stirling (Sweden) title block template: printed (not hand-filled) labels include 'Då ej annat anges gäller / To be valid unless otherwise specified', 'Toleranser SS 715 medel / Tolerances SS 715 medium', 'Inv. hörnradier 0,5 / Fillet radii 0,5', 'Skarpa kanter brutna / Remove sharp corners', 'Europ. proj.' with the first-angle symbol, 'Ytjämnhet / Surface roughness Ra µ max', 'Toleranssystem / Tolerance system', 'KOMMANDITBOLAGET UNITED STIRLING (SWEDEN) AB & Co'. PDF page 172 (portrait): title 'NUT' / 'MUTTER' (English / Swedish; title.partName recorded as NUT), drawing no 4-17122, revision letter A, scale 2:1, MATERIAL cell EMPTY, general roughness Ra 6,3, printed 'Tolerances SS 715 medium' legible. Thread 'M14x2-6H'. Dimensions read: 'Ø20 ±0,3', 22 (tolerance written '±0,3' but faint — nominal only), the 12-point socket 'NW 14,05 / 14,23' (limit dimension). Not recorded: the two 8 mm heights with faint tolerances; the drawn-date cell (cut off in the scan)."
+}

@@ -1,0 +1,228 @@
+{
+ "drawing": "nist-ctc-01",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-cad-model-ctc-01",
+ "checked": "Hand-checked by an independent reviewer (Claude, 10 Nov 2026): rendered with pdftoppm at 100/200/600 dpi, every annotation read off the image; reader output and reader code not consulted.",
+ "files": {
+  "nist_ctc_01_asme1_rd.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "quality",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.drawingNumber",
+   "value": "nist_ctc_01_asme1_rd"
+  },
+  {
+   "name": "title.revision",
+   "value": "D"
+  },
+  {
+   "name": "title.company",
+   "contains": "NIST"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "max": 35.2,
+    "min": 34.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "max": 35.2,
+    "min": 34.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 25,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 35,
+    "upper": 0,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 35,
+    "upper": 0.2,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "upper": 0.05,
+    "lower": -0.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "upper": 0.1,
+    "lower": -0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 60,
+    "upper": 0.5,
+    "lower": -0.5
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.15,
+    "nominal": 20
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 0.2
+   },
+   "partial": {
+    "tolerance": 0.2
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.5,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.5,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.25,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.25,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 1.5,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.5,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  }
+ ],
+ "notes": "Single sheet, annotated 3D isometric (no conventional title block). Title fields recorded: the sheet-edge identifier 'nist_ctc_01_asme1_rd' as drawing number, 'Rev D', 'NIST PMI Test Models - 2012' (company contains NIST); 'Test Model 1' and 'PMI Complex Test Case 1' are captions with no field label, so part name is not recorded and title block is not complete. No units, scale, date, sheet or projection printed (the values are mm by the NIST test-case definitions, but the sheet does not say so). 'Includes Atomic Test Cases - 1, 2, 3, 4, 7, 8, 17, 21, 33, 48' is a caption, not recorded as a note; notes group left out of complete. Ø35.2/Ø34.8 (stacked) and 'Ø34.8 - 35.2' are limit dimensions (recorded as max/min). Both profile frames use the closed semicircle (profile of a surface): 0.5 A carries the all-around circle on the leader; 1.25 A B C carries the 'A<->B' between indicator (the A and B leaders near it are point labels for the between indicator, not datum features). Position frames have no Ø symbol. Modifier field not used here (all-around / between are not frame modifiers). tolerance.tightest = smallest ± band on a length/diameter (Ø20 +0.05/-0.10 and Ø20 +0.10/-0.05, band 0.15); angle 60° ±0.5° not counted. Naming rule used for Ø callouts: a callout with an 'nX' count, THRU / depth, or an uppercase (hole) fit is recorded as hole.diameter {diameter, count, upper, lower}; any other Ø size is a dimension {type:'diameter'}. Tolerances are recorded as signed deviations upper/lower; limit dimensions as max/min. GD&T: characteristic in words, datums = the datum letters in order (datum-reference modifiers not encoded), modifiers 'MMC' / 'LMC' = circled M / L after the tolerance value, diameterZone true only where Ø precedes the tolerance."
+}

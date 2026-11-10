@@ -1,0 +1,415 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet4",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet4.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet4.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet4.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS V0.4"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.sheet",
+   "value": "4 of 6"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 3.81,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6.0
+   },
+   "partial": {
+    "nominal": 6.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 90
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 4.0,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 5,
+    "through": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 9
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 16.5
+   },
+   "partial": {
+    "nominal": 16.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 90
+   },
+   "partial": {
+    "nominal": 90
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 90
+   },
+   "partial": {
+    "nominal": 90
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13
+   },
+   "partial": {
+    "nominal": 13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14
+   },
+   "partial": {
+    "nominal": 14
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 127.5
+   },
+   "partial": {
+    "nominal": 127.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14.55
+   },
+   "partial": {
+    "nominal": 14.55
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13
+   },
+   "partial": {
+    "nominal": 13
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 70
+   },
+   "partial": {
+    "nominal": 70
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.85
+   },
+   "partial": {
+    "nominal": 3.85
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 36
+   },
+   "partial": {
+    "nominal": 36
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 29
+   },
+   "partial": {
+    "nominal": 29
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.85
+   },
+   "partial": {
+    "nominal": 3.85
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13.95
+   },
+   "partial": {
+    "nominal": 13.95
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 33
+   },
+   "partial": {
+    "nominal": 33
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80
+   },
+   "partial": {
+    "nominal": 80
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 95
+   },
+   "partial": {
+    "nominal": 95
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 150
+   },
+   "partial": {
+    "nominal": 150
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 10,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15.3
+   },
+   "partial": {
+    "nominal": 15.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20.3
+   },
+   "partial": {
+    "nominal": 20.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15.75
+   },
+   "partial": {
+    "nominal": 15.75
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 28.54
+   },
+   "partial": {
+    "nominal": 28.54
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 30.73
+   },
+   "partial": {
+    "nominal": 30.73
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 28.54
+   },
+   "partial": {
+    "nominal": 28.54
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 71.5
+   },
+   "partial": {
+    "nominal": 71.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 71.5
+   },
+   "partial": {
+    "nominal": 71.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10
+   },
+   "partial": {
+    "nominal": 10
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 200
+   },
+   "partial": {
+    "nominal": 200
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "2 X S-M3-2-Z1 PEM NUT"
+  },
+  {
+   "name": "note.general",
+   "contains": "SEE 3D BODY FOR DETAIL"
+  },
+  {
+   "name": "note.general",
+   "contains": "FHA-M3-10 FLUSH HEAD STUD"
+  },
+  {
+   "name": "note.general",
+   "contains": "6 X SOS-35M3-12 BLIND STANDOFFS"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheets 2-6 carry only a short title block (TITLE, SIZE A, DWG NO., REV., SCALE holding the literal word 'Scale', 'DO NOT SCALE DRAWING', SHEET) and the 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' line; no date, material, tolerance block or units statement — title.units, scale and company are NOT recorded and the title block is not complete. Sheet 4 title: 'ELECTRONICS CHASSIS V0.4', DWG NO PP-MP0110, REV IR, SHEET 4 of 6. Hole callouts: '4 X Ø3.81 THRU / Ø6.0, 90 DEG CHAMFER' (hole row + a Ø6.0 diameter row + a 90° row without type), '4 X Ø4.0 THRU', 'Ø5 THRU / SEE 3D BODY FOR DETAIL', 'Ø3 FOR FHA-M3-10 FLUSH HEAD STUD / INSTALL STUD TOWARD OTHER SIDE' (Ø3 recorded as a diameter row, not a hole). feature.count.holes = 9 (the THRU callouts: 4 + 4 + 1). Linear dimensions (complete): 16.5, 90, 90, 13 (left), 14, 127.5, 14.55, 13 (right), 70, 3.85, 36, 29, 3.85, 13.95, 33, 80, 95, 150, '2 X R10', 15.3, 20.3, 30, 15.75, 28.54 (horizontal), 'Ø30.73', 28.54 (vertical), 71.5 (vertical), 71.5 (horizontal), 10, 200. PEM hardware notes: '2 X S-M3-2-Z1 PEM NUT / INSTALL FROM OTHER SIDE', '6 X SOS-35M3-12 BLIND STANDOFFS / INSTALL STANDOFF TOWARD OUTSIDE', FHA-M3-10 stud — no thread callout is printed, so no thread rows (threads group not complete)."
+}

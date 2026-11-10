@@ -1,0 +1,280 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet3",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet3.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet3.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet3.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS REV A"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "DPP-MP-0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.sheet",
+   "value": "3 of 6"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 1.65
+   },
+   "partial": {
+    "nominal": 1.65
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 22.9
+   },
+   "partial": {
+    "nominal": 22.9
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6.6
+   },
+   "partial": {
+    "nominal": 6.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 37.7
+   },
+   "partial": {
+    "nominal": 37.7
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 9.3
+   },
+   "partial": {
+    "nominal": 9.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 4.4
+   },
+   "partial": {
+    "nominal": 4.4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.2
+   },
+   "partial": {
+    "nominal": 3.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 0.5,
+    "count": 4
+   },
+   "partial": {
+    "nominal": 0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 13.0
+   },
+   "partial": {
+    "nominal": 13.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 65.0
+   },
+   "partial": {
+    "nominal": 65.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6.3
+   },
+   "partial": {
+    "nominal": 6.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10.0
+   },
+   "partial": {
+    "nominal": 10.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 35.0
+   },
+   "partial": {
+    "nominal": 35.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 87.1
+   },
+   "partial": {
+    "nominal": 87.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 90.6
+   },
+   "partial": {
+    "nominal": 90.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 94.3
+   },
+   "partial": {
+    "nominal": 94.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 13.0
+   },
+   "partial": {
+    "nominal": 13.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 53.1
+   },
+   "partial": {
+    "nominal": 53.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 25.0
+   },
+   "partial": {
+    "nominal": 25.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 19.05
+   },
+   "partial": {
+    "nominal": 19.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 94.75
+   },
+   "partial": {
+    "nominal": 94.75
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 110.0
+   },
+   "partial": {
+    "nominal": 110.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140.6
+   },
+   "partial": {
+    "nominal": 140.6
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "4 X TSO-M25-1400Z1 BLIND INSERTS"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheets 2-6 carry only a short title block (TITLE, SIZE A, DWG NO., REV., SCALE holding the literal word 'Scale', 'DO NOT SCALE DRAWING', SHEET) and the 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' line; no date, material, tolerance block or units statement — title.units, scale and company are NOT recorded and the title block is not complete. Sheet 3 title: 'ELECTRONICS CHASSIS REV A', DWG NO printed 'DPP-MP-0110' (a stray D — recorded as printed), REV A, SHEET 3 of 6. Dimensions (23, complete): 'R1.65 TYP', 22.9, 6.6, 37.7, 9.3, 4.4, '3.2 TYP', '4 X R0.5', 13.0, 65.0, 6.3, 10.0, 35.0, 87.1, 90.6, 94.3, 'Ø13.0' (no THRU — a diameter row), 53.1, 25.0, 19.05, 94.75, 110.0, 140.6. Hardware note '4 X TSO-M25-1400Z1 BLIND INSERTS / INSTALL STANDOFF TOWARD INSIDE' (PEM part number; no thread is stated, so no thread row — threads not complete because a reader may decode M2.5 from the part number)."
+}

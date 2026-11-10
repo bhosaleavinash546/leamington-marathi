@@ -1,0 +1,126 @@
+{
+ "drawing": "seedmint-jig-faceplate",
+ "origin": "public",
+ "source": "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/PDF",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet ('Faceplate Drawing A3.pdf') rendered at 300 dpi (pdftoppm) and read on screen; pdftotext -layout used only as a typing aid, every value checked on the image; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "Faceplate Drawing A3.pdf": "vector",
+  "seedmint-jig-faceplate.pdf": "vector"
+ },
+ "complete": [
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "Faceplate"
+  },
+  {
+   "name": "title.revision",
+   "value": "V7"
+  },
+  {
+   "name": "title.date",
+   "value": "14.06.21"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "material.designation",
+   "contains": "Brass"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "2768-f"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "contains": "F"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80
+   },
+   "partial": {
+    "nominal": 80
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50
+   },
+   "partial": {
+    "nominal": 50
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 6,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   },
+   "partial": {
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 65
+   },
+   "partial": {
+    "nominal": 65
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 15
+   },
+   "partial": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "General tolerances as per DIN ISO 2768-f"
+  }
+ ],
+ "notes": "Autodesk Inventor ISO sheet (A3), selectable text. Title block: Technical reference 'Mat: Brass', Created by 'Seed Mint' 14.06.21, Title 'Faceplate', DWG No. blank, Rev. V7, Sheet 1/1; no scale, projection symbol or units statement. 'General tolerances as per DIN ISO 2768-f.' Dimensions (7, complete): 80, 50, 15, '2xØ6' (no THRU stated — a diameter row with count 2, no hole count recorded), 3, 65, 15. The raised/engraved 'SeedMint' lettering on the plate is part geometry drawn as outlines, not a note (not recorded). Material recorded as designation contains 'Brass' (no grade on the sheet). Title block, material, general tolerance, notes, quality not complete."
+}

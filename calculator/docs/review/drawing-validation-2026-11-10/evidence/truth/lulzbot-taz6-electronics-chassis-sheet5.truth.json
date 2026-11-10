@@ -1,0 +1,329 @@
+{
+ "drawing": "lulzbot-taz6-electronics-chassis-sheet5",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet5.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened. One truth file per sheet file (the six sheets are six separate PDFs).",
+ "files": {
+  "electronics_chassis_revA_sheet5.pdf": "curves",
+  "lulzbot-taz6-electronics-chassis-sheet5.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "welds",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ELECTRONICS CHASSIS V 0.4"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0110"
+  },
+  {
+   "name": "title.revision",
+   "value": "IR"
+  },
+  {
+   "name": "title.sheet",
+   "value": "5 of 6"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 4.2,
+    "count": 5,
+    "through": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 8.0
+   },
+   "partial": {
+    "nominal": 8.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 90
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 5
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 8
+   },
+   "partial": {
+    "nominal": 8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 94.0
+   },
+   "partial": {
+    "nominal": 94.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 95.3
+   },
+   "partial": {
+    "nominal": 95.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 96.52
+   },
+   "partial": {
+    "nominal": 96.52
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 112
+   },
+   "partial": {
+    "nominal": 112
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 29
+   },
+   "partial": {
+    "nominal": 29
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 26.25
+   },
+   "partial": {
+    "nominal": 26.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 230.3
+   },
+   "partial": {
+    "nominal": 230.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 111
+   },
+   "partial": {
+    "nominal": 111
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 48.7
+   },
+   "partial": {
+    "nominal": 48.7
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 448.75
+   },
+   "partial": {
+    "nominal": 448.75
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 89
+   },
+   "partial": {
+    "nominal": 89
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50
+   },
+   "partial": {
+    "nominal": 50
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 48.97
+   },
+   "partial": {
+    "nominal": 48.97
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50
+   },
+   "partial": {
+    "nominal": 50
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 450
+   },
+   "partial": {
+    "nominal": 450
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 310
+   },
+   "partial": {
+    "nominal": 310
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 170
+   },
+   "partial": {
+    "nominal": 170
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 6
+   },
+   "partial": {
+    "nominal": 6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30
+   },
+   "partial": {
+    "nominal": 30
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 85
+   },
+   "partial": {
+    "nominal": 85
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140
+   },
+   "partial": {
+    "nominal": 140
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "4X BSOS35M3-12 PEM BLIND STANDOFFS"
+  },
+  {
+   "name": "note.general",
+   "contains": "4X S-M5-2-Z1 PEM NUT"
+  },
+  {
+   "name": "note.general",
+   "contains": "FHA-M3-10 FLUSH HEAD STUD"
+  },
+  {
+   "name": "note.general",
+   "contains": "14 X S-M3-2-Z1 PEM NUTS"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "Sheets 2-6 carry only a short title block (TITLE, SIZE A, DWG NO., REV., SCALE holding the literal word 'Scale', 'DO NOT SCALE DRAWING', SHEET) and the 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0' line; no date, material, tolerance block or units statement — title.units, scale and company are NOT recorded and the title block is not complete. Sheet 5 title: 'ELECTRONICS CHASSIS V 0.4' (space before 0.4), DWG NO PP-MP0110, REV IR, SHEET 5 of 6. Hole callout '5 X Ø4.2 THRU / Ø8.0, 90 DEG CHAMFER' (hole row + Ø8.0 + a 90° row without type); feature.count.holes = 5. Linear dimensions (complete): top view 8, 94.0, 95.3, 96.52, 112, 29, 26.25, 230.3, 111, 48.7, 448.75, 89, 50, 48.97; side view 50, 30; bottom view 450, 310, 170, 30, 6, 30, 85, 140. PEM hardware notes ('4X BSOS35M3-12 PEM BLIND STANDOFFS INSTALL STANDOFF INSIDE', '4X S-M5-2-Z1 PEM NUT INSTALL FROM OTHER SIDE', 'FHA-M3-10 FLUSH HEAD STUD INSTALL STUD TOWARD OTHER SIDE', '14 X S-M3-2-Z1 PEM NUTS INSTALL FROM OTHER SIDE') — no thread callout printed, no thread rows, threads not complete."
+}

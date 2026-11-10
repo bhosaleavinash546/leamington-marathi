@@ -1,0 +1,1737 @@
+[
+ {
+  "id": "nist-ctc-01",
+  "component": "CTC-01 prismatic plate with hex boss, slots and holes",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ctc_01_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ctc_01_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ctc_01_asme1_ap242-e1.stp",
+   "docpage/nist_ctc_01_asme1_rd.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ctc-01"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_CTC_Definitions.zip) ships nist_ctc_01_asme1_rd.pdf and nist_ctc_01_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ctc_*.stp - STEP files of CTC model geometry, no PMI is included'. The drawing title text reads 'nist_ctc_01_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ctc_01_asme1_ap242-e1.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ctc_01_asme1_rd.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ctc-01 (same file name and revision, different bytes; same extracted text length). The repo fixture calculator/tests/fixtures/drawings/nist-ctc-01.pdf is byte-identical to the docpage/ PDF here, so this STEP is the missing model for that fixture.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ctc_01_asme1_rd.stp": {
+    "bytes": 235156,
+    "sha256": "bd5a73c58880ba9093f8dc653c87f4224d6a795459e7fb64f6fdc22ba76a02d3",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 139,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "nist_ctc_01_asme1_rd.pdf": {
+    "bytes": 114242,
+    "sha256": "ba763b97ef7f8f0cf812702d4de94861fbd55a4aad44ebfaae394e41b8e9e03a",
+    "pages": 1,
+    "textChars": 157,
+    "textCharsPerPage": 157,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ctc_01_asme1_ap242-e1.stp": {
+    "bytes": 396445,
+    "sha256": "85a5752da05f53c456ca3a9e038c90358e1d5a3141d1f0d6e5f0970f2356e821",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 117,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 1 1 4 }"
+   },
+   "docpage/nist_ctc_01_asme1_rd.pdf": {
+    "bytes": 55077,
+    "sha256": "5f71e173eff4381afb5dc79d9ff44d213f436a59519bd2142746f378f7d70e93",
+    "pages": 1,
+    "textChars": 157,
+    "textCharsPerPage": 157,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ctc-02",
+  "component": "CTC-02 housing with bosses, pockets and bores (cast-and-machine look)",
+  "likelyCommodity": "casting",
+  "drawingOnly": false,
+  "cadFile": "nist_ctc_02_asme1_rc.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ctc_02_asme1_rc.pdf",
+  "otherFiles": [
+   "nist_ctc_02_asme1_ap242-e2.stp",
+   "docpage/nist_ctc_02_asme1_rc.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ctc-02"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_CTC_Definitions.zip) ships nist_ctc_02_asme1_rc.pdf and nist_ctc_02_asme1_rc.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ctc_*.stp - STEP files of CTC model geometry, no PMI is included'. The drawing title text reads 'nist_ctc_02_asme1_rc'.",
+  "revision": "Rev C (file name suffix _rc; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 3,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ctc_02_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ctc_02_asme1_rc.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ctc-02 (same file name and revision, different bytes; same extracted text length). The repo fixture calculator/tests/fixtures/drawings/nist-ctc-02.pdf is byte-identical to the docpage/ PDF here, so this STEP is the missing model for that fixture.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ctc_02_asme1_rc.stp": {
+    "bytes": 1154618,
+    "sha256": "cd669778fbf9f11fa386a7fe8afe5a70513e3e17a5000e645d237dd4525d2775",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 664,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2 }"
+   },
+   "nist_ctc_02_asme1_rc.pdf": {
+    "bytes": 427564,
+    "sha256": "f1cb7ed923c54ec788b16480177f5d8412f8d49047cb576de8509f229491a51f",
+    "pages": 3,
+    "textChars": 1899,
+    "textCharsPerPage": 633,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ctc_02_asme1_ap242-e2.stp": {
+    "bytes": 1981342,
+    "sha256": "99a0a2079ddeb64d05c2432cbe931fa17c89da60d8b0bcb0b11bd0ed94fa2e68",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 637,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   },
+   "docpage/nist_ctc_02_asme1_rc.pdf": {
+    "bytes": 210564,
+    "sha256": "e9aabbf22d9f05b6d3ee40288b10ff99837af203033afbd80a3bcc5754159672",
+    "pages": 3,
+    "textChars": 1899,
+    "textCharsPerPage": 633,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ctc-03",
+  "component": "CTC-03 bent sheet-metal bracket with flanges and holes",
+  "likelyCommodity": "sheet metal",
+  "drawingOnly": false,
+  "cadFile": "nist_ctc_03_asme1_rc.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ctc_03_asme1_rc.pdf",
+  "otherFiles": [
+   "nist_ctc_03_asme1_ap242-e2.stp",
+   "docpage/nist_ctc_03_asme1_rc.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ctc-03"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_CTC_Definitions.zip) ships nist_ctc_03_asme1_rc.pdf and nist_ctc_03_asme1_rc.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ctc_*.stp - STEP files of CTC model geometry, no PMI is included'. The drawing title text reads 'nist_ctc_03_asme1_rc'.",
+  "revision": "Rev C (file name suffix _rc; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ctc_03_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ctc_03_asme1_rc.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ctc-03 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ctc_03_asme1_rc.stp": {
+    "bytes": 252113,
+    "sha256": "d4158ed46a3fb1d83c85cfec2e640bbaff8c28b2b39e1e66cb87fba9b7985af3",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 139,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "nist_ctc_03_asme1_rc.pdf": {
+    "bytes": 193183,
+    "sha256": "c581705f985efa4751db4021d2920089d1e9697eda198eb0386ad4322b8b83c4",
+    "pages": 1,
+    "textChars": 251,
+    "textCharsPerPage": 251,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ctc_03_asme1_ap242-e2.stp": {
+    "bytes": 673846,
+    "sha256": "196b665776e759282f80fc8fb27d7bceb995df77cf78b7ce48347535a4d6cb5f",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 120,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   },
+   "docpage/nist_ctc_03_asme1_rc.pdf": {
+    "bytes": 94974,
+    "sha256": "675698e729f756659fa99f04ceb065bc3f1445e1219f16841a2877b2499f5491",
+    "pages": 1,
+    "textChars": 251,
+    "textCharsPerPage": 251,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ctc-04",
+  "component": "CTC-04 machined plate with pockets, slots and hole patterns",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ctc_04_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ctc_04_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ctc_04_asme1_ap242-e1.stp",
+   "docpage/nist_ctc_04_asme1_rd.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ctc-04"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_CTC_Definitions.zip) ships nist_ctc_04_asme1_rd.pdf and nist_ctc_04_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ctc_*.stp - STEP files of CTC model geometry, no PMI is included'. The drawing title text reads 'nist_ctc_04_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ctc_04_asme1_ap242-e1.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ctc_04_asme1_rd.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ctc-04 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ctc_04_asme1_rd.stp": {
+    "bytes": 793056,
+    "sha256": "f4f467dcf97e54ab2582ecd447d3bd55cd6a5590117a77889eacc1c4778917fe",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 520,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF  { 1 0 10303 403 3 1 4}"
+   },
+   "nist_ctc_04_asme1_rd.pdf": {
+    "bytes": 124181,
+    "sha256": "cd834573ef731300b4bbfd526b6d48657479507768d635dbfbd7e3bb88f0cb23",
+    "pages": 1,
+    "textChars": 311,
+    "textCharsPerPage": 311,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ctc_04_asme1_ap242-e1.stp": {
+    "bytes": 1287291,
+    "sha256": "20b43b54ce25d4ed17cff794084c406e831c687f5b62471d3371eef33669e355",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 484,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 1 1 4 }"
+   },
+   "docpage/nist_ctc_04_asme1_rd.pdf": {
+    "bytes": 60260,
+    "sha256": "20cadec4d310beb86df89cda103149184c0612e3004dd3eec8d88ce354ea536a",
+    "pages": 1,
+    "textChars": 311,
+    "textCharsPerPage": 311,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ctc-05",
+  "component": "CTC-05 flanged turned shaft/hub with bolt circle",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ctc_05_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ctc_05_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ctc_05_asme1_ap242-e1.stp",
+   "docpage/nist_ctc_05_asme1_rd.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ctc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ctc-05"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_CTC_Definitions.zip) ships nist_ctc_05_asme1_rd.pdf and nist_ctc_05_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ctc_*.stp - STEP files of CTC model geometry, no PMI is included'. The drawing title text reads 'nist_ctc_05_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 2,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ctc_05_asme1_ap242-e1.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ctc_05_asme1_rd.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ctc-05 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ctc_05_asme1_rd.stp": {
+    "bytes": 326835,
+    "sha256": "edc5bb91c00a0fe6d1c76439130f6deabfef851e910538e8f23daf5dfe70f9e7",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 209,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2 }"
+   },
+   "nist_ctc_05_asme1_rd.pdf": {
+    "bytes": 180750,
+    "sha256": "1357a2aec060ab6ce963cc0ad974f0d693287bd2cb745ca409a6254604359313",
+    "pages": 2,
+    "textChars": 488,
+    "textCharsPerPage": 244,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ctc_05_asme1_ap242-e1.stp": {
+    "bytes": 878030,
+    "sha256": "59bbc09a34621c03106e4c1b2a5bc909fdb67463117c16c4965ee7a6fe5c1521",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 156,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF {1 0 10303 442 1 1 4 }"
+   },
+   "docpage/nist_ctc_05_asme1_rd.pdf": {
+    "bytes": 88700,
+    "sha256": "82eeafd5167ab590d6e1dc6ecce65aaecff322ecc6069ee6616accda941cee8f",
+    "pages": 2,
+    "textChars": 488,
+    "textCharsPerPage": 244,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-06",
+  "component": "FTC-06 prismatic block with ribs, bosses and pins (datum targets)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_06_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_06_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ftc_06_asme1_ap242-e2.stp",
+   "docpage/nist_ftc_06_asme1_rd.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-06"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_06_asme1_rd.pdf and nist_ftc_06_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_06_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 3,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_06_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ftc_06_asme1_rd.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ftc-06 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_06_asme1_rd.stp": {
+    "bytes": 222784,
+    "sha256": "bf751dc227ead634776c4ef93fe6189109b62339bef57f83ad9dbfe2cd3f764b",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 144,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "nist_ftc_06_asme1_rd.pdf": {
+    "bytes": 171484,
+    "sha256": "f54e61f5432598cdecf925abf75b153381f55bf4c47e80fd60fb080c7c1b3149",
+    "pages": 3,
+    "textChars": 1070,
+    "textCharsPerPage": 357,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ftc_06_asme1_ap242-e2.stp": {
+    "bytes": 1971192,
+    "sha256": "b87afb7f25adc0d44d12e182209d50f0b085b533c0742fb8ffd58f4c87403447",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 187,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   },
+   "docpage/nist_ftc_06_asme1_rd.pdf": {
+    "bytes": 167608,
+    "sha256": "501a976013cb1e2c13bfc998b5dfa010b064945a1f0a1eaa303a59d96ddc893c",
+    "pages": 3,
+    "textChars": 1070,
+    "textCharsPerPage": 357,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-07",
+  "component": "FTC-07 box (base of the FTC 7-8-9-10 assembly)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_07_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_07_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ftc_07_asme1_ap242-e2.stp"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-07"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_07_asme1_rd.pdf and nist_ftc_07_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_07_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 4,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_07_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). The repo fixture calculator/tests/fixtures/drawings/nist-ftc-07.pdf is byte-identical to the top-level PDF here, so this STEP is the missing model for that fixture.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_07_asme1_rd.stp": {
+    "bytes": 402549,
+    "sha256": "b0eecb1ee17386ec0785a90dcdde52d6a152991db33aec0c69c7e1bbd30d42fa",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 269,
+    "schema": "CONFIG_CONTROL_DESIGN"
+   },
+   "nist_ftc_07_asme1_rd.pdf": {
+    "bytes": 720347,
+    "sha256": "fcb214aa1aee70040b11eed88b65ebe42104f2ce1d0e94cb06668a75f8ec2456",
+    "pages": 4,
+    "textChars": 2430,
+    "textCharsPerPage": 608,
+    "embeddedImages": 0,
+    "creator": "AutoCAD Mechanical 2016 - English 2016 (20.1s (LMS Tech))",
+    "producer": "pdfplot12.hdi 12.01.107.000"
+   },
+   "nist_ftc_07_asme1_ap242-e2.stp": {
+    "bytes": 1478375,
+    "sha256": "aa8115c12e12a99cc439477cbfd222916f9ec629fbb3c9002b18e0c264c9a892",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 306,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-08",
+  "component": "FTC-08 flanged lid with pockets (FTC 7-8-9-10 assembly)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_08_asme1_rc.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_08_asme1_rc.pdf",
+  "otherFiles": [
+   "nist_ftc_08_asme1_ap242-e2.stp",
+   "docpage/nist_ftc_08_asme1_rc.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-08"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_08_asme1_rc.pdf and nist_ftc_08_asme1_rc.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_08_asme1_rc'.",
+  "revision": "Rev C (file name suffix _rc; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 4,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_08_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ftc_08_asme1_rc.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ftc-08 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_08_asme1_rc.stp": {
+    "bytes": 450747,
+    "sha256": "c0c59faae620c5cf1d1f5eba025b4e8666625bd0a7658ecd5625d3a8badc9a7b",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 270,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF  { 1 0 10303 403 3 1 4}"
+   },
+   "nist_ftc_08_asme1_rc.pdf": {
+    "bytes": 244241,
+    "sha256": "4c4281a15857a585874b8193df5ab8fd22ecee507a3fe7de2143833403102260",
+    "pages": 4,
+    "textChars": 1545,
+    "textCharsPerPage": 386,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ftc_08_asme1_ap242-e2.stp": {
+    "bytes": 4722264,
+    "sha256": "7b9283b4288d152fd181d76c39285d7c79fbba34fda1e14a41ac4a983f6d68b3",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 247,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   },
+   "docpage/nist_ftc_08_asme1_rc.pdf": {
+    "bytes": 240361,
+    "sha256": "db962fc2527457ef5226a1f9d0083b898e86f6622f63b91e9ffa42b1df6b30bf",
+    "pages": 4,
+    "textChars": 1545,
+    "textCharsPerPage": 386,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-09",
+  "component": "FTC-09 plate, 11 GA (0.1195 in) 304 stainless (FTC 7-8-9-10 assembly)",
+  "likelyCommodity": "sheet metal",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_09_asme1_rd.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_09_asme1_rd.pdf",
+  "otherFiles": [
+   "nist_ftc_09_asme1_ap242-e1.stp",
+   "docpage/nist_ftc_09_asme1_rd.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-09"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_09_asme1_rd.pdf and nist_ftc_09_asme1_rd.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_09_asme1_rd'.",
+  "revision": "Rev D (file name suffix _rd; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 4,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_09_asme1_ap242-e1.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ftc_09_asme1_rd.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ftc-09 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_09_asme1_rd.stp": {
+    "bytes": 263934,
+    "sha256": "d12866d3ab0fc260efd0f1a5c54af47950be513486f61f65513877045582afa8",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 158,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2 }"
+   },
+   "nist_ftc_09_asme1_rd.pdf": {
+    "bytes": 318757,
+    "sha256": "43156f3696e34c4d9222ffaade5910c8879d501e8939370512f3865796d98d90",
+    "pages": 4,
+    "textChars": 1576,
+    "textCharsPerPage": 394,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ftc_09_asme1_ap242-e1.stp": {
+    "bytes": 6109836,
+    "sha256": "f1215fe15a78085a9fa78dd81714caf774b59071be92580b04ebfdc19f52a1bd",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 163,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF {1 0 10303 442 1 1 4 }"
+   },
+   "docpage/nist_ftc_09_asme1_rd.pdf": {
+    "bytes": 314889,
+    "sha256": "148d43b816d8844b877baf948765896d58cb642d9b0b9c6a7e5f22853914f3ea",
+    "pages": 4,
+    "textChars": 1576,
+    "textCharsPerPage": 394,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-10",
+  "component": "FTC-10 shallow housing/frame with mounting ears (FTC 7-8-9-10 assembly)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_10_asme1_rb.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_10_asme1_rb.pdf",
+  "otherFiles": [
+   "nist_ftc_10_asme1_ap242-e2.stp",
+   "docpage/nist_ftc_10_asme1_rb.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-10"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_10_asme1_rb.pdf and nist_ftc_10_asme1_rb.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_10_asme1_rb'.",
+  "revision": "Rev B (file name suffix _rb; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 5,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_10_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ftc_10_asme1_rb.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ftc-10 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_10_asme1_rb.stp": {
+    "bytes": 323619,
+    "sha256": "7ab61ea7d6412b2df3b9b75123544d15810fe6792bf5adf7c820e6fe9e136424",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 214,
+    "schema": "CONFIG_CONTROL_DESIGN"
+   },
+   "nist_ftc_10_asme1_rb.pdf": {
+    "bytes": 875826,
+    "sha256": "26c71d56a9aa73fc47df8a9b6b4e916d237f3666d7146e410037fe49698849bc",
+    "pages": 5,
+    "textChars": 2734,
+    "textCharsPerPage": 547,
+    "embeddedImages": 0,
+    "creator": "AutoCAD Mechanical 2016 - English 2016 (20.1s (LMS Tech))",
+    "producer": "pdfplot12.hdi 12.01.107.000"
+   },
+   "nist_ftc_10_asme1_ap242-e2.stp": {
+    "bytes": 1879881,
+    "sha256": "9d7711f48e81831c5d1838fdac5c11c0de1aa9b61f3c1d67930a7638b3b25e69",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 282,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 3 1 4 }"
+   },
+   "docpage/nist_ftc_10_asme1_rb.pdf": {
+    "bytes": 369659,
+    "sha256": "fdb17aa687bde85db25899e4110588586e228e0a186ea160045095a3009be482",
+    "pages": 5,
+    "textChars": 1538,
+    "textCharsPerPage": 308,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-ftc-11",
+  "component": "FTC-11 non-rigid ring (drawing note: NON-RIGID PART, free-state tolerances)",
+  "likelyCommodity": "rubber",
+  "drawingOnly": false,
+  "cadFile": "nist_ftc_11_asme1_rb.stp",
+  "cadType": "STEP",
+  "drawingFile": "nist_ftc_11_asme1_rb.pdf",
+  "otherFiles": [
+   "nist_ftc_11_asme1_ap242-e2.stp",
+   "docpage/nist_ftc_11_asme1_rb.pdf"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-ftc-test-case-definitions",
+   "https://www.nist.gov/document/nist-pmi-step-files",
+   "https://www.nist.gov/document/nist-cad-model-ftc-11"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105); NIST: test cases, CAD models and STEP files can be used without any restrictions (acknowledgement requested, NIST logo not to be used)",
+  "licenceEvidence": [
+   "README.txt in NIST_MBE_PMI_FTC_Definitions.zip / NIST_MBE_PMI_CTC_Definitions.zip: 'Pursuant to Title 17 Section 105 of the United States Code this test system is not subject to copyright protection and is in the public domain' and 'The test cases and CAD models can be used without any restrictions.'",
+   "https://www.nist.gov/ctl/smart-connected-systems-division/smart-connected-manufacturing-systems-group/mbe-pmi-0 : 'The test cases, CAD models, and STEP files can be used without any restrictions.'"
+  ],
+  "matchEvidence": "Same NIST zip (NIST_MBE_PMI_FTC_Definitions.zip) ships nist_ftc_11_asme1_rb.pdf and nist_ftc_11_asme1_rb.stp side by side with the same test-case number and revision letter; its README: 'For each test case there are three PDF files and one STEP file ... nist_ftc_*.stp - STEP files of FTC model geometry, no PMI is included'. The drawing title text reads 'nist_ftc_11_asme1_rb'.",
+  "revision": "Rev B (file name suffix _rb; also printed on the sheet)",
+  "drawingKind": "vector PDF, mixed: notes/labels as text, much of the GD&T annotation as curves",
+  "sheets": 2,
+  "automotive": false,
+  "notes": "NIST PMI test case: an annotated 3D model view (ASME Y14.41 / Y14.5) on a NIST sheet frame, NOT a production 2D drawing with a conventional title block; the test cases 'are not intended to represent best practice in how to apply GD&T'. The material/commodity is mostly not stated on the sheet (commodity here is a judgement from the shape). Also stored: nist_ftc_11_asme1_ap242-e2.stp (STEP AP242 with graphical + semantic PMI from the NIST-PMI-STEP-Files.zip; geometry of the same test case, CAD system of origin removed by NIST). docpage/nist_ftc_11_asme1_rb.pdf is the copy from https://www.nist.gov/document/nist-cad-model-ftc-11 (same file name and revision, different bytes; same extracted text length).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "nist_ftc_11_asme1_rb.stp": {
+    "bytes": 7652,
+    "sha256": "d94ee0bed48f06e94621a03b6b088e16fac1bf70607f0d31dfbe87a17bb2ec7e",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 6,
+    "schema": "CONFIG_CONTROL_DESIGN"
+   },
+   "nist_ftc_11_asme1_rb.pdf": {
+    "bytes": 73748,
+    "sha256": "c402787d12ae4b90b27f7da027c60483d55a2e2616b0b7fa8b73a9a8aaf708ce",
+    "pages": 2,
+    "textChars": 936,
+    "textCharsPerPage": 468,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   },
+   "nist_ftc_11_asme1_ap242-e2.stp": {
+    "bytes": 1946454,
+    "sha256": "20a92edf514ae0989d556f9c7b9f065aed741cfbb361b7fe4cb7938a1eb5c232",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 42,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF { 1 0 10303 442 1 1 4 }"
+   },
+   "docpage/nist_ftc_11_asme1_rb.pdf": {
+    "bytes": 69874,
+    "sha256": "f15690050edb2a673b92d31733be86fac207a16a8716b21f13ccd757a002392c",
+    "pages": 2,
+    "textChars": 936,
+    "textCharsPerPage": 468,
+    "embeddedImages": 0,
+    "creator": "PScript5.dll Version 5.2.2",
+    "producer": "Acrobat Distiller 11.0 (Windows)"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-905",
+  "component": "Rolled standoff (spacer, shouldered), Al 6061-T6 round bar per ASTM B211, chromate conversion coat",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "827-9999-905.stp",
+  "cadType": "STEP",
+  "drawingFile": "827-9999-905.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip",
+   "https://www.nist.gov/system/files/documents/el/msid/infotest/NIST-D2MI-Models.zip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... Pursuant to Title 17 Section 105 of the United States Code the results are not subject to copyright protection and are in the public domain.'",
+   "Drawings originate from Rockwell Collins (PDF creator field; designs submitted by Rockwell Collins and altered to generic parts per NIST.GCR.15-1009) and are distributed by NIST under that notice."
+  ],
+  "matchEvidence": "Same NIST zip; drawing title block DWG NO 827-9999-905 = STEP file name 827-9999-905 (STEP PRODUCT entity carries an internal NX id, the file name and FILE_NAME header carry the part number); NIST.GCR.15-1009 (in the zip) describes data sets -903/-905/-907 (rolled standoff) and -904/-906/-908 (heat sink).",
+  "revision": "-",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Genuine production-style ASME drawing from an aerospace OEM (Rockwell Collins) with title block (DESC, DWG NO, REV, SHEET, PREP/ENG), numbered notes (material spec, finish spec, ASME Y14.5-2009), inch units. full-dimension 2D drawing data set (current state, drawing only per the report); NX STEP AP203 of the same part number is also in the zip. Text is drawn as vector strokes (NX CGM->PDF), only the plot-stamp footer is extractable text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-905.stp": {
+    "bytes": 12723,
+    "sha256": "a0619330351df8a333376a3b69838c0fe02ee41307e924d36b77c26ec1f71254",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 9,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "827-9999-905.pdf": {
+    "bytes": 107494,
+    "sha256": "2d057a43340d0d30dba6f06bc931d54a57d2bd11885006dd265f1c3997aed6f2",
+    "pages": 1,
+    "textChars": 75,
+    "textCharsPerPage": 75,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-906",
+  "component": "Heatsink, top: Al 6061-T6 plate per ASTM B209, fins, pin array, bosses; chromate conversion coat",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "827-9999-906.stp",
+  "cadType": "STEP",
+  "drawingFile": "827-9999-906.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip",
+   "https://www.nist.gov/system/files/documents/el/msid/infotest/NIST-D2MI-Models.zip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... Pursuant to Title 17 Section 105 of the United States Code the results are not subject to copyright protection and are in the public domain.'",
+   "Drawings originate from Rockwell Collins (PDF creator field; designs submitted by Rockwell Collins and altered to generic parts per NIST.GCR.15-1009) and are distributed by NIST under that notice."
+  ],
+  "matchEvidence": "Same NIST zip; drawing title block DWG NO 827-9999-906 = STEP file name 827-9999-906 (STEP PRODUCT entity carries an internal NX id, the file name and FILE_NAME header carry the part number); NIST.GCR.15-1009 (in the zip) describes data sets -903/-905/-907 (rolled standoff) and -904/-906/-908 (heat sink).",
+  "revision": "-",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 3,
+  "automotive": false,
+  "notes": "Genuine production-style ASME drawing from an aerospace OEM (Rockwell Collins) with title block (DESC, DWG NO, REV, SHEET, PREP/ENG), numbered notes (material spec, finish spec, ASME Y14.5-2009), inch units. full-dimension 2D drawing, 3 sheets; the report notes this drawing was issued to the supplier with two dimensions missing (ECO needed) - useful as a genuine incomplete-drawing case. Text is drawn as vector strokes (NX CGM->PDF), only the plot-stamp footer is extractable text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-906.stp": {
+    "bytes": 100202,
+    "sha256": "1327cf9c4668b1d5bf15553ba4bba803abe93d1aa55d716eafedfa3daf6ac443",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 89,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "827-9999-906.pdf": {
+    "bytes": 285851,
+    "sha256": "a955c0fc0823aae7ea8545891c78732dd709c70b3c11a71938e854b27c867766",
+    "pages": 3,
+    "textChars": 231,
+    "textCharsPerPage": 77,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-907",
+  "component": "Rolled standoff (spacer, shouldered), Al 6061-T6, MBD variant (partial-dimension drawing + STEP AP203)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "827-9999-907.stp",
+  "cadType": "STEP",
+  "drawingFile": "827-9999-907.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip",
+   "https://www.nist.gov/system/files/documents/el/msid/infotest/NIST-D2MI-Models.zip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... Pursuant to Title 17 Section 105 of the United States Code the results are not subject to copyright protection and are in the public domain.'",
+   "Drawings originate from Rockwell Collins (PDF creator field; designs submitted by Rockwell Collins and altered to generic parts per NIST.GCR.15-1009) and are distributed by NIST under that notice."
+  ],
+  "matchEvidence": "Same NIST zip; drawing title block DWG NO 827-9999-907 = STEP file name 827-9999-907 (STEP PRODUCT entity carries an internal NX id, the file name and FILE_NAME header carry the part number); NIST.GCR.15-1009 (in the zip) describes data sets -903/-905/-907 (rolled standoff) and -904/-906/-908 (heat sink).",
+  "revision": "-",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Genuine production-style ASME drawing from an aerospace OEM (Rockwell Collins) with title block (DESC, DWG NO, REV, SHEET, PREP/ENG), numbered notes (material spec, finish spec, ASME Y14.5-2009), inch units. ASME Y14.41 data set: partial 2D drawing; note 8 says the drawing is released with an associated 3D model and .stp file. Text is drawn as vector strokes (NX CGM->PDF), only the plot-stamp footer is extractable text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-907.stp": {
+    "bytes": 12723,
+    "sha256": "695901fb8872583f7674e57870bbed1fd77f6be1d9db5b7599808c9316814f36",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 9,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "827-9999-907.pdf": {
+    "bytes": 146770,
+    "sha256": "cdc288b7f5a52aa1ad34375e9d5075d5ecdd68edcb79fd0c6aaaacc4cf44ed84",
+    "pages": 1,
+    "textChars": 95,
+    "textCharsPerPage": 95,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-908",
+  "component": "Heatsink, top: Al 6061-T6 plate, MBD variant (partial-dimension drawing + STEP AP203)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "827-9999-908.stp",
+  "cadType": "STEP",
+  "drawingFile": "827-9999-908.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip",
+   "https://www.nist.gov/system/files/documents/el/msid/infotest/NIST-D2MI-Models.zip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... Pursuant to Title 17 Section 105 of the United States Code the results are not subject to copyright protection and are in the public domain.'",
+   "Drawings originate from Rockwell Collins (PDF creator field; designs submitted by Rockwell Collins and altered to generic parts per NIST.GCR.15-1009) and are distributed by NIST under that notice."
+  ],
+  "matchEvidence": "Same NIST zip; drawing title block DWG NO 827-9999-908 = STEP file name 827-9999-908 (STEP PRODUCT entity carries an internal NX id, the file name and FILE_NAME header carry the part number); NIST.GCR.15-1009 (in the zip) describes data sets -903/-905/-907 (rolled standoff) and -904/-906/-908 (heat sink).",
+  "revision": "-",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 3,
+  "automotive": false,
+  "notes": "Genuine production-style ASME drawing from an aerospace OEM (Rockwell Collins) with title block (DESC, DWG NO, REV, SHEET, PREP/ENG), numbered notes (material spec, finish spec, ASME Y14.5-2009), inch units. ASME Y14.41 data set: partial 2D drawing + STEP AP203, 3 sheets. Text is drawn as vector strokes (NX CGM->PDF), only the plot-stamp footer is extractable text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-908.stp": {
+    "bytes": 100202,
+    "sha256": "121f75c0aae5d690475ee712eec121b975558266205a6b8612667689cacd9330",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 89,
+    "schema": "AP203_CONFIGURATION_CONTROLLED_3D_DESIGN_OF_MECHANICAL_PARTS_AND_ASSEMBLIES_MIM_LF { 1 0 10303 403 2 1 2}"
+   },
+   "827-9999-908.pdf": {
+    "bytes": 262168,
+    "sha256": "d4340410798141c3becac2ce57c6ea6d59912e4f13a919bf2a6e87ffedf9a360",
+    "pages": 3,
+    "textChars": 291,
+    "textCharsPerPage": 97,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-904",
+  "component": "Heatsink, top: Al 6061-T6 plate, future-state data set (STEP AP242 with embedded PMI) + reference drawing",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "827-9999-904 rev c.stp",
+  "cadType": "STEP",
+  "drawingFile": "827-9999-904 rev c.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip",
+   "https://www.nist.gov/system/files/documents/el/msid/infotest/NIST-D2MI-Models.zip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... Pursuant to Title 17 Section 105 of the United States Code the results are not subject to copyright protection and are in the public domain.'",
+   "Drawings originate from Rockwell Collins (PDF creator field; designs submitted by Rockwell Collins and altered to generic parts per NIST.GCR.15-1009) and are distributed by NIST under that notice."
+  ],
+  "matchEvidence": "Same NIST zip; drawing title block DWG NO 827-9999-904 = STEP file name 827-9999-904; STEP PRODUCT name is 827-9999-904; NIST.GCR.15-1009 (in the zip) describes data sets -903/-905/-907 (rolled standoff) and -904/-906/-908 (heat sink).",
+  "revision": "A (title block) / \"rev c\" (file name)",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 3,
+  "automotive": false,
+  "notes": "Genuine production-style ASME drawing from an aerospace OEM (Rockwell Collins) with title block (DESC, DWG NO, REV, SHEET, PREP/ENG), numbered notes (material spec, finish spec, ASME Y14.5-2009), inch units. STEP is AP242 with PMI; drawing title block reads REV A while the file names say \"rev c\" - revision is ambiguous; drawing says MECHANICAL REFERENCE DATASET, SEE PDM FOR DEFINING DATA. Text is drawn as vector strokes (NX CGM->PDF), only the plot-stamp footer is extractable text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-904 rev c.stp": {
+    "bytes": 3725845,
+    "sha256": "2b64cfca8286d694bb1ab8150f7856012c0e40eef6280abed425efcc2f2e5696",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 117,
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF {1 0 10303 442 1 1 4 }"
+   },
+   "827-9999-904 rev c.pdf": {
+    "bytes": 314444,
+    "sha256": "d99a4371f4266ef3ffd64a1248aa020040730e340c4cf60ff2700d0cf9b3af7c",
+    "pages": 3,
+    "textChars": 231,
+    "textCharsPerPage": 77,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "nist-am-artifact",
+  "component": "NIST additive-manufacturing test artifact (ver3b) - square base with pins, holes, staircase, ramps, fine features",
+  "likelyCommodity": "other",
+  "drawingOnly": false,
+  "cadFile": "NIST Test Artifact_ver3b.step",
+  "cadType": "STEP",
+  "drawingFile": "EngineeringDrawing.pdf",
+  "otherFiles": [
+   "NIST Test Artifact online.STL",
+   "nist_test_artifact_ver3b.zip",
+   "NIST-Test-Artifact-stl.zip"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/el/intelligent-systems-division-73500/production-systems-group/nist-additive-manufacturing-test",
+   "https://www.nist.gov/document/nisttestartifactver3bzip",
+   "https://www.nist.gov/document/nist-test-artifact-stlzip",
+   "https://www.nist.gov/document/engineeringdrawingpdf"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105)",
+  "licenceEvidence": [
+   "NIST AM test artifact page: 'These files were developed at the National Institute of Standards and Technology by employees of the Federal Government ... these files are not subject to copyright protection and are in the public domain.'"
+  ],
+  "matchEvidence": "Same NIST download page lists the test part (.stl, .amf, .step) and the \"engineering drawing with geometric dimensioning and tolerancing that outlines the nominal dimensions of the features\" of that test part. STEP header: Uberfact_ver3b_forSTEP.STEP, 2012-05-18, author Shawn Moylan (NIST), the paper author.",
+  "revision": "STEP: ver3b (2012-05-18); STL: \"online\" (2013-04-10); drawing PDF created 2013-04-24 - not stated on the drawing, so the STEP/drawing revision match is inferred, not proven",
+  "drawingKind": "image (drawing stored as raster images in a PDF)",
+  "sheets": 2,
+  "automotive": false,
+  "notes": "The drawing PDF is byte-identical to calculator/tests/fixtures/drawings/nist-am-artifact.pdf (drawing stored as raster images inside the PDF, 2 pages; geometric tolerance values shown as \"xx\" placeholders). Research artifact, not a production drawing. The STL in the zip is binary despite starting with \"COLOR=\" header text.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "NIST Test Artifact_ver3b.step": {
+    "bytes": 564884,
+    "sha256": "74e88ac8e49031a8708bf201447b9a2f68223afae807d38614b9938cc967f97e",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 271,
+    "schema": "AUTOMOTIVE_DESIGN"
+   },
+   "NIST Test Artifact online.STL": {
+    "bytes": 369684,
+    "sha256": "f46099714f8dd06096ecb5110124445cb2aea771254a7d1a56202f22db9aa6f7",
+    "binarySTL": true,
+    "triangles": 7392
+   },
+   "EngineeringDrawing.pdf": {
+    "bytes": 69624,
+    "sha256": "97207b4e2ca11b4cb2b711a2b9665c6fe8fcd3011a334e572196690eaebea009",
+    "pages": 2,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 13,
+    "creator": "Acrobat PDFMaker 10.1 for Word",
+    "producer": "Adobe PDF Library 10.0"
+   },
+   "nist_test_artifact_ver3b.zip": {
+    "bytes": 74911,
+    "sha256": "ee18b7ff5051614d58eca15fa1aafccbdde493648b52bb3e22cca39d7cf77c37"
+   },
+   "NIST-Test-Artifact-stl.zip": {
+    "bytes": 68043,
+    "sha256": "9fb102d907855e8a9b64c03e81f93d6aad0b174ff038c60f2669c5dfe189368b"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-electronics-chassis",
+  "component": "Electronics chassis PP-MP0110 rev A: bent 5052-H32 aluminium enclosure 2.03 mm, PEM studs, powder coat with masking",
+  "likelyCommodity": "sheet metal",
+  "drawingOnly": false,
+  "cadFile": "electronics_chassis_reva.step",
+  "cadType": "STEP",
+  "drawingFile": "electronics_chassis_revA_sheet1.pdf",
+  "otherFiles": [
+   "electronics_chassis_revA_sheet2.pdf",
+   "electronics_chassis_revA_sheet3.pdf",
+   "electronics_chassis_revA_sheet4.pdf",
+   "electronics_chassis_revA_sheet5.pdf",
+   "electronics_chassis_revA_sheet6.pdf"
+  ],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_reva.step",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet1.pdf",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet2.pdf",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet3.pdf",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet4.pdf",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet5.pdf",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_chassis/electronics_chassis_revA_sheet6.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "Same LulzBot production_parts folder (electronics_chassis/) on the manufacturer's own download server; part number in the STEP file name = DWG NO in the drawing title block (Aleph Objects title block). Drawing is 6 single-page PDFs (sheet 1..6 of 6); revision history V0.2/V0.3/V0.4/A on sheet 1; notes include material, thickness, masking for powder coat. File names (revA / reva) and title block (ELECTRONICS CHASSIS REV A, PP-MP0110, REV A) agree.",
+  "revision": "A",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 6,
+  "automotive": false,
+  "notes": "LulzBot TAZ 6 3D printer production part (Aleph Objects, 2015-16). FreeCAD drawing exported via Qt: every string is drawn as glyph outlines (no extractable text). Real title block (drawn by, date, material, tolerance block, size, DWG NO, REV, scale, sheet), numbered notes (RoHS, material, coating, masking). Metric.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "electronics_chassis_reva.step": {
+    "bytes": 1574819,
+    "sha256": "d538809f866ea20df52373ee3da160aaa8b642d7d8e34bbb38d0d4573135759d",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 360,
+    "schema": "AUTOMOTIVE_DESIGN_CC2 { 1 2 10303 214 -1 1 5 4 }"
+   },
+   "electronics_chassis_revA_sheet1.pdf": {
+    "bytes": 1031845,
+    "sha256": "ad25c52c3fdc769d82e7bd42b2e6b7e6767ba9ca5aec7f4a661168949c353d31",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   },
+   "electronics_chassis_revA_sheet2.pdf": {
+    "bytes": 204078,
+    "sha256": "7457aeb3597372ea98580ea7fc81fa60f9879bae879603ef2d7704995d5fa29b",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   },
+   "electronics_chassis_revA_sheet3.pdf": {
+    "bytes": 309977,
+    "sha256": "64c69ec37bdbd86f254e8eeafccd833543e41405314d62375a509cb8e83335ad",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   },
+   "electronics_chassis_revA_sheet4.pdf": {
+    "bytes": 472691,
+    "sha256": "c225696d45a6434beede7a1b16be9cea33041914abecb3666b75af209d00d70a",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   },
+   "electronics_chassis_revA_sheet5.pdf": {
+    "bytes": 421160,
+    "sha256": "f7285c58b5733e70eea080107ae635e229fea9e46846ac1a8fd5f9c5a54a7470",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   },
+   "electronics_chassis_revA_sheet6.pdf": {
+    "bytes": 285006,
+    "sha256": "7f9fc3cb0a4556401c70ff0d6fc1df4fe65206647e1a01716047349042f956f6",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-electronics-cover",
+  "component": "Electronics cover PP-MP0109 rev A: flat 12 AWG (2.03 mm) aluminium cover, 20 holes, slot, powder coat with masked face",
+  "likelyCommodity": "sheet metal",
+  "drawingOnly": false,
+  "cadFile": "electronics_cover_revA.step",
+  "cadType": "STEP",
+  "drawingFile": "electronics_cover_reva.pdf",
+  "otherFiles": [],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_cover/electronics_cover_revA.step",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/electronics_cover/electronics_cover_reva.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "Same LulzBot production_parts folder (electronics_cover/) on the manufacturer's own download server; part number in the STEP file name = DWG NO in the drawing title block (Aleph Objects title block). Note 5 \"3D model governs dimensions not shown on print\"; revision table IR/4.0/4.1/A on the sheet.",
+  "revision": "A",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "LulzBot TAZ 6 3D printer production part (Aleph Objects, 2015-16). FreeCAD drawing exported via Qt: every string is drawn as glyph outlines (no extractable text). Real title block (drawn by, date, material, tolerance block, size, DWG NO, REV, scale, sheet), numbered notes (RoHS, material, coating, masking). Metric.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "electronics_cover_revA.step": {
+    "bytes": 123279,
+    "sha256": "42b23a70cc48491ce6c0374d9988e66e35ee9ea28c9297bde97c4ed375a9be93",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 34,
+    "schema": "AUTOMOTIVE_DESIGN_CC2 { 1 2 10303 214 -1 1 5 4 }"
+   },
+   "electronics_cover_reva.pdf": {
+    "bytes": 1084346,
+    "sha256": "450c6b3a5ac4b8e9b9c421833fa85e7ed3505c2e59f7c168f9711d1edbfbe0f6",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-corner-bracket",
+  "component": "Corner bracket v2.0 PP-MP0106: 3.175 mm 5052-H32 aluminium plate bracket, 4x Ø6 holes, radii, powder coat",
+  "likelyCommodity": "sheet metal",
+  "drawingOnly": false,
+  "cadFile": "corner_bracket_v2.0_PP-MP0106.step",
+  "cadType": "STEP",
+  "drawingFile": "corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+  "otherFiles": [
+   "corner_bracket_v2.0_PP-MP0106.iges"
+  ],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/corner_bracket_v2.0/corner_bracket_v2.0_PP-MP0106.step",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/corner_bracket_v2.0/corner_bracket_v2.0_PP-MP0106.iges",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/corner_bracket_v2.0/corner_bracket_v2.0_REV1_PP-MP0106.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "Same LulzBot production_parts folder (corner_bracket_v2.0/) on the manufacturer's own download server; part number in the STEP file name = DWG NO in the drawing title block (Aleph Objects title block). Profile-cut plate (laser/waterjet/punch) - could also be costed as machining. IGES of the same part also stored.",
+  "revision": "drawing REV 1; STEP/IGES file names carry no revision",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "LulzBot TAZ 6 3D printer production part (Aleph Objects, 2015-16). FreeCAD drawing exported via Qt: every string is drawn as glyph outlines (no extractable text). Real title block (drawn by, date, material, tolerance block, size, DWG NO, REV, scale, sheet), numbered notes (RoHS, material, coating, masking). Metric.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "corner_bracket_v2.0_PP-MP0106.step": {
+    "bytes": 93940,
+    "sha256": "6b417672b2c295030379042bd214ddfceb87592ea1cb75ed3954f064b09c1200",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 22,
+    "schema": "AUTOMOTIVE_DESIGN_CC2 { 1 2 10303 214 -1 1 5 4 }"
+   },
+   "corner_bracket_v2.0_PP-MP0106.iges": {
+    "bytes": 103518,
+    "sha256": "ec6d7f68faec2e06e3f60c277d704919b1b5c3d41ce28e299d88dfdb93c6ab26",
+    "igesStartSection": true
+   },
+   "corner_bracket_v2.0_REV1_PP-MP0106.pdf": {
+    "bytes": 724115,
+    "sha256": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-bed-plate",
+  "component": "300 mm bed plate v4.5 PP-MP0108: 3.175 mm 5052-H32 aluminium plate, 36x M3x0.5 tapped holes, flatness 1.0, powder coat with masked threads",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "bed_plate_v4.5_PP-MP0108.step",
+  "cadType": "STEP",
+  "drawingFile": "300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf",
+  "otherFiles": [],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_plate_v5.0/bed_plate_v4.5_PP-MP0108.step",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_plate_v5.0/300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "Same LulzBot production_parts folder (bed_plate_v5.0/) on the manufacturer's own download server; part number in the STEP file name = DWG NO in the drawing title block (Aleph Objects title block). Folder is named bed_plate_v5.0 but both files are v4.5 (the v5.0 exists only as FreeCAD .FCStd, not used). Plate profile + tapped holes: sheet metal blank + secondary machining.",
+  "revision": "IR (drawing); v4.5 in both file names",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "LulzBot TAZ 6 3D printer production part (Aleph Objects, 2015-16). FreeCAD drawing exported via Qt: every string is drawn as glyph outlines (no extractable text). Real title block (drawn by, date, material, tolerance block, size, DWG NO, REV, scale, sheet), numbered notes (RoHS, material, coating, masking). Metric.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "bed_plate_v4.5_PP-MP0108.step": {
+    "bytes": 348245,
+    "sha256": "23d675c8b3935b97d89ed4ac6ddcc1bfe75788499ac81362262412cef325f2f1",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 79,
+    "schema": "AUTOMOTIVE_DESIGN_CC2 { 1 2 10303 214 -1 1 5 4 }"
+   },
+   "300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf": {
+    "bytes": 988975,
+    "sha256": "da2705f979f3430fe2cffdc0049d789438bea3006ee068b6e306d1c7c864a502",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-bed-leveling-washer",
+  "component": "Bed leveling washer v2.0 PP-MP0082: Ø22 x 1.5 mm 303 stainless washer, Ø3.4 thru with 90° countersink",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "bed_leveling_washer_v2.0_PP-MP0082_rev_IR.step",
+  "cadType": "STEP",
+  "drawingFile": "bed_leveling_washer_v2.0_PP-MP0082.pdf",
+  "otherFiles": [],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_leveling_washer/bed_leveling_washer_v2.0_PP-MP0082_rev_IR.step",
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/bed_leveling_washer/bed_leveling_washer_v2.0_PP-MP0082.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "Same LulzBot production_parts folder (bed_leveling_washer/) on the manufacturer's own download server; part number in the STEP file name = DWG NO in the drawing title block (Aleph Objects title block). Small turned/stamped stainless part with a ±0.05 thickness tolerance.",
+  "revision": "IR (STEP file name rev_IR = drawing REV IR)",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "LulzBot TAZ 6 3D printer production part (Aleph Objects, 2015-16). FreeCAD drawing exported via Qt: every string is drawn as glyph outlines (no extractable text). Real title block (drawn by, date, material, tolerance block, size, DWG NO, REV, scale, sheet), numbered notes (RoHS, material, coating, masking). Metric.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "bed_leveling_washer_v2.0_PP-MP0082_rev_IR.step": {
+    "bytes": 16200,
+    "sha256": "c1b3c2cd0fa2c466682a3a6498aaa3f0d0d9eb9c24432e3df17a03e42f3c4c99",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 5,
+    "schema": "AUTOMOTIVE_DESIGN_CC2 { 1 2 10303 214 -1 1 5 4 }"
+   },
+   "bed_leveling_washer_v2.0_PP-MP0082.pdf": {
+    "bytes": 515377,
+    "sha256": "5ab840251b03622addbb7461231dfe91065b48b5eaa047eae56d1f4fb42b7388",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ },
+ {
+  "id": "openeai-arm-jxs-01-02",
+  "component": "Arm base/mount, 6061 aluminium, 1 off: flanged cylindrical body with counterbored holes",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "JXS-01-02.STEP",
+  "cadType": "STEP",
+  "drawingFile": "JXS-01-02.pdf",
+  "otherFiles": [
+   "JXS-01-02.DWG",
+   "LICENSE"
+  ],
+  "sourceUrls": [
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/STEP/STEP1/JXS-01-02.STEP",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP1/JXS-01-02.pdf",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP1/JXS-01-02.DWG",
+   "https://github.com/eai-yeslab/OpenEAI-Arm"
+  ],
+  "licence": "BSD-3-Clause (Copyright 2026 EAI-YesLab)",
+  "licenceEvidence": [
+   "LICENSE at https://github.com/eai-yeslab/OpenEAI-Arm (commit be3ea1ec1732f3856234d8544532d3ded9527c7a): 'BSD-3-Clause License ... Redistribution and use in source and binary forms, with or without modification, are permitted provided that ...'",
+   "README.md: 'OpenEAI-Arm is licensed under the BSD 3-Clause License'; hardware/drawings = 'DWG/PDF manufacturing drawings', hardware/STEP = 'manufacturable CAD'"
+  ],
+  "matchEvidence": "Same repo commit be3ea1ec; drawing title block part number JXS-01-02 = STEP file name = STEP PRODUCT name 'JXS-01-02'; README lists hardware/STEP (manufacturable CAD) and hardware/drawings (manufacturing drawings).",
+  "revision": "not stated (title-block revision field empty); git commit be3ea1ec1732f3856234d8544532d3ded9527c7a (2026-09-19)",
+  "drawingKind": "vector PDF, mixed: title block / notes as text, dimension values as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Chinese GB-style SolidWorks 2020 drawing (A4): general-tolerance table (GB/T 1804-m style), title block with material \"6061铝\" and quantity, technical requirements (chamfers C0.5, deburr, Ra1.6). Title block, notes and tolerance table are text; dimension values are drawn as curves (mixed). DWG source of the same drawing also stored.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "JXS-01-02.STEP": {
+    "bytes": 669838,
+    "sha256": "7f5f7e24159db49aa6dc520b1ab957b6de778596bb21ad2a3ec586da14e51a7c",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 217,
+    "schema": "AUTOMOTIVE_DESIGN"
+   },
+   "JXS-01-02.pdf": {
+    "bytes": 197545,
+    "sha256": "d5d30228a087c0166c43a4be0caf019111705ef0720aa1c141ef397e10ccc32d",
+    "pages": 1,
+    "textChars": 881,
+    "textCharsPerPage": 881,
+    "embeddedImages": 0,
+    "creator": "SOLIDWORKS 2020 SP0.0 (2019269)",
+    "producer": "SOLIDWORKS PDF 出版程序"
+   },
+   "JXS-01-02.DWG": {
+    "bytes": 77405,
+    "sha256": "91c4cb51b08639457543e5961cc9e65705e26f7ed61b8ae75f0e68c07bd7ec10"
+   },
+   "LICENSE": {
+    "bytes": 1481,
+    "sha256": "d8ff21b2aaab1d9d28ec3114c93b9e28b8367aaf72cba7b60db30ecd1896fa14"
+   }
+  }
+ },
+ {
+  "id": "openeai-arm-jxs-02-03",
+  "component": "Joint bracket, 6061 aluminium, 2 off: U-shaped bracket with bore and countersunk holes",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "JXS-02-03.STEP",
+  "cadType": "STEP",
+  "drawingFile": "JXS-02-03.pdf",
+  "otherFiles": [
+   "JXS-02-03.DWG",
+   "LICENSE"
+  ],
+  "sourceUrls": [
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/STEP/STEP2/JXS-02-03.STEP",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP2/JXS-02-03.pdf",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP2/JXS-02-03.DWG",
+   "https://github.com/eai-yeslab/OpenEAI-Arm"
+  ],
+  "licence": "BSD-3-Clause (Copyright 2026 EAI-YesLab)",
+  "licenceEvidence": [
+   "LICENSE at https://github.com/eai-yeslab/OpenEAI-Arm (commit be3ea1ec1732f3856234d8544532d3ded9527c7a): 'BSD-3-Clause License ... Redistribution and use in source and binary forms, with or without modification, are permitted provided that ...'",
+   "README.md: 'OpenEAI-Arm is licensed under the BSD 3-Clause License'; hardware/drawings = 'DWG/PDF manufacturing drawings', hardware/STEP = 'manufacturable CAD'"
+  ],
+  "matchEvidence": "Same repo commit be3ea1ec; drawing title block part number JXS-02-03 = STEP file name = STEP PRODUCT name 'JXS-02-03'; README lists hardware/STEP (manufacturable CAD) and hardware/drawings (manufacturing drawings).",
+  "revision": "not stated (title-block revision field empty); git commit be3ea1ec1732f3856234d8544532d3ded9527c7a (2026-09-19)",
+  "drawingKind": "vector PDF, mixed: title block / notes as text, dimension values as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Chinese GB-style SolidWorks 2020 drawing (A4): general-tolerance table (GB/T 1804-m style), title block with material \"6061铝\" and quantity, technical requirements (chamfers C0.5, deburr, Ra1.6). Title block, notes and tolerance table are text; dimension values are drawn as curves (mixed). DWG source of the same drawing also stored.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "JXS-02-03.STEP": {
+    "bytes": 781268,
+    "sha256": "80a0924ee03bde2f414b62cb57e7bd8fd4838e413c8c84bcfd5cd638a934fd3e",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 144,
+    "schema": "AUTOMOTIVE_DESIGN"
+   },
+   "JXS-02-03.pdf": {
+    "bytes": 195459,
+    "sha256": "63601a09a4ec0980f5930ed68959a4add1ee416c57cf25be4bde73c6fbd2212b",
+    "pages": 1,
+    "textChars": 922,
+    "textCharsPerPage": 922,
+    "embeddedImages": 0,
+    "creator": "SOLIDWORKS 2020 SP0.0 (2019269)",
+    "producer": "SOLIDWORKS PDF 出版程序"
+   },
+   "JXS-02-03.DWG": {
+    "bytes": 134911,
+    "sha256": "02417e0950f3b666403057d84642800657c8ddcf0cb943581246b0b110be2f0e"
+   },
+   "LICENSE": {
+    "bytes": 1481,
+    "sha256": "d8ff21b2aaab1d9d28ec3114c93b9e28b8367aaf72cba7b60db30ecd1896fa14"
+   }
+  }
+ },
+ {
+  "id": "openeai-arm-jxs-05-01",
+  "component": "Wrist/flange mount, 6061 aluminium, 1 off: round flange with stepped bores and angled web",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "JXS-05-01.STEP",
+  "cadType": "STEP",
+  "drawingFile": "JXS-05-01.pdf",
+  "otherFiles": [
+   "JXS-05-01.DWG",
+   "LICENSE"
+  ],
+  "sourceUrls": [
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/STEP/STEP5/JXS-05-01.STEP",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP5/JXS-05-01.pdf",
+   "https://github.com/eai-yeslab/OpenEAI-Arm/tree/be3ea1ec1732f3856234d8544532d3ded9527c7a/hardware/drawings/STEP5/JXS-05-01.DWG",
+   "https://github.com/eai-yeslab/OpenEAI-Arm"
+  ],
+  "licence": "BSD-3-Clause (Copyright 2026 EAI-YesLab)",
+  "licenceEvidence": [
+   "LICENSE at https://github.com/eai-yeslab/OpenEAI-Arm (commit be3ea1ec1732f3856234d8544532d3ded9527c7a): 'BSD-3-Clause License ... Redistribution and use in source and binary forms, with or without modification, are permitted provided that ...'",
+   "README.md: 'OpenEAI-Arm is licensed under the BSD 3-Clause License'; hardware/drawings = 'DWG/PDF manufacturing drawings', hardware/STEP = 'manufacturable CAD'"
+  ],
+  "matchEvidence": "Same repo commit be3ea1ec; drawing title block part number JXS-05-01 = STEP file name = STEP PRODUCT name 'JXS-05-01'; README lists hardware/STEP (manufacturable CAD) and hardware/drawings (manufacturing drawings).",
+  "revision": "not stated (title-block revision field empty); git commit be3ea1ec1732f3856234d8544532d3ded9527c7a (2026-09-19)",
+  "drawingKind": "vector PDF, mixed: title block / notes as text, dimension values as curves",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Chinese GB-style SolidWorks 2020 drawing (A4): general-tolerance table (GB/T 1804-m style), title block with material \"6061铝\" and quantity, technical requirements (chamfers C0.5, deburr, Ra1.6). Title block, notes and tolerance table are text; dimension values are drawn as curves (mixed). DWG source of the same drawing also stored.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "JXS-05-01.STEP": {
+    "bytes": 393901,
+    "sha256": "b8e36638161398a0da690b270fc92359a9973ed782e7fd331d1b3207f8b530a3",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 140,
+    "schema": "AUTOMOTIVE_DESIGN"
+   },
+   "JXS-05-01.pdf": {
+    "bytes": 202439,
+    "sha256": "9b02279d7c30f0b01fe057476717e114b331997298c5b24419c5bdfaf6dd6fdc",
+    "pages": 1,
+    "textChars": 900,
+    "textCharsPerPage": 900,
+    "embeddedImages": 0,
+    "creator": "SOLIDWORKS 2020 SP0.0 (2019269)",
+    "producer": "SOLIDWORKS PDF 出版程序"
+   },
+   "JXS-05-01.DWG": {
+    "bytes": 76584,
+    "sha256": "9d1f57ce20912285fcfff4badccb6795c974001c4dbf98f63a4ef66309b90450"
+   },
+   "LICENSE": {
+    "bytes": 1481,
+    "sha256": "d8ff21b2aaab1d9d28ec3114c93b9e28b8367aaf72cba7b60db30ecd1896fa14"
+   }
+  }
+ },
+ {
+  "id": "seedmint-jig",
+  "component": "SeedMint stamping jig: assembly + machined parts Base (steel AISI 1045), Slider/Retainer/Faceplate (brass), Guide (HSLA steel)",
+  "likelyCommodity": "machining",
+  "drawingOnly": false,
+  "cadFile": "SeedMint Assembly.step",
+  "cadType": "STEP",
+  "drawingFile": "Base Drawing.pdf",
+  "otherFiles": [
+   "LICENSE",
+   "Assembly Drawing A3.pdf",
+   "Faceplate Drawing A3.pdf",
+   "Guide Drawing.pdf",
+   "Retainer Drawing.pdf",
+   "Slider Drawing A3.pdf",
+   "Slider Drawing.pdf"
+  ],
+  "sourceUrls": [
+   "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/CAD/SeedMint%20Assembly.step",
+   "https://github.com/SeedMint/SeedMint/tree/109032c9e7c105237441ffc9a91a124c440dee1f/PDF",
+   "https://github.com/SeedMint/SeedMint"
+  ],
+  "licence": "GPL-3.0",
+  "licenceEvidence": [
+   "LICENSE at https://github.com/SeedMint/SeedMint (commit 109032c9): GNU GENERAL PUBLIC LICENSE Version 3; repo description: 'Design data, drawings, CNC program and parts list for manufacturing a Jig'"
+  ],
+  "matchEvidence": "Same repo commit; the STEP is the ASSEMBLY (FILE_NAME .../SeedMint/CAD/Assembly v1.step) and contains PRODUCT entities Base, Slider, Retainer, Guide, Faceplate plus fasteners - the same part names as the drawing title blocks and the assembly drawing parts list (Teileliste). Part drawings therefore match a body INSIDE the assembly STEP, not a separate part file.",
+  "revision": "Base drawing V10 (19.06.21); STEP time stamp 2021-08-03; no per-part STEP revision",
+  "drawingKind": "vector PDF with text",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Autodesk Inventor ISO drawings (A3), vector PDF with selectable text: title block, threads (M4x0.7 6H, M5x0.8 6H), fits (Ø3 H7), DIN ISO 2768-f, sections. Assembly drawing has a German parts list with materials. To test a single part, the Base body must be picked out of the assembly STEP. Not automotive.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "SeedMint Assembly.step": {
+    "bytes": 1544205,
+    "sha256": "9a0fb62c0c84b851286f0fd2a0edeba9684e01f03e32454703537ebfa30b9493",
+    "startsWithISO10303_21": true,
+    "advancedFaces": 621,
+    "schema": "AUTOMOTIVE_DESIGN { 1 0 10303 214 3 1 1 }"
+   },
+   "LICENSE": {
+    "bytes": 35149,
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+   },
+   "Assembly Drawing A3.pdf": {
+    "bytes": 330926,
+    "sha256": "eafb69c6c67686d3d92398aec4f3aee28b9b00c62f9ee85b0846f63f67cbd09b",
+    "pages": 1,
+    "textChars": 957,
+    "textCharsPerPage": 957,
+    "embeddedImages": 12,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00034"
+   },
+   "Base Drawing.pdf": {
+    "bytes": 110431,
+    "sha256": "91b83c4ec287abb33a716bd15615c1f32ffef57590221c6afe930988b882ddbe",
+    "pages": 1,
+    "textChars": 454,
+    "textCharsPerPage": 454,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00047"
+   },
+   "Faceplate Drawing A3.pdf": {
+    "bytes": 113507,
+    "sha256": "4b630b7378cf8229647e0c4ec060798cd520e8293e03aecd7b8fd7fa4270bb40",
+    "pages": 1,
+    "textChars": 332,
+    "textCharsPerPage": 332,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00034"
+   },
+   "Guide Drawing.pdf": {
+    "bytes": 94329,
+    "sha256": "e4d200d12d12630390b1b5fda0e8c1fd7014dd530f3327ae56c59571fd843f92",
+    "pages": 1,
+    "textChars": 324,
+    "textCharsPerPage": 324,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00047"
+   },
+   "Retainer Drawing.pdf": {
+    "bytes": 94003,
+    "sha256": "2151aa0232a032f5d77f4308167b7d699ba4aaf212b1ecf105f284f9916caba0",
+    "pages": 1,
+    "textChars": 376,
+    "textCharsPerPage": 376,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00047"
+   },
+   "Slider Drawing A3.pdf": {
+    "bytes": 94594,
+    "sha256": "977134e5e22a4f1aa3140768e9d4f64b502174b68f36496e409aa33099d89934",
+    "pages": 1,
+    "textChars": 430,
+    "textCharsPerPage": 430,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00011"
+   },
+   "Slider Drawing.pdf": {
+    "bytes": 90124,
+    "sha256": "1217b50811b6ecc6fd9e2f3f01af2820082ac3e9fe4d5a8ce6388bca8b38a630",
+    "pages": 1,
+    "textChars": 381,
+    "textCharsPerPage": 381,
+    "embeddedImages": 2,
+    "creator": "F",
+    "producer": "pdfplot16.bundle 16.01.038.00047"
+   }
+  }
+ },
+ {
+  "id": "ntrs-automotive-stirling-mod1-drawings",
+  "component": "Automotive Stirling Engine (DOE/NASA ASE program) Mod I design review, Volume III: engineering drawings of engine parts and assemblies (e.g. bedplate, heater head, drive, controls) and vehicle integration",
+  "likelyCommodity": "casting",
+  "drawingOnly": true,
+  "cadFile": null,
+  "cadType": null,
+  "drawingFile": "19820026436.pdf",
+  "otherFiles": [],
+  "sourceUrls": [
+   "https://ntrs.nasa.gov/citations/19820026436",
+   "https://ntrs.nasa.gov/api/citations/19820026436/downloads/19820026436.pdf"
+  ],
+  "licence": "NASA NTRS copyright determination GOV_PUBLIC_USE_PERMITTED; distribution PUBLIC",
+  "licenceEvidence": [
+   "NTRS API record 19820026436: copyright.determinationType = GOV_PUBLIC_USE_PERMITTED, distribution = PUBLIC. Report: DOE/NASA 0032-18, NASA CR-167937, MTI Report 80ASE142DR1 (Mechanical Technology Inc. under DOE/NASA contract)."
+  ],
+  "matchEvidence": "n/a (drawing only, no CAD)",
+  "revision": "Report dated Aug 1982; individual sheets carry their own drawing numbers (e.g. BEDPLATE, sheet 4 of 4 on PDF page 200)",
+  "drawingKind": "scanned (raster pages with OCR text layer)",
+  "sheets": 359,
+  "automotive": true,
+  "notes": "SCANNED, 359 pages, 81 MB, many sheets rotated, OCR text layer from NASA CASI (Envision OCR / Acrobat Paper Capture) of poor quality. Genuine 1980s automotive engine production-style drawings with title blocks (United Stirling / MTI), material and process notes (castings, brazing drawings). Pages are mixed: report pages, drawing lists and drawings - pick sheets by page. Use for scanned, rotated, low-quality title-block reading.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "19820026436.pdf": {
+    "bytes": 81633226,
+    "sha256": "7c55e7b9f54e59dc07a7506717d9e3615593b5e4a0ff1c22e0d04f40d30116a1",
+    "pages": 359,
+    "textChars": 157343,
+    "textCharsPerPage": 438,
+    "embeddedImages": 2383,
+    "creator": "Envision OCR",
+    "producer": "Adobe Acrobat 9.33 Paper Capture Plug-in"
+   }
+  }
+ },
+ {
+  "id": "nist-d2mi-903",
+  "component": "Rolled standoff 827-9999-903 (spacer, shouldered), Al 6061-T6 round, chromate conversion coat",
+  "likelyCommodity": "machining",
+  "drawingOnly": true,
+  "cadFile": null,
+  "cadType": null,
+  "drawingFile": "827-9999-903 rev c.pdf",
+  "otherFiles": [
+   "README.txt"
+  ],
+  "sourceUrls": [
+   "https://www.nist.gov/document/nist-d2mi-modelszip"
+  ],
+  "licence": "Public domain in the US (17 U.S.C. 105), NIST D2MI project",
+  "licenceEvidence": [
+   "README.txt in NIST-D2MI-Models.zip (public domain notice)"
+  ],
+  "matchEvidence": "n/a (drawing only: the zip ships only the native NX .prt for -903; its STEP AP242 is not in the public zip)",
+  "revision": "title block REV B; file name says \"rev c\"",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "Text as vector strokes. Single sheet, full GD&T, notes, title block. Same part family as nist-d2mi-905/907 (which do have STEP).",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "827-9999-903 rev c.pdf": {
+    "bytes": 112151,
+    "sha256": "1541643fb03fabaf5da6e967fc5c1d0bb9d5a66e247ec723e2b6771594b0bb6c",
+    "pages": 1,
+    "textChars": 75,
+    "textCharsPerPage": 75,
+    "embeddedImages": 0,
+    "creator": "Rockwell Collins, Inc. - UGS NX - SDI CGM PDF - tamatusk",
+    "producer": "UGS NX Via SDI CGM PDF"
+   },
+   "README.txt": {
+    "bytes": 1095,
+    "sha256": "6dde97f0d2d4409c32d8833cb3eadac43fc9f39c4edb5b3df4fde36eccdca72d"
+   }
+  }
+ },
+ {
+  "id": "lulzbot-taz6-8mm-rod",
+  "component": "8 mm smooth rod 18-19 mm, 304 stainless, Ra 0.3 (HD-RD0004, LulzBot TAZ 6)",
+  "likelyCommodity": "machining",
+  "drawingOnly": true,
+  "cadFile": null,
+  "cadType": null,
+  "drawingFile": "8mmx18.5mm_smooth_rod_v0.1.pdf",
+  "otherFiles": [],
+  "sourceUrls": [
+   "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/8_mm_rod/8mmx18.5mm_smooth_rod_v0.1.pdf"
+  ],
+  "licence": "CC BY-SA 4.0 (Aleph Objects, Inc.)",
+  "licenceEvidence": [
+   "Printed on every drawing sheet: 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'",
+   "TAZ 6 manual (https://download.lulzbot.com/TAZ/6.0/documentation/manual/TAZ-6-Manual.pdf): 'the LulzBot TAZ 3D printer being a Free Software and Open Source Hardware design ... Our source code and design files are hosted on: LulzBot Download Server http://download.lulzbot.com'"
+  ],
+  "matchEvidence": "n/a (drawing only: only a FreeCAD .fcstd is published, no STEP)",
+  "revision": "REV IR (title block); v0.1 (file name)",
+  "drawingKind": "text as curves (vector, no extractable annotation text)",
+  "sheets": 1,
+  "automotive": false,
+  "notes": "FreeCAD drawing, text as glyph outlines, Aleph Objects title block.",
+  "downloaded": "2026-11-10, unmodified",
+  "fileChecks": {
+   "8mmx18.5mm_smooth_rod_v0.1.pdf": {
+    "bytes": 665228,
+    "sha256": "ef00f93a996cae76d97880b06cf923536ea133bc4eb1906ab915505c815cd3f5",
+    "pages": 1,
+    "textChars": 0,
+    "textCharsPerPage": 0,
+    "embeddedImages": 0,
+    "creator": "",
+    "producer": "Qt 4.8.6"
+   }
+  }
+ }
+]

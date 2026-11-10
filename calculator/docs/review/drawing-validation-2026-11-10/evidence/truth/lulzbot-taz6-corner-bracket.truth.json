@@ -1,0 +1,316 @@
+{
+ "drawing": "lulzbot-taz6-corner-bracket",
+ "origin": "public",
+ "source": "https://download.lulzbot.com/TAZ/6.0/production_parts/machined_parts/corner_bracket_v2.0/corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+ "checked": "Typed by an independent reviewer on 10 Nov 2026 from the sheet rendered at 300 dpi (pdftoppm) and read in zooms on screen; the reader was not run and its code and earlier truth files were not opened.",
+ "files": {
+  "corner_bracket_v2.0_REV1_PP-MP0106.pdf": "curves",
+  "lulzbot-taz6-corner-bracket.pdf": "curves"
+ },
+ "complete": [
+  "heat treatment",
+  "threads",
+  "fits",
+  "dimensions",
+  "GD&T",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "Corner Bracket v2.0"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "PP-MP0106"
+  },
+  {
+   "name": "title.revision",
+   "value": "1"
+  },
+  {
+   "name": "title.date",
+   "value": "9/17/15"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1 of 1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "title.company",
+   "contains": "ALEPH OBJECTS"
+  },
+  {
+   "name": "material.designation",
+   "contains": "5052"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 3.175
+  },
+  {
+   "name": "tolerance.general",
+   "contains": ".75"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "powder coat"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "contains": "0.08"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "Break all sharp edges"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "BREAK EDGES 0.1/0.5"
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 6.0,
+    "count": 4,
+    "through": true
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 4
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 1.0,
+    "count": 5
+   },
+   "partial": {
+    "nominal": 1.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 3.0,
+    "count": 3
+   },
+   "partial": {
+    "nominal": 3.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 85.0
+   },
+   "partial": {
+    "nominal": 85.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 95
+   },
+   "partial": {
+    "nominal": 95
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 62.0
+   },
+   "partial": {
+    "nominal": 62.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 70.0
+   },
+   "partial": {
+    "nominal": 70.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 38.6
+   },
+   "partial": {
+    "nominal": 38.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30.0
+   },
+   "partial": {
+    "nominal": 30.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 23.0
+   },
+   "partial": {
+    "nominal": 23.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 20.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 10.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 10.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 20.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 23.0,
+    "count": 2
+   },
+   "partial": {
+    "nominal": 23.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 30.0
+   },
+   "partial": {
+    "nominal": 30.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 38.6
+   },
+   "partial": {
+    "nominal": 38.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 62.0
+   },
+   "partial": {
+    "nominal": 62.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 70.0
+   },
+   "partial": {
+    "nominal": 70.0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3.175
+   },
+   "partial": {
+    "nominal": 3.175
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "nominal": 0.125
+   }
+  },
+  {
+   "name": "note.general",
+   "contains": "Parts must be R0HS compliant"
+  },
+  {
+   "name": "note.general",
+   "contains": "Material: 5052 H-32 Aluminum"
+  },
+  {
+   "name": "note.general",
+   "contains": "Break all sharp edges prior to powder coat"
+  },
+  {
+   "name": "note.general",
+   "contains": "Part is to be powder coated with Cardinal color C241-BK109"
+  },
+  {
+   "name": "note.general",
+   "contains": "DO NOT SCALE DRAWING"
+  }
+ ],
+ "notes": "FreeCAD sheet, text as glyph outlines. Title block: DRAWN BY BAM, DATE 9/17/15, MATERIAL 'See Notes', TITLE 'Corner Bracket v2.0', SIZE A, DWG NO PP-MP0106, REV. 1, SCALE 1:1, SHEET 1 of 1; Aleph Objects Inc. logo/address; 'Copyright 2015, Aleph Objects, Inc. CC BY-SA 4.0'. Tolerance block as on the other Aleph sheets (.X ±.75 … angles ±1°, unlabelled '63' roughness mark not recorded, BREAK EDGES 0.1/0.5, FILLET RADIUS 0.1/0.5). Notes: 1 'Parts must be R0HS compliant' (printed with a zero), 2 'Material: 5052 H-32 Aluminum', 3 'Break all sharp edges prior to powder coat', 4 'Part is to be powder coated with Cardinal color C241-BK109. Thickness of coating not to exceed 0.08mm' — coating thickness checked with contains '0.08' (a reader may hold it as 80 µm; the raw text carries 0.08). Material contains '5052' (temper written 'H-32'); stock thickness '3.175 STK' with '[.125\"]' above it (inch equivalent in brackets) — recorded as a 3.175 linear row, a 0.125 row without a type, and material.stockThickness 3.175 mm. Dimensions (21, complete): '4X Ø6.0 THRU' (hole), '5X R1.0', '3X R3.0', 'R85.0', 'R95', verticals 70.0, 62.0, 38.6, 30.0, 23.0, '2X 20.0', '2X 10.0', horizontals '2X 10.0', '2X 20.0', '2X 23.0', 30.0, 38.6, 62.0, 70.0. No toleranced dimension (all general tolerance). Coating / material / roughness / quality / general tolerance / notes not complete."
+}

@@ -1,0 +1,267 @@
+{
+ "drawing": "nist-ctc-05",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-cad-model-ctc-05",
+ "checked": "Hand-checked by an independent reviewer (Claude, 10 Nov 2026): rendered with pdftoppm at 100/400/500 dpi, every annotation read off the image; reader output and reader code not consulted.",
+ "files": {
+  "nist_ctc_05_asme1_rd.pdf": "curves"
+ },
+ "complete": [
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "notes",
+  "quality",
+  "welds"
+ ],
+ "expect": [
+  {
+   "name": "title.drawingNumber",
+   "value": "nist_ctc_05_asme1_rd"
+  },
+  {
+   "name": "title.revision",
+   "value": "D"
+  },
+  {
+   "name": "title.company",
+   "contains": "NIST"
+  },
+  {
+   "name": "note.general",
+   "contains": "Datum feature B and Datum target D1 defined in View 2 (of 2)."
+  },
+  {
+   "name": "note.general",
+   "contains": "Datum feature A defined in View 1 (of 2)."
+  },
+  {
+   "name": "note.general",
+   "contains": "Datum target D1 referenced in View 1 (of 2)."
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 5.0,
+    "upper": 0.008,
+    "lower": -0.008
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.0,
+    "basic": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.25,
+    "basic": true
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circular run-out",
+    "tolerance": 0.025,
+    "datums": [
+     "A-B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.025,
+    "datums": [
+     "A-B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "concentricity",
+    "tolerance": 0.03,
+    "diameterZone": true,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.03,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.01,
+    "datums": [
+     "D"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.01,
+    "datums": [
+     "D"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "straightness",
+    "tolerance": 0.005
+   },
+   "partial": {
+    "tolerance": 0.005
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circularity",
+    "tolerance": 0.002
+   },
+   "partial": {
+    "tolerance": 0.002
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circular run-out",
+    "tolerance": 0.035,
+    "datums": [
+     "A-B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.035,
+    "datums": [
+     "A-B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circular run-out",
+    "tolerance": 0.025,
+    "datums": [
+     "A-B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.025,
+    "datums": [
+     "A-B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.01,
+    "datums": [
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.01,
+    "datums": [
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 10.0,
+    "upper": 0.001,
+    "lower": -0.001
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.0,
+    "basic": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.25,
+    "basic": true
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "total run-out",
+    "tolerance": 0.015,
+    "datums": [
+     "B"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.015,
+    "datums": [
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "total run-out",
+    "tolerance": 0.002,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.002,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.002,
+    "nominal": 10
+   }
+  }
+ ],
+ "notes": "2 sheets (View 1 and View 2 of the same model), both checked; decimal-inch values, no unit statement. Notes: each sheet has a black 'Notes' block (text) - recorded as one note per sentence block. Captions 'Test Model 5', 'PMI Complex Test Case 5 - View n (of 2)', 'Includes Atomic Test Cases - ...' are not notes. GD&T not complete because of datum TARGETS: C1 (sheet 1) and D1 (sheet 2) target symbols with hatched target areas are not recorded as gdt.datum; datum C and D are established by those targets. Datum feature symbol A appears on both sheets (recorded twice); B on sheet 2. '5.000 ±.008' carries the statistical-tolerance symbol (ST in a hexagon) - recorded as a plain ± dimension. Boxed (basic) 2.000 and 1.250 locate the datum target on each sheet. Runout frames: single arrow = circular run-out (.025 A-B, .035 A-B, .025 A-B), double arrow = total run-out (.015 B, .002 A). Concentricity Ø.030 A. Ø10.000 ±.001 is the size of datum feature B. tolerance.tightest = Ø10.000 ±.001 (band .002). Naming rule used for Ø callouts: a callout with an 'nX' count, THRU / depth, or an uppercase (hole) fit is recorded as hole.diameter {diameter, count, upper, lower}; any other Ø size is a dimension {type:'diameter'}. Tolerances are recorded as signed deviations upper/lower; limit dimensions as max/min. GD&T: characteristic in words, datums = the datum letters in order (datum-reference modifiers not encoded), modifiers 'MMC' / 'LMC' = circled M / L after the tolerance value, diameterZone true only where Ø precedes the tolerance."
+}

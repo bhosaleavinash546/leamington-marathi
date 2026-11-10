@@ -1,0 +1,1229 @@
+{
+ "generated": "2026-11-10T11:36:03.581Z",
+ "server": "HEAD e8328c23, built dist, AIR_GAPPED=1, no key, CAD_RATE_LIMIT_SCALE=20",
+ "tests": [
+  {
+   "id": "pair:nist-d2mi-904",
+   "pair": "827-9999-904 rev c.stp + 827-9999-904 rev c.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "49 drawing readings; 0 agree with CAD; 0 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: none; not costed: 49; units title [] dims [\"mm\"]",
+   "status": "PARTIAL",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "text-as-curves",
+      "text-as-curves",
+      "text-as-curves"
+     ],
+     "readings": 49,
+     "ocrReadings": 49,
+     "warnings": [
+      "Sheet 1 has only 67 characters of selectable text (3 runs) beside 2968 pieces of line work and 432 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 2 has only 67 characters of selectable text (3 runs) beside 5273 pieces of line work and 204 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 3 has only 67 characters of selectable text (3 runs) beside 2677 pieces of line work and 145 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 1 (text drawn as curves) was read by OCR at 300 dpi: 186 words, mean engine confidence 90 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 2 (text drawn as curves) was read by OCR at 300 dpi: 135 words, mean engine confidence 75 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 3 (text drawn as curves) was read by OCR at 300 dpi: 61 words, mean engine confidence 83 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 49,
+    "cadParams": 12,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [],
+    "notCostedCount": 49,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (extracted, \"Aluminum_6061-T651\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"827-9999-904\""
+    ]
+   },
+   "statusBefore": "FAIL",
+   "statusAuto": "PASS",
+   "assessment": "Stroke-font sheets now OCR'd with a warning (49 readings, all needs-validation); the 6061-T651 title-block material is still not read from this drawing (the STEP's own declared material supplies it, source CAD). Most new readings are wrong dimensions (extraction-final: D2MI precision 20 %). Revision still not compared."
+  },
+  {
+   "id": "pair:nist-d2mi-906",
+   "pair": "827-9999-906.stp + 827-9999-906.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "51 drawing readings; 0 agree with CAD; 0 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: none; not costed: 50; units title [] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "text-as-curves",
+      "text-as-curves",
+      "text-as-curves"
+     ],
+     "readings": 52,
+     "ocrReadings": 52,
+     "warnings": [
+      "Sheet 1 has only 67 characters of selectable text (3 runs) beside 2804 pieces of line work and 439 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 2 has only 67 characters of selectable text (3 runs) beside 4817 pieces of line work and 180 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 3 has only 67 characters of selectable text (3 runs) beside 2730 pieces of line work and 125 letter-sized stroked shapes: part of its annotation is drawn as curves or strokes, so the text layer is not the drawing's annotation.",
+      "Sheet 1 (text drawn as curves) was read by OCR at 300 dpi: 195 words, mean engine confidence 89 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 2 (text drawn as curves) was read by OCR at 300 dpi: 103 words, mean engine confidence 74 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 3 (text drawn as curves) was read by OCR at 300 dpi: 56 words, mean engine confidence 82 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 51,
+    "cadParams": 11,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [],
+    "notCostedCount": 50,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (needs-validation, \"MATERTAL: ALUMINUM, PLATE, 6061-T6, IN ACCORDANCE \")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"tama123C0503uf84\""
+    ]
+   },
+   "statusBefore": "FAIL",
+   "statusAuto": "PASS",
+   "assessment": "Stroke-font sheets OCR'd with a warning; 6061-T6 / ASTM B205 / chromate coating read (needs validation); confirmed, the material answers the family question (costing-final). Many OCR dimensions are wrong but all need validation and none is costed."
+  },
+  {
+   "id": "pair:lulzbot-taz6-bed-plate",
+   "pair": "bed_plate_v4.5_PP-MP0108.step + 300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "39 drawing readings; 1 agree with CAD; 1 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 1 conflicts (title.partName); missing: none; not costed: 30; units title [\"mm\"] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "text-as-curves"
+     ],
+     "readings": 42,
+     "ocrReadings": 42,
+     "warnings": [
+      "Sheet 1 (text drawn as curves) was read by OCR at 300 dpi: 255 words, mean engine confidence 86 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 39,
+    "cadParams": 8,
+    "agreeCadAndDrawing": [
+     "hole.diameter = {\"diameterMm\":20,\"count\":1,\"through\":true,\"depthMm\":3.2} mm"
+    ],
+    "holeCalloutsLinkedToModel": [
+     "thread {\"designation\":\"M3x0.5\",\"system\":\"ISO metric\",\"nominal\":3,\"p mm \u2014 matched to the 3D model: 36 \u00d7 \u00d83 through, 3"
+    ],
+    "calloutsNotInModel": [],
+    "conflicts": [
+     {
+      "name": "title.partName",
+      "sides": [
+       "cad: \"ASSEMBLY\" ",
+       "drawing: \"300mm Bed Plate v4.5\" "
+      ],
+      "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says 300mm Bed Plate v4.5. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses.",
+      "suggested": "drawing:title.partName:1",
+      "resolved": false
+     }
+    ],
+    "missing": [],
+    "notCostedCount": 30,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (needs-validation, \"Material: 5052 H-32 Aluminum\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "mm"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [
+     "drawing: IR"
+    ],
+    "identity": [
+     "title.partName cad: \"ASSEMBLY\"",
+     "title.partName drawing: \"300mm Bed Plate v4.5\"",
+     "title.drawingNumber drawing: \"300mm Bed Plate v4.5 PP-MP0108\""
+    ]
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "Material 5052 H-32 and stock 3.175 now read (needs validation); missing list empty. Part-name conflict CAD \"ASSEMBLY\" v title block still raised on every LulzBot STEP (a correct but non-specific flag)."
+  },
+  {
+   "id": "pair:lulzbot-taz6-corner-bracket",
+   "pair": "corner_bracket_v2.0_PP-MP0106.step + corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "23 drawing readings; 2 agree with CAD; 0 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: none; not costed: 21; units title [\"mm\"] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "text-as-curves"
+     ],
+     "readings": 27,
+     "ocrReadings": 27,
+     "warnings": [
+      "Sheet 1 (text drawn as curves) was read by OCR at 300 dpi: 169 words, mean engine confidence 89 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 23,
+    "cadParams": 7,
+    "agreeCadAndDrawing": [
+     "hole.diameter = {\"diameterMm\":6,\"count\":4,\"through\":true,\"depthMm\":3.2} mm",
+     "feature.count.holes = 4"
+    ],
+    "holeCalloutsLinkedToModel": [],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [],
+    "notCostedCount": 21,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (needs-validation, \"Material: 5052 H-32 Aluminum\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "mm"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"ASSEMBLY\""
+    ]
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "Material 5052 H-32 and stock 3.175 read; 2 values merged with CAD; no conflicts."
+  },
+  {
+   "id": "pair:lulzbot-taz6-electronics-cover",
+   "pair": "electronics_cover_revA.step + electronics_cover_reva.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "46 drawing readings; 0 agree with CAD; 1 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 2 conflicts (hole.diameter, title.partName); missing: none; not costed: 39; units title [\"mm\"] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "text-as-curves"
+     ],
+     "readings": 48,
+     "ocrReadings": 48,
+     "warnings": [
+      "Sheet 1 (text drawn as curves) was read by OCR at 300 dpi: 242 words, mean engine confidence 92 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 46,
+    "cadParams": 8,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [
+     "hole.diameter {\"diameter\":3.4,\"count\":14,\"through\":true} mm \u2014 matched to the 3D model: 14 \u00d7 \u00d83"
+    ],
+    "calloutsNotInModel": [],
+    "conflicts": [
+     {
+      "name": "hole.diameter",
+      "sides": [
+       "cad: {\"diameterMm\":3.3,\"count\":14,\"through\":true,\"depthMm\":2} mm",
+       "drawing: {\"diameter\":3.4,\"count\":14,\"through\":true} mm"
+      ],
+      "why": "the drawing states \u00d83.4 and the 3D model measures \u00d83.3 on the same 14 holes. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+      "suggested": "cad:hole.diameter:0",
+      "resolved": false
+     },
+     {
+      "name": "title.partName",
+      "sides": [
+       "cad: \"ASSEMBLY\" ",
+       "drawing: \"ELECTRONICS COVER\" "
+      ],
+      "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says ELECTRONICS COVER. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses.",
+      "suggested": "drawing:title.partName:1",
+      "resolved": false
+     }
+    ],
+    "missing": [],
+    "notCostedCount": 39,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (needs-validation, \"Material: 12AWG (0.8\") Aluminum.\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "mm"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"ASSEMBLY\"",
+     "title.partName drawing: \"ELECTRONICS COVER\"",
+     "title.drawingNumber drawing: \"ELECTRONICS COVER PP-MP0109\""
+    ]
+   },
+   "statusBefore": "PASS",
+   "statusAuto": "PASS",
+   "assessment": "Genuine \u00d83.4 v model \u00d83.3 hole conflict raised, nothing applied; reader reads \"Aluminum\" as the designation (the truth file records no designation on this sheet \u2014 unscored)."
+  },
+  {
+   "id": "pair:openeai-arm-jxs-01-02",
+   "pair": "JXS-01-02.STEP + JXS-01-02.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "34 drawing readings; 0 agree with CAD; 0 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: none; not costed: 34; units title [] dims [\"mm\"]",
+   "status": "PARTIAL",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "vector-text"
+     ],
+     "readings": 37,
+     "ocrReadings": 0,
+     "warnings": []
+    },
+    "commodity": "machining",
+    "drawingReadings": 34,
+    "cadParams": 12,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [],
+    "notCostedCount": 34,
+    "leanings": [
+     "material.family \u2190 \"aluminium\" (needs-validation, \"6061\u94dd 1\u4ef6\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"JXS-01-02\""
+    ]
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "Material \"6061\u94dd\" now read (needs validation) and answers the family when confirmed; the \u00d8 symbol is still lost on this GB sheet, so no hole callout is linked to the model; title units not read."
+  },
+  {
+   "id": "pair:seedmint-jig",
+   "pair": "SeedMint Assembly.step + Base Drawing.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "33 drawing readings; 0 agree with CAD; 4 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 1 conflicts (feature.count.threads); missing: material.grade; not costed: 26; units title [] dims [\"mm\"]",
+   "status": "PARTIAL",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "vector-text"
+     ],
+     "readings": 34,
+     "ocrReadings": 0,
+     "warnings": []
+    },
+    "commodity": "cast_and_machine",
+    "drawingReadings": 33,
+    "cadParams": 19,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [
+     "thread {\"designation\":\"M4x0.7\",\"system\":\"ISO metric\",\"nominal\":4,\"p mm \u2014 matched to the 3D model: 6 \u00d7 \u00d83",
+     "thread {\"designation\":\"M5x0.8\",\"system\":\"ISO metric\",\"nominal\":5,\"p mm \u2014 matched to the 3D model: 2 \u00d7 \u00d84",
+     "dimension {\"type\":\"diameter\",\"nominal\":12} mm \u2014 matched to the 3D model: 1 \u00d7 \u00d812 blind, 1 mm deep (\u00d812 by diameter and count)",
+     "hole.diameter {\"diameter\":3,\"fit\":\"H7\",\"upper\":0.01,\"lower\":0} mm \u2014 matched to the 3D model: 1 \u00d7 \u00d83 blind, 11 mm deep (\u00d83 by diameter and count)"
+    ],
+    "calloutsNotInModel": [],
+    "conflicts": [
+     {
+      "name": "feature.count.threads",
+      "sides": [
+       "derived: 13 ",
+       "drawing: 8 "
+      ],
+      "why": "Threaded holes (count): a rule says 13; the drawing (sheet 1, zone B3) says 8. Suggested: a rule \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+      "suggested": "cad:feature.count.threads",
+      "resolved": false
+     }
+    ],
+    "missing": [
+     {
+      "name": "material.grade",
+      "why": "\"Steel\" names no grade the cast and machine grade question offers \u2014 the grade question stays open"
+     }
+    ],
+    "notCostedCount": 26,
+    "leanings": [
+     "material.family \u2190 \"steel\" (extracted, \"Steel\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [
+     "drawing: V10"
+    ],
+    "identity": [
+     "title.partName drawing: \"Base\""
+    ]
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "Material \"Steel\" read (exact text); only the assembly STEP exists; thread-count conflict 13 (assembly) v 8 (drawing) is a correct flag; material.grade now listed missing (correct: \"Steel\" is a family, not a grade)."
+  },
+  {
+   "id": "pair:nist-ftc-09",
+   "pair": "nist_ftc_09_asme1_rd.stp + nist_ftc_09_asme1_rd.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; inch drawing compared with the mm model in ONE unit (no false conflict from units); a drawing whose annotation was not read says so",
+   "actual": "14 drawing readings; 0 agree with CAD; 0 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: none; not costed: 11; units title [\"in\"] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "vector-text",
+      "text-as-curves",
+      "vector-text",
+      "text-as-curves"
+     ],
+     "readings": 15,
+     "ocrReadings": 9,
+     "warnings": [
+      "Sheet 1 has selectable text (721 characters) but part of its annotation is drawn as curves (254 glyph-sized outlines away from any text).",
+      "Sheet 2 has selectable text (112 characters) but part of its annotation is drawn as curves (156 glyph-sized outlines away from any text).",
+      "Sheet 3 has selectable text (258 characters) but part of its annotation is drawn as curves (126 glyph-sized outlines away from any text).",
+      "Sheet 4 has selectable text (228 characters) but part of its annotation is drawn as curves (271 glyph-sized outlines away from any text).",
+      "Sheet 1 (selectable text) was read by OCR at 300 dpi: 33 words, mean engine confidence 61 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 2 (text drawn as curves) was read by OCR at 300 dpi: 38 words, mean engine confidence 59 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 3 (selectable text) was read by OCR at 300 dpi: 8 words, mean engine confidence 58 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels.",
+      "Sheet 4 (text drawn as curves) was read by OCR at 300 dpi: 30 words, mean engine confidence 64 %. Every value from OCR needs validation; symbols (\u00d8, geometric-tolerance, roughness and weld symbols) are not read from pixels."
+     ]
+    },
+    "commodity": "machining",
+    "drawingReadings": 14,
+    "cadParams": 14,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [],
+    "notCostedCount": 11,
+    "leanings": [
+     "material.family \u2190 \"steel\" (needs-validation, \"MATERIAL: (.1195 THICK) 11 GA 304 SST SHT, ASTM A2\")"
+    ],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "in"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": [
+     "title.partName cad: \"NIST_FTC_09_ASME1_RD\""
+    ]
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "Inch drawing: \"304 SST\", ASTM A240 and .1195 in read; units stated \"in\"; consolidated in mm (0.1195 in \u2192 3.0353 mm)."
+  },
+  {
+   "id": "pair:nist-ftc-10",
+   "pair": "nist_ftc_10_asme1_rb.stp + nist_ftc_10_asme1_rb.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; units consistent; a drawing whose annotation was not read says so",
+   "actual": "62 drawing readings; 0 agree with CAD; 5 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 1 conflicts (hole.diameter); missing: material.designation, tolerance.generalClass; not costed: 60; units title [\"mm\"] dims [\"mm\"]",
+   "status": "PARTIAL",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "vector-text",
+      "vector-text",
+      "vector-text",
+      "vector-text",
+      "vector-text"
+     ],
+     "readings": 73,
+     "ocrReadings": 0,
+     "warnings": []
+    },
+    "commodity": "cast_and_machine",
+    "drawingReadings": 62,
+    "cadParams": 16,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [
+     "dimension {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (\u00d86 by diameter and count)",
+     "hole.diameter {\"diameter\":2.5,\"count\":8,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 8 \u00d7 \u00d82",
+     "hole.diameter {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (by diameter)",
+     "dimension {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (\u00d86 by diameter and count)",
+     "hole.diameter {\"diameter\":7,\"count\":4,\"upper\":0.25,\"lower\":-0.25} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d87 through, 55 mm deep (\u00d87 \u00d7 4 by diameter and count)"
+    ],
+    "calloutsNotInModel": [],
+    "conflicts": [
+     {
+      "name": "hole.diameter",
+      "sides": [
+       "cad: {\"diameterMm\":6,\"count\":4,\"through\":true,\"depthMm\":6} mm",
+       "drawing: {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15} mm"
+      ],
+      "why": "the drawing calls 2 \u00d7 \u00d86 and the 3D model has 4 \u00d7 \u00d86. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+      "suggested": "cad:hole.diameter:6",
+      "resolved": false
+     }
+    ],
+    "missing": [
+     {
+      "name": "material.designation",
+      "why": "the material sets the weight and the \u00a3/kg \u2014 no source states it"
+     },
+     {
+      "name": "tolerance.generalClass",
+      "why": "\"1.5 A B C APPLIES TO ALL UNTOLERANCED SURFACES\" is not a general-tolerance notation the mapping table reads \u2014 the tolerance-class question stays open"
+     }
+    ],
+    "notCostedCount": 60,
+    "leanings": [],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "mm"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": []
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "5 callouts linked; one remaining conflict \"2 \u00d7 \u00d86 v model 4 \u00d7 \u00d86\": the sheet also calls \u00d86 \u00b10.15 twice as dimensions (not hole callouts), which the new split-hole sum does not count \u2014 probably still a false conflict."
+  },
+  {
+   "id": "pair:nist-ftc-07",
+   "pair": "nist_ftc_07_asme1_rd.stp + nist_ftc_07_asme1_rd.pdf",
+   "scenario": "genuine pair: what the consolidated data says (matching, conflicts, missing, not costed, units)",
+   "expected": "readings consolidated with the measured model; agreeing values merged; conflicts only where the two disagree; inch drawing compared with the mm model in ONE unit (no false conflict from units); a drawing whose annotation was not read says so",
+   "actual": "46 drawing readings; 0 agree with CAD; 11 hole/thread callouts linked to model features; 0 callouts with no matching model feature; 0 conflicts (); missing: material.designation, tolerance.generalClass; not costed: 44; units title [\"in\"] dims [\"mm\"]",
+   "status": "PASS",
+   "evidence": {
+    "drawing": {
+     "status": "ready",
+     "sheets": [
+      "vector-text",
+      "vector-text",
+      "vector-text",
+      "vector-text"
+     ],
+     "readings": 47,
+     "ocrReadings": 0,
+     "warnings": []
+    },
+    "commodity": "cast_and_machine",
+    "drawingReadings": 46,
+    "cadParams": 11,
+    "agreeCadAndDrawing": [],
+    "holeCalloutsLinkedToModel": [
+     "hole.diameter {\"diameter\":6.35,\"upper\":0.0762,\"lower\":0,\"depth\":7.62} mm \u2014 matched to the 3D model: 8 \u00d7 \u00d86",
+     "hole.diameter {\"diameter\":6.35,\"count\":2,\"upper\":0.0762,\"lower\":0,\"depth\": mm \u2014 matched to the 3D model: 8 \u00d7 \u00d86",
+     "hole.diameter {\"diameter\":6.35,\"count\":4,\"upper\":0.0762,\"lower\":-0.0254,\"d mm \u2014 matched to the 3D model: 8 \u00d7 \u00d86",
+     "hole.diameter {\"diameter\":6.35,\"upper\":0.0762,\"lower\":0,\"depth\":7.62} mm \u2014 matched to the 3D model: 8 \u00d7 \u00d86",
+     "hole.diameter {\"diameter\":7.137400000000001,\"count\":4,\"upper\":0.1524,\"lowe mm \u2014 matched to the 3D model: 4 \u00d7 \u00d87",
+     "hole.diameter {\"diameter\":11.1252,\"upper\":0.254,\"lower\":-0.254,\"depth\":7.6 mm \u2014 matched to the 3D model: 4 \u00d7 \u00d811",
+     "hole.diameter {\"diameter\":22.225,\"count\":3,\"upper\":0.508,\"lower\":-0.508} mm \u2014 matched to the 3D model: 3 \u00d7 \u00d822",
+     "hole.diameter {\"diameter\":22.225,\"count\":3,\"upper\":0.254,\"lower\":-0.254} mm \u2014 matched to the 3D model: 3 \u00d7 \u00d822",
+     "hole.diameter {\"diameter\":15.0876,\"count\":2,\"upper\":0.3048,\"lower\":-0.0508 mm \u2014 matched to the 3D model: 4 \u00d7 \u00d815",
+     "hole.diameter {\"diameter\":4.3942,\"count\":4,\"upper\":0.127,\"lower\":-0.0254} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d84",
+     "hole.diameter {\"diameter\":15.0876,\"count\":2,\"upper\":0.3048,\"lower\":-0.0508 mm \u2014 matched to the 3D model: 4 \u00d7 \u00d815"
+    ],
+    "calloutsNotInModel": [],
+    "conflicts": [],
+    "missing": [
+     {
+      "name": "material.designation",
+      "why": "the material sets the weight and the \u00a3/kg \u2014 no source states it"
+     },
+     {
+      "name": "tolerance.generalClass",
+      "why": "\".06 A B C APPLIES TO ALL UNTOLERANCED SURFACES\" is not a general-tolerance notation the mapping table reads \u2014 the tolerance-class question stays open"
+     }
+    ],
+    "notCostedCount": 44,
+    "leanings": [],
+    "answersFromDrawing": {},
+    "skipped": [],
+    "titleUnits": [
+     "in"
+    ],
+    "dimensionUnits": [
+     "mm"
+    ],
+    "revisions": [],
+    "identity": []
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PASS",
+   "assessment": "SPLIT HOLES FIXED: callouts of one size summed (\"one of 4 callouts of \u00d86.35 \u2026\"), 0 conflicts (4 false conflicts before); inch\u2192mm conversion with the exact factor; values rounded in messages."
+  },
+  {
+   "id": "wrong-cad:bedplate-drawing+d2mi906",
+   "pair": "827-9999-906.stp + 300mm_bed_plate_v4.5_TAZ_PP-MP0108.pdf",
+   "scenario": "(a) a drawing paired with the WRONG CAD model",
+   "expected": "the mismatch is flagged: identity (part name / number), envelope / thickness, and hole callouts with no matching model feature; more flags than with the right model",
+   "actual": "wrong model: 2 conflicts [feature.count.threads, title.partName], 2 callouts not in model, 0 linked; identity conflict true; envelope/thickness conflict false. RIGHT model: 1 conflicts, 0 not in model, 1 linked. A pairing question/block: false",
+   "status": "PASS",
+   "evidence": {
+    "wrong": {
+     "conflicts": [
+      {
+       "name": "feature.count.threads",
+       "sides": [
+        "derived: 4 ",
+        "drawing: 36 "
+       ],
+       "why": "Threaded holes (count): a rule says 4; the drawing (sheet 1) says 36. Suggested: a rule \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+       "suggested": "cad:feature.count.threads",
+       "resolved": false
+      },
+      {
+       "name": "title.partName",
+       "sides": [
+        "cad: \"tama123C0503uf84\" ",
+        "drawing: \"300mm Bed Plate v4.5\" "
+       ],
+       "why": "Part name: the CAD file's own declaration says tama123C0503uf84; the drawing (sheet 1) says 300mm Bed Plate v4.5. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses.",
+       "suggested": "drawing:title.partName:1",
+       "resolved": false
+      }
+     ],
+     "notInModel": [
+      "thread {\"designation\":\"M3x0.5\",\"system\":\"ISO metric\",\"nom mm \u2014 Read by OCR (engine confidence 94 %): check against the drawing.; no hole at the M3 tapping-drill (\u00d82.5) or nominal (\u00d83) size in the 3D model \u2014 the nearest are ",
+      "hole.diameter {\"diameter\":20,\"through\":true} mm \u2014 Read as a hole: THRU. Read by OCR (engine confidence 83 %): check against the drawing.; no hole of \u00d820 in the 3D model \u2014 the nearest are 1 \u00d7 \u00d86.35 blind, 2.5 mm"
+     ],
+     "linked": [],
+     "identity": [
+      "title.partName cad: \"tama123C0503uf84\"",
+      "title.partName drawing: \"300mm Bed Plate v4.5\"",
+      "title.drawingNumber drawing: \"300mm Bed Plate v4.5 PP-MP0108\""
+     ],
+     "drawingReadings": 40
+    },
+    "right": {
+     "conflicts": [
+      {
+       "name": "title.partName",
+       "sides": [
+        "cad: \"ASSEMBLY\" ",
+        "drawing: \"300mm Bed Plate v4.5\" "
+       ],
+       "why": "Part name: the CAD file's own declaration says ASSEMBLY; the drawing (sheet 1) says 300mm Bed Plate v4.5. Suggested: the drawing (sheet 1) \u2014 the title block is the released identity. Nothing is applied until the engineer chooses.",
+       "suggested": "drawing:title.partName:1",
+       "resolved": false
+      }
+     ],
+     "notInModel": [],
+     "linked": [
+      "thread {\"designation\":\"M3x0.5\",\"system\":\"ISO metric\",\"nominal\":3,\"p mm \u2014 matched to the 3D model: 36 \u00d7 \u00d83 through, 3"
+     ],
+     "identity": [
+      "title.partName cad: \"ASSEMBLY\"",
+      "title.partName drawing: \"300mm Bed Plate v4.5\"",
+      "title.drawingNumber drawing: \"300mm Bed Plate v4.5 PP-MP0108\""
+     ]
+    }
+   },
+   "statusBefore": "PASS",
+   "statusAuto": "PASS",
+   "assessment": "2 thread callouts with no model feature + thread-count conflict; the part-name conflict is also raised with the right model (not a pairing signal); no pairing warning as such."
+  },
+  {
+   "id": "wrong-cad:ftc10-drawing+ctc01",
+   "pair": "nist_ctc_01_asme1_rd.stp + nist_ftc_10_asme1_rb.pdf",
+   "scenario": "(a) a drawing paired with the WRONG CAD model",
+   "expected": "the mismatch is flagged: identity (part name / number), envelope / thickness, and hole callouts with no matching model feature; more flags than with the right model",
+   "actual": "wrong model: 1 conflicts [feature.count.holes], 12 callouts not in model, 0 linked; identity conflict false; envelope/thickness conflict false. RIGHT model: 1 conflicts, 0 not in model, 5 linked. A pairing question/block: false",
+   "status": "PARTIAL",
+   "evidence": {
+    "wrong": {
+     "conflicts": [
+      {
+       "name": "feature.count.holes",
+       "sides": [
+        "cad: 10 ",
+        "drawing: 22 "
+       ],
+       "why": "Holes (count): the 3D model says 10; the drawing (sheet 1) says 22. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+       "suggested": "cad:feature.count.holes",
+       "resolved": false
+      }
+     ],
+     "notInModel": [
+      "thread {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\" mm \u2014 no hole at the M3 tapping-drill (\u00d82.5) or nominal (\u00d83) size in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d835 th",
+      "thread {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\" mm \u2014 no hole at the M3 tapping-drill (\u00d82.5) or nominal (\u00d83) size in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d835 th",
+      "thread {\"designation\":\"M3x0.5-6g\",\"system\":\"ISO metric\",\" mm \u2014 no hole at the M3 tapping-drill (\u00d82.5) or nominal (\u00d83) size in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d835 th",
+      "hole.diameter {\"diameter\":2.5,\"count\":8,\"upper\":0.15,\"lower\":-0. mm \u2014 Read as a hole: a count before the diameter.; no hole of \u00d82.5 \u00d7 8 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 ",
+      "hole.diameter {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15 mm \u2014 Read as a hole: a count before the diameter.; no hole of \u00d86 \u00d7 2 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d83",
+      "hole.diameter {\"diameter\":5.5,\"upper\":0.2,\"lower\":-0.2,\"depth\":3 mm \u2014 Read as a hole: depth.; no hole of \u00d85.5 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d835 through, 100 mm deep",
+      "hole.diameter {\"diameter\":3.5,\"fit\":\"G6\",\"upper\":0.012,\"lower\":0 mm \u2014 Read as a hole: upper-case fit letter (an internal feature). Limit deviations computed for G6: +0.012 / +0.004 mm (ISO 286-1: IT6 = 8 \u00b5m for 3\u20136 mm).; no hole o",
+      "hole.diameter {\"diameter\":3.5,\"count\":3,\"upper\":0.2,\"lower\":-0.2 mm \u2014 Read as a hole: a count before the diameter.; no hole of \u00d83.5 \u00d7 3 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 ",
+      "hole.diameter {\"diameter\":3.5,\"fit\":\"G6\",\"upper\":0.012,\"lower\":0 mm \u2014 Read as a hole: upper-case fit letter (an internal feature). Limit deviations computed for G6: +0.012 / +0.004 mm (ISO 286-1: IT6 = 8 \u00b5m for 3\u20136 mm).; no hole o",
+      "hole.diameter {\"diameter\":5.5,\"upper\":0.2,\"lower\":-0.2,\"depth\":2 mm \u2014 Read as a hole: depth.; no hole of \u00d85.5 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d835 through, 100 mm deep",
+      "hole.diameter {\"diameter\":3.5,\"fit\":\"G6\",\"upper\":0.012,\"lower\":0 mm \u2014 Read as a hole: upper-case fit letter (an internal feature). Limit deviations computed for G6: +0.012 / +0.004 mm (ISO 286-1: IT6 = 8 \u00b5m for 3\u20136 mm).; no hole o",
+      "hole.diameter {\"diameter\":7,\"count\":4,\"upper\":0.25,\"lower\":-0.25 mm \u2014 Read as a hole: a count before the diameter.; no hole of \u00d87 \u00d7 4 in the 3D model \u2014 the nearest are 2 \u00d7 \u00d820 blind, 45 mm deep; 4 \u00d7 \u00d825 through, 50 mm deep; 4 \u00d7 \u00d83"
+     ],
+     "linked": [],
+     "identity": [
+      "title.partName cad: \"nist_ctc_01_asme1_rd\""
+     ],
+     "drawingReadings": 63
+    },
+    "right": {
+     "conflicts": [
+      {
+       "name": "hole.diameter",
+       "sides": [
+        "cad: {\"diameterMm\":6,\"count\":4,\"through\":true,\"depthMm\":6} mm",
+        "drawing: {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15} mm"
+       ],
+       "why": "the drawing calls 2 \u00d7 \u00d86 and the 3D model has 4 \u00d7 \u00d86. Suggested: the 3D model \u2014 feature sizes and counts are measured on the 3D model; the drawing adds their tolerances. Nothing is applied until the engineer chooses.",
+       "suggested": "cad:hole.diameter:6",
+       "resolved": false
+      }
+     ],
+     "notInModel": [],
+     "linked": [
+      "dimension {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (\u00d86 by diameter and count)",
+      "hole.diameter {\"diameter\":2.5,\"count\":8,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 8 \u00d7 \u00d82",
+      "hole.diameter {\"diameter\":6,\"count\":2,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (by diameter)",
+      "dimension {\"type\":\"diameter\",\"nominal\":6,\"upper\":0.15,\"lower\":-0.15} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d86 through, 6 mm deep (\u00d86 by diameter and count)",
+      "hole.diameter {\"diameter\":7,\"count\":4,\"upper\":0.25,\"lower\":-0.25} mm \u2014 matched to the 3D model: 4 \u00d7 \u00d87 through, 55 mm deep (\u00d87 \u00d7 4 by diameter and count)"
+     ],
+     "identity": []
+    }
+   },
+   "statusBefore": "PARTIAL",
+   "statusAuto": "PARTIAL",
+   "assessment": "12 callouts \"no hole of \u00d8\u2026 in the 3D model\" (good evidence); no identity / envelope check, no pairing warning."
+  },
+  {
+   "id": "wrong-cad:ftc09-drawing+ftc10",
+   "pair": "nist_ftc_10_asme1_rb.stp + nist_ftc_09_asme1_rd.pdf",
+   "scenario": "(a) a drawing paired with the WRONG CAD model",
+   "expected": "the mismatch is flagged: identity (part name / number), envelope / thickness, and hole callouts with no matching model feature; more flags than with the right model",
+   "actual": "wrong model: 1 conflicts [material.stockThickness], 0 callouts not in model, 0 linked; identity conflict false; envelope/thickness conflict false. RIGHT model: 0 conflicts, 0 not in model, 0 linked. A pairing question/block: false",
+   "status": "PARTIAL",
+   "evidence": {
+    "wrong": {
+     "conflicts": [
+      {
+       "name": "material.stockThickness",
+       "sides": [
+        "cad: 4.5 mm",
+        "drawing: 3.0353 mm"
+       ],
+       "why": "Stock / sheet thickness: the 3D model says 4.5 mm; the drawing (sheet 1) says 3.0353 mm. Suggested: the 3D model \u2014 a gauge measured between a bend's two faces is the modelled sheet; the drawing states the nominal. Nothing is applied until the engineer chooses.",
+       "suggested": "cad:material.stockThickness",
+       "resolved": false
+      }
+     ],
+     "notInModel": [],
+     "linked": [],
+     "identity": [],
+     "drawingReadings": 14
+    },
+    "right": {
+     "conflicts": [],
+     "notInModel": [],
+     "linked": [],
+     "identity": [
+      "title.partName cad: \"NIST_FTC_09_ASME1_RD\""
+     ]
+    }
+   },
+   "statusBefore": "FAIL",
+   "statusAuto": "PARTIAL",
+   "assessment": "NEW signal: stock thickness conflict model 4.5 mm v drawing 3.0353 mm (from the now-read .1195 THICK). No identity or envelope comparison, no pairing warning; the suggestion is the model's value."
+  },
+  {
+   "id": "wrong-cad:jxs-01-02-drawing+jxs-05-01",
+   "pair": "JXS-05-01.STEP + JXS-01-02.pdf",
+   "scenario": "(a) a drawing paired with the WRONG CAD model",
+   "expected": "the mismatch is flagged: identity (part name / number), envelope / thickness, and hole callouts with no matching model feature; more flags than with the right model",
+   "actual": "wrong model: 0 conflicts [], 0 callouts not in model, 0 linked; identity conflict false; envelope/thickness conflict false. RIGHT model: 0 conflicts, 0 not in model, 0 linked. A pairing question/block: false",
+   "status": "FAIL",
+   "evidence": {
+    "wrong": {
+     "conflicts": [],
+     "notInModel": [],
+     "linked": [],
+     "identity": [
+      "title.partName cad: \"JXS-05-01\""
+     ],
+     "drawingReadings": 34
+    },
+    "right": {
+     "conflicts": [],
+     "notInModel": [],
+     "linked": [],
+     "identity": [
+      "title.partName cad: \"JXS-01-02\""
+     ]
+    }
+   },
+   "statusBefore": "FAIL",
+   "statusAuto": "FAIL",
+   "assessment": "Still nothing flagged (no \u00d8 callouts read on the GB sheet; no identity, envelope or thickness comparison)."
+  },
+  {
+   "id": "wrong-gear-drawing",
+   "pair": "test-gear-m3-z38.step + gear-drawing-WRONG-z40.pdf",
+   "scenario": "(b) the existing wrong gear drawing (z 40 against 38 measured)",
+   "expected": "a teeth conflict with both sides, nothing chosen; the cost is the no-drawing cost before and after it is settled to the model value",
+   "actual": "teeth conflict: [\"cad: 38 \",\"drawing: 40 \"] resolved=false suggested=cad:gear.teeth; cost no drawing \u00a318.64867987419291, with drawing unsettled \u00a318.64867987419291, settled to 38 \u00a318.64867987419291",
+   "status": "PASS",
+   "evidence": {
+    "conflicts": [
+     {
+      "name": "gear.teeth",
+      "sides": [
+       "cad: 38 ",
+       "drawing: 40 "
+      ],
+      "why": "Number of teeth: the 3D model says 38; the drawing (sheet 1) says 40. Suggested: the 3D model \u2014 teeth are counted on the 3D model. Nothing is applied until the engineer chooses.",
+      "suggested": "cad:gear.teeth",
+      "resolved": false
+     }
+    ],
+    "leanings": [
+     "gear.helix \u2190 \"0\" (extracted, \"HELIX ANGLE b 0 deg (SPUR)\")",
+     "gear.qualityClass \u2190 \"7\" (extracted, \"QUALITY CLASS ISO 1328 CLASS 7\")",
+     "gear.hardeningRoute \u2190 \"case_hardening\" (extracted, \"CARBURISE + QUENCH\")"
+    ],
+    "answers": {}
+   },
+   "statusBefore": "PASS"
+  },
+  {
+   "id": "missing-material:seedmint-slider",
+   "pair": "SeedMint Assembly.step + Slider Drawing.pdf (and the drawing alone via /api/drawing/read)",
+   "scenario": "(c) a drawing that states no material (truth: blank)",
+   "expected": "material is listed as missing, never filled with a default; the material questions are identical to the no-drawing questions",
+   "actual": "drawing-only: status 200, material readings [], missing [\"part.volume\",\"material.designation\"]; with CAD: missing [\"material.designation\"]; material questions identical to no-drawing: true; answers from drawing {}",
+   "status": "PASS",
+   "evidence": {
+    "drawingOnlyKeys": [
+     "drawing",
+     "extraction",
+     "engineeringData",
+     "costing"
+    ],
+    "withDrawing": [
+     {
+      "id": "material.family",
+      "severity": "blocking",
+      "options": [
+       "aluminium",
+       "magnesium",
+       "zinc",
+       "cast iron",
+       "steel",
+       "copper alloy",
+       "nickel alloy"
+      ]
+     }
+    ],
+    "withoutDrawing": [
+     {
+      "id": "material.family",
+      "severity": "blocking",
+      "options": [
+       "aluminium",
+       "magnesium",
+       "zinc",
+       "cast iron",
+       "steel",
+       "copper alloy",
+       "nickel alloy"
+      ]
+     }
+    ],
+    "leanings": []
+   },
+   "statusBefore": "PASS"
+  },
+  {
+   "id": "revision-mismatch",
+   "pair": "SeedMint assembly v Base/Slider drawings; D2MI 904; LulzBot washer",
+   "scenario": "(d) revision of the model v the drawing",
+   "expected": "the model revision (STEP product version / file name) is compared with the drawing title-block revision, and a mismatch is flagged",
+   "actual": "the revision is NOT compared: no CAD-side revision parameter on any case; drawing revisions read: [[\"seedmint base\",[\"drawing: V10\"]],[\"seedmint slider\",[\"drawing: V22\"]],[\"D2MI 904\",[]],[\"LulzBot washer\",[]]]",
+   "status": "FAIL",
+   "evidence": [
+    {
+     "case": "seedmint base",
+     "note": "STEP PRODUCT \"Base v12\" v drawing V10",
+     "revisions": [
+      "drawing: V10"
+     ],
+     "revisionConflict": [],
+     "identity": [
+      "title.partName drawing: \"Base\""
+     ],
+     "cadMetadata": {
+      "productNames": [],
+      "materialDesignations": []
+     }
+    },
+    {
+     "case": "seedmint slider",
+     "note": "STEP PRODUCT \"Slider v9\" v drawing V22",
+     "revisions": [
+      "drawing: V22"
+     ],
+     "revisionConflict": [],
+     "identity": [
+      "title.partName drawing: \"Slider\""
+     ],
+     "cadMetadata": {
+      "productNames": [],
+      "materialDesignations": []
+     }
+    },
+    {
+     "case": "D2MI 904",
+     "note": "file names \"rev c\" v title block REV A",
+     "revisions": [],
+     "revisionConflict": [],
+     "identity": [
+      "title.partName cad: \"827-9999-904\""
+     ],
+     "cadMetadata": {
+      "productNames": [
+       "827-9999-904"
+      ],
+      "materialDesignations": [
+       "Aluminum_6061-T651"
+      ],
+      "headerFileName": "827-9999-904.stp",
+      "description": "CAx-IF Rec.Pracs.---Model Styling and Organization---1.2---2011-12-15"
+     }
+    },
+    {
+     "case": "LulzBot washer",
+     "note": "STEP name rev_IR = drawing REV IR (agree)",
+     "revisions": [],
+     "revisionConflict": [],
+     "identity": [
+      "title.partName cad: \"ASSEMBLY\""
+     ],
+     "cadMetadata": {
+      "productNames": [
+       "ASSEMBLY",
+       "Chamfer"
+      ],
+      "materialDesignations": [],
+      "headerFileName": "/home/aleph/shared-j/devel/lulzbot/TAZ/Nutmeg/production_\nparts/machined_parts/bed_leveling_washer/bed_leveling_washer_v2.0_\nPP-MP0082_rev_IR.step",
+      "authoringSystem": "Open CASCADE STEP processor 6.7",
+      "description": "FreeCAD Model"
+     }
+    }
+   ],
+   "statusBefore": "FAIL",
+   "statusAuto": "FAIL",
+   "assessment": "Unchanged: no model revision extracted, nothing compared (SeedMint Base v12 v V10, Slider v9 v V22 pass silently)."
+  },
+  {
+   "id": "correction-persists",
+   "pair": "corner_bracket_v2.0_PP-MP0106.step + corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+   "scenario": "(e) a correction and confirmations sent as drawingReview; /analyze again, then /reanalyze",
+   "expected": "the corrected value persists (status Corrected, history kept); every confirmed reading stays Confirmed; no decision skipped; who/when are the server's (signed-in user, server clock) not the client's",
+   "actual": "/analyze: corrected {\"status\":\"corrected\",\"value\":\"Powder coat all over, Cardinal C241-BK109 (QA correction)\"}, confirmed 4/4, skipped 0; /reanalyze: corrected {\"status\":\"corrected\",\"value\":\"Powder coat all over, Cardinal C241-BK109 (QA correction)\"}, confirmed 4/4, skipped 0; stamped by server: true (qa@test @ 2026-11-10T11:34:33.181Z); drawing answers {\"material.family\":\"aluminium\"}",
+   "status": "PASS",
+   "evidence": {
+    "ops": 5,
+    "analyze": {
+     "corrected": {
+      "status": "corrected",
+      "value": "Powder coat all over, Cardinal C241-BK109 (QA correction)",
+      "history": [
+       {
+        "by": "qa@test",
+        "at": "2026-11-10T11:34:32.419Z",
+        "from": {
+         "status": "needs-validation",
+         "value": "Break all sharp edges prior to powder coat"
+        },
+        "to": {
+         "status": "corrected",
+         "value": "Powder coat all over, Cardinal C241-BK109 (QA correction)"
+        },
+        "action": "correct",
+        "reason": "validation test"
+       }
+      ]
+     },
+     "confirmed": [
+      {
+       "id": "drawing:title.units:1",
+       "name": "title.units",
+       "status": "confirmed",
+       "value": "mm",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:32.419Z"
+      },
+      {
+       "id": "drawing:material.designation:1",
+       "name": "material.designation",
+       "status": "confirmed",
+       "value": "5052 H-32 Aluminum",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:32.419Z"
+      },
+      {
+       "id": "drawing:finish.coating:2",
+       "name": "finish.coating",
+       "status": "confirmed",
+       "value": "Part is to be powder coated with Cardinal color C241-BK109.",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:32.419Z"
+      },
+      {
+       "id": "drawing:material.designation:1>material.family",
+       "name": "material.family",
+       "status": "confirmed",
+       "value": "aluminium",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:32.419Z"
+      }
+     ],
+     "skipped": [],
+     "answers": {
+      "material.family": "aluminium"
+     }
+    },
+    "reanalyze": {
+     "corrected": {
+      "status": "corrected",
+      "value": "Powder coat all over, Cardinal C241-BK109 (QA correction)",
+      "history": [
+       {
+        "by": "qa@test",
+        "at": "2026-11-10T11:34:33.181Z",
+        "from": {
+         "status": "needs-validation",
+         "value": "Break all sharp edges prior to powder coat"
+        },
+        "to": {
+         "status": "corrected",
+         "value": "Powder coat all over, Cardinal C241-BK109 (QA correction)"
+        },
+        "action": "correct",
+        "reason": "validation test"
+       }
+      ]
+     },
+     "confirmed": [
+      {
+       "id": "drawing:title.units:1",
+       "name": "title.units",
+       "status": "confirmed",
+       "value": "mm",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:33.181Z"
+      },
+      {
+       "id": "drawing:material.designation:1",
+       "name": "material.designation",
+       "status": "confirmed",
+       "value": "5052 H-32 Aluminum",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:33.181Z"
+      },
+      {
+       "id": "drawing:finish.coating:2",
+       "name": "finish.coating",
+       "status": "confirmed",
+       "value": "Part is to be powder coated with Cardinal color C241-BK109.",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:33.181Z"
+      },
+      {
+       "id": "drawing:material.designation:1>material.family",
+       "name": "material.family",
+       "status": "confirmed",
+       "value": "aluminium",
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:33.181Z"
+      }
+     ],
+     "skipped": [],
+     "answers": {
+      "material.family": "aluminium"
+     }
+    }
+   },
+   "statusBefore": "PASS"
+  },
+  {
+   "id": "review-on-other-drawing",
+   "pair": "corner_bracket_v2.0_PP-MP0106.step + electronics_cover_reva.pdf with the review taken on corner_bracket_v2.0_REV1_PP-MP0106.pdf",
+   "scenario": "(e) the same review sent with a DIFFERENT drawing",
+   "expected": "every decision (5) skipped and listed with the reason; nothing confirmed/corrected on the other drawing; no drawing answers",
+   "actual": "/analyze (drawing status in that response: ready) skipped 5; /reanalyze skipped 5/5; first reason: \"the decision was taken on another drawing (008f1486), not this one (450c6b3a)\"; decided readings on the other drawing: 0; answers {}",
+   "status": "PASS",
+   "evidence": {
+    "skipped": [
+     {
+      "index": 0,
+      "op": {
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:34.307Z",
+       "drawingHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+       "seen": "\"mm\"",
+       "op": "confirm",
+       "id": "drawing:title.units:1"
+      },
+      "why": "the decision was taken on another drawing (008f1486), not this one (450c6b3a)"
+     },
+     {
+      "index": 1,
+      "op": {
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:34.307Z",
+       "drawingHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+       "seen": "\"5052 H-32 Aluminum\"",
+       "op": "confirm",
+       "id": "drawing:material.designation:1"
+      },
+      "why": "the decision was taken on another drawing (008f1486), not this one (450c6b3a)"
+     },
+     {
+      "index": 2,
+      "op": {
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:34.307Z",
+       "drawingHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+       "seen": "\"Part is to be powder coated with Cardinal color C241-BK109.\"",
+       "op": "confirm",
+       "id": "drawing:finish.coating:2"
+      },
+      "why": "the decision was taken on another drawing (008f1486), not this one (450c6b3a)"
+     },
+     {
+      "index": 3,
+      "op": {
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:34.307Z",
+       "reason": "validation test",
+       "drawingHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+       "seen": "\"Break all sharp edges prior to powder coat\"",
+       "op": "correct",
+       "id": "drawing:finish.coating:1",
+       "value": "Powder coat all over, Cardinal C241-BK109 (QA correction)"
+      },
+      "why": "the decision was taken on another drawing (008f1486), not this one (450c6b3a)"
+     },
+     {
+      "index": 4,
+      "op": {
+       "by": "qa@test",
+       "at": "2026-11-10T11:34:34.307Z",
+       "drawingHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4",
+       "seen": "\"aluminium\"",
+       "op": "confirm",
+       "id": "drawing:material.designation:1>material.family"
+      },
+      "why": "the decision was taken on another drawing (008f1486), not this one (450c6b3a)"
+     }
+    ],
+    "otherHash": "450c6b3a5ac4b8e9b9c421833fa85e7ed3505c2e59f7c168f9711d1edbfbe0f6",
+    "reviewHash": "008f14868183012b1c298de08b8bb781db0120364307f628535248dd36754cd4"
+   },
+   "statusBefore": "PASS"
+  },
+  {
+   "id": "correction-supersedes-family",
+   "pair": "electronics_chassis_reva.step + electronics_chassis_revA_sheet1.pdf",
+   "scenario": "(e) correct the material designation \"5052 H32 AL\" to \"S235JR\"",
+   "expected": "no family from the old text stays live; the family leaning follows the corrected designation (steel) or none",
+   "actual": "before: [{\"id\":\"drawing:material.designation:1>material.family\",\"value\":\"aluminium\",\"status\":\"needs-validation\",\"source\":\"derived\",\"raw\":\"MATERIAL: 5052 H32 AL, 2.03 MM THICK\"}]; after: [{\"id\":\"drawing:material.designation:1>material.family\",\"value\":\"steel\",\"status\":\"needs-validation\"}]; leaning for material.family: [\"steel\"]",
+   "status": "PASS",
+   "evidence": {
+    "designation": {
+     "id": "drawing:material.designation:1",
+     "value": "5052 H32 AL",
+     "raw": "MATERIAL: 5052 H32 AL, 2.03 MM THICK"
+    },
+    "after": [
+     {
+      "id": "drawing:material.designation:1>material.family",
+      "value": "steel",
+      "status": "needs-validation",
+      "source": "derived",
+      "raw": "MATERIAL: 5052 H32 AL, 2.03 MM THICK",
+      "derivedFrom": [
+       "drawing:material.designation:1"
+      ],
+      "note": "\"S235JR\" is steel by the engine's designation \u2192 family reader (material-family.ts) (by the EN 10027-1 steel name) Worked out from a reading that needs checking (read by OCR): check the reading first."
+     }
+    ]
+   },
+   "statusBefore": "not run before"
+  }
+ ],
+ "summary": {
+  "PASS": 12,
+  "PARTIAL": 6,
+  "FAIL": 2,
+  "ERROR": 0,
+  "N/A": 0
+ },
+ "summaryBefore": {
+  "PASS": 6,
+  "PARTIAL": 8,
+  "FAIL": 5,
+  "ERROR": 0
+ },
+ "statusMeaning": "PASS = behaved as expected; PARTIAL = correct as far as it went, but a stated fact was not read or a false flag was raised; FAIL = expected behaviour absent. statusAuto = the script's mechanical criterion; statusBefore = reconciliation.json (HEAD e72adf46)."
+}
