@@ -1,0 +1,1801 @@
+{
+ "Casting_Braket": {
+  "A_total": 9.979,
+  "B_total": 8.357,
+  "gapGBP": 1.6219999999999999,
+  "gapPct": 19.40887878425272,
+  "aRun": "current/Casting_Braket__LIKE_B_gravity_LM25_T6_2imp_200k_5y_EXW.json",
+  "bRun": "reference/Casting_Braket.json",
+  "routeComparability": [
+   "A as recorded (baseline ANSWERS: steel, sand GS-C25 on a DISA line): £9.8108 — not comparable with B (aluminium gravity).",
+   "A re-run with B's answers (material.family aluminium, material.grade mat-lm25, casting.processChoice gravity, casting.heatTreat T6, casting.impressions 2): £9.9790 — used below.",
+   "Same with 1 impression (the tool's default): £10.8382."
+  ],
+  "A_machiningOps": [
+   {
+    "op": "Machining Setup (amortised)",
+    "machine": "mach-hmc-400",
+    "min": 0.009,
+    "crew": 1,
+    "gbp": 0.0065
+   },
+   {
+    "op": "Finish machining — +Z side",
+    "machine": "mach-hmc-400",
+    "min": 0.984,
+    "crew": 0.5,
+    "gbp": 0.5588
+   },
+   {
+    "op": "Finish machining — +X side",
+    "machine": "mach-hmc-400",
+    "min": 0.642,
+    "crew": 0.5,
+    "gbp": 0.3646
+   },
+   {
+    "op": "Finish machining — +Y side",
+    "machine": "mach-hmc-400",
+    "min": 0.474,
+    "crew": 0.5,
+    "gbp": 0.2692
+   },
+   {
+    "op": "Drilling — 6 holes (1×Ø4.0×7, 1×Ø4.9×15, 1× stepped bore Ø13.0×8.0 / Ø20.0×1.0, 2× stepped",
+    "machine": "mach-hmc-400",
+    "min": 1.452,
+    "crew": 0.5,
+    "gbp": 0.8246
+   },
+   {
+    "op": "Pallet change — 1 fixturing(s)",
+    "machine": "mach-hmc-400",
+    "min": 0.12,
+    "crew": 0.5,
+    "gbp": 0.0681
+   },
+   {
+    "op": "Deburr and gauge check (bench)",
+    "machine": "mach-hmc-400",
+    "min": 0,
+    "crew": 1,
+    "gbp": 0.4957
+   }
+  ],
+  "B_machiningOps": [
+   {
+    "op": "OP10",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.188,
+    "tools": 3,
+    "nFeatures": 7
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.049,
+    "tools": 5,
+    "nFeatures": 5
+   }
+  ],
+  "B_machiningTotals": {
+   "cycle": 1.737,
+   "cut": 0.237
+  },
+  "machiningSplit": {
+   "A_machiningGbp": 2.0852853668478257,
+   "A_minutes": 3.672,
+   "A_handlingMinutes": 0.12,
+   "allowanceGbp": 1.419127786458333,
+   "allowanceMinutes": 2.6220000000000003,
+   "oeeGbp": 0.06609075520833331,
+   "labourBasisGbp": 0.06332130434782608,
+   "A_restGbp": 0.5367455208333334,
+   "B_machiningGbp": 0.7941,
+   "B_cycleMin": 1.737,
+   "B_cutMin": 0.237,
+   "contentRateHandlingGapGbp": -0.25735447916666665,
+   "A_totalWithoutAllowances": 8.1065
+  },
+  "drivers": [
+   {
+    "driver": "Metal bought (net of melt loss / incl. bar kerf)",
+    "A": 2.9583,
+    "B": 2.9055,
+    "gapGBP": 0.0528,
+    "gapPct": 0.63,
+    "cause": "A as-cast 0.965 kg (1.5 mm gravity stock on 8 face rows = 18,166 mm² + 12.7 cm³ drilled holes) + 3 % loss on returns → 0.993 kg; B raw 0.926 kg (ISO 8062 RMA E 1.1 + CT8/4 = 1.55 mm on 4 faces = 7,444 mm²) + 2.5 % dross of poured → 0.975 kg. Same £2.98/kg.",
+    "gapId": "CF-01, CF-02",
+    "whoLooksRight": "B",
+    "why": "B uses a size-dependent ISO 8062 allowance on the faces it judges machined; A puts stock on the 8 largest planar areas (CF-01). Neither is checked against a drawing.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap credits (swarf, flash, wad, crop)",
+    "A": 0,
+    "B": -0.0372,
+    "gapGBP": 0.0372,
+    "gapPct": 0.45,
+    "cause": "A credits nothing on a casting (lossIsNotScrap); B credits 0.068 kg swarf at £0.54/kg.",
+    "gapId": "CF-14",
+    "whoLooksRight": "B",
+    "why": "Aluminium swarf is sold.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Melt / billet-heating energy + foundry indirect (melt-shop fixed, sand, bentonite, sand plant)",
+    "A": 0.1962,
+    "B": 0.169,
+    "gapGBP": 0.0272,
+    "gapPct": 0.33,
+    "cause": "A: melt + plant electricity kWh on 1.66 kg poured (yield 0.6) at £0.182; B: 600 kWh/t gas melter (StrikoWestofen, sourced) at £0.046 + holding + £20/t melt-shop fixed + treatment on 1.97 kg poured (yield 0.5).",
+    "gapId": "CF-10",
+    "whoLooksRight": "neither",
+    "why": "Electric v gas melting is a plant choice; both yields are assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Casting / forge cell (machine + crew, incl. melt crew)",
+    "A": 0.7591,
+    "B": 1.1247,
+    "gapGBP": -0.3656,
+    "gapPct": -4.37,
+    "cause": "A die cycle 3.22 min / 2 impressions (mass / section correlation with cited anchors), crew 0.25, OEE 0.8; B 240 s / 2, crew 0.5 + melt crew 1/6, no OEE.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Die cycle and crew are assumptions on both sides; B's 240 s is ~25 % longer than A's.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Primary tooling (die / pattern, maintenance, die change)",
+    "A": 0.0779,
+    "B": 0.1633,
+    "gapGBP": -0.0854,
+    "gapPct": -1.02,
+    "cause": "A gravity die £12,988 (179 toolroom h + 70 kg H13) × 6 sets; B £24,552 (290 h + 260 kg H13 + 2 core pulls) × 6 + £0.03/shot maintenance.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Both toolroom build-ups are judgement; B adds die maintenance A omits.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Fettling",
+    "A": 0.9189,
+    "B": 0.4067,
+    "gapGBP": 0.5122,
+    "gapPct": 6.13,
+    "cause": "A 2 min bench fettling at the foundry rate ÷ 0.92 (flat for gravity aluminium, \"engineering-typical, not sourced\"); B 45 s + band saw.",
+    "gapId": "CF-16",
+    "whoLooksRight": "B",
+    "why": "A flat 2 min on a 0.9 kg casting looks high; both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Heat treatment",
+    "A": 0.3934,
+    "B": 0.5831,
+    "gapGBP": -0.1897,
+    "gapPct": -2.27,
+    "cause": "A T6 station ESTIMATE £0.41/kg (0.948 kWh/kg + operator h/kg + capital £0.0078/kg); B furnace hours (8 h solution + 7 h age) × £15.97/h ÷ 400 kg charge = £0.63/kg.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "No toll price on either side; A's capital charge (£0.0078/kg) looks low.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Shot blast / descale",
+    "A": 0.1,
+    "B": 0.0385,
+    "gapGBP": 0.0615,
+    "gapPct": 0.74,
+    "cause": "A £0.10 floor (CostVision heuristic); B 10 min a 150 kg load.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Inspection and NDT",
+    "A": 0,
+    "B": 0.3335,
+    "gapGBP": -0.3335,
+    "gapPct": -3.99,
+    "cause": "A none beyond the 0.5-min gauge check inside \"deburr\"; B visual 12 s + X-ray 1 in 50 + in-process gauging 15 s + CMM audit 1 in 250.",
+    "gapId": "CF-12",
+    "whoLooksRight": "B (partly)",
+    "why": "In-process gauging and a CMM audit are normal; an X-ray audit on a non-safety bracket is B's own assumption.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — non-cutting time: A fixed per-feature allowances + handling v B per-operation non-cut",
+    "A": 1.4805,
+    "B": 0.6858,
+    "gapGBP": 0.7947,
+    "gapPct": 9.51,
+    "cause": "A: 2.62 min of fixed allowances (0.2 min a face, 0.15 a hole, 0.25 a bore pass, 0.1 blind, 0.1 tap; \"engineering-typical, not sourced\") + 0.12 min handling / pallet change = 2.74 min; B: 1.50 min non-cut (tool changes, approaches, probing, indexing, pallet change). A at B's OEE / operator basis. A 3.67 min on the HMC (8 faces × (0.2 min + one finish pass) + 6 hole works at 0.15–0.25 min approach + 0.1 blind + tap, pallet change 7.1 s) v B 1.74 min (0.24 cut + 1.50 non-cut over OP10/OP20).",
+    "gapId": "CF-19 (new)",
+    "whoLooksRight": "B (more plausible)",
+    "why": "Both are assumptions; B builds non-cut per operation from tool changes, approaches, probing and indexing; A adds 9–15 s per feature. Neither is a timed cycle.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — cutting time (feature set, passes, cutting data)",
+    "A": 0.4754,
+    "B": 0.1083,
+    "gapGBP": 0.3671,
+    "gapPct": 4.39,
+    "cause": "A 0.93 min cutting (incl. 2.2 s tool changes and any lathe op) v B 0.24 min, both at B's basis, split by minutes. A faces its 8 largest planar areas (18,166 mm²) with a finish face mill at the catalogue rate; B faces 4 (7,444 mm²) with a PCD mill at vc 1,000 m/min and drills at vc 200 m/min.",
+    "gapId": "CF-01, CF-06",
+    "whoLooksRight": "neither",
+    "why": "The face set is not drawing-backed on either side (CF-01); cutting data are sourced on both.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — OEE 0.8 on machine time (A) v none (B)",
+    "A": 0.0661,
+    "B": 0,
+    "gapGBP": 0.0661,
+    "gapPct": 0.79,
+    "cause": "A divides machine time by OEE 0.8 (core.ts:247); B applies no availability / performance loss.",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "A dedicated cell still loses availability; B is optimistic. A's 0.8 is unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — operator grade and efficiency",
+    "A": 0.0633,
+    "B": 0,
+    "gapGBP": 0.0633,
+    "gapPct": 0.76,
+    "cause": "A: skilled machinist £27.95 ÷ 0.92 efficiency, 0.5 crew; B: semi-skilled £24.65 at 100 %, 0.5 crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A production-cell loader is semi-skilled; a 0.92 efficiency is a plant figure. Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cutting-tool wear",
+    "A": 0.1421,
+    "B": 0.0095,
+    "gapGBP": 0.1326,
+    "gapPct": 1.59,
+    "cause": "Same rate (tool-wear.aluminium £0.04/min). A charges it on 3.55 \"cutting\" min — which include the fixed approach allowances; B on 0.24 min of chip-making.",
+    "gapId": "CF-20 (new)",
+    "whoLooksRight": "B",
+    "why": "Tools do not wear during positioning.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining setup, fixtures, CNC programming",
+    "A": 0.0427,
+    "B": 0.03,
+    "gapGBP": 0.0127,
+    "gapPct": 0.15,
+    "cause": "A 3 hydraulic fixtures (one a machine the capacity implies) + £175 programming; B 2 fixtures (OP10 + OP20). Setup per part equal.",
+    "gapId": "CF-05",
+    "whoLooksRight": "B",
+    "why": "B has 2 clampings (OP10/OP20) — the geometry needs them (probe 3); A costs 1.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Deburr / wash after machining",
+    "A": 0.4957,
+    "B": 0.2354,
+    "gapGBP": 0.2603,
+    "gapPct": 3.11,
+    "cause": "A 0.5 + 0.004 × faces + 0.5 gauge ≈ 1.1 min ÷ 0.92; B 30 s + £0.03 wash.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Scrap adjustments (casting-scrap secondary, 1 % machining scrap)",
+    "A": 0,
+    "B": 0.0639,
+    "gapGBP": -0.0639,
+    "gapPct": -0.76,
+    "cause": "A charges no machining scrap and no secondary spent on rejected castings; B 1 % machining scrap + 6 % casting scrap on fettle/HT/blast.",
+    "gapId": "CF-09",
+    "whoLooksRight": "B",
+    "why": "Scrap at machining is real; B's rates are assumptions.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Packaging",
+    "A": 0.09,
+    "B": 0.1,
+    "gapGBP": -0.01,
+    "gapPct": -0.12,
+    "cause": "A £0.09 (rule by size); B £0.10 assumption.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Overhead 12 %",
+    "A": 0.9803,
+    "B": 0.8184,
+    "gapGBP": 0.1619,
+    "gapPct": 1.94,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Margin 8 %",
+    "A": 0.7392,
+    "B": 0.6191,
+    "gapGBP": 0.1201,
+    "gapPct": 1.44,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Rounding (B total printed to 3 dp; 4-dp rounding of the rows)",
+    "A": 0,
+    "B": 0,
+    "gapGBP": 0.0004,
+    "gapPct": 0,
+    "cause": "arithmetic",
+    "gapId": "—",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   }
+  ]
+ },
+ "Part1": {
+  "A_total": 13.8192,
+  "B_total": 11.87,
+  "gapGBP": 1.9492000000000012,
+  "gapPct": 16.421229991575412,
+  "aRun": "current/Part1__LIKE_B_gravity_LM25_T6_2imp_200k_5y_EXW.json",
+  "bRun": "reference/Part1.json",
+  "routeComparability": [
+   "A as run before (gravity LM25 T6, 1 impression = the tool default): £14.6049.",
+   "A with B's 2 impressions (casting.impressions 2): £13.8192 — used below."
+  ],
+  "A_machiningOps": [
+   {
+    "op": "Machining Setup (amortised)",
+    "machine": "mach-hmc-400",
+    "min": 0.009,
+    "crew": 1,
+    "gbp": 0.0065
+   },
+   {
+    "op": "Finish machining — +X side",
+    "machine": "mach-hmc-400",
+    "min": 2.022,
+    "crew": 0.5,
+    "gbp": 1.1483
+   },
+   {
+    "op": "Finish machining — +Z side",
+    "machine": "mach-hmc-400",
+    "min": 0.852,
+    "crew": 0.5,
+    "gbp": 0.4838
+   },
+   {
+    "op": "Finish machining — +Y side",
+    "machine": "mach-hmc-400",
+    "min": 0.654,
+    "crew": 0.5,
+    "gbp": 0.3714
+   },
+   {
+    "op": "Drilling — 2 holes (1× stepped bore Ø14.0×10 / Ø8.0×41, 1× stepped bore Ø8.0×41 / Ø14.0×10",
+    "machine": "mach-hmc-400",
+    "min": 0.678,
+    "crew": 0.5,
+    "gbp": 0.385
+   },
+   {
+    "op": "Finish boring — 5 cored bore(s), 3 stepped (2×Ø50.0×32, 2× stepped bore Ø10.5×13 / Ø22.0×4",
+    "machine": "mach-hmc-400",
+    "min": 1.692,
+    "crew": 0.5,
+    "gbp": 0.9609
+   },
+   {
+    "op": "Pallet change — 1 fixturing(s)",
+    "machine": "mach-hmc-400",
+    "min": 0.12,
+    "crew": 0.5,
+    "gbp": 0.0681
+   },
+   {
+    "op": "Deburr and gauge check (bench)",
+    "machine": "mach-hmc-400",
+    "min": 0,
+    "crew": 1,
+    "gbp": 0.5225
+   }
+  ],
+  "B_machiningOps": [
+   {
+    "op": "OP10",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.904,
+    "tools": 11,
+    "nFeatures": 12
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.145,
+    "tools": 3,
+    "nFeatures": 3
+   }
+  ],
+  "B_machiningTotals": {
+   "cycle": 3.35,
+   "cut": 1.05
+  },
+  "machiningSplit": {
+   "A_machiningGbp": 3.4175510178894926,
+   "A_minutes": 6.018000000000001,
+   "A_handlingMinutes": 0.12,
+   "allowanceGbp": 2.582755405344203,
+   "allowanceMinutes": 4.548000000000001,
+   "oeeGbp": 0.09252705729166665,
+   "labourBasisGbp": 0.07019782608695653,
+   "A_restGbp": 0.6720707291666665,
+   "B_machiningGbp": 1.5315,
+   "B_cycleMin": 3.35,
+   "B_cutMin": 1.05,
+   "contentRateHandlingGapGbp": -0.8594292708333335,
+   "A_totalWithoutAllowances": 10.4315
+  },
+  "drivers": [
+   {
+    "driver": "Metal bought (net of melt loss / incl. bar kerf)",
+    "A": 4.1324,
+    "B": 4.392,
+    "gapGBP": -0.2596,
+    "gapPct": -2.19,
+    "cause": "A as-cast 1.348 kg (1.5 mm stock) v B 1.399 kg (ISO 8062 for a 270 mm part: RMA E 1.8 + CT8/4 = 2.35 mm on 5 faces + cored-bore stock).",
+    "gapId": "CF-02",
+    "whoLooksRight": "B",
+    "why": "ISO 8062 RMA grows with the largest dimension; A keeps 1.5 mm for any gravity casting.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap credits (swarf, flash, wad, crop)",
+    "A": 0,
+    "B": -0.1355,
+    "gapGBP": 0.1355,
+    "gapPct": 1.14,
+    "cause": "A none; B 0.249 kg swarf × £0.54.",
+    "gapId": "CF-14",
+    "whoLooksRight": "B",
+    "why": "Swarf is sold.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Melt / billet-heating energy + foundry indirect (melt-shop fixed, sand, bentonite, sand plant)",
+    "A": 0.274,
+    "B": 0.2554,
+    "gapGBP": 0.0186,
+    "gapPct": 0.16,
+    "cause": "As the bracket: A electric melt + plant kWh on 2.32 kg poured; B gas melter + holding + fixed £20/t + treatment on 2.98 kg poured (yield 0.5 v 0.6).",
+    "gapId": "CF-10",
+    "whoLooksRight": "neither",
+    "why": "Yield and melt-shop fixed cost are assumptions on both sides.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Casting / forge cell (machine + crew, incl. melt crew)",
+    "A": 0.8912,
+    "B": 1.2653,
+    "gapGBP": -0.3741,
+    "gapPct": -3.15,
+    "cause": "A die cycle 3.71 min / 2, crew 0.25; B 270 s / 2, crew 0.5 + 1/6 melt crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Assumptions both sides.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Primary tooling (die / pattern, maintenance, die change)",
+    "A": 0.2151,
+    "B": 0.2146,
+    "gapGBP": 0.0005,
+    "gapPct": 0,
+    "cause": "A die £35,853 × 6; B £33,104 × 6 + maintenance — close.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Agree within £0.01.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Fettling",
+    "A": 0.9189,
+    "B": 0.427,
+    "gapGBP": 0.4919,
+    "gapPct": 4.14,
+    "cause": "A 2 min flat; B 45 s.",
+    "gapId": "CF-16",
+    "whoLooksRight": "B",
+    "why": "A flat 2 min unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Heat treatment",
+    "A": 0.5495,
+    "B": 0.8813,
+    "gapGBP": -0.3318,
+    "gapPct": -2.8,
+    "cause": "A £0.41/kg station ESTIMATE v B £0.63/kg furnace hours.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "No toll price.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Shot blast / descale",
+    "A": 0.1116,
+    "B": 0.0581,
+    "gapGBP": 0.0535,
+    "gapPct": 0.45,
+    "cause": "A heuristic throughput; B 10 min / 150 kg.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Inspection and NDT",
+    "A": 0,
+    "B": 0.3335,
+    "gapGBP": -0.3335,
+    "gapPct": -2.81,
+    "cause": "A none; B visual + X-ray audit + gauging + CMM.",
+    "gapId": "CF-12",
+    "whoLooksRight": "B (partly)",
+    "why": "As the bracket.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — non-cutting time: A fixed per-feature allowances + handling v B per-operation non-cut",
+    "A": 2.6376,
+    "B": 1.0515,
+    "gapGBP": 1.5861,
+    "gapPct": 13.36,
+    "cause": "A: 4.55 min of fixed allowances (0.2 min a face, 0.15 a hole, 0.25 a bore pass, 0.1 blind, 0.1 tap; \"engineering-typical, not sourced\") + 0.12 min handling / pallet change = 4.67 min; B: 2.30 min non-cut (tool changes, approaches, probing, indexing, pallet change). A at B's OEE / operator basis. A 6.02 min v B 3.35 min (1.05 cut + 2.30 non-cut).",
+    "gapId": "CF-19 (new)",
+    "whoLooksRight": "B (more plausible)",
+    "why": "Both are assumptions; B builds non-cut per operation from tool changes, approaches, probing and indexing; A adds 9–15 s per feature. Neither is a timed cycle.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — cutting time (feature set, passes, cutting data)",
+    "A": 0.6172,
+    "B": 0.48,
+    "gapGBP": 0.1372,
+    "gapPct": 1.16,
+    "cause": "A 1.35 min cutting (incl. 2.2 s tool changes and any lathe op) v B 1.05 min, both at B's basis, split by minutes. A 14 faces (22,761 mm²) v B 5 faces (11,663 mm²); B also cuts the two 3 mm slits with a saw.",
+    "gapId": "CF-01, CF-06",
+    "whoLooksRight": "neither",
+    "why": "As the bracket.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — OEE 0.8 on machine time (A) v none (B)",
+    "A": 0.0925,
+    "B": 0,
+    "gapGBP": 0.0925,
+    "gapPct": 0.78,
+    "cause": "A divides machine time by OEE 0.8 (core.ts:247); B applies no availability / performance loss.",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "A dedicated cell still loses availability; B is optimistic. A's 0.8 is unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — operator grade and efficiency",
+    "A": 0.0702,
+    "B": 0,
+    "gapGBP": 0.0702,
+    "gapPct": 0.59,
+    "cause": "A: skilled machinist £27.95 ÷ 0.92 efficiency, 0.5 crew; B: semi-skilled £24.65 at 100 %, 0.5 crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A production-cell loader is semi-skilled; a 0.92 efficiency is a plant figure. Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cutting-tool wear",
+    "A": 0.2359,
+    "B": 0.042,
+    "gapGBP": 0.1939,
+    "gapPct": 1.63,
+    "cause": "Same £0.04/min; A on 5.9 min incl. allowances, B on 1.05 min.",
+    "gapId": "CF-20 (new)",
+    "whoLooksRight": "B",
+    "why": "Wear on positioning time.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining setup, fixtures, CNC programming",
+    "A": 0.0667,
+    "B": 0.045,
+    "gapGBP": 0.0217,
+    "gapPct": 0.18,
+    "cause": "A 5 fixtures (4.18 HMCs) in 1 clamping; B 3 fixtures (2 OP10 machines + 1 OP20).",
+    "gapId": "CF-05",
+    "whoLooksRight": "B",
+    "why": "Part1 needs ≥ 2 clampings (probe 3).",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Deburr / wash after machining",
+    "A": 0.5225,
+    "B": 0.3039,
+    "gapGBP": 0.2186,
+    "gapPct": 1.84,
+    "cause": "A ~1.1 min ÷ 0.92; B 40 s + wash.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Scrap adjustments (casting-scrap secondary, 1 % machining scrap)",
+    "A": 0,
+    "B": 0.0922,
+    "gapGBP": -0.0922,
+    "gapPct": -0.78,
+    "cause": "A none; B 1 % machining scrap + casting scrap on secondary.",
+    "gapId": "CF-09",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Packaging",
+    "A": 0.1,
+    "B": 0.12,
+    "gapGBP": -0.02,
+    "gapPct": -0.17,
+    "cause": "A £0.10; B £0.12.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Overhead 12 %",
+    "A": 1.3602,
+    "B": 1.1648,
+    "gapGBP": 0.1954,
+    "gapPct": 1.65,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Margin 8 %",
+    "A": 1.0236,
+    "B": 0.8793,
+    "gapGBP": 0.1443,
+    "gapPct": 1.22,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Rounding (B total printed to 3 dp; 4-dp rounding of the rows)",
+    "A": 0,
+    "B": 0,
+    "gapGBP": 0.0005,
+    "gapPct": 0,
+    "cause": "arithmetic",
+    "gapId": "—",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   }
+  ]
+ },
+ "PRCR002": {
+  "A_total": 25.7885,
+  "B_total": 16.197,
+  "gapGBP": 9.5915,
+  "gapPct": 59.21775637463728,
+  "aRun": "current/PRCR002__200k_5y_EXW.json",
+  "bRun": "reference/PRCR002.json",
+  "routeComparability": [
+   "Same route and grade (sand, EN-GJS-500-7, DISA-class vertical line). A re-run with casting.processChoice sand + material.grade mat-gjs500 gives the identical £25.7885.",
+   "Impressions differ and cannot be answered on the sand route: A 4 a mould (60 % plate rule), B 2 (assumption). Cores: A band £3.00 (32 undercut faces), B 2 shell cores built up."
+  ],
+  "A_machiningOps": [
+   {
+    "op": "Machining Setup (amortised)",
+    "machine": "mach-hmc-400",
+    "min": 0.018,
+    "crew": 1,
+    "gbp": 0.0129
+   },
+   {
+    "op": "Finish machining — +Y side",
+    "machine": "mach-hmc-400",
+    "min": 1.674,
+    "crew": 0.5,
+    "gbp": 0.9506
+   },
+   {
+    "op": "Finish machining — +X side",
+    "machine": "mach-hmc-400",
+    "min": 1.518,
+    "crew": 0.5,
+    "gbp": 0.8621
+   },
+   {
+    "op": "Finish machining — +Z side",
+    "machine": "mach-hmc-400",
+    "min": 1.158,
+    "crew": 0.5,
+    "gbp": 0.6576
+   },
+   {
+    "op": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø",
+    "machine": "mach-hmc-400",
+    "min": 2.97,
+    "crew": 0.5,
+    "gbp": 1.6866
+   },
+   {
+    "op": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× steppe",
+    "machine": "mach-hmc-400",
+    "min": 2.1,
+    "crew": 0.5,
+    "gbp": 1.1926
+   },
+   {
+    "op": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+    "machine": "mach-lathe-cnc",
+    "min": 1.722,
+    "crew": 0.5,
+    "gbp": 0.8721
+   },
+   {
+    "op": "Load / clamp / unload — lathe fixture, 1 fixturing",
+    "machine": "mach-lathe-cnc",
+    "min": 1.2,
+    "crew": 1,
+    "gbp": 0.9115
+   },
+   {
+    "op": "Pallet change — 1 fixturing(s)",
+    "machine": "mach-hmc-400",
+    "min": 0.12,
+    "crew": 0.5,
+    "gbp": 0.0681
+   },
+   {
+    "op": "Deburr and gauge check (bench)",
+    "machine": "mach-hmc-400",
+    "min": 0,
+    "crew": 1,
+    "gbp": 0.5439
+   }
+  ],
+  "B_machiningOps": [
+   {
+    "op": "OP10",
+    "machine": "mach-hmc-400",
+    "cutMin": 2.08,
+    "tools": 12,
+    "nFeatures": 17
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-lathe-cnc",
+    "cutMin": 1.898,
+    "tools": 4,
+    "nFeatures": 2
+   },
+   {
+    "op": "OP30",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.84,
+    "tools": 6,
+    "nFeatures": 6
+   }
+  ],
+  "B_machiningTotals": {
+   "cycle": 8.517,
+   "cut": 4.817
+  },
+  "machiningSplit": {
+   "A_machiningGbp": 7.201270859375,
+   "A_minutes": 12.461999999999998,
+   "A_handlingMinutes": 1.3199999999999998,
+   "allowanceGbp": 2.5623114311594195,
+   "allowanceMinutes": 4.511999999999997,
+   "oeeGbp": 0.46449025520833326,
+   "labourBasisGbp": 0.436945652173913,
+   "A_restGbp": 3.737523520833334,
+   "B_machiningGbp": 3.7678000000000003,
+   "B_cycleMin": 8.517,
+   "B_cutMin": 4.817,
+   "contentRateHandlingGapGbp": -0.030276479166666093,
+   "A_totalWithoutAllowances": 22.0998
+  },
+  "drivers": [
+   {
+    "driver": "Metal bought (net of melt loss / incl. bar kerf)",
+    "A": 3.408,
+    "B": 3.5635,
+    "gapGBP": -0.1555,
+    "gapPct": -0.96,
+    "cause": "A as-cast 9.084 kg (3.0 mm on 8 face rows + cored bores + 3 mm turning stock on the 226 cm² spindle) + 2 % loss on returns → 9.261 kg × £0.368; B raw 9.278 kg (3.6 mm = RMA F 2.5 + CT10/4 on faces + spindle) + 2 % remelt loss + inoculant £0.10.",
+    "gapId": "CF-02",
+    "whoLooksRight": "B",
+    "why": "Size-dependent ISO 8062 allowance; B also prices the inoculant A leaves out.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap credits (swarf, flash, wad, crop)",
+    "A": 0,
+    "B": -0.2901,
+    "gapGBP": 0.2901,
+    "gapPct": 1.79,
+    "cause": "A none; B 1.91 kg swarf × £0.15.",
+    "gapId": "CF-14",
+    "whoLooksRight": "B",
+    "why": "Iron borings are sold.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Melt / billet-heating energy + foundry indirect (melt-shop fixed, sand, bentonite, sand plant)",
+    "A": 2.7103,
+    "B": 3.0313,
+    "gapGBP": -0.321,
+    "gapPct": -1.98,
+    "cause": "A: melt + plant electricity (455 kWh/t good, ESTIMATE) + ladle gas + dust on 14.98 kg poured (yield 0.625) + new sand £11/t = £2.71; B: 620 kWh/t (sourced range) on 16.28 kg poured (yield 0.6) + £30/t fixed + sand 5:1 × 5 % + bentonite + £15/t sand plant = £3.03.",
+    "gapId": "CF-10",
+    "whoLooksRight": "neither",
+    "why": "B's fixed £/t, sand ratio and bentonite are assumptions; A's plant electricity is a grade-D estimate.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Casting / forge cell (machine + crew, incl. melt crew)",
+    "A": 0.8152,
+    "B": 0.5243,
+    "gapGBP": 0.2909,
+    "gapPct": 1.8,
+    "cause": "A DISA line 1/280 moulds/h ÷ 4 impressions (60 % plate rule), crew 3, + melt shop 1.5 operator-h/t (£0.60); B 300 moulds/h × 2 impressions, crew 8 covering melt, pour, cores, shake-out.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A's impressions follow the DISA plate rule (sourced); B's 2 impressions and crew 8 are assumptions; A's melt crew is heavier.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cores",
+    "A": 3.0928,
+    "B": 0.324,
+    "gapGBP": 2.7688,
+    "gapPct": 17.09,
+    "cause": "A £3.00 band for \"32 undercut faces — complex multi-core\" × 1.03; B 2 shell cores Ø30.8 × 100 mm built up (0.224 kg × £0.45/kg + 2 × 10 s shooting).",
+    "gapId": "CF-11",
+    "whoLooksRight": "B",
+    "why": "B is a build-up from the cored features; A is an unsourced band keyed to a face count. B's inputs are assumptions too.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Primary tooling (die / pattern, maintenance, die change)",
+    "A": 0.0494,
+    "B": 0.0572,
+    "gapGBP": -0.0078,
+    "gapPct": -0.05,
+    "cause": "A pattern £16,483 × 3 sets; B £19,058 × 3 — close.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Agree.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Fettling",
+    "A": 0.4367,
+    "B": 0.3568,
+    "gapGBP": 0.0799,
+    "gapPct": 0.49,
+    "cause": "Both 40 s on the robot cell; A × reject uplift and OEE 0.8.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Same assumption (Malleable Castings time study).",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Shot blast / descale",
+    "A": 0.752,
+    "B": 0.2897,
+    "gapGBP": 0.4623,
+    "gapPct": 2.85,
+    "cause": "A 9.08 kg ÷ 600 kg/h × (machine + full operator); B ÷ 1,000 kg/h, crew 0.25.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Inspection and NDT",
+    "A": 0.7673,
+    "B": 0.5472,
+    "gapGBP": 0.2201,
+    "gapPct": 1.36,
+    "cause": "A MPI 75 s + RT 1 in 50 × £5 (safety-critical); B visual 10 s + MPI 30 s + ultrasonic 8 s + gauging 15 s + CMM audit.",
+    "gapId": "CF-12",
+    "whoLooksRight": "neither",
+    "why": "MPI 75 s v 30 s — both assumptions; B adds in-process gauging A lacks.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — non-cutting time: A fixed per-feature allowances + handling v B per-operation non-cut",
+    "A": 3.1829,
+    "B": 1.6368,
+    "gapGBP": 1.5461,
+    "gapPct": 9.55,
+    "cause": "A: 4.51 min of fixed allowances (0.2 min a face, 0.15 a hole, 0.25 a bore pass, 0.1 blind, 0.1 tap; \"engineering-typical, not sourced\") + 1.32 min handling / pallet change = 5.83 min; B: 3.70 min non-cut (tool changes, approaches, probing, indexing, pallet change). A at B's OEE / operator basis. A 12.46 min (HMC faces/holes/bores + lathe spindle 1.72 + lathe load 1.2) v B 8.52 min (4.82 cut + 3.70 non-cut; rough + finish king-pin bores, OP30).",
+    "gapId": "CF-19 (new)",
+    "whoLooksRight": "B (more plausible)",
+    "why": "Both are assumptions; B builds non-cut per operation from tool changes, approaches, probing and indexing; A adds 9–15 s per feature. Neither is a timed cycle.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — cutting time (feature set, passes, cutting data)",
+    "A": 3.117,
+    "B": 2.131,
+    "gapGBP": 0.986,
+    "gapPct": 6.09,
+    "cause": "A 6.63 min cutting (incl. 2.2 s tool changes and any lathe op) v B 4.82 min, both at B's basis, split by minutes. A includes the lathe spindle op (1.72 min) and one pass per face and bore; B turns the spindle between centres (1.90 min cut) and rough + finish bores the king-pins (OP10 + OP30).",
+    "gapId": "CF-01, CF-06",
+    "whoLooksRight": "B",
+    "why": "B's rough + finish bore structure follows stock and tolerance (CF-06).",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — OEE 0.8 on machine time (A) v none (B)",
+    "A": 0.4645,
+    "B": 0,
+    "gapGBP": 0.4645,
+    "gapPct": 2.87,
+    "cause": "A divides machine time by OEE 0.8 (core.ts:247); B applies no availability / performance loss.",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "A dedicated cell still loses availability; B is optimistic. A's 0.8 is unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — operator grade and efficiency",
+    "A": 0.4369,
+    "B": 0,
+    "gapGBP": 0.4369,
+    "gapPct": 2.7,
+    "cause": "A: skilled machinist £27.95 ÷ 0.92 efficiency, 0.5 crew; B: semi-skilled £24.65 at 100 %, 0.5 crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A production-cell loader is semi-skilled; a 0.92 efficiency is a plant figure. Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cutting-tool wear",
+    "A": 1.1142,
+    "B": 0.4818,
+    "gapGBP": 0.6324,
+    "gapPct": 3.9,
+    "cause": "Same rate (£0.10/min cast iron). A 11.1 \"cutting\" min incl. allowances; B 4.8 min of chip-making.",
+    "gapId": "CF-20 (new)",
+    "whoLooksRight": "B",
+    "why": "Wear charged on positioning time.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining setup, fixtures, CNC programming",
+    "A": 0.1072,
+    "B": 0.091,
+    "gapGBP": 0.0162,
+    "gapPct": 0.1,
+    "cause": "A 2 HMC + 1 lathe fixtures; B 3 HMC (OP10) + 3 lathe (OP20) + 2 HMC (OP30) fixtures.",
+    "gapId": "CF-05, CF-08",
+    "whoLooksRight": "B",
+    "why": "B sequences OP10 / OP20 (between centres) / OP30 (king-pins from the turned spindle); A has 1 HMC clamping.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Deburr / wash after machining",
+    "A": 0.5439,
+    "B": 0.2654,
+    "gapGBP": 0.2785,
+    "gapPct": 1.72,
+    "cause": "A ~1.2 min ÷ 0.92; B 30 s + wash / RP oil.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Scrap adjustments (casting-scrap secondary, 1 % machining scrap)",
+    "A": 0,
+    "B": 0.1575,
+    "gapGBP": -0.1575,
+    "gapPct": -0.97,
+    "cause": "A none; B 1 % machining scrap £0.12 + casting scrap on secondary.",
+    "gapId": "CF-09",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Packaging",
+    "A": 0.36,
+    "B": 0.25,
+    "gapGBP": 0.11,
+    "gapPct": 0.68,
+    "cause": "A £0.36 (size rule); B £0.25.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Overhead 12 %",
+    "A": 2.5198,
+    "B": 1.5801,
+    "gapGBP": 0.9397,
+    "gapPct": 5.8,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Margin 8 %",
+    "A": 1.9103,
+    "B": 1.1998,
+    "gapGBP": 0.7105,
+    "gapPct": 4.39,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Rounding (B total printed to 3 dp; 4-dp rounding of the rows)",
+    "A": 0,
+    "B": 0,
+    "gapGBP": 0.0004,
+    "gapPct": 0,
+    "cause": "arithmetic",
+    "gapId": "—",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   }
+  ]
+ },
+ "steering_knuckle_RH": {
+  "A_total": 12.5294,
+  "B_total": 9.161,
+  "gapGBP": 3.368400000000001,
+  "gapPct": 36.76891169086346,
+  "aRun": "current/steering_knuckle_RH__LIKE_B_cam_GJS400_200k_5y_EXW.json",
+  "bRun": "reference/steering_knuckle_RH.json",
+  "routeComparability": [
+   "A as recorded = closed-die forging in 38MnVS6: £18.7363 (route note: B estimates forging at +£5–8 over its £9.16 casting, i.e. £14–17, without costing it).",
+   "A re-run as cast + machine, EN-GJS-400-15 (material.grade mat-gjs400), sand, safety-critical yes: £12.5294 — used below. A still adds its near-net \"spindle\" lathe op (CF-07)."
+  ],
+  "A_machiningOps": [
+   {
+    "op": "Machining Setup (amortised)",
+    "machine": "mach-hmc-400",
+    "min": 0.018,
+    "crew": 1,
+    "gbp": 0.0129
+   },
+   {
+    "op": "Finish machining — +X side",
+    "machine": "mach-hmc-400",
+    "min": 1.674,
+    "crew": 0.5,
+    "gbp": 0.9506
+   },
+   {
+    "op": "Finish machining — +Z side",
+    "machine": "mach-hmc-400",
+    "min": 0.87,
+    "crew": 0.5,
+    "gbp": 0.4941
+   },
+   {
+    "op": "Finish machining — +Y side",
+    "machine": "mach-hmc-400",
+    "min": 0.588,
+    "crew": 0.5,
+    "gbp": 0.3339
+   },
+   {
+    "op": "Drilling — 7 holes (1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25, 1× stepped ",
+    "machine": "mach-hmc-400",
+    "min": 1.392,
+    "crew": 0.5,
+    "gbp": 0.7905
+   },
+   {
+    "op": "Finish boring — 1 cored bore(s), 1 stepped (1× stepped bore Ø75.0×6.0 / Ø68.0×40 / Ø71.0×2",
+    "machine": "mach-hmc-400",
+    "min": 1.302,
+    "crew": 0.5,
+    "gbp": 0.7394
+   },
+   {
+    "op": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+    "machine": "mach-lathe-cnc",
+    "min": 0.822,
+    "crew": 0.5,
+    "gbp": 0.4163
+   },
+   {
+    "op": "Load / clamp / unload — lathe fixture, 1 fixturing",
+    "machine": "mach-lathe-cnc",
+    "min": 0.6,
+    "crew": 1,
+    "gbp": 0.4558
+   },
+   {
+    "op": "Pallet change — 1 fixturing(s)",
+    "machine": "mach-hmc-400",
+    "min": 0.12,
+    "crew": 0.5,
+    "gbp": 0.0681
+   },
+   {
+    "op": "Deburr and gauge check (bench)",
+    "machine": "mach-hmc-400",
+    "min": 0,
+    "crew": 1,
+    "gbp": 0.5091
+   }
+  ],
+  "B_machiningOps": [
+   {
+    "op": "OP10",
+    "machine": "mach-hmc-400",
+    "cutMin": 2.924,
+    "tools": 11,
+    "nFeatures": 21
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-hmc-400",
+    "cutMin": 0.858,
+    "tools": 6,
+    "nFeatures": 11
+   }
+  ],
+  "B_machiningTotals": {
+   "cycle": 6.699,
+   "cut": 3.782
+  },
+  "machiningSplit": {
+   "A_machiningGbp": 4.248720817481884,
+   "A_minutes": 7.368,
+   "A_handlingMinutes": 0.72,
+   "allowanceGbp": 1.6764058831521735,
+   "allowanceMinutes": 2.952,
+   "oeeGbp": 0.26048255208333326,
+   "labourBasisGbp": 0.2395321739130435,
+   "A_restGbp": 2.072300208333333,
+   "B_machiningGbp": 3.0625999999999998,
+   "B_cycleMin": 6.699,
+   "B_cutMin": 3.782,
+   "contentRateHandlingGapGbp": -0.9902997916666667,
+   "A_totalWithoutAllowances": 10.1155
+  },
+  "drivers": [
+   {
+    "driver": "Metal bought (net of melt loss / incl. bar kerf)",
+    "A": 1.0828,
+    "B": 1.0636,
+    "gapGBP": 0.0192,
+    "gapPct": 0.21,
+    "cause": "A as-cast 3.238 kg (3.0 mm sand stock on its 8 face rows and the cored Ø68 bore, plus turning stock on the 71 cm² \"spindle\") v B 3.097 kg (3.0 mm, RMA F 2.0 + CT10/4, 9 faces); same £0.328/kg + B inoculant.",
+    "gapId": "CF-07",
+    "whoLooksRight": "B",
+    "why": "A adds turning stock for a lathe op the knuckle does not have (CF-07).",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap credits (swarf, flash, wad, crop)",
+    "A": 0,
+    "B": -0.0861,
+    "gapGBP": 0.0861,
+    "gapPct": 0.94,
+    "cause": "A none; B 0.57 kg swarf × £0.15.",
+    "gapId": "CF-14",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Melt / billet-heating energy + foundry indirect (melt-shop fixed, sand, bentonite, sand plant)",
+    "A": 0.9661,
+    "B": 1.0117,
+    "gapGBP": -0.0456,
+    "gapPct": -0.5,
+    "cause": "A £0.97 on 5.34 kg poured; B £1.01 on 5.43 kg poured — close in total, split differently.",
+    "gapId": "CF-10",
+    "whoLooksRight": "neither",
+    "why": "—",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Casting / forge cell (machine + crew, incl. melt crew)",
+    "A": 0.3856,
+    "B": 0.5243,
+    "gapGBP": -0.1387,
+    "gapPct": -1.51,
+    "cause": "A 5 impressions a mould (plate rule), crew 3 + melt shop 1.5 op-h/t; B 2 impressions, crew 8.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Assumptions both sides.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cores",
+    "A": 0.7732,
+    "B": 0,
+    "gapGBP": 0.7732,
+    "gapPct": 8.44,
+    "cause": "A £0.75 band for \"1 undercut face — a small core or loose piece\"; B no core (1 undercut face; bore formed by the mould halves).",
+    "gapId": "CF-11",
+    "whoLooksRight": "B",
+    "why": "One undercut face does not justify a core; A's band fires on any count ≥ 1.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Primary tooling (die / pattern, maintenance, die change)",
+    "A": 0.0349,
+    "B": 0.0439,
+    "gapGBP": -0.009,
+    "gapPct": -0.1,
+    "cause": "A £11,639 × 3; B £14,627 × 3.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Close.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Fettling",
+    "A": 0.4367,
+    "B": 0.3568,
+    "gapGBP": 0.0799,
+    "gapPct": 0.87,
+    "cause": "Both 40 s robot cell.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "Same assumption.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Shot blast / descale",
+    "A": 0.2681,
+    "B": 0.0966,
+    "gapGBP": 0.1715,
+    "gapPct": 1.87,
+    "cause": "A 600 kg/h + full operator; B 1,000 kg/h, crew 0.25.",
+    "gapId": "CF-13",
+    "whoLooksRight": "neither",
+    "why": "Both unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Inspection and NDT",
+    "A": 0.7673,
+    "B": 0.5472,
+    "gapGBP": 0.2201,
+    "gapPct": 2.4,
+    "cause": "A MPI 75 s + RT 1/50; B visual + MPI 30 s + US + gauging + CMM.",
+    "gapId": "CF-12",
+    "whoLooksRight": "neither",
+    "why": "Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — non-cutting time: A fixed per-feature allowances + handling v B per-operation non-cut",
+    "A": 2.0143,
+    "B": 1.3336,
+    "gapGBP": 0.6807,
+    "gapPct": 7.43,
+    "cause": "A: 2.95 min of fixed allowances (0.2 min a face, 0.15 a hole, 0.25 a bore pass, 0.1 blind, 0.1 tap; \"engineering-typical, not sourced\") + 0.72 min handling / pallet change = 3.67 min; B: 2.92 min non-cut (tool changes, approaches, probing, indexing, pallet change). A at B's OEE / operator basis. A 7.37 min incl. a lathe \"spindle\" op 0.82 min + load 0.6 min (CF-07) v B 6.70 min (3.78 cut incl. rough + finish faces and an H7 bore, 2.92 non-cut).",
+    "gapId": "CF-19 (new)",
+    "whoLooksRight": "B (more plausible)",
+    "why": "Both are assumptions; B builds non-cut per operation from tool changes, approaches, probing and indexing; A adds 9–15 s per feature. Neither is a timed cycle.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — cutting time (feature set, passes, cutting data)",
+    "A": 1.7344,
+    "B": 1.729,
+    "gapGBP": 0.0054,
+    "gapPct": 0.06,
+    "cause": "A 3.70 min cutting (incl. 2.2 s tool changes and any lathe op) v B 3.78 min, both at B's basis, split by minutes. Equal in total, but A's includes a lathe \"spindle\" op (0.82 min) the knuckle does not have (CF-07); on the HMC A cuts ≈ 2.9 min v B 3.8 min because B roughs + finishes faces and bores the H7 seat (CF-06).",
+    "gapId": "CF-06, CF-07",
+    "whoLooksRight": "B",
+    "why": "A adds a lathe op the part does not need and omits B's rough / finish passes.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — OEE 0.8 on machine time (A) v none (B)",
+    "A": 0.2605,
+    "B": 0,
+    "gapGBP": 0.2605,
+    "gapPct": 2.84,
+    "cause": "A divides machine time by OEE 0.8 (core.ts:247); B applies no availability / performance loss.",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "A dedicated cell still loses availability; B is optimistic. A's 0.8 is unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — operator grade and efficiency",
+    "A": 0.2395,
+    "B": 0,
+    "gapGBP": 0.2395,
+    "gapPct": 2.61,
+    "cause": "A: skilled machinist £27.95 ÷ 0.92 efficiency, 0.5 crew; B: semi-skilled £24.65 at 100 %, 0.5 crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A production-cell loader is semi-skilled; a 0.92 efficiency is a plant figure. Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cutting-tool wear",
+    "A": 0.6648,
+    "B": 0.3782,
+    "gapGBP": 0.2866,
+    "gapPct": 3.13,
+    "cause": "Same £0.10/min; A 6.6 min incl. allowances and the lathe op; B 3.8 min.",
+    "gapId": "CF-20 (new), CF-07",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining setup, fixtures, CNC programming",
+    "A": 0.0782,
+    "B": 0.0901,
+    "gapGBP": -0.0119,
+    "gapPct": -0.13,
+    "cause": "A 4 HMC + 1 lathe fixture; B 4 + 2 HMC fixtures (OP10, OP20).",
+    "gapId": "CF-05",
+    "whoLooksRight": "B",
+    "why": "B has 2 clampings; the geometry needs ≥ 2 (probe 3).",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Deburr / wash after machining",
+    "A": 0.5091,
+    "B": 0.2554,
+    "gapGBP": 0.2537,
+    "gapPct": 2.77,
+    "cause": "A ~1.1 min ÷ 0.92; B 30 s + wash.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "—",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Scrap adjustments (casting-scrap secondary, 1 % machining scrap)",
+    "A": 0,
+    "B": 0.0954,
+    "gapGBP": -0.0954,
+    "gapPct": -1.04,
+    "cause": "A none; B 1 % machining scrap + casting scrap on secondary.",
+    "gapId": "CF-09",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Packaging",
+    "A": 0.16,
+    "B": 0.15,
+    "gapGBP": 0.01,
+    "gapPct": 0.11,
+    "cause": "A £0.16; B £0.15.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "—",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Overhead 12 %",
+    "A": 1.2259,
+    "B": 0.8928,
+    "gapGBP": 0.3331,
+    "gapPct": 3.64,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Margin 8 %",
+    "A": 0.9281,
+    "B": 0.6786,
+    "gapGBP": 0.2495,
+    "gapPct": 2.72,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Rounding (B total printed to 3 dp; 4-dp rounding of the rows)",
+    "A": 0,
+    "B": 0,
+    "gapGBP": 0,
+    "gapPct": 0,
+    "cause": "arithmetic",
+    "gapId": "—",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   }
+  ]
+ },
+ "FORGE_Hub_Flange": {
+  "A_total": 13.3685,
+  "B_total": 10.435,
+  "gapGBP": 2.9334999999999987,
+  "gapPct": 28.112122664111148,
+  "aRun": "current/MODELLED_FORGE_Hub_Flange__200k_5y_EXW.json",
+  "bRun": "reference/FORGE_Hub_Flange.json",
+  "routeComparability": [
+   "MODELLED part. Both closed-die 38MnVS6, controlled cooled, no heat treatment. A: 1,600 t press, trim 100 t, 2 hits; B: 2,500 t press, trim + pierce 400 t, takt 7.5 s. A answers safetyCritical \"no\" → no MPI; B charges 100 % MPI (an assumption for a wheel-end part) — the tool offers the answer, not changed so A stays as recorded."
+  ],
+  "A_machiningOps": [
+   {
+    "op": "Machining Setup (amortised)",
+    "machine": "mach-haas-umc500",
+    "min": 0.018,
+    "crew": 1,
+    "gbp": 0.0135
+   },
+   {
+    "op": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+    "machine": "mach-haas-umc500",
+    "min": 1.08,
+    "crew": 0.5,
+    "gbp": 0.6575
+   },
+   {
+    "op": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+    "machine": "mach-haas-umc500",
+    "min": 0.378,
+    "crew": 0.5,
+    "gbp": 0.2301
+   },
+   {
+    "op": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+    "machine": "mach-lathe-cnc",
+    "min": 1.452,
+    "crew": 0.5,
+    "gbp": 0.7353
+   },
+   {
+    "op": "Load / clamp / unload — lathe fixture, 1 fixturing",
+    "machine": "mach-lathe-cnc",
+    "min": 0.6,
+    "crew": 1,
+    "gbp": 0.4558
+   },
+   {
+    "op": "Load / clamp / unload — 1 fixturing(s)",
+    "machine": "mach-haas-umc500",
+    "min": 0.6,
+    "crew": 1,
+    "gbp": 0.5172
+   },
+   {
+    "op": "Deburr and gauge check (bench)",
+    "machine": "mach-haas-umc500",
+    "min": 0,
+    "crew": 1,
+    "gbp": 0.4635
+   }
+  ],
+  "B_machiningOps": [
+   {
+    "op": "OP10",
+    "machine": "mach-lathe-cnc",
+    "cutMin": 1.223,
+    "tools": 4,
+    "nFeatures": 2
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-lathe-cnc",
+    "cutMin": 0.848,
+    "tools": 3,
+    "nFeatures": 2
+   },
+   {
+    "op": "OP30",
+    "machine": "mach-vmc3",
+    "cutMin": 0.293,
+    "tools": 2,
+    "nFeatures": 2
+   }
+  ],
+  "B_machiningTotals": {
+   "cycle": 4.081,
+   "cut": 2.364
+  },
+  "machiningSplit": {
+   "A_machiningGbp": 2.5959168953804346,
+   "A_minutes": 4.109999999999999,
+   "A_handlingMinutes": 1.2,
+   "allowanceGbp": 0.6976794021739128,
+   "allowanceMinutes": 1.1459999999999995,
+   "oeeGbp": 0.16880728124999997,
+   "labourBasisGbp": 0.19884608695652173,
+   "A_restGbp": 1.5305841250000003,
+   "B_machiningGbp": 1.6482999999999999,
+   "B_cycleMin": 4.081,
+   "B_cutMin": 2.364,
+   "contentRateHandlingGapGbp": -0.11771587499999958,
+   "A_totalWithoutAllowances": 12.3522
+  },
+  "drivers": [
+   {
+    "driver": "Metal bought (net of melt loss / incl. bar kerf)",
+    "A": 5.6383,
+    "B": 4.7878,
+    "gapGBP": 0.8505,
+    "gapPct": 8.15,
+    "cause": "A billet = as-forged 3.185 kg ÷ 0.675 (unsourced band; 25.7 % of the billet \"scale, crop, wad\" not itemised) = 4.716 kg + kerf → 4.903 kg bar; B billet 3.947 kg = raw 3.425 + flash 0.348 (20 × 3 mm land, assumption) + wad 0.145 + scale 0.75 % + excess 3 % → 4.10 kg bar. Same £1.15/kg.",
+    "gapId": "CF-04",
+    "whoLooksRight": "B",
+    "why": "B itemises every loss term; A's yield band is unsourced and constant. B's flash land, scale % and excess are still assumptions. Note A's as-forged weight is LOWER (3.185 v 3.425 kg) — B adds EN 10243-1 minus tolerance and 3°/5° drafts; it is A's billet ratio (1.48 v 1.15) that drives the gap.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap credits (swarf, flash, wad, crop)",
+    "A": -0.3306,
+    "B": -0.3896,
+    "gapGBP": 0.059,
+    "gapPct": 0.57,
+    "cause": "A credits flash + un-itemised loss + kerf (1.65 kg × £0.20) but no swarf; B credits flash, wad, kerf, crop (0.71 kg) and 1.24 kg swarf, not scale.",
+    "gapId": "CF-14, CF-04",
+    "whoLooksRight": "B",
+    "why": "Scale is not recoverable; swarf is.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Melt / billet-heating energy + foundry indirect (melt-shop fixed, sand, bentonite, sand plant)",
+    "A": 0.3503,
+    "B": 0.2917,
+    "gapGBP": 0.0586,
+    "gapPct": 0.56,
+    "cause": "Same 0.4 kWh/kg (SMS Elotherm); A heats a 4.72 kg billet, B 3.95 kg.",
+    "gapId": "CF-04",
+    "whoLooksRight": "B",
+    "why": "Consequence of the billet mass.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Casting / forge cell (machine + crew, incl. melt crew)",
+    "A": 0.8753,
+    "B": 0.6618,
+    "gapGBP": 0.2135,
+    "gapPct": 2.05,
+    "cause": "A 1,600 t press, takt 3 s + 2 hits × 4 s = 11 s, crew 2 + trim 1, OEE 0.8; B 2,500 t press, takt 7.5 s, crew 3, no OEE.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Takt and crew unsourced on both sides; A picks a smaller press, B a faster takt.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Primary tooling (die / pattern, maintenance, die change)",
+    "A": 0.5306,
+    "B": 0.6027,
+    "gapGBP": -0.0721,
+    "gapPct": -0.69,
+    "cause": "A die set £25,447 ÷ 47,955 forgings (fractional); B insert pairs by life + holder + die change £0.06.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "Both build-ups are judgement.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Shot blast / descale",
+    "A": 0.39,
+    "B": 0.0895,
+    "gapGBP": 0.3005,
+    "gapPct": 2.88,
+    "cause": "A £0.12/kg × forging (unsourced); B 1,200 kg/h blast.",
+    "gapId": "CF-13",
+    "whoLooksRight": "B",
+    "why": "A's £/kg is ~4× B's build-up; neither sourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Inspection and NDT",
+    "A": 0,
+    "B": 0.3625,
+    "gapGBP": -0.3625,
+    "gapPct": -3.47,
+    "cause": "A none (safety-critical answered \"no\" in ANSWERS); B 100 % MPI 25 s (its assumption for a wheel-end part) £0.22 + gauging + CMM £0.14.",
+    "gapId": "CF-12 (gauging / CMM); MPI = a route choice",
+    "whoLooksRight": "B (gauging / CMM)",
+    "why": "The MPI is an answer difference, not method: the modelled part is stated not safety-critical.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — non-cutting time: A fixed per-feature allowances + handling v B per-operation non-cut",
+    "A": 1.3173,
+    "B": 0.6935,
+    "gapGBP": 0.6239,
+    "gapPct": 5.98,
+    "cause": "A: 1.15 min of fixed allowances (0.2 min a face, 0.15 a hole, 0.25 a bore pass, 0.1 blind, 0.1 tap; \"engineering-typical, not sourced\") + 1.20 min handling / pallet change = 2.35 min; B: 1.72 min non-cut (tool changes, approaches, probing, indexing, pallet change). A at B's OEE / operator basis. A 4.11 min (lathe op10/op20 1.45 + 1 load 0.6; holes + Ø60 bore on a 5-axis 1.46 + load 0.6) v B 4.08 min (two lathe chuckings + VMC drilling).",
+    "gapId": "CF-19 (new)",
+    "whoLooksRight": "B (more plausible)",
+    "why": "Both are assumptions; B builds non-cut per operation from tool changes, approaches, probing and indexing; A adds 9–15 s per feature. Neither is a timed cycle.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — cutting time (feature set, passes, cutting data)",
+    "A": 0.9109,
+    "B": 0.9548,
+    "gapGBP": -0.0439,
+    "gapPct": -0.42,
+    "cause": "A 1.76 min cutting (incl. 2.2 s tool changes and any lathe op) v B 2.36 min, both at B's basis, split by minutes. A turns outside + faces in one lathe op (1.45 min) and drills / bores on a 5-axis; B turns op 10 and op 20 (2.07 min cut) and drills on a VMC.",
+    "gapId": "CF-06, CF-07",
+    "whoLooksRight": "B",
+    "why": "B's op 10 / op 20 structure holds the bore-to-OD datum (CF-08).",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining — OEE 0.8 on machine time (A) v none (B)",
+    "A": 0.1688,
+    "B": 0,
+    "gapGBP": 0.1688,
+    "gapPct": 1.62,
+    "cause": "A divides machine time by OEE 0.8 (core.ts:247); B applies no availability / performance loss.",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "A dedicated cell still loses availability; B is optimistic. A's 0.8 is unsourced.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Machining — operator grade and efficiency",
+    "A": 0.1988,
+    "B": 0,
+    "gapGBP": 0.1988,
+    "gapPct": 1.91,
+    "cause": "A: skilled machinist £27.95 ÷ 0.92 efficiency, 0.5 crew; B: semi-skilled £24.65 at 100 %, 0.5 crew.",
+    "gapId": "CF-16",
+    "whoLooksRight": "neither",
+    "why": "A production-cell loader is semi-skilled; a 0.92 efficiency is a plant figure. Both assumptions.",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Cutting-tool wear",
+    "A": 0.3492,
+    "B": 0.2837,
+    "gapGBP": 0.0655,
+    "gapPct": 0.63,
+    "cause": "Same £0.12/min; A 2.9 min incl. allowances; B 2.36 min.",
+    "gapId": "CF-20 (new)",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Machining setup, fixtures, CNC programming",
+    "A": 0.0286,
+    "B": 0.0479,
+    "gapGBP": -0.0193,
+    "gapPct": -0.18,
+    "cause": "A lathe fixture + 1 5-axis fixture; B 2 + 2 soft-jaw sets + 1 VMC fixture + jaw replacement.",
+    "gapId": "CF-08",
+    "whoLooksRight": "B",
+    "why": "B turns op 10 / op 20 in two chuckings; A charges one.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Deburr / wash after machining",
+    "A": 0.4635,
+    "B": 0.05,
+    "gapGBP": 0.4135,
+    "gapPct": 3.96,
+    "cause": "A ~1.04 min ÷ 0.92; B wash only (chamfers in OP30).",
+    "gapId": "CF-16",
+    "whoLooksRight": "A",
+    "why": "B charges no deburr of 6 drilled holes — optimistic.",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Scrap adjustments (casting-scrap secondary, 1 % machining scrap)",
+    "A": 0,
+    "B": 0.0833,
+    "gapGBP": -0.0833,
+    "gapPct": -0.8,
+    "cause": "A none; B 1 % machining scrap.",
+    "gapId": "CF-09",
+    "whoLooksRight": "B",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Packaging",
+    "A": 0.18,
+    "B": 0.12,
+    "gapGBP": 0.06,
+    "gapPct": 0.57,
+    "cause": "A £0.18; B £0.12.",
+    "gapId": "—",
+    "whoLooksRight": "neither",
+    "why": "—",
+    "assumptionVsAssumption": true
+   },
+   {
+    "driver": "Overhead 12 %",
+    "A": 1.307,
+    "B": 1.0224,
+    "gapGBP": 0.2846,
+    "gapPct": 2.73,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Margin 8 %",
+    "A": 0.9903,
+    "B": 0.773,
+    "gapGBP": 0.2173,
+    "gapPct": 2.08,
+    "cause": "Same rate on both sides (12 % of the factory base; 8 % of the subtotal incl. packaging) — the gap is the rate × the other gaps.",
+    "gapId": "follows",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   },
+   {
+    "driver": "Rounding (B total printed to 3 dp; 4-dp rounding of the rows)",
+    "A": 0,
+    "B": 0,
+    "gapGBP": 0.0001,
+    "gapPct": 0,
+    "cause": "arithmetic",
+    "gapId": "—",
+    "whoLooksRight": "n/a",
+    "why": "—",
+    "assumptionVsAssumption": false
+   }
+  ]
+ }
+}

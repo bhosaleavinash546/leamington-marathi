@@ -1,0 +1,62 @@
+{
+ "created": "2026-11-10",
+ "purpose": "raw (as-cast / as-forged) v finished (machined) drawing pairs for should-cost validation of casting+machining and forging+machining",
+ "sources": {
+  "DTIC_AD0747857.pdf": {
+   "bytes": 10642718,
+   "sha256": "85a804076e5c35b0941cfb028775d87f6c169a41d4937116e6db9febc97fd218",
+   "from": "https://archive.org/download/DTIC_AD0747857/DTIC_AD0747857.pdf",
+   "unmodified": true
+  }
+ },
+ "entries": [
+  {
+   "id": "ase-mod1-crankcase",
+   "component": "Crankcase, Automotive Stirling Engine Mod I (U-4 engine drive system)",
+   "route": "casting+machining",
+   "matchEvidence": "Parent-child reference on the sheet: crankcase 1-61116 sheet 1 note sends the marked dimensions to 'DRG No 61108 (3274-108)' = title of 1-61108 'CRANKCASE/BEDPLATE MACHINING DRAWING' (internal no. 3274-108 in its title block). Both are listed together in the same Engine Drive System drawing list (PDF p.181). Vol I sec. 7.1.3 says crankcase and bedplate are castings (LPDC, initially sand cast).",
+   "licence": "NASA NTRS copyright determination GOV_PUBLIC_USE_PERMITTED, distribution PUBLIC (both volumes)",
+   "drawingKind": "scan (1982 NASA CASI reproduction of reduced-size prints, 300 ppi JPEG, poor OCR text layer \u2014 unusable; read by eye)",
+   "raw": "CRANKCASE (sheets 1-7 of 7) 1-61116 (internal no. 3274-116)",
+   "finished": "CRANKCASE/BEDPLATE MACHINING DRAWING (sheets 1 and 2 of 2)",
+   "cad": null,
+   "realCostData": false
+  },
+  {
+   "id": "ase-mod1-bedplate",
+   "component": "Bedplate (lower crankcase), Automotive Stirling Engine Mod I",
+   "route": "casting+machining",
+   "matchEvidence": "Parent-child reference on the sheet: bedplate 1-61117 sheet 4 note 'finish machine these dimensions on assembly with crankcase see drg No 61108 (3274-108)', and sheet 1 defines the casting location areas for machining. 1-61108 is the CRANKCASE/BEDPLATE MACHINING DRAWING. Same drawing list (PDF p.181) and Vol I sec. 7.1.3.",
+   "licence": "NASA NTRS copyright determination GOV_PUBLIC_USE_PERMITTED, distribution PUBLIC (both volumes)",
+   "drawingKind": "scan (1982 NASA CASI reproduction of reduced-size prints, 300 ppi JPEG, poor OCR text layer \u2014 unusable; read by eye)",
+   "raw": "BEDPLATE (sheets 1-4 of 4) 1-61117 (internal no. 3274-117)",
+   "finished": "CRANKCASE/BEDPLATE MACHINING DRAWING (sheets 1 and 2 of 2)",
+   "cad": null,
+   "realCostData": false
+  },
+  {
+   "id": "ch47-spiral-bevel-gear",
+   "component": "Spiral bevel GEAR, 43 teeth, CH-47C helicopter nose gearbox (precision-forged teeth)",
+   "route": "forging+machining",
+   "matchEvidence": "Same report, same part: text p.15 names the gear forging design SK22270/FR529997 and states it carries the drawing requirements of the finished gear plus forging stock; Table I lists Gear SK22270 against Boeing-Vertol part number 114D6245; the forging design data block (43 teeth, pitch 4.930, 22deg30' PA, 25deg RH spiral, PD 8.722) equals Table I; Figure 45 is captioned as the gear machining sequence for these forgings; Table XXV / XXVI headers: part name SPIRAL BEVEL GEAR, material AMS 6265, customer Boeing-Vertol, engine CH-47 helicopter, part number starting SK22270 (rest only partly legible).",
+   "licence": "US Government-sponsored technical report, Distribution Statement A: 'Approved for public release; distribution unlimited' (no copyright notice)",
+   "drawingKind": "scan (1972 NTIS reproduction, 300 ppi bilevel CCITT; drawings reduced; forging design legible at 200-300 dpi, operation sketches faint)",
+   "raw": "Figure 5. Gear forging design SK22270 / FR529997 (forging design)",
+   "finished": "Figure 45. Gear machining sequence sketches and layout (route card + operation sheets) and Table I Basic Gear and Pinion",
+   "cad": null,
+   "realCostData": true
+  },
+  {
+   "id": "ch47-spiral-bevel-pinion",
+   "component": "Spiral bevel PINION, 35 teeth, integral shaft, CH-47C helicopter nose gearbox input",
+   "route": "forging+machining",
+   "matchEvidence": "Same report, same part: p.15 names pinion forging design SK22269/FR729996; Table I lists Pinion SK22269 against Boeing-Vertol 114D6244; forging design data block (35 teeth, pitch 4.930, PD 7.099, 25deg LH) equals Table I; the forging design shows 'MMC OF FINISH PART' inside the forging stock (section A-A); route card FR-729982-4 'Forged pinion gear', material 'Forging - 9310 St'l', first op 'Release forgings'; Figure 44 captioned as the pinion machining sequence.",
+   "licence": "US Government-sponsored technical report, Distribution Statement A: 'Approved for public release; distribution unlimited' (no copyright notice)",
+   "drawingKind": "scan (1972 NTIS reproduction, 300 ppi bilevel CCITT; forging design clearly legible; operation sketches legible at 150-300 dpi)",
+   "raw": "Figure 4. Pinion forging design SK22269 / FR729996 (forging design)",
+   "finished": "Figure 44. Pinion machining sequence sketches and layout (route card for job-cost orders FR-729982-4 'Forged pinion gear",
+   "cad": null,
+   "realCostData": false
+  }
+ ]
+}

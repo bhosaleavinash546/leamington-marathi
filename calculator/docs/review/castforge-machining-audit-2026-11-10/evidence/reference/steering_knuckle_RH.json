@@ -1,0 +1,1033 @@
+{
+ "part": "steering_knuckle_RH",
+ "conditions": {
+  "country": "UK",
+  "annual_volume": 200000,
+  "programme_years": 5,
+  "programme_parts": 1000000,
+  "terms": "ex-works (packaging in, freight out)",
+  "date": "2026-11-10",
+  "overhead": "12 % of factory base (material + process + labour + tooling + scrap + inspection), rate-book oh-default",
+  "margin": "8 % of subtotal (incl. packaging), rate-book oh-default",
+  "note": "overhead and margin applied ONCE on the integrated cast/forge + machine chain, like for like with the application"
+ },
+ "route": "Green-sand vertically parted flaskless moulding, EN-GJS-400-15 as-cast, no cores; machined on a twin-pallet 4-axis HMC (2 clampings).",
+ "route_justification": [
+  "CHOSEN: ductile iron EN-GJS-400-15 green sand. Reasons: fill ratio 0.063 (spindly, branched arms in three directions) — near-net in sand with a 2-part mould and no cores (only 1 undercut face measured), the lowest-cost route at 200k/yr; ductile iron gives 15 % elongation (safety part) without heat treatment.",
+  "ALTERNATIVE 1 — forged steel (e.g. 38MnVS6): 2.80 kg finished (density 7.85 vs 7.10), a branched part with S ≈ 0.06 (EN 10243-1 complexity class S4) needs a large flash (typically ≥ 30 % of billet) and a multi-impression die; the bearing bore would be pierced and arms bent/forged in several directions — material alone ≈ (2.8 kg + ~20 % stock + ~35 % flash) ≈ 4.5 kg bar × £1.15 ≈ £5.2 vs £1.06 of iron charge here; expected +£5–8/part. Not costed in detail.",
+  "ALTERNATIVE 2 — aluminium (gravity / squeeze cast A356-T6, ~0.96 kg + section increase ~30 % for stiffness): lighter (unsprung mass) but metal at ~£2.98/kg and T6; expected +£3–6/part vs iron. Not costed in detail."
+ ],
+ "geometry": {
+  "volume_cm3": 356.101,
+  "surface_cm2": 789.25,
+  "source": "kernel re-measure (server/utils/cad-geometry-engine.py) + own OCP face listing; feature table = kernel featureTable"
+ },
+ "allowance": {
+  "standard": "ISO 8062:1994 Table 2 (RMA) + Table 1 (CT) (S1)",
+  "RMA_mm": 2.0,
+  "CT_total_mm": 4.0,
+  "nominal_stock_per_side_mm": 3.0,
+  "formula": "external: R = F + 2·RMA + CT/2; internal: R = F − 2·RMA − CT/2 → nominal stock per side = RMA + CT/4 (casting tolerance kept separate: the cast surface may lie anywhere in ±CT/2 about R)",
+  "machined_faces": [
+   {
+    "face": "hub-side face X=0",
+    "area_mm2": 1184
+   },
+   {
+    "face": "inner face X=−48.5",
+    "area_mm2": 491
+   },
+   {
+    "face": "caliper boss faces X=−31 (×2)",
+    "area_mm2": 712
+   },
+   {
+    "face": "caliper boss faces X=−48 (×2)",
+    "area_mm2": 664
+   },
+   {
+    "face": "strut-clamp faces Y=5.5 / Y=21.5",
+    "area_mm2": 1883
+   },
+   {
+    "face": "tie-rod boss face (tilted)",
+    "area_mm2": 758
+   },
+   {
+    "face": "ball-joint boss faces Z=±13",
+    "area_mm2": 1128
+   },
+   {
+    "face": "arm pad Z=+13 / Z=−13 (Ø12.5 hole)",
+    "area_mm2": 1176
+   },
+   {
+    "face": "lower pads Z=17 / Z=20 / Z=−18.5",
+    "area_mm2": 1290
+   }
+  ],
+  "holes": [
+   {
+    "feature": "Ø68 bearing bore L40.3",
+    "dia": 68,
+    "length": 40.3,
+    "count": 1
+   },
+   {
+    "feature": "Ø75 recess L6",
+    "dia": 75,
+    "length": 6,
+    "count": 1
+   },
+   {
+    "feature": "Ø63 lip L3",
+    "dia": 63,
+    "length": 3,
+    "count": 1
+   },
+   {
+    "feature": "Ø12.5 caliper holes ×2 L16 (M14×1.5 assumed)",
+    "dia": 12.5,
+    "length": 16,
+    "count": 2
+   },
+   {
+    "feature": "Ø12.5 L25",
+    "dia": 12.5,
+    "length": 25,
+    "count": 1
+   },
+   {
+    "feature": "Ø15 ball-joint L25",
+    "dia": 15,
+    "length": 25,
+    "count": 1
+   },
+   {
+    "feature": "Ø10 L11.7",
+    "dia": 10,
+    "length": 11.7,
+    "count": 1
+   },
+   {
+    "feature": "Ø11 L20.5",
+    "dia": 11,
+    "length": 20.5,
+    "count": 1
+   },
+   {
+    "feature": "Ø12 strut-clamp hole L16",
+    "dia": 12,
+    "length": 16,
+    "count": 1
+   },
+   {
+    "feature": "Ø15 tie-rod L18.9",
+    "dia": 15,
+    "length": 18.9,
+    "count": 1
+   }
+  ],
+  "grade": "largest 236.4 mm → band 160–250; RMAG F = 2.0 mm; CT10 = 4.0 mm → 3.0 mm/side",
+  "holes_note": "Ø68 bearing bore formed by the green-sand mould halves (through, along the draw) with stock; holes ≤ Ø15 drilled from solid",
+  "raw_shape": "finished CAD + nominal stock on every machined face and bore + drilled holes filled; mass from volume × rate-book density"
+ },
+ "weights_kg": {
+  "finished": 2.5283,
+  "raw": 3.0965,
+  "removed": 0.5682
+ },
+ "primary_process": {
+  "process": "green-sand vertical flaskless line, 2 impressions/mould",
+  "raw_casting_kg": 3.0965,
+  "yield_": 0.6,
+  "poured_per_good_casting_kg": 5.4324,
+  "returns_kg": 2.3359,
+  "casting_scrap": 0.05,
+  "pattern_sets": 3,
+  "moulds": 531632,
+  "pattern_buildup": {
+   "cost": 14626.65,
+   "items": [
+    {
+     "item": "pattern plates (steel / iron)",
+     "gbp": 627.0,
+     "formula": "330 kg × tool-steel.plate-steel £1.9/kg"
+    },
+    {
+     "item": "design & CAM",
+     "gbp": 2921.0,
+     "formula": "50 h × toolroom.design £58.42"
+    },
+    {
+     "item": "CNC",
+     "gbp": 8902.9,
+     "formula": "170 h × toolroom.cnc £52.37"
+    },
+    {
+     "item": "fitting",
+     "gbp": 2175.75,
+     "formula": "45 h × toolroom.fitting £48.35"
+    },
+    {
+     "item": "core boxes (CNC)",
+     "gbp": 0.0,
+     "formula": "0 h × toolroom.cnc £52.37"
+    }
+   ],
+   "note": "plate mass and toolroom hours are engineering assumptions; unit rates are rate-book values"
+  },
+  "assumptions": {
+   "yield_": 0.6,
+   "scrap": 0.05,
+   "return_loss": 0.02,
+   "inoc_frac": 0.002,
+   "inoc_gbp_kg": 3.0,
+   "melt_kwh_t": 620,
+   "melt_fixed_gbp_t": 30.0,
+   "sand_ratio": 5.0,
+   "sand_renew": 0.05,
+   "bond_gbp_kg": 0.01,
+   "sand_plant_gbp_t": 15.0,
+   "moulds_h": 300,
+   "impressions": 2,
+   "crew": 8,
+   "blast_kg_h": 1000,
+   "blast_crew": 0.25,
+   "grind_s": 40,
+   "grind_crew": 0.5,
+   "vis_s": 10,
+   "mpi_s": 30,
+   "us_s": 8,
+   "pattern_life": 250000
+  },
+  "heat_treatment": "none — as-cast grade by chemistry / cooling (assumption)",
+  "ndt": "MPI 100 %, ultrasonic nodularity 100 %, visual 100 %"
+ },
+ "machining": {
+  "ops": [
+   {
+    "op": "OP10",
+    "machine": "mach-hmc-400",
+    "machine_desc": "HMC 400 twin pallet, 4 axes",
+    "axes": "4 (B-index): X, Y and the tie-rod axis (0.139,−0.99,0) all lie in the B plane; 3-axis would need 4 clampings",
+    "workholding": "hydraulic fixture: bearing-bore axis horizontal; located on cast datum targets (bore core print area, strut lug, lower arm)",
+    "orientation": "B0 (+X) hub side; B180 (−X) inner side + caliper bosses; B90 (±Y) strut-clamp faces + Ø12; B≈ −82° tie-rod face + Ø15",
+    "datum": "cast datums → bearing bore + hub face become the datum system for OP20",
+    "tools": 11,
+    "features": [
+     {
+      "feature": "hub-side face X=0 — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=1184/60+80=100 mm; t=0.161 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1607
+     },
+     {
+      "feature": "hub-side face X=0 — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=1184/94+125=138 mm; t=0.073 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0734
+     },
+     {
+      "feature": "inner face X=−48.5 — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=491/60+80=88 mm; t=0.142 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1421
+     },
+     {
+      "feature": "inner face X=−48.5 — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=491/94+125=130 mm; t=0.069 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0695
+     },
+     {
+      "feature": "caliper boss faces X=−31 (×2) — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=712/60+80=92 mm; t=0.148 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.148
+     },
+     {
+      "feature": "caliper boss faces X=−31 (×2) — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=712/94+125=133 mm; t=0.071 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0707
+     },
+     {
+      "feature": "caliper boss faces X=−48 (×2) — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=664/60+80=91 mm; t=0.147 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1467
+     },
+     {
+      "feature": "caliper boss faces X=−48 (×2) — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=664/94+125=132 mm; t=0.070 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0705
+     },
+     {
+      "feature": "strut-clamp faces Y=5.5 / Y=21.5 — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=1883/60+80=111 mm; t=0.179 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1794
+     },
+     {
+      "feature": "strut-clamp faces Y=5.5 / Y=21.5 — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=1883/94+125=145 mm; t=0.077 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0774
+     },
+     {
+      "feature": "tie-rod boss face (tilted) — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=758/60+80=93 mm; t=0.149 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1492
+     },
+     {
+      "feature": "tie-rod boss face (tilted) — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=758/94+125=133 mm; t=0.071 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.071
+     },
+     {
+      "feature": "bearing bore Ø68 H7 L40.3",
+      "operation": "bore",
+      "tool": "Ø68 boring tool",
+      "params": "rough: n=702, vf=0.3·n=211 mm/min, t=1×(40.3+2)/211=0.201 min; semi: n=819, vf=0.2·n=164 mm/min, t=1×(40.3+2)/164=0.258 min; finish: n=936, vf=0.12·n=112 mm/min, t=1×(40.3+2)/112=0.377 min",
+      "source": "S12 nodular iron 150–200 m/min (secondary source): rough 150 m/min fn 0.30, finish 200 m/min fn 0.12 (fn = assumption); semi pass 175/0.2 = assumption",
+      "cut_min": 0.8355
+     },
+     {
+      "feature": "Ø75 recess L6",
+      "operation": "bore",
+      "tool": "Ø75 boring tool",
+      "params": "rough: n=637, vf=0.3·n=191 mm/min, t=1×(6+2)/191=0.042 min; finish: n=849, vf=0.12·n=102 mm/min, t=1×(6+2)/102=0.079 min",
+      "source": "S12 nodular iron 150–200 m/min (secondary source): rough 150 m/min fn 0.30, finish 200 m/min fn 0.12 (fn = assumption)",
+      "cut_min": 0.1204
+     },
+     {
+      "feature": "Ø63 lip L3",
+      "operation": "bore",
+      "tool": "Ø63 boring tool",
+      "params": "finish: n=1011, vf=0.12·n=121 mm/min, t=1×(3+2)/121=0.041 min",
+      "source": "S12 nodular iron 150–200 m/min (secondary source): rough 150 m/min fn 0.30, finish 200 m/min fn 0.12 (fn = assumption)",
+      "cut_min": 0.0412
+     },
+     {
+      "feature": "circlip groove Ø71 × 2.7",
+      "operation": "groove mill (interpolation)",
+      "tool": "Ø50 groove mill",
+      "params": "Ø50 z6 groove mill, vc 150 fz 0.05 (assumption): n=955, vf=286 mm/min, path π·(71−50)+20 entry = 86 mm → 0.300 min",
+      "source": "assumption",
+      "cut_min": 0.3001
+     },
+     {
+      "feature": "Ø12.5 caliper holes ×2 L16",
+      "operation": "drill",
+      "tool": "Ø12.5 carbide drill",
+      "params": "n=1000·135/(π·12.5)=3438 rpm; vf=fn·n=0.3·3438=1031 mm/min; L=hole 16+0.3D+2 (point+clearance, assumption)=21.8 mm; t=2×21.8/1031=0.042 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0422
+     },
+     {
+      "feature": "M14×1.5 caliper threads ×2 (assumed)",
+      "operation": "tap",
+      "tool": "M14x1.5 tap",
+      "params": "n=1000·15/(π·14)=341 rpm; vf=P·n=1.5·341=512 mm/min; t=2×2×(16+2)/512=0.141 min (in + reverse out)",
+      "source": "S5 CoroTap 100-KM vc 15 m/min",
+      "cut_min": 0.1407
+     },
+     {
+      "feature": "Ø12 strut-clamp hole L16",
+      "operation": "drill",
+      "tool": "Ø12 carbide drill",
+      "params": "n=1000·135/(π·12)=3581 rpm; vf=fn·n=0.3·3581=1074 mm/min; L=hole 16+0.3D+2 (point+clearance, assumption)=21.6 mm; t=1×21.6/1074=0.020 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0201
+     },
+     {
+      "feature": "Ø15 tie-rod hole L18.9",
+      "operation": "drill",
+      "tool": "Ø15 carbide drill",
+      "params": "n=1000·135/(π·15)=2865 rpm; vf=fn·n=0.37·2865=1060 mm/min; L=hole 18.9+0.3D+2 (point+clearance, assumption)=25.4 mm; t=1×25.4/1060=0.024 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.024
+     },
+     {
+      "feature": "Ø15 tie-rod hole finish",
+      "operation": "bore",
+      "tool": "Ø15 boring tool",
+      "params": "finish: n=4244, vf=0.12·n=509 mm/min, t=1×(18.9+2)/509=0.041 min",
+      "source": "S12 nodular iron 150–200 m/min (secondary source): rough 150 m/min fn 0.30, finish 200 m/min fn 0.12 (fn = assumption)",
+      "cut_min": 0.041
+     }
+    ],
+    "cut_min": 2.924,
+    "noncut_min": 1.883,
+    "noncut_formula": "tool changes 11×3.0 s + approaches 26×2.0 s + probe 12.0 s + 4 B-index × 2.0 s + pallet change 8.0 s × 1.0 = 113.0 s",
+    "cycle_min": 4.807,
+    "machines_needed": 4,
+    "annual_hours": 16186.0,
+    "machine_gbp": 1.2103,
+    "labour_gbp": 0.9875,
+    "toolwear_gbp": 0.2924,
+    "setup": "dedicated cell: monthly 1 h tool/fixture check per machine by a setter (batch = one month = 16,667 parts); no product changeover"
+   },
+   {
+    "op": "OP20",
+    "machine": "mach-hmc-400",
+    "machine_desc": "HMC 400 twin pallet, 4 axes",
+    "axes": "4 (B 0/180)",
+    "workholding": "hydraulic fixture on the finished bearing bore (expanding mandrel) + hub face, Z axis horizontal",
+    "orientation": "B0 (+Z), B180 (−Z)",
+    "datum": "bearing bore + hub face",
+    "tools": 6,
+    "features": [
+     {
+      "feature": "ball-joint boss faces Z=±13 — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=1128/60+80=99 mm; t=0.159 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1592
+     },
+     {
+      "feature": "ball-joint boss faces Z=±13 — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=1128/94+125=137 mm; t=0.073 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0731
+     },
+     {
+      "feature": "arm pad Z=+13 / Z=−13 (Ø12.5 hole) — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=1176/60+80=100 mm; t=0.160 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1605
+     },
+     {
+      "feature": "arm pad Z=+13 / Z=−13 (Ø12.5 hole) — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=1176/94+125=138 mm; t=0.073 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.0734
+     },
+     {
+      "feature": "lower pads Z=17 / Z=20 / Z=−18.5 — rough",
+      "operation": "face mill",
+      "tool": "Ø80 face mill, z=6",
+      "params": "rough: n=1000·130/(π·80)=517 rpm; vf=fz·z·n=0.2·6·517=621 mm/min; path=A/ae+D=1290/60+80=102 mm; t=0.164 min (ap ≈ stock − 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.1635
+     },
+     {
+      "feature": "lower pads Z=17 / Z=20 / Z=−18.5 — finish",
+      "operation": "face mill",
+      "tool": "Ø125 face mill, z=16",
+      "params": "finish: n=1000·200/(π·125)=509 rpm; vf=fz·z·n=0.23·16·509=1874 mm/min; path=A/ae+D=1290/94+125=139 mm; t=0.074 min (ap 0.5)",
+      "source": "rough: S2 p.A70 ISO K nodular 09.1/09.2 GC3040 at hex 0.2: 135/125 → 130 m/min, fz 0.2 (Ø80 z6 = tool assumption); finish: S5 CoroMill 425 on EN-GJS-600-3 vc 200 m/min fz 0.23, Ø125 z16, ap 0.3–0.5",
+      "cut_min": 0.074
+     },
+     {
+      "feature": "Ø15 ball-joint hole L25",
+      "operation": "drill",
+      "tool": "Ø15 carbide drill",
+      "params": "n=1000·135/(π·15)=2865 rpm; vf=fn·n=0.37·2865=1060 mm/min; L=hole 25+0.3D+2 (point+clearance, assumption)=31.5 mm; t=1×31.5/1060=0.030 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0297
+     },
+     {
+      "feature": "Ø15 ball-joint hole finish",
+      "operation": "bore",
+      "tool": "Ø15 boring tool",
+      "params": "finish: n=4244, vf=0.12·n=509 mm/min, t=1×(25+2)/509=0.053 min",
+      "source": "S12 nodular iron 150–200 m/min (secondary source): rough 150 m/min fn 0.30, finish 200 m/min fn 0.12 (fn = assumption)",
+      "cut_min": 0.053
+     },
+     {
+      "feature": "Ø12.5 arm hole L25",
+      "operation": "drill",
+      "tool": "Ø12.5 carbide drill",
+      "params": "n=1000·135/(π·12.5)=3438 rpm; vf=fn·n=0.3·3438=1031 mm/min; L=hole 25+0.3D+2 (point+clearance, assumption)=30.8 mm; t=1×30.8/1031=0.030 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0298
+     },
+     {
+      "feature": "Ø11 L20.5",
+      "operation": "drill",
+      "tool": "Ø11 carbide drill",
+      "params": "n=1000·135/(π·11)=3907 rpm; vf=fn·n=0.25·3907=977 mm/min; L=hole 20.5+0.3D+2 (point+clearance, assumption)=25.8 mm; t=1×25.8/977=0.026 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0264
+     },
+     {
+      "feature": "Ø10 L11.7",
+      "operation": "drill",
+      "tool": "Ø10 carbide drill",
+      "params": "n=1000·135/(π·10)=4297 rpm; vf=fn·n=0.25·4297=1074 mm/min; L=hole 11.7+0.3D+2 (point+clearance, assumption)=16.7 mm; t=1×16.7/1074=0.016 min",
+      "source": "S2 CoroDrill 870 K3.1 ferritic 145 / K3.3 pearlitic 125 → 135 m/min; fn by Ø (10–12 .25, 12–14 .30, 14–16 .37, 16–21 .44, 21–26 .48)",
+      "cut_min": 0.0155
+     }
+    ],
+    "cut_min": 0.858,
+    "noncut_min": 1.033,
+    "noncut_formula": "tool changes 6×3.0 s + approaches 11×2.0 s + probe 12.0 s + 1 B-index × 2.0 s + pallet change 8.0 s × 1.0 = 62.0 s",
+    "cycle_min": 1.891,
+    "machines_needed": 2,
+    "annual_hours": 6369.0,
+    "machine_gbp": 0.4762,
+    "labour_gbp": 0.3886,
+    "toolwear_gbp": 0.0858,
+    "setup": "dedicated cell: monthly 1 h tool/fixture check per machine by a setter (batch = one month = 16,667 parts); no product changeover"
+   }
+  ],
+  "total_cycle_min": 6.699,
+  "total_cut_min": 3.782
+ },
+ "material_balance": {
+  "per": "one good finished part",
+  "inputs": [
+   {
+    "item": "pig iron + steel scrap + FeSiMg charge (solid)",
+    "kg": 3.2397
+   }
+  ],
+  "outputs": [
+   {
+    "item": "finished part",
+    "kg": 2.5283,
+    "fate": "product"
+   },
+   {
+    "item": "machining swarf",
+    "kg": 0.5739,
+    "fate": "recoverable (sold £0.15/kg)"
+   },
+   {
+    "item": "scrapped machined parts",
+    "kg": 0.0255,
+    "fate": "recoverable (sold)"
+   },
+   {
+    "item": "melt loss on new charge (2 %, inside the rate-book £/kg)",
+    "kg": 0.0648,
+    "fate": "non-recoverable"
+   },
+   {
+    "item": "remelt loss on returns (2 %)",
+    "kg": 0.0472,
+    "fate": "non-recoverable"
+   }
+  ],
+  "internal_recirculation": [
+   {
+    "item": "gating + feeders + scrapped castings, remelted in-house",
+    "kg": 2.3595
+   }
+  ],
+  "closure_g": 0.0,
+  "recoverable_kg": 0.5994,
+  "non_recoverable_kg": 0.112
+ },
+ "cost_lines": [
+  {
+   "category": "raw material",
+   "item": "mat-gjs400 treated-metal charge per good casting",
+   "gbp": 1.031,
+   "formula": "(raw casting 3.0965 kg + 0.02 remelt loss on returns 2.3359 kg) = 3.1432 kg × mat-gjs400 £0.328/kg (rate-book charge already includes FeSiMg and ÷0.98 melt loss on new metal)",
+   "stage": "primary",
+   "kind": "material"
+  },
+  {
+   "category": "raw material",
+   "item": "inoculant (not in the rate-book charge)",
+   "gbp": 0.0326,
+   "formula": "0.2 % × 5.4324 kg poured × £3.0/kg (assumption)",
+   "stage": "primary",
+   "kind": "material"
+  },
+  {
+   "category": "primary",
+   "item": "induction melting electricity",
+   "gbp": 0.613,
+   "formula": "620 kWh/t (S9: 570–700 kWh/t incl. preparation to pouring) × 5.4324 kg × energy-uk £0.182/kWh",
+   "stage": "primary",
+   "kind": "energy"
+  },
+  {
+   "category": "primary",
+   "item": "melt shop fixed (furnaces, refractory, ladles, treatment station)",
+   "gbp": 0.163,
+   "formula": "£30.0/t poured (assumption — no melting plant in the rate book) × 5.4324 kg",
+   "stage": "primary",
+   "kind": "consumables/other"
+  },
+  {
+   "category": "primary",
+   "item": "moulding sand renewal + disposal",
+   "gbp": 0.0999,
+   "formula": "sand:metal 5.0:1 × renewal 0.05 × 5.4324 kg = 1.358 kg × foundry.new-sand £73.55/t (ratio and renewal = assumptions)",
+   "stage": "primary",
+   "kind": "consumables/other"
+  },
+  {
+   "category": "primary",
+   "item": "bentonite / coal-dust additions",
+   "gbp": 0.0543,
+   "formula": "£0.01/kg poured (assumption)",
+   "stage": "primary",
+   "kind": "consumables/other"
+  },
+  {
+   "category": "primary",
+   "item": "sand plant (mixer, cooler, return conveyors) — not in the DISA rate",
+   "gbp": 0.0815,
+   "formula": "£15.0/t poured (assumption)",
+   "stage": "primary",
+   "kind": "consumables/other"
+  },
+  {
+   "category": "primary",
+   "item": "vertical moulding line (machine)",
+   "gbp": 0.179,
+   "formula": "1 / (300 moulds/h × 2 impressions) / (1−0.05) = 6.32 s × sand-auto-vertical-line £102.056/h (mould rate and impressions = assumptions)",
+   "stage": "primary",
+   "kind": "machine"
+  },
+  {
+   "category": "primary",
+   "item": "foundry crew labour (melt, pour, core setting, shake-out, sort)",
+   "gbp": 0.3453,
+   "formula": "6.32 s × crew 8 (assumption) × lab-uk-foundry £24.6/h",
+   "stage": "primary",
+   "kind": "labour"
+  },
+  {
+   "category": "tooling",
+   "item": "pattern plates (+ core boxes)",
+   "gbp": 0.0439,
+   "formula": "3 set(s) [= 531,632 moulds / life 250,000 (assumption)] × £14,627 / 1,000,000",
+   "stage": "primary",
+   "kind": "tooling"
+  },
+  {
+   "category": "secondary",
+   "item": "shot blast (continuous) — machine",
+   "gbp": 0.0776,
+   "formula": "3.0965 kg / 1000 kg/h (assumption) × blast-machine £25.071/h",
+   "stage": "primary",
+   "kind": "machine"
+  },
+  {
+   "category": "secondary",
+   "item": "shot blast — labour",
+   "gbp": 0.019,
+   "formula": "same time × crew 0.25 × lab-uk-foundry",
+   "stage": "primary",
+   "kind": "labour"
+  },
+  {
+   "category": "secondary",
+   "item": "robot fettling / grinding — machine",
+   "gbp": 0.2201,
+   "formula": "40 s (assumption) × fettle-robot-cell £19.805/h",
+   "stage": "primary",
+   "kind": "machine"
+  },
+  {
+   "category": "secondary",
+   "item": "robot fettling — labour",
+   "gbp": 0.1367,
+   "formula": "40 s × crew 0.5 × lab-uk-foundry",
+   "stage": "primary",
+   "kind": "labour"
+  },
+  {
+   "category": "inspection",
+   "item": "visual inspection 100 %",
+   "gbp": 0.0779,
+   "formula": "10 s × lab-uk-inspector £28.03/h",
+   "stage": "primary",
+   "kind": "inspection"
+  },
+  {
+   "category": "inspection",
+   "item": "magnetic particle inspection 100 % (safety part)",
+   "gbp": 0.2669,
+   "formula": "30 s × (lab-uk-inspector £28.03 + ndt.mpi-bench £4.0)/h (100 % MPI = assumption for a steering / axle part)",
+   "stage": "primary",
+   "kind": "inspection"
+  },
+  {
+   "category": "inspection",
+   "item": "ultrasonic nodularity (velocity) check 100 %",
+   "gbp": 0.0623,
+   "formula": "8 s × lab-uk-inspector (assumption; equipment not in the rate book)",
+   "stage": "primary",
+   "kind": "inspection"
+  },
+  {
+   "category": "scrap/recovery",
+   "item": "casting scrap — blast/fettle spent on rejected castings",
+   "gbp": 0.0239,
+   "formula": "secondary £0.4534 × 0.05/(1−0.05); rejects remelted (metal loss in the charge line)",
+   "stage": "primary",
+   "kind": "scrap/recovery"
+  },
+  {
+   "category": "machining",
+   "item": "OP10 machine (HMC 400 twin pallet, 4 axes)",
+   "gbp": 1.2103,
+   "formula": "cycle 4.807 min / 60 × mach-hmc-400 £15.106/h",
+   "stage": "machining",
+   "kind": "machine"
+  },
+  {
+   "category": "machining",
+   "item": "OP10 labour",
+   "gbp": 0.9875,
+   "formula": "cycle 4.807 min / 60 × lab-uk-semiskilled £24.65/h × crew 0.5",
+   "stage": "machining",
+   "kind": "labour"
+  },
+  {
+   "category": "machining",
+   "item": "OP10 cutting tools (wear)",
+   "gbp": 0.2924,
+   "formula": "cut 2.924 min × tool-wear.cast-iron £0.1/min cut",
+   "stage": "machining",
+   "kind": "cutting tools"
+  },
+  {
+   "category": "machining",
+   "item": "OP20 machine (HMC 400 twin pallet, 4 axes)",
+   "gbp": 0.4762,
+   "formula": "cycle 1.891 min / 60 × mach-hmc-400 £15.106/h",
+   "stage": "machining",
+   "kind": "machine"
+  },
+  {
+   "category": "machining",
+   "item": "OP20 labour",
+   "gbp": 0.3886,
+   "formula": "cycle 1.891 min / 60 × lab-uk-semiskilled £24.65/h × crew 0.5",
+   "stage": "machining",
+   "kind": "labour"
+  },
+  {
+   "category": "machining",
+   "item": "OP20 cutting tools (wear)",
+   "gbp": 0.0858,
+   "formula": "cut 0.858 min × tool-wear.cast-iron £0.1/min cut",
+   "stage": "machining",
+   "kind": "cutting tools"
+  },
+  {
+   "category": "setup",
+   "item": "OP10 monthly tool/fixture check",
+   "gbp": 0.0121,
+   "formula": "4 machine(s) × 1.0 h × (lab-uk-technician £35.17 + mach-hmc-400 £15.106) / batch 16667 (= one month of demand; dedicated cell, assumption)",
+   "stage": "machining",
+   "kind": "setup"
+  },
+  {
+   "category": "setup",
+   "item": "OP20 monthly tool/fixture check",
+   "gbp": 0.006,
+   "formula": "2 machine(s) × 1.0 h × (lab-uk-technician £35.17 + mach-hmc-400 £15.106) / batch 16667 (= one month of demand; dedicated cell, assumption)",
+   "stage": "machining",
+   "kind": "setup"
+  },
+  {
+   "category": "tooling",
+   "item": "OP10 fixtures",
+   "gbp": 0.048,
+   "formula": "4 machine(s) × 1 × fixture.hydraulic £12000 / programme 1,000,000 parts",
+   "stage": "machining",
+   "kind": "tooling"
+  },
+  {
+   "category": "tooling",
+   "item": "OP20 fixtures",
+   "gbp": 0.024,
+   "formula": "2 machine(s) × 1 × fixture.hydraulic £12000 / programme 1,000,000 parts",
+   "stage": "machining",
+   "kind": "tooling"
+  },
+  {
+   "category": "inspection",
+   "item": "in-process gauging of critical bores (operator)",
+   "gbp": 0.1027,
+   "formula": "15.0 s × lab-uk-semiskilled £24.65/h (assumption)",
+   "stage": "machining",
+   "kind": "inspection"
+  },
+  {
+   "category": "inspection",
+   "item": "CMM audit",
+   "gbp": 0.0374,
+   "formula": "20.0 min × lab-uk-inspector £28.03/h ÷ 1 in 250 (CMM machine time not in the rate book — excluded)",
+   "stage": "machining",
+   "kind": "inspection"
+  },
+  {
+   "category": "secondary",
+   "item": "deburr + wash + rust preventive",
+   "gbp": 0.2554,
+   "formula": "30 s × lab-uk-semiskilled + £0.05 wash / RP (assumptions)",
+   "stage": "machining",
+   "kind": "consumables/other"
+  },
+  {
+   "category": "scrap/recovery",
+   "item": "machining scrap (1 %) — cost of scrapped part less its metal",
+   "gbp": 0.0715,
+   "formula": "(raw part £3.9954 + machining £3.4589) × 0.01/(1−0.01) − finished 2.5283 kg × scrap £0.15/kg × 0.01/(1−0.01) (scrap rate assumption)",
+   "stage": "machining",
+   "kind": "scrap/recovery"
+  },
+  {
+   "category": "scrap/recovery",
+   "item": "swarf credit",
+   "gbp": -0.0861,
+   "formula": "(raw 3.0965 − finished 2.5283) kg × £0.15/kg / (1−0.01) (swarf of scrapped parts included)",
+   "stage": "machining",
+   "kind": "scrap/recovery"
+  },
+  {
+   "category": "overhead",
+   "item": "overhead 12 % of factory base",
+   "gbp": 0.8928,
+   "formula": "£7.4397 × 0.12 (rate-book oh-default)",
+   "stage": "commercial",
+   "kind": "overhead"
+  },
+  {
+   "category": "packaging",
+   "item": "packaging (ex-works: packaging in)",
+   "gbp": 0.15,
+   "formula": "assumption — returnable stillage + dunnage share, not sourced",
+   "stage": "commercial",
+   "kind": "packaging"
+  },
+  {
+   "category": "margin",
+   "item": "margin 8 % of subtotal",
+   "gbp": 0.6786,
+   "formula": "£8.4825 × 0.08 (rate-book oh-default)",
+   "stage": "commercial",
+   "kind": "margin"
+  }
+ ],
+ "cost_by_category": {
+  "raw material": 1.0636,
+  "primary": 1.536,
+  "tooling": 0.1159,
+  "secondary": 0.7088,
+  "inspection": 0.5472,
+  "scrap/recovery": 0.0093,
+  "machining": 3.4408,
+  "setup": 0.0181,
+  "overhead": 0.8928,
+  "packaging": 0.15,
+  "margin": 0.6786
+ },
+ "cost_by_kind": {
+  "material": 1.0636,
+  "energy": 0.613,
+  "consumables/other": 0.6541,
+  "machine": 2.1632,
+  "labour": 1.8771,
+  "tooling": 0.1159,
+  "inspection": 0.5472,
+  "scrap/recovery": 0.0093,
+  "cutting tools": 0.3782,
+  "setup": 0.0181,
+  "overhead": 0.8928,
+  "packaging": 0.15,
+  "margin": 0.6786
+ },
+ "primary_cost_before_oh_margin": 3.5279,
+ "machining_cost_before_oh_margin": 3.9118,
+ "total_gbp_per_part": 9.161,
+ "range": {
+  "low": 8.36,
+  "high": 10.26,
+  "method": "root-sum-square of the one-at-a-time swings below (independent assumptions)",
+  "swings": [
+   {
+    "assumption": "casting yield 70 % / 50 %",
+    "low_case_total": 8.972,
+    "high_case_total": 9.425,
+    "d_low": -0.189,
+    "d_high": 0.264
+   },
+   {
+    "assumption": "mould rate 400 / 220 moulds/h",
+    "low_case_total": 9.001,
+    "high_case_total": 9.394,
+    "d_low": -0.16,
+    "d_high": 0.233
+   },
+   {
+    "assumption": "foundry crew 6 / 10",
+    "low_case_total": 9.055,
+    "high_case_total": 9.266,
+    "d_low": -0.106,
+    "d_high": 0.105
+   },
+   {
+    "assumption": "melt energy 570 / 700 kWh/t (S9)",
+    "low_case_total": 9.101,
+    "high_case_total": 9.258,
+    "d_low": -0.06,
+    "d_high": 0.097
+   },
+   {
+    "assumption": "melt + sand plant fixed £15+8 / £50+25 per t",
+    "low_case_total": 9.015,
+    "high_case_total": 9.36,
+    "d_low": -0.146,
+    "d_high": 0.199
+   },
+   {
+    "assumption": "casting scrap 3 % / 8 %",
+    "low_case_total": 9.108,
+    "high_case_total": 9.244,
+    "d_low": -0.053,
+    "d_high": 0.083
+   },
+   {
+    "assumption": "machining non-cut ×0.7 / ×1.4",
+    "low_case_total": 8.654,
+    "high_case_total": 9.813,
+    "d_low": -0.507,
+    "d_high": 0.652
+   },
+   {
+    "assumption": "cutting time ×0.8 / ×1.3",
+    "low_case_total": 8.628,
+    "high_case_total": 9.934,
+    "d_low": -0.533,
+    "d_high": 0.772
+   }
+  ]
+ },
+ "rates_used": {
+  "blast-machine": {
+   "value": 25.071,
+   "unit": "£/h",
+   "note": "Shot blast machine (tumble/hanger)"
+  },
+  "fettle-robot-cell": {
+   "value": 19.805,
+   "unit": "£/h",
+   "note": "Robotic fettling/grinding cell, iron castings"
+  },
+  "fixture.hydraulic": {
+   "value": 12000,
+   "unit": "£ each",
+   "note": "Dedicated hydraulic fixture on a tombstone"
+  },
+  "foundry.new-sand": {
+   "value": 73.548,
+   "unit": "£/t sand",
+   "note": "New silica sand + disposal"
+  },
+  "lab-uk-foundry": {
+   "value": 24.6,
+   "unit": "£/h",
+   "note": "Foundry operative, fully loaded"
+  },
+  "lab-uk-inspector": {
+   "value": 28.03,
+   "unit": "£/h",
+   "note": "CMM / quality inspector"
+  },
+  "lab-uk-semiskilled": {
+   "value": 24.65,
+   "unit": "£/h",
+   "note": "Semi-skilled operator, fully loaded"
+  },
+  "lab-uk-technician": {
+   "value": 35.17,
+   "unit": "£/h",
+   "note": "Maintenance / setter technician"
+  },
+  "mach-hmc-400": {
+   "value": 15.106,
+   "unit": "£/h",
+   "note": "HMC 400 twin pallet 4th axis, machine only (6000 h x 0.8)"
+  },
+  "mat-gjs400": {
+   "value": 0.328,
+   "unit": "£/kg",
+   "note": "EN-GJS-400-15 treated-metal charge; scrap 0.15"
+  },
+  "ndt.mpi-bench": {
+   "value": 4.0,
+   "unit": "£/h",
+   "note": "MPI bench equipment"
+  },
+  "oh-default.margin": {
+   "value": 0.08,
+   "unit": "fraction",
+   "note": "margin 8 % of subtotal"
+  },
+  "oh-default.overhead": {
+   "value": 0.12,
+   "unit": "fraction",
+   "note": "overhead 12 % of material + process + labour + tooling"
+  },
+  "sand-auto-vertical-line": {
+   "value": 102.056,
+   "unit": "£/h",
+   "note": "DISAMATIC 270 class vertical green-sand moulding line, moulding equipment only (6000 h x 0.8)"
+  },
+  "tool-wear.cast-iron": {
+   "value": 0.1,
+   "unit": "£/min of cut",
+   "note": "service-rates-data"
+  }
+ },
+ "sources": {
+  "S1": "ISO 8062:1994 \"Castings — System of dimensional tolerances and machining allowances\" (licensed copy hosted at castingquality.com/wp-content/uploads/2010/05/iso-8062.pdf): Table 1 CT values, Table 2 RMA values (grades A–K by largest finished dimension), Annex A Table A.1 CT grades (long series), Annex B Table B.1 RMA grades; Fig. 5/6: R = F + 2RMA + CT/2 (external), R = F − 2RMA − CT/2 (internal). The same RMA values were carried into ISO 8062-3:2007; the 2007/2023 tables themselves were not read (paywalled).",
+  "S2": "Sandvik Coromant tools catalogue extract \"mtmpa01724\" (2018, DGI Supply hosted Sandvik_Coromant_7591766_Catalog.pdf): General turning cutting data p.A24 (GC4325, ISO P); Milling with large engagement p.A70 (ISO K, GC3040/GC1020/GC4330, cutter Ø125); CoroDrill 870 cutting data p.A101–A102 (vc by material, fn by diameter).",
+  "S3": "Sandvik Coromant CoroDrill 860 -GM leaflet (DGI Supply): recommended start values SFM / feed per rev for Ø6 and Ø8 drills by ISO group.",
+  "S4": "Sandvik Coromant C-2948 \"Small part machining\" (2004, Sandvik_5743590_Catalog.pdf) p.170–172: CoroMill Plura solid-carbide end mill cutting data (ve m/min by CMC, fz by Dc).",
+  "S5": "Sandvik Coromant C-1040:167 \"Automotive solutions for ISO K\" (2016, Sandvik_6878203_Catalog.pdf): CoroMill 425 finishing EN-GJS-600-3 vc 200 m/min, fz 0.23, 16 inserts, n 510 rpm, ap 0.3–0.5; CoroTap 100-KM M6 in CGI vc 15 m/min.",
+  "S6": "BS EN 10243-1:1999+corr (Steel die forgings — tolerances, drop and press forgings), copy at itforging.com: method (mass, steel group M1/M2, shape complexity S = m_forging/m_envelope, grade F/E), worked example (200 g C45 forging, 78 mm: +1.1/−0.5 mm), 5.2.4: scale pits allowed to half the nominal machining allowance. Table 1 itself is an image and was NOT read.",
+  "S7": "Engineers Edge, \"Design for Forging\" (engineersedge.com/manufacturing/forging-design.htm): \"machine allowance should be .06 inch for each machined surface\"; standard draft ≥ 1°.",
+  "S8": "StrikoWestofen shaft-melter figures reported by Foundry Management & Technology / GIFA news: guarantee 600 kWh/t (gas) at 720 °C continuous, pigs + returns; 520–560 kWh/t measured; giessereilexikon: 580–900 kWh/t independent.",
+  "S9": "ABP Induction (E. Doetsch) / foundry-planet: cast-iron induction melting 515–550 kWh/t melt, 570–700 kWh/t including preparation until pouring; theoretical 385–390 kWh/t at 1,480–1,500 °C.",
+  "S10": "Rate-book note on forge-induction-heater: SMS Elotherm ~500 kW heats ~1,250 kg/h of steel billets to 1,250 °C (0.40 kWh/kg); vendor ranges 280–450 kWh/t (dw-inductionheater.com).",
+  "S11": "Open University OpenLearn \"Gravity die casting\": yield \"usually 40–60 %\"; cylinder heads one every 5 min; accuracy ±0.1–0.2 mm.",
+  "S12": "US patent 6,344,265 (coated insert) background: nodular cast iron turned at 150–200 m/min, fn 0.4 mm/rev (secondary source, used for turning/boring ISO K where no Sandvik turning row was available)."
+ }
+}

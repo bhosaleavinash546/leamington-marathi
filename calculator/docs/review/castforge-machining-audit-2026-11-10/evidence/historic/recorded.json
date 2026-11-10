@@ -1,0 +1,936 @@
+{
+ "source": "DTIC AD-747857, TRW ER-7389-F \"Spiral Bevel Gear and Pinion Forging Development Program\", 29 Feb 1972, Distribution Statement A. File dataset/sources/DTIC_AD0747857.pdf (sha256 85a804...fd218). PDF page numbers are the file's; printed page numbers in brackets where given.",
+ "currencyAndTimeBase": "1972 US$ and 1972 standard hours (observed + factored for practical efficiency, or standard labour data), 1972 manual / semi-automatic machines. Not converted.",
+ "precepts": {
+  "pdfPage": 147,
+  "printedPage": 133,
+  "items": [
+   "1. Standard Hours used instead of dollars; standard hours were actually observed and factored for practical efficiency, or calculated from standard labour data in general use in the metal working industry.",
+   "2. Forging lot 500 pieces = projected die life; order 2,500 pieces to use the die insert for four resinking cycles.",
+   "3. Machining lot 100 pieces, consistent with recent production practice.",
+   "4. Materials and purchased services in actual dollar costs to the program.",
+   "5. Analysis applies only to operations leading up to carburizing-hardening; after that both gears are finish processed identically.",
+   "6. Quality control and inspection are not direct costs in either process (indirect, assumed equivalent)."
+  ]
+ },
+ "tableXXV": {
+  "title": "Table XXV  Direct Labor for Precision Forging Process",
+  "pdfPages": [
+   148,
+   149
+  ],
+  "printedPages": [
+   134,
+   135
+  ],
+  "header": {
+   "form": "AIRFOIL-COMPONENTS EST. NO. T.R.W. (blank); PREVIOUS ESTIMATES (blank)",
+   "partName": "SPIRAL BEVEL GEAR",
+   "partNumber": "SK22270-FR729983-4 (as read; sheet 2 header reads \"TRW SK-22270\")",
+   "customer": "AUSCOM, BOEING VERTOL",
+   "engine": "CH-47 HELICOPTER",
+   "material": "AMS 6265",
+   "wtPer100Pcs": "1600 LB",
+   "stockSize": "3.50 DIA. CRD.",
+   "sheets": "1 of 2, 2 of 2",
+   "date": "blank"
+  },
+  "columns": "OPER. NO. | OPERATION | GROUP TRW | MACHINE DESCRIPTION AND TOOLING REQUIRED | STD.HRS. PER PC. MAN | MACH | HOURS SET-UP (sheet 1 header carries a handwritten \"500/lot\" over SET-UP) | TOOLING ESTIMATE (cost for each: design, build; No.; total) - all blank except the last No./Total pair",
+  "rows": [
+   {
+    "opNo": 10,
+    "operation": "RECEIVE ST'K - NOTE CERT.",
+    "group": null,
+    "machineAndTooling": "$.65/LB (in the machine column)",
+    "stdHrsPerPcMan": "*",
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": true,
+    "note": "last tooling-estimate pair on this row: No. \"16#\", Total \"10.40\" (= 16 lb x $0.65/lb, the bar material)",
+    "toolingEstimateTotalUSD": 10.4
+   },
+   {
+    "opNo": 20,
+    "operation": "INSPECT - AMS SPEC",
+    "group": "8851",
+    "machineAndTooling": null,
+    "stdHrsPerPcMan": "*",
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": true
+   },
+   {
+    "opNo": 30,
+    "operation": "CUT BILLET TO LENGTH",
+    "group": "T.R.",
+    "machineAndTooling": "DO ALL",
+    "stdHrsPerPcMan": 0.07,
+    "stdHrsPerPcMach": 0.14,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 40,
+    "operation": "SQUARE ENDS & CHAMFER",
+    "group": "T.R.",
+    "machineAndTooling": "LATHE AUTOMATIC",
+    "stdHrsPerPcMan": 0.035,
+    "stdHrsPerPcMach": null,
+    "setupHours": 3.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 50,
+    "operation": "HEAT FOR FORGING",
+    "group": "623-11",
+    "machineAndTooling": "J-28 ROTARY-EXOGAS FURNACE",
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": 0.18,
+    "setupHours": 1.0,
+    "indirectAsterisk": false,
+    "note": "MACH printed \".J8\" - first digit not fully legible; read as .18"
+   },
+   {
+    "opNo": 60,
+    "operation": "PREFORM & FINISH HOT COIN",
+    "group": "623-11",
+    "machineAndTooling": "J-28 - 2000T MAXIPRESS",
+    "stdHrsPerPcMan": 0.1,
+    "stdHrsPerPcMach": 0.08,
+    "setupHours": 9.0,
+    "indirectAsterisk": false,
+    "note": "MAN \".10\" is printed half a line above the op-60 line (between 50 and 60); Table XXIX item 2 (.235) only reconciles if it belongs to op 60. Tooling total 1.60 = die ODC $/pc (Table XXIX item 6)",
+    "toolingEstimateTotalUSD": 1.6
+   },
+   {
+    "opNo": 70,
+    "operation": "INSPECT - STAMP SER. NO.",
+    "group": "623-91",
+    "machineAndTooling": "SCHMIDT",
+    "stdHrsPerPcMan": 0.015,
+    "stdHrsPerPcMach": 0.015,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 80,
+    "operation": "CLEAN",
+    "group": "655-12",
+    "machineAndTooling": "WHEEL ABRATOR - TABLAST",
+    "stdHrsPerPcMan": 0.015,
+    "stdHrsPerPcMach": 0.015,
+    "setupHours": "-",
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 90,
+    "operation": "MAGNAFLUX - 100%",
+    "group": "623-91",
+    "machineAndTooling": "MAG UNIT",
+    "stdHrsPerPcMan": 0.055,
+    "stdHrsPerPcMach": 0.055,
+    "setupHours": "-",
+    "indirectAsterisk": true
+   },
+   {
+    "opNo": 100,
+    "operation": "INSPECT & RECORD - 10%",
+    "group": "623-91",
+    "machineAndTooling": "BENCH & GAGES",
+    "stdHrsPerPcMan": 0.03,
+    "stdHrsPerPcMach": "-",
+    "setupHours": "-",
+    "indirectAsterisk": true
+   },
+   {
+    "opNo": null,
+    "operation": "(no operation text)",
+    "group": "H-R",
+    "machineAndTooling": null,
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": null,
+    "setupHours": "1.00/LOT",
+    "indirectAsterisk": false,
+    "note": "a group change to \"H-R\" and \"1.00/LOT\" in the set-up column between op 100 and op 130 - read as a sub-heading (machining set-ups per lot of 100, consistent with Table XXIX item 5 \"prorated over 100 pieces\"); not an operation"
+   },
+   {
+    "opNo": 130,
+    "operation": "TURN EXCESS STOCK - DRILL / RE STAMP",
+    "group": "619-32",
+    "machineAndTooling": "ENGINE LATHE",
+    "stdHrsPerPcMan": 0.17,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 140,
+    "operation": "LOC ON FIXT. GRD FACE & O.D.",
+    "group": "881-42",
+    "machineAndTooling": "HEALD INT. GRINDER",
+    "stdHrsPerPcMan": 0.2,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 150,
+    "operation": "TURN & BORE",
+    "group": "513-30",
+    "machineAndTooling": "TURRET LATHE",
+    "stdHrsPerPcMan": 0.3,
+    "stdHrsPerPcMach": null,
+    "setupHours": 3.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 160,
+    "operation": "FACE, TURN O.D. & C BORE",
+    "group": "627-32",
+    "machineAndTooling": "ENGINE LATHE",
+    "stdHrsPerPcMan": 0.2,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 170,
+    "operation": "GRIND FACE & O.D.",
+    "group": "881-42",
+    "machineAndTooling": "HEALD INT. GRINDER",
+    "stdHrsPerPcMan": 0.175,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 180,
+    "operation": "GRIND BORE & FACE",
+    "group": "886-42",
+    "machineAndTooling": "BRYANT INT'L GRINDER",
+    "stdHrsPerPcMan": 0.15,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 190,
+    "operation": "GRIND BORE & FACE",
+    "group": "881-42",
+    "machineAndTooling": "HEALD INT'L GRINDER",
+    "stdHrsPerPcMan": 0.1,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 200,
+    "operation": "TRANSFER IDENTITY",
+    "group": "989-46",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": 0.02,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 210,
+    "operation": "TRACE WEB CONTOUR",
+    "group": "526-41",
+    "machineAndTooling": "TRACER LATHE",
+    "stdHrsPerPcMan": 0.2,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 220,
+    "operation": "SEMI-FIN TURN GROOVE",
+    "group": "618-32",
+    "machineAndTooling": "ENGINE LATHE",
+    "stdHrsPerPcMan": 0.12,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 240,
+    "operation": "POLISH WEB",
+    "group": "953-46",
+    "machineAndTooling": "POLISHING MACHINE",
+    "stdHrsPerPcMan": 0.06,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 250,
+    "operation": "VIBRO ETCH",
+    "group": "989-46",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": 0.02,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 260,
+    "operation": "ROUGH TURN GEAR ANGLES",
+    "group": "614-32",
+    "machineAndTooling": "DOUBLE COMPOUND LATHE",
+    "stdHrsPerPcMan": 0.11,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 270,
+    "operation": "FINISH TURN GEAR ANGLES",
+    "group": "614-32",
+    "machineAndTooling": "DOUBLE COMPOUND LATHE",
+    "stdHrsPerPcMan": 0.11,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 280,
+    "operation": "POLISH",
+    "group": "953-46",
+    "machineAndTooling": "POLISH LATHE",
+    "stdHrsPerPcMan": 0.04,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 290,
+    "operation": "WASH",
+    "group": "996-46",
+    "machineAndTooling": "WASH MACHINE",
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": true
+   },
+   {
+    "opNo": 300,
+    "operation": "INSPECT & RECORD",
+    "group": "900-68",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": 0.07,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": true
+   }
+  ],
+  "footnote": "*INDIRECT COST (asterisk/bullet marks ops 10, 20, 90, 100, 290, 300)",
+  "printedTotals": {
+   "sheet1Totals": "blank",
+   "sheet2Totals": {
+    "man": 0.93,
+    "setup": 10.5
+   },
+   "grandTotal": {
+    "man": 2.19,
+    "setup": 22.0
+   }
+  },
+  "opNumbersAbsent": [
+   110,
+   120,
+   230
+  ],
+  "checks_derived": {
+   "sheet2_man_direct_sum": "ops 180-280 = .150+.100+.020+.200+.120+.060+.020+.110+.110+.040 = 0.930 = printed sheet total (op 300 .070 indirect excluded)",
+   "sheet2_setup_sum": "2.5+1.0+2.5+1.5+2.0+1.0 = 10.5 = printed",
+   "sheet1_man_direct_sum": "ops 30,40,60,70,80,130-170 = 0.235 + 1.045 = 1.280; printed grand total 2.190 - 0.930 implies 1.260 - a 0.020 h difference NOT reconciled",
+   "sheet1_setup_sum": "forging 1.0+3.0+1.0+9.0+1.0 = 15.0 (per 500 lot) + machining 1.0+1.5+3.0+1.5+1.5 = 8.5 (per 100 lot) = 23.5; printed grand total 22.0 - 10.5 implies 11.5 - NOT reconciled"
+  }
+ },
+ "tableXXVI": {
+  "title": "Table XXVI  Direct Labor for Conventional Process",
+  "pdfPages": [
+   150
+  ],
+  "printedPages": [
+   136
+  ],
+  "header": {
+   "partName": "SPIRAL BEVEL GEAR",
+   "partNumber": "114D6245-1",
+   "customer": "BOEING - VERTOL",
+   "engine": "CH-47 HELICOPTER",
+   "material": "AMS-6265",
+   "wtPer100Pcs": "blank",
+   "stockSize": "FORGING - BM67-C (as read, last characters uncertain)",
+   "sheet": "1 of 1",
+   "groupColumnHeader": "H-R"
+  },
+  "rows": [
+   {
+    "opNo": 5,
+    "operation": "PROCURE FORGING BLANK",
+    "group": null,
+    "machineAndTooling": null,
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 10,
+    "operation": "INSPECT FORGING",
+    "group": "890-68",
+    "machineAndTooling": null,
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 20,
+    "operation": "STAMP",
+    "group": "989-46",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": 0.024,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 30,
+    "operation": "FACE & BORE",
+    "group": "511-30",
+    "machineAndTooling": "W&S TURRET LATHE",
+    "stdHrsPerPcMan": 0.22,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 40,
+    "operation": "TURN O.D.",
+    "group": "511-30",
+    "machineAndTooling": "W&S TURRET LATHE",
+    "stdHrsPerPcMan": 0.09,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 50,
+    "operation": "TRACE WEB & BORE I.D.",
+    "group": "526-41",
+    "machineAndTooling": "W&S TURRET LATHE",
+    "stdHrsPerPcMan": 0.22,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 60,
+    "operation": "TURN MTG FCE",
+    "group": "613-32 (read; 618-32 possible)",
+    "machineAndTooling": "ENGINE LATHE",
+    "stdHrsPerPcMan": 0.125,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 70,
+    "operation": "GRIND BORE & (2) FACES",
+    "group": "886-42",
+    "machineAndTooling": "BRYANT INTERNAL GRINDER",
+    "stdHrsPerPcMan": 0.333,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 80,
+    "operation": "SEMI-FINISH TURN GROOVE",
+    "group": "618-32",
+    "machineAndTooling": "ENGINE LATHE",
+    "stdHrsPerPcMan": 0.12,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.5,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 90,
+    "operation": "STAMP",
+    "group": "989-46",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": 0.02,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 95,
+    "operation": "POLISH",
+    "group": "953-46",
+    "machineAndTooling": null,
+    "stdHrsPerPcMan": 0.06,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 100,
+    "operation": "ROUGH TURN GEAR ANGLES",
+    "group": "614-32",
+    "machineAndTooling": "DOUBLE COMPOUND LATHE",
+    "stdHrsPerPcMan": 0.11,
+    "stdHrsPerPcMach": null,
+    "setupHours": 2.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 110,
+    "operation": "FINISH TURN GEAR ANGLES",
+    "group": "614-32",
+    "machineAndTooling": "DOUBLE COMPOUND LATHE",
+    "stdHrsPerPcMan": 0.11,
+    "stdHrsPerPcMach": null,
+    "setupHours": 1.0,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 120,
+    "operation": "POLISH",
+    "group": "953-46",
+    "machineAndTooling": "POLISHING LATHE",
+    "stdHrsPerPcMan": 0.04,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 130,
+    "operation": "WASH & INSPECT & RECORD",
+    "group": "900-68",
+    "machineAndTooling": "BENCH",
+    "stdHrsPerPcMan": null,
+    "stdHrsPerPcMach": null,
+    "setupHours": null,
+    "indirectAsterisk": false
+   },
+   {
+    "opNo": 140,
+    "operation": "GENERATE GEAR TEETH",
+    "group": "819-37",
+    "machineAndTooling": "GLEASON GEAR CUTTER",
+    "stdHrsPerPcMan": 0.4,
+    "stdHrsPerPcMach": null,
+    "setupHours": 5.0,
+    "indirectAsterisk": false,
+    "note": "printed value reads \".400\" at 300 and 600 dpi but the first digit is blurred; the printed sheet total 2.072 is only reached with .600 (sum of the other legible values 1.472 + .600). Both values are carried; comparisons use the sheet total."
+   }
+  ],
+  "printedTotals": {
+   "sheetTotals": {
+    "man": 2.072,
+    "setup": 20.0
+   }
+  },
+  "checks_derived": {
+   "man_sum_as_read": "sum of legible MAN values incl. .400 = 1.872 (printed 2.072; difference 0.200 = the op-140 ambiguity)",
+   "setup_sum": "2.0x5 + 2.5 + 1.5 + 1.0 + 5.0 = 20.0 = printed"
+  }
+ },
+ "tableXXVIII": {
+  "title": "Table XXVIII  Direct and Consumable Tooling Cost for Precision Forging",
+  "pdfPages": [
+   153
+  ],
+  "printedPages": [
+   139
+  ],
+  "rows": [
+   {
+    "operation": "DESIGN DIE SET",
+    "tooling": "BF 13774",
+    "designUSD": 1500
+   },
+   {
+    "operation": "FABRICATE DIE SET",
+    "tooling": "BF 13774 MINUS DET 42",
+    "buildUSD": 5000
+   },
+   {
+    "operation": "FABRICATE - DIE INSERT",
+    "tooling": "DET. 42 OF BF 13774"
+   },
+   {
+    "operation": "H-21 BILLET",
+    "tooling": "17\" DIA. x 3-3/4\" - MATERIAL",
+    "eachUSD": 510,
+    "no": 1,
+    "totalUSD": 510.0
+   },
+   {
+    "operation": "MACH. BLANK - H.T.",
+    "eachUSD": 540,
+    "no": 1,
+    "totalUSD": 540.0
+   },
+   {
+    "operation": "BLANK EDM ELECTRODES - ROUGHING",
+    "tooling": "BE 14759 DET. 2",
+    "eachUSD": 150,
+    "no": 7,
+    "totalUSD": 1050.0
+   },
+   {
+    "operation": "BLANK EDM ELECTRODES - FINISHING",
+    "tooling": "DET. 1",
+    "eachUSD": 125,
+    "no": 7,
+    "totalUSD": 875.0
+   },
+   {
+    "operation": "CUT EDM ELECTRODE",
+    "tooling": "SET-UP CHARGE",
+    "eachUSD": 375,
+    "no": 1,
+    "totalUSD": 375.0
+   },
+   {
+    "operation": "ROUGHING ELECTRODES",
+    "tooling": "DET. 2",
+    "eachUSD": 45,
+    "no": 7,
+    "totalUSD": 315.0
+   },
+   {
+    "operation": "FINISHING ELECT.",
+    "tooling": "DET. 1",
+    "eachUSD": 45,
+    "no": 7,
+    "totalUSD": 315.0
+   },
+   {
+    "operation": "SINK DIE CAVITY",
+    "tooling": "BF 13774 - DET. 42",
+    "man": 8.0,
+    "mach": 32.0,
+    "setup": 3.0,
+    "no": 1,
+    "hours2500Lot": "10.0 (as read)"
+   },
+   {
+    "operation": "RESINK DIE CAVITY",
+    "man": 6.5,
+    "mach": 24.0,
+    "setup": 2.0,
+    "no": 4,
+    "hours2500Lot": 34.0
+   },
+   {
+    "operation": "INSPECTIONS - NDT DIE BILLET",
+    "man": 2.0,
+    "no": 1
+   },
+   {
+    "operation": "INSPECTIONS - INSPECT ELECTRODES",
+    "man": 1.0,
+    "no": 7
+   },
+   {
+    "operation": "INSPECTIONS - INSPECT CAST OF DIE",
+    "man": 2.0,
+    "no": 5
+   }
+  ],
+  "sheetTotals": {
+   "hours2500Lot": 44.0,
+   "totalUSD": 3980.0
+  },
+  "note": "Die ODC $3,980 / 2,500 = $1.59 -> $1.60 (Table XXIX item 6); resink labour 34.0 h / 2,500 = 0.0136 -> .014 h/pc (item 6 labour). The die set design + fabrication ($6,500) is EXCLUDED from the comparison by the report (sec. 8.3)."
+ },
+ "tableXXIX": {
+  "title": "Table XXIX  Comparative Cost Summary",
+  "pdfPages": [
+   155
+  ],
+  "printedPages": [
+   141
+  ],
+  "source": "PDF text layer (clean on this page), checked by its own arithmetic",
+  "columns": "Conventional Process: Standard Hours/Piece, $ Cost/Piece | Precision Forging Process: Standard Hours/Piece, $ Cost/Piece",
+  "rows": [
+   {
+    "item": "1. Material",
+    "convUSD": 29.88,
+    "pfUSD": 10.4
+   },
+   {
+    "item": "2. Forging",
+    "pfHours": 0.235
+   },
+   {
+    "item": "3. Set-up",
+    "pfHours": 0.03
+   },
+   {
+    "item": "4. Machining Labor",
+    "convHours": 2.072,
+    "pfHours": 1.045
+   },
+   {
+    "item": "5. Set-up",
+    "convHours": 0.2,
+    "pfHours": 0.19
+   },
+   {
+    "item": "6. Die Cost - Labor",
+    "pfHours": 0.014
+   },
+   {
+    "item": "6. Die Cost - Mat. ODC",
+    "pfUSD": 1.6
+   },
+   {
+    "item": "Total",
+    "convHours": 2.272,
+    "convUSD": 29.88,
+    "pfHours": 1.514,
+    "pfUSD": 12.0
+   }
+  ],
+  "itemDefinitions_pdfPage154": {
+   "1": "cost of the blank forging incl. set-up and material (conventional); material in bar form (forged tooth)",
+   "2": "direct labour hours for cutting the bar stock, making and cleaning the precision forging",
+   "3": "direct labour for setting up for item 2",
+   "4": "machining labour hours to machine the forgings to a common configuration prior to heat treat; some deburring common to both processes not included",
+   "5": "set-up hours for each process, prorated over 100 pieces",
+   "6": "prorated forging die cost: insert, preparation and EDM electrodes as material/ODC; set-up and EDM of the cavity as direct labour"
+  },
+  "checks_derived": {
+   "pf_hours": ".235 + .030 + 1.045 + .190 + .014 = 1.514 = printed",
+   "item2": "Table XXV MAN ops 30 .070 + 40 .035 + 60 .10 + 70 .015 + 80 .015 = .235",
+   "item3": "Table XXV forging set-ups 1.0+3.0+1.0+9.0+1.0 = 15.0 h / 500 lot = .030",
+   "item4": "Table XXV sheet-1 machining ops 130-170 = .170+.200+.300+.200+.175 = 1.045 - sheet-2 ops 180-280 (.930 h) are NOT in item 4, although their set-ups are in item 5",
+   "item5": "(8.5 + 10.5) h / 100 = .190 (precision forging); 20.0 / 100 = .20 (conventional)",
+   "conv_total": "2.072 + .20 = 2.272",
+   "text_inconsistency": "p.151 text says \"comparable direct labor, including set-up labor, is 1.514 hours for precision forging and 2.072 hours for conventional\" - 2.072 is the conventional figure WITHOUT set-up (Table XXIX total 2.272)"
+  },
+  "pinionStatement_p155": "For the pinion: \"it is possible to estimate a saving of approximately thirty dollars in material and .3 standard direct hours for each forged tooth pinion\" - no table."
+ },
+ "routeCards": {
+  "pinion_FR729982-4": {
+   "pdfPage": 108,
+   "printedPage": 96,
+   "figure": "Figure 44 Pinion machining sequence sketches and layout (route card + op sheets 2,3,4,5); op sheets 6,7,8,9,11A on PDF p.110 (printed 97A)",
+   "header": {
+    "customer": "TRW",
+    "partAndName": "FR-729982-4 FORGED PINION GEAR",
+    "date": "6-23-70",
+    "by": "VLCEK (as read)",
+    "material": "FORGING - 9310 ST'L"
+   },
+   "hoursColumns": "STANDARD HOURS set-up / each columns present but BLANK",
+   "operations": [
+    {
+     "op": 1,
+     "description": "RELEASE FORGINGS",
+     "dept": "810-50"
+    },
+    {
+     "op": 2,
+     "description": "TRANSFER (VIBRO-ETCH) SERIAL NO'S",
+     "dept": "989-46",
+     "sheet": "bench"
+    },
+    {
+     "op": 3,
+     "description": "DRILL",
+     "dept": "511-30",
+     "sheet": "W&S TURRET LATHE: drill thru as shown, 1-1/4 drill thru"
+    },
+    {
+     "op": 4,
+     "description": "LOC ON BALL FIXTURE - TURN",
+     "dept": "618-32",
+     "sheet": "ENGINE LATHE: 2.970 (+.000/-.001) dia, 2.83 dia, 2.771 dia, 4.612 dia, 7.580 dia, 1.413, 2.320, 1.178, .320, 125 rms"
+    },
+    {
+     "op": 5,
+     "description": "VIBRO-ETCH SERIAL NO'S",
+     "dept": "989-46"
+    },
+    {
+     "op": 6,
+     "description": "TRACE INNER CONTOUR & FACE",
+     "dept": "526-41",
+     "sheet": "CAM FOLLOWER LATHE: 1.912 dia, 2.166 dia, 3.032 dia, 1.879, 1.467, 2.043; templet T-104795"
+    },
+    {
+     "op": 7,
+     "description": "FACE, CHAMFER & CENTER",
+     "dept": "618-32",
+     "sheet": "ENGINE LATHE: 6.255 ±.005, 125 rms"
+    },
+    {
+     "op": 8,
+     "description": "TURN GEAR FACE ANGLE",
+     "dept": "614-32",
+     "sheet": "DOUBLE COMPOUND LATHE: 41°49' face angle, T-104815 fixture"
+    },
+    {
+     "op": 9,
+     "description": "TURN BACK & FRONT ANGLES",
+     "dept": "614-32",
+     "sheet": "DOUBLE COMPOUND LATHE: same tools as oper 8"
+    },
+    {
+     "op": 10,
+     "description": "DEBURR COMPLETE",
+     "dept": "989-46"
+    },
+    {
+     "op": 11,
+     "description": "WASH",
+     "dept": "996-46"
+    },
+    {
+     "op": "11A",
+     "description": "GRIND BEARING DIA & SHOULDER",
+     "dept": "812-40",
+     "sheet": "CINCINNATI GRINDER: loc on centers, 2.9555 dia (+.0000/-.0008), 125 rms"
+    },
+    {
+     "op": 12,
+     "description": "CHECK GEAR TEETH FOR STOCK REMOVAL",
+     "dept": "900-68"
+    }
+   ]
+  },
+  "gear": {
+   "pdfPage": 109,
+   "printedPage": 97,
+   "figure": "Figure 45 Gear machining sequence sketches and layout",
+   "legibility": "route card and operation sheets are too faint to transcribe at 600 dpi; the card has filled set-up / hours columns, but no figure can be read with confidence. Table XXV is used instead."
+  },
+  "forgingLayouts": {
+   "gear_Fig7_p25": "Manufacturing routing work sheet, Gear Spiral Bevel, Boeing, SK 222.., AMS-6265, 3-1/2 DIA x 5-7/8: 10 cut stock to length (Doall saw); 20 chamfer ends (Gardner polisher); 30 heat / preform / warm coin (2000 ton Maxi press, rotary furnace exo-gas); 40 zirc blast (Pangborn blast room); 50 remove flash (Warner & Swasey lathe); 60 degrease (Detrex); 70 cold coin (2000 ton Maxi press); 80 zirc blast; 90 magnaflux inspect; 100 demagnetize; 110 final inspection (bench gages); 120 oil; box; ship. No hours.",
+   "pinion_Fig11_p31": "Pinion, Spiral Bevel, Boeing, SK 22271 (as read), AMS-6265: 10 cut stock to length (Doall saw); 20 machine slug (Warner & Swasey lathe); 30 heat / preform / warm coin (2000 ton Maxi press, rotary furnace exo-gas); 40 zirc blast; 50 remove flash (W&S lathe); 60 degrease; 70 cold coin (2000 ton Maxi press); 80 zirc blast; 90 magnaflux inspect; 100 demagnetize; 110 final inspection; 120 oil; box; ship. No hours, no stock size.",
+   "text_p26_29": "gear billet 3-1/2 dia x 5-1/2 long -> preform ~9 in dia x 1-3/4; pinion: portion of billet above the die 3-1/2 dia x 5-1/2 -> preform ~7 in dia x 2 in; pinion first preform machined from bar in the development program (an upset operation would be used in production)."
+  }
+ },
+ "drawings": {
+  "tableI_p21": {
+   "pinion": {
+    "BV": "114D-6244",
+    "teeth": 35,
+    "pitch": 4.93,
+    "pressureAngle": "22°30'",
+    "spiralAngleMean": "25°0'' L.H.",
+    "pitchDiameter": 7.099,
+    "pitchAngle": "39°9'",
+    "rootAngle": "37°1'",
+    "faceAngle": "41°49'",
+    "circularToothThickness": ".344-.337",
+    "addendum": 0.199,
+    "dedendum": 0.184,
+    "normalChordalThicknessAtPD": 0.287,
+    "loadSide": "Concave"
+   },
+   "gear": {
+    "BV": "114D-6245",
+    "teeth": 43,
+    "pitch": 4.93,
+    "pressureAngle": "22°30'",
+    "spiralAngleMean": "25°0'' R.H.",
+    "pitchDiameter": 8.722,
+    "pitchAngle": "50°5' (Table I as printed; forging-design data block reads 50°51', and 90° - 39°9' = 50°51')",
+    "rootAngle": "48°11'",
+    "faceAngle": "52°59'",
+    "circularToothThickness": ".291-.294",
+    "addendum": 0.146,
+    "dedendum": 0.237,
+    "normalChordalThicknessAtPD": 0.241,
+    "loadSide": "Convex"
+   }
+  },
+  "pinionForgingDesign_Fig4_p19": {
+   "dataBlock": {
+    "teeth": 35,
+    "pitch": 4.93,
+    "pressureAngle": "22°30'",
+    "spiralAngle": "25°0' LH",
+    "pitchDiameter": 7.099,
+    "shaftAngle": "90°",
+    "pitchAngle": "39°9'",
+    "rootAngle": "37°1'",
+    "filletRadius": ".045-.055",
+    "pitchTolerance": ".0003",
+    "totalIndexTolerance": ".0015",
+    "backlashWithZeroMaster": ".003-.006",
+    "wholeDepth": ".383-.393",
+    "ref_circularToothThk": ".334-.337 (as read)",
+    "ref_addendum": 0.199,
+    "ref_dedendum": 0.184,
+    "ref_normalChordalThk": 0.287,
+    "ref_normalChordalAddendum": 0.197,
+    "ref_backlashWithMate": ".006-.012",
+    "ref_teethInMate": 43,
+    "ref_loadSide": "CONCAVE"
+   },
+   "notes": "1. MATERIAL: STEEL AMS 6265, AISI 9310 CVM - BMS 7-6; 2. TOLERANCES: fractions ±1/32, angles ±2°",
+   "dimensions": {
+    "headDiaApprox": "8\" DIA APPROX",
+    "toothedODForging": "7.536/7.526 DIA",
+    "faceAngle": "41°49' BASIC",
+    "rootAngle": "37°1' BASIC",
+    "mountingDistanceRef": "4.500 REF",
+    "headLength": "1.640/1.610",
+    "land": ".360",
+    "shank": "4.015/3.985 DIA x 8\" (no taper this length 1-7/16)",
+    "shaftFinishDashed": "3.052/3.050 DIA (5.000 BASIC, 1° taper ref), 2.877/2.875 DIA",
+    "innerDia": "5-15/16 DIA",
+    "stockAllowance": ".006/.010 STK ALLOW to MMC OF FINISH PART (section A-A)",
+    "flashMin": "3/16 MIN"
+   }
+  },
+  "gearForgingDesign_Fig5_p20": {
+   "dataBlock": {
+    "teeth": 43,
+    "pitch": 4.93,
+    "pressureAngle": "22°30'",
+    "spiralAngle": "25°0' RH",
+    "pitchDiameter": 8.722,
+    "shaftAngle": "90°",
+    "pitchAngle": "50°51'",
+    "rootAngle": "48°11'",
+    "filletRadius": ".045-.055",
+    "pitchTolerance": ".0003",
+    "totalIndexTolerance": ".0015",
+    "backlash": ".003-.006",
+    "wholeDepth": ".388-.398 (as read)",
+    "ref_circularToothThk": ".291-.294",
+    "ref_addendum": 0.146,
+    "ref_dedendum": 0.237,
+    "ref_normalChordalThk": 0.241,
+    "ref_normalChordalAddendum": ".144 (as read)",
+    "ref_backlashWithMate": ".006-.012",
+    "ref_teethInMate": 35,
+    "ref_loadSide": "CONVEX"
+   },
+   "dimensions": {
+    "approxDia": "9-3/4 APPROX DIA",
+    "od": "9.046/9.016 DIA",
+    "steps": "7.515/7.485 DIA SHARP CORNER, 5.265/5.235 DIA SHARP CORNER, 2-1/4 DIA",
+    "innerDia": "4.135/4.125 DIA (as read)",
+    "web": ".440/.410",
+    "other": ".140/.110, .155/.125, 1/16",
+    "faceAngle": "52°59' (as read, low legibility)",
+    "rootAngle": "48°11' BASIC",
+    "stock": ".006/.010 STOCK ALLOWANCE @ MMC SEE DETAIL B"
+   }
+  }
+ }
+}

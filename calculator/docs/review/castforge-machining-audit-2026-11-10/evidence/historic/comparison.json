@@ -1,0 +1,1867 @@
+{
+ "basis": {
+  "what": "Operation route and hours: CostVision (headless costMeasuredPart, UK book, AIR_GAPPED) on STEP models MODELLED FROM THE PUBLISHED DRAWING v the recorded TRW 1972 data.",
+  "timeBaseCaveat": "1972 standard hours on 1972 US machines (engine / turret / tracer / double-compound lathes, Heald and Bryant internal grinders, a Gleason generator, a 2000 t Maxipress) v CostVision 2026 cycle times on CNC lathes / VMC / hobbers. A ratio here measures method + era + scope together; it is not an accuracy figure for either. Dollars and pounds are NOT compared.",
+  "recordedHours": "MAN = direct labour standard hours a piece (observed and factored for practical efficiency, or standard data); MACH = machine hours where given; set-up = hours a lot (forging lot 500, machining lot 100).",
+  "toolHours": "machine h/pc = cycle / OEE (as the core charges it); labour h/pc = crew x labour time / labour efficiency; gear route: set-up 0.75 h an operation a batch is folded into each cycle by the module - split out here (DERIVED); forging route: secondary-machining set-up is its own amortised line (45 min a fixturing / batch = annual/20).",
+  "scope": "Record stops before carburise/harden; inspection and quality control are indirect (asterisked ops, sec. 8.0 precept 6) - excluded from both sides. Tool lines excluded on that basis: gear grinding (after case hardening), gear inspection, carburise / quench / temper and washes (gear route, \u00a3 by weight, no hours), forging quench-temper (\u00a3/kg), NDT (\u00a3/part), descale (\u00a3/kg, no hours). Deburr: Table XXIX item 4 excludes \"some deburring operations common to both processes\" - tool deburr lines are shown but kept out of the like-for-like totals."
+ },
+ "gear_precisionForged_vs_toolForging": {
+  "order2500": {
+   "label": "gear_forging-route_order2500",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 2500,
+    "programmeYears": 1,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "commodity.route": "forging",
+     "material.grade": "mat-steel-18crnimo7-6",
+     "service.toleranceClass": "tight",
+     "service.safetyCritical": "yes"
+    },
+    "commodityForced": "forging",
+    "geometrySource": "models/CH47_gear_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "rows": [
+    {
+     "recorded": "30 CUT BILLET TO LENGTH (DoAll saw)",
+     "recMan": 0.07,
+     "recMach": 0.14,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": "Billet cut-off (saw) (forge-billet-saw)",
+     "toolLabour": 0.0013864241348713398,
+     "toolMachine": 0.0031887755102040817,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "40 SQUARE ENDS & CHAMFER (automatic lathe)",
+     "recMan": 0.035,
+     "recMach": null,
+     "recSetupPerLot": 3.0,
+     "recLot": 500,
+     "tool": null,
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "50 HEAT FOR FORGING (rotary exogas furnace)",
+     "recMan": null,
+     "recMach": 0.18,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": "Induction billet heating (forge-induction-heater, untended)",
+     "toolLabour": 0.0,
+     "toolMachine": 0.008067602040816326,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "60 PREFORM & FINISH HOT COIN (2000 t Maxipress, 2 stations, one heat)",
+     "recMan": 0.1,
+     "recMach": 0.08,
+     "recSetupPerLot": 9.0,
+     "recLot": 500,
+     "tool": "Forging (forge-ring-mill, crew 2)",
+     "toolLabour": 0.044347826086956525,
+     "toolMachine": 0.025500000000000002,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "70 INSPECT - STAMP SER. NO. (Schmidt)",
+     "recMan": 0.015,
+     "recMach": 0.015,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": null,
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "80 CLEAN (Wheelabrator Tablast)",
+     "recMan": 0.015,
+     "recMach": 0.015,
+     "recSetupPerLot": 0,
+     "recLot": 500,
+     "tool": "descale \u00a30.12/kg service - no hours",
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "130 TURN EXCESS STOCK - DRILL / RE STAMP (ENGINE LATHE)",
+     "recMan": 0.17,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "140 LOC ON FIXT. GRD FACE & O.D. (HEALD INT. GRINDER)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "150 TURN & BORE (TURRET LATHE)",
+     "recMan": 0.3,
+     "recMach": null,
+     "recSetupPerLot": 3.0,
+     "recLot": 100,
+     "recKind": "turn+bore",
+     "tool": "CNC lathe turning + VMC finish boring",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "160 FACE, TURN O.D. & C BORE (ENGINE LATHE)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "170 GRIND FACE & O.D. (HEALD INT. GRINDER)",
+     "recMan": 0.175,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "180 GRIND BORE & FACE (BRYANT INT'L GRINDER)",
+     "recMan": 0.15,
+     "recMach": null,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "190 GRIND BORE & FACE (HEALD INT'L GRINDER)",
+     "recMan": 0.1,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "200 TRANSFER IDENTITY (BENCH)",
+     "recMan": 0.02,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "identity",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "210 TRACE WEB CONTOUR (TRACER LATHE)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "220 SEMI-FIN TURN GROOVE (ENGINE LATHE)",
+     "recMan": 0.12,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "240 POLISH WEB (POLISHING MACHINE)",
+     "recMan": 0.06,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "polish",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "250 VIBRO ETCH (BENCH)",
+     "recMan": 0.02,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "identity",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "260 ROUGH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recMach": null,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "270 FINISH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "280 POLISH (POLISH LATHE)",
+     "recMan": 0.04,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "polish",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    }
+   ],
+   "toolMachiningLines": [
+    {
+     "tool": "Turning \u2014 outside and faces on the CNC lathe, op 10 / op 20",
+     "machineId": "mach-lathe-cnc",
+     "toolLabour": 0.018097826086956523,
+     "toolMachine": 0.041625,
+     "cycleMin": 1.9980000000000002,
+     "crew": 0.5,
+     "oee": 0.8
+    },
+    {
+     "tool": "Finish boring \u2014 1 cored bore(s), 1 stepped (1\u00d7 stepped bore \u00d8104.9\u00d719 / \u00d8166.3\u00d77.8) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.012065217391304348,
+     "toolMachine": 0.02775,
+     "cycleMin": 1.332,
+     "crew": 0.5,
+     "oee": 0.8
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 lathe fixture, 1 fixturing",
+     "machineId": "mach-lathe-cnc",
+     "toolLabour": 0.010869565217391304,
+     "toolMachine": 0.012499999999999999,
+     "cycleMin": 0.6,
+     "crew": 1,
+     "oee": 0.8
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 1 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.010869565217391304,
+     "toolMachine": 0.012499999999999999,
+     "cycleMin": 0.6,
+     "crew": 1,
+     "oee": 0.8
+    },
+    {
+     "tool": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.01847826086956522,
+     "toolMachine": 0.0,
+     "cycleMin": 0,
+     "crew": 1,
+     "oee": 1
+    },
+    {
+     "tool": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.012,
+     "toolMachine": 0.012,
+     "cycleMin": 0.72,
+     "crew": 1,
+     "oee": 1
+    }
+   ],
+   "totals": {
+    "recorded_XXIX_basis": {
+     "forgingRun": 0.235,
+     "forgingSetupPerPc": 0.03,
+     "machiningRun_item4": 1.045,
+     "machiningSetupPerPc": 0.19,
+     "dieLabour": 0.014,
+     "total": 1.514
+    },
+    "recorded_full_TableXXV_DERIVED": {
+     "machiningRun_sheet1": 1.045,
+     "machiningRun_sheet2": 0.9300000000000002,
+     "total": 2.444,
+     "note": "adds the sheet-2 operations (180-280, 0.930 h) that Table XXIX item 4 leaves out although item 5 carries their set-ups"
+    },
+    "tool_inScope_labour": {
+     "forging": 0.045734250221827866,
+     "machiningRun": 0.05190217391304348,
+     "machiningSetupPerPc": 0.012,
+     "forgeSetupPerPc": 0.0,
+     "dieLabour": 0.0,
+     "total": 0.10963642413487133
+    },
+    "tool_inScope_machine": {
+     "forging": 0.03675637755102041,
+     "machiningRun": 0.094375,
+     "total": 0.13113137755102042
+    },
+    "tool_excluded_deburr_labour": 0.01847826086956522,
+    "DERIVED_ratios_recorded_over_tool_labour": {
+     "forgingRun": 5.138380947761555,
+     "machiningRun_vs_item4": 20.134031413612565,
+     "machiningRun_vs_fullXXV": 38.05235602094241,
+     "machiningSetupPerPc": 15.833333333333334,
+     "total_XXIX": 13.809279278732442,
+     "total_fullXXV": 22.291861662630176
+    }
+   },
+   "material": {
+    "recorded_billet": {
+     "lbPerPc": 16,
+     "kgPerPc_DERIVED": 7.25747792,
+     "bar": "3.50 in dia CRD = 88.9 mm",
+     "pricedAs": "$0.65/lb -> $10.40 (not compared)",
+     "lengthFromFig7": "3-1/2 dia x 5-7/8 in -> 56.5 in3 x 0.283 lb/in3 = 16.0 lb (DERIVED check)"
+    },
+    "tool_billet": {
+     "kgPerPc": 7.906,
+     "barDiaMm": 82.3,
+     "asForgedKg": 5.732,
+     "yieldFraction": 0.725,
+     "finishedKg_model": 4.197159037637865,
+     "basis": "ring-rolling stock yield band 0.6\u20130.85, midpoint 0.725 \u2014 as-forged weight \u00f7 billet, CostVision engineering-typical, not sourced \u2014 this route makes no flash; billet = 5.732 kg forging \u00f7 0.725 = 7.906 kg; finished \u00f7 billet = 4.197 kg \u00f7 7.906 kg = 0.53; 7.906 \u2212 5.732 = 2.174 kg is scale, crop and any pierced wad (not itemised)"
+    },
+    "DERIVED_ratio_tool_over_recorded_billet": 1.0893591530210263,
+    "recorded_asForged_or_finished_weight": "not recorded in the report"
+   },
+   "counts": {
+    "recorded_directOps_inScope": 20,
+    "recorded_forgingOps": 5,
+    "recorded_machiningOps": 15,
+    "tool_ops_inScope": 7,
+    "tool_forgingOps": 3,
+    "tool_machiningOps": 4,
+    "recorded_setupsPerLot": {
+     "forging (per 500)": 5,
+     "machining (per 100)": 11,
+     "forgingSetupHrPerLot": 15.0,
+     "machiningSetupHrPerLot": 19.0
+    },
+    "tool_setupsPerBatch": {
+     "forging line": 0,
+     "secondary machining": 1.5,
+     "batch": 125
+    },
+    "dieLife": {
+     "recorded": "500 forgings per cavity (sink + 4 resinks), insert retired after 2,500 (sec. 8.0 precept 2, Table XXVII)",
+     "tool": 23827,
+     "DERIVED_ratio_tool_over_recorded_perCavity": 47.654
+    },
+    "forgingMachine": {
+     "recorded": "J-28 2000 t Maxipress: preform + finish hot coin in one heat (+ cold coin in the development layout)",
+     "tool": "forge-ring-mill - seamless ring: upset and punched, then rolled on the ring mill"
+    }
+   }
+  },
+  "10k_5y": {
+   "label": "gear_forging-route_10k_5y",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "commodity.route": "forging",
+     "material.grade": "mat-steel-18crnimo7-6",
+     "service.toleranceClass": "tight",
+     "service.safetyCritical": "yes"
+    },
+    "commodityForced": "forging",
+    "geometrySource": "models/CH47_gear_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "rows": [
+    {
+     "recorded": "30 CUT BILLET TO LENGTH (DoAll saw)",
+     "recMan": 0.07,
+     "recMach": 0.14,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": "Billet cut-off (saw) (forge-billet-saw)",
+     "toolLabour": 0.0013864241348713398,
+     "toolMachine": 0.0031887755102040817,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "40 SQUARE ENDS & CHAMFER (automatic lathe)",
+     "recMan": 0.035,
+     "recMach": null,
+     "recSetupPerLot": 3.0,
+     "recLot": 500,
+     "tool": null,
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "50 HEAT FOR FORGING (rotary exogas furnace)",
+     "recMan": null,
+     "recMach": 0.18,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": "Induction billet heating (forge-induction-heater, untended)",
+     "toolLabour": 0.0,
+     "toolMachine": 0.008067602040816326,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "60 PREFORM & FINISH HOT COIN (2000 t Maxipress, 2 stations, one heat)",
+     "recMan": 0.1,
+     "recMach": 0.08,
+     "recSetupPerLot": 9.0,
+     "recLot": 500,
+     "tool": "Forging (forge-ring-mill, crew 2)",
+     "toolLabour": 0.044347826086956525,
+     "toolMachine": 0.025500000000000002,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "70 INSPECT - STAMP SER. NO. (Schmidt)",
+     "recMan": 0.015,
+     "recMach": 0.015,
+     "recSetupPerLot": 1.0,
+     "recLot": 500,
+     "tool": null,
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "80 CLEAN (Wheelabrator Tablast)",
+     "recMan": 0.015,
+     "recMach": 0.015,
+     "recSetupPerLot": 0,
+     "recLot": 500,
+     "tool": "descale \u00a30.12/kg service - no hours",
+     "toolLabour": 0,
+     "toolMachine": 0,
+     "toolSetupPerBatch": 0
+    },
+    {
+     "recorded": "130 TURN EXCESS STOCK - DRILL / RE STAMP (ENGINE LATHE)",
+     "recMan": 0.17,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "140 LOC ON FIXT. GRD FACE & O.D. (HEALD INT. GRINDER)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "150 TURN & BORE (TURRET LATHE)",
+     "recMan": 0.3,
+     "recMach": null,
+     "recSetupPerLot": 3.0,
+     "recLot": 100,
+     "recKind": "turn+bore",
+     "tool": "CNC lathe turning + VMC finish boring",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "160 FACE, TURN O.D. & C BORE (ENGINE LATHE)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "170 GRIND FACE & O.D. (HEALD INT. GRINDER)",
+     "recMan": 0.175,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "180 GRIND BORE & FACE (BRYANT INT'L GRINDER)",
+     "recMan": 0.15,
+     "recMach": null,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "190 GRIND BORE & FACE (HEALD INT'L GRINDER)",
+     "recMan": 0.1,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "grind",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "200 TRANSFER IDENTITY (BENCH)",
+     "recMan": 0.02,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "identity",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "210 TRACE WEB CONTOUR (TRACER LATHE)",
+     "recMan": 0.2,
+     "recMach": null,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "220 SEMI-FIN TURN GROOVE (ENGINE LATHE)",
+     "recMan": 0.12,
+     "recMach": null,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "240 POLISH WEB (POLISHING MACHINE)",
+     "recMan": 0.06,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "polish",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "250 VIBRO ETCH (BENCH)",
+     "recMan": 0.02,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "identity",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "260 ROUGH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recMach": null,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "270 FINISH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recMach": null,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "recKind": "turn",
+     "tool": "CNC lathe turning op 10/20 (one line covers all turning)",
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    },
+    {
+     "recorded": "280 POLISH (POLISH LATHE)",
+     "recMan": 0.04,
+     "recMach": null,
+     "recSetupPerLot": 0.0,
+     "recLot": 100,
+     "recKind": "polish",
+     "tool": null,
+     "toolLabour": null,
+     "toolMachine": null,
+     "toolSetupPerBatch": null
+    }
+   ],
+   "toolMachiningLines": [
+    {
+     "tool": "Turning \u2014 outside and faces on the CNC lathe, op 10 / op 20",
+     "machineId": "mach-lathe-cnc",
+     "toolLabour": 0.018097826086956523,
+     "toolMachine": 0.041625,
+     "cycleMin": 1.9980000000000002,
+     "crew": 0.5,
+     "oee": 0.8
+    },
+    {
+     "tool": "Finish boring \u2014 1 cored bore(s), 1 stepped (1\u00d7 stepped bore \u00d8104.9\u00d719 / \u00d8166.3\u00d77.8) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.012065217391304348,
+     "toolMachine": 0.02775,
+     "cycleMin": 1.332,
+     "crew": 0.5,
+     "oee": 0.8
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 lathe fixture, 1 fixturing",
+     "machineId": "mach-lathe-cnc",
+     "toolLabour": 0.010869565217391304,
+     "toolMachine": 0.012499999999999999,
+     "cycleMin": 0.6,
+     "crew": 1,
+     "oee": 0.8
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 1 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.010869565217391304,
+     "toolMachine": 0.012499999999999999,
+     "cycleMin": 0.6,
+     "crew": 1,
+     "oee": 0.8
+    },
+    {
+     "tool": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.01847826086956522,
+     "toolMachine": 0.0,
+     "cycleMin": 0,
+     "crew": 1,
+     "oee": 1
+    },
+    {
+     "tool": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "toolLabour": 0.003,
+     "toolMachine": 0.003,
+     "cycleMin": 0.18,
+     "crew": 1,
+     "oee": 1
+    }
+   ],
+   "totals": {
+    "recorded_XXIX_basis": {
+     "forgingRun": 0.235,
+     "forgingSetupPerPc": 0.03,
+     "machiningRun_item4": 1.045,
+     "machiningSetupPerPc": 0.19,
+     "dieLabour": 0.014,
+     "total": 1.514
+    },
+    "recorded_full_TableXXV_DERIVED": {
+     "machiningRun_sheet1": 1.045,
+     "machiningRun_sheet2": 0.9300000000000002,
+     "total": 2.444,
+     "note": "adds the sheet-2 operations (180-280, 0.930 h) that Table XXIX item 4 leaves out although item 5 carries their set-ups"
+    },
+    "tool_inScope_labour": {
+     "forging": 0.045734250221827866,
+     "machiningRun": 0.05190217391304348,
+     "machiningSetupPerPc": 0.003,
+     "forgeSetupPerPc": 0.0,
+     "dieLabour": 0.0,
+     "total": 0.10063642413487134
+    },
+    "tool_inScope_machine": {
+     "forging": 0.03675637755102041,
+     "machiningRun": 0.094375,
+     "total": 0.13113137755102042
+    },
+    "tool_excluded_deburr_labour": 0.01847826086956522,
+    "DERIVED_ratios_recorded_over_tool_labour": {
+     "forgingRun": 5.138380947761555,
+     "machiningRun_vs_item4": 20.134031413612565,
+     "machiningRun_vs_fullXXV": 38.05235602094241,
+     "machiningSetupPerPc": 63.333333333333336,
+     "total_XXIX": 15.044254731974194,
+     "total_fullXXV": 24.28544158847089
+    }
+   },
+   "material": {
+    "recorded_billet": {
+     "lbPerPc": 16,
+     "kgPerPc_DERIVED": 7.25747792,
+     "bar": "3.50 in dia CRD = 88.9 mm",
+     "pricedAs": "$0.65/lb -> $10.40 (not compared)",
+     "lengthFromFig7": "3-1/2 dia x 5-7/8 in -> 56.5 in3 x 0.283 lb/in3 = 16.0 lb (DERIVED check)"
+    },
+    "tool_billet": {
+     "kgPerPc": 7.906,
+     "barDiaMm": 82.3,
+     "asForgedKg": 5.732,
+     "yieldFraction": 0.725,
+     "finishedKg_model": 4.197159037637865,
+     "basis": "ring-rolling stock yield band 0.6\u20130.85, midpoint 0.725 \u2014 as-forged weight \u00f7 billet, CostVision engineering-typical, not sourced \u2014 this route makes no flash; billet = 5.732 kg forging \u00f7 0.725 = 7.906 kg; finished \u00f7 billet = 4.197 kg \u00f7 7.906 kg = 0.53; 7.906 \u2212 5.732 = 2.174 kg is scale, crop and any pierced wad (not itemised)"
+    },
+    "DERIVED_ratio_tool_over_recorded_billet": 1.0893591530210263,
+    "recorded_asForged_or_finished_weight": "not recorded in the report"
+   },
+   "counts": {
+    "recorded_directOps_inScope": 20,
+    "recorded_forgingOps": 5,
+    "recorded_machiningOps": 15,
+    "tool_ops_inScope": 7,
+    "tool_forgingOps": 3,
+    "tool_machiningOps": 4,
+    "recorded_setupsPerLot": {
+     "forging (per 500)": 5,
+     "machining (per 100)": 11,
+     "forgingSetupHrPerLot": 15.0,
+     "machiningSetupHrPerLot": 19.0
+    },
+    "tool_setupsPerBatch": {
+     "forging line": 0,
+     "secondary machining": 1.5,
+     "batch": 500
+    },
+    "dieLife": {
+     "recorded": "500 forgings per cavity (sink + 4 resinks), insert retired after 2,500 (sec. 8.0 precept 2, Table XXVII)",
+     "tool": 23827,
+     "DERIVED_ratio_tool_over_recorded_perCavity": 47.654
+    },
+    "forgingMachine": {
+     "recorded": "J-28 2000 t Maxipress: preform + finish hot coin in one heat (+ cold coin in the development layout)",
+     "tool": "forge-ring-mill - seamless ring: upset and punched, then rolled on the ring mill"
+    }
+   }
+  }
+ },
+ "gear_conventional_vs_toolGear": {
+  "order2500": {
+   "label": "gear_gear-route_order2500",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 2500,
+    "programmeYears": 1,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "gear.helix": "25",
+     "gear.faceWidthEntry": "25.4",
+     "gear.moduleEntry": "5.152",
+     "gear.qualityClass": "6",
+     "gear.materialClass": "case_hardening_steel",
+     "gear.hardeningRoute": "case_hardening",
+     "gear.teethEntry": "43"
+    },
+    "commodityForced": "gear",
+    "geometrySource": "models/CH47_gear_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "rows": [
+    {
+     "recorded": "5 PROCURE FORGING BLANK",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": "bar slice, bar slice \u00d8259 \u00d7 31 mm (tip \u00d8 254.7 + 4 mm OD clean-up, face 25.4 + 6 mm kerf and facing \u2014 engineering-typical allowance..."
+    },
+    {
+     "recorded": "10 INSPECT FORGING",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "20 STAMP (BENCH)",
+     "recMan": 0.024,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "30 FACE & BORE (W&S TURRET LATHE)",
+     "recMan": 0.22,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "40 TURN O.D. (W&S TURRET LATHE)",
+     "recMan": 0.09,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "50 TRACE WEB & BORE I.D. (W&S TURRET LATHE)",
+     "recMan": 0.22,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "60 TURN MTG FCE (ENGINE LATHE)",
+     "recMan": 0.125,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "70 GRIND BORE & (2) FACES (BRYANT INTERNAL GRINDER)",
+     "recMan": 0.333,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "80 SEMI-FINISH TURN GROOVE (ENGINE LATHE)",
+     "recMan": 0.12,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "90 STAMP (BENCH)",
+     "recMan": 0.02,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "95 POLISH",
+     "recMan": 0.06,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "100 ROUGH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "110 FINISH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "120 POLISH (POLISHING LATHE)",
+     "recMan": 0.04,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "130 WASH & INSPECT & RECORD (BENCH)",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "140 GENERATE GEAR TEETH (GLEASON GEAR CUTTER)",
+     "recMan": 0.4,
+     "recSetupPerLot": 5.0,
+     "recLot": 100,
+     "tool": "Gear hobbing (cylindrical-gear hob model)"
+    }
+   ],
+   "toolLines": [
+    {
+     "tool": "Blank turning (face, OD, bore)",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin_costed": 2.8377065111758992,
+     "runMin_DERIVED": 2.5666666666666664,
+     "setupHrPerBatch": 0.75,
+     "batch": 210,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.02570386332586865,
+     "machineHrPerPc_costed": 0.059118885649497896,
+     "inScope": true,
+     "scopeNote": "in scope"
+    },
+    {
+     "tool": "Gear hobbing",
+     "machineId": "gear-hob-medium",
+     "cycleMin_costed": 1.2676391997577967,
+     "runMin_DERIVED": 1.0280007014769263,
+     "setupHrPerBatch": 0.75,
+     "batch": 210,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.011482239128240913,
+     "machineHrPerPc_costed": 0.026409149994954098,
+     "inScope": true,
+     "scopeNote": "in scope"
+    },
+    {
+     "tool": "Chamfer and deburr",
+     "machineId": "gear-deburr",
+     "cycleMin_costed": 0.6438289601554906,
+     "runMin_DERIVED": 0.41666666666666663,
+     "setupHrPerBatch": 0.75,
+     "batch": 210,
+     "crew": 1,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.011663568118758889,
+     "machineHrPerPc_costed": 0.013413103336572722,
+     "inScope": false,
+     "scopeNote": "deburr - excluded like the record (XXIX item 4)"
+    },
+    {
+     "tool": "Gear grinding",
+     "machineId": "gear-grind-generating",
+     "cycleMin_costed": 1.3710780589070093,
+     "runMin_DERIVED": 1.1293707834431548,
+     "setupHrPerBatch": 0.75,
+     "batch": 210,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.012419185316186679,
+     "machineHrPerPc_costed": 0.02856412622722936,
+     "inScope": false,
+     "scopeNote": "after case hardening - out of scope"
+    },
+    {
+     "tool": "Gear inspection",
+     "machineId": "gear-checker",
+     "cycleMin_costed": 0.5587949465500487,
+     "runMin_DERIVED": 0.33333333333333337,
+     "setupHrPerBatch": 0.75,
+     "batch": 210,
+     "crew": 1,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.010123096857790736,
+     "machineHrPerPc_costed": 0.011641561386459347,
+     "inScope": false,
+     "scopeNote": "inspection - indirect in the record"
+    }
+   ],
+   "totals": {
+    "recorded": {
+     "turningRun_7ops": 0.995,
+     "turningSetupPerLot": 12.5,
+     "grindPolishStampRun": 0.47700000000000004,
+     "gleasonRun_asRead": 0.4,
+     "gleasonRun_fromSheetTotal_DERIVED": 0.6000000000000001,
+     "gleasonSetupPerLot": 5.0,
+     "runTotal_sheet": 2.072,
+     "setupPerPc": 0.2,
+     "total_XXIX": 2.272
+    },
+    "tool": {
+     "blankTurningRunHr_DERIVED": 0.042777777777777776,
+     "hobbingRunHr_DERIVED": 0.01713334502461544,
+     "setupHrPerBatch_inScope": 1.5,
+     "batch": 210,
+     "labourHrPerPc_inScope_costed": 0.03718610245410956,
+     "machineHrPerPc_inScope_costed": 0.085528035644452,
+     "excluded": {
+      "deburrLabour": 0.011663568118758889,
+      "grindingMachine": 0.02856412622722936,
+      "inspectionLabour": 0.010123096857790736
+     }
+    },
+    "DERIVED_ratios": {
+     "turning_recordedRun_over_toolBlankRun": 23.259740259740262,
+     "toothCutting_recordedGleason(.600 from total)_over_toolHobRun": 35.01943135668961,
+     "toothCutting_recordedGleason(.400 as read)_over_toolHobRun": 23.346287571126414,
+     "total_XXIX_over_tool_inScope_labour": 61.098094450845394,
+     "setupHoursPerLot_recorded20_over_tool": 13.333333333333334
+    }
+   },
+   "material": {
+    "recorded": {
+     "start": "bought \"normal oversize forging blank\" (stock size FORGING - BM67-C as read); cost $29.88 incl. set-up and material; weight NOT recorded"
+    },
+    "tool": {
+     "start": "sawn bar slice (gear module: blank = bar)",
+     "basis": "bar slice \u00d8259 \u00d7 31 mm (tip \u00d8 254.7 + 4 mm OD clean-up, face 25.4 + 6 mm kerf and facing \u2014 engineering-typical allowances, not sourced) = 1651.0 cm\u00b3 \u00d7 7.85 g/cm\u00b3 = 12.961 kg 20MnCr5 (Gear Steel) \u00d7 \u00a31.48/kg = \u00a319.18, less chips (12.961 \u2212 4.197 kg net) = 8.763 kg \u00d7 \u00a30.22/kg = \u00a31.93 \u2192 \u00a317.25. MATERIAL only \u2014 turning is costed as an operation; the saw cut-off itself is not costed. Replace with the forged-blank quote (and zero the turning cycle) when one exists.",
+     "netKg_model": 4.197
+    },
+    "comparable": "no - the record gives a forged blank in dollars only; the tool buys bar. Hours only."
+   },
+   "counts": {
+    "recorded_directOps": 13,
+    "recorded_setupsPerLot": 9,
+    "recorded_setupHrPerLot": 20.0,
+    "tool_inScopeOps": 2,
+    "tool_setupsPerBatch_inScope": 2,
+    "tool_setupHrPerBatch_inScope": 1.5,
+    "tool_batch": 210
+   },
+   "geometry": {
+    "tool_tipDiameterMm_DERIVED_by_tool": "254.7",
+    "model_heelOD_mm_DERIVED": 226.22141741328895,
+    "note": "the gear module treats the part as a cylindrical helical gear: tip \u00d8 = mn z / cos \u03b2 + 2 mn with mn = 25.4/4.930 = 5.152 mm, \u03b2 = 25\u00b0 - larger than the bevel gear's real heel OD"
+   }
+  },
+  "10k_5y": {
+   "label": "gear_gear-route_10k_5y",
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "gear.helix": "25",
+     "gear.faceWidthEntry": "25.4",
+     "gear.moduleEntry": "5.152",
+     "gear.qualityClass": "6",
+     "gear.materialClass": "case_hardening_steel",
+     "gear.hardeningRoute": "case_hardening",
+     "gear.teethEntry": "43"
+    },
+    "commodityForced": "gear",
+    "geometrySource": "models/CH47_gear_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "rows": [
+    {
+     "recorded": "5 PROCURE FORGING BLANK",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": "bar slice, bar slice \u00d8259 \u00d7 31 mm (tip \u00d8 254.7 + 4 mm OD clean-up, face 25.4 + 6 mm kerf and facing \u2014 engineering-typical allowance..."
+    },
+    {
+     "recorded": "10 INSPECT FORGING",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "20 STAMP (BENCH)",
+     "recMan": 0.024,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "30 FACE & BORE (W&S TURRET LATHE)",
+     "recMan": 0.22,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "40 TURN O.D. (W&S TURRET LATHE)",
+     "recMan": 0.09,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "50 TRACE WEB & BORE I.D. (W&S TURRET LATHE)",
+     "recMan": 0.22,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "60 TURN MTG FCE (ENGINE LATHE)",
+     "recMan": 0.125,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "70 GRIND BORE & (2) FACES (BRYANT INTERNAL GRINDER)",
+     "recMan": 0.333,
+     "recSetupPerLot": 2.5,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "80 SEMI-FINISH TURN GROOVE (ENGINE LATHE)",
+     "recMan": 0.12,
+     "recSetupPerLot": 1.5,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "90 STAMP (BENCH)",
+     "recMan": 0.02,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "95 POLISH",
+     "recMan": 0.06,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "100 ROUGH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recSetupPerLot": 2.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "110 FINISH TURN GEAR ANGLES (DOUBLE COMPOUND LATHE)",
+     "recMan": 0.11,
+     "recSetupPerLot": 1.0,
+     "recLot": 100,
+     "tool": "Blank turning (face, OD, bore) - one line"
+    },
+    {
+     "recorded": "120 POLISH (POLISHING LATHE)",
+     "recMan": 0.04,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "130 WASH & INSPECT & RECORD (BENCH)",
+     "recMan": null,
+     "recSetupPerLot": null,
+     "recLot": 100,
+     "tool": null
+    },
+    {
+     "recorded": "140 GENERATE GEAR TEETH (GLEASON GEAR CUTTER)",
+     "recMan": 0.4,
+     "recSetupPerLot": 5.0,
+     "recLot": 100,
+     "tool": "Gear hobbing (cylindrical-gear hob model)"
+    }
+   ],
+   "toolLines": [
+    {
+     "tool": "Blank turning (face, OD, bore)",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin_costed": 2.6743709532005573,
+     "runMin_DERIVED": 2.5666666666666664,
+     "setupHrPerBatch": 0.75,
+     "batch": 830,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.024224374576092004,
+     "machineHrPerPc_costed": 0.05571606152501161,
+     "inScope": true,
+     "scopeNote": "in scope"
+    },
+    {
+     "tool": "Gear hobbing",
+     "machineId": "gear-hob-medium",
+     "cycleMin_costed": 1.104303641782455,
+     "runMin_DERIVED": 1.0280007014769263,
+     "setupHrPerBatch": 0.75,
+     "batch": 830,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.010002750378464266,
+     "machineHrPerPc_costed": 0.023006325870467813,
+     "inScope": true,
+     "scopeNote": "in scope"
+    },
+    {
+     "tool": "Chamfer and deburr",
+     "machineId": "gear-deburr",
+     "cycleMin_costed": 0.4804934021801492,
+     "runMin_DERIVED": 0.41666666666666663,
+     "setupHrPerBatch": 0.75,
+     "batch": 830,
+     "crew": 1,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.0087045906192056,
+     "machineHrPerPc_costed": 0.01001027921208644,
+     "inScope": false,
+     "scopeNote": "deburr - excluded like the record (XXIX item 4)"
+    },
+    {
+     "tool": "Gear grinding",
+     "machineId": "gear-grind-generating",
+     "cycleMin_costed": 1.2077425009316676,
+     "runMin_DERIVED": 1.1293707834431548,
+     "setupHrPerBatch": 0.75,
+     "batch": 830,
+     "crew": 0.5,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.010939696566410032,
+     "machineHrPerPc_costed": 0.025161302102743074,
+     "inScope": false,
+     "scopeNote": "after case hardening - out of scope"
+    },
+    {
+     "tool": "Gear inspection",
+     "machineId": "gear-checker",
+     "cycleMin_costed": 0.395459388574707,
+     "runMin_DERIVED": 0.33333333333333337,
+     "setupHrPerBatch": 0.75,
+     "batch": 830,
+     "crew": 1,
+     "oee": 0.8,
+     "labourHrPerPc_costed": 0.007164119358237446,
+     "machineHrPerPc_costed": 0.008238737261973062,
+     "inScope": false,
+     "scopeNote": "inspection - indirect in the record"
+    }
+   ],
+   "totals": {
+    "recorded": {
+     "turningRun_7ops": 0.995,
+     "turningSetupPerLot": 12.5,
+     "grindPolishStampRun": 0.47700000000000004,
+     "gleasonRun_asRead": 0.4,
+     "gleasonRun_fromSheetTotal_DERIVED": 0.6000000000000001,
+     "gleasonSetupPerLot": 5.0,
+     "runTotal_sheet": 2.072,
+     "setupPerPc": 0.2,
+     "total_XXIX": 2.272
+    },
+    "tool": {
+     "blankTurningRunHr_DERIVED": 0.042777777777777776,
+     "hobbingRunHr_DERIVED": 0.01713334502461544,
+     "setupHrPerBatch_inScope": 1.5,
+     "batch": 830,
+     "labourHrPerPc_inScope_costed": 0.03422712495455627,
+     "machineHrPerPc_inScope_costed": 0.07872238739547942,
+     "excluded": {
+      "deburrLabour": 0.0087045906192056,
+      "grindingMachine": 0.025161302102743074,
+      "inspectionLabour": 0.007164119358237446
+     }
+    },
+    "DERIVED_ratios": {
+     "turning_recordedRun_over_toolBlankRun": 23.259740259740262,
+     "toothCutting_recordedGleason(.600 from total)_over_toolHobRun": 35.01943135668961,
+     "toothCutting_recordedGleason(.400 as read)_over_toolHobRun": 23.346287571126414,
+     "total_XXIX_over_tool_inScope_labour": 66.38010066625692,
+     "setupHoursPerLot_recorded20_over_tool": 13.333333333333334
+    }
+   },
+   "material": {
+    "recorded": {
+     "start": "bought \"normal oversize forging blank\" (stock size FORGING - BM67-C as read); cost $29.88 incl. set-up and material; weight NOT recorded"
+    },
+    "tool": {
+     "start": "sawn bar slice (gear module: blank = bar)",
+     "basis": "bar slice \u00d8259 \u00d7 31 mm (tip \u00d8 254.7 + 4 mm OD clean-up, face 25.4 + 6 mm kerf and facing \u2014 engineering-typical allowances, not sourced) = 1651.0 cm\u00b3 \u00d7 7.85 g/cm\u00b3 = 12.961 kg 20MnCr5 (Gear Steel) \u00d7 \u00a31.48/kg = \u00a319.18, less chips (12.961 \u2212 4.197 kg net) = 8.763 kg \u00d7 \u00a30.22/kg = \u00a31.93 \u2192 \u00a317.25. MATERIAL only \u2014 turning is costed as an operation; the saw cut-off itself is not costed. Replace with the forged-blank quote (and zero the turning cycle) when one exists.",
+     "netKg_model": 4.197
+    },
+    "comparable": "no - the record gives a forged blank in dollars only; the tool buys bar. Hours only."
+   },
+   "counts": {
+    "recorded_directOps": 13,
+    "recorded_setupsPerLot": 9,
+    "recorded_setupHrPerLot": 20.0,
+    "tool_inScopeOps": 2,
+    "tool_setupsPerBatch_inScope": 2,
+    "tool_setupHrPerBatch_inScope": 1.5,
+    "tool_batch": 830
+   },
+   "geometry": {
+    "tool_tipDiameterMm_DERIVED_by_tool": "254.7",
+    "model_heelOD_mm_DERIVED": 226.22141741328895,
+    "note": "the gear module treats the part as a cylindrical helical gear: tip \u00d8 = mn z / cos \u03b2 + 2 mn with mn = 25.4/4.930 = 5.152 mm, \u03b2 = 25\u00b0 - larger than the bevel gear's real heel OD"
+   }
+  }
+ },
+ "pinion": {
+  "order2500": {
+   "labels": [
+    "pinion_forging-route_order2500",
+    "pinion_gear-route_order2500"
+   ],
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 2500,
+    "programmeYears": 1,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "commodity.route": "forging",
+     "material.grade": "mat-steel-18crnimo7-6",
+     "service.toleranceClass": "tight",
+     "service.safetyCritical": "yes"
+    },
+    "commodityForced": "forging",
+    "geometrySource": "models/CH47_pinion_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "routeCardCoverage": [
+    {
+     "recorded": "1 RELEASE FORGINGS (810-50)",
+     "tool_forgingRoute": "n/a (release forgings = stores)"
+    },
+    {
+     "recorded": "2 TRANSFER (VIBRO-ETCH) SERIAL NO'S (989-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "3 DRILL (511-30)",
+     "tool_forgingRoute": "VMC finish boring (bore) / lathe"
+    },
+    {
+     "recorded": "4 LOC ON BALL FIXTURE - TURN (618-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "5 VIBRO-ETCH SERIAL NO'S (989-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "6 TRACE INNER CONTOUR & FACE (526-41)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20 (inner contour) / VMC boring"
+    },
+    {
+     "recorded": "7 FACE, CHAMFER & CENTER (618-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "8 TURN GEAR FACE ANGLE (614-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "9 TURN BACK & FRONT ANGLES (614-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "10 DEBURR COMPLETE (989-46)",
+     "tool_forgingRoute": "Deburr and gauge check (bench)"
+    },
+    {
+     "recorded": "11 WASH (996-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "11A GRIND BEARING DIA & SHOULDER (812-40)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "12 CHECK GEAR TEETH FOR STOCK REMOVAL (900-68)",
+     "tool_forgingRoute": null
+    }
+   ],
+   "toolForgingRouteOps": [
+    {
+     "tool": "Billet cut-off (saw)",
+     "machineId": "forge-billet-saw",
+     "cycleMin": 0.15306122448979592,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.0013864241348713398,
+     "machineHrPerPc_costed": 0.0031887755102040817
+    },
+    {
+     "tool": "Induction billet heating",
+     "machineId": "forge-induction-heater",
+     "cycleMin": 0.7518367346938776,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.0,
+     "machineHrPerPc_costed": 0.01566326530612245
+    },
+    {
+     "tool": "Forging",
+     "machineId": "forge-press-2500t",
+     "cycleMin": 0.2551224489795918,
+     "crew": 2,
+     "labourHrPerPc_costed": 0.009243566992014196,
+     "machineHrPerPc_costed": 0.0053150510204081625
+    },
+    {
+     "tool": "Flash Trimming",
+     "machineId": "press-100t",
+     "cycleMin": 0.2551224489795918,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.004621783496007098,
+     "machineHrPerPc_costed": 0.0053150510204081625
+    },
+    {
+     "tool": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 0.72,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.012,
+     "machineHrPerPc_costed": 0.012
+    },
+    {
+     "tool": "Finish boring \u2014 1 cored bore(s), 1 stepped (1\u00d7 stepped bore \u00d848.6\u00d7140 / \u00d855.0\u00d713 / \u00d877.0\u00d76.3) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 1.0799999999999998,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.009782608695652173,
+     "machineHrPerPc_costed": 0.022499999999999996
+    },
+    {
+     "tool": "Turning \u2014 outside and faces on the CNC lathe, op 10 / op 20",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 2.5500000000000003,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.023097826086956524,
+     "machineHrPerPc_costed": 0.053125
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 lathe fixture, 1 fixturing",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 1.2,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.021739130434782608,
+     "machineHrPerPc_costed": 0.024999999999999998
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 1 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 1.2,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.021739130434782608,
+     "machineHrPerPc_costed": 0.024999999999999998
+    },
+    {
+     "tool": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 0,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.018804347826086955,
+     "machineHrPerPc_costed": 0.0
+    }
+   ],
+   "toolGearRouteOps": [
+    {
+     "tool": "Blank turning (face, OD, bore)",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 31.885325558794946,
+     "runMin_DERIVED": 31.033333333333335,
+     "labourHrPerPc_costed": 0.2888163546992296
+    },
+    {
+     "tool": "Gear hobbing",
+     "machineId": "gear-hob-medium",
+     "cycleMin": 1.1294330865206013,
+     "runMin_DERIVED": 0.892558710504475,
+     "labourHrPerPc_costed": 0.010230372160512691
+    },
+    {
+     "tool": "Chamfer and deburr",
+     "machineId": "gear-deburr",
+     "cycleMin": 0.6438289601554906,
+     "runMin_DERIVED": 0.41666666666666663,
+     "labourHrPerPc_costed": 0.011663568118758889
+    },
+    {
+     "tool": "Gear grinding",
+     "machineId": "gear-grind-generating",
+     "cycleMin": 1.2579242952411678,
+     "runMin_DERIVED": 1.01848009505063,
+     "labourHrPerPc_costed": 0.011394241804720722
+    },
+    {
+     "tool": "Gear inspection",
+     "machineId": "gear-checker",
+     "cycleMin": 0.5587949465500487,
+     "runMin_DERIVED": 0.33333333333333337,
+     "labourHrPerPc_costed": 0.010123096857790736
+    }
+   ],
+   "savingCheck": {
+    "recorded_statement": "~0.3 standard direct hours and ~$30 material saved per forged-tooth pinion v conventional (p.155) - an estimate, no table",
+    "tool_inScope_labour_forgingRoute": 0.10361047027506655,
+    "tool_inScope_labour_gearRoute_fromBar": 0.2990467268597423,
+    "DERIVED_tool_saving_hr": 0.19543625658467578,
+    "caveat": "the record's conventional pinion starts from a bought forged blank, the tool's gear route from a \u00d8200 mm bar - the tool saving mixes blank route with tooth route"
+   },
+   "material": {
+    "recorded": "not recorded (Fig. 11 gives AMS-6265, no stock size; text: billet portion 3-1/2 dia x 5-1/2 above the die + a machined tapered stem)",
+    "tool_forging": {
+     "billetKg": 15.35,
+     "asForgedKg": 10.368,
+     "finishedKg_model": 7.700451017801328,
+     "press": "forge-press-2500t"
+    },
+    "tool_gearRoute_bar": "a gear on a shaft (164 mm long against a 25.4 mm gear face, 80% of the area turned): \u00d8200 mm bar (\u00d8188 + 3 mm turning allowance, next stocked size) \u00d7 172 mm (164 + 5 facing + 3 parting) = 42.40 kg 20MnCr5 (Gear Steel) \u00d7 \u00a31.48/kg \u2212 chips \u00d7 \u00a30.22/kg. MATERIAL only \u2014 turning is costed as an operation. Replace with the forged-blank quote (and zero the turning cycle) when one exists."
+   }
+  },
+  "10k_5y": {
+   "labels": [
+    "pinion_forging-route_10k_5y",
+    "pinion_gear-route_10k_5y"
+   ],
+   "conditions": {
+    "region": "UK",
+    "annualVolume": 10000,
+    "programmeYears": 5,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+     "material.family": "steel",
+     "commodity.route": "forging",
+     "material.grade": "mat-steel-18crnimo7-6",
+     "service.toleranceClass": "tight",
+     "service.safetyCritical": "yes"
+    },
+    "commodityForced": "forging",
+    "geometrySource": "models/CH47_pinion_MODELLED_FROM_DRAWING.step measured by server/utils/geometry-bridge.ts analyzeGeometry (OCP)"
+   },
+   "routeCardCoverage": [
+    {
+     "recorded": "1 RELEASE FORGINGS (810-50)",
+     "tool_forgingRoute": "n/a (release forgings = stores)"
+    },
+    {
+     "recorded": "2 TRANSFER (VIBRO-ETCH) SERIAL NO'S (989-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "3 DRILL (511-30)",
+     "tool_forgingRoute": "VMC finish boring (bore) / lathe"
+    },
+    {
+     "recorded": "4 LOC ON BALL FIXTURE - TURN (618-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "5 VIBRO-ETCH SERIAL NO'S (989-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "6 TRACE INNER CONTOUR & FACE (526-41)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20 (inner contour) / VMC boring"
+    },
+    {
+     "recorded": "7 FACE, CHAMFER & CENTER (618-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "8 TURN GEAR FACE ANGLE (614-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "9 TURN BACK & FRONT ANGLES (614-32)",
+     "tool_forgingRoute": "CNC lathe turning op 10/20"
+    },
+    {
+     "recorded": "10 DEBURR COMPLETE (989-46)",
+     "tool_forgingRoute": "Deburr and gauge check (bench)"
+    },
+    {
+     "recorded": "11 WASH (996-46)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "11A GRIND BEARING DIA & SHOULDER (812-40)",
+     "tool_forgingRoute": null
+    },
+    {
+     "recorded": "12 CHECK GEAR TEETH FOR STOCK REMOVAL (900-68)",
+     "tool_forgingRoute": null
+    }
+   ],
+   "toolForgingRouteOps": [
+    {
+     "tool": "Billet cut-off (saw)",
+     "machineId": "forge-billet-saw",
+     "cycleMin": 0.15306122448979592,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.0013864241348713398,
+     "machineHrPerPc_costed": 0.0031887755102040817
+    },
+    {
+     "tool": "Induction billet heating",
+     "machineId": "forge-induction-heater",
+     "cycleMin": 0.7518367346938776,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.0,
+     "machineHrPerPc_costed": 0.01566326530612245
+    },
+    {
+     "tool": "Forging",
+     "machineId": "forge-press-2500t",
+     "cycleMin": 0.2551224489795918,
+     "crew": 2,
+     "labourHrPerPc_costed": 0.009243566992014196,
+     "machineHrPerPc_costed": 0.0053150510204081625
+    },
+    {
+     "tool": "Flash Trimming",
+     "machineId": "press-100t",
+     "cycleMin": 0.2551224489795918,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.004621783496007098,
+     "machineHrPerPc_costed": 0.0053150510204081625
+    },
+    {
+     "tool": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 0.18,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.003,
+     "machineHrPerPc_costed": 0.003
+    },
+    {
+     "tool": "Finish boring \u2014 1 cored bore(s), 1 stepped (1\u00d7 stepped bore \u00d848.6\u00d7140 / \u00d855.0\u00d713 / \u00d877.0\u00d76.3) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 1.0799999999999998,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.009782608695652173,
+     "machineHrPerPc_costed": 0.022499999999999996
+    },
+    {
+     "tool": "Turning \u2014 outside and faces on the CNC lathe, op 10 / op 20",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 2.5500000000000003,
+     "crew": 0.5,
+     "labourHrPerPc_costed": 0.023097826086956524,
+     "machineHrPerPc_costed": 0.053125
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 lathe fixture, 1 fixturing",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 1.2,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.021739130434782608,
+     "machineHrPerPc_costed": 0.024999999999999998
+    },
+    {
+     "tool": "Load / clamp / unload \u2014 1 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 1.2,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.021739130434782608,
+     "machineHrPerPc_costed": 0.024999999999999998
+    },
+    {
+     "tool": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "cycleMin": 0,
+     "crew": 1,
+     "labourHrPerPc_costed": 0.018804347826086955,
+     "machineHrPerPc_costed": 0.0
+    }
+   ],
+   "toolGearRouteOps": [
+    {
+     "tool": "Blank turning (face, OD, bore)",
+     "machineId": "mach-lathe-cnc",
+     "cycleMin": 31.721990000819606,
+     "runMin_DERIVED": 31.033333333333335,
+     "labourHrPerPc_costed": 0.28733686594945296
+    },
+    {
+     "tool": "Gear hobbing",
+     "machineId": "gear-hob-medium",
+     "cycleMin": 0.9660975285452595,
+     "runMin_DERIVED": 0.8925587105044749,
+     "labourHrPerPc_costed": 0.008750883410736047
+    },
+    {
+     "tool": "Chamfer and deburr",
+     "machineId": "gear-deburr",
+     "cycleMin": 0.4804934021801492,
+     "runMin_DERIVED": 0.41666666666666663,
+     "labourHrPerPc_costed": 0.0087045906192056
+    },
+    {
+     "tool": "Gear grinding",
+     "machineId": "gear-grind-generating",
+     "cycleMin": 1.0945887372658263,
+     "runMin_DERIVED": 1.01848009505063,
+     "labourHrPerPc_costed": 0.009914753054944077
+    },
+    {
+     "tool": "Gear inspection",
+     "machineId": "gear-checker",
+     "cycleMin": 0.395459388574707,
+     "runMin_DERIVED": 0.33333333333333337,
+     "labourHrPerPc_costed": 0.007164119358237446
+    }
+   ],
+   "savingCheck": {
+    "recorded_statement": "~0.3 standard direct hours and ~$30 material saved per forged-tooth pinion v conventional (p.155) - an estimate, no table",
+    "tool_inScope_labour_forgingRoute": 0.09461047027506654,
+    "tool_inScope_labour_gearRoute_fromBar": 0.296087749360189,
+    "DERIVED_tool_saving_hr": 0.20147727908512247,
+    "caveat": "the record's conventional pinion starts from a bought forged blank, the tool's gear route from a \u00d8200 mm bar - the tool saving mixes blank route with tooth route"
+   },
+   "material": {
+    "recorded": "not recorded (Fig. 11 gives AMS-6265, no stock size; text: billet portion 3-1/2 dia x 5-1/2 above the die + a machined tapered stem)",
+    "tool_forging": {
+     "billetKg": 15.35,
+     "asForgedKg": 10.368,
+     "finishedKg_model": 7.700451017801328,
+     "press": "forge-press-2500t"
+    },
+    "tool_gearRoute_bar": "a gear on a shaft (164 mm long against a 25.4 mm gear face, 80% of the area turned): \u00d8200 mm bar (\u00d8188 + 3 mm turning allowance, next stocked size) \u00d7 172 mm (164 + 5 facing + 3 parting) = 42.40 kg 20MnCr5 (Gear Steel) \u00d7 \u00a31.48/kg \u2212 chips \u00d7 \u00a30.22/kg. MATERIAL only \u2014 turning is costed as an operation. Replace with the forged-blank quote (and zero the turning cycle) when one exists."
+   }
+  }
+ },
+ "notCompared": [
+  "Dollars / pounds of any kind (1972 US$ v 2026 \u00a3; the task forbids conversion).",
+  "Pinion hours: the route card (Fig. 44) has empty hours columns and Table XXV-XXIX cover the gear only; the only pinion figure is the p.155 estimate (~0.3 std h, ~$30 material saved).",
+  "Gear route card / operation sheets (Fig. 45): too faint to read figures at 600 dpi; Table XXV used instead.",
+  "Forging and finished weights: the report gives the gear billet (16 lb/pc) only; the finished masses here are DERIVED from the models, which are approximations.",
+  "Heat treatment, carburise / harden, finish grinding of teeth, inspection: outside the record (precepts 5 and 6).",
+  "Die and tool money (Table XXVIII $3,980 consumable / $6,500 die set v tool \u00a332,945 a die set): only the die-life COUNT is compared.",
+  "Op-140 Gleason hours in Table XXVI: .400 as read v .600 implied by the sheet total - both shown."
+ ],
+ "geometry_step1": {
+  "units": "inch on the drawings; mm in STEP",
+  "common_READ": {
+   "diametralPitch": 4.93,
+   "pressureAngle": "22\u00b030'",
+   "meanSpiralAngle": "25\u00b00'",
+   "shaftAngle": "90\u00b0 (forging data blocks)",
+   "material": "AMS 6265 / AISI 9310 CVM / BMS 7-6 (forging design note 1)",
+   "toothStockOnForging": ".006-.010 in to MMC of finish part"
+  },
+  "common_DERIVED": {
+   "moduleMm": 5.152129817444219,
+   "outerConeDistanceIn": 5.623499598026084,
+   "faceWidthIn": "1.00 ASSUMED (not in the report; 0.88-1.10 derived from forging diameters 5-15/16 (pinion) and 7.5 (gear))"
+  },
+  "pinion_READ": {
+   "teeth": 35,
+   "PD": 7.099,
+   "pitchAngle": "39\u00b09'",
+   "faceAngle": "41\u00b049'",
+   "rootAngle": "37\u00b01'",
+   "addendum": 0.199,
+   "dedendum": 0.184,
+   "hand": "LH",
+   "shaft": "2.970 dia (ground to 2.9555), 2.83, 2.771; bore 1.912; inner 2.166, 3.032; length 6.255 (op sheets 4, 6, 7, 11A)",
+   "forging": "head ~8 dia approx, toothed OD 7.536/7.526, shank 4.015/3.985 dia x 8 in, head length 1.640/1.610, 4.500 REF mounting distance"
+  },
+  "pinion_DERIVED": {
+   "heelOD_in": 7.407647305782549,
+   "toeOD_in": 6.090042337700041,
+   "modelFaceAngleDeg": 41.17721288887477,
+   "massKg_model": 7.700451017801328,
+   "volumeCm3": 980.9491742422074
+  },
+  "gear_READ": {
+   "teeth": 43,
+   "PD": 8.722,
+   "pitchAngle": "50\u00b051' (data block; Table I prints 50\u00b05')",
+   "faceAngle": "52\u00b059'",
+   "rootAngle": "48\u00b011'",
+   "addendum": 0.146,
+   "dedendum": 0.237,
+   "hand": "RH",
+   "forging": "9-3/4 approx dia, 9.046/9.016 dia, 7.515/7.485, 5.265/5.235, 2-1/4 dia, 4.135/4.125 dia (as read), web .440/.410",
+   "billet": "3-1/2 dia x 5-7/8 (Fig. 7) / 5-1/2 (text); 16 lb/pc (Table XXV)"
+  },
+  "gear_DERIVED": {
+   "heelOD_in": 8.906355016271219,
+   "toeOD_in": 7.322580560343907,
+   "modelFaceAngleDeg": 52.33720648136961,
+   "bore_in": "4.130 ASSUMED from the 4.135/4.125 forging dimension",
+   "hub": "4.130-5.250 dia x 0.75 ASSUMED",
+   "massKg_model": 4.197159037637865,
+   "volumeCm3": 534.669941100365
+  },
+  "toothApproximation": "skew-straight bevel teeth (ruled loft heel->toe, toe rotated so the trace is inclined ~25\u00b0 at mid-face), straight-sided 22.5\u00b0 flanks, proportional depth, no root fillet; real curved Gleason spiral NOT modelled",
+  "kernelReading": "analyzeGeometry: gear metrology null on both (tips are conical, the kernel looks for cylindrical tip patches); pinion turning fraction 0.80, gear 0.71"
+ },
+ "verdicts": {
+  "operationCoverage": "POOR: tool omits all pre-HT grinding (4 gear ops, 1 pinion op), polishing, marking; collapses 7-9 lathe ops into 1 turning + 1 VMC boring line; forging route picks a ring-rolling mill (not a closed-die precision coin press) and has no forged-teeth concept; gear route is a cylindrical hob/grind model - no bevel / spiral-bevel process exists in the tool; with neutral file names the gear is not routed to gear or forging at all.",
+  "setupStructure": "DIFFERENT IN KIND: record = one set-up per op (5 forging / 500-lot incl. 9.0 h press set-up; 11 machining / 100-lot = 19.0 h); tool forging = no forge-line set-up, 1.5 h machining per batch of annual/20; tool gear = 0.75 h per op per batch of annual/12. Per-piece set-up 13-63x lower in the tool.",
+  "runTimeOrderOfMagnitude": "tool 1 to 1.5 orders of magnitude lower: forging 5x, machining 20-38x labour (11-21x machine-h), tooth cutting 23-35x; totals 14x (XXIX), 22x (full XXV), 61x labour / 27x machine-h (conventional). ~2x of the labour ratio is the tool's 0.5 crew; the rest is era/method plus omitted operations.",
+  "materialInput": "forged gear billet: tool 7.91 kg v recorded 7.26 kg (+9%), bar 82.3 v 88.9 mm - close, but reached via a ring-rolling yield; conventional blank and pinion billet not comparable (dollars only / not recorded); tool gear route buys a 12.96 kg bar slice sized from a cylindrical tip \u00d8 254.7 mm v 226.2 mm real heel OD."
+ },
+ "routingProbe_neutralNames": "tool-runs/probe/neutral_*.json: with file names part_A/part_B the gear gets \"Which process makes this part?\" options casting / cast_and_machine (leaning) / machining; the pinion casting / forging / cast_and_machine (leaning) / machining."
+}

@@ -1,0 +1,1476 @@
+{
+  "conditions": {
+    "region": "UK",
+    "annualVolume": 50000,
+    "programmeYears": null,
+    "deliveryTerms": "DAP (default)",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+      "material.family": "steel",
+      "commodity.route": "forging",
+      "service.toleranceClass": "standard",
+      "service.safetyCritical": "no"
+    },
+    "geometrySource": "tests/fixtures/real-parts-baseline.json (recorded OCP measurement)"
+  },
+  "status": "costed",
+  "commodity": "forging",
+  "total": 13.8473,
+  "breakdown": {
+    "rawMaterial": 6.3973,
+    "process": 1.8465,
+    "labour": 2.1152,
+    "tooling": 0.6335,
+    "packaging": 0.18,
+    "logistics": 0.33,
+    "overhead": 1.3191,
+    "margin": 1.0257
+  },
+  "assumed": [
+    "oee",
+    "manning",
+    "labourEfficiency",
+    "rejectRate",
+    "labourId"
+  ],
+  "provenance": {
+    "forge-mat": {
+      "value": "mat-steel-38mnvs6",
+      "basis": "280 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer); steel → 38MnVS6 (Microalloyed) (representative forging billet — not a drawing callout); the STEP product name (\"HUB FLANGE FORGING C45 2\") names C45 / 1045 / CK45 (medium-carbon forging steel) — costed as 38MnVS6 (Microalloyed) until the grade question is answered (a name leans the question; it does not set the grade)"
+    },
+    "forge-part-wt": {
+      "value": 3.185,
+      "basis": "2.198 kg finished + 16.6 cm³ of holes drilled from solid (≤ Ø25; larger bores pierced) + 49.1 cm³ machining stock (1.5 mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5 minimum finish stock for a drop / press forging whose greatest dimension (140.0 mm) is not over 205 mm) + 31.9 cm³ turning stock on the 160 cm² turned axis (2 mm a side, engineering-typical, not sourced) + 28.1 cm³ draft metal (draft metal 28.1 cm³ = Σ A·h·tan α / 2 over the 3 zero-draft face(s) along the Z parting axis (parting at the mid-plane of the part's extent, 25.0 mm — CostVision approximation): inside ≤ 25 mm 1 face(s), 9,425 mm², Σ A·h 235,620 mm³ at 7°: 235620 × 0.12278 ÷ 2 ÷ 1000 = 14.46 cm³; outside ≤ 25 mm 2 face(s), 15,959 mm², Σ A·h 311,898 mm³ at 5°: 311898 × 0.08749 ÷ 2 ÷ 1000 = 13.64 cm³ — α the lower end of IS 3469 (Part I):1974 Table 1.4 normal drafts (outside 5–7° / 5–10°, inside 7–10° / 8–12°, depth ≤ 25 / > 25 mm); inside = the face's outward normal meets the part again (one ray); exact for a plane face, a cylinder on its developed area; holes drilled from solid excluded) = 2.198 kg + 125.7 cm³ × 0.00785 kg/cm³ = 3.185 kg — 280 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)"
+    },
+    "forge-proj-area": {
+      "value": 116,
+      "basis": "largest of the three measured silhouettes — a forging parts round its largest periphery"
+    },
+    "forge-shape": {
+      "value": "simple",
+      "basis": "score 0 + 0 + 0 = 0 → simple — 0 for 0 free-form face(s), 0 for 0 undercut face(s), 0 for 12 faces (≥ 3 complex, ≥ 1 moderate; free-form ≥ 3 / ≥ 8, undercuts ≥ 4, faces ≥ 120 — CostVision heuristic)"
+    },
+    "forge-yield": {
+      "value": 0.743,
+      "basis": "closed-die stock yield band 0.55–0.8, midpoint 0.675 — as-forged weight ÷ billet, CostVision engineering-typical, not sourced; the 10% flash is itemised, so yieldFraction = 0.675 × 1.10 = 0.743; billet = 3.185 kg forging + 0.319 kg flash = 3.504 kg ÷ 0.743 = 4.716 kg; finished ÷ billet = 2.198 kg ÷ 4.716 kg = 0.47; 4.716 − 3.504 = 1.212 kg is scale, crop and any pierced wad (not itemised)"
+    },
+    "forge-flash": {
+      "value": 0.319,
+      "basis": "10% of the 3.185 kg forging, squeezed out at the flash land (CostVision engineering-typical, not sourced) — cost-neutral: the yield is scaled by the same fraction, so the billet stays forging ÷ 0.675"
+    },
+    "forge-mach": {
+      "value": "forge-press-1600t",
+      "basis": "Kt 3 for a simple shape, σflow 105 MPa hot flow stress for microalloyed-steel (both CostVision engineering-typical, not sourced); A = 116 cm² silhouette + 22.97 cm² flash land = 138.97 cm²; F = Kt × σflow × A = 3 × 105 MPa × 13,897 mm² ÷ 9,806.65 N/t = 446 t × 1.2 safety = 535 t → the smallest forge press at or above it: the 1,600 t press (library presses 500, 1,600, 2,500, 4,000, 8,000 t)"
+    },
+    "forge-strokes": {
+      "value": 2,
+      "basis": "2 hit(s): 2 impression(s); takt = 3 s billet from the heater + 2 × 4 s mechanical press hit + transfer = 11 s (load and hit times CostVision engineering-typical, not sourced)"
+    },
+    "forge-time-per-blow": {
+      "value": 4,
+      "basis": "hit + transfer on the press (informational — the cycle below is the line takt)"
+    },
+    "forge-ct": {
+      "value": 0.003056,
+      "basis": "2 hit(s): 2 impression(s); takt = 3 s billet from the heater + 2 × 4 s mechanical press hit + transfer = 11 s (load and hit times CostVision engineering-typical, not sourced). The billet cut-off and the induction heater are their own operations (billetSaw…, billetHeater…)"
+    },
+    "forge-lab": {
+      "value": "lab-uk-forge",
+      "basis": "forge-shop operative"
+    },
+    "forge-manning": {
+      "value": 2,
+      "basis": "closed-die line crew: forger + heater / handler — engineering typical"
+    },
+    "forge-reject": {
+      "value": 0.02,
+      "basis": "2% forging scrap (laps, underfill, cracks at inspection) — engineering typical"
+    },
+    "forge-furnace": {
+      "value": "induction",
+      "basis": "steel / titanium billets for an impression line heat in-line by induction"
+    },
+    "forge-saw-mach": {
+      "value": "forge-billet-saw",
+      "basis": "billet cut off the bar on the automatic carbide saw (billet 4.716 kg cut from round bar at a height / diameter of 2.3 (the free-upset limit, CostVision heuristic) = Ø69.3 mm; kerf π/4 × 69.3² mm² × 3 mm (engineering-typical carbide kerf, not sourced) × 7.85 g/cm³ = 0.0888 kg)"
+    },
+    "forge-saw-ct": {
+      "value": 0.0025,
+      "basis": "1 ÷ 400 cuts an hour = 0.0025 h a billet — ENGINEERING ESTIMATE (no published cut time for this bar was found)"
+    },
+    "forge-saw-manning": {
+      "value": 0.5,
+      "basis": "one operator tends two automatic saws — ENGINEERING ESTIMATE, not sourced"
+    },
+    "forge-saw-kerf": {
+      "value": 0.0888,
+      "basis": "billet 4.716 kg cut from round bar at a height / diameter of 2.3 (the free-upset limit, CostVision heuristic) = Ø69.3 mm; kerf π/4 × 69.3² mm² × 3 mm (engineering-typical carbide kerf, not sourced) × 7.85 g/cm³ = 0.0888 kg — bought as bar, lost in the cut, credited as scrap"
+    },
+    "forge-heater-mach": {
+      "value": "forge-induction-heater",
+      "basis": "the in-line induction billet heater (~500 kW, SMS Elotherm sizing); fed by the forge crew — no crew of its own; its energy is the per-kg heating line, not in its machine rate"
+    },
+    "forge-heater-ct": {
+      "value": 0.003773,
+      "basis": "4.716 kg billet ÷ 1,250 kg/h = 0.00377 h a billet — the heater's throughput, SMS Elotherm (~500 kW to 1,250 °C, a maker's claim for billets ≤ Ø51 mm; a larger billet heats slower — not adjusted)"
+    },
+    "forge-trim-mach": {
+      "value": "press-100t",
+      "basis": "flash line 4.4 √A = 474 mm and flash 0.015 √A = 1.62 mm over A = 11,600 mm² (outline and thickness after ASM closed-die practice); 474 mm × 1.62 mm × 105 MPa hot flow stress ÷ 9,806.65 N/t = 8.2 t × 1.25 margin = 10.25 t → the 100 t press, the smallest mechanical press in the library at or above it (flow stress CostVision engineering-typical, not sourced; a pierce in the same stroke is not added to the force)"
+    },
+    "forge-trim-ct": {
+      "value": 0.003056,
+      "basis": "the trim press stands in line and works to the forge takt (11 s)"
+    },
+    "forge-trim-lab": {
+      "value": "lab-uk-forge",
+      "basis": "forge-shop operative"
+    },
+    "forge-trim-manning": {
+      "value": 1,
+      "basis": "one operator on the in-line trim press"
+    },
+    "forge-die-steel": {
+      "value": "h13",
+      "basis": "H13 — the impression-die workhorse"
+    },
+    "forge-die-impr": {
+      "value": 2,
+      "basis": "blocker + finisher"
+    },
+    "forge-die-cost": {
+      "value": 25447,
+      "basis": "2-impression h13 die over 116 cm²: Die design & CAM 41.9 h £2,447 + Die blocks (both halves + holder allowance) 160 kg £1,523 + Block prep (squaring, faces, keyways) 38 h £1,991 + Die sinking × 2 impression(s) 145.9 h £7,639 + EDM (deep ribs, tight radii) 29.2 h £1,704 + Harden + temper the blocks £2,853 + Impression polishing × 2 25.6 h £1,160 + Die tryout — 3 sessions 18 h £1,541 = £20,858; toolmaker overhead + profit at 22% of it = £4,589; die set £20,858 + £4,589 = £25,447 (toolroom hours and the die-block rules are CostVision engineering-typical, not sourced; rates from the toolroom book)"
+    },
+    "forge-die-life": {
+      "value": 47955,
+      "basis": "size factor (100 ÷ 116 cm²)^0.2 = 0.970752; 38,000 forgings a die set for microalloyed steel × 1.3 simple impression × 0.970752 size = 47,955 forgings — CostVision engineering-typical figures, not sourced; die sets are charged fractionally over the programme"
+    },
+    "forge-heat-energy": {
+      "value": 0.4,
+      "basis": "energy to bring microalloyed-steel to forging temperature in the in-line induction heater: 500 kW ÷ 1,250 kg/h = 0.4 kWh/kg (SMS Elotherm, a maker's claim for steel billets ≤ Ø51 mm to 1,250 °C); charged on every billet heated: 0.4 kWh/kg × 4.716 kg billet ÷ 0.98 for the 2% scrap = 1.925 kWh a good part, priced at the costing book's tariff as kWh (gas furnace × 2.4 kWh of gas)"
+    },
+    "forge-ht-cost": {
+      "value": 0,
+      "basis": "none — a microalloyed-steel forging is controlled-cooled from the forge heat (no separate heat treatment). The file names C45 / 1045 / CK45 (medium-carbon forging steel): a carbon-steel forging is normalised — £0.3/kg × 3.185 kg = £0.9555 a part before overhead and margin, NOT in this cost until the grade question is answered"
+    },
+    "forge-descale": {
+      "value": 0.12,
+      "basis": "forge scale removed after the trim, before MPI and machining (shot blast or pickle): £0.12/kg × the 3.185 kg forging — the flash is off by then — UK price × the country's process-service factor, CostVision engineering-typical, not sourced"
+    },
+    "forge-ndt": {
+      "value": 0,
+      "basis": "not safety-critical — no NDT"
+    },
+    "forge-sf-route": {
+      "value": "",
+      "basis": "not asked yet — costed bare (answer \"Is the part coated?\" to price a finish)"
+    },
+    "forge-sf-area": {
+      "value": 0.0534,
+      "basis": "measured surface 534.2 cm² = 0.0534 m² — the whole wetted surface; a masked or machined-after-coating face is in it"
+    }
+  },
+  "params": {
+    "labourId": "lab-uk-forge",
+    "oee": 0.8,
+    "manning": 2,
+    "labourEfficiency": 0.92,
+    "rejectRate": 0.02,
+    "amortizationVolume": 50000,
+    "materialId": "mat-steel-38mnvs6",
+    "partWeightKg": 3.185,
+    "flashAndScaleKg": 0.319,
+    "yieldFraction": 0.743,
+    "forgeId": "forge-press-1600t",
+    "strokesToForm": 2,
+    "timePerBlowSec": 4,
+    "cycleTimeHr": 0.003056,
+    "furnaceType": "induction",
+    "trimmingMachineId": "press-100t",
+    "trimmingCycleHr": 0.003056,
+    "trimmingLabourId": "lab-uk-forge",
+    "trimmingManning": 1,
+    "billetSawMachineId": "forge-billet-saw",
+    "billetSawCycleHr": 0.0025,
+    "billetSawManning": 0.5,
+    "billetSawKerfKg": 0.0888,
+    "billetHeaterMachineId": "forge-induction-heater",
+    "billetHeaterCycleHr": 0.003773,
+    "heatingEnergyKwhPerKg": 0.4,
+    "dieLife": 47955,
+    "dieCost": 25447,
+    "projectedAreaCm2": 116,
+    "dieSteel": "h13",
+    "dieImpressions": 2,
+    "descaleCostPerKg": 0.12,
+    "secondaryMachiningOps": [
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0006,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0006,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.018,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.018,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0063,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0063,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0242,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0242,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — 1 fixturing(s)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-semiskilled",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0173,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "secondaryMachiningToolingCost": 5141,
+    "secondaryMachiningProgrammingNRE": 141,
+    "secondaryMachiningConsumablesPerPart": 0.3492
+  },
+  "operations": [
+    {
+      "machine": "forge-billet-saw",
+      "labour": "lab-uk-forge",
+      "cycleTimeSec": 9.183673469387756,
+      "labourCost": 0.0348685669920142,
+      "raw": {
+        "operationName": "Billet cut-off (saw)",
+        "machineId": "forge-billet-saw",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.045265427599611274,
+        "labourCost": 0.0348685669920142,
+        "machineRateUsed": 14.195238095238095,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.0025510204081632655,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0025510204081632655,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "forge-induction-heater",
+      "labour": "lab-uk-forge",
+      "cycleTimeSec": 13.860000000000001,
+      "labourCost": 0,
+      "raw": {
+        "operationName": "Induction billet heating",
+        "machineId": "forge-induction-heater",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.12271874999999999,
+        "labourCost": 0,
+        "machineRateUsed": 25.5,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.00385,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "forge-press-1600t",
+      "labour": "lab-uk-forge",
+      "cycleTimeSec": 11.226122448979593,
+      "labourCost": 0.17049334516415263,
+      "raw": {
+        "operationName": "Forging",
+        "machineId": "forge-press-1600t",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.35740573372206025,
+        "labourCost": 0.17049334516415263,
+        "machineRateUsed": 91.69047619047619,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 2,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "press-100t",
+      "labour": "lab-uk-forge",
+      "cycleTimeSec": 11.226122448979593,
+      "labourCost": 0.08524667258207631,
+      "raw": {
+        "operationName": "Flash Trimming",
+        "machineId": "press-100t",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.059283782798833826,
+        "labourCost": 0.08524667258207631,
+        "machineRateUsed": 15.208928571428572,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-haas-umc500",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 2.1599999999999997,
+      "labourCost": 0.016769999999999997,
+      "raw": {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.010242,
+        "labourCost": 0.016769999999999997,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0006,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0006,
+        "labourEfficiency": 1
+      }
+    },
+    {
+      "machine": "mach-haas-umc500",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 64.8,
+      "labourCost": 0.27342391304347824,
+      "raw": {
+        "operationName": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.38407499999999994,
+        "labourCost": 0.27342391304347824,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.018,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.018,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-haas-umc500",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 22.68,
+      "labourCost": 0.09569836956521738,
+      "raw": {
+        "operationName": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.13442625,
+        "labourCost": 0.09569836956521738,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0063,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0063,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-lathe-cnc",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 87.12,
+      "labourCost": 0.3676032608695652,
+      "raw": {
+        "operationName": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.3677454687499999,
+        "labourCost": 0.3676032608695652,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0242,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0242,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-lathe-cnc",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 36,
+      "labourCost": 0.30380434782608695,
+      "raw": {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.1519609375,
+        "labourCost": 0.30380434782608695,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-haas-umc500",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 36,
+      "labourCost": 0.30380434782608695,
+      "raw": {
+        "operationName": "Load / clamp / unload — 1 fixturing(s)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.213375,
+        "labourCost": 0.30380434782608695,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-haas-umc500",
+      "labour": "lab-uk-semiskilled",
+      "cycleTimeSec": 0,
+      "labourCost": 0.46352717391304343,
+      "raw": {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-semiskilled",
+        "processCost": 0,
+        "labourCost": 0.46352717391304343,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 24.65,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0173,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    }
+  ],
+  "traceability": [
+    {
+      "field": "material.pricePerKg",
+      "value": 1.15,
+      "unit": "£/kg",
+      "rateSource": "Index-anchored 2026-07 (see FORGING PRICING BASIS). Air-hardening V-microalloyed steel — con-rods, crankshafts; controlled-cooled from forge heat, no separate Q&T. | Refresh 2026-09: INDEX FLAT — Index flat: Kallanish N-Europe wire rod ’stable’ (Jun 2026), ’decrease slightly’ (Jul), ’remain stable’ / ’flat’ (Sep 2026) — carbon and alloy bar unchanged.",
+      "rateId": "mat-steel-38mnvs6",
+      "confidence": "Medium"
+    },
+    {
+      "field": "material.scrapRecoveryPricePerKg",
+      "value": 0.2,
+      "unit": "£/kg",
+      "rateSource": "Index-anchored 2026-07 (see FORGING PRICING BASIS). Air-hardening V-microalloyed steel — con-rods, crankshafts; controlled-cooled from forge heat, no separate Q&T. | Refresh 2026-09: INDEX FLAT — Index flat: Kallanish N-Europe wire rod ’stable’ (Jun 2026), ’decrease slightly’ (Jul), ’remain stable’ / ’flat’ (Sep 2026) — carbon and alloy bar unchanged.",
+      "rateId": "mat-steel-38mnvs6",
+      "confidence": "Medium"
+    },
+    {
+      "field": "rawMaterial.consumablesCostPerPart",
+      "value": 0.7392000000000001,
+      "unit": "£",
+      "rateSource": "Per-part consumables & services: descale £0.39 · cutting-tool wear £0.35",
+      "rateId": "rules (per-part services)",
+      "confidence": "Medium"
+    },
+    {
+      "field": "rawMaterial.energyKwh.electricity",
+      "value": 0.3503326283407037,
+      "unit": "£",
+      "rateSource": "1.9249 kWh × £0.182/kWh electricity (UK tariff) — billet heating (induction furnace)",
+      "rateId": "energy-uk",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Billet cut-off (saw).machineRatePerHr",
+      "value": 14.195238095238095,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-11-04): machine only (the operator, overhead and margin are added by the costing). Capex £120,953 = ESTIMATE (phase B, 4 Nov 2026) — the only NEW price found: a US DLA award for a Tsune automatic cold saw US$161,400 (Oct 2019, model and options truncated in the record — size unread) = £120,953 at US$1.3344/£, not escalated; used Tsune automatic carbide saws (TK5C-160GL, Ø30–160 mm, 2015, and TK160GL) are asked at US$64,500–76,500 = £48,336+ (a floor), and a UK workshop automatic band saw was awarded at £58,500 (2020, a lower bound: slower than a production carbide saw); replace with a dealer quote (Low confidence); 15.0 kW (no sourced draw — the running load of the book’s automatic cut-to-length saw, not measured for this saw); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £9,900/yr (the floor of the book’s automatic cut-to-length saw, held — not sourced for this saw); £0.182/kWh. At 3,500 h a year × 0.78 utilisation the rate is £14.2/h — the book’s forge-press hours — it serves the forge line it feeds; the hours move this rate: at 6,000 h × 0.80 (the book’s three-shift production-line convention) it would be £9.25/h.",
+      "rateId": "forge-billet-saw",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Billet cut-off (saw).labourRatePerHr",
+      "value": 25.15,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+      "rateId": "lab-uk-forge",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Induction billet heating.machineRatePerHr",
+      "value": 25.5,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-11-04): machine only (the operator, overhead and margin are added by the costing). Capex £325,000 = ESTIMATE (phase B, 4 Nov 2026) — no new list price or award with a stated kW was found: a USED Inductoforge line derated to 250 kW (in-feed conveyor, pinch roll, PLC, coil, extractor, pyrometer) asked at US$175,000 = £131,145, and a US DLA award for an unsized ’induction heater’ from a forge-heater maker (Inter-Power) US$285,840 = £214,209 (Dec 2017); a new ~500 kW heater line is the research’s estimate of £250,000–400,000 — £325,000 is its midpoint (CostVision judgement — replace with a maker’s quote; Low confidence). Sized per SMS Elotherm: ~500 kW heats up to 1,250 kg/h of steel billets (≤ Ø51 mm) to 1,250 °C; 0.0 kW (none in this rate — the heating energy is charged per kg of billet as kWh by the forging route (0.40 kWh/kg = 500 kW ÷ 1,250 kg/h, SMS Elotherm), so it is not counted twice); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £12,115/yr (the floor of the book’s smallest forge press, held — not sourced for this heater); £0.182/kWh. At 3,500 h a year × 0.78 utilisation the rate is £25.5/h — the book’s forge-press hours — it serves the forge line it feeds; the hours move this rate: at 6,000 h × 0.80 (the book’s three-shift production-line convention) it would be £14.5/h.",
+      "rateId": "forge-induction-heater",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Induction billet heating.labourRatePerHr",
+      "value": 25.15,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+      "rateId": "lab-uk-forge",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Forging.machineRatePerHr",
+      "value": 91.69047619047619,
+      "unit": "£/hr",
+      "rateSource": "UK forge shop benchmark (mid-size crank press), Jun 2026 | UK book 2026-10-10: energy re-priced at £0.182/kWh (DESNZ manufacturing Q2 2026 + CCL); capital, maintenance, support HELD — capex not sourced this round",
+      "rateId": "forge-press-1600t",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Forging.labourRatePerHr",
+      "value": 25.15,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+      "rateId": "lab-uk-forge",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Flash Trimming.machineRatePerHr",
+      "value": 15.208928571428572,
+      "unit": "£/hr",
+      "rateSource": "UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026 | UK book 2026-10-10: energy re-priced at £0.182/kWh (DESNZ manufacturing Q2 2026 + CCL); capital, maintenance, support HELD — capex not sourced this round",
+      "rateId": "press-100t",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Flash Trimming.labourRatePerHr",
+      "value": 25.15,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+      "rateId": "lab-uk-forge",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Machining Setup (amortised).machineRatePerHr",
+      "value": 17.07,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+      "rateId": "mach-haas-umc500",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Machining Setup (amortised).labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured].machineRatePerHr",
+      "value": 17.07,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+      "rateId": "mach-haas-umc500",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured].labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured].machineRatePerHr",
+      "value": 17.07,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+      "rateId": "mach-haas-umc500",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured].labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Turning — outside and faces on the CNC lathe, op 10 / op 20.machineRatePerHr",
+      "value": 12.156875,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+      "rateId": "mach-lathe-cnc",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Turning — outside and faces on the CNC lathe, op 10 / op 20.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Load / clamp / unload — lathe fixture, 1 fixturing.machineRatePerHr",
+      "value": 12.156875,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+      "rateId": "mach-lathe-cnc",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Load / clamp / unload — lathe fixture, 1 fixturing.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Load / clamp / unload — 1 fixturing(s).machineRatePerHr",
+      "value": 17.07,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+      "rateId": "mach-haas-umc500",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Load / clamp / unload — 1 fixturing(s).labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Deburr and gauge check (bench).labourRatePerHr",
+      "value": 24.65,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives. Was £19.94/h",
+      "rateId": "lab-uk-semiskilled",
+      "confidence": "Medium"
+    }
+  ],
+  "drivers": {
+    "rawMaterial": {
+      "materialId": "mat-steel-38mnvs6",
+      "netWeightKg": 3.25,
+      "materialUtilization": 0.6628765597013137,
+      "consumablesCostPerPart": 0.7392000000000001,
+      "consumablesItems": [
+        {
+          "label": "descale",
+          "gbp": 0.39
+        },
+        {
+          "label": "cutting-tool wear",
+          "gbp": 0.3492
+        }
+      ],
+      "energyKwh": {
+        "electricity": 1.924904551322548,
+        "basis": "billet heating (induction furnace)"
+      }
+    },
+    "operations": [
+      {
+        "operationName": "Billet cut-off (saw)",
+        "machineId": "forge-billet-saw",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.0025510204081632655,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0025510204081632655,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Induction billet heating",
+        "machineId": "forge-induction-heater",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.00385,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0,
+        "labourEfficiency": 0.92,
+        "untended": true
+      },
+      {
+        "operationName": "Forging",
+        "machineId": "forge-press-1600t",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 2,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Flash Trimming",
+        "machineId": "press-100t",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0006,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0006,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.018,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.018,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0063,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0063,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0242,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0242,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — 1 fixturing(s)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-semiskilled",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0173,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "tooling": {
+      "totalToolingCost": 31673.165571890317,
+      "amortizationVolume": 50000,
+      "mode": "amortized",
+      "items": [
+        {
+          "label": "Forging die set — first set",
+          "gbp": 25447,
+          "kind": "initial",
+          "firstSetGbp": 25447,
+          "sets": 1
+        },
+        {
+          "label": "Forging die set — 0.04 replacement sets as it wears out (1.04 sets over the programme; life 47,955 forgings a set; 50,000 forgings, charged fractionally)",
+          "gbp": 1085.1655718903166,
+          "kind": "replacement",
+          "firstSetGbp": 25447,
+          "sets": 0.04264414555312279
+        },
+        {
+          "label": "Machining fixtures",
+          "gbp": 5000,
+          "kind": "nre"
+        },
+        {
+          "label": "CNC programming (NRE)",
+          "gbp": 141,
+          "kind": "nre"
+        }
+      ]
+    }
+  },
+  "stackInput": {
+    "partName": "FORGE_Hub_Flange",
+    "rawMaterial": {
+      "materialId": "mat-steel-38mnvs6",
+      "netWeightKg": 3.25,
+      "materialUtilization": 0.6628765597013137,
+      "consumablesCostPerPart": 0.7392000000000001,
+      "consumablesItems": [
+        {
+          "label": "descale",
+          "gbp": 0.39
+        },
+        {
+          "label": "cutting-tool wear",
+          "gbp": 0.3492
+        }
+      ],
+      "energyKwh": {
+        "electricity": 1.924904551322548,
+        "basis": "billet heating (induction furnace)"
+      }
+    },
+    "operations": [
+      {
+        "operationName": "Billet cut-off (saw)",
+        "machineId": "forge-billet-saw",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.0025510204081632655,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0025510204081632655,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Induction billet heating",
+        "machineId": "forge-induction-heater",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.00385,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0,
+        "labourEfficiency": 0.92,
+        "untended": true
+      },
+      {
+        "operationName": "Forging",
+        "machineId": "forge-press-1600t",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 2,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Flash Trimming",
+        "machineId": "press-100t",
+        "labourId": "lab-uk-forge",
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0006,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0006,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.018,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.018,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0063,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0063,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0242,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0242,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — 1 fixturing(s)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-semiskilled",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0173,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "tooling": {
+      "totalToolingCost": 31673.165571890317,
+      "amortizationVolume": 50000,
+      "mode": "amortized",
+      "items": [
+        {
+          "label": "Forging die set — first set",
+          "gbp": 25447,
+          "kind": "initial",
+          "firstSetGbp": 25447,
+          "sets": 1
+        },
+        {
+          "label": "Forging die set — 0.04 replacement sets as it wears out (1.04 sets over the programme; life 47,955 forgings a set; 50,000 forgings, charged fractionally)",
+          "gbp": 1085.1655718903166,
+          "kind": "replacement",
+          "firstSetGbp": 25447,
+          "sets": 0.04264414555312279
+        },
+        {
+          "label": "Machining fixtures",
+          "gbp": 5000,
+          "kind": "nre"
+        },
+        {
+          "label": "CNC programming (NRE)",
+          "gbp": 141,
+          "kind": "nre"
+        }
+      ]
+    },
+    "packagingPerPart": 0.18,
+    "logisticsPerPart": 0.33,
+    "overheadPct": 0.12,
+    "marginPct": 0.08
+  },
+  "result": {
+    "partName": "FORGE_Hub_Flange",
+    "breakdown": {
+      "rawMaterial": 6.397262570384815,
+      "process": 1.8464983503705052,
+      "labour": 2.1152399977817216,
+      "tooling": 0.6334633114378063,
+      "packaging": 0.18,
+      "logistics": 0.33,
+      "overhead": 1.3190957075969818,
+      "margin": 1.0257247950057464
+    },
+    "operationDetails": [
+      {
+        "operationName": "Billet cut-off (saw)",
+        "machineId": "forge-billet-saw",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.045265427599611274,
+        "labourCost": 0.0348685669920142,
+        "machineRateUsed": 14.195238095238095,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.0025510204081632655,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0025510204081632655,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Induction billet heating",
+        "machineId": "forge-induction-heater",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.12271874999999999,
+        "labourCost": 0,
+        "machineRateUsed": 25.5,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.00385,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Forging",
+        "machineId": "forge-press-1600t",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.35740573372206025,
+        "labourCost": 0.17049334516415263,
+        "machineRateUsed": 91.69047619047619,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 2,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Flash Trimming",
+        "machineId": "press-100t",
+        "labourId": "lab-uk-forge",
+        "processCost": 0.059283782798833826,
+        "labourCost": 0.08524667258207631,
+        "machineRateUsed": 15.208928571428572,
+        "labourRateUsed": 25.15,
+        "cycleTimeHr": 0.003118367346938776,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.003118367346938776,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.010242,
+        "labourCost": 0.016769999999999997,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0006,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0006,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.38407499999999994,
+        "labourCost": 0.27342391304347824,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.018,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.018,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured]",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.13442625,
+        "labourCost": 0.09569836956521738,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0063,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0063,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — outside and faces on the CNC lathe, op 10 / op 20",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.3677454687499999,
+        "labourCost": 0.3676032608695652,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0242,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0242,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.1519609375,
+        "labourCost": 0.30380434782608695,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — 1 fixturing(s)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.213375,
+        "labourCost": 0.30380434782608695,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.01,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.01,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-haas-umc500",
+        "labourId": "lab-uk-semiskilled",
+        "processCost": 0,
+        "labourCost": 0.46352717391304343,
+        "machineRateUsed": 17.07,
+        "labourRateUsed": 24.65,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0173,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "factoryCost": 11.502464229974848,
+    "overheadBase": 10.992464229974848,
+    "subtotal": 12.82155993757183,
+    "total": 13.847284732577577,
+    "traceability": [
+      {
+        "field": "material.pricePerKg",
+        "value": 1.15,
+        "unit": "£/kg",
+        "rateSource": "Index-anchored 2026-07 (see FORGING PRICING BASIS). Air-hardening V-microalloyed steel — con-rods, crankshafts; controlled-cooled from forge heat, no separate Q&T. | Refresh 2026-09: INDEX FLAT — Index flat: Kallanish N-Europe wire rod ’stable’ (Jun 2026), ’decrease slightly’ (Jul), ’remain stable’ / ’flat’ (Sep 2026) — carbon and alloy bar unchanged.",
+        "rateId": "mat-steel-38mnvs6",
+        "confidence": "Medium"
+      },
+      {
+        "field": "material.scrapRecoveryPricePerKg",
+        "value": 0.2,
+        "unit": "£/kg",
+        "rateSource": "Index-anchored 2026-07 (see FORGING PRICING BASIS). Air-hardening V-microalloyed steel — con-rods, crankshafts; controlled-cooled from forge heat, no separate Q&T. | Refresh 2026-09: INDEX FLAT — Index flat: Kallanish N-Europe wire rod ’stable’ (Jun 2026), ’decrease slightly’ (Jul), ’remain stable’ / ’flat’ (Sep 2026) — carbon and alloy bar unchanged.",
+        "rateId": "mat-steel-38mnvs6",
+        "confidence": "Medium"
+      },
+      {
+        "field": "rawMaterial.consumablesCostPerPart",
+        "value": 0.7392000000000001,
+        "unit": "£",
+        "rateSource": "Per-part consumables & services: descale £0.39 · cutting-tool wear £0.35",
+        "rateId": "rules (per-part services)",
+        "confidence": "Medium"
+      },
+      {
+        "field": "rawMaterial.energyKwh.electricity",
+        "value": 0.3503326283407037,
+        "unit": "£",
+        "rateSource": "1.9249 kWh × £0.182/kWh electricity (UK tariff) — billet heating (induction furnace)",
+        "rateId": "energy-uk",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Billet cut-off (saw).machineRatePerHr",
+        "value": 14.195238095238095,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-11-04): machine only (the operator, overhead and margin are added by the costing). Capex £120,953 = ESTIMATE (phase B, 4 Nov 2026) — the only NEW price found: a US DLA award for a Tsune automatic cold saw US$161,400 (Oct 2019, model and options truncated in the record — size unread) = £120,953 at US$1.3344/£, not escalated; used Tsune automatic carbide saws (TK5C-160GL, Ø30–160 mm, 2015, and TK160GL) are asked at US$64,500–76,500 = £48,336+ (a floor), and a UK workshop automatic band saw was awarded at £58,500 (2020, a lower bound: slower than a production carbide saw); replace with a dealer quote (Low confidence); 15.0 kW (no sourced draw — the running load of the book’s automatic cut-to-length saw, not measured for this saw); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £9,900/yr (the floor of the book’s automatic cut-to-length saw, held — not sourced for this saw); £0.182/kWh. At 3,500 h a year × 0.78 utilisation the rate is £14.2/h — the book’s forge-press hours — it serves the forge line it feeds; the hours move this rate: at 6,000 h × 0.80 (the book’s three-shift production-line convention) it would be £9.25/h.",
+        "rateId": "forge-billet-saw",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Billet cut-off (saw).labourRatePerHr",
+        "value": 25.15,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+        "rateId": "lab-uk-forge",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Induction billet heating.machineRatePerHr",
+        "value": 25.5,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-11-04): machine only (the operator, overhead and margin are added by the costing). Capex £325,000 = ESTIMATE (phase B, 4 Nov 2026) — no new list price or award with a stated kW was found: a USED Inductoforge line derated to 250 kW (in-feed conveyor, pinch roll, PLC, coil, extractor, pyrometer) asked at US$175,000 = £131,145, and a US DLA award for an unsized ’induction heater’ from a forge-heater maker (Inter-Power) US$285,840 = £214,209 (Dec 2017); a new ~500 kW heater line is the research’s estimate of £250,000–400,000 — £325,000 is its midpoint (CostVision judgement — replace with a maker’s quote; Low confidence). Sized per SMS Elotherm: ~500 kW heats up to 1,250 kg/h of steel billets (≤ Ø51 mm) to 1,250 °C; 0.0 kW (none in this rate — the heating energy is charged per kg of billet as kWh by the forging route (0.40 kWh/kg = 500 kW ÷ 1,250 kg/h, SMS Elotherm), so it is not counted twice); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £12,115/yr (the floor of the book’s smallest forge press, held — not sourced for this heater); £0.182/kWh. At 3,500 h a year × 0.78 utilisation the rate is £25.5/h — the book’s forge-press hours — it serves the forge line it feeds; the hours move this rate: at 6,000 h × 0.80 (the book’s three-shift production-line convention) it would be £14.5/h.",
+        "rateId": "forge-induction-heater",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Induction billet heating.labourRatePerHr",
+        "value": 25.15,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+        "rateId": "lab-uk-forge",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Forging.machineRatePerHr",
+        "value": 91.69047619047619,
+        "unit": "£/hr",
+        "rateSource": "UK forge shop benchmark (mid-size crank press), Jun 2026 | UK book 2026-10-10: energy re-priced at £0.182/kWh (DESNZ manufacturing Q2 2026 + CCL); capital, maintenance, support HELD — capex not sourced this round",
+        "rateId": "forge-press-1600t",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Forging.labourRatePerHr",
+        "value": 25.15,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+        "rateId": "lab-uk-forge",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Flash Trimming.machineRatePerHr",
+        "value": 15.208928571428572,
+        "unit": "£/hr",
+        "rateSource": "UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026 | UK book 2026-10-10: energy re-priced at £0.182/kWh (DESNZ manufacturing Q2 2026 + CCL); capital, maintenance, support HELD — capex not sourced this round",
+        "rateId": "press-100t",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Flash Trimming.labourRatePerHr",
+        "value": 25.15,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton. Was £24.17/h",
+        "rateId": "lab-uk-forge",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Machining Setup (amortised).machineRatePerHr",
+        "value": 17.07,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+        "rateId": "mach-haas-umc500",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Machining Setup (amortised).labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured].machineRatePerHr",
+        "value": 17.07,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+        "rateId": "mach-haas-umc500",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Drilling — 6 holes (6×Ø14.0×18) [geometry-measured].labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured].machineRatePerHr",
+        "value": 17.07,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+        "rateId": "mach-haas-umc500",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Finish boring — 1 cored bore(s) (1×Ø60.0×50) [geometry-measured].labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Turning — outside and faces on the CNC lathe, op 10 / op 20.machineRatePerHr",
+        "value": 12.156875,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+        "rateId": "mach-lathe-cnc",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Turning — outside and faces on the CNC lathe, op 10 / op 20.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Load / clamp / unload — lathe fixture, 1 fixturing.machineRatePerHr",
+        "value": 12.156875,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+        "rateId": "mach-lathe-cnc",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Load / clamp / unload — lathe fixture, 1 fixturing.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Load / clamp / unload — 1 fixturing(s).machineRatePerHr",
+        "value": 17.07,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £126,275 = Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older); 13.0 kW (measured machining-centre roughing mean 13 kW); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £76.94/h (a build-up tuned to a shop rate). HAAS UMC-500 benchmark, UK Tier-2 machining shop",
+        "rateId": "mach-haas-umc500",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Load / clamp / unload — 1 fixturing(s).labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Deburr and gauge check (bench).labourRatePerHr",
+        "value": 24.65,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives. Was £19.94/h",
+        "rateId": "lab-uk-semiskilled",
+        "confidence": "Medium"
+      }
+    ]
+  }
+}

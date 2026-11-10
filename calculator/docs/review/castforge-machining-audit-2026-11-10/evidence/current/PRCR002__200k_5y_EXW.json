@@ -1,0 +1,1722 @@
+{
+  "conditions": {
+    "region": "UK",
+    "annualVolume": 200000,
+    "programmeYears": 5,
+    "deliveryTerms": "EXW",
+    "rateBook": "2.2.0",
+    "rateBookModified": "2026-09-29",
+    "answers": {
+      "material.family": "cast iron",
+      "commodity.route": "cast_and_machine",
+      "service.pressureTight": "no",
+      "service.toleranceClass": "standard",
+      "service.safetyCritical": "yes"
+    },
+    "geometrySource": "tests/fixtures/real-parts-baseline.json (recorded OCP measurement)"
+  },
+  "status": "costed",
+  "commodity": "cast_and_machine",
+  "total": 25.7885,
+  "breakdown": {
+    "rawMaterial": 11.8447,
+    "process": 4.1621,
+    "labour": 4.8479,
+    "tooling": 0.1437,
+    "packaging": 0.36,
+    "logistics": 0,
+    "overhead": 2.5198,
+    "margin": 1.9103
+  },
+  "assumed": [
+    "oee",
+    "manning",
+    "labourEfficiency",
+    "rejectRate",
+    "labourId",
+    "partsPerCycle=1",
+    "labourTimeHr=cycleTimeHr",
+    "castPartWeightKg = finished + drilled-hole stock + face machining stock"
+  ],
+  "provenance": {
+    "cam-mat": {
+      "value": "mat-gjs500",
+      "basis": "cast iron → EN-GJS-500-7 (Ductile Iron) (safety-critical / fatigue-loaded → ductile EN-GJS-500-7 (grey iron is brittle))"
+    },
+    "cam-cast-subtype": {
+      "value": "sand",
+      "basis": "sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining"
+    },
+    "cam-cast-yield": {
+      "value": 0.625,
+      "basis": "sand ductile-iron yield band 0.55–0.7, midpoint (feeding scales with the alloy's shrinkage; consistent with the published casting ÷ pour yields of ductile iron on automatic green-sand lines — Döktaş EN-GJS-500, a 26.8 kg casting from 53 kg poured, 50.6 % (Foseco case study, 2023); a differential case housing 62 → 67 % (EU BREF 2024 §3.2.1.4.2.2); Fundimig 68 % scrap-adjusted (MAGMA) — and above the published METAL yields, which also lose the scrap castings and the melt (EU BREF 2024 Table 3.13: mechanised small nodular 40–50 %, medium nodular jobbing 50–60 %; Table 3.12: iron-foundry OME median 58 %, n = 73). Casting ÷ pour; melt loss and rejects are charged separately. The band itself is CostVision's, inside those figures — the foundry's method yield replaces it)"
+    },
+    "cam-sand-core": {
+      "value": 3,
+      "basis": "32 undercut faces — a complex multi-core (£2–8); per-part core (sand, binder, labour), material consumable — a default band (UK, engineering-typical, not sourced), not a core-shop quote"
+    },
+    "cam-finish-wt": {
+      "value": 7.364,
+      "basis": "1037 cm³ × 7100 kg/m³ (EN-GJS-500-7 (Ductile Iron), the default grade — safety-critical / fatigue-loaded → ductile EN-GJS-500-7 (grey iron is brittle))"
+    },
+    "cam-hpdc-die-cost": {
+      "value": 16483,
+      "basis": "sand toolmaker shop model: 228 toolroom hours + aluminium plate + bought-outs from a 246 cm² parting footprint × 4 impressions on the plate, 2 core box(es) (32 undercut face(s)) — a quotation overrides this"
+    },
+    "cam-hpdc-die-life": {
+      "value": 400000,
+      "basis": "aluminium match-plate life 100,000 moulds × 4 impression(s) a mould on the automatic vertical flaskless line (DISAMATIC 270 class) = 400,000 castings — the pattern priced is an aluminium plate, so its life is an aluminium match plate: published 10,000–50,000 moulds (Supro MFG), 25k–100k to first refurbishment and 80k–150k total (YB Metal), 100k–500k for a metal pattern (Bowmanville) — supplier pages that disagree ×10; 100,000 total is CostVision engineering judgement, and the refurbishments between are not costed. A steel plate lasts up to 500,000 moulds (DISA, said of an aluminium-casting foundry) but none is priced; a foundry's pattern life replaces this"
+    },
+    "cam-sand-ct": {
+      "value": 0.001,
+      "basis": "automatic vertical flaskless line (DISAMATIC 270 class): 4 impression(s) of 222 × 177 mm (+50 mm gating) on a 950 × 700 mm mould (impressions = the smallest of: free fit 9 (the footprint + 50 mm a side for gating, engineering-typical, not sourced); 60 % plate rule (DISA Application Manual §2.1.4: \"Plate area covered by the pattern and the gating system should not exceed 60% of the total plate area\" (the maker's manual, read from a third-party upload)): each impression is the footprint + 50 mm a side, 272.36 × 227.00 mm = 61,826 mm², and 0.6 × 950 × 700 mm² ÷ 61,826 mm² = 6.45 → 6 (rounded down); sand : iron ≥ 5 : 1 (DISA MATCH (Foundry-Planet, 7 Mar 2012): \"In iron foundries … a ratio of 5:1 or greater should be aimed at\") — the mould, 950 × 700 mm and 344.5 mm thick (274.5 mm deep along the draw + 70 mm of sand between cavities, DISA Application Manual §2.1: minimum sand between mould cavities S = 70 mm (60 mm on the DMM 2110), necessary mould thickness T = P + Q + S), holds 343.6 kg of sand at 1,500 kg/m³ (compacted green sand 1.5 t/m³ — engineering-typical, not sourced (the foundry's mould weight replaces it)); an impression pours 9.084 kg ÷ 0.625 yield = 14.534 kg of iron and displaces 3.07 kg of sand (at 7,100 kg/m³), so it needs 5 × 14.534 + 3.07 = 75.74 kg of sand: 343.6 ÷ 75.74 = 4.54 → 4 (rounded down) → 4 — sand : iron 5 : 1 binds), 250 cored moulds/h (DISA 270-280, 950 × 700 mm mould (the smallest 270 size), 280 uncored / 250 cored moulds/h at 200 mm mould thickness (DISA General Specifications, 04/23) — the rated maximum; the 270 mould thickness is not in the specification read, so a casting's depth is not checked against it) — 1 ÷ 250 ÷ 4 = 0.001 h, the line's time per casting, not the cooling time. Line: 200,000 castings a year = 66,667 moulds a year on the semi-automatic flask line (HWS HSP-2D class) (3 a mould) ≥ 5,000 → the automatic vertical flaskless line (DISAMATIC 270 class) (the line threshold is CostVision engineering judgement, not sourced — no published source gives one; 5,000 follows AFS: metal pattern equipment over ~5,000 castings a year); loading 50,000 moulds ÷ 250 moulds/h = 200 h of the line's 4,800 h a year (book hours × utilisation) = 4.2 %"
+    },
+    "cam-sand-line": {
+      "value": "sand-auto-vertical-line",
+      "basis": "automatic vertical flaskless line (DISAMATIC 270 class): 200,000 castings a year = 66,667 moulds a year on the semi-automatic flask line (HWS HSP-2D class) (3 a mould) ≥ 5,000 → the automatic vertical flaskless line (DISAMATIC 270 class) (the line threshold is CostVision engineering judgement, not sourced — no published source gives one; 5,000 follows AFS: metal pattern equipment over ~5,000 castings a year); loading 50,000 moulds ÷ 250 moulds/h = 200 h of the line's 4,800 h a year (book hours × utilisation) = 4.2 %"
+    },
+    "cam-cast-lab": {
+      "value": "lab-uk-foundry",
+      "basis": "foundry operative on the moulding / die-casting line and at the fettling bench"
+    },
+    "cam-fettle-min": {
+      "value": 0,
+      "basis": "none at the bench — a 7.4 kg ductile iron casting off the automatic vertical flaskless line (DISAMATIC 270 class) is fettled on a robotic grinding cell (see the robotic fettling cell)"
+    },
+    "cam-fettle-cell-sec": {
+      "value": 40,
+      "basis": "a 7.4 kg ductile iron casting off the automatic vertical flaskless line (DISAMATIC 270 class) is fettled on a robotic grinding cell: robotic grinding cell 40 s a casting, one operator to two cells (Malleable Castings time study, high-volume ductile iron 0.1–30 kg: manual 45 s, cell 40 s; published range to 260 s on a 22 kg heavy-flash casting)"
+    },
+    "cam-ht-cost": {
+      "value": 0,
+      "basis": "EN-GJS-500-7 (Ductile Iron) is normally met as-cast — EN 1563 sets the mechanical properties and leaves heat treatment to the foundry unless the order says otherwise; none costed — add a stress relief if the drawing calls for one"
+    },
+    "cam-ht-route": {
+      "value": "none",
+      "basis": "ductile iron — the aluminium heat-treat station does not apply (see the heat-treat cost)"
+    },
+    "cam-shot-blast": {
+      "value": 0.752,
+      "basis": "sand castings are blasted to remove the moulding sand, scale and fins — 9.08 kg as cast (finished + machining stock) ÷ 600 kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × (blast machine £25.07/h + operator £24.60/h), min £0.10 = £0.7520 (CostVision engineering heuristic)"
+    },
+    "cam-impreg": {
+      "value": 0,
+      "basis": "not pressure-tight — no impregnation"
+    },
+    "cam-ndt": {
+      "value": 0.7673,
+      "basis": "safety-critical ductile-iron — 100% magnetic-particle inspection (wet fluorescent bench, demagnetised): 75 s a part × (inspector £28.03/h × 1 + bench £4.00/h) = £0.667 + 1 in 50 radiographed × £5.00 = £0.100 = £0.7673 (engineering-typical station figures; CostVision heuristic)"
+    },
+    "cam-cast-manning": {
+      "value": 3,
+      "basis": "automatic vertical flaskless line (DISAMATIC 270 class) crew of 3: 3 operators a DISAMATIC line with manual pouring (Trakya Döküm: 3 → 2 with automatic pouring, DISA, c. 2025) — the line's capital excludes an automatic pourer, so the manual-pouring crew is taken"
+    },
+    "cam-leak-sec": {
+      "value": 0,
+      "basis": "not pressure-tight — no leak test"
+    },
+    "cam-new-sand": {
+      "value": 11.0322,
+      "basis": "new silica sand added at 15 % of the poured weight (the midpoint of 10–20 %) and the same tonnage discarded, in 2014 prices not escalated: new sand €45/t + disposal €43/t = €88/t; €88 ÷ €1.1965/£ = £73.5478/t of sand; 0.15 × £73.5478 = £11.0322/t poured (UK) — EU JRC SF BREF 2024 §3.2.1.4.4 (new sand 10–20 % of poured metal) and Tables 3.21–3.22 (DE UBA 2014: new sand €45/t, disposal €43/t), grade B. It replaces the engineering-typical £0.01/kg poured \"green-sand additions\"; bentonite and coal dust are NOT costed (bentonite €228/t is published, no consumption a tonne poured)"
+    },
+    "cam-ladle-kwh": {
+      "value": 100,
+      "basis": "ladle preheat 100 kWh per tonne of liquid metal poured — the midpoint of 50–150 kWh/t for iron foundries (EU JRC SF BREF 2024, BAT-AEPL Tables 4.1 (iron) and 4.2 (steel), kWh per tonne of liquid metal, grade B); natural-gas burner assumed (CostVision engineering judgement, not sourced), so the kWh are costed as gas at the costed country's tariff"
+    },
+    "cam-dust-kwh": {
+      "value": 20,
+      "basis": "dust extraction / off-gas cleaning 20 kWh of electricity per tonne of good casting (German data restated in the EU JRC SF BREF 2024 §2.3.8.1 (flue-gas cleaning ~20 kWh per tonne of good casting), grade B), at the costed country's tariff"
+    },
+    "cam-plant-kwh": {
+      "value": 455,
+      "basis": "ESTIMATE (grade D — an inference, not a published figure): other plant electricity beyond melting and holding (sand plant, moulding, cleaning, compressed air, services) 0.45–0.5 kWh/kg good casting, midpoint 0.475 (US DOE \"Energy Use in Selected Metalcasting Facilities – 2003\": a cupola ductile-iron green-sand plant used 720 kWh/t of electricity in all; with its two 1.2 MW channel holding furnaces taken out, ~0.45–0.50 kWh/kg good casting is left (the research's inference, grade D)) − 0.02 kWh/kg dust extraction charged on its own line = 455 kWh per tonne of good casting, at the costed country's tariff. NOT costed (no published price found): furnace and ladle refractory (8–9 kg/t molten on induction, 1994 data — no current price), the metallurgical lab a melt, the pouring and sand-plant crew beyond the moulding-line crew and the melt shop's operator-hours, bentonite and coal-dust additions (bentonite €228/t is published, no consumption a tonne poured)"
+    },
+    "cam-sf-route": {
+      "value": "",
+      "basis": "not asked yet — costed bare (answer \"Is the part coated?\" to price a finish)"
+    },
+    "cam-sf-area": {
+      "value": 0.137,
+      "basis": "measured surface 1370.1 cm² = 0.1370 m² — the whole wetted surface; a masked or machined-after-coating face is in it"
+    },
+    "cam-cast-wt": {
+      "value": 9.084,
+      "basis": "7.364 kg finished + 38.9 cm³ of 12 hole(s) ≤ 20 mm drilled from solid + 135.7 cm³ machining stock (3 mm a side on the machined faces and cored bores, sand — the total stock a side, assumed (engineering-typical, not sourced): under ISO 8062-3 it is the RMA for the drawing's RMA grade plus half its DCTG casting tolerance, and neither grade is read from a drawing; type the as-cast weight from the drawing or the foundry to override) + 67.7 cm³ turning stock on the 226 cm² spindle (3 mm a side)"
+    },
+    "cam-mach-setup-time": {
+      "value": 1.5,
+      "basis": "2 fixturing(s) of the volume-cell routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch (45 min engineering-typical, not sourced)"
+    },
+    "cam-mach-batch-size": {
+      "value": 5000,
+      "basis": "200,000/yr ÷ 20 runs a year, held between 50 and 5,000"
+    },
+    "cam-mach-setup-mach": {
+      "value": "mach-hmc-400",
+      "basis": "cost-ranked 3 routing(s), machine + operator: volume-cell £4.60 (machine £2.40 + operator £2.19; twin-pallet HMC cell at 200,000/yr: 3 direction(s) in 1 clamping(s) on a 4th-axis tombstone, dedicated hydraulic fixture: Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell) £15.11/hr, 1 setup(s) × 45 min / batch 5000 + 7.1 s pallet change per part per fixturing (Okuma MA-4000H 7.1 s, ISO 10791-9 — Okuma MA-4000H brochure (Jul 2025)), 1.2 min load / unload masked by the cut) vs consolidated-5axis £5.78 (machine £3.02 + operator £2.75; single-setup 5-axis consolidation: HAAS UMC-500 (5-axis Mill) £17.07/hr, 1 setup(s) × 45 min / batch 5000 + 1.2 min handling per part per setup) vs split-3axis £6.46 (machine £2.03 + operator £4.43; 3-fixturing split routing: HAAS VF-2 (3-axis Mill) £9.05/hr + CNC Drilling Centre £6.64/hr, 4 setup(s) × 45 min / batch 5000 + 1.2 min handling per part per setup) → volume-cell, £1.18/part cheaper than consolidated-5axis"
+    },
+    "cam-mach-tooling": {
+      "value": 94000,
+      "basis": "7 fixture set(s), one a machine — on the Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell): cycle ÷ OEE 11.9250 min + change-over 0.0090 min = 11.9340 min a part; 11.9340 × 200,000 a year ÷ 60 = 39,780 h; 39,780 h ÷ 6,000 h available = 6.63 machine(s), rounded up — the capacity at this volume; 7 dedicated hydraulic (tombstone) fixture(s) × £12,000 (the volume cell's dedicated fixture; fixture prices engineering-typical toolroom builds, not sourced); lathe: 4 fixture set(s), one a machine — on the CNC Lathe (2-axis): cycle ÷ OEE 3.6525 min + change-over 0.0090 min = 3.6615 min a part; 3.6615 × 200,000 a year ÷ 60 = 12,205 h; 12,205 h ÷ 4,000 h available = 3.05 machine(s), rounded up — the capacity at this volume; 4 dedicated fixture(s) × £2,500 (dedicated above 10,000 parts over 5 years; fixture prices engineering-typical toolroom builds, not sourced)"
+    },
+    "cam-mach-prog-nre": {
+      "value": 299,
+      "basis": "CAM programming and prove-out 9.00 h (1.5 h × 2 fixturing(s) incl. the lathe + 0.25 h × 24 machined feature group(s)) × £33.27/h manufacturing engineer (hours engineering-typical, not sourced); programmed once a fixturing and run on all 7 machines — not repeated a machine"
+    },
+    "cam-tool-wear": {
+      "value": 1.1142,
+      "basis": "11.1 min of cutting × £0.1000/min inserts, end mills and drills (cast iron) — not in the machine rate (£/min engineering-typical, not sourced)"
+    }
+  },
+  "params": {
+    "castingSubtype": "sand",
+    "materialId": "mat-gjs500",
+    "castPartWeightKg": 9.084,
+    "finishedWeightKg": 7.364,
+    "castingYield": 0.625,
+    "rejectRate": 0.03,
+    "castingLabourId": "lab-uk-foundry",
+    "castingOee": 0.8,
+    "castingManning": 3,
+    "castingLabourEfficiency": 0.92,
+    "sand": {
+      "mouldLineId": "sand-auto-vertical-line",
+      "cycleTimeHr": 0.001,
+      "patternCost": 16483,
+      "patternLife": 400000,
+      "coreCostPerPart": 3
+    },
+    "fettlingCell": {
+      "machineId": "fettle-robot-cell",
+      "secPerCasting": 40,
+      "manning": 0.5
+    },
+    "foundry": {
+      "newSandGbpPerTPoured": 11.0322,
+      "ladlePreheatKwhPerTPoured": 100,
+      "dustExtractionKwhPerTGood": 20,
+      "plantElectricityKwhPerTGood": 455
+    },
+    "shotBlastCostPerPart": 0.752,
+    "ndtCostPerPart": 0.7673,
+    "machiningOps": [
+      {
+        "name": "Finish machining — +Y side",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.0279,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0279
+      },
+      {
+        "name": "Finish machining — +X side",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.0253,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0253
+      },
+      {
+        "name": "Finish machining — +Z side",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.0193,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0193
+      },
+      {
+        "name": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.0495,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0495
+      },
+      {
+        "name": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.035,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.035
+      },
+      {
+        "name": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+        "machineId": "mach-lathe-cnc",
+        "cycleTimeHr": 0.0287,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0287
+      },
+      {
+        "name": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "cycleTimeHr": 0.02,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 1,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.02
+      },
+      {
+        "name": "Pallet change — 1 fixturing(s)",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.002,
+        "labourId": "lab-uk-skilled",
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourEfficiency": 0.92,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.002
+      },
+      {
+        "name": "Deburr and gauge check (bench)",
+        "machineId": "mach-hmc-400",
+        "cycleTimeHr": 0.0203,
+        "labourId": "lab-uk-semiskilled",
+        "oee": 1,
+        "manning": 1,
+        "labourEfficiency": 0.92,
+        "benchOperation": true,
+        "type": "milling",
+        "partsPerCycle": 1,
+        "labourTimeHr": 0.0203
+      }
+    ],
+    "machiningSetup": {
+      "setupTimeHr": 1.5,
+      "batchSize": 5000,
+      "machineId": "mach-hmc-400",
+      "labourId": "lab-uk-skilled"
+    },
+    "machiningToolingCost": 94000,
+    "machiningProgrammingNRE": 299,
+    "machiningToolWearCostPerPart": 1.1142,
+    "amortizationVolume": 1000000
+  },
+  "operations": [
+    {
+      "machine": "sand-auto-vertical-line",
+      "labour": "lab-uk-foundry",
+      "cycleTimeSec": 3.711340206185568,
+      "labourCost": 0.08269834155087408,
+      "raw": {
+        "operationName": "Sand Casting — Moulding",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-foundry",
+        "processCost": 0.13151578608247427,
+        "labourCost": 0.08269834155087408,
+        "machineRateUsed": 102.05625,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0.0010309278350515466,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 3,
+        "labourTimeHr": 0.0010309278350515466,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "sand-auto-vertical-line",
+      "labour": "lab-uk-furnace",
+      "cycleTimeSec": 0,
+      "labourCost": 0.600985387718512,
+      "raw": {
+        "operationName": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical)",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-furnace",
+        "processCost": 0,
+        "labourCost": 0.600985387718512,
+        "machineRateUsed": 102.05625,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.022475876288659796,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    },
+    {
+      "machine": "fettle-robot-cell",
+      "labour": "lab-uk-foundry",
+      "cycleTimeSec": 41.23711340206186,
+      "labourCost": 0.15314507694606308,
+      "raw": {
+        "operationName": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator)",
+        "machineId": "fettle-robot-cell",
+        "labourId": "lab-uk-foundry",
+        "processCost": 0.2835827128675067,
+        "labourCost": 0.15314507694606308,
+        "machineRateUsed": 19.805416666666666,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0.01145475372279496,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.01145475372279496,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 1.0799999999999998,
+      "labourCost": 0.008384999999999998,
+      "raw": {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.0045319374999999995,
+        "labourCost": 0.008384999999999998,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0003,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0003,
+        "labourEfficiency": 1
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 100.44,
+      "labourCost": 0.42380706521739125,
+      "raw": {
+        "operationName": "Finish machining — +Y side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.526837734375,
+        "labourCost": 0.42380706521739125,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0279,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0279,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 91.08,
+      "labourCost": 0.38431249999999995,
+      "raw": {
+        "operationName": "Finish machining — +X side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.47774174479166664,
+        "labourCost": 0.38431249999999995,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0253,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0253,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 69.48,
+      "labourCost": 0.2931711956521739,
+      "raw": {
+        "operationName": "Finish machining — +Z side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.3644433072916667,
+        "labourCost": 0.2931711956521739,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0193,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0193,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 178.20000000000002,
+      "labourCost": 0.7519157608695652,
+      "raw": {
+        "operationName": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.934712109375,
+        "labourCost": 0.7519157608695652,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0495,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0495,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 126.00000000000001,
+      "labourCost": 0.5316576086956522,
+      "raw": {
+        "operationName": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.6609075520833333,
+        "labourCost": 0.5316576086956522,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.035,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.035,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-lathe-cnc",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 103.32,
+      "labourCost": 0.4359592391304348,
+      "raw": {
+        "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.43612789062499996,
+        "labourCost": 0.4359592391304348,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0287,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0287,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-lathe-cnc",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 72,
+      "labourCost": 0.6076086956521739,
+      "raw": {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.303921875,
+        "labourCost": 0.6076086956521739,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.02,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.02,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-skilled",
+      "cycleTimeSec": 7.2,
+      "labourCost": 0.030380434782608694,
+      "raw": {
+        "operationName": "Pallet change — 1 fixturing(s)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.037766145833333334,
+        "labourCost": 0.030380434782608694,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.002,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.002,
+        "labourEfficiency": 0.92
+      }
+    },
+    {
+      "machine": "mach-hmc-400",
+      "labour": "lab-uk-semiskilled",
+      "cycleTimeSec": 0,
+      "labourCost": 0.543907608695652,
+      "raw": {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-semiskilled",
+        "processCost": 0,
+        "labourCost": 0.543907608695652,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 24.65,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0203,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    }
+  ],
+  "traceability": [
+    {
+      "field": "material.pricePerKg",
+      "value": 0.368,
+      "unit": "£/kg",
+      "rateSource": "UK book 2026-10-10: Ductile / CGI / ADI / SiMo iron (charge) — Treated-metal charge for GJS-500-7 £0.3684/kg = (0.5 × Brazilian pig iron £0.3867 (CFR Italy $520/t, Apr 2026) + 0.5 × UK heavy melting scrap £0.2899 (HMRC OTS: UK exports of CN 7204 49 90, Jan–Aug 2026, £860,694,234 ÷ 2,969,165,527 kg — the export parity a UK consumer must match; phase B, 4 Nov 2026: was letsrecycle 0A £0.1425, a merchant buying price) + 0.012 × FeSiMg £1.8985 (EU import value)) = £0.3611 ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books); inoculant, carburiser and a nodular pig-iron premium not priced — + the book’s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.fesimg_eu_import_unit_value 1.907 → 1.8985 (the page now shows €2.21/kg (Jan 2022 – Mar 2026 import unit value) ÷ 1.1641 = £1.8985/kg). Was £0.86/kg. Source: https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf (2026-10-10 (derived)) ; https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/ (2026-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072044990%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (months 202601–202608 (latest published); read 2026-11-04) ; https://www.thetradehub.eu/de/customs/trade/72022910 (period not stated on the page (indexed 2026)). Earlier note: Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility.",
+      "rateId": "mat-gjs500",
+      "confidence": "Low"
+    },
+    {
+      "field": "material.scrapRecoveryPricePerKg",
+      "value": 0.15,
+      "unit": "£/kg",
+      "rateSource": "UK book 2026-10-10: Ductile / CGI / ADI / SiMo iron (charge) — Treated-metal charge for GJS-500-7 £0.3684/kg = (0.5 × Brazilian pig iron £0.3867 (CFR Italy $520/t, Apr 2026) + 0.5 × UK heavy melting scrap £0.2899 (HMRC OTS: UK exports of CN 7204 49 90, Jan–Aug 2026, £860,694,234 ÷ 2,969,165,527 kg — the export parity a UK consumer must match; phase B, 4 Nov 2026: was letsrecycle 0A £0.1425, a merchant buying price) + 0.012 × FeSiMg £1.8985 (EU import value)) = £0.3611 ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books); inoculant, carburiser and a nodular pig-iron premium not priced — + the book’s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.fesimg_eu_import_unit_value 1.907 → 1.8985 (the page now shows €2.21/kg (Jan 2022 – Mar 2026 import unit value) ÷ 1.1641 = £1.8985/kg). Was £0.86/kg. Source: https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf (2026-10-10 (derived)) ; https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/ (2026-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072044990%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (months 202601–202608 (latest published); read 2026-11-04) ; https://www.thetradehub.eu/de/customs/trade/72022910 (period not stated on the page (indexed 2026)). Earlier note: Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility.",
+      "rateId": "mat-gjs500",
+      "confidence": "Low"
+    },
+    {
+      "field": "rawMaterial.consumablesCostPerPart",
+      "value": 5.891589080082475,
+      "unit": "£",
+      "rateSource": "Per-part consumables & services: cores £3.09 · new sand + disposal (14.984 kg poured × £11.0322/t ÷ 1,000) £0.17 · shot blast £0.75 · NDT £0.77 · cutting-tool wear £1.11",
+      "rateId": "rules (per-part services)",
+      "confidence": "Medium"
+    },
+    {
+      "field": "rawMaterial.energyKwh.gas",
+      "value": 0.06892602061855671,
+      "unit": "£",
+      "rateSource": "1.4984 kWh × £0.046/kWh gas (UK tariff) — melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh",
+      "rateId": "energy-uk",
+      "confidence": "Medium"
+    },
+    {
+      "field": "rawMaterial.energyKwh.electricity",
+      "value": 2.4760970536082474,
+      "unit": "£",
+      "rateSource": "13.6049 kWh × £0.182/kWh electricity (UK tariff) — melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh",
+      "rateId": "energy-uk",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Sand Casting — Moulding.machineRatePerHr",
+      "value": 102.05625,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-11-03): machine only (the operator, overhead and margin are added by the costing). Capex £2,507,313 = Dovre (BE) investment in DISA moulding equipment, a DISAMATIC 270-A replacing a DISAMATIC 2070, €3,000,000 (2015 money, NOT escalated — the library has no escalation rule) ÷ €1.1965/£ (book FX); scope: the moulding equipment only — the foundry kept its DISA sand plant, and melting, pouring automation and the building are not in it; a maker’s press release quoting the buyer, one data point (Medium–Low confidence); 41.4 kW (no sourced draw — the running load of the book’s semi-automatic sand moulding line, not measured for this line); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £10,096/yr (the floor of the book’s semi-automatic sand moulding line, held — not sourced for this line); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £102.06/h — the UK book’s convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022); the hours move this rate: at 3,500 h × 0.75 (the book’s semi-automatic sand line’s hours) it would be £180.37/h.",
+      "rateId": "sand-auto-vertical-line",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Sand Casting — Moulding.labourRatePerHr",
+      "value": 24.6,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £18.63/h",
+      "rateId": "lab-uk-foundry",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical).labourRatePerHr",
+      "value": 24.6,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £22.16/h",
+      "rateId": "lab-uk-furnace",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator).machineRatePerHr",
+      "value": 19.805416666666666,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-11-03): machine only (the operator, overhead and margin are added by the costing). Capex £320,720 = KAW-MET iron foundry (PL) declared budget for a 7-axis robotic grinding-cleaning centre (Ø800 × 500 mm envelope, castings ≥ 40 kg), zł1,634,390 net (2025, a resolved EU-funds procedure, 3 bids; the winning price was not published) ÷ zł5.096/£ (book FX); scope: the cell, three tool sets, installation, start-up, training and a 24-month warranty with service — part fixtures excluded; cross-check Sinto America US$300–500k (2019) (Low–Medium confidence); 30.0 kW (the tender’s ≤ 30 kW power limit — an upper bound on the draw, not a measured load); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £12,115/yr (the floor of the book’s single-robot welding cell, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £19.81/h — the UK book’s convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022); the hours move this rate: at 3,500 h × 0.75 (the book’s semi-automatic sand line’s hours) it would be £31.69/h.",
+      "rateId": "fettle-robot-cell",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator).labourRatePerHr",
+      "value": 24.6,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £18.63/h",
+      "rateId": "lab-uk-foundry",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Machining Setup (amortised).machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Machining Setup (amortised).labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Finish machining — +Y side.machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Finish machining — +Y side.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Finish machining — +X side.machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Finish machining — +X side.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Finish machining — +Z side.machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Finish machining — +Z side.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured].machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured].labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured].machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured].labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).machineRatePerHr",
+      "value": 12.156875,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+      "rateId": "mach-lathe-cnc",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Load / clamp / unload — lathe fixture, 1 fixturing.machineRatePerHr",
+      "value": 12.156875,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+      "rateId": "mach-lathe-cnc",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Load / clamp / unload — lathe fixture, 1 fixturing.labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Pallet change — 1 fixturing(s).machineRatePerHr",
+      "value": 15.106458333333334,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+      "rateId": "mach-hmc-400",
+      "confidence": "Medium"
+    },
+    {
+      "field": "Pallet change — 1 fixturing(s).labourRatePerHr",
+      "value": 27.95,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+      "rateId": "lab-uk-skilled",
+      "confidence": "Low"
+    },
+    {
+      "field": "Deburr and gauge check (bench).labourRatePerHr",
+      "value": 24.65,
+      "unit": "£/hr",
+      "rateSource": "UK book 2026-10-10: 15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives. Was £19.94/h",
+      "rateId": "lab-uk-semiskilled",
+      "confidence": "Medium"
+    }
+  ],
+  "drivers": {
+    "rawMaterial": {
+      "materialId": "mat-gjs500",
+      "netWeightKg": 9.084,
+      "materialUtilization": 0.9808878551926383,
+      "lossIsNotScrap": true,
+      "consumablesCostPerPart": 5.891589080082475,
+      "consumablesItems": [
+        {
+          "label": "cores",
+          "gbp": 3.0927835051546397
+        },
+        {
+          "label": "new sand + disposal (14.984 kg poured × £11.0322/t ÷ 1,000)",
+          "gbp": 0.16530557492783507
+        },
+        {
+          "label": "shot blast",
+          "gbp": 0.752
+        },
+        {
+          "label": "NDT",
+          "gbp": 0.7673
+        },
+        {
+          "label": "cutting-tool wear",
+          "gbp": 1.1142
+        }
+      ],
+      "energyKwh": {
+        "gas": 1.4983917525773198,
+        "electricity": 13.604928865979382,
+        "basis": "melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh"
+      }
+    },
+    "operations": [
+      {
+        "operationName": "Sand Casting — Moulding",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-foundry",
+        "cycleTimeHr": 0.0010309278350515466,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 3,
+        "labourTimeHr": 0.0010309278350515466,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical)",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-furnace",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.022475876288659796,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      },
+      {
+        "operationName": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator)",
+        "machineId": "fettle-robot-cell",
+        "labourId": "lab-uk-foundry",
+        "cycleTimeHr": 0.01145475372279496,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.01145475372279496,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0003,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0003,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Finish machining — +Y side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0279,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0279,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +X side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0253,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0253,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +Z side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0193,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0193,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0495,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0495,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.035,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.035,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0287,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0287,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.02,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.02,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Pallet change — 1 fixturing(s)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.002,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.002,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-semiskilled",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0203,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "tooling": {
+      "items": [
+        {
+          "label": "Pattern equipment — first set",
+          "gbp": 16483,
+          "kind": "initial",
+          "firstSetGbp": 16483,
+          "sets": 1
+        },
+        {
+          "label": "Pattern equipment — 2 replacement sets as it wears out (3 sets over the programme; life 400,000 castings each; 1,030,928 poured incl. 3% rejects)",
+          "gbp": 32966,
+          "kind": "replacement",
+          "firstSetGbp": 16483,
+          "sets": 2
+        },
+        {
+          "label": "Machining fixtures",
+          "gbp": 94000,
+          "kind": "nre"
+        },
+        {
+          "label": "CNC programming (NRE)",
+          "gbp": 299,
+          "kind": "nre"
+        }
+      ],
+      "totalToolingCost": 143748,
+      "amortizationVolume": 1000000,
+      "mode": "amortized"
+    }
+  },
+  "stackInput": {
+    "partName": "PRCR002",
+    "rawMaterial": {
+      "materialId": "mat-gjs500",
+      "netWeightKg": 9.084,
+      "materialUtilization": 0.9808878551926383,
+      "lossIsNotScrap": true,
+      "consumablesCostPerPart": 5.891589080082475,
+      "consumablesItems": [
+        {
+          "label": "cores",
+          "gbp": 3.0927835051546397
+        },
+        {
+          "label": "new sand + disposal (14.984 kg poured × £11.0322/t ÷ 1,000)",
+          "gbp": 0.16530557492783507
+        },
+        {
+          "label": "shot blast",
+          "gbp": 0.752
+        },
+        {
+          "label": "NDT",
+          "gbp": 0.7673
+        },
+        {
+          "label": "cutting-tool wear",
+          "gbp": 1.1142
+        }
+      ],
+      "energyKwh": {
+        "gas": 1.4983917525773198,
+        "electricity": 13.604928865979382,
+        "basis": "melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh"
+      }
+    },
+    "operations": [
+      {
+        "operationName": "Sand Casting — Moulding",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-foundry",
+        "cycleTimeHr": 0.0010309278350515466,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 3,
+        "labourTimeHr": 0.0010309278350515466,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical)",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-furnace",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.022475876288659796,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      },
+      {
+        "operationName": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator)",
+        "machineId": "fettle-robot-cell",
+        "labourId": "lab-uk-foundry",
+        "cycleTimeHr": 0.01145475372279496,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.01145475372279496,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0003,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0003,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Finish machining — +Y side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0279,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0279,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +X side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0253,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0253,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +Z side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0193,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0193,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0495,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0495,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.035,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.035,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.0287,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0287,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.02,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.02,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Pallet change — 1 fixturing(s)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "cycleTimeHr": 0.002,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.002,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-semiskilled",
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0203,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "tooling": {
+      "items": [
+        {
+          "label": "Pattern equipment — first set",
+          "gbp": 16483,
+          "kind": "initial",
+          "firstSetGbp": 16483,
+          "sets": 1
+        },
+        {
+          "label": "Pattern equipment — 2 replacement sets as it wears out (3 sets over the programme; life 400,000 castings each; 1,030,928 poured incl. 3% rejects)",
+          "gbp": 32966,
+          "kind": "replacement",
+          "firstSetGbp": 16483,
+          "sets": 2
+        },
+        {
+          "label": "Machining fixtures",
+          "gbp": 94000,
+          "kind": "nre"
+        },
+        {
+          "label": "CNC programming (NRE)",
+          "gbp": 299,
+          "kind": "nre"
+        }
+      ],
+      "totalToolingCost": 143748,
+      "amortizationVolume": 1000000,
+      "mode": "amortized"
+    },
+    "packagingPerPart": 0.36,
+    "logisticsPerPart": 0,
+    "deliveryTerms": "EXW",
+    "overheadPct": 0.12,
+    "marginPct": 0.08
+  },
+  "result": {
+    "partName": "PRCR002",
+    "breakdown": {
+      "rawMaterial": 11.844659243793815,
+      "process": 4.162088795824981,
+      "labour": 4.847933914911102,
+      "tooling": 0.143748,
+      "packaging": 0.36,
+      "logistics": 0,
+      "overhead": 2.5198115945435875,
+      "margin": 1.9102593239258787
+    },
+    "operationDetails": [
+      {
+        "operationName": "Sand Casting — Moulding",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-foundry",
+        "processCost": 0.13151578608247427,
+        "labourCost": 0.08269834155087408,
+        "machineRateUsed": 102.05625,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0.0010309278350515466,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 3,
+        "labourTimeHr": 0.0010309278350515466,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical)",
+        "machineId": "sand-auto-vertical-line",
+        "labourId": "lab-uk-furnace",
+        "processCost": 0,
+        "labourCost": 0.600985387718512,
+        "machineRateUsed": 102.05625,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.022475876288659796,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      },
+      {
+        "operationName": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator)",
+        "machineId": "fettle-robot-cell",
+        "labourId": "lab-uk-foundry",
+        "processCost": 0.2835827128675067,
+        "labourCost": 0.15314507694606308,
+        "machineRateUsed": 19.805416666666666,
+        "labourRateUsed": 24.6,
+        "cycleTimeHr": 0.01145475372279496,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.01145475372279496,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Machining Setup (amortised)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.0045319374999999995,
+        "labourCost": 0.008384999999999998,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0003,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0003,
+        "labourEfficiency": 1
+      },
+      {
+        "operationName": "Finish machining — +Y side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.526837734375,
+        "labourCost": 0.42380706521739125,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0279,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0279,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +X side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.47774174479166664,
+        "labourCost": 0.38431249999999995,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0253,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0253,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish machining — +Z side",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.3644433072916667,
+        "labourCost": 0.2931711956521739,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0193,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0193,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.934712109375,
+        "labourCost": 0.7519157608695652,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0495,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0495,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured]",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.6609075520833333,
+        "labourCost": 0.5316576086956522,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.035,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.035,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.43612789062499996,
+        "labourCost": 0.4359592391304348,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.0287,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.0287,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Load / clamp / unload — lathe fixture, 1 fixturing",
+        "machineId": "mach-lathe-cnc",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.303921875,
+        "labourCost": 0.6076086956521739,
+        "machineRateUsed": 12.156875,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.02,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 1,
+        "labourTimeHr": 0.02,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Pallet change — 1 fixturing(s)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-skilled",
+        "processCost": 0.037766145833333334,
+        "labourCost": 0.030380434782608694,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 27.95,
+        "cycleTimeHr": 0.002,
+        "partsPerCycle": 1,
+        "oee": 0.8,
+        "manning": 0.5,
+        "labourTimeHr": 0.002,
+        "labourEfficiency": 0.92
+      },
+      {
+        "operationName": "Deburr and gauge check (bench)",
+        "machineId": "mach-hmc-400",
+        "labourId": "lab-uk-semiskilled",
+        "processCost": 0,
+        "labourCost": 0.543907608695652,
+        "machineRateUsed": 15.106458333333334,
+        "labourRateUsed": 24.65,
+        "cycleTimeHr": 0,
+        "partsPerCycle": 1,
+        "oee": 1,
+        "manning": 1,
+        "labourTimeHr": 0.0203,
+        "labourEfficiency": 0.92,
+        "benchOperation": true
+      }
+    ],
+    "factoryCost": 21.358429954529896,
+    "overheadBase": 20.998429954529897,
+    "subtotal": 23.878241549073483,
+    "total": 25.78850087299936,
+    "traceability": [
+      {
+        "field": "material.pricePerKg",
+        "value": 0.368,
+        "unit": "£/kg",
+        "rateSource": "UK book 2026-10-10: Ductile / CGI / ADI / SiMo iron (charge) — Treated-metal charge for GJS-500-7 £0.3684/kg = (0.5 × Brazilian pig iron £0.3867 (CFR Italy $520/t, Apr 2026) + 0.5 × UK heavy melting scrap £0.2899 (HMRC OTS: UK exports of CN 7204 49 90, Jan–Aug 2026, £860,694,234 ÷ 2,969,165,527 kg — the export parity a UK consumer must match; phase B, 4 Nov 2026: was letsrecycle 0A £0.1425, a merchant buying price) + 0.012 × FeSiMg £1.8985 (EU import value)) = £0.3611 ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books); inoculant, carburiser and a nodular pig-iron premium not priced — + the book’s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.fesimg_eu_import_unit_value 1.907 → 1.8985 (the page now shows €2.21/kg (Jan 2022 – Mar 2026 import unit value) ÷ 1.1641 = £1.8985/kg). Was £0.86/kg. Source: https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf (2026-10-10 (derived)) ; https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/ (2026-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072044990%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (months 202601–202608 (latest published); read 2026-11-04) ; https://www.thetradehub.eu/de/customs/trade/72022910 (period not stated on the page (indexed 2026)). Earlier note: Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility.",
+        "rateId": "mat-gjs500",
+        "confidence": "Low"
+      },
+      {
+        "field": "material.scrapRecoveryPricePerKg",
+        "value": 0.15,
+        "unit": "£/kg",
+        "rateSource": "UK book 2026-10-10: Ductile / CGI / ADI / SiMo iron (charge) — Treated-metal charge for GJS-500-7 £0.3684/kg = (0.5 × Brazilian pig iron £0.3867 (CFR Italy $520/t, Apr 2026) + 0.5 × UK heavy melting scrap £0.2899 (HMRC OTS: UK exports of CN 7204 49 90, Jan–Aug 2026, £860,694,234 ÷ 2,969,165,527 kg — the export parity a UK consumer must match; phase B, 4 Nov 2026: was letsrecycle 0A £0.1425, a merchant buying price) + 0.012 × FeSiMg £1.8985 (EU import value)) = £0.3611 ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books); inoculant, carburiser and a nodular pig-iron premium not priced — + the book’s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.fesimg_eu_import_unit_value 1.907 → 1.8985 (the page now shows €2.21/kg (Jan 2022 – Mar 2026 import unit value) ÷ 1.1641 = £1.8985/kg). Was £0.86/kg. Source: https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf (2026-10-10 (derived)) ; https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/ (2026-04) ; HMRC uktradeinfo OTS OData API — https://api.uktradeinfo.com/OTS?$filter=CommodityId%20eq%2072044990%20and%20MonthId%20ge%20202601%20and%20MonthId%20le%20202612&$select=MonthId,FlowTypeId,CountryId,Value,NetMass (months 202601–202608 (latest published); read 2026-11-04) ; https://www.thetradehub.eu/de/customs/trade/72022910 (period not stated on the page (indexed 2026)). Earlier note: Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility.",
+        "rateId": "mat-gjs500",
+        "confidence": "Low"
+      },
+      {
+        "field": "rawMaterial.consumablesCostPerPart",
+        "value": 5.891589080082475,
+        "unit": "£",
+        "rateSource": "Per-part consumables & services: cores £3.09 · new sand + disposal (14.984 kg poured × £11.0322/t ÷ 1,000) £0.17 · shot blast £0.75 · NDT £0.77 · cutting-tool wear £1.11",
+        "rateId": "rules (per-part services)",
+        "confidence": "Medium"
+      },
+      {
+        "field": "rawMaterial.energyKwh.gas",
+        "value": 0.06892602061855671,
+        "unit": "£",
+        "rateSource": "1.4984 kWh × £0.046/kWh gas (UK tariff) — melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh",
+        "rateId": "energy-uk",
+        "confidence": "Medium"
+      },
+      {
+        "field": "rawMaterial.energyKwh.electricity",
+        "value": 2.4760970536082474,
+        "unit": "£",
+        "rateSource": "13.6049 kWh × £0.182/kWh electricity (UK tariff) — melt energy on every kg poured: 14.984 kg poured a good casting (9.084 kg ÷ (1 − 0.03 reject) ÷ 0.625 yield) × 0.62 kWh/kg; runners, risers and rejects remelted, 3% of them lost (0.177 kg bought and lost) — induction iron 520–650 kWh/t + Mg treatment, oxidation 2–4% (engineering-typical — replace with plant data); ladle preheat (gas): 14.9839 kg poured × 100 kWh/t ÷ 1,000 = 1.4984 kWh; dust extraction: 9.0840 kg good casting × 20 kWh/t ÷ 1,000 = 0.1817 kWh; other plant electricity beyond melt: 9.0840 kg good casting × 455 kWh/t ÷ 1,000 = 4.1332 kWh",
+        "rateId": "energy-uk",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Sand Casting — Moulding.machineRatePerHr",
+        "value": 102.05625,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-11-03): machine only (the operator, overhead and margin are added by the costing). Capex £2,507,313 = Dovre (BE) investment in DISA moulding equipment, a DISAMATIC 270-A replacing a DISAMATIC 2070, €3,000,000 (2015 money, NOT escalated — the library has no escalation rule) ÷ €1.1965/£ (book FX); scope: the moulding equipment only — the foundry kept its DISA sand plant, and melting, pouring automation and the building are not in it; a maker’s press release quoting the buyer, one data point (Medium–Low confidence); 41.4 kW (no sourced draw — the running load of the book’s semi-automatic sand moulding line, not measured for this line); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £10,096/yr (the floor of the book’s semi-automatic sand moulding line, held — not sourced for this line); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £102.06/h — the UK book’s convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022); the hours move this rate: at 3,500 h × 0.75 (the book’s semi-automatic sand line’s hours) it would be £180.37/h.",
+        "rateId": "sand-auto-vertical-line",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Sand Casting — Moulding.labourRatePerHr",
+        "value": 24.6,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £18.63/h",
+        "rateId": "lab-uk-foundry",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Melt shop (charge, melt, treat, ladle) — 14.98 kg poured × 1.5 operator-h/t (engineering-typical).labourRatePerHr",
+        "value": 24.6,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £22.16/h",
+        "rateId": "lab-uk-furnace",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator).machineRatePerHr",
+        "value": 19.805416666666666,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-11-03): machine only (the operator, overhead and margin are added by the costing). Capex £320,720 = KAW-MET iron foundry (PL) declared budget for a 7-axis robotic grinding-cleaning centre (Ø800 × 500 mm envelope, castings ≥ 40 kg), zł1,634,390 net (2025, a resolved EU-funds procedure, 3 bids; the winning price was not published) ÷ zł5.096/£ (book FX); scope: the cell, three tool sets, installation, start-up, training and a 24-month warranty with service — part fixtures excluded; cross-check Sinto America US$300–500k (2019) (Low–Medium confidence); 30.0 kW (the tender’s ≤ 30 kW power limit — an upper bound on the draw, not a measured load); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £12,115/yr (the floor of the book’s single-robot welding cell, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £19.81/h — the UK book’s convention for a three-shift production line (as its twin-pallet machining cell and the EV lines; the book treats 6,000 h or more as a continuous line) — NOT a foundry-specific source; one published DISAMATIC C3-350 ran 24/7 at ≈ 6,400 rated-speed h/yr (Deshan, 2022); the hours move this rate: at 3,500 h × 0.75 (the book’s semi-automatic sand line’s hours) it would be £31.69/h.",
+        "rateId": "fettle-robot-cell",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Fettling — robotic grinding cell (40 s a casting, 0.5 operator).labourRatePerHr",
+        "value": 24.6,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives. Was £18.63/h",
+        "rateId": "lab-uk-foundry",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Machining Setup (amortised).machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Machining Setup (amortised).labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Finish machining — +Y side.machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Finish machining — +Y side.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Finish machining — +X side.machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Finish machining — +X side.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Finish machining — +Z side.machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Finish machining — +Z side.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured].machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Drilling — 12 holes (1×Ø3.1×3, 1×Ø6.3×4, 2×Ø8.5×31, 1×Ø10.0×23, 2×Ø14.0×8, 2×Ø14.0×40, 2×Ø14.0×59, 1×Ø16.0×3) [geometry-measured].labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured].machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Finish boring — 3 cored bore(s), 3 stepped (1× stepped bore Ø24.0×18 / Ø31.0×11, 1× stepped bore Ø40.0×9.9 / Ø42.5×1.9 / Ø37.0×45 / Ø45.0×3.0, 1× stepped bore Ø46.0×5.5 / Ø39.0×45 / Ø40.0×9.9 / Ø42.5×1.9) [geometry-measured].labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).machineRatePerHr",
+        "value": 12.156875,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+        "rateId": "mach-lathe-cnc",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Load / clamp / unload — lathe fixture, 1 fixturing.machineRatePerHr",
+        "value": 12.156875,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: machine only (the operator, overhead and margin are added by the costing). Capex £135,041 = UK public award: Yamazaki Mazak UK, UKRI-4318 ’CNC Lathe machine’ £135,041 (Nov 2024, Contracts Finder; supply — no bar feeder or gantry loader stated); other UK awards: Mazak NPL £147,330 and Aston ’Quickturn’ £113,000 (2020), Doosan via Mills CNC £92,901 (2023) and £89,711 (2018), a Haas ST-15 toolroom lathe £57,091 (2019); a US DLA turning centre with bar feeder US$219,379 = £164,736 (2023). Hours held at the book’s convention (the lathe 4,000 h × 0.80): a production lathe at 200,000 a year may run three shifts, which would lower the rate — capex and hours are chosen together, and the hours were not changed with this capex; 11.9 kW (no lathe draw sourced — the machining-centre mean 10 kW (7.4 kW finishing – 13 kW roughing, maker study) × the book’s running-load ratio lathe ÷ VF-2, as before); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3% (machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)); indirect 5% (the library’s own line build-up rule (5% of capex)); finance 4% on half (the library’s own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched); floor, hours, utilisation held; £0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre (Doosan/Hyundai class).",
+        "rateId": "mach-lathe-cnc",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Load / clamp / unload — lathe fixture, 1 fixturing.labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Pallet change — 1 fixturing(s).machineRatePerHr",
+        "value": 15.106458333333334,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10 method (machine added 2026-10-30): machine only (the operator, overhead and margin are added by the costing). Capex £300,000 = ESTIMATE (review round, 4 Nov 2026) — no new list price or award for a named 400 mm twin-pallet HMC was found (the Haas EC-400 price page returned HTTP 403, not bypassed): the floor is a USED Okuma MB-4000H (2021, 400 mm, 2-station APC) asked at US$249,990 = £187,722 (The Equipment Hub listing, read 2026-11-04 — a new machine costs more); a US DLA award for an unsized ’horizontal machining center’ was US$467,682 = £351,192 (2023, model, pallet size and options not in the record); £300,000 is taken between the used floor and the unsized award (CostVision judgement — replace with a dealer quote). It was £185,000 (2019–2023 used EC-400 listings + 25 %), below the used price of the machine whose pallet- and tool-change times the cycle model uses (Low confidence); 13.0 kW (measured machining-centre roughing mean 13 kW (maker study)); 13-yr life (German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)); maintenance 3%; indirect 5%; finance 4% on half; floor £8,077/yr (the floor of the book’s lathe / 5-axis class, held — not sourced for this cell); £0.182/kWh. At 6,000 h a year × 0.80 utilisation the rate is £15.11/h — a production cell runs three shifts, the economics of a pallet cell (the book’s convention for a three-shift line, as the EV lines); the hours move this rate: at 4,000 h × 0.50 (the book’s job-shop VMC hours) it would be £32.94/h.",
+        "rateId": "mach-hmc-400",
+        "confidence": "Medium"
+      },
+      {
+        "field": "Pallet change — 1 fixturing(s).labourRatePerHr",
+        "value": 27.95,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/. Was £26.19/h",
+        "rateId": "lab-uk-skilled",
+        "confidence": "Low"
+      },
+      {
+        "field": "Deburr and gauge check (bench).labourRatePerHr",
+        "value": 24.65,
+        "unit": "£/hr",
+        "rateSource": "UK book 2026-10-10: 15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h. Loading: ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness). Source: https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives. Was £19.94/h",
+        "rateId": "lab-uk-semiskilled",
+        "confidence": "Medium"
+      }
+    ],
+    "warnings": [
+      "rawMaterial.materialId: price confidence Low — see the material price source"
+    ]
+  }
+}

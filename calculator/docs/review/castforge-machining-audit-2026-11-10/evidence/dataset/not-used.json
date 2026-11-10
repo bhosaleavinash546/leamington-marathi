@@ -1,0 +1,105 @@
+{
+ "created": "2026-11-10",
+ "items": [
+  {
+   "source": "NASA CR-167937 ASE Mod I Vol III, parts lists PDF p.19-20",
+   "what": "17037 'Cast, generator housing' -> 17038 'Regenerator house ass'y (machining)'; 17035 'Cast cylinder housing' -> 17036 'Cylinder house ass'y (machining)'",
+   "why": "Genuine raw/machined parent-child pairs in the parts lists, but neither the casting nor the machining DRAWINGS (17035-17038) are in the volume (not in the C.3/C.5/C.6 drawing lists, not found on any sheet). Parts-list evidence only."
+  },
+  {
+   "source": "NASA CR-167937 Vol III, Hot Engine System PDF p.108, 112, 115",
+   "what": "2-17020 Gas cooler machining, 3-17018 Cooler housing (SIS 2343 stainless), 3-17021 Gas cooler ass'y",
+   "why": "Fabricated/brazed assembly then machined; housing is wrought stainless, not a casting or forging."
+  },
+  {
+   "source": "NASA CR-167937 Vol III, Cold Engine System PDF p.151-156",
+   "what": "1-17045 Water jacket (2 sheets), 1-17112 / 1-17128 Crosshead guide (SIS 4255 cast Al)",
+   "why": "Single combined cast-and-machined drawings; no separate raw or machining drawing; crosshead guide scans largely illegible."
+  },
+  {
+   "source": "NASA CR-167937 Vol III, Engine Drive System PDF p.185-310 (every title block read)",
+   "what": "Connecting rods 1-61101 (S.G. iron), 2-61114 (casting SG iron 37/2), crankshafts 1-61112/1-61113/1-61240 (722M24 En40B), clutch housing 1-61219, intercasing 1-61121, sump 1-61119, water pump body 1-61123, oil filter housing 1-61149 (cast Al LM6), flywheel, gears",
+   "why": "Each is ONE drawing (cast-and-machined or machined-from-bar); no separate casting/forging drawing exists in the volume. Usable as single-stage castings, not as raw/finished pairs."
+  },
+  {
+   "source": "NASA CR-167936 ASE Mod I Vol I (NTRS 19820026435) and Vol II (NTRS 19830002721)",
+   "what": "Design text",
+   "why": "No drawings of raw/finished pairs; Vol I used only for the casting-process statement (pages extracted into the ASE folders). Vol II is controls/auxiliaries text."
+  },
+  {
+   "source": "NTRS 19870061507 'Automotive Stirling engine system component review'",
+   "what": "possible later ASE drawings",
+   "why": "Download returned a non-PDF (JSON/error body); not pursued."
+  },
+  {
+   "source": "NTRS 19790003238 Mini-BRU Vol 2 'Figures and drawings' (GOV_PUBLIC_USE_PERMITTED)",
+   "what": "Turbine/compressor figures",
+   "why": "Figures and photos (e.g. Astroloy turbine wheel machined); no casting/forging drawing paired with a machining drawing."
+  },
+  {
+   "source": "DTIC AD0855761 Evaluation of Advanced Gear-Forging Techniques (Sikorsky, 1969; limitation changed to public release 1971)",
+   "url": "https://archive.org/details/DTIC_AD0855761",
+   "why": "Finished detail gear drawing (Fig. 1) only; the as-forged blanks are photographs, no forging drawing."
+  },
+  {
+   "source": "DTIC ADA124578 / ADA110326 / ADA393677 CAD/CAM for near-net / net forged spiral bevel gears (Battelle 1981-85)",
+   "url": "https://archive.org/details/DTIC_ADA124578",
+   "why": "Process/die-design reports; preform schematics and photos, no dimensioned forging + machining drawing pair found in the OCR text. Not opened page by page (time)."
+  },
+  {
+   "source": "DTIC ADA153479 Powder Metallurgy Forged Gear Development (1985); ADA095556 Forging of P/M Gears (1980)",
+   "why": "Powder-forging route (not conventional forging); preform drawing + figure 'relationship between forged shape and machined shape' could be a later candidate; not extracted."
+  },
+  {
+   "source": "DTIC ADA028861 Isothermal Forging of Ti-6Al-4V (M85 machine gun cover, 1976)",
+   "url": "https://archive.org/details/DTIC_ADA028861",
+   "why": "References TRW drawing 8851-250-3 'Cover forging' and US Army drawing 7793151 'Finish machined M85 cover' but the report's figures are photos/tooling; the two part drawings are not reproduced. Weapon component; titanium isothermal forging - off-target."
+  },
+  {
+   "source": "DTIC ADA151951 Production Methods for Squeeze Castings (IITRI 1978, US Army Missile Command)",
+   "url": "https://archive.org/details/DTIC_ADA151951",
+   "why": "Fig. 3 (PDF p.20) is a half-section of the forward-dome squeeze casting with the machined part outline superimposed - genuine raw+finished in one figure, but sparsely dimensioned and a missile rocket-motor part; kept as a fallback, not extracted."
+  },
+  {
+   "source": "DTIC ADA385344 Agile Manufacturing Development of Castings (GE CRD, ONR 2000, Distribution A)",
+   "why": "Casting process / software report (AEGIS tower, AC locomotive, AAAV, Sundstrand housing); pictures of models, no dimensioned as-cast + machined drawing pair seen in OCR text."
+  },
+  {
+   "source": "DTIC AD0782965 Endurance test of high-strength cast aluminium transmission case and clutch housing (1974)",
+   "why": "Test report; no drawings in the OCR text."
+  },
+  {
+   "source": "OSTI 2320384 ORNL/TM-2023/3051 'Prototyping and manufacturing of magnetic gearbox components using innovations in castings' (Emrgy CRADA)",
+   "url": "https://www.osti.gov/biblio/2320384",
+   "why": "Very useful COST reference (Table 1A quoted mould+casting $ and machining $ for 5 sand-cast parts; Table 3 casting v finished weight, e.g. SH020 rotor 383 lb cast / 315 lb machined, $16,635 casting + $18,250 machining) but the only drawing (Fig. 2, SH020 machine drawing) is a thumbnail with illegible dimensions and there is no as-cast drawing. Not a drawing pair; worth recording as cost data separately."
+  },
+  {
+   "source": "MIL-STD-100G (DTIC ADA361444) / MIL-STD-100D (ibiblio)",
+   "why": "Looked for worked casting-drawing / machined-casting examples. DTIC returned 'Service unavailable' (not retried around); ibiblio TLS chain failed through the proxy. Not obtained."
+  },
+  {
+   "source": "Wikimedia Commons (Rohteil / Schmiedeteil / casting drawing / forging drawing searches)",
+   "why": "Only paintings, patents and HAER photos; no raw/finished drawing pairs. API rate-limited on first attempts."
+  },
+  {
+   "source": "GitHub repository search (casting/forging drawing, foundry pattern, open-source engine castings)",
+   "why": "Nothing with a licence and both drawings. RamShankhpal/UGNX--Pully-Casting-Machining has no licence (and is a student exercise) - not used."
+  },
+  {
+   "source": "M1 Garand / M1911 ordnance forging drawings",
+   "why": "Only collector/mirror sites of unclear provenance and licence (and weapons); not used."
+  },
+  {
+   "source": "archive.org public-domain shop books (Woodworth 1911 'Drop Forging, Die Sinking...'; 'United States Navy drop forging book' 1919)",
+   "why": "Forging/die catalogues, no paired machining drawing of the same part; not opened page by page."
+  },
+  {
+   "source": "Drafting textbooks found by archive.org full-text search ('forging drawing' + 'machining drawing')",
+   "why": "In-copyright textbooks (borrow-only); not reusable."
+  },
+  {
+   "source": "GrabCAD / Formula Student / NADCA / AFS / ASM worked examples",
+   "why": "Download needs an account, or the material is not openly licensed - not attempted per rules."
+  }
+ ]
+}
