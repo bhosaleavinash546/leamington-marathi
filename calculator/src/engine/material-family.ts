@@ -19,8 +19,9 @@ export function familyFromFilename(filename: string): MaterialFamily | null {
   // A two-letter polymer abbreviation that STARTS the name and is joined to a coded token ("PP-MP0108", "PC_A12") is a
   // part-number prefix, not polypropylene / polycarbonate — unless that token is a filler code ("PP-GF30", "PC-GF10")
   // (independent validation, 10 Nov 2026: LulzBot aluminium plates "PP-MP0108" were costed in POM-C acetal).
-  const prefixed = /^(pp|pc)[-_](?!(?:gf|cf|mf|gb|td|t)\d)[a-z]{0,4}\d/.test(n0);
-  const n = (prefixed ? n0.replace(/^(pp|pc)(?=[-_])/, '') : n0).replace(/[_\-.]+/g, ' ');
+  // Anywhere in the name ("bed_plate_v4.5_PP-MP0108"): the token is joined by "-" / "_" to a letter code + digits.
+  const PART_PREFIX = /(^|[\s_\-.])(pp|pc)[-_](?!(?:gf|cf|mf|gb|td|t)\d)(?=[a-z]{1,4}\d{2,})/g;
+  const n = n0.replace(PART_PREFIX, '$1').replace(/[_\-.]+/g, ' ');
   if (!n.trim()) return null;
   if (/nylon|\bpa6|pa66|\babs|polycarb|\bpc\b|polyprop|\bpp\b|\bpeek|\bpom|acetal|delrin|plastic|resin|glass ?filled/.test(n)) return 'plastic';
   // Wrought (6061, 6082, 5083, 5754, 7075), cast (LM25/LM6, A356/A357/A380, ADC12, AlSi…, EN AC-4xxxx) and trade names.

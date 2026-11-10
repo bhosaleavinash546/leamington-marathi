@@ -155,10 +155,13 @@ function scopeGrades(commodity: string): MaterialRate[] {
 const POLYMER_ROUTES = new Set(['injection_moulding', 'blow_moulding', 'thermoforming', 'rotational_moulding', 'extrusion']);
 
 function interpretDesignation(origin: EngineeringParameter, opts: InterpretOptions, out: EngineeringParameter[], unresolved: Unresolved[]): void {
-  const text = textOf(origin).trim();
-  if (!text) return;
+  const raw = textOf(origin).trim();
+  if (!raw) return;
+  // An alloy and its temper as drawings write them: "5052 H-32", "6061 T6" are the "5052-H32" / "6061-T6" the grade names
+  // carry (final re-measurement, 10 Nov 2026: "5052 H-32 Aluminum" named no sheet grade and costed as AA5754).
+  const text = raw.replace(/\b([HT])\s*-\s*(\d)/gi, '$1$2').replace(/\b(\d{4}A?)\s+([HT]\d{1,4}|O)\b/gi, '$1-$2');
   const commodity = opts.commodity;
-  const quoted = `"${text}"`;
+  const quoted = `"${raw}"`;
 
   // ── The rate-book grade, on a route whose grade question exists ──
   let gradeId: string | null = null;

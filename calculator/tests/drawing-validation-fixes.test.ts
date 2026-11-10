@@ -102,6 +102,11 @@ describe('D08 (validation) — a "PP-" / "PC-" part-number prefix is not polypro
     const { familyFromFilename } = await import('../src/engine/material-family');
     expect(familyFromFilename('PP-MP0108-bed-plate.step')).toBeNull();
     expect(familyFromFilename('PP-MP0110_electronics_chassis.STEP')).toBeNull();
+    // the real LulzBot names carry the part number in the MIDDLE (final re-measurement, 10 Nov 2026)
+    expect(familyFromFilename('bed_plate_v4.5_PP-MP0108.step')).toBeNull();
+    expect(familyFromFilename('corner_bracket_v2.0_PP-MP0106.step')).toBeNull();
+    expect(familyFromFilename('bed_leveling_washer_v2.0_PP-MP0082_rev_IR.step')).toBeNull();
+    expect(familyFromFilename('cover_PP_GF30.step')).toBe('plastic');
     expect(familyFromFilename('PC_A12_bracket_6061.step')).toBe('aluminium');
     expect(familyFromFilename('PP-GF30_cover.step')).toBe('plastic');
     expect(familyFromFilename('housing_PP_T20.step')).toBe('plastic');
@@ -195,5 +200,17 @@ describe('validation — US spelling, stainless abbreviations and GB material wo
     expect(familyFromFilename('6061铝')).toBe('aluminium');
     expect(familyFromFilename('H62黄铜')).toBe('copper alloy');
     expect(familyFromFilename('HT250铸铁')).toBe('cast iron');
+  });
+});
+
+describe('D15 (final re-measurement) — an alloy and temper as drawings write them name the sheet grade', () => {
+  it('"5052 H-32 Aluminum" and "5052 H32 AL" name AA5052-H32 (to confirm); "5052-H32" exactly', async () => {
+    const { interpretParameters } = await import('../src/engine/engineering-data/interpret');
+    const grade = (t: string) => interpretParameters([{ id: 'd:1', name: 'material.designation', value: t, rawText: t, source: 'drawing',
+      method: 'pdf-text', kind: 'extracted', status: 'extracted' }], { commodity: 'sheet_metal' }).parameters.find(p => p.name === 'material.grade');
+    expect(grade('5052 H-32 Aluminum')?.value).toBe('mat-aa5052');
+    expect(grade('5052 H32 AL')?.value).toBe('mat-aa5052');
+    expect(grade('5052-H32')).toMatchObject({ value: 'mat-aa5052', status: 'extracted' });
+    expect(grade('5052 H-32 Aluminum')!.note).toMatch(/"5052 H-32 Aluminum"/);   // the note quotes what the drawing says
   });
 });
