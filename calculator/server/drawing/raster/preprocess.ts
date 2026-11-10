@@ -190,3 +190,39 @@ export function inkMask(g: Grey, threshold = 160): Uint8Array {
   for (let i = 0; i < m.length; i++) m[i] = g.data[i] < threshold ? 1 : 0;
   return m;
 }
+
+/** Turn the image `c` quarter turns clockwise (0–3). A point (x, y) of the turned image is `unturnPoint(x, y, c, w, h)` of this one. */
+export function turnCw(g: Grey, c: 0 | 1 | 2 | 3): Grey {
+  if (c === 0) return g;
+  if (c === 1) return rotate90cw(g);
+  const { data, width: w, height: h } = g;
+  const out = new Uint8Array(w * h);
+  if (c === 2) { for (let i = 0, n = data.length; i < n; i++) out[n - 1 - i] = data[i]; return { data: out, width: w, height: h }; }
+  for (let y = 0; y < h; y++) { const row = y * w; for (let x = 0; x < w; x++) out[(w - 1 - x) * h + y] = data[row + x]; }
+  return { data: out, width: h, height: w };
+}
+
+/** A point of an image turned `c` quarters clockwise (`turnCw`) → the same point of the image as it was (w × h). */
+export function unturnPoint(x: number, y: number, c: 0 | 1 | 2 | 3, w: number, h: number): [number, number] {
+  if (c === 1) return [y, h - x];
+  if (c === 2) return [w - x, h - y];
+  if (c === 3) return [w - y, x];
+  return [x, y];
+}
+
+/** A smaller copy of the image (box filter: each pixel the mean of the pixels it covers). `s` ≤ 1. */
+export function shrinkGrey(g: Grey, s: number): Grey {
+  if (s >= 1) return g;
+  const { data, width: w, height: h } = g;
+  const ow = Math.floor((w - 1) * s) + 1, oh = Math.floor((h - 1) * s) + 1;
+  const sum = new Float64Array(ow * oh), cnt = new Uint32Array(ow * oh);
+  const col = new Int32Array(w);
+  for (let x = 0; x < w; x++) col[x] = Math.floor(x * s);
+  for (let y = 0; y < h; y++) {
+    const orow = Math.floor(y * s) * ow, row = y * w;
+    for (let x = 0; x < w; x++) { const o = orow + col[x]; sum[o] += data[row + x]; cnt[o]++; }
+  }
+  const out = new Uint8Array(ow * oh);
+  for (let i = 0; i < out.length; i++) out[i] = cnt[i] ? sum[i] / cnt[i] : 255;
+  return { data: out, width: ow, height: oh };
+}

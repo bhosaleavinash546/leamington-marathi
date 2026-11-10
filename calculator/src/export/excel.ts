@@ -1,4 +1,3 @@
-import { overallConfidence } from '../engine/uncertainty.js';
 import { coverWarningText, decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
@@ -8,7 +7,7 @@ import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import { reportNoteText } from './money-text.js';
 import type { ChecksAppliedMeta, CADReportMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
-import { buildCoreReport, formWeights } from './executive-summary.js';
+import { buildCoreReport, costingConfidence, formWeights } from './executive-summary.js';
 import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
@@ -119,7 +118,9 @@ export async function exportToExcelBlob(
       : `8. Supplier Margin — ${(input.marginPct * 100).toFixed(1)}% of the subtotal`, m(b.margin), pc(pcts.margin)],
     ['TOTAL SHOULD COST', m(result.total), pc(100)],
   ];
-  sum.push(['Model confidence', band?.overallConfidence ?? overallConfidence(result)]);
+  // ONE grade (executive-summary.ts costingConfidence) — the same as 0-Executive, the core PDF, the audit pack and the
+  // cost card; the band's own `overallConfidence` grades every traced row and is the band's spread, not the grade (D06).
+  sum.push(['Model confidence', costingConfidence({ result, library, commodity, cadMeta: extras?.cadMeta ?? null }).grade]);
   if (band) {
     sum.push(['Uncertainty band', `± ${band.plusMinusPct}%`, 'as shown on screen']);
     // The band is a simulated range, held to the penny in GBP: converted, it is rounded to the report currency's

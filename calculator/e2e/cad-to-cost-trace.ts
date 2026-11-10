@@ -400,7 +400,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('3', '#2', 'tooling over the programme with its amortisation basis', card.figs.some(f => /Tooling over the programme/.test(f) && f.includes(`a part over ${p.programmeYears ?? 5} years × ${(p.annual ?? 100_000).toLocaleString('en-GB')}`)), card.figs[0] ?? '(none)');
   check('3', 'D6', 'the band says what it covers and that accuracy is not measured', /not the model's error/.test(card.note) && /not yet measured/.test(card.note), card.note);
   check('3', '§3', 'confidence shown beside the band', card.figs.some(f => /confidence (High|Medium|Low)/.test(f)), card.figs[1] ?? '');
-  check('3', '§3', 'confidence explained ("why", "what would raise it")', /data points behind this cost/.test(card.why) && /moves it/.test(card.why), card.why);
+  check('3', '§3', 'confidence explained ("why", "what would raise it")', /distinct inputs behind this cost/.test(card.why) && /moves it/.test(card.why), card.why);
   check('3', '§3', 'chips: route, grade, weight, country, volume + Change answers',
     card.changeAnswers && card.chips.some(c => /Country/.test(c)) && card.chips.some(c => /Volume/.test(c)),
     card.chips.join(' | '));

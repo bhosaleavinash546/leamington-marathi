@@ -1055,6 +1055,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   - Tests: `tests/drawing-integration-*.test.ts`, `drawing-review-*.test.ts`, `drawing-service-queue.test.ts`; live
     `npm run test:e2e:drawing`. OCR-heavy files run in their own vitest group AFTER the main suite (`vite.config.ts`).
     Accuracy on real production drawings is UNMEASURED — the customer runs `scripts/drawings/accuracy.ts` on their own.
+  - Independent validation (10 Nov 2026, `docs/review/drawing-validation-2026-11-10/`): NO drawing is sent to a model in
+    any mode, and a model reply's drawing reads (finish callout, deposit, masks, gear drawing fields) are dropped
+    (`stripModelDrawingReads`) — a drawing reaches the cost only through the review. A review decision carries its
+    `drawingHash` and the `seen` value; the server stamps who / when and skips a decision bound to another drawing or a
+    changed value. Drawings are scoped to their uploaders (`drawing_uploaders`). A value derived from an OCR reading is
+    needs-validation. ISO 2768 / DIN 7168 never answer `service.toleranceClass` (it is the as-cast / as-forged class);
+    EN 1706 Al designations map by `CAST_AL_DESIGNATIONS`; trade names are whole words ("GEOMETRIC" is not Geomet).
+    ONE confidence grade: `costingConfidence` (distinct inputs) on screen, PDF and workbook.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

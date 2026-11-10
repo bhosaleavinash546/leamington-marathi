@@ -20,9 +20,10 @@ export const TOLERANCE_CLASS: DecisionBinding = { parameter: 'tolerance.generalC
 export const FINISH: DecisionBinding = { parameter: 'finish.coatingRoute', decisionId: FINISH_DECISION_ID, codec: 'finishRoute' };
 
 /**
- * The finish thickness and the masked-feature count. No Decision exists for either: on the screen they are the
- * surface-treatment block's own fields, and the headless costing does not carry them at all. The adapter returns them
- * bounded (`boundDrawingCoating`) for the screen to fill; it never puts them in `answers`.
+ * The finish thickness and the masked-feature count. No Decision exists for either: they are the surface-treatment
+ * block's own fields. The adapter returns them bounded (`boundDrawingCoating`); the CAD route writes them onto the
+ * finish the rules chose (`applyDrawingFinishFields`), so the screen fills its two fields and headless costs the same
+ * (`BulkRunOptions.finishFields`). They never go in `answers`.
  */
 export const FINISH_FORM_FIELDS: readonly FormFieldBinding[] = [
   { parameter: 'finish.coatingThickness', fieldSuffix: 'sf-um', why: 'plating deposit thickness — a form field of the surface-treatment block, not a question' },

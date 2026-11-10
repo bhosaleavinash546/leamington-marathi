@@ -44,9 +44,6 @@ export interface ToleranceRule {
  *   tight    "±0.1–0.5 mm" — investment casting or added machining
  * Only "tight" carries a figure, so only a reading inside ±0.5 mm maps `by-label`.
  */
-const ISO_2768_LETTER: Record<string, ToleranceClass> = { f: 'tight', m: 'tight', c: 'standard', v: 'loose' };
-const DIN_7168_LETTER: Record<string, ToleranceClass> = { f: 'tight', m: 'tight', g: 'standard', sg: 'loose' };
-const ISO_2768_WORD: Record<string, string> = { fine: 'f', medium: 'm', coarse: 'c', 'very coarse': 'v' };
 
 /** ISO 8062-3 casting tolerance grade → class. Band edges are ENGINEERING JUDGEMENT (see the row's basis). */
 export const DCTG_BANDS = { tightMax: 6, standardMax: 10 } as const;
@@ -81,34 +78,6 @@ export const TOLERANCE_RULES: readonly ToleranceRule[] = [
       + 'two grade names, as commonly cited (not re-read in this build).',
   },
   {
-    id: 'iso2768-letter', standard: 'ISO 2768-1 (general tolerances, linear class f / m / c / v)',
-    pattern: /\bISO\s*2768(?:\s*[-–]\s*[12](?![0-9]))?(?:\s*T\s*[12])?\s*[-–:]?\s*([fmcvFMCV])\s*([hklHKL])?(?![A-Za-z])/,
-    classOf: m => ISO_2768_LETTER[m[1].toLowerCase()] ?? null,
-    certainty: 'judgement',
-    written: m => `ISO 2768-${m[1].toLowerCase()}${m[2] ? m[2].toUpperCase() : ''}`,
-    basis: 'ISO 2768-1 linear class: f and m → tight (their permissible deviations up to 400 mm are within the ±0.5 mm the engine\'s "tight" '
-      + 'label states), c → standard, v → loose. ENGINEERING JUDGEMENT: ISO 2768-1 covers dimensions made by metal removal or formed from '
-      + 'sheet — on a cast or forged part it governs the machined features, not the as-cast or as-forged tolerance the question is about.',
-  },
-  {
-    id: 'iso2768-word', standard: 'ISO 2768-1 (class written as a word)',
-    pattern: /\bISO\s*2768(?:\s*[-–]\s*[12](?![0-9]))?\D{0,12}?\b(very coarse|fine|medium|coarse)\b/i,
-    classOf: m => ISO_2768_LETTER[ISO_2768_WORD[m[1].toLowerCase()]] ?? null,
-    certainty: 'judgement',
-    written: m => `ISO 2768-${ISO_2768_WORD[m[1].toLowerCase()]}`,
-    basis: 'ISO 2768-1 linear class by its name (fine / medium → tight, coarse → standard, very coarse → loose). ENGINEERING JUDGEMENT, as '
-      + 'for the class letter: the standard covers machined and sheet-metal dimensions.',
-  },
-  {
-    id: 'din7168-letter', standard: 'DIN 7168 (withdrawn general tolerances f / m / g / sg)',
-    pattern: /\bDIN\s*7168(?:\s*T\s*1)?\s*[-–:]?\s*(sg|f|m|g)(?![A-Za-z])/i,
-    classOf: m => DIN_7168_LETTER[m[1].toLowerCase()] ?? null,
-    certainty: 'judgement',
-    written: m => `DIN 7168-${m[1].toLowerCase()}`,
-    basis: 'DIN 7168 class f / m / g / sg read as ISO 2768-1 f / m / c / v, which replaced it (fine, medium → tight; grob → standard; '
-      + 'sehr grob → loose). ENGINEERING JUDGEMENT.',
-  },
-  {
     id: 'explicit-plus-minus', standard: 'a single stated general tolerance ("± 0.2")',
     // one ± figure in the whole note; a block of several (".XX ±.01  .XXX ±.005") is not read (see GENERAL_TOLERANCE_NOT_MAPPED)
     pattern: /(?:±|\+\s*\/\s*-|\+-)\s*(\d*[.,]?\d+)\s*(mm|in|")?/i,
@@ -122,6 +91,14 @@ export const TOLERANCE_RULES: readonly ToleranceRule[] = [
 
 /** Notations that are recognised and deliberately NOT mapped, with the reason printed to the engineer. */
 export const GENERAL_TOLERANCE_NOT_MAPPED: ReadonlyArray<{ pattern: RegExp; why: string }> = [
+  // ISO 2768 used to answer the question (f / m → tight, c → standard, v → loose). The question is asked on cast and forged
+  // routes only and asks the AS-CAST / AS-FORGED tolerance (it decides investment v sand casting); ISO 2768-1 covers
+  // dimensions made by metal removal or formed from sheet, so on those routes it governs the machined features. The default
+  // title-block note "ISO 2768-mK" therefore pushed a casting toward investment casting (independent validation, 10 Nov 2026).
+  { pattern: /\bISO\s*2768\b/i, why: 'ISO 2768-1 sets the tolerances of machined and sheet-metal dimensions; the question here is the as-cast / '
+    + 'as-forged tolerance (ISO 8062-3 DCTG for castings, EN 10243-1 grade for forgings), which this note does not state — choose the class' },
+  { pattern: /\bDIN\s*7168\b/i, why: 'DIN 7168 (withdrawn; replaced by ISO 2768-1) sets the tolerances of machined dimensions; the question here is '
+    + 'the as-cast / as-forged tolerance, which this note does not state — choose the class' },
   { pattern: /\bVDG\s*P\s*69\d\b/i, why: 'VDG P 690 (investment casting accuracy grades): no defensible mapping to the engine\'s three classes — choose the class' },
   { pattern: /\bDIN\s*16(?:80|83|84|85|86|87|88)\b|\bGT[AB]\s*\d+/i, why: 'DIN 1680–1688 casting tolerances (GTA / GTB): withdrawn series with no defensible mapping here — choose the class' },
   { pattern: /\bISO\s*20457\b|\bDIN\s*16742\b|\bDIN\s*16901\b/i, why: 'a plastics moulding tolerance standard: no route that asks the tolerance class moulds plastics' },
@@ -145,8 +122,8 @@ export interface CoatingRule {
 export const COATING_RULES: readonly CoatingRule[] = [
   { route: 'zinc_nickel', pattern: /zinc[\s-]*nickel|\bZn\s*-?\s*Ni\b|ZnNi|ISO\s*19598/i, certainty: 'by-name',
     basis: 'zinc-nickel electroplate (ISO 19598 designation ZnNi) → the "Zinc-nickel + passivate" route' },
-  { route: 'zinc_flake', pattern: /zinc[\s-]*flake|zinklamelle|\bflZn|geomet|dacromet|delta[\s-]*(?:protekt|tone|seal)|zintek|ISO\s*10683/i, certainty: 'by-name',
-    basis: 'non-electrolytic zinc flake (ISO 10683 flZn, and the trade names Geomet / Dacromet / Delta-Protekt / Zintek) → the "Zinc flake dip-spin" route' },
+  { route: 'zinc_flake', pattern: /zinc[\s-]*flake|zinklamelle|\bflZn|\bgeomet(?![a-z])|\bdacromet(?![a-z])|delta[\s-]*(?:protekt|tone|seal)|\bzintek(?![a-z])|ISO\s*10683/i, certainty: 'by-name',
+    basis: 'non-electrolytic zinc flake (ISO 10683 flZn, and the trade names Geomet / Dacromet / Delta-Protekt / Zintek — whole words: "geometric" is not Geomet) → the "Zinc flake dip-spin" route' },
   { route: 'galvanise', pattern: /hot[\s-]*dip(?:ped)?[\s-]*galvani[sz]|hot[\s-]*dip(?:ped)?[\s-]*zinc|\bHDG\b|feuerverzink|ISO\s*1461|\btZn/i, certainty: 'by-name',
     basis: 'hot dip galvanising (ISO 1461, tZn) → the "Hot dip galvanise" route' },
   { route: 'zinc_plate', pattern: /electro[\s-]*(?:zinc|galvani[sz])|zinc[\s-]*(?:electro[\s-]*)?plat|\bZn[\s-]*plat|galvanisch[\s-]*verzinkt|Fe\s*\/\/?\s*Zn\s*\d|ISO\s*2081|\bZn\s*\d{1,2}\b/i, certainty: 'by-name',
@@ -155,7 +132,7 @@ export const COATING_RULES: readonly CoatingRule[] = [
     basis: 'cathodic electro-deposition (e-coat, KTL, CED, cataphoresis) → the "E-coat / KTL" route' },
   { route: 'powder_coat_zn', pattern: /powder[\s\S]{0,60}zinc[\s-]*phosphat|zinc[\s-]*phosphat[\s\S]{0,60}powder/i, certainty: 'by-name',
     basis: 'powder coat over a zinc phosphate pre-treatment, both stated → the "Powder coat (zinc phosphate pre-treat)" route' },
-  { route: 'powder_coat', pattern: /powder[\s-]*(?:coat|paint)|pulverbeschicht|\bEPS\b/i, certainty: 'judgement',
+  { route: 'powder_coat', pattern: /powder[\s-]*(?:coat|paint)|pulverbeschicht|\bEPS\b(?=[^.;\n]{0,24}\b(?:coat\w*|RAL|powder|finish)\b)/i, certainty: 'judgement',
     basis: 'powder coat with no pre-treatment stated → the "Powder coat (iron phosphate pre-treat)" route. ENGINEERING JUDGEMENT: the drawing '
       + 'does not name the pre-treatment; the zinc phosphate route is the other choice where it is offered.' },
   { route: 'anodise', pattern: /anodi[sz]|eloxal|eloxier|ISO\s*7599|MIL[\s-]*A[\s-]*8625|\bAA\s*\d{1,2}\b/i, unless: /hard[\s-]*anodi|hartelox|hard[\s-]*coat|type\s*III\b/i, certainty: 'by-name',
@@ -297,3 +274,19 @@ export function parseSpecLookup(json: unknown): SpecLookup {
   }
   return out;
 }
+
+// ─── Cast aluminium: EN 1706 designations the rate book holds under their US / BS names ─────────────────────────────
+
+/**
+ * EN 1706 cast aluminium designations that name a rate-book grade held under its US / BS name. The engine's stem matcher
+ * reads "AlSi7Mg0.3" (EN AC-42100, the A356 alloy) as A357 (AlSi7Mg0.6) through the shared "AlSi7Mg" stem, and finds no
+ * grade at all for "EN AC-42100" (independent validation, 10 Nov 2026). Only designations whose chemical limits ARE the
+ * library grade's alloy are listed: EN AC-42100 AlSi7Mg0.3 and ASTM A356 both hold Mg 0.25–0.45 %; EN AC-42200 AlSi7Mg0.6
+ * and A357 both Mg 0.45–0.70 %. EN AC-42000 (AlSi7Mg) is NOT listed: the rate book has two grades it could be (LM25 / A356
+ * gravity, A365 / AlSi7Mg die cast) — the engine's matcher and the engineer choose. Equivalences as commonly cross-referenced
+ * (EN 1706 / ASTM B26 / B108), not re-read in this build.
+ */
+export const CAST_AL_DESIGNATIONS: ReadonlyArray<{ pattern: RegExp; gradeId: string; written: string }> = [
+  { pattern: /\bEN\s*AC\s*-?\s*42100\b|\bAlSi7Mg0[.,]3\b/i, gradeId: 'mat-lm25', written: 'EN AC-42100 (AlSi7Mg0.3) = A356' },
+  { pattern: /\bEN\s*AC\s*-?\s*42200\b|\bAlSi7Mg0[.,]6\b/i, gradeId: 'mat-a357', written: 'EN AC-42200 (AlSi7Mg0.6) = A357' },
+];

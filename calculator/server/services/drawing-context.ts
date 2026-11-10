@@ -11,7 +11,11 @@
  *  - the dataset is built here, from the server's own readings — a client sends decisions, never a dataset;
  *  - only confirmed and corrected parameters become answers (the adapter's rule), and an answer the engineer gave by
  *    hand always wins: a differing confirmed drawing value is reported (`overridden`), never applied;
- *  - with no drawing, or a drawing nobody has reviewed, `answers` is `{}` and the costing is exactly what it is today.
+ *  - with no drawing, or a drawing nobody has reviewed, `answers` is `{}` and the costing is exactly what it is today;
+ *  - a review is replayed only onto the drawing it was taken on (F04 / D02): every decision names the drawing's hash and
+ *    the value it was taken on, and one that does not match is skipped and listed;
+ *  - who decided and when are the signed-in user and this server's clock (F05), never what the client wrote;
+ *  - a drawing is named only by a user who uploaded it, or an admin (F06): anyone else is told it is gone.
  *
  * No cost formula. /analyze, /reanalyze, compare-routes and the option re-costs all call `drawingContextFor`, so the
  * headline and every comparison row are costed on the same drawing-derived answers.
@@ -28,7 +32,7 @@ import {
 } from '../../src/engine/engineering-data/index.js';
 import { drawingFinishFields, type DrawingFinishFields } from '../../src/engine/surface-finish-routes.js';
 import { READER_VERSION } from '../drawing/index.js';
-import { getDrawing, drawingInfo, type DrawingInfo, type DrawingRecord } from './drawing-service.js';
+import { getDrawing, drawingInfo, canSeeDrawing, extractionHash, type DrawingInfo, type DrawingRecord, type DrawingUser } from './drawing-service.js';
 
 // ─── The company specification table (data, admin-maintained) ───────────────────────────────────────────────────
 
@@ -72,22 +76,48 @@ export interface DrawingRequest {
 /** The refusal when a request names a drawing the server no longer holds — never costed without it silently. */
 export const DRAWING_GONE = 'The drawing for this part is no longer on this server — attach it and measure the part again (it is not costed without the drawing it was reviewed against).';
 
-/**
- * The drawing a JSON request names (`drawingHash` + `drawingReview`). Returns null when the request names none;
- * `{ gone: true }` when it names one this server does not hold.
- */
-export function drawingFromBody(body: Record<string, unknown> | undefined | null): DrawingRequest | { gone: true } | null {
-  const hash = typeof body?.drawingHash === 'string' ? body.drawingHash.trim() : '';
-  if (!hash) return null;
-  const record = getDrawing(hash, typeof body?.drawingFile === 'string' ? body.drawingFile.slice(0, 200) : undefined);
-  if (!record) return { gone: true };
-  return { record, review: parseReviewState(body?.drawingReview) };
+/** The signed-in user of a request (the session's `req.user`, set by requireAuth), as the drawing service records and checks it. */
+export function drawingUserOf(req: object): DrawingUser | null {
+  const u = (req as { user?: { userId?: unknown; email?: unknown } }).user;
+  return typeof u?.userId === 'string' && u.userId
+    ? { userId: u.userId, ...(typeof u.email === 'string' && u.email ? { email: u.email } : {}) } : null;
 }
 
-/** What goes into a cache key for a costing with a drawing: the bytes, the reader, how far the read got, the decisions and the lookup table. */
+/**
+ * The engineer's review decisions as a request carries them, stamped with WHO decided and WHEN by this server: the
+ * signed-in user and the server's clock, whatever the client wrote (F05). Every route that takes `drawingReview` reads
+ * it through this — /analyze with the drawing it uploads, the JSON routes through `drawingFromBody`.
+ */
+export function reviewFromRequest(raw: unknown, user: DrawingUser | null | undefined): DrawingReviewState {
+  return parseReviewState(raw, user?.userId ? { by: user.email || user.userId, at: new Date().toISOString() } : undefined);
+}
+
+/**
+ * The drawing a JSON request names (`drawingHash` + `drawingReview`). Returns null when the request names none;
+ * `{ gone: true }` when it names one this server does not hold — or one `user` may not see (F06: the same answer, so
+ * a hash says nothing about whether the drawing exists). `user` is the session's `req.user`; every route passes it.
+ */
+export function drawingFromBody(body: Record<string, unknown> | undefined | null, user?: DrawingUser | null): DrawingRequest | { gone: true } | null {
+  const hash = typeof body?.drawingHash === 'string' ? body.drawingHash.trim() : '';
+  if (!hash) return null;
+  // A caller that names no user is not checked (it predates F06); one that names a user sees only that user's drawings.
+  if (user !== undefined && !canSeeDrawing(hash, user)) return { gone: true };
+  const record = getDrawing(hash, typeof body?.drawingFile === 'string' ? body.drawingFile.slice(0, 200) : undefined);
+  if (!record) return { gone: true };
+  return { record, review: reviewFromRequest(body?.drawingReview, user) };
+}
+
+/**
+ * What goes into a cache key for a costing with a drawing: the bytes, the reader, how far the read got, the decisions
+ * and the lookup table. The decisions are keyed on what they decide only (`reviewStateKey`, D16); the reviewer is a
+ * separate part — a cached costing prints the history (who confirmed what), so one engineer's decisions are not served
+ * under another's name. The same decisions by the same engineer at another time give the same key.
+ */
 export function drawingCacheKey(req: DrawingRequest | null): string {
   if (!req) return '';
-  return JSON.stringify({ drawing: req.record.hash, reader: READER_VERSION, status: req.record.status, review: reviewStateKey(req.review), spec: specLookup().print });
+  const reviewers = [...new Set(req.review.ops.map(o => o.by))].sort();
+  return JSON.stringify({ drawing: req.record.hash, reader: READER_VERSION, status: req.record.status, review: reviewStateKey(req.review),
+    ...(reviewers.length ? { reviewers } : {}), spec: specLookup().print });
 }
 
 // ─── The join ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -122,6 +152,11 @@ export interface DrawingContextInput {
   commodity: string;
   extraction: DrawingExtraction;
   review: DrawingReviewState;
+  /**
+   * The hash of the drawing `extraction` was read from — every decision must name it (F04). Defaults to the hash the
+   * drawing service recorded for this extraction; a caller holding an extraction from elsewhere passes it.
+   */
+  drawingHash?: string;
   /** The engineer's own answers: what they clicked or typed, and a material they pinned. They always win. */
   explicitAnswers: Readonly<Record<string, unknown>>;
   /** The engine's open questions for this part, built WITHOUT any answer from the drawing. */
@@ -137,7 +172,8 @@ function measuredMaskable(geo: OCCTGeometry): number | undefined {
 export function drawingContextFor(i: DrawingContextInput): DrawingContext {
   const { lookup } = specLookup();
   const fresh = consolidate({ cad: { geo: i.geo, filename: i.filename }, drawing: i.extraction, commodity: i.commodity, specLookup: lookup });
-  const { data, skipped } = replayReview(fresh, i.review, { specLookup: lookup });
+  const drawingHash = i.drawingHash ?? extractionHash(i.extraction);
+  const { data, skipped } = replayReview(fresh, i.review, { specLookup: lookup, ...(drawingHash ? { drawingHash } : {}) });
   const cap = measuredMaskable(i.geo);
   const costing = answersFromEngineeringData(data, i.commodity, {
     decisions: i.bareDecisions, answered: i.explicitAnswers, ...(cap !== undefined ? { measuredMaskableFeatures: cap } : {}),

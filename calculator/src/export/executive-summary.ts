@@ -13,7 +13,6 @@
  */
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
 import { runSensitivity } from '../engine/sensitivity.js';
-import { confidenceWhy } from '../engine/uncertainty.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { shortOperationName, isFeatureCutOperation } from '../engine/operation-names.js';
@@ -34,7 +33,7 @@ import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '..
 import { decisionAnswerLabel, decisionAnswerText } from './decision-text.js';
 import { decisionUsedValue, type DecisionForUsed, type DecisionUsedFacts } from './decision-used.js';
 import { reportNoteText, directMaterialNames } from './money-text.js';
-import { reportStandardFor, dfmRuleApplies, type NotIncludedItem } from './report-standard.js';
+import { reportStandardFor, dfmRuleApplies, THREADS, drawingThreadsOf, threadsItemText, type NotIncludedItem } from './report-standard.js';
 import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
 import { routeMaterialCheck } from '../engine/route-material-guard.js';
 import { familyOfCategory } from '../engine/route-feasibility.js';
@@ -102,6 +101,8 @@ export interface ExecutiveSummaryArgs {
   ruleValues?: DecisionUsedFacts['ruleValues'] | null;
   volumeProvided?: boolean;
   pkgLogisticsEstimated?: boolean;
+  /** The DFM findings and geometry source — the grade is capped by a BLOCKING finding or estimated geometry, as on page 1. */
+  cadMeta?: Pick<CoreReportMeta, 'geometricDFM' | 'geometrySource'> | null;
 }
 
 const TOP = 3;
@@ -163,13 +164,9 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
   const annual = input.annualVolume && input.annualVolume > 0 ? input.annualVolume : null;
   const years = input.programmeYears && input.programmeYears > 0 ? input.programmeYears : null;
 
-  // Confidence: the grade and the data behind it (uncertainty.ts — the same grade the cover and §7 print).
-  const why = confidenceWhy(result);
-  const lowLabels = why.lowFields.slice(0, 3).map(f => traceFieldLabel(shortOperationName(f)));
-  const reason = why.total
-    ? `${why.high} of ${why.total} data points are graded High, ${why.medium} Medium, ${why.low} Low`
-      + (lowLabels.length ? `; the Low ones include ${lowLabels.join(', ')}` : '')
-    : 'no traced data points';
+  // Confidence: ONE grade (costingConfidence — the core report's page 1, the cost card, the cover, §7 and the workbook).
+  const conf = costingConfidence({ result, library, commodity: a.commodity ?? null, cadMeta: a.cadMeta ?? null });
+  const reason = confidenceReason(conf);
 
   const basis = [
     `${country} — every rate from this country's own rate book${a.stamp ? ` (${a.stamp})` : ''}`,
@@ -196,7 +193,7 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
       toConfirm.push(d.severity === 'blocking' ? `OPEN — ${d.question}` : `${d.question} — not answered${used ? `; costed as ${used}` : '; the rules\' value is used'}`);
     }
   }
-  if (why.low > 0) toConfirm.push(`${why.low} rate${why.low === 1 ? ' is' : 's are'} graded Low confidence — each is listed with how to close it (Inputs to Confirm).`);
+  if (conf.distinct.low > 0) toConfirm.push(`${conf.distinct.low} input${conf.distinct.low === 1 ? ' is' : 's are'} graded Low confidence — each is listed with how to close it (Inputs to Confirm).`);
   toConfirm.push('Accuracy: this figure has not yet been compared with a price paid for this part.');
 
   // What can be done: re-costed levers only (opportunity-ranking.ts).
@@ -230,7 +227,7 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
     country,
     total: result.total,
     band: a.band ? { p10: a.band.p10, p90: a.band.p90, plusMinusPct: a.band.plusMinusPct } : null,
-    confidence: { grade: why.grade, reason },
+    confidence: { grade: conf.grade, reason },
     basis,
     annualSpend: annual ? r4(result.total * annual) : null,
     tooling,
@@ -797,6 +794,102 @@ export function gradeOfCounts(high: number, medium: number, low: number): 'High'
   return (high + medium / 2) / n >= 0.45 ? 'Medium' : 'Low';
 }
 
+/**
+ * What the geometric DFM check does not look at, worded by whether a drawing was read (D03, Nov 2026: a costing with a
+ * drawing read, reviewed and applied printed "(no drawing is read)" under the drawing's own specification table). The
+ * DFM rules run on the 3D model; the drawing's tolerances, datums and finish call-outs are READ (and a confirmed one
+ * answers a costing question) but no DFM rule checks the design against them. No period at the end: the caller adds one.
+ */
+export function dfmDrawingScope(d: Pick<import('./drawing-spec-report.js').DrawingSpecReport, 'file' | 'usedCount'> | null): string {
+  if (!d) return 'Not checked: tolerances, datums and finish call-outs (no drawing is attached, and the DFM check reads the 3D model only)';
+  return `Not checked against the DFM rules: tolerances, datums and finish call-outs — the drawing ${d.file} was read `
+    + `(${d.usedCount} reading${d.usedCount === 1 ? '' : 's'} confirmed and used in this costing, listed under Drawing specification), `
+    + 'but the DFM check runs on the 3D model only; geometric-tolerance, roughness and weld symbols drawn as geometry are not read';
+}
+
+/** One graded input of a costing: a rate shared by several operations is ONE input, at its lowest grade. */
+export interface ConfidenceInput { label: string; value: number; unit: string; conf: string; ops: number }
+export interface CostingConfidence {
+  /** The ONE grade every report surface prints: core page 1, the cost card, the audit pack (cover, executive page, §7)
+   *  and the workbook (`0-Executive`, `1-Summary`). */
+  grade: 'High' | 'Medium' | 'Low';
+  /** Why the grade is capped below what its inputs give (null when it is not). */
+  gradeNote: string | null;
+  cap: 'blocking-dfm' | 'geometry-estimated' | null;
+  inputs: ConfidenceInput[];
+  distinct: { total: number; high: number; medium: number; low: number };
+  /** `overallConfidence` on every traced ROW — the spread the Monte-Carlo band is drawn at (uncertainty.ts). Never
+   *  printed as a grade: a rate shared by nine operations counted nine times (director.md #13). */
+  rowGrade: string;
+}
+
+/**
+ * THE confidence grade of a costing — ONE function for every report (D06, Nov 2026: the core PDF, `0-Executive` and the
+ * screen's cost card said Medium while the audit pack's cover, executive page, §7 and `1-Summary` said Low on the same
+ * costing, because the audit pack graded every traced row with `overallConfidence` and the core graded distinct inputs).
+ *
+ * The rule (report standard, director.md #13; CLAUDE.md "Confidence grade"): the inputs are DISTINCT — a rate shared by
+ * nine operations is one input, at its lowest grade — and they are graded on `overallConfidence`'s thresholds
+ * (`gradeOfCounts`: 40 % or more Low is Low, 70 % or more High is High, else the mix's score of 0.45 or more is Medium). Capped at Low by a
+ * BLOCKING DFM finding on the costed process (the route as costed cannot be made as drawn), or when the geometry was
+ * estimated from text, not measured (§7 printed Low for that alone).
+ */
+export function costingConfidence(a: {
+  result: PartCostResult; library: RateLibrary; commodity?: CommodityType | null;
+  cadMeta?: Pick<CoreReportMeta, 'geometricDFM' | 'geometrySource'> | null;
+}): CostingConfidence {
+  const { result, library } = a;
+  const meta = a.cadMeta ?? {};
+  const distinct = new Map<string, ConfidenceInput>();
+  const rank = { Low: 0, Medium: 1, High: 2 } as Record<string, number>;
+  for (const t of result.traceability) {
+    const prop = /\.([A-Za-z]+)$/.exec(t.field)?.[1] ?? t.field;
+    const key = `${t.rateId}|${prop}`;
+    const d = distinct.get(key);
+    if (d) {
+      d.ops += /PerHr$/.test(prop) ? 1 : 0;
+      if ((rank[t.confidence] ?? 1) < (rank[d.conf] ?? 1)) d.conf = t.confidence;
+      continue;
+    }
+    const m = library.machines.find(x => x.id === t.rateId);
+    const mat = library.materials.find(x => x.id === t.rateId);
+    const label = /labourRatePerHr/.test(t.field) ? `${labourRoleLabel(t.rateId).replace(/ \(role\)$/, '')} labour rate`
+      : /machineRatePerHr/.test(t.field) ? `${m?.machineClass ?? 'machine'} rate`
+      : /pricePerKg/.test(t.field) ? `${mat?.grade ?? 'material'} price`
+      : /scrapRecovery/.test(t.field) ? `${mat?.grade ?? 'material'} scrap price`
+      : traceFieldLabel(t.field);
+    distinct.set(key, { label, value: t.value, unit: t.unit, conf: t.confidence, ops: /PerHr$/.test(prop) ? 1 : 0 });
+  }
+  const inputs = [...distinct.values()];
+  const cnt = (c: string) => inputs.filter(d => d.conf === c).length;
+  const rowGrade = overallConfidence(result);
+  const inputGrade = inputs.length ? gradeOfCounts(cnt('High'), cnt('Medium'), cnt('Low')) : (rowGrade as CostingConfidence['grade']);
+  const commodity = a.commodity ?? null;
+  const blockingDfm = (meta.geometricDFM?.grouped ?? [])
+    .filter(x => dfmRuleApplies(commodity, x.ruleId) && normaliseSeverity(x.severity, (x.totalCostGBP ?? 0) > 0) === 'blocking');
+  const geomEstimated = meta.geometrySource === 'text_parsing';
+  const cap: CostingConfidence['cap'] = blockingDfm.length ? 'blocking-dfm' : geomEstimated && inputGrade !== 'Low' ? 'geometry-estimated' : null;
+  const gradeNote = cap === 'blocking-dfm'
+    ? `Capped at Low: a BLOCKING DFM finding (${blockingDfm[0].title}${blockingDfm.length > 1 ? ` and ${blockingDfm.length - 1} more` : ''}) says the route as costed cannot be made as drawn — the price assumes it can.`
+    : cap === 'geometry-estimated'
+      ? 'Capped at Low: the volume and weight were estimated from text, not measured from a CAD model.'
+      : null;
+  return {
+    grade: cap ? 'Low' : inputGrade, gradeNote, cap, inputs,
+    distinct: { total: inputs.length, high: cnt('High'), medium: cnt('Medium'), low: cnt('Low') }, rowGrade,
+  };
+}
+
+/** The confidence sentence the executive page prints beside the grade — distinct inputs, as page 1 counts them. */
+export function confidenceReason(c: CostingConfidence): string {
+  const low = c.inputs.filter(i => i.conf === 'Low').map(i => i.label);
+  const base = c.distinct.total
+    ? `${c.distinct.total} distinct inputs: ${c.distinct.high} High, ${c.distinct.medium} Medium, ${c.distinct.low} Low (a rate shared by several operations counts once)`
+      + (low.length ? `; the Low ones include ${low.slice(0, 3).join(', ')}` : '')
+    : 'no traced inputs';
+  return c.gradeNote ? `${base}. ${c.gradeNote.replace(/\.$/, '')}` : base;
+}
+
 const ruleKey = (r: { label: string; fieldId?: string }) => `${r.label} ${r.fieldId ?? ''}`.trim();
 /** A form field's label without its hints: "Mould / Die Cost (£, 0=estimate)" gives "Mould / Die Cost". */
 /**
@@ -923,7 +1016,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const geomEstimated = meta.geometrySource === 'text_parsing';
   const u = !geomEstimated && meta.uncertainty ? meta.uncertainty : computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
   const exec = buildExecutiveSummary({ result, input, library, commodity, region: regionCode, band: u, stamp: meta.stamp ?? null,
-    decisions: meta.checks?.decisions ?? null, volumeProvided: meta.volumeProvided, pkgLogisticsEstimated: meta.pkgLogisticsEstimated });
+    decisions: meta.checks?.decisions ?? null, volumeProvided: meta.volumeProvided, pkgLogisticsEstimated: meta.pkgLogisticsEstimated, cadMeta: meta });
   const omFactor = (1 + input.overheadPct) * (1 + input.marginPct);
   const rvs = meta.checks?.ruleValues ?? [];
   const fx = a.fx && a.fx > 0 ? a.fx : 1;
@@ -937,36 +1030,14 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const tooling = toolingSplit(input, result);
   const price = quotedPrice(result, input, library, tooling, pieceEx);
 
-  // Confidence by DISTINCT input: a rate shared by nine operations is one input — and graded on those inputs.
-  const distinct = new Map<string, { label: string; value: number; unit: string; conf: string; ops: number }>();
-  const rank = { Low: 0, Medium: 1, High: 2 } as Record<string, number>;
-  for (const t of result.traceability) {
-    const prop = /\.([A-Za-z]+)$/.exec(t.field)?.[1] ?? t.field;
-    const key = `${t.rateId}|${prop}`;
-    const m = library.machines.find(x => x.id === t.rateId);
-    const mat = library.materials.find(x => x.id === t.rateId);
-    const label = /labourRatePerHr/.test(t.field) ? `${labourRoleLabel(t.rateId).replace(/ \(role\)$/, '')} labour rate`
-      : /machineRatePerHr/.test(t.field) ? `${m?.machineClass ?? 'machine'} rate`
-      : /pricePerKg/.test(t.field) ? `${mat?.grade ?? 'material'} price`
-      : /scrapRecovery/.test(t.field) ? `${mat?.grade ?? 'material'} scrap price`
-      : traceFieldLabel(t.field);
-    const d = distinct.get(key);
-    if (!d) distinct.set(key, { label, value: t.value, unit: t.unit, conf: t.confidence, ops: /PerHr$/.test(prop) ? 1 : 0 });
-    else { d.ops += /PerHr$/.test(prop) ? 1 : 0; if ((rank[t.confidence] ?? 1) < (rank[d.conf] ?? 1)) d.conf = t.confidence; }
-  }
-  const dl = [...distinct.values()];
+  // ONE grade for every surface (costingConfidence: distinct inputs, the overallConfidence thresholds, the caps).
+  const conf = costingConfidence({ result, library, commodity, cadMeta: meta });
+  const dl = conf.inputs;
   const cnt = (c: string) => dl.filter(d => d.conf === c).length;
   const lowInputs = dl.filter(d => d.conf === 'Low').map(d => ({ label: d.label, value: d.value, unit: d.unit, operations: d.ops }));
-  const screenGrade = overallConfidence(result);
-  const inputGrade = dl.length ? gradeOfCounts(cnt('High'), cnt('Medium'), cnt('Low')) : screenGrade;
-  // ONE grade (fresh review, 4 Nov 2026: the knuckle printed "Medium" and "the costing screen grades Low" on page 1, beside
-  // a finding that the part cannot be made as drawn). A BLOCKING DFM finding caps it at Low and says so beside it.
-  const blockingDfm = (meta.geometricDFM?.grouped ?? [])
-    .filter(x => dfmRuleApplies(commodity, x.ruleId) && normaliseSeverity(x.severity, (x.totalCostGBP ?? 0) > 0) === 'blocking');
-  const grade: string = blockingDfm.length ? 'Low' : inputGrade;
-  const gradeNote = blockingDfm.length
-    ? `Capped at Low: a BLOCKING DFM finding (${blockingDfm[0].title}${blockingDfm.length > 1 ? ` and ${blockingDfm.length - 1} more` : ''}) says the route as costed cannot be made as drawn — the price assumes it can.`
-    : null;
+  const screenGrade = conf.rowGrade;
+  const grade: string = conf.grade;
+  const gradeNote = conf.gradeNote;
 
   // The £ resting on figures labelled "not sourced / engineering-typical / ESTIMATE / held": each cost line such a value
   // drives (matched by name and, for tooling, by kind) or whose own basis says so, counted once, before overhead and margin.
@@ -1140,7 +1211,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     'Import duty, customs and cross-border shipping',
     ...(input.tooling.totalToolingCost > 0 && input.tooling.mode === 'one_time_nre' ? ['Tooling — charged once, separately'] : []),
     ...std.notIncluded.filter(i => !(i.costedIf && i.costedIf.test(costedText)) && !answeredAway(i) && (!i.materialIf || i.materialIf.test(matCat)))
-      .map(i => (i.requiredIf && i.requiredText && i.requiredIf.answer.test(String(answers[i.requiredIf.id] ?? '')) ? i.requiredText : i.text)),
+      .map(i => (i === THREADS ? threadsItemText(drawingThreadsOf(meta.drawingSpec))
+        : i.requiredIf && i.requiredText && i.requiredIf.answer.test(String(answers[i.requiredIf.id] ?? '')) ? i.requiredText : i.text)),
   ];
 
   const answerOf = (d: typeof decisionsAll[number]) => decisionAnswerLabel(d.id, d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials });
@@ -1339,7 +1411,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
       findings: pick.slice(0, 5).map(gr => ({ ruleId: gr.ruleId, severity: SEVERITY_LABEL[sev(gr)], title: gr.title, count: gr.count,
         amount: amounts[gr.ruleId]?.text ?? null, fix: gr.recommendation ?? '' })),
       considered: (g.grouped ?? []).length,
-      notChecked: `Not checked: tolerances, datums and finish call-outs (no drawing is read)${g.limitations.length ? `. ${g.limitations.length} other limit${g.limitations.length === 1 ? '' : 's'} of the DFM check ${g.limitations.length === 1 ? 'is' : 'are'} listed in the audit pack` : ''}.`,
+      notChecked: `${dfmDrawingScope(meta.drawingSpec ?? null)}${g.limitations.length ? `. ${g.limitations.length} other limit${g.limitations.length === 1 ? '' : 's'} of the DFM check ${g.limitations.length === 1 ? 'is' : 'are'} listed in the audit pack` : ''}.`,
       status: 'ran',
     };
   } else {
@@ -1381,7 +1453,9 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     confidence: {
       grade, screenGrade, gradeNote, distinct: { total: dl.length, high: cnt('High'), medium: cnt('Medium'), low: cnt('Low') }, lowInputs,
       sentence: `${dl.length} distinct inputs: ${cnt('High')} High, ${cnt('Medium')} Medium, ${cnt('Low')} Low (a rate shared by several operations counts once) — `
-        + (blockingDfm.length ? 'the grade is capped at Low by a BLOCKING DFM finding' : `graded ${grade} on these`),
+        + (conf.cap === 'blocking-dfm' ? 'the grade is capped at Low by a BLOCKING DFM finding'
+          : conf.cap === 'geometry-estimated' ? 'the grade is capped at Low because the geometry was estimated, not measured'
+          : `graded ${grade} on these`),
     },
     unsourced: {
       items: unsourcedItems, totalGbp: unsourcedGbp, sharePct: share(unsourcedGbp), ruleBasis: rvs.length > 0,

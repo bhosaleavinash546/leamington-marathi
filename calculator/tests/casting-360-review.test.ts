@@ -364,7 +364,9 @@ describe('X30 — the band the screen shows is on the cover and in the workbook'
     const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, null, u);
     const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
     const sum = XLSX.utils.sheet_to_csv(wb.Sheets['1-Summary']);
-    expect(sum).toMatch(new RegExp(`Model confidence,${u.overallConfidence}`));
+    // one grade for the costing (costingConfidence: distinct inputs), as the core report and the screen print it
+    const { costingConfidence } = await import('../src/export/executive-summary');
+    expect(sum).toMatch(new RegExp(`Model confidence,${costingConfidence({ result, library: lib }).grade}`));
     expect(sum).toContain(`Uncertainty band,± ${u.plusMinusPct}%`);
     expect(sum).toMatch(/P90 \(conservative\)/);
   });

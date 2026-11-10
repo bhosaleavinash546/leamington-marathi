@@ -9,12 +9,31 @@
  *
  * Pure: `replayReview` is `overrides.ts` applied in order, with the clock and the name carried by each decision. No
  * cost formula; no costing code is called.
+ *
+ * A decision is BOUND to the drawing and the value it was taken on (review F04 / D02, Nov 2026). Reading ids are
+ * positional (`drawing:<name>:<n>`), so an id alone could land on another reading — of another drawing, or of the same
+ * drawing re-read by a newer reader. Each decision therefore carries the drawing's hash (or the review states it once)
+ * and, for one taken on a reading, the value the engineer saw (`seen`). On replay a decision made on another drawing,
+ * one that says no drawing at all, or one whose reading now holds a different value is SKIPPED with the reason.
+ *
+ * Who decided and when are the SERVER's (review F05): `parseReviewState(raw, stamp)` writes the signed-in user and the
+ * server's clock over whatever the client sent. The cache key (`reviewStateKey`) holds the decisions only — never who
+ * or when (D16).
  */
 import type { ConsolidatedEngineeringData, ParameterValue } from './model.js';
 import { confirm, correct, reject, resolveConflict, reopen, supply, OverrideError, type OverrideOptions, type Who } from './overrides.js';
 import { isKnownParameter } from './dictionary.js';
 
-interface OpBase { by: string; at: string; reason?: string }
+interface OpBase {
+  by: string; at: string; reason?: string;
+  /** The SHA-256 of the drawing the decision was taken on (else the review's own `drawingHash`). */
+  drawingHash?: string;
+  /**
+   * The value of the reading when the decision was taken (`seenKey` of it) — confirm, correct, reject, reopen, and the
+   * chosen side of a resolve. Replay skips the decision when the reading now holds another value.
+   */
+  seen?: string;
+}
 
 export type ReviewOp =
   | (OpBase & { op: 'confirm'; id: string })
@@ -28,7 +47,18 @@ export type ReviewOp =
 
 export interface DrawingReviewState {
   schemaVersion: 1;
+  /** The drawing every decision without its own `drawingHash` was taken on. */
+  drawingHash?: string;
   ops: ReviewOp[];
+}
+
+/** Who decided and when, as the SERVER knows it: the signed-in user and the server's clock. */
+export interface ReviewStamp { by: string; at: string }
+
+/** What a replay is told about the drawing it replays onto. */
+export interface ReplayOptions extends OverrideOptions {
+  /** The hash of the drawing this dataset was read from. Given (the server always gives it), every decision must name it. */
+  drawingHash?: string;
 }
 
 export interface SkippedOp { index: number; op: ReviewOp; why: string }
@@ -39,6 +69,48 @@ export const EMPTY_REVIEW: DrawingReviewState = { schemaVersion: 1, ops: [] };
 export const MAX_REVIEW_OPS = 2000;
 
 const str = (v: unknown, max: number): string | null => (typeof v === 'string' && v.length > 0 && v.length <= max ? v : null);
+const HASH_RE = /^[a-f0-9]{64}$/;
+const hashOf = (v: unknown): string | null => (typeof v === 'string' && HASH_RE.test(v) ? v : null);
+
+/** A value as stable text: object keys sorted, so the same value always gives the same text. */
+function canonical(v: unknown): string {
+  const sorted = (x: unknown): unknown => (x && typeof x === 'object' && !Array.isArray(x)
+    ? Object.fromEntries(Object.keys(x as object).sort().map(k => [k, sorted((x as Record<string, unknown>)[k])]))
+    : Array.isArray(x) ? x.map(sorted) : x);
+  return JSON.stringify(sorted(v)) ?? 'null';
+}
+
+/** FNV-1a, 2 × 32 bit — a short fingerprint of a long value (not a security hash: it only detects a changed reading). */
+function fnv(text: string): string {
+  let a = 0x811c9dc5, b = 0x01000193 ^ 0x5bd1e995;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    a = Math.imul(a ^ c, 0x01000193) >>> 0;
+    b = Math.imul(b ^ c, 0x5bd1e995) >>> 0;
+  }
+  return a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0');
+}
+
+/** The most text a `seen` value keeps as itself; a longer value is kept as its fingerprint. */
+const SEEN_MAX = 400;
+
+/**
+ * The value of a reading as a decision records it (`seen`): the value itself as stable text, or `#` + a fingerprint
+ * when it is long. The screen and the server compute it with this one function.
+ */
+export function seenKey(value: unknown): string {
+  const t = canonical(value);
+  return t.length <= SEEN_MAX ? t : `#${fnv(t)}`;
+}
+
+/** A `seen` value for a message: short, and said as the value it was. */
+function seenText(seen: string): string {
+  if (seen.startsWith('#')) return 'a longer value';
+  let v: unknown = seen;
+  try { v = JSON.parse(seen) as unknown; } catch { /* the text itself */ }
+  const t = typeof v === 'string' ? `"${v}"` : typeof v === 'object' ? seen : String(v);
+  return t.length > 80 ? `${t.slice(0, 77)}…` : t;
+}
 
 function valueOf(v: unknown): ParameterValue | null {
   if (typeof v === 'string') return v.length <= 400 ? v : null;
@@ -63,21 +135,27 @@ function valueOf(v: unknown): ParameterValue | null {
 /**
  * A review state from JSON a client or a saved project supplied. Anything that is not a well-formed decision is
  * dropped — this list is replayed on the server and reaches the costing, so nothing is taken on trust.
+ *
+ * `stamp` (the server always passes it): who decided and when are the signed-in user and the server's clock, written
+ * over whatever the client sent — the history the reports print is never the client's word (F05).
  */
-export function parseReviewState(raw: unknown): DrawingReviewState {
+export function parseReviewState(raw: unknown, stamp?: ReviewStamp): DrawingReviewState {
   let v: unknown = raw;
   if (typeof v === 'string') { try { v = JSON.parse(v) as unknown; } catch { return { schemaVersion: 1, ops: [] }; } }
   const list = v && typeof v === 'object' ? (v as { ops?: unknown }).ops : null;
   if (!Array.isArray(list)) return { schemaVersion: 1, ops: [] };
+  const reviewHash = hashOf((v as { drawingHash?: unknown }).drawingHash);
   const ops: ReviewOp[] = [];
   for (const o of list.slice(0, MAX_REVIEW_OPS)) {
     if (!o || typeof o !== 'object') continue;
     const r = o as Record<string, unknown>;
-    const by = str(r.by, 120) ?? 'engineer';
-    const at = str(r.at, 40) && !Number.isNaN(Date.parse(String(r.at))) ? String(r.at) : null;
+    const by = stamp ? stamp.by : str(r.by, 120) ?? 'engineer';
+    const at = stamp ? stamp.at : str(r.at, 40) && !Number.isNaN(Date.parse(String(r.at))) ? String(r.at) : null;
     if (!at) continue;
     const reason = str(r.reason, 400);
-    const base: OpBase = { by, at, ...(reason ? { reason } : {}) };
+    const opHash = hashOf(r.drawingHash);
+    const seen = str(r.seen, SEEN_MAX + 2);
+    const base: OpBase = { by, at, ...(reason ? { reason } : {}), ...(opHash ? { drawingHash: opHash } : {}), ...(seen ? { seen } : {}) };
     const id = str(r.id, 300);
     const unit = str(r.unit, 20);
     switch (r.op) {
@@ -108,16 +186,22 @@ export function parseReviewState(raw: unknown): DrawingReviewState {
       default: break;
     }
   }
-  return { schemaVersion: 1, ops };
+  return { schemaVersion: 1, ...(reviewHash ? { drawingHash: reviewHash } : {}), ops };
 }
 
-/** The review state as stable text — the same decisions give the same text, for cache keys and for storing. */
+/**
+ * The review state as stable text — the same DECISIONS give the same text, for cache keys and change detection: the
+ * action, the reading or conflict it names, the value typed or chosen, the value seen, the drawing, and the reason the
+ * engineer wrote (it is part of the decision as recorded and printed). Who decided and when are NOT in it (D16): the same
+ * decisions taken again later, or stamped by the server at another request, give the same key.
+ */
 export function reviewStateKey(state: DrawingReviewState | null | undefined): string {
   const ops = state?.ops ?? [];
   if (!ops.length) return '';
-  const sorted = (v: unknown): unknown => (v && typeof v === 'object' && !Array.isArray(v)
-    ? Object.fromEntries(Object.keys(v as object).sort().map(k => [k, sorted((v as Record<string, unknown>)[k])])) : v);
-  return JSON.stringify(ops.map(sorted));
+  return JSON.stringify(ops.map(op => {
+    const { by: _by, at: _at, drawingHash, ...decision } = op;
+    return JSON.parse(canonical({ ...decision, drawing: drawingHash ?? state?.drawingHash ?? null })) as unknown;
+  }));
 }
 
 function applyOne(data: ConsolidatedEngineeringData, op: ReviewOp, opts: OverrideOptions): ConsolidatedEngineeringData {
@@ -134,16 +218,45 @@ function applyOne(data: ConsolidatedEngineeringData, op: ReviewOp, opts: Overrid
   }
 }
 
+/** The reading a decision was taken on, for the `seen` check: the id it names, or the side it chose. */
+function readingOf(op: ReviewOp): string | null {
+  if (op.op === 'confirm' || op.op === 'correct' || op.op === 'reject' || op.op === 'reopen') return op.id;
+  if (op.op === 'resolve' && op.choose) return op.choose;
+  return null;
+}
+
+/** Why a decision does not belong on this dataset — another drawing, no drawing named, a reading that changed — or null. */
+export function bindingProblem(data: ConsolidatedEngineeringData, op: ReviewOp, state: DrawingReviewState | null | undefined,
+  drawingHash: string | undefined): string | null {
+  if (drawingHash) {
+    const stated = op.drawingHash ?? state?.drawingHash;
+    if (!stated) return 'the decision does not say which drawing it was taken on (a review saved before decisions were bound to their drawing) — take it again on this drawing';
+    if (stated !== drawingHash) return `the decision was taken on another drawing (${stated.slice(0, 8)}), not this one (${drawingHash.slice(0, 8)})`;
+  }
+  const rid = readingOf(op);
+  if (op.seen !== undefined && rid) {
+    const p = data.parameters.find(x => x.id === rid);
+    if (p && seenKey(p.value) !== op.seen) {
+      return `the reading "${rid}" now holds ${seenText(seenKey(p.value))}; the decision was taken when it held ${seenText(op.seen)}`;
+    }
+  }
+  return null;
+}
+
 /**
  * Replay the engineer's decisions, in order, onto a freshly consolidated dataset. A decision that cannot be applied
- * (its reading is not in this dataset, its conflict is not open) is skipped with the reason; the rest still apply.
+ * (its reading is not in this dataset, its conflict is not open, it was taken on another drawing, or its reading now
+ * holds another value) is skipped with the reason; the rest still apply.
  */
 export function replayReview(data: ConsolidatedEngineeringData, state: DrawingReviewState | null | undefined,
-  opts: OverrideOptions = {}): { data: ConsolidatedEngineeringData; skipped: SkippedOp[] } {
+  opts: ReplayOptions = {}): { data: ConsolidatedEngineeringData; skipped: SkippedOp[] } {
+  const { drawingHash, ...overrideOpts } = opts;
   let cur = data;
   const skipped: SkippedOp[] = [];
   (state?.ops ?? []).forEach((op, index) => {
-    try { cur = applyOne(cur, op, opts); }
+    const why = bindingProblem(cur, op, state, drawingHash);
+    if (why) { skipped.push({ index, op, why }); return; }
+    try { cur = applyOne(cur, op, overrideOpts); }
     catch (e) {
       if (!(e instanceof OverrideError)) throw e;
       skipped.push({ index, op, why: e.message });

@@ -77,10 +77,13 @@ vocabulary — every table row states its source or says "engineering judgement"
 ### The review is a list of decisions
 
 The page never sends a dataset. It sends `drawingReview: { ops: [...] }` — `confirm`, `correct` (a typed value, reason
-optional), `reject`, `resolve` (a conflict: choose a side or type the value), `reopen` — each with who and when. The
-server sanitises the list and replays it on **its own** fresh consolidation (`engineering-data/review-state.ts`). A
-decision that no longer applies — the route changed, so a reading interpreted for the old route is not in this
-dataset — is **skipped and listed** on the panel; it is never matched to another reading.
+optional), `reject`, `resolve` (a conflict: choose a side or type the value), `reopen`. Each decision is BOUND to the
+drawing it was taken on (`drawingHash`) and to the value the reading had (`seen`); the server stamps who (the signed-in
+user) and when (its own clock) — what a client sends for those is ignored. The server sanitises the list and replays it
+on **its own** fresh consolidation (`engineering-data/review-state.ts`). A decision that no longer applies — taken on
+another drawing, naming no drawing, a reading whose value has changed, or a reading interpreted for a route no longer
+costed — is **skipped and listed** on the panel; it is never matched to another reading. The review part of a cache key
+depends on the decisions only (who / when do not change a cost).
 
 Rules the layer keeps (`overrides.ts`):
 
@@ -92,7 +95,9 @@ Rules the layer keeps (`overrides.ts`):
 ### On the screen (CAD to COST, AI off or on)
 
 - **Part step:** "Attach drawing" sits with the part and the volume (it used to be inside "More options"), with the line
-  *Read on this server — no AI, nothing leaves it*.
+  *Read on this server — no AI, nothing leaves it*. That is true in EVERY analysis mode: no drawing is ever sent to a
+  model (independent validation, 10 Nov 2026 — in AI-led / Compare mode a PDF drawing used to go to the model), and what
+  a model reply says about a drawing is dropped (`stripModelDrawingReads`, cad.ts).
 - **Confirm step — "From the drawing":** rows grouped as in section 2. Each row: label, value, a source badge (CAD /
   Drawing / Derived / Typed), where it was read (sheet, zone, block, exact text or OCR), a status **word** (Read, Needs
   checking, Missing, Conflict, Confirmed, Corrected, Rejected, Inferred), what it would answer and what that answer does,
@@ -339,8 +344,14 @@ every cache key.
   linear dimensions are not linked.
 - **The drawing never chooses the process.** The route is measured or answered; the drawing's values are consolidated
   for that route, and a review made on one route is replayed — not transplanted — on another.
-- **A scanned drawing's sheet picture and file are kept for a day** (`CV_DRAWING_FILE_DIR`, default the temp folder);
-  the readings for a week.
+- **A drawing's file and sheet pictures are kept for a day** (`CV_DRAWING_FILE_DIR`, default the temp folder), the readings
+  and the list of users who uploaded it for a week — swept at start-up and hourly. A drawing, its readings, sheet
+  pictures and OCR job are visible only to the users who uploaded it (and admins).
+- **Image size:** a raster over 150 megapixels is refused before it is decoded (an A0 sheet at 300 dpi is 139 MP);
+  images are read at 300 dpi at most (a PNG is shrunk a row at a time, so the full-size image never exists in memory).
+- **A turned scan** is found by reading a small copy in the four quarter turns when the first read is not clearly text;
+  when no turn stands out the sheet's warning says its orientation is unknown. `rotationDeg` is the text's anticlockwise
+  turn, the same convention as every text item's `rotation`.
 - **Reading time:** exact text about 1 s (most of it starting the worker); OCR 5–7 s a sheet at 300 dpi on this machine.
 
 ## 10. Specified on the drawing — not in the cost model yet

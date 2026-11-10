@@ -178,7 +178,7 @@ describe('step 3 — the cost card', () => {
     expect(full).toMatch(/aria-current="step"><span class="cad-step-n" aria-hidden="true">3<\/span><span class="cad-step-label">Cost/);
   });
   it('the confidence says why, from the mix it is graded on', () => {
-    expect(full).toMatch(/Confidence Low: of 23 data points behind this cost, 6 are High, 7 Medium and 10 Low/);
+    expect(full).toMatch(/Confidence Low: of 23 distinct inputs behind this cost \(a rate shared by several operations counts once\), 6 are High, 7 Medium and 10 Low/);
     expect(full).toMatch(/Low: Tooling, Scrap rate, Cycle time, Die life and 1 more\./);
     expect(confidenceWhyText('calibrated', null)).toMatch(/Calibrated against prices actually paid/);
     // a raw traceability key is read as a person would (the live card printed the whole feature list)

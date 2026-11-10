@@ -11,11 +11,11 @@ import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
-import { buildExecutiveSummary, buildCoreReport, type ExecutiveSummary } from './executive-summary.js';
+import { buildExecutiveSummary, buildCoreReport, costingConfidence, type ExecutiveSummary } from './executive-summary.js';
 import { formWeights } from './form-weights.js';
 import { renderCoreReport } from './core-report-pdf.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
-import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
+import { computeCostUncertainty, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
 import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -365,15 +365,24 @@ function chk(doc: jsPDF, y: number, need: number): number {
 }
 
 /** Draw the full-width navy section header bar and return new y. */
-function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
-  y = chk(doc, y, 16);
+export function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
+  // The subtitle sits right-aligned beside the title only when it clears it; a longer one is wrapped onto its own
+  // line(s) under the title and the bar grows (D14, Nov 2026: §9b's "the same part on every route and process …" was
+  // drawn over "§9b — Route Comparison").
+  doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
+  const titleW = doc.getTextWidth(title);
+  doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+  const besideTitle = !right || MG + 10 + titleW + 6 + doc.getTextWidth(right) <= W - MG - 2;
+  const under = right && !besideTitle ? doc.splitTextToSize(right, CW - 12) as string[] : [];
+  const barH = 9 + under.length * 3.2;
+  y = chk(doc, y, 7 + barH);
   doc.setFillColor(...NAVY);
-  doc.roundedRect(MG, y, CW, 9, 1.5, 1.5, 'F');
+  doc.roundedRect(MG, y, CW, barH, 1.5, 1.5, 'F');
   // Orange left accent
   doc.setFillColor(...ORANGE);
-  doc.roundedRect(MG, y, 5, 9, 1, 1, 'F');
+  doc.roundedRect(MG, y, 5, barH, 1, 1, 'F');
   doc.setFillColor(...NAVY); // patch rounded right edge of accent
-  doc.rect(MG + 3, y, 2, 9, 'F');
+  doc.rect(MG + 3, y, 2, barH, 'F');
 
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'bold');
@@ -383,11 +392,12 @@ function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(200, 215, 240);
-    doc.text(right, W - MG - 2, y + 6, { align: 'right' });
+    if (besideTitle) doc.text(right, W - MG - 2, y + 6, { align: 'right' });
+    else doc.text(under, MG + 10, y + 9.8);
   }
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...SLATE);
-  return y + 13;
+  return y + barH + 4;
 }
 
 /**
@@ -405,8 +415,34 @@ const STROKED: Record<string, string> = { 'ł': 'l', 'Ł': 'L', 'đ': 'd', 'Đ':
 /** Currency signs the PDF font (WinAnsi) cannot draw, printed as their ISO code — the whitelist below used to DELETE
  *  them, so an India report printed "Total Should-Cost 2445.66" with no currency at all (casting 360 review, Oct 2026). */
 const CURRENCY_CODES: Record<string, string> = { '₹': 'INR', '฿': 'THB', '₫': 'VND', '₩': 'KRW', '₺': 'TRY', '₱': 'PHP' };
+/**
+ * Drawing symbols (ASME Y14.5 / ISO 1101 — the set the drawing reader maps from GD&T symbol fonts, server/drawing/
+ * symbol-fonts.ts) the PDF font cannot draw, printed as the WORD a drawing reader says, as Greek letters are named
+ * below. The strip at the end used to delete them: "M6x1-6H <depth symbol U+21A7> 12" printed "M6x1-6H  12", readable as a thread length
+ * (D05, Nov 2026). The workbook keeps the Unicode symbol. The diameter sign U+2300 becomes Ø, which WinAnsi has.
+ */
+export const DRAWING_SYMBOL_WORDS: Readonly<Record<string, string>> = {
+  '\u21A7': 'depth', '\u2334': 'cbore', '\u2335': 'csk', '\u2316': 'position', '\u27C2': 'perpendicularity',
+  '\u22A5': 'perpendicularity', '\u2225': 'parallelism', '\u2220': 'angularity', '\u23E5': 'flatness',
+  '\u23E4': 'straightness', '\u25CB': 'circularity', '\u232D': 'cylindricity', '\u2312': 'profile of a line',
+  '\u2313': 'profile of a surface', '\u25CE': 'concentricity', '\u232F': 'symmetry', '\u2197': 'circular runout',
+  '\u2330': 'total runout', '\u24C2': '(MMC)', '\u24DC': '(MMC)', '\u24C1': '(LMC)', '\u24DB': '(LMC)',
+  '\u24C5': '(projected)', '\u24DF': '(projected)', '\u24C8': '(RFS)', '\u24E2': '(RFS)', '\u24BB': '(free state)',
+  '\u24D5': '(free state)', '\u24CA': '(tangent plane)', '\u24E4': '(tangent plane)', '\u25A1': 'square',
+  '\u2104': 'centre line', '\u2332': 'conical taper', '\u2333': 'slope', '\u2300': 'Ø',
+};
+const DRAWING_SYMBOL_RE = new RegExp(`[${Object.keys(DRAWING_SYMBOL_WORDS).join('')}]`, 'g');
+/** A symbol's word, spaced from a letter or digit it touches (counterbore symbol + "Ø10" prints "cbore Ø10"); Ø stays tight to its figure. */
+function drawingSymbolWord(ch: string, at: number, whole: string): string {
+  const w = DRAWING_SYMBOL_WORDS[ch];
+  if (w === 'Ø') return w;
+  const before = at > 0 && !/\s|\(/.test(whole[at - 1]) ? ' ' : '';
+  const after = at + ch.length < whole.length && !/[\s),.;:]/.test(whole[at + ch.length]) ? ' ' : '';
+  return `${before}${w}${after}`;
+}
 export function winAnsiSafe(s: string): string {
   return s
+    .replace(DRAWING_SYMBOL_RE, drawingSymbolWord)
     .replace(/[₹฿₫₩₺₱]\s?(?=[\d(+-])/g, ch => `${CURRENCY_CODES[ch.trim()]} `)   // "₹2,445" → "INR 2,445"
     .replace(/[₹฿₫₩₺₱]/g, ch => CURRENCY_CODES[ch])                          // "₹/kg" → "INR/kg"
     // The złoty sign: 'ł' is not in the font ("zł165.57" printed "zl165.57"). Only the symbol — never a Polish word
@@ -1028,10 +1064,13 @@ export function renderShouldCostSections(
   y = chk(doc, y, 78);   // the 8-bucket table on one page (it split after row 4; report audit, Oct 2026)
   y = secBar(doc, y, '§1 — 8-Bucket Cost Breakdown');
   if (cadMeta.stamp) {
+    // Wrapped to the content width: it is quoted word for word, and the drawing suffix (reader version, file, hash, date)
+    // ran it off the page edge (D04, Nov 2026).
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110, 110, 110);
-    doc.text(`Reproducibility: ${cadMeta.stamp}`, MG, y + 1);
+    const stampLines = doc.splitTextToSize(`Reproducibility: ${cadMeta.stamp}`, CW) as string[];
+    doc.text(stampLines, MG, y + 1);
     doc.setTextColor(0, 0, 0);
-    y += 5;
+    y += 5 + (stampLines.length - 1) * 3;
   }
 
   const buckets: [string, number, number, string][] = [
@@ -1764,7 +1803,9 @@ export function renderShouldCostSections(
     const geomEstimated = cadMeta.geometrySource === 'text_parsing';
     const u = !geomEstimated && cadMeta.uncertainty ? cadMeta.uncertainty
       : computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
-    const confShown = geomEstimated ? 'Low' : u.overallConfidence;
+    // the report's ONE grade (costingConfidence caps it at Low on estimated geometry, as this section always did)
+    const conf = costingConfidence({ result, library, commodity: commodityType, cadMeta });
+    const confShown = conf.grade;
     y = secBar(doc, y, '§7 — Should-Cost with Uncertainty', `Monte-Carlo  ·  ${confShown} confidence`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
@@ -1788,10 +1829,12 @@ export function renderShouldCostSections(
     doc.text(note, MG, y + 3); y += note.length * 3.6 + 4;
 
     // Confidence-driver line — WHY the band is what it is (not just the grade).
-    const lowRates = result.traceability.filter(t => t.confidence === 'Low').length;
+    // counted as page 1 counts them — distinct inputs (it said "8 rate(s)" beside page 1's "3 Low": one rate on 6 operations)
+    const lowRates = conf.distinct.low;
     const drivers: string[] = [];
     if (geomEstimated) drivers.push('geometry weight/volume estimated (not measured)');
-    if (lowRates > 0) drivers.push(`${lowRates} rate(s) at Low confidence`);
+    if (conf.cap === 'blocking-dfm' && conf.gradeNote) drivers.push(conf.gradeNote.replace(/\.$/, ''));
+    if (lowRates > 0) drivers.push(`${lowRates} input(s) at Low confidence (a rate shared by several operations counts once)`);
     if (result.breakdown.tooling > 0.005) drivers.push('tooling amortisation carries the widest per-bucket spread');
     if (!drivers.length) drivers.push('rate-data confidence alone (no estimated geometry, no Low-confidence rate)');
     if (cadMeta.featureLinesInCost && cadMeta.featureLines?.some(l => !l.included && !(cadMeta.featureTurningOp && (l.kind === 'boss' || /turn/i.test(l.operation))))) drivers.push('some detected features not costed (see §4C)');
@@ -2687,9 +2730,9 @@ export function printPDF(
   const allCount  = result.traceability.length;
   // A PCBA's confidence is the analysis's own (how much of the BOM has a price behind it), not a
   // count of machining operations — "Low · 0 traced operations" said nothing about the board.
-  // ONE grade for the cover and §7 (uncertainty.ts overallConfidence) — the cover used its own High-share test and could
-  // disagree with §7 on the same report.
-  const overallConf = pcba?.confidence ? pcba.confidence.label : overallConfidence(result);
+  // ONE grade for the cover, the executive page, §7, the core report and the workbook (executive-summary.ts
+  // costingConfidence): the cover graded every traced row and printed Low beside a core page 1 that said Medium (D06).
+  const overallConf = pcba?.confidence ? pcba.confidence.label : costingConfidence({ result, library, commodity: commodityType, cadMeta }).grade;
   // The screen's band on the cover too (casting 360 X30: the screen read "₹2,445.66 ±9.8%"; the band was only on p13).
   const coverBand = !pcba && cadMeta.geometrySource !== 'text_parsing' ? (cadMeta.uncertainty ?? null) : null;
   const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
@@ -2841,7 +2884,7 @@ export function printPDF(
     const ex = buildExecutiveSummary({
       result, input, library, commodity: commodityType, region, band: cadMeta.uncertainty ?? null, stamp: cadMeta.stamp ?? null,
       decisions: cadMeta.checks?.decisions ?? null, ruleValues: cadMeta.checks?.ruleValues ?? null,
-      volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated,
+      volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated, cadMeta,
     });
     doc.addPage();
     renderExecutiveSummaryPage(doc, ex, money, keyAssumptions);

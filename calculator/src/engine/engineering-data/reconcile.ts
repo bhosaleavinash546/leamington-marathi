@@ -399,6 +399,18 @@ export function computeNotCosted(params: readonly EngineeringParameter[], commod
       : NOT_COSTED_REASON;
     out.push({ parameterId: p.id, why });
   }
+  // A material designation feeds the family on every route, but on a route with no grade question (machining costs the
+  // family's representative bar) the GRADE it names is not costed — say so instead of letting the family hide it
+  // (independent validation, 10 Nov 2026: 42CrMo4 on a machining drawing answered "steel" and nothing said more).
+  const GRADE_NAMES = ['material.grade', 'material.alloy', 'material.laminateSystem'];
+  if (commodity && pack && !GRADE_NAMES.some(n => here.has(n))) {
+    for (const p of params) {
+      if (p.source !== 'drawing' || p.name !== 'material.designation' || p.status === 'rejected' || p.status === 'missing') continue;
+      if (out.some(o => o.parameterId === p.id)) continue;
+      out.push({ parameterId: p.id, why: `the material family is taken from it; the grade it names is not costed — the ${commodity.replace(/_/g, ' ')} `
+        + 'route has no grade question and costs the family\'s representative grade' });
+    }
+  }
   return out;
 }
 

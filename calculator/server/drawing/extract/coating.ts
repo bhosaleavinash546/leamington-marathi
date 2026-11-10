@@ -6,10 +6,14 @@
 import type { DraftParameter, ExtractContext } from '../types.js';
 import { buildUnits, clauses, draft, num, type TextUnit } from './common.js';
 
-/** Process keywords. `route` is a plain name for the family; order matters (zinc-nickel before zinc, hard anodise before anodise). */
+/**
+ * Process keywords. `route` is a plain name for the family; order matters (zinc-nickel before zinc, hard anodise before anodise).
+ * A trade name that is the start of an ordinary word ends at a word boundary: "GEOMET" is in "GEOMETRIC TOLERANCES" and
+ * "GEOMETRY" (independent validation, 10 Nov 2026: a NIST sheet's tolerance notes read as zinc flake).
+ */
 export const COATING_KEYWORDS: Array<{ route: string; re: RegExp }> = [
   { route: 'zinc-nickel', re: /\b(?:ZN\s?-?\s?NI|ZINC\s?-?\s?NICKEL|ZINK\s?-?\s?NICKEL|Fe\s?\/\/?\s?ZnNi\s?\d*[^\s,;]*)/i },
-  { route: 'zinc-flake', re: /\b(?:DACROMET|GEOMET(?:\s?\d{3})?|DELTA\s?-?\s?PROTEKT(?:\s?K[LV]\s?\d{3})?|DELTA\s?-?\s?TONE|ZINC\s?-?\s?FLAKE|ZINKLAMELLEN?(?:ÜBERZUG|BESCHICHTUNG)?|MAGNI\s?\d{3}|fl\s?Zn(?:nc|yc|ncl)?\s?-?\s?\d*h?[^\s,;]*)/i },
+  { route: 'zinc-flake', re: /\b(?:DACROMET(?![A-Za-z])|GEOMET(?![A-Za-z])(?:\s?\d{3})?|DELTA\s?-?\s?PROTEKT(?:\s?K[LV]\s?\d{3})?|DELTA\s?-?\s?TONE|ZINC\s?-?\s?FLAKE|ZINKLAMELLEN?(?:ÜBERZUG|BESCHICHTUNG)?|MAGNI\s?\d{3}|fl\s?Zn(?:nc|yc|ncl)?\s?-?\s?\d*h?[^\s,;]*)/i },
   { route: 'hot-dip-galvanise', re: /\b(?:HOT\s?-?\s?DIP(?:PED)?\s?GALVANI[SZ]\w*|FEUERVERZINK\w*|GALVANI[SZ]ED\s+TO\s+ISO\s?1461|t\s?Zn\s?[ok]?\b)/i },
   { route: 'zinc-plate', re: /\b(?:ZINC\s?-?\s?PLAT\w*|ZINC\s+ELECTROPLAT\w*|ELECTRO\s?-?\s?(?:ZINC|GALVANI[SZ]\w*)|GALVANISCH\s+VERZINK\w*|GALV\.?\s+VERZINK\w*|VERZINKT|Fe\s?\/\/?\s?Zn\s?\d+[^\s,;]*|ZINC\s+COAT\w*|A[23][A-Z]\b(?=.*ISO\s?4042)|ISO\s?4042\s?[-/]?\s?A\d[A-Z])/i },
   { route: 'e-coat', re: /\b(?:E\s?-?\s?COAT\w*|ELECTRO\s?-?\s?COAT\w*|KTL(?:\s?-?\s?BESCHICHT\w*)?|CATHODIC\s+(?:DIP|ELECTRO\w*)(?:\s+(?:COAT\w*|PAINT\w*|PRIM\w*))?|KATAPHORE\w*|CATAPHOR\w*|CDP|CED\s+(?:COAT\w*|PRIMER))\b/i },

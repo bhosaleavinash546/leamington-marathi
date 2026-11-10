@@ -160,12 +160,12 @@ describe('the server\'s drawing path with all outbound connections blocked, AIR_
       const ids = [...new Set<string>(last.drawingCosting.leanings.map((l: Json) => l.parameterId))].filter(id => !ops.some(o => o.id === id));
       if (!ids.length) break;
       ops.push(...ids.map(id => ({ op: 'confirm', id, by: 'off-user', at: '2026-11-10T10:00:00.000Z' })));
-      last = (await post('/api/cad/reanalyze', { ...body, drawingReview: { ops } })).body;
+      last = (await post('/api/cad/reanalyze', { ...body, drawingReview: { drawingHash: hash, ops } })).body;
     }
     expect(last.drawingCosting.answers).toMatchObject({ 'material.family': 'aluminium', 'material.grade': 'mat-lm25', 'service.finish': 'e_coat', 'casting.heatTreat': 'T6' });
     expect(last.mode).toBe('deterministic');
     const cmp = await post('/api/cad/compare-routes', { geometryHash: HASH, filename: 'Casting_Braket.stp', current: 'cast_and_machine', annualVolume: 50_000, programmeYears: 5,
-      decisionAnswers: { 'commodity.route': 'cast_and_machine' }, ladder: false, bands: false, drawingHash: hash, drawingReview: { ops } });
+      decisionAnswers: { 'commodity.route': 'cast_and_machine' }, ladder: false, bands: false, drawingHash: hash, drawingReview: { drawingHash: hash, ops } });
     expect(cmp.status).toBe(200);
     expect(cmp.body.comparison.rows[0]).toMatchObject({ route: 'cast_and_machine', status: 'costed' });
     expect(cmp.body.comparison.rows[0].total).toBeGreaterThan(1);

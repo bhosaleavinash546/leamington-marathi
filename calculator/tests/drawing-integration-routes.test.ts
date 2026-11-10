@@ -88,8 +88,14 @@ beforeAll(async () => {
 afterAll(() => { srv?.close(); rmSync(env.dir, { recursive: true, force: true }); });
 
 type Json = Record<string, any>;   // eslint-disable-line @typescript-eslint/no-explicit-any
+/** A review sent with a request names the drawing it was taken on (review F04): the request's own drawing. */
+const bound = (body: unknown): unknown => {
+  const b = body as Json;
+  return b && typeof b === 'object' && typeof b.drawingHash === 'string' && b.drawingReview && typeof b.drawingReview === 'object' && !b.drawingReview.drawingHash
+    ? { ...b, drawingReview: { ...b.drawingReview, drawingHash: b.drawingHash } } : body;
+};
 const post = async (path: string, body: unknown, who: string | null = USER): Promise<{ status: number; body: Json }> => {
-  const r = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(who ? { Authorization: `Bearer ${tok(who)}` } : {}) }, body: JSON.stringify(body) });
+  const r = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(who ? { Authorization: `Bearer ${tok(who)}` } : {}) }, body: JSON.stringify(bound(body)) });
   return { status: r.status, body: await r.json() as Json };
 };
 const get = async (path: string, who: string | null = USER): Promise<Response> =>
@@ -426,7 +432,7 @@ describe('D — the WRONG gear drawing (z 40 against 38 teeth measured)', () => 
     // Settled for the 3D model: the cost is the same.
     const forCad: ReviewOp[] = [{ op: 'resolve', name: 'gear.teeth', choose: 'cad:gear.teeth', by: USER, at: AT }];
     const s1 = (await post('/api/cad/reanalyze', reBody(c, { drawingHash: hash, drawingReview: { ops: forCad } }))).body;
-    expect((s1.engineeringData as ConsolidatedEngineeringData).conflicts.find(x => x.name === 'gear.teeth')!.resolution).toMatchObject({ parameterId: 'cad:gear.teeth', by: USER });
+    expect((s1.engineeringData as ConsolidatedEngineeringData).conflicts.find(x => x.name === 'gear.teeth')!.resolution).toMatchObject({ parameterId: 'cad:gear.teeth', by: `${USER}@test` });   // the signed-in user, stamped by the server (F05)
     expect(refRow((await post('/api/cad/compare-routes', cmpBody(c, { drawingHash: hash, drawingReview: { ops: forCad } }))).body.comparison, 'gear').total).toBe(before);
 
     // Settled for the DRAWING: the engine counted the teeth on the model, its question is not open, so the measured
@@ -471,7 +477,7 @@ describe('E — a drawing with the material left off', () => {
 describe('G — the drawing\'s confirmed values reach each route\'s own questions', () => {
   const families: Array<{ family: string; part: string; drawing: string; commodity: string; answers?: Record<string, string>; expect: Record<string, string> }> = [
     { family: 'casting', part: 'PRCR002.stp', drawing: 'gen-casting.pdf', commodity: 'cast_and_machine', expect: { 'material.family': 'cast iron', 'service.pressureTight': 'yes', 'service.safetyCritical': 'yes' } },
-    { family: 'forging', part: 'FORGE_Hub_Flange.stp', drawing: 'gen-forging.pdf', commodity: 'forging', expect: { 'material.family': 'steel', 'material.grade': 'mat-steel-42crmo4', 'service.toleranceClass': 'tight', 'service.safetyCritical': 'yes' } },
+    { family: 'forging', part: 'FORGE_Hub_Flange.stp', drawing: 'gen-forging.pdf', commodity: 'forging', expect: { 'material.family': 'steel', 'material.grade': 'mat-steel-42crmo4', 'service.safetyCritical': 'yes' } },   // ISO 2768-mK is the only tolerance note: it sets machined dimensions, not the as-forged class (validation, 10 Nov 2026)
     { family: 'sheet metal', part: 'BIW_Reinf_Channel.stp', drawing: 'gen-sheetmetal.pdf', commodity: 'sheet_metal', answers: { 'commodity.thinWallRoute': 'sheet_metal' }, expect: { 'material.family': 'steel', 'material.grade': 'mat-dc04', 'service.finish': 'zinc_nickel' } },
     { family: 'machining', part: 'MACH_Hydraulic_Manifold.stp', drawing: 'gen-machined.pdf', commodity: 'machining', expect: { 'material.family': 'aluminium' } },
     { family: 'polymers', part: 'IM_ECU_Cover.stp', drawing: 'gen-moulding.pdf', commodity: 'injection_moulding', answers: { 'commodity.thinWallRoute': 'injection_moulding' }, expect: { 'material.resin': 'mat-pa66gf30' } },
@@ -608,7 +614,7 @@ describe('the review state survives save and reopen (projects table)', () => {
     // every confirmation carries who and when
     const conf = (again.engineeringData as ConsolidatedEngineeringData).parameters.filter(p => p.status === 'confirmed');
     expect(conf.length).toBe(ops.length);
-    for (const p of conf) expect(p.history?.[0]).toMatchObject({ by: USER, at: AT, action: 'confirm' });
+    for (const p of conf) expect(p.history?.[0]).toMatchObject({ by: `${USER}@test`, action: 'confirm' });   // who: the session; when: the server's clock (F05)
   }, 120_000);
 
   it('an old project with no review, or a malformed one, opens as an unreviewed drawing', async () => {
@@ -665,7 +671,7 @@ describe('/api/cad/analyze reads the attached drawing on the no-AI path', () => 
     const resin = named(data, 'material.grade').find(p => p.status === 'extracted' || p.status === 'needs-validation');
     expect(resin).toBeTruthy();
     const r2 = await analyze({ cadFile: [join(stlDir, stl!), stl!], drawingPdf: [join(FIX, 'gen-moulding.pdf'), 'connector.pdf'] },
-      { commodity: 'injection_moulding', drawingReview: JSON.stringify({ ops: [confirmOp(resin!.id)] }) });
+      { commodity: 'injection_moulding', drawingReview: JSON.stringify({ drawingHash: r.body.drawing.hash, ops: [confirmOp(resin!.id)] }) });
     expect(r2.body.drawingCosting.answers).toEqual({ 'material.resin': 'mat-pa66gf30' });
     expect(r2.body.decisions.some((d: Json) => d.id === 'material.resin')).toBe(false);
   }, 120_000);

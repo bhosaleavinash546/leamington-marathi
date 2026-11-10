@@ -10,9 +10,14 @@
  *  - exact text first: a file is read with OCR OFF (a CAD-exported PDF: about a second, and that is the whole read).
  *    Only when a sheet has no usable text is the slow OCR pass queued — ONE at a time (the VM has 2 GB; an A0 sheet at
  *    300 dpi is a 40-megapixel image) — and the caller is told the drawing is still being read, with a job to poll;
- *  - the reader's own refusals (DWG, a password, a broken file) reach the engineer in the reader's words.
+ *  - the reader's own refusals (DWG, a password, a broken file) reach the engineer in the reader's words;
+ *  - a drawing is the UPLOADER's (review F06, Nov 2026): the record is shared by hash (one read per file), but it keeps
+ *    the set of users who uploaded those bytes, and only they (and an admin) may see its reading, its sheet pictures
+ *    or its OCR job, or name it in a costing. Anyone else is told it does not exist (404, the same words);
+ *  - retention is enforced on a timer (F07): files and sheet pictures a day, readings and uploaders a week, swept
+ *    hourly as well as at start-up — not only when the same file is read again.
  *
- * No AI, no network: this file imports the reader, the cache and node built-ins only.
+ * No AI, no network: this file imports the reader, the database and node built-ins only.
  */
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
@@ -22,17 +27,94 @@ import type { DrawingExtraction, DrawingSheetInfo } from '../../src/engine/engin
 import { READER_VERSION, DrawingReadError, ocrWouldRead } from '../drawing/index.js';
 import { detectFileKind, type FileKind } from '../drawing/ingest.js';
 import { readDrawingOffThread } from '../drawing/worker.js';
-import { createAnalysisCache } from '../utils/analysis-cache.js';
+import { checkImagePixels } from '../drawing/raster/render.js';
+import db from '../db.js';
 
 /** The upload limit of a drawing (the CAD screen has always said 30 MB). */
 export const MAX_DRAWING_BYTES = 30 * 1024 * 1024;
 /** The file types the drawing field accepts, for the screen's file picker and the limits route. */
 export const DRAWING_ACCEPT = ['.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff', '.dxf'];
 
-const EXTRACTION_TTL_MS = 7 * 24 * 60 * 60 * 1000;      // as the measured geometry
-const FILE_TTL_MS = 24 * 60 * 60 * 1000;                // as the kept CAD upload
-const extractionCache = createAnalysisCache('drawing_extraction_by_hash', EXTRACTION_TTL_MS);
+const HASH_RE = /^[a-f0-9]{64}$/;
+
+export const EXTRACTION_TTL_MS = 7 * 24 * 60 * 60 * 1000;      // as the measured geometry
+export const FILE_TTL_MS = 24 * 60 * 60 * 1000;                // as the kept CAD upload
+/** How often retention is enforced on a running server (F07): files, sheet pictures, readings, uploaders, old jobs. */
+export const SWEEP_INTERVAL_MS = 60 * 60 * 1000;
 const FILE_DIR = process.env.CV_DRAWING_FILE_DIR ?? join(tmpdir(), 'cv-drawing-files');
+
+// ─── The readings, kept a week (SQLite, the table the analysis cache used — same rows, same schema) ─────────────────
+//
+// Kept here rather than in the shared analysis cache so the week is enforced on a timer, in memory as on disk: that
+// cache's in-memory copy holds an entry until it is next asked for, which on a long-running server is never.
+
+const EXTRACTION_TABLE = 'drawing_extraction_by_hash';
+db.exec(`CREATE TABLE IF NOT EXISTS ${EXTRACTION_TABLE} (key TEXT PRIMARY KEY, ts INTEGER NOT NULL, payload TEXT NOT NULL);`);
+/** Who uploaded which drawing: one row a (drawing, user), kept as long as the reading. */
+db.exec(`CREATE TABLE IF NOT EXISTS drawing_uploaders (hash TEXT NOT NULL, user_id TEXT NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY (hash, user_id));`);
+
+const extractionL1 = new Map<string, { ts: number; payload: unknown }>();
+const extractionCache = {
+  get(key: string): unknown | null {
+    const e = extractionL1.get(key);
+    if (e && Date.now() - e.ts <= EXTRACTION_TTL_MS) return e.payload;
+    if (e) extractionL1.delete(key);
+    try {
+      const row = db.prepare(`SELECT ts, payload FROM ${EXTRACTION_TABLE} WHERE key = ?`).get(key) as { ts: number; payload: string } | undefined;
+      if (!row) return null;
+      if (Date.now() - row.ts > EXTRACTION_TTL_MS) { db.prepare(`DELETE FROM ${EXTRACTION_TABLE} WHERE key = ?`).run(key); return null; }
+      const payload = JSON.parse(row.payload) as unknown;
+      if (extractionL1.size >= 200) extractionL1.delete(extractionL1.keys().next().value as string);
+      extractionL1.set(key, { ts: row.ts, payload });
+      return payload;
+    } catch (err) {
+      console.warn('[drawing] reading store not readable:', err instanceof Error ? err.message : String(err));
+      return null;
+    }
+  },
+  set(key: string, payload: unknown): void {
+    const ts = Date.now();
+    if (extractionL1.size >= 200) extractionL1.delete(extractionL1.keys().next().value as string);
+    extractionL1.set(key, { ts, payload });
+    try { db.prepare(`INSERT OR REPLACE INTO ${EXTRACTION_TABLE} (key, ts, payload) VALUES (?, ?, ?)`).run(key, ts, JSON.stringify(payload)); }
+    catch (err) { console.warn('[drawing] reading not stored:', err instanceof Error ? err.message : String(err)); }
+  },
+};
+
+// ─── Who may see a drawing (F06) ────────────────────────────────────────────────────────────────────────────────────
+
+/** The signed-in user a drawing is read for or shown to (the session's `req.user`). */
+export interface DrawingUser { userId: string; email?: string }
+
+/** Record that `userId` uploaded the drawing `hash` (another upload of the same bytes adds a user; it never replaces one). */
+export function recordDrawingUploader(hash: string, userId: string): void {
+  if (!HASH_RE.test(hash) || !userId) return;
+  try { db.prepare('INSERT OR REPLACE INTO drawing_uploaders (hash, user_id, ts) VALUES (?, ?, ?)').run(hash, userId, Date.now()); }
+  catch (err) { console.warn('[drawing] uploader not recorded:', err instanceof Error ? err.message : String(err)); }
+}
+
+/** The users who uploaded this drawing within the reading's retention. */
+export function drawingUploaders(hash: string): string[] {
+  try {
+    return (db.prepare('SELECT user_id FROM drawing_uploaders WHERE hash = ? AND ts >= ?').all(hash, Date.now() - EXTRACTION_TTL_MS) as Array<{ user_id: string }>)
+      .map(r => r.user_id);
+  } catch { return []; }
+}
+
+function isAdmin(userId: string): boolean {
+  try { return (db.prepare('SELECT role FROM users WHERE id = ?').get(userId) as { role?: string } | undefined)?.role === 'admin'; }
+  catch { return false; }
+}
+
+/**
+ * May this user see the drawing (its reading, its sheets, its OCR job) or name it in a costing? Only a user who
+ * uploaded these bytes, or an admin. A drawing nobody is recorded against (read before uploaders were recorded, or by
+ * a caller that named no user) is refused to everyone but an admin — attaching it again records the uploader.
+ */
+export function canSeeDrawing(hash: string, user: DrawingUser | null | undefined): boolean {
+  if (!user?.userId || !HASH_RE.test(hash)) return false;
+  return drawingUploaders(hash).includes(user.userId) || isAdmin(user.userId);
+}
 
 /** How long a costing request waits for an OCR pass before answering "still reading" (the costing never waits on it). */
 export const OCR_INLINE_WAIT_MS = Math.max(0, parseInt(process.env.CV_DRAWING_OCR_INLINE_MS ?? '2500', 10) || 0);
@@ -82,7 +164,13 @@ const jobByHash = new Map<string, Job>();
 /** Fast (exact-text) reads in flight, by hash — two requests for one file share one read. */
 const fastInFlight = new Map<string, Promise<DrawingRecord>>();
 
-const HASH_RE = /^[a-f0-9]{64}$/;
+/** The drawing an extraction handed out by this service was read from — what a replay binds a review to (F04). */
+const extractionHashes = new WeakMap<object, string>();
+/** The hash of the drawing this extraction (as returned in a record by this service) was read from. */
+export function extractionHash(e: DrawingExtraction | null | undefined): string | undefined {
+  return e ? extractionHashes.get(e) : undefined;
+}
+
 const cacheKey = (hash: string): string => `${hash}:${READER_VERSION}`;
 
 export function drawingHash(buffer: Uint8Array): string {
@@ -109,18 +197,46 @@ export function getDrawingBytes(hash: string): Buffer | null {
   } catch { return null; }
 }
 
-/** Remove kept drawing files older than a day. */
-export function sweepDrawingFiles(): number {
+/** Remove kept drawing files and sheet pictures older than a day. */
+export function sweepDrawingFiles(now = Date.now()): number {
   let n = 0;
   try {
     ensureDir();
     for (const f of readdirSync(FILE_DIR)) {
       const p = join(FILE_DIR, f);
-      if (Date.now() - statSync(p).mtimeMs > FILE_TTL_MS) { unlinkSync(p); n++; }
+      try { if (now - statSync(p).mtimeMs > FILE_TTL_MS) { unlinkSync(p); n++; } } catch { /* gone already */ }
     }
   } catch { /* best effort */ }
   return n;
 }
+
+/**
+ * Enforce every retention this service states (F07): files and sheet pictures older than a day; readings and the
+ * record of who uploaded them older than a week (on disk and in memory); finished OCR jobs older than an hour.
+ */
+export function sweepDrawingStore(now = Date.now()): { files: number; readings: number; uploaders: number; jobs: number } {
+  const files = sweepDrawingFiles(now);
+  let readings = 0, uploaders = 0, jobsGone = 0;
+  try { readings = db.prepare(`DELETE FROM ${EXTRACTION_TABLE} WHERE ts < ?`).run(now - EXTRACTION_TTL_MS).changes; } catch { /* best effort */ }
+  try { uploaders = db.prepare('DELETE FROM drawing_uploaders WHERE ts < ?').run(now - EXTRACTION_TTL_MS).changes; } catch { /* best effort */ }
+  for (const [k, e] of extractionL1) if (now - e.ts > EXTRACTION_TTL_MS) extractionL1.delete(k);
+  for (const [id, j] of jobs) {
+    if (j.finishedAt && now - j.finishedAt > 3_600_000) { jobs.delete(id); jobsGone++; if (jobByHash.get(j.hash) === j) jobByHash.delete(j.hash); }
+  }
+  return { files, readings, uploaders, jobs: jobsGone };
+}
+
+let sweeper: ReturnType<typeof setInterval> | null = null;
+
+/** Sweep now and then every `SWEEP_INTERVAL_MS` for as long as the server runs (the timer never keeps it alive). */
+export function startDrawingSweeper(): void {
+  sweepDrawingStore();
+  if (sweeper) return;
+  sweeper = setInterval(() => { try { sweepDrawingStore(); } catch { /* the next sweep tries again */ } }, SWEEP_INTERVAL_MS);
+  sweeper.unref?.();
+}
+
+export function stopDrawingSweeper(): void { if (sweeper) { clearInterval(sweeper); sweeper = null; } }
 
 // ─── Concurrency: exact-text reads two at a time, OCR strictly one at a time ───────────────────────────────────────
 
@@ -151,7 +267,11 @@ function stored(hash: string): Stored | null {
 function recordOf(hash: string, filename: string, sizeBytes: number): DrawingRecord {
   const s = stored(hash);
   // The record carries the name THIS request gave the file: the same bytes under another name are the same drawing.
-  if (s) return { hash, filename, sizeBytes: s.sizeBytes, fileKind: s.extraction.fileKind, status: 'ready', extraction: { ...s.extraction, sourceFile: filename, parameters: s.extraction.parameters.map(p => ({ ...p, sourceFile: filename })) }, jobId: null, error: null, errorCode: null };
+  if (s) {
+    const extraction: DrawingExtraction = { ...s.extraction, sourceFile: filename, parameters: s.extraction.parameters.map(p => ({ ...p, sourceFile: filename })) };
+    extractionHashes.set(extraction, hash);
+    return { hash, filename, sizeBytes: s.sizeBytes, fileKind: s.extraction.fileKind, status: 'ready', extraction, jobId: null, error: null, errorCode: null };
+  }
   const j = jobByHash.get(hash);
   if (j && (j.status === 'queued' || j.status === 'running')) return { hash, filename, sizeBytes, fileKind: null, status: 'reading', extraction: null, jobId: j.id, error: null, errorCode: null };
   if (j && j.status === 'failed') return { hash, filename, sizeBytes, fileKind: null, status: 'failed', extraction: null, jobId: j.id, error: j.error, errorCode: j.errorCode };
@@ -209,14 +329,20 @@ export interface DrawingHandle {
 
 /**
  * Start reading a drawing. Throws `DrawingReadError` at once for a file that is not a drawing this reader takes (by
- * its first bytes) or is over the size limit; everything else is reported by `settled()`.
+ * its first bytes), is over the size limit, or is an image with more pixels than the reader decodes (read from its
+ * header, before anything is decoded); everything else is reported by `settled()`.
+ *
+ * `uploader` is the signed-in user (F06): recorded against the drawing, so that user — and only the users recorded —
+ * may see it afterwards. A caller that names no user records none, and the drawing is then visible to admins only.
  */
-export function startDrawingRead(buffer: Uint8Array, filename: string): DrawingHandle {
+export function startDrawingRead(buffer: Uint8Array, filename: string, uploader?: DrawingUser | null): DrawingHandle {
   if (buffer.length > MAX_DRAWING_BYTES) {
-    throw new DrawingReadError('too-large', `The drawing is ${(buffer.length / 1048576).toFixed(0)} MB; the limit is ${MAX_DRAWING_BYTES / 1048576} MB.`);
+    throw new DrawingReadError('too-large', `The drawing is ${(buffer.length / 1048576).toFixed(1)} MB; the limit is ${MAX_DRAWING_BYTES / 1048576} MB.`);
   }
   const kind: FileKind = detectFileKind(buffer);          // throws for DWG, binary DXF and anything unrecognised
+  if (kind === 'png' || kind === 'jpeg' || kind === 'tiff') checkImagePixels(buffer, kind);   // throws 'too-large' above the pixel cap
   const hash = drawingHash(buffer);
+  if (uploader?.userId) recordDrawingUploader(hash, uploader.userId);
   const sizeBytes = buffer.length;
   const name = (filename || 'drawing').replace(/[\u0000-\u001f]/g, '').slice(0, 200) || 'drawing';
 

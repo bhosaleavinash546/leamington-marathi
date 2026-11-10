@@ -7,7 +7,9 @@
  *                           screen polls this until it is done.
  *   GET  /:hash/sheet/:n    sheet n as a picture, for the review panel to show where a reading sits.
  *
- * Every route needs a session. This file calls no costing code and no AI client.
+ * Every route needs a session, and a drawing is shown only to the users who uploaded it (and an admin): anyone else
+ * is told it does not exist, in the same words as an unknown drawing (review F06). This file calls no costing code and
+ * no AI client.
  */
 import { Router, type Request, type Response } from 'express';
 import multer from 'multer';
@@ -17,15 +19,26 @@ import { DrawingReadError } from '../drawing/index.js';
 import { consolidate, type DrawingExtraction } from '../../src/engine/engineering-data/index.js';
 import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
 import {
-  startDrawingRead, getDrawing, getDrawingJob, waitForDrawingJob, getSheetImage, drawingInfo, drawingErrorStatus, sweepDrawingFiles,
-  MAX_DRAWING_BYTES, DRAWING_ACCEPT, type DrawingRecord,
+  startDrawingRead, getDrawing, getDrawingJob, waitForDrawingJob, getSheetImage, drawingInfo, drawingErrorStatus, startDrawingSweeper,
+  canSeeDrawing, MAX_DRAWING_BYTES, DRAWING_ACCEPT, type DrawingRecord, type DrawingUser,
 } from '../services/drawing-service.js';
-import { specLookup } from '../services/drawing-context.js';
+import { specLookup, drawingUserOf } from '../services/drawing-context.js';
 
 const router = Router();
-sweepDrawingFiles();   // drawings are kept for a day, as CAD uploads are
+// Files and sheet pictures are kept a day, readings a week: swept now and every hour while the server runs (F07).
+startDrawingSweeper();
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_DRAWING_BYTES, files: 1 } });
+// A file of EXACTLY the limit is accepted (as /api/cad/analyze accepts it): busboy reports a file as over the limit
+// when its size REACHES `fileSize`, so the multer limit is one byte more and the route checks `> MAX` itself (D07).
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_DRAWING_BYTES + 1, files: 1 } });
+const overLimit = (bytes: number): string =>
+  `The drawing is ${bytes > MAX_DRAWING_BYTES + 1 ? `${(bytes / 1048576).toFixed(1)} MB` : 'over 30 MB'}; the limit is ${MAX_DRAWING_BYTES / 1048576} MB (${MAX_DRAWING_BYTES.toLocaleString('en-GB')} bytes).`;
+
+/** The signed-in user, as the drawing service records and checks it. */
+const userOf = (req: Request): DrawingUser | null => drawingUserOf(req);
+
+/** The answer for a drawing or job this user may not see — word for word the answer for one that does not exist. */
+const NO_JOB = 'No such drawing job on this server — attach the drawing again.';
 const readLimiter = cadLimiter(120, 'drawing reads');
 const sheetLimiter = cadLimiter(600, 'drawing sheet pictures');
 
@@ -55,7 +68,8 @@ router.post('/read', requireAuth, readLimiter, upload.fields([{ name: 'drawing',
     const files = req.files as Record<string, Express.Multer.File[]> | undefined;
     const file = files?.drawing?.[0] ?? files?.drawingPdf?.[0];
     if (!file) { res.status(400).json({ error: `No drawing uploaded. Attach a ${DRAWING_ACCEPT.join(', ')} file as "drawing".` }); return; }
-    const handle = startDrawingRead(file.buffer, file.originalname);
+    if (file.size > MAX_DRAWING_BYTES) { res.status(413).json({ error: overLimit(file.size), code: 'drawing_too-large' }); return; }
+    const handle = startDrawingRead(file.buffer, file.originalname, userOf(req));
     const wait = req.body?.wait === '0' || req.body?.wait === 'false' ? 0 : READ_WAIT_MS;
     const rec = await handle.settled(wait);
     if (rec.status === 'failed') {
@@ -73,7 +87,7 @@ router.post('/read', requireAuth, readLimiter, upload.fields([{ name: 'drawing',
 router.get('/jobs/:id', requireAuth, async (req: Request, res: Response) => {
   const id = String(req.params.id ?? '');
   const job = getDrawingJob(id);
-  if (!job) { res.status(404).json({ error: 'No such drawing job on this server — attach the drawing again.' }); return; }
+  if (!job || !canSeeDrawing(job.hash, userOf(req))) { res.status(404).json({ error: NO_JOB }); return; }
   // A short wait so a poll that arrives just before the read ends gets the result in one round trip.
   if ((job.status === 'queued' || job.status === 'running') && req.query.wait === '1') await waitForDrawingJob(id, 8000);
   const now = getDrawingJob(id)!;
@@ -87,9 +101,14 @@ router.get('/jobs/:id', requireAuth, async (req: Request, res: Response) => {
   });
 });
 
+/** The answer for a sheet of a drawing this user may not see — word for word the answer for one the server does not hold. */
+const NO_SHEET = 'The drawing file is no longer held on this server — attach it again to see the sheet.';
+
 router.get('/:hash/sheet/:n', requireAuth, sheetLimiter, async (req: Request, res: Response) => {
   try {
-    const png = await getSheetImage(String(req.params.hash ?? ''), Number(req.params.n));
+    const hash = String(req.params.hash ?? '');
+    if (!canSeeDrawing(hash, userOf(req))) { res.status(404).json({ error: NO_SHEET }); return; }
+    const png = await getSheetImage(hash, Number(req.params.n));
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'private, max-age=3600');
     res.send(png);
@@ -102,7 +121,8 @@ router.get('/:hash/sheet/:n', requireAuth, sheetLimiter, async (req: Request, re
 // Multer's own errors (a file over the limit) as JSON, not a generic 500.
 router.use((err: unknown, _req: Request, res: Response, next: (e?: unknown) => void) => {
   if (err instanceof multer.MulterError) {
-    res.status(err.code === 'LIMIT_FILE_SIZE' ? 413 : 400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? `The drawing is over the ${MAX_DRAWING_BYTES / 1048576} MB limit.` : `Upload error: ${err.message}` });
+    res.status(err.code === 'LIMIT_FILE_SIZE' ? 413 : 400).json(err.code === 'LIMIT_FILE_SIZE'
+      ? { error: overLimit(MAX_DRAWING_BYTES + 1), code: 'drawing_too-large' } : { error: `Upload error: ${err.message}` });
     return;
   }
   next(err);

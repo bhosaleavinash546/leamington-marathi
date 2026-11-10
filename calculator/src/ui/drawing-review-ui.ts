@@ -9,10 +9,16 @@
  *
  * main.ts supplies the hooks (who is signed in, how to re-run, the engineer's own answers). No inline handlers:
  * one delegated listener on the panel reads `data-dr-act`.
+ *
+ * Every decision is sent BOUND to what it was taken on (review F04 / D02): the drawing's hash and, for a decision on a
+ * reading, the value the engineer saw (`seen`). The server skips — and the panel lists — a decision whose drawing or
+ * reading no longer matches. The name and time written here are for this page only: the server records the signed-in
+ * user and its own clock (F05).
  */
 import type { ConsolidatedEngineeringData, ReviewOp, ParameterValue } from '../engine/engineering-data/index.js';
 import { applyReviewOp, answersFromEngineeringData, reviewStateKey, parameterDef, valueText, locationText, methodText } from '../engine/engineering-data/index.js';
 import { OverrideError } from '../engine/engineering-data/overrides.js';
+import { seenKey } from '../engine/engineering-data/review-state.js';
 import type { Decision } from '../engine/cost-input-rules/types.js';
 import { buildReviewPanel, reviewPanelHtml, answerLabel, type DrawingCostingView, type DrawingInfoView, type ReviewPanelModel } from './drawing-review.js';
 import { projectStore } from './project-store.js';
@@ -281,9 +287,19 @@ async function restoreSavedReview(): Promise<void> {
   try {
     const id = reviewProjectId(hash, S.partKey, userTag());
     const saved = (await projectStore.list(DRAWING_REVIEW_KIND)).find(p => p.id === id);
-    const d = saved?.data as { review?: { ops?: ReviewOp[] }; savedAt?: string; drawingHash?: string } | undefined;
-    const ops = Array.isArray(d?.review?.ops) ? d!.review!.ops! : [];
-    if (!ops.length || d?.drawingHash !== hash || S.info?.hash !== hash || S.ops.length) return;
+    const d = saved?.data as { review?: { ops?: ReviewOp[] }; savedAt?: string; drawingHash?: string; readerVersion?: string } | undefined;
+    const savedOps = Array.isArray(d?.review?.ops) ? d!.review!.ops! : [];
+    if (!savedOps.length || d?.drawingHash !== hash || S.info?.hash !== hash || S.ops.length) return;
+    // A review saved before decisions carried the value they were taken on, on a reading by another reader version:
+    // its positional ids may now name other readings — it is not restored (F04).
+    if (d.readerVersion && d.readerVersion !== S.info.readerVersion && savedOps.some(o => o.seen === undefined)) {
+      S.restored = `Your earlier review of this drawing was taken on an earlier reading (reader v${d.readerVersion}); the drawing has been read again `
+        + `(v${S.info.readerVersion}), so its ${savedOps.length} decision${savedOps.length === 1 ? ' was' : 's were'} not restored. Review the readings again.`;
+      hooks?.onChange();
+      return;
+    }
+    // A review saved before decisions named their drawing is this drawing's (the saved record says so, and it matches).
+    const ops = savedOps.map(o => (o.drawingHash ? o : { ...o, drawingHash: hash }));
     S.ops = [...ops];
     S.restored = `Your earlier review of this drawing was restored: ${ops.length} decision${ops.length === 1 ? '' : 's'}`
       + `${d?.savedAt ? `, saved ${new Date(d.savedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}. “Start the review again” clears them.`;
@@ -311,12 +327,21 @@ export function drawingPanelHtml(): string {
 /** The row the engineer last acted on: focus returns to it when a re-run redraws the results. */
 let lastRowId = '';
 
+/** The decision bound to what it is taken on: this drawing, and the value its reading holds now (F04). */
+export function bindOp(data: ConsolidatedEngineeringData, op: ReviewOp, drawingHash: string): ReviewOp {
+  const rid = op.op === 'confirm' || op.op === 'correct' || op.op === 'reject' || op.op === 'reopen' ? op.id
+    : op.op === 'resolve' && op.choose ? op.choose : null;
+  const p = rid ? data.parameters.find(x => x.id === rid) : undefined;
+  return { ...op, drawingHash, ...(p ? { seen: seenKey(p.value) } : {}) };
+}
+
 function apply(ops: ReviewOp[]): boolean {
-  if (!S.data) return false;
+  if (!S.data || !S.info) return false;
   lastRowId = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>('[data-dr-row]')?.dataset.drRow ?? lastRowId;
   let data = S.data;
   const done: ReviewOp[] = [];
-  for (const op of ops) {
+  for (const raw of ops) {
+    const op = bindOp(data, raw, S.info.hash);
     try { data = applyReviewOp(data, op); done.push(op); }
     catch (e) {
       if (!(e instanceof OverrideError)) throw e;

@@ -299,14 +299,14 @@ export function traceFieldLabel(field: string): string {
   return words && !name.toLowerCase().includes(words) ? `${name}: ${words}` : name;
 }
 
-/** What raises a confidence grade, from the rule `overallConfidence` grades on. */
+/** What raises a confidence grade: the distinct inputs `costingConfidence` grades on (export/executive-summary.ts), with `overallConfidence`'s thresholds. */
 export function confidenceWhyText(grade: string | null, w: CostCardModel['confidenceWhy']): string {
   if (!grade) return '';
   if (grade === 'calibrated') return 'Calibrated against prices actually paid for this kind of part.';
   if (!w || !w.total) return '';
   const names = [...new Set(w.lowFields.map(traceFieldLabel))];
   const lows = names.slice(0, 4).join(', ') + (names.length > 4 ? ` and ${names.length - 4} more` : '');
-  return `${grade}: of ${w.total} data points behind this cost, ${w.high} are High, ${w.medium} Medium and ${w.low} Low`
+  return `${grade}: of ${w.total} distinct inputs behind this cost (a rate shared by several operations counts once), ${w.high} are High, ${w.medium} Medium and ${w.low} Low`
     + ' (the grade is Low when 40 % or more are Low, High when 70 % or more are High, otherwise their mix).'
     + (w.low ? ` Low: ${lows}.` : '')
     + ' A quote typed in for one of them, or prices paid logged with Log actual £, is what moves it.';

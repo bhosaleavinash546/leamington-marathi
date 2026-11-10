@@ -39,7 +39,7 @@ import type { EngineeringParameter, ParameterCandidate, ParameterKind, Parameter
 import { comparisonKey, convertUnit, designationTokens, parseNumber } from './normalise.js';
 import { flagOf, textOf } from './values.js';
 import {
-  TOLERANCE_RULES, GENERAL_TOLERANCE_NOT_MAPPED, TIGHT_LABEL_MAX_MM, classOfCastingGrade,
+  TOLERANCE_RULES, GENERAL_TOLERANCE_NOT_MAPPED, TIGHT_LABEL_MAX_MM, classOfCastingGrade, CAST_AL_DESIGNATIONS,
   COATING_RULES, COATING_NOT_MAPPED, AL_TEMPER_RULES, AL_TEMPER_NOT_MAPPED, HARDENING_RULES,
   GEAR_QUALITY_RULES, GEAR_CLASS_RANGE, LEAK_NOTE_RE, LEAK_NEGATION_RE, SAFETY_NOTE_RE, IMPREGNATION_RE, IMPREGNATION_NEGATION_RE,
   type Certainty, type SpecLookup,
@@ -80,11 +80,17 @@ function derive(
   origin: EngineeringParameter, name: string, value: ParameterValue, note: string,
   o: { kind?: ParameterKind; status?: ParameterStatus; unit?: string; candidates?: ParameterCandidate[]; suffix?: string } = {},
 ): EngineeringParameter {
+  // A value worked out from a doubtful reading is no surer than the reading (independent validation, 10 Nov 2026: a
+  // grade derived from a 41 %-confidence OCR word showed as "read, nothing to doubt" and could be bulk-confirmed).
+  const asked = o.status ?? 'extracted';
+  const status: ParameterStatus = asked === 'extracted' && (origin.status === 'needs-validation' || origin.method === 'ocr')
+    ? 'needs-validation' : asked;
+  if (status !== asked) note = `${note} Worked out from a reading that needs checking (${origin.method === 'ocr' ? 'read by OCR' : 'its own status'}): check the reading first.`;
   return {
     id: `${origin.id}>${name}${o.suffix ? `:${o.suffix}` : ''}`, name, value, ...(o.unit ? { unit: o.unit } : {}),
     ...(origin.rawText !== undefined ? { rawText: origin.rawText } : typeof origin.value === 'string' ? { rawText: origin.value } : {}),
     source: 'derived', ...(origin.sourceFile ? { sourceFile: origin.sourceFile } : {}), ...(origin.location ? { location: origin.location } : {}),
-    method: 'rule', kind: o.kind ?? 'interpreted', status: o.status ?? 'extracted',
+    method: 'rule', kind: o.kind ?? 'interpreted', status,
     ...(origin.reliability !== undefined ? { reliability: origin.reliability } : {}),
     note, derivedFrom: [origin.id], ...(o.candidates?.length ? { candidates: o.candidates } : {}),
   };
@@ -157,8 +163,14 @@ function interpretDesignation(origin: EngineeringParameter, opts: InterpretOptio
   // ── The rate-book grade, on a route whose grade question exists ──
   let gradeId: string | null = null;
   if (commodity && GRADE_SCOPE[commodity]) {
-    const g = gradeNamed(text, scopeGrades(commodity));
-    if (g.id) {
+    const scope = scopeGrades(commodity);
+    const en1706 = CAST_AL_DESIGNATIONS.find(d => d.pattern.test(text) && scope.some(m => m.id === d.gradeId));
+    const g: GradeReading = en1706 ? { id: en1706.gradeId, exact: true, candidates: [] } : gradeNamed(text, scope);
+    if (en1706) {
+      gradeId = en1706.gradeId;
+      out.push(derive(origin, 'material.grade', en1706.gradeId,
+        `${quoted} names ${gradeLabel(en1706.gradeId)}: ${en1706.written} — the same alloy limits under its EN 1706 designation (cross-reference table, interpret-tables.ts)`));
+    } else if (g.id) {
       gradeId = g.id;
       out.push(derive(origin, 'material.grade', g.id,
         g.exact

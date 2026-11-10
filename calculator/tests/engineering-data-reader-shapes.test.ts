@@ -56,12 +56,13 @@ describe('the reader\'s own vocabulary is re-stated in the engine\'s, through th
     expect(byName(alone, 'material.family')[0].note).toMatch(/the source wrote "grey iron"; held in the costing's vocabulary as "cast iron"/);
   });
 
-  it('class letter "m" is the question\'s "tight" by the ISO 2768 row — flagged as a judgement', () => {
+  // Validation, 10 Nov 2026: ISO 2768 sets MACHINED dimensions; the tolerance question (cast and forged routes only) asks
+  // the as-cast / as-forged tolerance. The letter used to read as "tight" — investment casting.
+  it('class letter "m" (ISO 2768) is kept as written and answers nothing: it is not the as-cast tolerance', () => {
     const cls = byName(data, 'tolerance.generalClass');
     expect(cls).toHaveLength(1);
-    expect(cls[0]).toMatchObject({ id: 'r:tol>tolerance.generalClass', value: 'tight', status: 'needs-validation' });
-    expect(cls[0].alsoFrom![0]).toMatchObject({ parameterId: 'r:class', rawText: 'ISO 2768-mK' });
-    expect(cls[0].note).toMatch(/ENGINEERING JUDGEMENT/);
+    expect(cls[0]).toMatchObject({ id: 'r:class', value: 'm' });
+    expect(cls[0].note).toMatch(/kept as written \("m"\), not in the costing's vocabulary: ISO 2768-1 sets the tolerances of machined/);
   });
 
   it('route "e-coat" is the finish question\'s "e_coat"', () => {
@@ -81,11 +82,12 @@ describe('the reader\'s own vocabulary is re-stated in the engine\'s, through th
     expect(lean.answers).toEqual({});
     expect(lean.leanings.map(l => [l.decisionId, l.value]).sort()).toEqual([
       ['material.family', 'cast iron'], ['material.grade', 'mat-gjs500'], ['service.finish', 'e_coat'],
-      ['service.safetyCritical', 'yes'], ['service.toleranceClass', 'tight'],
+      ['service.safetyCritical', 'yes'],
     ]);
     const a = answersFromEngineeringData(confirmNames(data, ['material.family', 'material.grade', 'tolerance.generalClass', 'finish.coatingRoute', 'quality.safetyCritical']));
-    expect(a.answers).toEqual({ 'material.family': 'cast iron', 'material.grade': 'mat-gjs500', 'service.toleranceClass': 'tight', 'service.safetyCritical': 'yes', 'service.finish': 'e_coat' });
-    expect(a.dropped).toEqual([]);
+    expect(a.answers).toEqual({ 'material.family': 'cast iron', 'material.grade': 'mat-gjs500', 'service.safetyCritical': 'yes', 'service.finish': 'e_coat' });
+    // even confirmed, "m" is not a class the question offers: dropped with the reason, never answered
+    expect(a.dropped).toEqual([expect.objectContaining({ parameterId: 'r:class', decisionId: 'service.toleranceClass' })]);
   });
 });
 
@@ -94,7 +96,7 @@ describe('a word the tables do not carry is left as written — never compared, 
     const data = build('cast_and_machine', [dp('tolerance.castingGrade', 'DCTG 9', 'ISO 8062-3 DCTG 9', { id: 'r:dctg', kind: 'interpreted' })]);
     const cls = byName(data, 'tolerance.generalClass');
     expect(cls.map(p => [p.id, p.value]).sort()).toEqual([['r:class', 'm'], ['r:dctg>tolerance.generalClass', 'standard']]);
-    expect(cls.find(p => p.id === 'r:class')!.note).toMatch(/kept as written \("m"\), not in the costing's vocabulary: it would read as "tight", but .*DCTG 9.*governs/);
+    expect(cls.find(p => p.id === 'r:class')!.note).toMatch(/kept as written \("m"\), not in the costing's vocabulary: ISO 2768-1 sets the tolerances of machined/);
     expect(data.conflicts).toEqual([]);
     const a = answersFromEngineeringData(data);
     expect(a.leanings.filter(l => l.decisionId === 'service.toleranceClass').map(l => l.value)).toEqual(['standard']);
@@ -181,7 +183,7 @@ describe('the reader\'s structured values', () => {
   });
 
   it('what no question takes is listed as not costed; identity, units and cross-checks are not', () => {
-    expect(data.notCosted.map(n => n.parameterId).sort()).toEqual(['r:bore', 'r:hbw', 'r:len', 'r:m10', 'r:tight'].sort());
+    expect(data.notCosted.map(n => n.parameterId).sort()).toEqual(['r:bore', 'r:hbw', 'r:len', 'r:m10', 'r:tight', 'r:tol'].sort());
     // "6x Ø14" with no tolerance says no more than the model does: a cross-check, not a requirement
   });
 

@@ -37,9 +37,6 @@ describe('general tolerance → the tolerance-class question', () => {
   const CASES: Record<string, Array<[string, string]>> = {
     'iso8062-dctg': [['ISO 8062-3 DCTG 5', 'tight'], ['ISO 8062-3:2007 - DCTG 9 - RMA 2 (RMAG H)', 'standard'], ['GENERAL TOLERANCES ISO 8062 CT12', 'loose'], ['DCTG 6', 'tight'], ['DCTG 7', 'standard'], ['DCTG 10', 'standard'], ['DCTG 11', 'loose']],
     'en10243-grade': [['EN 10243-1 grade F', 'standard'], ['Tolerances to EN 10243-1 - E', 'tight'], ['DIN 7526 Schmiedegüte F', 'standard']],
-    'iso2768-letter': [['ISO 2768-mK', 'tight'], ['ISO 2768-f', 'tight'], ['DIN ISO 2768 T1 - c', 'standard'], ['ISO 2768-1 v', 'loose'], ['GENERAL TOLERANCE ISO 2768-MK', 'tight'], ['ISO 2768 - cL', 'standard']],
-    'iso2768-word': [['ISO 2768 medium', 'tight'], ['ISO 2768-1 very coarse', 'loose'], ['ISO 2768 coarse', 'standard'], ['ISO 2768 fine', 'tight']],
-    'din7168-letter': [['DIN 7168 m', 'tight'], ['DIN 7168-g', 'standard'], ['DIN 7168 T1 sg', 'loose'], ['DIN 7168 f', 'tight']],
     'explicit-plus-minus': [['UNLESS OTHERWISE STATED ±0.25', 'tight'], ['general tolerance +/- 0,5 mm', 'tight'], ['ALL DIMENSIONS ±0.1', 'tight']],
   };
 
@@ -68,8 +65,8 @@ describe('general tolerance → the tolerance-class question', () => {
       if (r.certainty === 'judgement') expect(r.basis, r.id).toMatch(/ENGINEERING JUDGEMENT/);
       else expect(r.basis, r.id).not.toMatch(/ENGINEERING JUDGEMENT/);
     }
-    const p = dp('tolerance.general', 'ISO 2768-mK');
-    expect(derived([p], 'casting', 'tolerance.generalClass')[0]).toMatchObject({ value: 'tight', status: 'needs-validation', kind: 'interpreted', source: 'derived', method: 'rule', derivedFrom: [p.id] });
+    const p = dp('tolerance.general', 'ISO 8062-3 DCTG 9');
+    expect(derived([p], 'casting', 'tolerance.generalClass')[0]).toMatchObject({ value: 'standard', status: 'needs-validation', kind: 'interpreted', source: 'derived', method: 'rule', derivedFrom: [p.id] });
     expect(derived([dp('tolerance.general', 'EN 10243-1 grade E')], 'forging', 'tolerance.generalClass')[0]).toMatchObject({ value: 'tight', status: 'extracted' });
     expect(derived([dp('tolerance.general', '±0.2')], 'casting', 'tolerance.generalClass')[0]).toMatchObject({ value: 'tight', status: 'extracted' });
   });
@@ -81,13 +78,15 @@ describe('general tolerance → the tolerance-class question', () => {
     expect(derived(ps, 'casting', 'tolerance.generalClass')[0].value).toBe('tight');
   });
 
-  it('a wider ± figure, a block of tolerances and an unmapped standard give NO class', () => {
-    for (const text of ['±1.5', '.XX ±.01  .XXX ±.005', 'VDG P 690 D1', 'DIN 1688 GTA 14', 'ISO 20457', 'ISO 13920-B', 'see specification 1234', 'TOLERANCES PER COMPANY STD']) {
+  // ISO 2768 / DIN 7168 set MACHINED dimensions; the question is the as-cast / as-forged tolerance (validation, 10 Nov 2026)
+  it('a machining general tolerance (ISO 2768, DIN 7168), a wider ± figure, a block of tolerances and an unmapped standard give NO class', () => {
+    for (const text of ['ISO 2768-mK', 'GENERAL TOLERANCES ISO 2768-1 medium', 'DIN ISO 2768 T1 - c', 'DIN 7168 m', '±1.5', '.XX ±.01  .XXX ±.005', 'VDG P 690 D1', 'DIN 1688 GTA 14', 'ISO 20457', 'ISO 13920-B', 'see specification 1234', 'TOLERANCES PER COMPANY STD']) {
       const r = toleranceClassOf(text);
       expect(r === null || 'unmapped' in r, text).toBe(true);
       const i = interpretParameters([dp('tolerance.general', text)], { commodity: 'casting' });
       expect(i.parameters.filter(p => p.name === 'tolerance.generalClass'), text).toEqual([]);
       expect(i.unresolved.some(u => u.name === 'tolerance.generalClass'), text).toBe(true);
+      if (/2768|7168/.test(text)) expect(i.unresolved.find(u => u.name === 'tolerance.generalClass')!.why, text).toMatch(/as-cast \/ as-forged/);
     }
     for (const n of GENERAL_TOLERANCE_NOT_MAPPED) expect(n.why.length).toBeGreaterThan(20);
   });
@@ -309,13 +308,14 @@ describe('material designation → family and rate-book grade (the engine\'s own
     expect(g.status).toBe('needs-validation');
     expect(g.candidates!.map(c => c.value).sort()).toEqual(['mat-gjs500', 'mat-gjs500-14']);
     expect(g.note).toMatch(/choose the grade/);
-    // a stem the engine's matcher would follow to a DIFFERENT alloy is not taken as read
-    expect(one('AlSi7Mg0.3', 'casting', 'material.grade')).toMatchObject({ value: 'mat-a357', status: 'needs-validation' });
+    // a stem the engine's matcher would follow to a DIFFERENT alloy is not taken as read by the matcher alone…
     expect(gradeNamed('AlSi7Mg0.3', gradeCandidates('casting', 'aluminium')).exact).toBe(false);
+    // …and the EN 1706 table names the right one: AlSi7Mg0.3 is A356, not A357 (validation, 10 Nov 2026)
+    expect(one('AlSi7Mg0.3', 'casting', 'material.grade')).toMatchObject({ value: 'mat-lm25', status: 'extracted' });
   });
 
   it('a designation that names no grade gives no grade parameter and says so', () => {
-    for (const [text, commodity] of [['EN AC-42100', 'casting'], ['AlSi9Cu3(Fe)', 'casting'], ['unobtainium', 'forging'], ['Stahl nach Werksnorm', 'sheet_metal']]) {
+    for (const [text, commodity] of [['EN AC-42000', 'casting'], ['AlSi9Cu3(Fe)', 'casting'], ['unobtainium', 'forging'], ['Stahl nach Werksnorm', 'sheet_metal']]) {
       const i = interpretParameters([dp('material.designation', text)], { commodity });
       expect(i.parameters.filter(p => p.name === 'material.grade'), text).toEqual([]);
       expect(i.unresolved.find(u => u.name === 'material.grade')?.why, text).toMatch(/names no grade/);

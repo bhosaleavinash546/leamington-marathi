@@ -90,7 +90,7 @@ describe('every binding answers a question the commodity\'s rules really ask', (
       if (READ_NOT_ASKED.has(b.decisionId)) continue;
       expect([...ids], `${commodity}: "${b.decisionId}" (from ${b.parameter}) is a question its rules ask`).toContain(b.decisionId);
     }
-  });
+  }, 30_000);   // runs a route's rules on real recorded parts: ~5 s for sheet metal in a loaded suite (validation F18)
 
   it('the one read-but-not-asked id is really read by the gear rules', () => {
     const src = readFileSync(join(FOLDER, '..', 'cost-input-rules', 'commodities', 'gear.ts'), 'utf8');

@@ -15,7 +15,7 @@ import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage, questionsToStopOn, newQuestionsMessage, GET_COST_AFTER_STOP_LABEL } from './cad-flow.js';
 import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerName, answerChipsHtml, cadCostCardHtml, basisGradeFor, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, entryChoiceHtml, entryChoiceValue, optionCostSlotHtml, optionCostHtml, optionCostNoteText, pricedQuestionsReady, PRICED_QUESTION_IDS, cardLeadHtml, routeAlternativesHtml, type QuestionCosts, type CardPage1, type EntryChoiceDecision, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
 // Phase C: the cost card reads page 1 of the core report from its own model (already in this bundle via excel.ts).
-import { buildCoreReport } from '../export/executive-summary.js';
+import { buildCoreReport, costingConfidence } from '../export/executive-summary.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -204,7 +204,7 @@ import { countryFactor } from '../engine/regional-services.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printAuditPackPDF as printAuditPackType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
-import { computeCostUncertainty, confidenceWhy, confidenceRaisers } from '../engine/uncertainty.js';
+import { computeCostUncertainty, confidenceRaisers } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
   computeConformalBand, applyConformalBand, segmentDrift, calibrationCoverage, calibrationSummary,
@@ -16452,6 +16452,17 @@ function paneSkeleton(msg: string): string {
  * panes render lazily, so without this the sticky band would be blank until the
  * Insights tab is opened.
  */
+/**
+ * The ONE confidence grade of a costing, as every report prints it (`costingConfidence`: distinct inputs, capped by a
+ * blocking DFM finding or estimated geometry). The screen used the per-row grade and said Medium where the audit pack
+ * said Low on the same costing (independent validation, 10 Nov 2026). Only the two fields the cap reads are passed —
+ * `buildCadReportMeta` itself calls `resultBand`.
+ */
+function screenConfidence(result: PartCostResult) {
+  const cadMeta = costedFromCAD() ? { geometricDFM: dfmBelongsToCosting() ? cadGeometricDFM : null, geometrySource: cadGeometrySource } : null;
+  return costingConfidence({ result, library, commodity: activeCommodity, cadMeta });
+}
+
 function resultBand(result: PartCostResult, input: UniversalStackInput): {
   u: ReturnType<typeof computeCostUncertainty>;
   hcalApplied: boolean; mapePct: number; n: number;
@@ -16464,7 +16475,7 @@ function resultBand(result: PartCostResult, input: UniversalStackInput): {
     ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
     : computeCostUncertainty(result, input, { provenance: driverProvenance(input), library });
   const conf90 = computeConformalBand(getCalibrationRecords(), seg, 0.9);
-  _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence), p10: u.p10, p90: u.p90 };
+  _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : screenConfidence(result).grade, p10: u.p10, p90: u.p90 };
   return { u, hcalApplied: hcal.applied, mapePct: hcal.calibratedMapePct, n: hcal.n, conf90, region };
 }
 
@@ -16487,7 +16498,7 @@ function buildResultHeroBlock(result: PartCostResult, input: UniversalStackInput
   const markerPos = Math.max(3, Math.min(97, ((u.p50 - u.p10) / span) * 100));
   const confLabel = hcalApplied
     ? `Calibrated · ${mapePct}% MAPE (${n} actual${n === 1 ? '' : 's'})`
-    : `${u.overallConfidence} confidence`;
+    : `${_lastBandInfo?.conf ?? screenConfidence(result).grade} confidence`;
   return `
     <div class="cv-rhero" style="--band:${bandColor}">
       <div class="cv-rhero-head">
@@ -17313,14 +17324,14 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           materialFamily: currentMaterialFamily(),
           region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
         }, 0.9);
-        _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence), p10: u.p10, p90: u.p90 };
+        _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : screenConfidence(lastResult!).grade, p10: u.p10, p90: u.p90 };
         const bandNote = hcal.applied
           ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
           : 'Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.';
         const uncertaintyCard = `
       <div style="margin-top:12px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid ${bandColor};border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Should-Cost with uncertainty <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(Monte-Carlo, ${hcal.applied ? 'accuracy-driven' : `${u.overallConfidence} confidence`})</span></div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Should-Cost with uncertainty <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(Monte-Carlo, ${hcal.applied ? 'accuracy-driven' : `${_lastBandInfo?.conf ?? 'Medium'} confidence`})</span></div>
           <div style="font-size:1.15rem;font-weight:700;color:var(--text-primary)">${cf(result.total)} <span style="font-size:0.8rem;color:${bandColor}">± ${u.plusMinusPct}%</span></div>
         </div>
         <div style="margin-top:8px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
@@ -21989,7 +22000,12 @@ function renderCADCostCard(): void {
     band: _lastBandInfo ? { pm: _lastBandInfo.pm, p10: _lastBandInfo.p10 ?? null, p90: _lastBandInfo.p90 ?? null } : null,
     confidence: _lastBandInfo?.conf ?? null,
     basis,
-    confidenceWhy: _lastBandInfo?.conf === 'calibrated' ? null : confidenceWhy(lastResult!),
+    confidenceWhy: _lastBandInfo?.conf === 'calibrated' ? null : (() => {
+      // distinct inputs, as the grade and the reports count them
+      const c = screenConfidence(lastResult!);
+      return { total: c.distinct.total, high: c.distinct.high, medium: c.distinct.medium, low: c.distinct.low,
+        lowFields: c.inputs.filter(i => i.conf === 'Low').map(i => i.label) };
+    })(),
     raisers: _lastBandInfo?.conf === 'calibrated' ? [] : confidenceRaisers(lastResult!, input),
     // A laminate is two materials priced per kg (a direct cost on the placeholder id): the Laminate chip names it and
     // the costed weight is the cured part weight the form holds — "Grade Virtual / Pass-through (default)" and no

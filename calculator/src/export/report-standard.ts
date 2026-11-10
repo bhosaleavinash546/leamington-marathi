@@ -64,8 +64,39 @@ const ni = (text: string, costedIf?: RegExp, unlessAnswered?: NotIncludedItem['u
  * tapped only where its Ø is a tapping-drill size (feature-ops.ts tappedThread). Listed on every machined route until the
  * engineer confirms which holes are tapped — never costed by guess (Part1 review, Nov 2026).
  */
-const THREADS: NotIncludedItem = { text: 'Threads not detected — confirm: the CAD model shows no thread, so each hole is costed drilled '
+export const THREADS: NotIncludedItem = { text: 'Threads not detected — confirm: the CAD model shows no thread, so each hole is costed drilled '
   + '(tapped only where its Ø is a tapping-drill size); say which holes are tapped and their size' };
+
+/** A thread the attached drawing states (drawing-spec-report.ts rows and not-costed readings named "Thread"). */
+export interface DrawingThread { value: string; status: string }
+/** The threads the drawing states — every "Thread" reading from the drawing that the engineer did not reject. */
+export function drawingThreadsOf(d: {
+  rows: ReadonlyArray<{ parameter: string; value: string; source: string; status: string }>;
+  notCosted: ReadonlyArray<{ parameter: string; value: string; source: string; status: string }>;
+} | null | undefined): DrawingThread[] {
+  if (!d) return [];
+  const seen = new Set<string>();
+  const out: DrawingThread[] = [];
+  for (const r of [...d.rows, ...d.notCosted]) {
+    if (!/^thread$/i.test(r.parameter.trim()) || r.status === 'Rejected' || !/^Drawing\b/.test(r.source)) continue;
+    if (seen.has(r.value)) continue;
+    seen.add(r.value);
+    out.push({ value: r.value, status: r.status });
+  }
+  return out;
+}
+/**
+ * The THREADS line when the drawing states threads (D13, Nov 2026: page 1 said "the CAD model shows no thread" while the
+ * drawing on the same report stated the M6x1-6H thread, 12 deep). It says what the drawing states, whether the engineer confirmed it,
+ * and that no thread is priced FROM the drawing — the costing taps a hole only where its Ø is a tapping-drill size.
+ */
+export function threadsItemText(threads: ReadonlyArray<DrawingThread>): string {
+  if (!threads.length) return THREADS.text;
+  const confirmed = threads.every(t => t.status === 'Confirmed' || t.status === 'Corrected');
+  return `Threads — the drawing states ${threads.map(t => t.value).join(', ')} (${confirmed ? 'confirmed by the engineer' : 'read off the drawing, not confirmed'}); `
+    + 'no thread is priced from the drawing: each hole is costed drilled, tapped only where its Ø is a tapping-drill size — '
+    + 'confirm which holes are tapped and their size';
+}
 /** Settled by a "No" to the leak-tight question. */
 const NOT_PRESSURE_TIGHT = { id: 'service.pressureTight', answer: /^no$/ };
 /** A safety-critical part: answered Yes. */

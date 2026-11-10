@@ -62,7 +62,17 @@ interface Work {
   pixels?: (dpi: number) => Promise<{ grey: Grey; dpi: number }>;
   /** Boxes of the exact text already read, so OCR does not repeat it. */
   textBoxes: BBox[];
+  /** A scan's orientation as OCR found it (raster/index.ts): turned to read it, or no turn read clearly. */
+  ocrOrientation?: 'turned' | 'unknown';
 }
+
+/**
+ * How far the drawing is turned on its page, ANTICLOCKWISE — the convention of every text item's `rotation` (90 = text
+ * reading bottom to top): the dominant reading direction of its text (`dominantRotation`). One figure per sheet, the
+ * same in `rotationDeg` and in the warning (review D10: `rotationDeg` used to be the PDF page's /Rotate — clockwise, the
+ * other way round — and 0 for every image, while the warning gave the text's turn).
+ */
+const turnWords = (q: Quarter): string => (q === 90 ? '90° (its text reads bottom to top)' : q === 270 ? '270° (its text reads top to bottom)' : '180° (upside down)');
 
 function toBytes(buffer: Uint8Array | ArrayBuffer | Buffer): Uint8Array {
   if (buffer instanceof Uint8Array) return buffer;
@@ -184,6 +194,7 @@ export async function readDrawing(buffer: Uint8Array | ArrayBuffer | Buffer, fil
             const res = await ocrSheet(engine, px.grey, px.dpi, w.info.sheet, {
               clean: w.info.content !== 'scanned', vertical: opts.ocrVertical ?? true, languages: opts.ocrLanguages?.length ? opts.ocrLanguages : DEFAULT_OCR_LANGUAGES,
             });
+            if (res.orientation === 'turned' || res.orientation === 'unknown') w.ocrOrientation = res.orientation;
             const fresh = res.items.filter(it => !w.textBoxes.some(b => containsPoint(b, it.ox + 2, it.oy - 2, 1.5)));
             w.items = [...w.items, ...fresh];
             if (w.info.content === 'scanned') { w.h = res.h; w.v = res.v; w.o = []; }
@@ -225,7 +236,15 @@ export async function readDrawing(buffer: Uint8Array | ArrayBuffer | Buffer, fil
     const uw = q === 90 || q === 270 ? H : W, uh = q === 90 || q === 270 ? W : H;
     const lines = assembleLines(items, segs, nextId);
     nextId += lines.length;
-    if (q !== 0) warnings.push(`Sheet ${w.info.sheet}: the drawing is turned ${q}° on its page; it was read upright and every location is given on the page as supplied.`);
+    // One rotation figure per sheet (D10): the turn of its text (anticlockwise), in rotationDeg and in the warning.
+    w.info = { ...w.info, rotationDeg: q };
+    if (q !== 0) {
+      warnings.push(`Sheet ${w.info.sheet}: the drawing is turned ${turnWords(q)} on its page`
+        + `${w.ocrOrientation === 'turned' ? ' (found by reading the scan in all four quarter turns)' : ''}; it was read upright and every location is given on the page as supplied.`);
+    }
+    if (w.ocrOrientation === 'unknown') {
+      warnings.push(`Sheet ${w.info.sheet}: which way up this scan lies could not be told from its text (no quarter turn read clearly); it was read as it lies — every reading on it needs validation.`);
+    }
     const layout = analyseLayout({ sheet: w.info.sheet, width: uw, height: uh, lines, hSegs: segs.h, vSegs: segs.v, oSegs: segs.o });
     sheets.push({ info: { ...w.info, widthPt: uw, heightPt: uh }, items, lines, hSegs: segs.h, vSegs: segs.v, oSegs: segs.o, stats: w.stats });
     layouts.push(layout);
