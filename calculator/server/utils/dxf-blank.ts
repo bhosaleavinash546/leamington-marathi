@@ -143,10 +143,10 @@ function bulgePoints(p0: Pt, p1: Pt, bulge: number): Pt[] {
 
 // ─── Reading the file ────────────────────────────────────────────────────────
 
-interface Pair { code: number; value: string }
+export interface Pair { code: number; value: string }
 
 /** DXF is group-code/value pairs, one per line, codes on the odd lines. */
-function readPairs(text: string): Pair[] {
+export function readPairs(text: string): Pair[] {
   const lines = text.split(/\r\n|\r|\n/);
   const out: Pair[] = [];
   for (let i = 0; i + 1 < lines.length; i += 2) {

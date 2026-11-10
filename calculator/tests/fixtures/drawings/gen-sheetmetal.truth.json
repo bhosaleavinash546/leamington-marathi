@@ -1,0 +1,208 @@
+{
+ "drawing": "gen-sheetmetal",
+ "commodity": "sheet metal",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "SEAT BRACKET LH"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "SB-7781-LH"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "SB-7781"
+  },
+  {
+   "name": "title.revision",
+   "value": "D"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-05-21"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "part.mass",
+   "value": 0.42
+  },
+  {
+   "name": "material.designation",
+   "value": "DC04+ZE25/25"
+  },
+  {
+   "name": "material.standard",
+   "value": "EN 10152"
+  },
+  {
+   "name": "material.family",
+   "value": "steel"
+  },
+  {
+   "name": "material.stockThickness",
+   "value": 1.5
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-mK"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "value": "medium"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "ZINC-NICKEL PLATE Fe//ZnNi8//Cn//T2"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "zinc-nickel"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "match": {
+    "min": 8
+   }
+  },
+  {
+   "name": "finish.masking",
+   "contains": "NO PAINT ON CONTACT SURFACES"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M6",
+    "count": 2,
+    "insert": "WELD NUT"
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 2
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 220
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 73.5,
+    "upper": 0.3,
+    "lower": -0.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 133
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 40,
+    "upper": 0.5,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 90
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 9,
+    "count": 3,
+    "through": true
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.5,
+    "nominal": 40
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 3
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "ZINC-NICKEL PLATE"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "WELDING TO ISO 5817-C"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "PROJECTION WELD NUTS"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "INSIDE BEND RADII R2"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "NO PAINT ON CONTACT SURFACES"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "ISO 13920-BF"
+  },
+  {
+   "name": "weld.standard",
+   "value": "ISO 5817-C"
+  },
+  {
+   "name": "weld.note",
+   "contains": "WELDING TO ISO 5817-C, PROCESS 135"
+  },
+  {
+   "name": "weld.note",
+   "contains": "PROJECTION WELD NUTS"
+  }
+ ]
+}

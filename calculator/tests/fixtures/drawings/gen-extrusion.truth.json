@@ -1,0 +1,179 @@
+{
+ "drawing": "gen-extrusion",
+ "commodity": "aluminium extrusion",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "STRANGPRESSPROFIL LÄNGSTRÄGER"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "LT-6063-220"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "LT 220 771"
+  },
+  {
+   "name": "title.revision",
+   "value": "C"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-08-18"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "part.mass",
+   "value": 2.35
+  },
+  {
+   "name": "material.designation",
+   "value": "EN AW-6063 T66"
+  },
+  {
+   "name": "material.standard",
+   "value": "DIN EN 755-2"
+  },
+  {
+   "name": "material.family",
+   "value": "aluminium (wrought)"
+  },
+  {
+   "name": "material.condition",
+   "value": "T66"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "DIN EN 755-9"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "eloxiert E6/EV1, 15 µm"
+  },
+  {
+   "name": "finish.coating",
+   "contains": "Sichtflächen eloxiert E6/EV1"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "anodise"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "match": {
+    "nominal": 15
+   }
+  },
+  {
+   "name": "heatTreat.process",
+   "value": "age-harden"
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 75,
+    "scale": "HBW"
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 80,
+    "upper": 0.6,
+    "lower": -0.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 55,
+    "upper": 0.5,
+    "lower": -0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.5,
+    "upper": 0.25,
+    "lower": -0.25
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1200,
+    "upper": 2,
+    "lower": 0
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.5,
+    "nominal": 2.5
+   }
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Strangpressprofil EN AW-6063 T66"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Warmausgelagert, Härte min. 75 HBW"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Sichtflächen eloxiert"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Schnittkanten entgratet"
+  },
+  {
+   "name": "note.general",
+   "contains": "Geradheit max. 1,5 mm/m"
+  }
+ ]
+}

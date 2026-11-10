@@ -1,0 +1,283 @@
+{
+ "drawing": "gen-casting",
+ "commodity": "casting",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "PUMP HOUSING"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "CV-100-2231"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "D-100-2231"
+  },
+  {
+   "name": "title.revision",
+   "value": "C"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:2"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-03-14"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "part.mass",
+   "value": 4.85
+  },
+  {
+   "name": "material.designation",
+   "value": "EN-GJS-500-7"
+  },
+  {
+   "name": "material.standard",
+   "value": "EN 1563"
+  },
+  {
+   "name": "material.family",
+   "value": "ductile iron"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 8062-3 DCTG 9"
+  },
+  {
+   "name": "tolerance.castingGrade",
+   "value": "DCTG 9"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "parameter": "Ra",
+    "value": 12.5
+   }
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Ra",
+    "value": 3.2
+   }
+  },
+  {
+   "name": "finish.coating",
+   "contains": "CATHODIC E-COAT 20-35 µm"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "e-coat"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "match": {
+    "min": 20,
+    "max": 35
+   }
+  },
+  {
+   "name": "finish.masking",
+   "contains": "MASK 4x M10 THREADS"
+  },
+  {
+   "name": "finish.maskedFeatures",
+   "value": 4
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 170,
+    "max": 230,
+    "scale": "HBW"
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M10x1.5-6H",
+    "count": 4,
+    "depth": 20,
+    "pitch": 1.5
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 4
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 150,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 90
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 105
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 50,
+    "upper": 0.1,
+    "lower": -0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 12
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 8.5,
+    "count": 2,
+    "through": true
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 62,
+    "fit": "H7",
+    "upper": 0.03,
+    "lower": 0
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.03,
+    "nominal": 62
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 3
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.2,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 0.05
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CASTING TOLERANCES TO ISO 8062-3 DCTG 9"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "ISO 2768-mK"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "UNSPECIFIED RADII R3"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "PRESSURE TEST AT 6 bar"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "100% X-RAY TO ASTM E446"
+  },
+  {
+   "name": "note.general",
+   "contains": "SAFETY CRITICAL PART"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CATHODIC E-COAT"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "HARDNESS 170-230 HBW"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "BREAK ALL SHARP EDGES"
+  },
+  {
+   "name": "quality.pressureTight",
+   "value": true
+  },
+  {
+   "name": "quality.leakTestSpec",
+   "contains": "PRESSURE TEST AT 6 bar AIR"
+  },
+  {
+   "name": "quality.ndt",
+   "contains": "X-RAY TO ASTM E446"
+  },
+  {
+   "name": "quality.safetyCritical",
+   "value": true
+  },
+  {
+   "name": "finish.edges",
+   "contains": "ISO 13715"
+  }
+ ]
+}

@@ -1,0 +1,283 @@
+{
+ "drawing": "gen-forging",
+ "commodity": "forging",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ACHSSCHENKEL"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "Z-4471-08"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "4471 08 221"
+  },
+  {
+   "name": "title.revision",
+   "value": "B"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "12.02.2026"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/2"
+  },
+  {
+   "name": "part.mass",
+   "value": 3.2
+  },
+  {
+   "name": "material.designation",
+   "value": "42CrMo4+QT"
+  },
+  {
+   "name": "material.standard",
+   "value": "DIN EN ISO 683-2"
+  },
+  {
+   "name": "material.family",
+   "value": "steel"
+  },
+  {
+   "name": "material.condition",
+   "value": "+QT"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-mK"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "value": "medium"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "parameter": "Rz",
+    "value": 25
+   }
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Rz",
+    "value": 6.3
+   }
+  },
+  {
+   "name": "finish.coating",
+   "contains": "zinkphosphatiert"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "phosphate"
+  },
+  {
+   "name": "heatTreat.process",
+   "value": "quench-and-temper"
+  },
+  {
+   "name": "heatTreat.process",
+   "value": "induction-harden"
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 28,
+    "max": 34,
+    "scale": "HRC"
+   }
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 52,
+    "max": 58,
+    "scale": "HRC"
+   }
+  },
+  {
+   "name": "heatTreat.caseDepth",
+   "match": {
+    "type": "SHD",
+    "min": 2,
+    "max": 3
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M24x1.5-6g",
+    "pitch": 1.5,
+    "toleranceClass": "6g"
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 1
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 480,
+    "upper": 0.5,
+    "lower": -0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 90
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 120,
+    "upper": 0,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 45,
+    "fit": "k6",
+    "upper": 0.018,
+    "lower": 0.002
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 30,
+    "fit": "h6",
+    "upper": 0,
+    "lower": -0.013
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 38,
+    "fit": "f7",
+    "upper": -0.025,
+    "lower": -0.05
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.013,
+    "nominal": 30
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circular run-out",
+    "tolerance": 0.03,
+    "datums": [
+     "A-B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "concentricity",
+    "tolerance": 0.05,
+    "diameterZone": true,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Schmiedeteil nach DIN EN 10243-1"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Vergütet, Härte 28-34 HRC"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "induktiv gehärtet 52-58 HRC"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Magnetpulverprüfung"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "zinkphosphatiert"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Alle Kanten entgratet"
+  },
+  {
+   "name": "note.general",
+   "contains": "Sicherheitsrelevantes Bauteil"
+  },
+  {
+   "name": "quality.ndt",
+   "contains": "Magnetpulverprüfung nach DIN EN ISO 9934-1"
+  },
+  {
+   "name": "quality.safetyCritical",
+   "value": true
+  },
+  {
+   "name": "finish.edges",
+   "contains": "ISO 13715"
+  }
+ ]
+}

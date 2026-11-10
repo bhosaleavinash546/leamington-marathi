@@ -1,0 +1,146 @@
+{
+ "drawing": "gen-composite",
+ "commodity": "composites",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "ROOF BOW PANEL"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "RB-0450-CF"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "RB-0450"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:5"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-09-11"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "part.mass",
+   "value": 0.95
+  },
+  {
+   "name": "material.designation",
+   "contains": "CFRP"
+  },
+  {
+   "name": "material.family",
+   "value": "composite"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-cL"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "value": "coarse"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1050,
+    "upper": 1.5,
+    "lower": -1.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 400,
+    "upper": 1,
+    "lower": -1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 2.1,
+    "upper": 0.2,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 6.2,
+    "count": 2,
+    "through": true
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.4,
+    "nominal": 2.1
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 2
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "LAMINATE: 8 PLIES CARBON FIBRE EPOXY PREPREG"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CURE IN AUTOCLAVE"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "ULTRASONIC C-SCAN"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "TRIM EDGES BY WATERJET"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CLEAR COAT 40-60 µm"
+  },
+  {
+   "name": "note.general",
+   "contains": "DIMENSIONS IN MILLIMETRES"
+  },
+  {
+   "name": "quality.ndt",
+   "contains": "ULTRASONIC C-SCAN"
+  }
+ ]
+}

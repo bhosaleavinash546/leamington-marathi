@@ -1,0 +1,126 @@
+{
+ "drawing": "gen-rubber",
+ "commodity": "rubber",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "DICHTUNGSPROFIL"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "DP-3310"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "A 331 098 12"
+  },
+  {
+   "name": "title.revision",
+   "value": "A"
+  },
+  {
+   "name": "title.scale",
+   "value": "2:1"
+  },
+  {
+   "name": "title.date",
+   "value": "08.09.2026"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1"
+  },
+  {
+   "name": "material.designation",
+   "value": "EPDM 70 Shore A"
+  },
+  {
+   "name": "material.family",
+   "value": "elastomer"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 3302-1 M2"
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 64,
+    "upper": 0.5,
+    "lower": -0.5
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 44,
+    "upper": 0.4,
+    "lower": -0.4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 14,
+    "upper": 0.3,
+    "lower": -0.3
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 10
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.6,
+    "nominal": 14
+   }
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Werkstoff EPDM 70 ±5 Shore A"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "ISO 3302-1 Klasse M2"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Gratfrei im Dichtbereich"
+  },
+  {
+   "name": "note.general",
+   "contains": "frei von Trennmittel"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "Kennzeichnung nach VDA 260"
+  },
+  {
+   "name": "quality.marking",
+   "contains": "VDA 260"
+  }
+ ]
+}

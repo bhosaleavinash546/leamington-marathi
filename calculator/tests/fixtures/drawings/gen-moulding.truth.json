@@ -1,0 +1,182 @@
+{
+ "drawing": "gen-moulding",
+ "commodity": "injection moulding",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "coating",
+  "heat treatment",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "CONNECTOR HOUSING 12-WAY"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "CH-12W-0093"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "CH-12W-0093-01"
+  },
+  {
+   "name": "title.revision",
+   "value": "7"
+  },
+  {
+   "name": "title.scale",
+   "value": "5:1"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-07-30"
+  },
+  {
+   "name": "title.sheet",
+   "value": "2/2"
+  },
+  {
+   "name": "title.projection",
+   "value": "first angle"
+  },
+  {
+   "name": "part.mass",
+   "value": 0.018
+  },
+  {
+   "name": "material.designation",
+   "value": "PA66-GF30"
+  },
+  {
+   "name": "material.family",
+   "value": "thermoplastic"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "DIN 16742 TG6"
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M4",
+    "count": 4
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 4
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 56.4,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 7.6
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 34.2,
+    "upper": 0.1,
+    "lower": -0.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 29.4
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 1.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 5.2,
+    "count": 12,
+    "upper": 0.05,
+    "lower": -0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "radius",
+    "nominal": 0.5
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.1,
+    "nominal": 5.2
+   }
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "MATERIAL PA66-GF30 TO ISO 16396"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "DIN 16742 TG6"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "DRAFT ANGLE 1°"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "GATE AND EJECTOR MARKS"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "PART MARKING PER ISO 11469"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "NO SINK MARKS OR WELD LINES"
+  },
+  {
+   "name": "note.general",
+   "contains": "CC = CRITICAL CHARACTERISTIC"
+  },
+  {
+   "name": "quality.marking",
+   "contains": "ISO 11469"
+  },
+  {
+   "name": "quality.safetyCritical",
+   "value": true
+  },
+  {
+   "name": "quality.inspection",
+   "contains": "Cpk ≥ 1.67"
+  }
+ ]
+}

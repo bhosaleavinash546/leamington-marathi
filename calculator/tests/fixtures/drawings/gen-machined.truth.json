@@ -1,0 +1,339 @@
+{
+ "drawing": "gen-machined",
+ "commodity": "machining",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes",
+  "quality"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "VALVE MANIFOLD BLOCK"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "MB-2207-114"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "MB-2207-114-D"
+  },
+  {
+   "name": "title.revision",
+   "value": "04"
+  },
+  {
+   "name": "title.scale",
+   "value": "2:1"
+  },
+  {
+   "name": "title.date",
+   "value": "03-Jun-2026"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/3"
+  },
+  {
+   "name": "title.units",
+   "value": "mm"
+  },
+  {
+   "name": "part.mass",
+   "value": 1.25
+  },
+  {
+   "name": "material.designation",
+   "value": "EN AW-6082-T6"
+  },
+  {
+   "name": "material.standard",
+   "value": "EN 573-3"
+  },
+  {
+   "name": "material.family",
+   "value": "aluminium (wrought)"
+  },
+  {
+   "name": "material.condition",
+   "value": "T6"
+  },
+  {
+   "name": "material.specCode",
+   "value": "STJLR.50.5021"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-fH"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "value": "fine"
+  },
+  {
+   "name": "finish.roughnessGeneral",
+   "match": {
+    "parameter": "Ra",
+    "value": 1.6
+   }
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Ra",
+    "value": 0.8
+   }
+  },
+  {
+   "name": "finish.coating",
+   "contains": "ANODISE 10-15 µm"
+  },
+  {
+   "name": "finish.coatingRoute",
+   "value": "anodise"
+  },
+  {
+   "name": "finish.coatingThickness",
+   "match": {
+    "min": 10,
+    "max": 15
+   }
+  },
+  {
+   "name": "finish.masking",
+   "contains": "FREE OF ANODISING"
+  },
+  {
+   "name": "finish.masking",
+   "contains": "MASK 6x M6"
+  },
+  {
+   "name": "finish.maskedFeatures",
+   "value": 6
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "M6-6H",
+    "count": 6,
+    "depth": 12,
+    "pitch": 1
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "G1/4",
+    "count": 2,
+    "system": "pipe"
+   }
+  },
+  {
+   "name": "thread",
+   "match": {
+    "designation": "1/4-20UNC-2B",
+    "system": "unified",
+    "insert": "HELICOIL INSERT"
+   }
+  },
+  {
+   "name": "feature.count.threads",
+   "value": 9
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 140
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 46.5,
+    "upper": 0.02,
+    "lower": -0.02
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 46.5,
+    "upper": 0.02,
+    "lower": -0.02
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 93.5,
+    "upper": 0.05,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 46.75,
+    "reference": true
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "chamfer",
+    "nominal": 2,
+    "chamferAngle": 45
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "max": 25.02,
+    "min": 24.98
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 62.5,
+    "basic": true
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 25,
+    "count": 3,
+    "fit": "H7",
+    "upper": 0.021,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "fit": "g6",
+    "upper": -0.007,
+    "lower": -0.02
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.013,
+    "nominal": 20
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 3
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 0.02,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "parallelism",
+    "tolerance": 0.05,
+    "datums": [
+     "B"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.1,
+    "diameterZone": true,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  },
+  {
+   "name": "note.general",
+   "contains": "ALL DIMENSIONS IN MILLIMETRES"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "SURFACE ROUGHNESS Ra 1.6 ALL OVER"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "DEBURR ALL EDGES 0.2 MAX"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CLEANLINESS TO ISO 16232"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "THREADS TO BE FREE OF ANODISING"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "LASER MARK PART NUMBER"
+  },
+  {
+   "name": "note.general",
+   "contains": "MATERIAL SPECIFICATION STJLR.50.5021"
+  },
+  {
+   "name": "quality.cleanliness",
+   "contains": "ISO 16232"
+  },
+  {
+   "name": "quality.marking",
+   "contains": "LASER MARK PART NUMBER"
+  },
+  {
+   "name": "finish.edges",
+   "contains": "DEBURR ALL EDGES"
+  }
+ ]
+}

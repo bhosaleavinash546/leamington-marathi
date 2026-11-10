@@ -1,0 +1,229 @@
+{
+ "drawing": "gen-gear",
+ "commodity": "gear",
+ "origin": "generated",
+ "source": "scripts/drawings/make-fixture-drawings.ts",
+ "checked": "Typed by hand beside the drawing content in the generator; not produced by the reader.",
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes",
+  "gear"
+ ],
+ "expect": [
+  {
+   "name": "title.partName",
+   "value": "HELICAL GEAR Z23"
+  },
+  {
+   "name": "title.partNumber",
+   "value": "HG-23-0417"
+  },
+  {
+   "name": "title.drawingNumber",
+   "value": "HG-23-0417"
+  },
+  {
+   "name": "title.revision",
+   "value": "B"
+  },
+  {
+   "name": "title.scale",
+   "value": "1:1"
+  },
+  {
+   "name": "title.date",
+   "value": "2026-04-02"
+  },
+  {
+   "name": "title.sheet",
+   "value": "1/1"
+  },
+  {
+   "name": "part.mass",
+   "value": 0.61
+  },
+  {
+   "name": "material.designation",
+   "value": "16MnCr5"
+  },
+  {
+   "name": "material.standard",
+   "value": "EN ISO 683-3"
+  },
+  {
+   "name": "material.family",
+   "value": "steel"
+  },
+  {
+   "name": "tolerance.general",
+   "contains": "ISO 2768-mK"
+  },
+  {
+   "name": "tolerance.generalClass",
+   "value": "medium"
+  },
+  {
+   "name": "finish.roughness",
+   "match": {
+    "parameter": "Rz",
+    "value": 6.3
+   }
+  },
+  {
+   "name": "heatTreat.process",
+   "value": "case-harden"
+  },
+  {
+   "name": "heatTreat.process",
+   "value": "temper"
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 58,
+    "max": 62,
+    "scale": "HRC"
+   }
+  },
+  {
+   "name": "heatTreat.hardness",
+   "match": {
+    "min": 30,
+    "max": 42,
+    "scale": "HRC"
+   }
+  },
+  {
+   "name": "heatTreat.caseDepth",
+   "match": {
+    "type": "CHD",
+    "min": 0.6,
+    "max": 0.9
+   }
+  },
+  {
+   "name": "hole.diameter",
+   "match": {
+    "diameter": 25,
+    "fit": "H7",
+    "upper": 0.021,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 64.52,
+    "fit": "h9",
+    "upper": 0,
+    "lower": -0.074
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 8,
+    "fit": "P9",
+    "upper": -0.015,
+    "lower": -0.051
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "linear",
+    "nominal": 20,
+    "upper": 0,
+    "lower": -0.1
+   }
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.021,
+    "nominal": 25
+   }
+  },
+  {
+   "name": "feature.count.holes",
+   "value": 1
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "circular run-out",
+    "tolerance": 0.02,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gear.teeth",
+   "value": 23
+  },
+  {
+   "name": "gear.module",
+   "value": 2.5
+  },
+  {
+   "name": "gear.pressureAngle",
+   "value": 20
+  },
+  {
+   "name": "gear.helixAngle",
+   "value": 15
+  },
+  {
+   "name": "gear.helixHand",
+   "value": "right"
+  },
+  {
+   "name": "gear.faceWidth",
+   "value": 20
+  },
+  {
+   "name": "gear.profileShift",
+   "value": 0.25
+  },
+  {
+   "name": "gear.qualityClass",
+   "contains": "ISO 1328 CLASS 6"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "CASE HARDENED AND TEMPERED"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "SURFACE HARDNESS 58-62 HRC"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "TOOTH FLANKS GROUND"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "100% CRACK DETECTION"
+  },
+  {
+   "name": "note.manufacturing",
+   "contains": "BREAK SHARP EDGES"
+  }
+ ]
+}

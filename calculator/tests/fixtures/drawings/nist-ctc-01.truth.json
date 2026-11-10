@@ -1,0 +1,216 @@
+{
+ "drawing": "nist-ctc-01",
+ "origin": "public",
+ "source": "https://www.nist.gov/document/nist-cad-model-ctc-01 (nist_ctc_01_asme1_rd.pdf, NIST MBE PMI Validation and Conformance Testing Project)",
+ "checked": "Hand-checked on 10 Nov 2026 by rendering the sheet at 150 dpi and reading every annotation off the image; not produced by the reader. Every annotation on this sheet is drawn as curves on an isometric view.",
+ "files": {
+  "nist-ctc-01.pdf": "curves"
+ },
+ "complete": [
+  "title block",
+  "material",
+  "general tolerance",
+  "roughness",
+  "coating",
+  "heat treatment",
+  "threads",
+  "dimensions",
+  "fits",
+  "GD&T",
+  "notes"
+ ],
+ "expect": [
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "max": 35.2,
+    "min": 34.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "max": 35.2,
+    "min": 34.8
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 25,
+    "upper": 0.15,
+    "lower": -0.15
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "upper": 0.05,
+    "lower": -0.1
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 20,
+    "upper": 0.1,
+    "lower": -0.05
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 35,
+    "upper": 0,
+    "lower": -0.2
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "diameter",
+    "nominal": 35,
+    "upper": 0.2,
+    "lower": 0
+   }
+  },
+  {
+   "name": "dimension",
+   "match": {
+    "type": "angle",
+    "nominal": 60,
+    "upper": 0.5,
+    "lower": -0.5
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "flatness",
+    "tolerance": 0.2,
+    "datums": []
+   },
+   "partial": {
+    "tolerance": 0.2,
+    "datums": []
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "position",
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.75,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 0.5,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 0.5,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "perpendicularity",
+    "tolerance": 1.5,
+    "datums": [
+     "A"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.5,
+    "datums": [
+     "A"
+    ]
+   }
+  },
+  {
+   "name": "gdt.frame",
+   "match": {
+    "characteristic": "profile of a surface",
+    "tolerance": 1.25,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   },
+   "partial": {
+    "tolerance": 1.25,
+    "datums": [
+     "A",
+     "B",
+     "C"
+    ]
+   }
+  },
+  {
+   "name": "gdt.datum",
+   "value": "A"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "B"
+  },
+  {
+   "name": "gdt.datum",
+   "value": "C"
+  },
+  {
+   "name": "tolerance.tightest",
+   "match": {
+    "band": 0.15
+   }
+  }
+ ]
+}
