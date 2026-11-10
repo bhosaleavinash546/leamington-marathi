@@ -51,7 +51,7 @@ describe('1. cutting time is built up from the metal removed and the surface fin
     expect(c.detail.roughMin).toBeGreaterThan(3);
     expect(c.kernelHr! * 60).toBeLessThan(15);                // the kernel's area-rate figure, not used
     expect(c.detail.basis).toContain('cm³ ÷ 535 cm³/min in-cut');
-    expect(c.detail.basis).toContain('25% air moves and step-downs (engineering-typical, not sourced)');
+    expect(c.detail.basis).toContain('25% air moves and step-downs (non-cutting, engineering-typical, not sourced)');
   });
   it('steel takes longer than aluminium — the kernel rate was the same for both', () => {
     const al = solidCut(ctx('MACH_Hydraulic_Manifold.stp', 'aluminium'), 'aluminium')!;
@@ -72,15 +72,16 @@ describe('1. cutting time is built up from the metal removed and the surface fin
 describe('2. drilling runs at a drilling feed', () => {
   it('Ø11 × 60 through in aluminium: n·f at the MVE Ø12 row, 60 mm > 5 Ø pecks', () => {
     // MVE aluminium Ø12: n 2600 × f 0.31 = 806 mm/min; at Ø11 f scales with Ø, so n·f stays 806 mm/min (data.json #25)
-    expect(featureMinutesEach({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeCloseTo(0.15 + 60 / 806 * 1.5, 6);
+    // PKG-2: no 0.15 approach — the hole is its drilling + the peck retracts + the 2 mm R-plane, all at its feed
+    expect(featureMinutesEach({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeCloseTo((60 * 1.5 + 2) / 806, 6);
   });
   it('a hole at a tapping-drill size is tapped — the manifold\'s four Ø5 × 12 are M6', () => {
     const row = { kind: 'hole' as const, diaMm: 5, depthMm: 12, through: false, count: 4 };
     expect(tappedThread(row)).toBe('M6');
     expect(featureToOperation(row)).toBe('Drill + tap M6');
-    // drill 0.06 + 12 ÷ 806 mm/min; blind 0.10; tap 0.10 + 2 × 12 ÷ (n × pitch), n = 1000 × 15 / (π × 6) = 795.8 rev/min,
-    // ISO 261 M6 pitch 1.0 → 795.8 mm/min (OSG 15 m/min, data.json #60)
-    expect(featureMinutesEach(row)).toBeCloseTo(0.06 + 12 / 806 + 0.10 + 0.10 + 24 / (1000 * 15 / (Math.PI * 6) * 1.0), 6);
+    // drill (12 + 2) ÷ 806 mm/min; tap in and out 2 × (12 + 2) ÷ (n × pitch), n = 1000 × 15 / (π × 6) = 795.8 rev/min,
+    // ISO 261 M6 pitch 1.0 → 795.8 mm/min (OSG 15 m/min, data.json #60). PKG-2: no drill / blind / tap allowances.
+    expect(featureMinutesEach(row)).toBeCloseTo(14 / 806 + 28 / (1000 * 15 / (Math.PI * 6) * 1.0), 6);
     // a Ø14 × 1 land is not a tapped hole (too shallow), nor is a Ø11 clearance hole
     expect(tappedThread({ kind: 'hole', diaMm: 14, depthMm: 1, through: false, count: 1 })).toBeNull();
     expect(tappedThread({ kind: 'hole', diaMm: 11, depthMm: 60, through: true, count: 1 })).toBeNull();
@@ -88,7 +89,7 @@ describe('2. drilling runs at a drilling feed', () => {
   it('a deep hole pecks', () => {
     const shallow = featureMinutesEach({ kind: 'hole', diaMm: 8, depthMm: 30, through: true, count: 1 });
     const deep = featureMinutesEach({ kind: 'hole', diaMm: 8, depthMm: 70, through: true, count: 1 });
-    expect((deep - 0.15) / (shallow - 0.15)).toBeCloseTo(70 / 30 * 1.5, 1);
+    expect(deep / shallow).toBeCloseTo((70 * 1.5 + 2) / 32, 6);                 // PKG-2: no fixed allowance to take off
   });
 });
 
@@ -172,7 +173,7 @@ describe('9–14. fixtures, programming, tool wear, deburr, scrap, batch and gra
   it('cutting tools wear: steel at £0.12 a cutting minute', () => {
     const m = mach('MACH_Stepped_Shaft.stp', 'steel');
     const cutMin = cuttingMinutesOf(machiningOperationPlan(ctx('MACH_Stepped_Shaft.stp', 'steel'), 'steel'));
-    expect(cutMin).toBeGreaterThan(1);
+    expect(cutMin).toBeGreaterThan(0.5);                      // chip-making minutes only (PKG-2, CF-20)
     expect(Number(m.toolWearCostPerPart)).toBeCloseTo(cutMin * 0.12, 3);
   });
   it('deburr and gauge check is a bench task: labour, no machine time', () => {
@@ -248,10 +249,12 @@ describe('15–18. cast + machine', () => {
     const st = computeFeatureMachining(rows, { ...opts, materialFactor: CUTTING_DATA.steel.timeFactor }).totalCycleHr;
     const stFam = computeFeatureMachining(rows, { ...opts, family: 'steel' }).totalCycleHr;
     const cored = computeFeatureMachining(rows, { ...opts, coredAboveMm: 20 }).totalCycleHr;
-    // A Ø40 hole from solid is helically milled (no catalogue row: 0.050 min/mm × the machinability ratio); the 0.50
-    // approach and 0.10 blind allowances are NOT scaled by the metal (report standard, Nov 2026 — they were × 2).
-    expect(st * 60).toBeCloseTo(0.50 + 45 * 0.050 * 2 + 0.10, 6);
-    expect(al * 60).toBeCloseTo(0.50 + 45 * 0.050 + 0.10, 6);
+    // A Ø40 hole from solid is helically milled (no catalogue row: 0.050 min/mm × the machinability ratio) with its 2 mm
+    // R-plane at the same rate; PKG-2: no 0.50 approach / 0.10 blind allowance — the operation pays one tool change (2.2 s)
+    // and the rapids (2 × 25 mm + 45 mm out of the hole) at the VMC's 25.4 m/min (Haas VF-2).
+    const nonCut = 2.2 / 60 + (2 * 25 + 45) / 25_400;
+    expect(st * 60).toBeCloseTo(47 * 0.050 * 2 + nonCut, 3);
+    expect(al * 60).toBeCloseTo(47 * 0.050 + nonCut, 3);
     expect(stFam).toBe(st);                                   // the legacy factor reads as the family it stands for
     expect(cored).toBeLessThan(al / 3);                       // one boring pass, not a helical mill from solid
   });

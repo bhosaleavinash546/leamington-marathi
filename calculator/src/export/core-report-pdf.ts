@@ -14,6 +14,8 @@ import type { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { brandRgb } from '../brand/index.js';
 import type { CoreReport } from './executive-summary.js';
+import { bridgePrintRows, bridgeReAddText } from './cost-bridge.js';
+import { balancePrintRows } from './material-balance.js';
 
 type RGB = [number, number, number];
 const W = 210, MG = 14, CW = W - MG * 2, BOTTOM = 276;
@@ -346,6 +348,31 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
       + `the direct cost is ${fm.machiningParts.join(', ')}; the ${fm.form.toLowerCase()} is the rest (metal, melt / heating, forming, finishing, its tooling and packaging).`, 7.1, NAVY, 'bold');
   } else if (m.perKg) {
     para(`Per kg (${m.perKg.kgLabel}, ${m.perKg.kg.toFixed(3)} kg): the price ${money(m.perKg.pricePerKg)}/kg (should-cost ÷ kg).`, 7.1, NAVY, 'bold');
+  }
+  // The cost bridge (PKG-6): the buckets regrouped by what they pay for, raw material in to finished part out — the model's
+  // rows (cost-bridge.ts), the same on the cost card, in the audit pack and in the workbook. The running total ends at the price.
+  // money in text is 2 dp on the core (coreMoneyText): the metal line states its kg, its price a kg is in the audit pack
+  const br = bridgePrintRows(m.bridge, money, 4, null);
+  chk(30);   // the heading never sits alone at the foot of a page
+  head('Cost bridge — raw material to finished part', 'the same figures as the buckets, by what they pay for');
+  table(['Line', 'What it is', 'A part', 'Running total'],
+    [...br.map(r => [r.label, r.detail || r.basis, money(r.gbp), money(r.cumulativeGbp)]), ['Should-cost', 'the rows re-added', money(m.bridge.reAddGbp), money(m.total)]],
+    { 0: { cellWidth: 46 }, 1: { cellWidth: 92, textColor: GREY }, 2: { cellWidth: 21, halign: 'right' }, 3: { cellWidth: 23, halign: 'right' } },
+    { fontSize: 6.3, bold: r => r === br.length, fill: r => (r === br.length ? HDR : null) });
+  para(m.bridge.reconciles ? 'The rows re-add to the should-cost and, by bucket, to the eight buckets above (each row rounded to the penny; the running total is exact).'
+    : bridgeReAddText(m.bridge, money), 6.4, m.bridge.reconciles ? GREY : RD);
+  if (m.balance) {
+    const bl = m.balance;
+    chk(14 + bl.lines.length * 4.6);   // the balance on one page, its heading with it
+    head(`Material balance — a good part (${bl.form === 'forged' ? 'forging' : 'casting'})`, 'input = finished + removed by machining + losses');
+    const rows = balancePrintRows(bl);
+    table(['Stage', 'Stream', 'kg', 'Treatment'], rows.map(l => [l.stage, l.label, l.kg, l.recovery]),
+      { 0: { cellWidth: 24, textColor: GREY }, 1: { cellWidth: 84 }, 2: { cellWidth: 26, halign: 'right' }, 3: { cellWidth: 48, textColor: GREY } }, { fontSize: 6.3 });
+    if (bl.stock) para(`${bl.stock.text} — ${bl.stock.partsNote}.`, 6.6, NAVY);
+    para((bl.summary.creditedKg > 0.0005 ? `Credited ${bl.summary.creditedKg.toFixed(3)} kg, sold back at the scrap price a kg: ${money(bl.creditGbp)} (the bridge's scrap / return credit)`
+      : 'No scrap credit: the costing sells nothing back (the melt loss is metal lost; gating, feeders and rejects are remelted)')
+      + `${bl.closes != null ? `; the balance closes to ${(Math.abs(bl.closureKg ?? 0) * 1000).toFixed(1)} g` : ''}.`
+      + `${bl.notItemised.length ? ` Not itemised by this costing: ${bl.notItemised.join('; ')}.` : ''}`, 6.4, GREY);
   }
   if (t.totalGbp > 0) {
     head('Tooling', t.mode === 'amortized' ? `over ${Math.round(t.amortisationVolume).toLocaleString('en-GB')} parts` : 'charged once, outside the piece price');

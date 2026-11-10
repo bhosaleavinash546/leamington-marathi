@@ -48,7 +48,8 @@ import { SERVICE_RATES } from '../../src/engine/service-rates-data.js';
 const svcRow = (id: string): number => SERVICE_RATES.find(r => r.id === id)!.value;
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { featureMinutesEach } from '../../src/engine/feature-machining.js';
+import { featureTime } from '../../src/engine/feature-machining.js';
+import { tappedThread } from '../../src/engine/feature-ops.js';
 import { CUTTING_DATA, secondaryMachiningCell } from '../../src/engine/machining-time.js';
 
 process.env.AIR_GAPPED = '1';
@@ -202,17 +203,56 @@ export function shadowAluminium(geo: OCCTGeometry, answers: Record<string, unkno
   const finishArea = r4(geo.surfaceArea!.mm2 / 1e6);
   const finishOut = ps?.outerPerimeterMm ? r4(ps.outerPerimeterMm * ps.lengthMm / 1e6) : 0;
 
-  // Fabrication: holes across the profile from the feature table, plus volume machined away.
-  let fabMin = 0; let rows = 0; let holeMm3 = 0;
+  // Fabrication: holes across the profile from the feature table, plus volume machined away — PKG-2 (10 Nov 2026), restated:
+  // each hole's own minutes (cutting + its R-plane fed in, featureTime at the aluminium row), then the operation's
+  // non-cutting time: one 2.2 s tool change a distinct tool (a drill a 0.5 mm Ø step, a tap a thread, a boring bar on a
+  // blind Ø13–26, a roughing cutter), 2 × 25 mm of rapid a tool visit + the retract out of each drilled / bored hole + the
+  // traverse between a tool's visits (nearest neighbour over the kernel's axis mid-points; else (n − 1) × √(plan ÷ n)), all
+  // at 22.9 m/min (no rapid read for the profile centre — the slowest sourced). Tool wear on the cutting only.
+  let fabMin = 0; let fabCut = 0; let rows = 0; let holeMm3 = 0;
   if (ps) {
+    const visits = new Map<string, Array<[number, number, number] | null>>();
+    let rapidIn = 0;
+    const visit = (tool: string, pos: [number, number, number] | null, out: number) => { visits.set(tool, [...(visits.get(tool) ?? []), pos]); rapidIn += out; };
     for (const r of geo.featureTable ?? []) {
       if (r.depthMm >= 0.9 * ps.lengthMm || r.kind !== 'hole') continue;
-      fabMin += featureMinutesEach(r) * CUTTING_DATA.aluminium.timeFactor * (r.count ?? 1); rows += 1;
-      holeMm3 += Math.PI / 4 * r.diaMm ** 2 * r.depthMm * (r.count ?? 1);
+      const n = r.count ?? 1;
+      const t = featureTime(r, 'aluminium');
+      fabMin += (t.cutMin + t.nonCutMin) * n; fabCut += t.cutMin * n; rows += 1;
+      holeMm3 += Math.PI / 4 * r.diaMm ** 2 * r.depthMm * n;
+      const thread = tappedThread(r);
+      for (let k = 0; k < n; k++) {
+        const a = r.axes?.[k]; const v = a ? a.line.split(',').map(Number) : null;
+        const pos: [number, number, number] | null = v && v.length >= 6 ? [v[0] + v[3] * (a!.s0 + a!.s1) / 2, v[1] + v[4] * (a!.s0 + a!.s1) / 2, v[2] + v[5] * (a!.s0 + a!.s1) / 2] : null;
+        const L = Math.max(r.depthMm, 1);
+        if (r.depthMm < 0.25 * r.diaMm) visit(`spot Ø${r.diaMm.toFixed(1)}`, pos, 0);
+        else if (r.diaMm > 26) visit('helical', pos, L);
+        else {
+          visit(`drill ${Math.round(r.diaMm * 2) / 2}`, pos, L);
+          if (r.diaMm > 13 && r.through === false) visit(`bore ${r.diaMm.toFixed(1)}`, pos, L);
+          if (thread) visit(`tap ${thread}`, pos, 0);
+        }
+      }
     }
     const removedCm3 = Math.max(0, ((1 - volumeShare) * ps.areaMm2 * ps.lengthMm - holeMm3) / 1000);
-    if (volumeShare < 0.98 && removedCm3 > 0.5) { fabMin += removedCm3 / CUTTING_DATA.aluminium.millRoughCm3PerMin + 0.5; rows += 1; }
+    if (volumeShare < 0.98 && removedCm3 > 0.5) {
+      const inCut = removedCm3 / (CUTTING_DATA.aluminium.millRoughCm3PerMin * 1.25);   // the in-cut rate (effective × 1.25, the air share)
+      fabMin += inCut * 1.25 + 0.5; fabCut += inCut; rows += 1; visit('roughing', null, 0);
+    }
+    const env = [ps.lengthMm, ...[geo.boundingBox!.xMm, geo.boundingBox!.yMm, geo.boundingBox!.zMm].sort((x, y) => y - x).slice(1)];
+    const area = [...env].sort((x, y) => y - x).slice(0, 2).reduce((x, y) => x * y, 1);
+    let trav = 0; let approaches = 0;
+    for (const ps2 of visits.values()) {
+      approaches += ps2.length;
+      if (ps2.every(Boolean)) {
+        const left = [...ps2 as Array<[number, number, number]>].sort((p, q) => p[0] - q[0] || p[1] - q[1] || p[2] - q[2]);
+        let cur = left.shift()!;
+        while (left.length) { let bi = 0, bd = Infinity; left.forEach((q, i) => { const dd = Math.hypot(cur[0] - q[0], cur[1] - q[1], cur[2] - q[2]); if (dd < bd - 1e-9) { bd = dd; bi = i; } }); trav += bd; cur = left.splice(bi, 1)[0]; }
+      } else if (ps2.length > 1) trav += (ps2.length - 1) * Math.sqrt(area / ps2.length);
+    }
+    if (visits.size) fabMin += visits.size * 2.2 / 60 + (approaches * 50 + trav + rapidIn) / 22_900;
   }
+  fabCut = r2(fabCut);
   fabMin = r2(fabMin);
   const fixturings = fabMin > 0 ? 1 : 0;
 
@@ -343,7 +383,7 @@ export function shadowAluminium(geo: OCCTGeometry, answers: Record<string, unkno
   // Fabrication.
   let fabTool = 0; let fabWear = 0;
   if (fabMin > 0) {
-    const cell = secondaryMachiningCell({ fixturings, weightKg: partKg, annualVolume: ANNUAL, family: 'aluminium', featureRows: rows, cuttingMin: fabMin,
+    const cell = secondaryMachiningCell({ fixturings, weightKg: partKg, annualVolume: ANNUAL, family: 'aluminium', featureRows: rows, cuttingMin: fabCut,
       engineerRatePerHr: book.labour.find(l => l.id === 'lab-uk-engineer')!.fullyLoadedRatePerHr });
     fabTool = cell.toolingGBP; fabWear = cell.toolWearPerPart;
     const cut = fabMin / 60;

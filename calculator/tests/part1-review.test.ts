@@ -44,8 +44,8 @@ import type { UniversalStackInput, PartCostResult } from '../src/engine/types.js
 const FULL = { ...ANSWERS, 'service.pressureTight': 'no', 'service.toleranceClass': 'standard', 'service.safetyCritical': 'no', 'material.grade': 'mat-lm25' };
 const BASE_BOOK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const CN = regionalBook(BASE_BOOK, 'CN', new Map());
-async function part1(region: 'CN' | 'UK' = 'CN') {
-  const r = await costMeasuredPart(PART1, 'Part1.stp', { partNumber: 'Part1', file: 'Part1.stp', annualVolume: 200_000, commodity: 'cast_and_machine' } as never,
+async function part1(region: 'CN' | 'UK' = 'CN', geo: typeof PART1 = PART1) {
+  const r = await costMeasuredPart(geo, 'Part1.stp', { partNumber: 'Part1', file: 'Part1.stp', annualVolume: 200_000, commodity: 'cast_and_machine' } as never,
     FULL, region, { annualVolume: 200_000, programmeYears: 5, deliveryTerms: 'EXW' }, BASE_BOOK, { partNumber: 'Part1', file: 'Part1.stp', status: 'error' } as never);
   expect(r.status).toBe('costed');
   const t = r.trace as unknown as { stackInput: UniversalStackInput; result: PartCostResult };
@@ -112,10 +112,12 @@ describe('(c) casting report text is the costed process\'s and metal\'s', () => 
 describe('(d) the capacity warning says which minutes are sourced', () => {
   it('cutting minutes from the published cutting data; handling and set-up engineering-typical', async () => {
     const { input } = await part1();
-    const rows = capacityImplied(input, CN, 200_000);
-    const w = capacityWarnings(rows, 200_000).join('\n');
+    // PKG-2 (10 Nov 2026): Part1 needs 2.8 VF-2s at 200,000 a year in China (5.03 with the fixed allowances) — under the
+    // 5-machine dedicated-line warning; the warning is read at a volume that crosses it
+    const rows = capacityImplied(input, CN, 400_000);
+    const w = capacityWarnings(rows, 400_000).join('\n');
     expect(w).toMatch(/CUTTING minutes are from the tool makers' published cutting data/);
-    expect(w).toMatch(/handling, the set-up and the fixed positioning allowances are engineering-typical, not sourced/);
+    expect(w).toMatch(/non-cutting time is built per operation.*the load \/ unload handling and the set-up are engineering-typical, not sourced/);
     expect(w).not.toMatch(/machining minutes are engineering-typical and conservative/);
   }, 60_000);
 });
@@ -138,10 +140,10 @@ describe('(e) the line rate and the costed cycle reconcile, both labelled', () =
 });
 
 describe('(g) machining fixtures follow the machines the capacity implies', () => {
-  it('one fixture set a VF-2 the capacity table implies (5.03 → 6 × 4 fixturings); programming once a fixturing', async () => {
+  it('one fixture set a VF-2 the capacity table implies (2.82 → 3 × 4 fixturings since PKG-2; 5.03 → 6 before); programming once a fixturing', async () => {
     const { input, rvs } = await part1();
     const vf2 = capacityImplied(input, CN, 200_000).find(r => /VF-2/.test(r.machine))!;
-    expect(vf2.machines).toBeGreaterThan(5);
+    expect(vf2.machines).toBeGreaterThan(2);
     const sets = Math.ceil(vf2.machines - 1e-6);
     const fx = rvs.find(r => r.fieldId === 'cam-mach-tooling')!;
     // the capacity the tooling was sized on IS the report's capacity row (same hours, same available hours)
@@ -153,7 +155,7 @@ describe('(g) machining fixtures follow the machines the capacity implies', () =
     const one = Math.round(4 * 2500 * (Number(fx.value) / (4 * sets * 2500)));
     expect(Number(fx.value)).toBeCloseTo(one * sets, -1);
     expect(input.tooling.items!.find(i => i.label === 'Machining fixtures')!.gbp).toBe(Number(fx.value));
-    expect(rvs.find(r => r.fieldId === 'cam-mach-prog-nre')!.basis).toMatch(/1\.5 h × 4 fixturing\(s\).*programmed once a fixturing and run on all 6 machines/);
+    expect(rvs.find(r => r.fieldId === 'cam-mach-prog-nre')!.basis).toMatch(new RegExp(`1\\.5 h × 4 fixturing\\(s\\).*programmed once a fixturing and run on all ${sets} machines`));
   }, 60_000);
 });
 
@@ -178,7 +180,10 @@ describe('(h) narrow slits and threads', () => {
   });
 
   it('page 1 carries the slit as uncosted scope with a question; Not included lists threads', async () => {
-    const { input, result, rvs } = await part1();
+    // an older measurement with no kernel `slits` (the recorded baseline carries them since its PKG-2 re-measure, 10 Nov
+    // 2026, and the costing then saws them — tests/part1-phase3.test.ts): the slit is uncosted scope on page 1
+    const { slits: _s, ...older } = PART1 as typeof PART1 & { slits?: unknown };
+    const { input, result, rvs } = await part1('CN', older as typeof PART1);
     const geometricDFM = dfmOf('cast_and_machine');
     const core = buildCoreReport({ result, input, library: CN, commodity: 'cast_and_machine', region: 'CN',
       cadMeta: { checks: { decisions: [], ruleValues: rvs }, geometricDFM } as never, regionalRows: [] } as never);

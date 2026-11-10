@@ -13,6 +13,8 @@ import { currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { buildExecutiveSummary, buildCoreReport, costingConfidence, type ExecutiveSummary } from './executive-summary.js';
 import { formWeights } from './form-weights.js';
+import { buildCostBridge, bridgePrintRows, bridgeReAddText } from './cost-bridge.js';
+import { buildMaterialBalance, balancePrintRows } from './material-balance.js';
 import { renderCoreReport } from './core-report-pdf.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
@@ -1030,6 +1032,69 @@ function renderFunctionalSafety(
   return y;
 }
 
+/**
+ * §3C cost bridge and §3D material balance of the audit pack (PKG-6): `bridgePrintRows` / `balancePrintRows` — the same
+ * rows the core report's section 2 and the workbook print — with the items under each bridge row.
+ */
+function renderCostBridgeAudit(doc: jsPDF, y: number, bridge: ReturnType<typeof buildCostBridge>,
+  balance: ReturnType<typeof buildMaterialBalance>, money: (gbp: number) => string): number {
+  y = chk(doc, y, 40);
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text('3C  Cost bridge — raw material to finished part (the buckets grouped by what they pay for; # = the cost-structure line, 1 raw material … 11 overhead and margin)', MG, y);
+  y += 4;
+  const rows = bridgePrintRows(bridge, money, 12);
+  const body = rows.map(r => [r.phase8, `${r.label}${r.detail ? `\n${r.detail}` : ''}`, r.basis, r.inBuckets, money(r.gbp), money(r.cumulativeGbp)]);
+  body.push(['', 'SHOULD-COST', '', '', money(bridge.reAddGbp), money(bridge.totalGbp)]);
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG },
+    head: [['#', 'Line (items)', 'How', 'Bucket', 'A part', 'Running']],
+    body, theme: 'plain',
+    headStyles: { ...TH.headStyles, fontSize: 6.8, cellPadding: { top: 2, bottom: 2, left: 1.5, right: 1.5 } },
+    bodyStyles: { ...TH.bodyStyles, fontSize: 6.3, cellPadding: 1.2 },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: {
+      0: { cellWidth: 10, textColor: GREY }, 1: { cellWidth: 66 }, 2: { cellWidth: 50, textColor: GREY },
+      3: { cellWidth: 18, textColor: GREY }, 4: { cellWidth: 19, halign: 'right', fontStyle: 'bold' }, 5: { cellWidth: 19, halign: 'right' },
+    },
+    didParseCell: (d) => {
+      if (d.section === 'body' && d.row.index === body.length - 1) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; }
+    },
+  });
+  y = lastFinalY(doc) + 3;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+  for (const ln of doc.splitTextToSize(`${bridge.note} ${bridgeReAddText(bridge, money)}`, CW) as string[]) { y = chk(doc, y, 4); doc.text(ln, MG, y); y += 3.3; }
+  y += 3;
+  if (!balance) return y;
+  y = chk(doc, y, 16 + balance.lines.length * 5.5);
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text(`3D  Material balance — a good part (${balance.form === 'forged' ? 'forging' : 'casting'})`, MG, y);
+  y += 4;
+  const bal = balancePrintRows(balance);
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG },
+    head: [['Stage', 'Stream', 'kg', 'Treatment', 'Basis']],
+    body: bal.map(l => [l.stage, l.label, l.kg, l.recovery, l.note]), theme: 'plain',
+    headStyles: { ...TH.headStyles, fontSize: 6.8, cellPadding: { top: 2, bottom: 2, left: 1.5, right: 1.5 } },
+    bodyStyles: { ...TH.bodyStyles, fontSize: 6.3, cellPadding: 1.2 },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: { 0: { cellWidth: 18, textColor: GREY }, 1: { cellWidth: 44 }, 2: { cellWidth: 16, halign: 'right', fontStyle: 'bold' },
+      3: { cellWidth: 28, textColor: GREY }, 4: { cellWidth: 76, textColor: GREY } },
+  });
+  y = lastFinalY(doc) + 3;
+  const s = balance.summary;
+  const lines = [
+    ...(balance.stock ? [`${balance.stock.text}: ${balance.stock.partsNote}.`] : []),
+    `${s.creditedKg > 0.0005 ? `Credited ${s.creditedKg.toFixed(3)} kg × ${money(balance.scrapPricePerKg)}/kg = ${money(balance.creditGbp)} (the bridge's scrap / return credit)` : 'No scrap credit (nothing is sold back)'}; recoverable, not credited ${s.recoverableNotCreditedKg.toFixed(3)} kg; `
+      + `${s.remeltedKg != null ? `remelted in house ${s.remeltedKg.toFixed(3)} kg; ` : ''}not recoverable ${s.notRecoverableKg.toFixed(3)} kg`
+      + `${balance.closes != null ? `; the balance closes to ${(Math.abs(balance.closureKg ?? 0) * 1000).toFixed(1)} g` : '; the balance cannot be closed — a stream is not held'}.`,
+    ...(balance.notItemised.length ? [`Not itemised by this costing: ${balance.notItemised.join('; ')}.`] : []),
+    balance.note,
+  ];
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+  for (const t of lines) for (const ln of doc.splitTextToSize(t, CW) as string[]) { y = chk(doc, y, 4); doc.text(ln, MG, y); y += 3.3; }
+  return y + 4;
+}
+
 export function renderShouldCostSections(
   doc: jsPDF,
   y: number,
@@ -1436,6 +1501,13 @@ export function renderShouldCostSections(
     for (const ln of doc.splitTextToSize(note, CW) as string[]) { doc.text(ln, MG, y); y += 3.6; }
     y += 5;
   }
+
+  // ── §3C — Cost bridge, raw material in to finished part out (PKG-6 / CF-17) ──
+  // The SAME figures as the eight buckets, regrouped by what they pay for (cost-bridge.ts — the one model the cost card,
+  // the core report and the workbook print); 4 dp here, as the audit pack prints rates.
+  y = renderCostBridgeAudit(doc, y, buildCostBridge({ result, input, library, commodity: commodityType }),
+    buildMaterialBalance({ input, result, commodity: commodityType, ruleValues: cadMeta.checks?.ruleValues ?? null, measuredWeightKg: cadMeta.measuredWeightKg ?? null }),
+    (g: number) => { const v = g * fxRate; return `${v < 0 ? '-' : ''}${sym}${Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`; });
 
   // ── Alloy / specification advisory (casting commodities) ──────────────────
   // A general die-cast alloy on a safety-critical structural part is the exact

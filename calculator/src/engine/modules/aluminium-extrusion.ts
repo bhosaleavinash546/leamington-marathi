@@ -283,6 +283,8 @@ export interface AlExtrusionSpec {
   bends: number;
   /** Fabrication, measured from the CAD: cutting minutes, fixturings and feature rows. */
   cncMinutes: number;
+  /** The chip-making minutes inside `cncMinutes` — tool wear is charged on these only (PKG-2, CF-20). Absent: all of it. */
+  cncCutMinutes?: number;
   cncFixturings: number;
   fabFeatureRows: number;
   /** Impact extrusion: outer Ø of the cup, mm. */
@@ -386,7 +388,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   if (spec.cncMinutes > 0) {
     const cell = secondaryMachiningCell({
       fixturings: spec.cncFixturings, weightKg: partKg, annualVolume: spec.annualVolume, family: 'aluminium',
-      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncMinutes, engineerRatePerHr: spec.engineerRatePerHr ?? activeLabourRate('lab-uk-engineer'),   // the costed country's engineer — it was the UK's
+      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncCutMinutes ?? spec.cncMinutes, engineerRatePerHr: spec.engineerRatePerHr ?? activeLabourRate('lab-uk-engineer'),   // the costed country's engineer — it was the UK's
     });
     fabTooling = cell.toolingGBP; fabWear = cell.toolWearPerPart;
     const cut = spec.cncMinutes / 60;
@@ -397,7 +399,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
       { operationName: 'CNC load / unload and change-over', machineId: AL_DOWNSTREAM.cnc.id, labourId: 'lab-uk-skilled',
         cycleTimeHr: handle, partsPerCycle: 1, oee: 0.80, manning: 1, labourTimeHr: handle, labourEfficiency: eff },
     ];
-    notes.push(`fabrication: ${spec.cncMinutes.toFixed(1)} min cutting at 80% OEE with ½ an operator, then load / unload `
+    notes.push(`fabrication: ${spec.cncMinutes.toFixed(1)} min CNC (${(spec.cncCutMinutes ?? spec.cncMinutes).toFixed(2)} min of it cutting, the tool wear's basis) at 80% OEE with ½ an operator, then load / unload `
       + `${(handle * 60).toFixed(2)} min with one (OEE and manning engineering-typical, not sourced); ${cell.basis}`);
   }
 

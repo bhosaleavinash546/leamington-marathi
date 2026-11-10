@@ -180,6 +180,7 @@ async function runPart(page: Page, base: string, p: PartSpec): Promise<Record<st
     ref: tr.classList.contains('cad-compare-ref'),
     why: (tr.querySelector('td:last-child')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
     action: (tr.querySelector('[data-cost-route]') as HTMLElement | null)?.dataset.costRoute ?? null,
+    also: ((tr.querySelector('[data-cost-route]') as HTMLElement | null)?.dataset.alsoRoutes ?? '').split(' ').filter(Boolean),
   })));
   rec.compare = rows;
   const ref = rows.find(r => r.ref);
@@ -191,14 +192,22 @@ async function runPart(page: Page, base: string, p: PartSpec): Promise<Record<st
 
   // Cost this route: re-costed on the chosen route, it must equal that route's row.
   if (p.costRoute) {
-    const row = rows.find(r => r.action === p.costRoute);
+    // A route whose costing equals another route's to the penny is folded into that row (`alsoRoutes`,
+    // route-compare.ts foldSameScopeRows): the row's own button costs it.
+    // The compare table is two rows a route: the PRICE row ("£10.29 ± 7.4%"), then the detail row that holds the
+    // "Cost this route" button. Match the button, then take the price from the row above it.
+    const btnAt = rows.findIndex(r => r.action === p.costRoute || (r.also ?? []).includes(p.costRoute!));
+    let priceAt = btnAt;
+    while (priceAt > 0 && !/^[£€$¥₹]\s?[\d,]+\.\d{2}\s*±/.test(rows[priceAt].cost.trim())) priceAt--;
+    const row = btnAt < 0 ? undefined : { ...rows[priceAt], action: rows[btnAt].action };
     if (!row) { check(p.label, `cost this route: ${p.costRoute}`, false, 'no costed row for that route'); return rec; }
-    await page.click(`#cad-compare-host [data-cost-route="${p.costRoute}"]`);
+    if (row.action !== p.costRoute) log(`${p.label}: ${p.costRoute} is folded into the ${row.action} row (same costing to the penny)`);
+    await page.click(`#cad-compare-host [data-cost-route="${row.action}"]`);
     await page.waitForFunction(() => !document.getElementById('cad-cost-card') || !!document.getElementById('cad-steps'), null, { timeout: 60_000 });
     const notice = await page.waitForFunction(() => (document.getElementById('cad-flow-notice')?.textContent ?? '').trim() || null, null, { timeout: 120_000 })
       .then(h => h.jsonValue() as Promise<string>).catch(() => '');
     check(p.label, `cost this route: ${p.costRoute} opens its questions`, /Costing as/i.test(notice) || /question/i.test(notice), notice);
-    const hero2 = await answerAndCost(page, { ...p.answers, 'commodity.route': p.costRoute, ...(p.costRouteAnswers ?? {}) }, `${p.label}→${p.costRoute}`);
+    const hero2 = await answerAndCost(page, { ...p.answers, 'commodity.route': row.action ?? p.costRoute, ...(p.costRouteAnswers ?? {}) }, `${p.label}→${row.action ?? p.costRoute}`);
     rec.costRoute = { route: p.costRoute, row: row.cost, headline: hero2 };
     check(p.label, `cost this route: ${p.costRoute} = its row`, money(hero2) === money(row.cost), `${money(hero2)} v row ${row.cost}`);
     await page.screenshot({ path: join(OUT, `${p.label}-${p.costRoute}.png`) });

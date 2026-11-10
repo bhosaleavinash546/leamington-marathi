@@ -151,8 +151,8 @@ describe('9. holes: through means open at both ends; clearance holes are not rea
     const clear = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: true, count: 1 });
     const bore = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: false, count: 1 });
     // the boring pass at the bore's own n·f: aluminium vc 400 m/min (SVJD), f 0.2 → n = 1000 × 400 / (π × 14) = 9,095,
-    // vf = 1,819 mm/min; + 0.25 bore-pass allowance + 0.10 blind
-    expect(bore - clear).toBeCloseTo(0.25 + 18 / (1000 * 400 / (Math.PI * 14) * 0.2) + 0.10, 6);
+    // vf = 1,819 mm/min; (18 + 2 mm R-plane) ÷ 1,819 (PKG-2: the 0.25 bore-pass and 0.10 blind allowances are gone)
+    expect(bore - clear).toBeCloseTo((18 + 2) / (1000 * 400 / (Math.PI * 14) * 0.2), 6);
     // a 4.2×D through hole (the stub axle's Ø14 × 59) is standard reach (DIN 338) and a clearance hole: drilled only
     const deepThrough = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 59, through: true, count: 1 });
     const shallowThrough = featureMinutesEach({ kind: 'hole', diaMm: 14, depthMm: 18, through: true, count: 1 });
@@ -183,7 +183,9 @@ describe('10. the hub flange reconciles by hand', () => {
   // Phase B (4 Nov 2026): the billet saw and induction heater as operations, the heater's 0.40 kWh/kg, the measured draft
   // metal on the zero-draft faces (IS 3469 Table 1.4) and the IS 3469 Table 1.5 stock (1.5 mm a side below 205 mm, was
   // 2.0 mm): £13.23 → £13.85.
-  it('£13.85 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13.85);
+  // PKG-2 (10 Nov 2026): non-cutting time per operation instead of a fixed allowance a feature, tool wear on the cutting
+  // only, the pierced bore opened from the IS 3469 stock, and the forge line's die setting (141 min a batch): £13.85 → £13.02.
+  it('£13.02 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13.02);
   });
 });

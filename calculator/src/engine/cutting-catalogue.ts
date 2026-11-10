@@ -32,7 +32,9 @@ export const CUTTING_SOURCES = {
   'TUNGALOY-T515': { name: 'Tungaloy T515 cast-iron turning brochure, internal (boring) application example (2017)', rows: '#55' },
   'OSG-ATAP': { name: 'OSG A-Tap flier n_102, tapping speed chart (2026)', rows: '#58–62' },
   'SANDVIK-K': { name: 'Sandvik Coromant Metalcutting Technical Guide (D) Milling, power constant K (2006)', rows: '#72–80' },
-  'OKUMA-MA4000H': { name: 'Okuma MA-4000H brochure (Jul 2025)', rows: '#15, #17, #63, #64' },
+  'OKUMA-MA4000H': { name: 'Okuma MA-4000H brochure (Jul 2025)', rows: '#15, #17, #63, #64, #65, #66' },
+  'MMC-MC6100': { name: 'Mitsubishi Materials TOOL NEWS B266A, MC6100 steel turning grades (F and M ranges)', rows: '#44, #46' },
+  'TUNGALOY-T515-RANGE': { name: 'Tungaloy T515 cast-iron turning brochure, CM breaker range (2017)', rows: '#54' },
   'DMG-NHX4000': { name: 'DMG MORI NHX 4000 2nd generation press release (2016)', rows: '#69' },
   'SANDVIK-MILLING': { name: 'Sandvik Coromant Metalcutting Technical Guide (D) Milling, worked examples (2006)', rows: '#5' },
   'GARANT-DIN338': { name: 'Hoffmann Group GARANT DIN 338 jobber drill product page', rows: '#43' },
@@ -78,6 +80,18 @@ export interface CatalogueRow {
   bodies: { list: CutterBody[]; assumed: boolean; note: string };
   /** Roughing (medium-duty face milling on the Ø100 body): fz, ap. vc as `face`. */
   rough: { fz: number; apMm: number; src: CuttingSourceId };
+  /**
+   * The finishing allowance — the most a FINISHING pass takes, mm, where the catalogue gives finishing data distinct from
+   * roughing (PKG-2, CF-06). Face milling: the finish row's ap; null where the catalogue does not distinguish (every pass
+   * is then taken at the face data, ap ≤ `rough.apMm`).
+   */
+  faceFinish: { apMm: number | null; src: CuttingSourceId | null; note: string };
+  /**
+   * Boring a cored / pierced bore (PKG-2, CF-06): the roughing passes take the turning ROUGH row (vc, fn) at up to
+   * `roughApMm` a side — the catalogue's maximum depth of cut for the metal — and the last pass the finish-boring row at
+   * up to `finishApMm`.
+   */
+  boreRough: { roughApMm: number; roughSrc: CuttingSourceId; finishApMm: number; finishSrc: CuttingSourceId; note: string };
   /** Side-milling finish pass: vc, fz, the body, the row's ap limit. */
   shoulder: { vc: number; fz: number; body: CutterBody; bodyAssumed: boolean; apLimitMm: number; src: CuttingSourceId };
   /** Drilling: the catalogue's n (rev/min) and f (mm/rev) at two diameters. */
@@ -107,6 +121,9 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     face: { vc: 220, fz: 0.15, src: 'MMC-WSX445' },
     bodies: { list: WSX_BODIES, assumed: true, note: WSX_NOTE },
     rough: { fz: 0.2, apMm: 3.0, src: 'MMC-WSX445' },
+    faceFinish: { apMm: 1.0, src: 'MMC-WSX445', note: 'the WSX445 finish row: fz 0.15, ap < 1.0 mm' },
+    boreRough: { roughApMm: 4.0, roughSrc: 'MMC-MC6100', finishApMm: 1.0, finishSrc: 'MMC-MC6100',
+      note: 'rough ap ≤ 4.0 mm (MC6125 M range .012–.157 in), finish ap ≤ 1.0 mm (MC6115 F range .004–.039 in)' },
     shoulder: { vc: 160, fz: 0.25, body: { dc: 50, z: 4 }, bodyAssumed: true, apLimitMm: 20, src: 'MMC-APX4000' },
     drill: { pts: [{ d: 12, n: 2300, f: 0.31 }, { d: 16, n: 1700, f: 0.33 }], src: 'MMC-MVE' },
     bore: { vc: 350, f: 0.2, src: 'SANDVIK-TURN',
@@ -122,6 +139,9 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     face: { vc: 200, fz: 0.15, src: 'MMC-WSX445' },
     bodies: { list: WSX_BODIES, assumed: true, note: WSX_NOTE },
     rough: { fz: 0.2, apMm: 3.0, src: 'MMC-WSX445' },
+    faceFinish: { apMm: 1.0, src: 'MMC-WSX445', note: 'the WSX445 finish row: fz 0.15, ap < 1.0 mm' },
+    boreRough: { roughApMm: 5.0, roughSrc: 'TUNGALOY-T515-RANGE', finishApMm: 1.0, finishSrc: 'MMC-MC6100',
+      note: 'rough ap ≤ 5.0 mm (T515 CM breaker .004–.197 in); finish ap ≤ 1.0 mm — the steel F-range figure, no cast-iron finish ap read' },
     shoulder: { vc: 190, fz: 0.25, body: { dc: 50, z: 4 }, bodyAssumed: true, apLimitMm: 20, src: 'MMC-APX4000' },
     drill: { pts: [{ d: 12, n: 1900, f: 0.31 }, { d: 16, n: 1400, f: 0.33 }], src: 'MMC-MVE',
       note: 'the MVE ductile row is < 450 MPa; Sandvik R840 pearlitic 09.2 (vc 70–100, fn 0.30–0.55 at Ø10–14) brackets it for GJS-500' },
@@ -138,6 +158,9 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     bodies: { list: [{ dc: 50, z: 4 }, { dc: 63, z: 5 }, { dc: 100, z: 6 }], assumed: false,
       note: 'cutter Ø chosen from the face width; teeth Ø50 z4 / Ø63 z5 / Ø100 z6 from the TungAlu-Mill worked table' },
     rough: { fz: 0.2, apMm: 2.0, src: 'TUNGALOY-TUNGALU' },
+    faceFinish: { apMm: null, src: null, note: 'the TungAlu-Mill row gives one set of data (fz 0.2, max ap 2.0 mm) — no separate finishing pass' },
+    boreRough: { roughApMm: 3.0, roughSrc: 'MMC-SVJD', finishApMm: 1.0, finishSrc: 'MMC-MC6100',
+      note: 'rough ap ≤ 3.0 mm (SVJD HTi10 ap 0.2–3.0); finish ap ≤ 1.0 mm — the steel F-range figure, no aluminium finish ap read' },
     shoulder: { vc: 1000, fz: 0.2, body: { dc: 50, z: 4 }, bodyAssumed: false, apLimitMm: 2.0, src: 'TUNGALOY-TUNGALU' },
     drill: { pts: [{ d: 12, n: 2600, f: 0.31 }, { d: 16, n: 1900, f: 0.33 }], src: 'MMC-MVE' },
     bore: { vc: 400, f: 0.2, src: 'MMC-SVJD',
@@ -233,18 +256,79 @@ export function faceCutter(family: MaterialFamily | null | undefined, widthMm: n
 }
 
 /**
- * One finish face-milling pass over a face of area A (the feature table gives area, not length and width — the face is
- * taken as √A × √A, stated): passes × (L + Dc + 2 × clearance) ÷ vf, vf = n·z·fz. Cutting minutes only (× the
- * family's scale); the positioning allowance is the caller's.
+ * The passes a face takes from its per-side stock (PKG-2, CF-06 — 10 Nov 2026): with no stock stated (a part cut from
+ * solid, a feature's own minutes) one finish pass, as before. With the route's stock: where the catalogue gives finishing
+ * data distinct from roughing (steel, cast iron — WSX445) the last pass is a finish pass of up to `faceFinish.apMm` and the
+ * rest is roughed at up to `rough.apMm` a pass, n_rough = ⌈(stock − finish ap) ÷ rough ap⌉; where it does not
+ * (aluminium — one TungAlu-Mill row) ⌈stock ÷ max ap⌉ passes at the face data.
  */
-export function faceMillCutMinutes(family: MaterialFamily | null | undefined, areaMm2: number): { min: number; text: string } {
-  const { scale } = catalogueFor(family);
+export function facePassPlan(family: MaterialFamily | null | undefined, stockMm?: number): { rough: number; finish: number; text: string } {
+  const { row } = catalogueFor(family);
+  if (stockMm === undefined || !(stockMm > 0)) return { rough: 0, finish: 1, text: 'one finish pass' };
+  const fin = row.faceFinish.apMm;
+  if (fin === null) {
+    const n = Math.max(1, Math.ceil(stockMm / row.rough.apMm - 1e-9));
+    return { rough: 0, finish: n, text: `${stockMm} mm stock ÷ ap ≤ ${row.rough.apMm} mm = ${n} pass(es) at the face data (${row.faceFinish.note})` };
+  }
+  if (stockMm <= fin + 1e-9) return { rough: 0, finish: 1, text: `${stockMm} mm stock ≤ the ${fin} mm finishing ap — one finish pass (${row.faceFinish.note})` };
+  const n = Math.max(1, Math.ceil((stockMm - fin) / row.rough.apMm - 1e-9));
+  return { rough: n, finish: 1,
+    text: `⌈(${stockMm} mm stock − ${fin} mm finish) ÷ ${row.rough.apMm} mm rough ap⌉ = ${n} rough pass(es) at fz ${row.rough.fz} + 1 finish pass at fz ${row.face.fz} (${row.faceFinish.note}; rough ap the WSX445 medium row)` };
+}
+
+/**
+ * Face milling over a face of area A (the feature table gives area, not length and width — the face is taken as √A × √A,
+ * stated): each pass cuts (√A + Dc) at its table feed vf = n·z·fz; the 2 × clearance at each end of a pass is fed but not
+ * cut (non-cutting, PKG-2 CF-19 / CF-20 — it used to count as cutting); a further pass returns over the face at rapid.
+ * Passes from the stock (`facePassPlan`); no stock → one finish pass. `min` is cutting only (× the family's scale).
+ */
+export function faceMillCutMinutes(family: MaterialFamily | null | undefined, areaMm2: number, stockMm?: number): {
+  min: number; clearMin: number; returnMm: number; passes: number; text: string;
+} {
+  const { scale, row } = catalogueFor(family);
   const side = Math.sqrt(Math.max(areaMm2, 1));
   const c = faceCutter(family, side);
-  const path = c.passes * (side + c.body.dc + 2 * FACE_CLEARANCE_MM);
-  const min = path / c.vf * scale;
-  return { min, text: `${c.passes} pass(es) × (${side.toFixed(0)} + Ø${c.body.dc} + 2 × ${FACE_CLEARANCE_MM}) mm ÷ ${c.vf.toFixed(0)} mm/min (z${c.body.z})`
-    + (scale !== 1 ? ` × ${+scale.toFixed(3)}` : '') + ` = ${min.toFixed(2)} min` };
+  const plan = facePassPlan(family, stockMm);
+  const vfF = c.vf;                                                     // finish: face.vc, face.fz
+  const vfR = rpm(row.face.vc, c.body.dc) * c.body.z * row.rough.fz;    // rough: face.vc, rough.fz
+  const cutLen = c.passes * (side + c.body.dc);
+  const clear = c.passes * 2 * FACE_CLEARANCE_MM;
+  const min = (plan.rough * cutLen / vfR + plan.finish * cutLen / vfF) * scale;
+  const clearMin = (plan.rough * clear / vfR + plan.finish * clear / vfF) * scale;
+  const passes = plan.rough + plan.finish;
+  const returnMm = (passes - 1) * c.passes * (side + c.body.dc + 2 * FACE_CLEARANCE_MM);
+  const sc = scale !== 1 ? ` × ${+scale.toFixed(3)}` : '';
+  const text = (plan.rough ? `${plan.rough} rough × ${c.passes} × (${side.toFixed(0)} + Ø${c.body.dc}) mm ÷ ${vfR.toFixed(0)} mm/min + ` : '')
+    + `${plan.finish} × ${c.passes} × (${side.toFixed(0)} + Ø${c.body.dc}) mm ÷ ${vfF.toFixed(0)} mm/min (z${c.body.z})${sc} = ${min.toFixed(3)} min cutting `
+    + `[${plan.text}]; + ${passes} × ${c.passes} × 2 × ${FACE_CLEARANCE_MM} mm clearance at feed = ${clearMin.toFixed(3)} min non-cutting`;
+  return { min, clearMin, returnMm, passes, text };
+}
+
+/**
+ * The passes that open a cored / pierced bore of Ø d, length L, with `stockMm` a side (PKG-2, CF-06): above the finishing
+ * allowance it is rough-bored at the turning rough row (vc, fn) in ⌈(stock − finish ap) ÷ rough ap⌉ passes, then
+ * finish-bored once at the boring row; no stock stated → one finish pass (as before). Cutting minutes per pass (× scale).
+ */
+export function borePasses(family: MaterialFamily | null | undefined, d: number, L: number, stockMm?: number): {
+  passes: Array<{ kind: 'rough' | 'finish'; vf: number; cutMin: number }>; text: string;
+} {
+  const { row, scale } = catalogueFor(family);
+  const D = Math.max(d, 1);
+  const fin = boreFeed(family, D);
+  const br = row.boreRough;
+  const nR = stockMm !== undefined && stockMm > br.finishApMm + 1e-9 ? Math.max(1, Math.ceil((stockMm - br.finishApMm) / br.roughApMm - 1e-9)) : 0;
+  const vfR = rpm(row.turnRough.vc, D) * row.turnRough.fn;
+  const passes: Array<{ kind: 'rough' | 'finish'; vf: number; cutMin: number }> = [
+    ...Array.from({ length: nR }, () => ({ kind: 'rough' as const, vf: vfR, cutMin: L / vfR * scale })),
+    { kind: 'finish', vf: fin.vf, cutMin: L / fin.vf * scale },
+  ];
+  const sc = scale !== 1 ? ` × ${+scale.toFixed(3)}` : '';
+  const text = (nR
+    ? `${nR} rough pass(es) ${L.toFixed(0)} ÷ ${vfR.toFixed(0)} mm/min (vc ${row.turnRough.vc}, fn ${row.turnRough.fn}) + `
+    : '')
+    + `finish ${L.toFixed(0)} ÷ ${fin.vf.toFixed(0)} mm/min (n ${fin.n.toFixed(0)} × f ${row.bore.f})${sc}`
+    + (stockMm !== undefined ? ` [${stockMm} mm a side: ${nR ? `⌈(${stockMm} − ${br.finishApMm}) ÷ ${br.roughApMm}⌉ = ${nR} rough + 1 finish` : `≤ ${br.finishApMm} mm — one finish pass`}; ${br.note}]` : '');
+  return { passes, text };
 }
 
 /** Side-milling finish rate, cm²/min: ap (`SIDE_PASS_AP_MM`, capped at the row's limit) × vf of the shoulder row. */
@@ -253,6 +337,12 @@ export function sidePassCm2PerMin(family: MaterialFamily | null | undefined): nu
   const s = row.shoulder;
   const vf = rpm(s.vc, s.body.dc) * s.body.z * s.fz;
   return Math.min(SIDE_PASS_AP_MM, s.apLimitMm) * vf / 100 / scale;
+}
+
+/** The shoulder (side-milling) table feed vf = n·z·fz on the row's body, mm/min — the end mill's feed. */
+export function shoulderVf(family: MaterialFamily | null | undefined): number {
+  const s = catalogueFor(family).row.shoulder;
+  return rpm(s.vc, s.body.dc) * s.body.z * s.fz;
 }
 
 /** Finish-turning area rate, cm²/min = fn × vc × 10. */
@@ -328,7 +418,7 @@ export function slitMinutes(family: MaterialFamily | null | undefined, s: SlitGe
 const f1 = (n: number) => (Math.round(n * 10) / 10).toString();
 
 /** The sources a basis names for the operations it used. */
-export function sourcesLine(family: MaterialFamily | null | undefined, ops: Array<'face' | 'rough' | 'side' | 'drill' | 'bore' | 'tap' | 'turn' | 'slit'>): string {
+export function sourcesLine(family: MaterialFamily | null | undefined, ops: Array<'face' | 'face-rough' | 'rough' | 'side' | 'drill' | 'bore' | 'bore-rough' | 'tap' | 'turn' | 'slit'>): string {
   const { row, note } = catalogueFor(family);
   const parts: string[] = [];
   const add = (label: string, id: CuttingSourceId, extra?: string) => parts.push(`${label} ${sourceName(id)}${extra ? ` (${extra})` : ''}`);
@@ -338,6 +428,8 @@ export function sourcesLine(family: MaterialFamily | null | undefined, ops: Arra
     if (op === 'side') add(`side passes vc ${row.shoulder.vc} m/min, fz ${row.shoulder.fz} on Ø${row.shoulder.body.dc} z${row.shoulder.body.z}${row.shoulder.bodyAssumed ? ' (body and teeth ASSUMED)' : ''} —`, row.shoulder.src);
     if (op === 'drill') add(`drilling n·f at Ø${row.drill.pts[0].d} (n ${row.drill.pts[0].n}, f ${row.drill.pts[0].f}) and Ø${row.drill.pts[1].d} (n ${row.drill.pts[1].n}, f ${row.drill.pts[1].f}) —`, row.drill.src, row.drill.note);
     if (op === 'bore') add(`boring vc ${row.bore.vc} m/min, f ${row.bore.f} mm/rev —`, row.bore.src, row.bore.note);
+    if (op === 'bore-rough') add(`rough boring at the turning rough row (vc ${row.turnRough.vc} @ fn ${row.turnRough.fn}), ap ≤ ${row.boreRough.roughApMm} mm —`, row.boreRough.roughSrc, row.boreRough.note);
+    if (op === 'face-rough' && row.faceFinish.apMm !== null) add(`face roughing fz ${row.rough.fz}, ap ≤ ${row.rough.apMm} mm, finishing ap ≤ ${row.faceFinish.apMm} mm —`, row.faceFinish.src!, row.faceFinish.note);
     if (op === 'tap') add(`tapping ${row.tap.vc} m/min —`, row.tap.src, `${row.tap.note}; pitch ISO 261 coarse`);
     if (op === 'slit') add(`slitting saw ${row.slit.group}: vc ${row.slit.vc[0]}–${row.slit.vc[1]} m/min, fz ${row.slit.fz[0]}–${row.slit.fz[1]} mm (the middle taken — ${ASSUMED}), HSS type ${row.slit.type} bodies —`, row.slit.src, `arbor collar ${SAW_COLLAR_X_BORE} × bore ${ASSUMED}`);
     if (op === 'turn') add(`turning finish vc ${row.turnFinish.vc} @ fn ${row.turnFinish.fn}, rough vc ${row.turnRough.vc} @ fn ${row.turnRough.fn} —`, row.turnFinish.src, row.turnFinish.note);

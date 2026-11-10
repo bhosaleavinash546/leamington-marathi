@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeFeatureMachining, featureMinutesEach, defaultInclude } from '../src/engine/feature-machining.js';
+import { computeFeatureMachining, featureMinutesEach, featureTime, defaultInclude } from '../src/engine/feature-machining.js';
+import { planNonCut, rapidMinutes } from '../src/engine/non-cut-time.js';
 import type { FeatureRow } from '../src/engine/feature-ops.js';
 
 const HOLES: FeatureRow[] = [
@@ -24,11 +25,12 @@ describe('computeFeatureMachining', () => {
     expect(boss.included).toBe(false);
   });
 
-  it('cycle time = sum of per-feature minutes / 60', () => {
+  it('cycle time = sum of per-feature minutes + the operation\'s tool changes and rapids (PKG-2) / 60', () => {
     const r = computeFeatureMachining(HOLES, { machineId: 'm', labourId: 'l' });
-    const expectedMin =
-      featureMinutesEach(HOLES[0]) * 8 + featureMinutesEach(HOLES[1]) * 2;
-    expect(r.totalCycleHr).toBeCloseTo(expectedMin / 60, 5);
+    const featureMin = featureMinutesEach(HOLES[0]) * 8 + featureMinutesEach(HOLES[1]) * 2;
+    const visits = HOLES.flatMap(h => Array.from({ length: h.count }, () => featureTime(h, 'aluminium').visits).flat());
+    const nc = planNonCut(visits, null);
+    expect(r.totalCycleHr).toBeCloseTo((featureMin + nc.toolChangeMin + rapidMinutes(nc.rapidMm, 'm').min) / 60, 5);   // lines at 3 dp
   });
 
   it('near-net (default) removes NO material — machining time only', () => {
@@ -52,10 +54,12 @@ describe('computeFeatureMachining', () => {
     expect(r.operations[0].operationName).toMatch(/Ø40/);
   });
 
-  it('blind holes cost more than through holes of the same size', () => {
+  it('a blind and a through hole of the same size drill alike (the 0.10 min "blind" allowance is gone, PKG-2); a blind Ø13–26 is bored too', () => {
     const through = featureMinutesEach({ kind: 'hole', diaMm: 10, depthMm: 20, through: true, count: 1 });
     const blind = featureMinutesEach({ kind: 'hole', diaMm: 10, depthMm: 20, through: false, count: 1 });
-    expect(blind).toBeGreaterThan(through);
+    expect(blind).toBeCloseTo(through, 12);
+    expect(featureMinutesEach({ kind: 'hole', diaMm: 16, depthMm: 20, through: false, count: 1 }))
+      .toBeGreaterThan(featureMinutesEach({ kind: 'hole', diaMm: 16, depthMm: 20, through: true, count: 1 }));
   });
 
   it('larger bores cost more per unit depth (drill+ream vs drill)', () => {
@@ -69,10 +73,12 @@ describe('computeFeatureMachining', () => {
     expect(computeFeatureMachining(undefined, { machineId: 'm', labourId: 'l' }).featureCount).toBe(0);
   });
 
-  it('finishFactor scales machining time (precision/ground features)', () => {
-    const base = computeFeatureMachining(HOLES, { machineId: 'm', labourId: 'l' }).totalCycleHr;
-    const precise = computeFeatureMachining(HOLES, { machineId: 'm', labourId: 'l', finishFactor: 1.6 }).totalCycleHr;
-    expect(precise).toBeCloseTo(base * 1.6, 5);
+  it('finishFactor scales the features\' machining time, not the tool changes and rapids (precision/ground features)', () => {
+    const base = computeFeatureMachining(HOLES, { machineId: 'm', labourId: 'l' });
+    const precise = computeFeatureMachining(HOLES, { machineId: 'm', labourId: 'l', finishFactor: 1.6 });
+    const feat = (r: typeof base) => r.lines.reduce((s, l) => s + l.totalMinutes, 0);
+    expect(feat(precise)).toBeCloseTo(feat(base) * 1.6, 2);
+    expect(precise.totalCycleHr * 60 - feat(precise)).toBeCloseTo(base.totalCycleHr * 60 - feat(base), 6);
   });
 
   it('defaultInclude: near-net → holes in, bosses out', () => {
@@ -114,18 +120,19 @@ describe('Phase 2 — compound machining features (facing, pockets)', () => {
     const m = featureMinutesEach(FACE);
     // Aluminium (TungAlu-Mill, data.json #13): vc 1000, fz 0.2; √8000 = 89.4 mm wide > 0.7 × Ø100 = 70 → the Ø100 z6
     // body, 2 passes; n = 1000 × 1000 / (π × 100) = 3,183 rev/min, vf = 3,183 × 6 × 0.2 = 3,820 mm/min;
-    // 0.20 positioning + 2 × (89.4 + 100 + 2 × 5) / 3,820 = 0.20 + 0.104 = 0.304 min (it was 0.20 + 8000/8000 = 1.2).
+    // 2 × (89.4 + 100 + 2 × 5) / 3,820 = 0.104 min (it was 0.20 + 8000/8000 = 1.2; the 0.20 positioning went with PKG-2).
     const vf = 1000 * 1000 / (Math.PI * 100) * 6 * 0.2;
-    expect(m).toBeCloseTo(0.20 + 2 * (Math.sqrt(8000) + 100 + 10) / vf, 6);
+    expect(m).toBeCloseTo(2 * (Math.sqrt(8000) + 100 + 10) / vf, 6);
   });
 
   it('pocket is costed by removed volume at the roughing rate + walls at the side-pass rate', () => {
     const m = featureMinutesEach(POCKET);
     // 36 cm³ ÷ (534.8 in-cut ÷ 1.25 air = 427.8 cm³/min) + 4 × √3000 × 12 / 100 = 26.3 cm² of wall ÷ (2 mm ap (the
-    // TungAlu max) × Ø50 z4 at vc 1000, fz 0.2 = 5,093 mm/min → 101.9 cm²/min) + 0.30 allowance
+    // TungAlu max) × Ø50 z4 at vc 1000, fz 0.2 = 5,093 mm/min → 101.9 cm²/min) + 2 mm R-plane at 5,093 mm/min (PKG-2: the
+    // 0.30 allowance is gone)
     const rough = 36 / 427.8;
     const wall = 4 * Math.sqrt(3000) * 12 / 100 / (2 * (1000 * 1000 / (Math.PI * 50)) * 4 * 0.2 / 100);
-    expect(m).toBeCloseTo(0.30 + rough + wall, 4);
+    expect(m).toBeCloseTo(rough + wall + 2 / (1000 * 1000 / (Math.PI * 50) * 4 * 0.2), 3);
   });
 
   it('faces are ON by default; pockets stay off (engineer confirms recesses)', () => {

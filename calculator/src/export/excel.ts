@@ -8,6 +8,8 @@ import { reportNoteText } from './money-text.js';
 import type { ChecksAppliedMeta, CADReportMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
 import { buildCoreReport, costingConfidence, formWeights } from './executive-summary.js';
+import { buildCostBridge, bridgePrintRows, bridgeReAddText, type CostBridge } from './cost-bridge.js';
+import { buildMaterialBalance, balancePrintRows, type MaterialBalance } from './material-balance.js';
 import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
@@ -52,6 +54,34 @@ export const ITEMISED_MATERIAL_TEXT = 'priced by its itemised lines (not by weig
  * (it was text, "£25.34"; uploaded-parts review, Oct 2026). Sheet 7 states the arithmetic that ties the sheets to the
  * total, so a reader can see the workbook reconciles rather than take it on trust.
  */
+/**
+ * The cost bridge and material balance as workbook rows (PKG-6): `bridgePrintRows` / `balancePrintRows` — the rows the
+ * PDFs print. `text` formats £ inside a text cell (2 dp on 0-Executive as the core PDF, 4 dp on 2-Material as the audit
+ * pack); `cell` makes a numeric money cell. Exported for the tests that compare the workbook with the PDF.
+ */
+export function bridgeSheetRows(bridge: CostBridge, balance: MaterialBalance | null, o: { currency: string; cell: (gbp: number) => unknown;
+  text: (gbp: number) => string; rate: ((gbp: number) => string) | null; maxItems: number }): unknown[][] {
+  const br = bridgePrintRows(bridge, o.text, o.maxItems, o.rate);
+  const rows: unknown[][] = [
+    [COST_BRIDGE_HEAD, `A part (${o.currency})`, `Running total (${o.currency})`, 'In bucket', 'What it is'],
+    ...br.map(r => [r.label, o.cell(r.gbp), o.cell(r.cumulativeGbp), r.inBuckets, r.detail || r.basis]),
+    ['Should-cost (the rows re-added)', o.cell(bridge.reAddGbp), o.cell(bridge.totalGbp)],
+    [bridge.reconciles ? 'The rows re-add to the should-cost and, by bucket, to the eight buckets (each row to its own decimals; the running total is exact).' : bridgeReAddText(bridge, o.text)],
+  ];
+  if (balance) {
+    rows.push([], [`${MATERIAL_BALANCE_HEAD} (${balance.form === 'forged' ? 'forging' : 'casting'})`, 'kg', 'Stage', 'Treatment', 'Basis'],
+      ...balancePrintRows(balance).map(l => [l.label, l.kg === 'not itemised' ? l.kg : Number(l.kg), l.stage, l.recovery, l.note]));
+    if (balance.stock) rows.push([balance.stock.text, '', '', '', balance.stock.partsNote]);
+    rows.push([balance.summary.creditedKg <= 0.0005 ? 'No scrap credit (nothing is sold back)'
+      : o.rate ? `Credited ${balance.summary.creditedKg.toFixed(3)} kg × ${o.rate(balance.scrapPricePerKg)}/kg` : `Credited ${balance.summary.creditedKg.toFixed(3)} kg, sold back at the scrap price a kg`, o.cell(balance.creditGbp), '', '',
+      `the bridge's scrap / return credit${balance.closes != null ? `; the balance closes to ${(Math.abs(balance.closureKg ?? 0) * 1000).toFixed(1)} g` : ''}`
+        + `${balance.notItemised.length ? `. Not itemised by this costing: ${balance.notItemised.join('; ')}` : ''}`]);
+  }
+  return rows;
+}
+export const COST_BRIDGE_HEAD = 'Cost bridge — raw material to finished part';
+export const MATERIAL_BALANCE_HEAD = 'Material balance — a good part';
+
 export async function exportToExcelBlob(
   result: PartCostResult,
   input: UniversalStackInput,
@@ -225,6 +255,10 @@ export async function exportToExcelBlob(
       ...(cr.perKg ? [[`Metal a kg (${cr.perKg.kgLabel})`, m(cr.perKg.metalPerKg), 'metal line ÷ kg']] : []),
       ...(cr.weights ? [['Weights', cr.weights.line]] : []),
       [],
+      ...bridgeSheetRows(cr.bridge, cr.balance, { currency, cell: m, maxItems: 4,
+        text: (g: number) => `${g < 0 ? '-' : ''}${sym}${Math.abs(g * fxRate).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        rate: null }),   // as the core PDF: the price a kg is on 2-Material
+      [],
       ...(t.totalGbp > 0 ? [
         ['Tooling item', `Over the programme (${currency})`, 'First set / NRE', 'Replacements', 'Perishable', 'Split read from'],
         ...t.rows.map(r => [r.label, m(r.gbp), m(r.initialGbp), m(r.replacementGbp), m(r.perishableGbp), r.basis]),
@@ -372,7 +406,15 @@ export async function exportToExcelBlob(
     matDetail.push([], ['Data confidence', mat.confidence, '', ''], ['Effective date', mat.effectiveDate, '', '']);
   }
 
-  sheets.push({ name: '2-Material', rows: matDetail, cols: [40, 18, 10, 60] });
+  // The cost bridge and the material balance (PKG-6), 4 dp as the audit pack's §3C / §3D prints them.
+  try {
+    const four = (g: number) => `${g < 0 ? '-' : ''}${sym}${Math.abs(g * fxRate).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
+    matDetail.push([], ...bridgeSheetRows(buildCostBridge({ result, input, library, commodity }),
+      buildMaterialBalance({ input, result, commodity, ruleValues: extras?.cadMeta?.checks?.ruleValues ?? checks?.ruleValues ?? null,
+        measuredWeightKg: extras?.cadMeta?.measuredWeightKg ?? null }),
+      { currency, cell: m, text: four, rate: four, maxItems: 12 }));
+  } catch (e) { console.warn('[excel] cost bridge not built:', e); }
+  sheets.push({ name: '2-Material', rows: matDetail, cols: [40, 18, 14, 60, 60] });
 
   // ── Sheet 3: Operations Detail ──────────────────────────────────────────────
   const opHdr: string[] = [

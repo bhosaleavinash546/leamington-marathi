@@ -288,7 +288,8 @@ export function toCostParams(
       partWeightKg: num(e.partWeightKg) || num(ci.netWeightKg), annualVolume, amortizationVolume: amortVolume,
       temper: (e.temper ?? 'T6') as AlTemper, finish: (e.finish ?? 'mill') as AlFinish, finishAreaM2: num(e.finishAreaM2),
       ...(num(e.finishOutsideAreaM2) ? { finishOutsideAreaM2: num(e.finishOutsideAreaM2) } : {}),
-      bends: Math.round(Number(e.bends) || 0), cncMinutes: Number(e.cncMinutes) || 0, cncFixturings: Math.round(Number(e.cncFixturings) || 0),
+      bends: Math.round(Number(e.bends) || 0), cncMinutes: Number(e.cncMinutes) || 0,
+      ...(e.cncCutMinutes != null && Number.isFinite(Number(e.cncCutMinutes)) ? { cncCutMinutes: Number(e.cncCutMinutes) } : {}), cncFixturings: Math.round(Number(e.cncFixturings) || 0),
       fabFeatureRows: Math.round(Number(e.fabFeatureRows) || 0),
       ...(num(e.impactOuterDiaMm) ? { impactOuterDiaMm: num(e.impactOuterDiaMm) } : {}),
     });
@@ -647,6 +648,8 @@ export function toCostParams(
         heatingEnergyKwhPerKg: num(f.heatingEnergyKwhPerKg, 0.35),
         dieLife: num(f.dieLife, 30_000),
         dieCost: num(f.dieCostGBP),
+        // forge-line die setting (PKG-2, CF-22), as the screen collects it
+        ...(num(f.dieSettingHr) > 0 && num(f.dieSettingBatch) > 0 ? { dieSettingHr: num(f.dieSettingHr), dieSettingBatch: num(f.dieSettingBatch) } : {}),
       };
       if (num(f.projectedAreaCm2) > 0) params.projectedAreaCm2 = num(f.projectedAreaCm2);
       if (f.dieSteel) params.dieSteel = f.dieSteel;

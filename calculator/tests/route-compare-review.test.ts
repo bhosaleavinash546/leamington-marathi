@@ -144,7 +144,9 @@ describe('3. The arithmetic on a row', () => {
     // is sized on the heavier forging (443,582.83 → 443,915.43); bought 5.084 → 5.916 kg (with the saw kerf).
     // Part1 review (5 Nov 2026): one fixture set a machine the capacity implies (the tombstone fixture on each HMC, the lathe
     // fixture on each lathe) — 19.1288 → 19.1578
-    expect(ref.total).toBeCloseTo(axes ? 19.1578 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
+    // PKG-2 (10 Nov 2026): non-cutting time per operation, wear on cutting only, passes from the IS 3469 stock, the forge
+    // line's die setting — 19.1578 → 17.3389
+    expect(ref.total).toBeCloseTo(axes ? 17.3389 : 17.3206, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
     // the tombstone fixture on each of the 2 HMCs the capacity implies (+£12,000, Part1 review) + the lathe's own fixture,
     // programming of the machined rows
     expect(ref.tooling!.investment).toBe(455915.43);

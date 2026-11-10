@@ -68,7 +68,9 @@ describe('1. the bracket: the casting route = cast + machine, to the penny', () 
       // electricity), 12 impressions (the 60 % plate rule) for 20, the HMC at £300,000
       // Phase B (4 Nov 2026): 9.14 → 9.77 — the UK cast-steel charge at consumer scrap + trim ÷ 0.96 (£0.148 → £0.314/kg)
       // Part1 review (5 Nov 2026): 9.77 → 9.81 — one hydraulic fixture a cell the capacity implies, not one for all of them
-      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 9.81 : 8.80, 2);
+      // PKG-2 (10 Nov 2026): 9.81 → 8.54 — non-cutting time per operation (tool changes, rapids, one datum probe) in place of
+      // the fixed allowance a feature, tool wear on the cutting only, the faces rough + finish from the 3 mm sand stock
+      if (annual === 200_000) expect(cast.total).toBeCloseTo(axes ? 8.54 : 8.80, 2);
     }, 60_000);
   }
 

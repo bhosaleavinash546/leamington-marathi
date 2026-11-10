@@ -37,7 +37,9 @@ describe('optimiseMachiningRouting — the cheapest capable routing wins, with t
     const vf2 = R('mach-haas-vf2'), drill = R('mach-drill'), umc = R('mach-haas-umc500');
     expect(r.chosen.costPerPart).toBeCloseTo(0.30 * vf2 + 0.05 * drill + 5 * 0.75 * vf2 / 1000 + 5 * H * vf2, 2);
     const consolidated = r.alternatives.find(a => a.label === 'consolidated-5axis')!;
-    expect(consolidated.costPerPart).toBeCloseTo(0.35 * umc + 0.75 * umc / 1000 + H * umc, 2);
+    // + 3 indexes between the 4 sides of the one clamping (0.8 s each — PKG-2)
+    expect(consolidated.indexes).toBe(3);
+    expect(consolidated.costPerPart).toBeCloseTo((0.30 + 3 * 0.8 / 3600 + 0.05) * umc + 0.75 * umc / 1000 + H * umc, 2);
     expect(r.basis).toContain('cost-ranked');
     expect(r.basis).toContain('split-3axis');
   });
@@ -54,7 +56,7 @@ describe('optimiseMachiningRouting — the cheapest capable routing wins, with t
     expect(r.chosen.primaryMachineId).toBe('mach-haas-umc500'); // £75 beats £85/£95 5-axis
     expect(r.chosen.setups).toBe(1);
     const umc = R('mach-haas-umc500');
-    expect(r.chosen.costPerPart).toBeCloseTo(0.07 * umc + 0.75 * umc / 5 + H * umc, 2);
+    expect(r.chosen.costPerPart).toBeCloseTo((0.07 + 3 * 0.8 / 3600) * umc + 0.75 * umc / 5 + H * umc, 2);   // + 3 indexes (PKG-2)
     expect(r.savingVsNext).toBeGreaterThan(0);
   });
 

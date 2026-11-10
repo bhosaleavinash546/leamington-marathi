@@ -83,35 +83,37 @@ describe('every catalogue figure is the published one', () => {
 describe('times are the makers\' formulas on the measured geometry', () => {
   it('drilling at the hole\'s own Ø: the stub axle\'s Ø14 × 59 in ductile iron is 0.26 min (it was 1.11 with a ream)', () => {
     // MVE ductile Ø12 n 1900 f 0.31, Ø16 n 1400 f 0.33; at Ø14: vc = (71.63 + 70.37)/2 = 71.00 m/min, f 0.32;
-    // n = 1000 × 71.00 / (π × 14) = 1,614 rev/min; vf = 516.6 mm/min; 0.15 + 59 ÷ 516.6 = 0.264 min
+    // n = 1000 × 71.00 / (π × 14) = 1,614 rev/min; vf = 516.6 mm/min; 59 ÷ 516.6 cutting + 2 mm R-plane fed in (PKG-2:
+    // the 0.15 min approach allowance is gone — the operation pays the tool change and the rapids)
     const vc = (Math.PI * 12 * 1900 + Math.PI * 16 * 1400) / 2 / 1000;
     const vf = 1000 * vc / (Math.PI * 14) * 0.32;
     expect(drillFeed('cast iron', 14).vf).toBeCloseTo(vf, 6);
-    expect(featureMinutesEach(hole(14, 59), 'cast iron')).toBeCloseTo(0.15 + 59 / vf, 6);
+    expect(featureMinutesEach(hole(14, 59), 'cast iron')).toBeCloseTo((59 + 2) / vf, 6);
     expect(featureMinutesEach(hole(14, 59), 'cast iron')).toBeLessThan(0.3);
   });
   it('a Ø6 and a Ø20 drill no longer share a feed', () => {
     expect(drillFeed('steel', 20).vf).toBeLessThan(drillFeed('steel', 12).vf);
     expect(drillFeed('steel', 20).vf).toBeCloseTo(1000 * (Math.PI * 16 * 1700 / 1000) / (Math.PI * 20) * 0.33, 6);
   });
-  it('a cored bore is one boring pass at n·f, f 0.2: Ø45 in ductile iron 0.25 + 45 ÷ 284 mm/min', () => {
+  it('a cored bore with no stated stock is one boring pass at n·f, f 0.2: Ø45 in ductile iron (45 + 2) ÷ 284 mm/min', () => {
     const vf = 1000 * 201 / (Math.PI * 45) * 0.2;
     expect(boreFeed('cast iron', 45).vf).toBeCloseTo(vf, 6);
-    expect(nearNetHoleMinutes(hole(45, 45, false), 20, 'cast iron')).toBeCloseTo(0.25 + 45 / vf, 6);
+    expect(nearNetHoleMinutes(hole(45, 45, false), 20, 'cast iron')).toBeCloseTo((45 + 2) / vf, 6);
   });
   it('tapping feed = n × pitch (ISO 261): M10 at 15 m/min = 477.5 × 1.5 = 716 mm/min', () => {
     const t = tapFeed('steel', 'M10');
     expect(t.pitch).toBe(1.5);
     expect(t.vf).toBeCloseTo(1000 * 15 / (Math.PI * 10) * 1.5, 6);
   });
-  it('face milling by passes over face length + cutter Ø: the knuckle\'s 4,385 mm² face in steel 0.44 min (it was 1.50)', () => {
+  it('face milling by passes over face length + cutter Ø: the knuckle\'s 4,385 mm² face in steel 0.24 min (it was 1.50)', () => {
     // √4385 = 66.2 mm ≤ 0.7 × 100 → the Ø100 body, z 7 ASSUMED; n = 1000 × 220 / (π × 100) = 700.3; vf = 700.3 × 7 × 0.15
-    // = 735.4 mm/min; 0.20 + (66.2 + 100 + 10) ÷ 735.4 = 0.44 min
+    // = 735.4 mm/min; (66.2 + 100) ÷ 735.4 cutting + 2 × 5 mm clearance at feed = 0.24 min (PKG-2: no 0.20 positioning)
     const c = faceCutter('steel', Math.sqrt(4385));
     expect(c.body).toEqual({ dc: 100, z: 7 });
     const vf = 1000 * 220 / (Math.PI * 100) * 7 * 0.15;
     const face: FeatureRow = { kind: 'face', diaMm: 0, depthMm: 0, through: null, count: 1, areaMm2: 4385 };
-    expect(featureMinutesEach(face, 'steel')).toBeCloseTo(0.20 + (Math.sqrt(4385) + 100 + 10) / vf, 6);
+    expect(featureMinutesEach(face, 'steel')).toBeCloseTo((Math.sqrt(4385) + 100 + 10) / vf, 6);
+    expect(featureTime(face, 'steel').cutMin).toBeCloseTo((Math.sqrt(4385) + 100) / vf, 6);
   });
   it('roughing: the catalogue in-cut rate + 25 % air moves (labelled); turning vc × fn × 3 mm', () => {
     // steel: 0.7 × 100 × 3 × (700.3 × 7 × 0.2 = 980.4) / 1000 = 205.9 cm³/min ÷ 1.25 = 164.7
@@ -122,18 +124,19 @@ describe('times are the makers\' formulas on the measured geometry', () => {
   });
 });
 
-describe('the allowances are fixed; the metal changes only the cutting', () => {
-  it('a hole in steel and in aluminium differ by the cutting term alone — the 0.15 approach is not × 2', () => {
+describe('no fixed allowance; the metal changes the cutting and the feed the R-plane is fed in at', () => {
+  it('a hole in steel and in aluminium: (depth + 2 mm R-plane) at each metal\'s own feed — no allowance (PKG-2)', () => {
     const st = featureMinutesEach(hole(10, 30), 'steel');
     const al = featureMinutesEach(hole(10, 30), 'aluminium');
-    expect(st - ALLOWANCE_MIN.drill).toBeCloseTo(30 / drillFeed('steel', 10).vf, 9);
-    expect(al - ALLOWANCE_MIN.drill).toBeCloseTo(30 / drillFeed('aluminium', 10).vf, 9);
+    expect(ALLOWANCE_MIN.drill).toBe(0);
+    expect(st).toBeCloseTo(32 / drillFeed('steel', 10).vf, 9);
+    expect(al).toBeCloseTo(32 / drillFeed('aluminium', 10).vf, 9);
   });
   it('a metal with no catalogue row takes the nearest row × the machinability ratio, and says so', () => {
     const ti = catalogueFor('titanium');
     expect(ti).toMatchObject({ fam: 'steel', scale: 2 });
     expect(ti.note).toMatch(/no catalogue row read for titanium.*engineering-typical, not sourced/);
-    expect(featureMinutesEach(hole(10, 30), 'titanium') - 0.15).toBeCloseTo(2 * 30 / drillFeed('steel', 10).vf, 9);
+    expect(featureMinutesEach(hole(10, 30), 'titanium')).toBeCloseTo(2 * 32 / drillFeed('steel', 10).vf, 9);
   });
   it('the legacy time factor reads as the family it stands for', () => {
     expect(familyForTimeFactor(2)).toBe('steel');
@@ -151,12 +154,14 @@ describe('a 4.2×D hole is standard reach; clearance holes are not reamed', () =
   });
   it('beyond 5×D it pecks, and the premium is exactly the costing\'s extra time', () => {
     const d = hole(8, 60);
-    expect(featureMinutesEach(d, 'steel') - 0.15).toBeCloseTo(60 / drillFeed('steel', 8).vf * 1.5, 9);
+    expect(featureMinutesEach(d, 'steel')).toBeCloseTo((60 * 1.5 + 2) / drillFeed('steel', 8).vf, 9);
+    expect(featureTime(d, 'steel').cutMin).toBeCloseTo(60 / drillFeed('steel', 8).vf, 9);   // the peck retracts are non-cutting
     expect(deepHolePeckPremiumMin(d, 'steel')).toBeCloseTo(0.5 * 60 / drillFeed('steel', 8).vf, 9);
   });
   it('a blind Ø13–26 hole is a locating bore: drilled + one boring pass', () => {
     const t = featureTime(hole(16, 30, false), 'steel');
-    expect(t.min).toBeCloseTo(0.15 + 30 / drillFeed('steel', 16).vf + 0.25 + 30 / boreFeed('steel', 16).vf + 0.10, 9);
+    expect(t.min).toBeCloseTo(32 / drillFeed('steel', 16).vf + 32 / boreFeed('steel', 16).vf, 9);
+    expect(t.visits.map(v => v.tool)).toEqual(['drill Ø16.0', 'bore Ø16.0']);
   });
 });
 
@@ -168,8 +173,9 @@ describe('every basis names its sources and labels its assumptions', () => {
     const b = nearNetMachiningTime(rows, 'cast iron', 'sand').basis;
     for (const id of ['MMC-WSX445', 'MMC-MVE', 'TUNGALOY-T515', 'OSG-ATAP', 'OKUMA-MA4000H', 'DMG-NHX4000'] as const) expect(b).toContain(sourceName(id));
     expect(b).toMatch(/ASSUMED/);                                             // the WSX445 teeth
-    expect(b).toMatch(/clearance engineering-typical, not sourced/);
-    expect(b).toMatch(/allowances engineering-typical, not sourced, not scaled by the metal/);
+    expect(b).toMatch(/clearance at feed non-cutting, engineering-typical, not sourced/);
+    expect(b).toMatch(/approach \/ retract 25 mm rapid plane \+ 2 mm fed in \(engineering-typical, not sourced\)/);
+    expect(b).toMatch(/datum probing 12 s \(engineering estimate, not sourced\)/);
     expect(b).not.toMatch(/×1\.6 on aluminium/);
   });
   it('turning and from-solid', () => {
@@ -178,7 +184,7 @@ describe('every basis names its sources and labels its assumptions', () => {
       areaByTypeCm2: { PLANE: 150, BSPLINE: 50 }, rows: [hole(10, 20)] });
     expect(fs.basis).toContain(sourceName('MMC-APX4000'));
     expect(fs.basis).toContain(sourceName('SANDVIK-K'));
-    expect(fs.basis).toMatch(/25% air moves and step-downs \(engineering-typical, not sourced\)/);
+    expect(fs.basis).toMatch(/25% air moves and step-downs \(non-cutting, engineering-typical, not sourced\)/);
     expect(fs.basis).toMatch(/no catalogue row read, engineering-typical, not sourced/);   // ball-nose surfacing
   });
 });

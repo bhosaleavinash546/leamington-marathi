@@ -26,6 +26,7 @@
  * on the estimate still come from the regional engine run.
  */
 import { activeRates, activeLabourRate } from './rate-context.js';
+import { rapidMinutes, indexMinutes } from './non-cut-time.js';
 import type { RateLibrary } from './types.js';
 
 /** A machine as a reader knows it — its class, never the library id (7-country review, 3 Nov 2026). */
@@ -118,6 +119,8 @@ export interface RoutingCandidate {
   oversize: boolean;
   /** The primary machine's envelope (sorted mm) — so the viewer can draw the box the part does not fit. */
   envelopeMm: readonly [number, number, number] | null;
+  /** B-axis / trunnion indexes between the sides of a clamping (HMC cell, 5-axis) a part — non-cutting time (PKG-2). */
+  indexes?: number;
 }
 
 export interface RoutingChoice {
@@ -189,6 +192,11 @@ export interface RoutingInputs {
   labourRatePerHr?: number;
   /** No twin-pallet HMC candidate: a turned near-net part's holes go to the drill, not the volume cell. */
   noVolumeCell?: boolean;
+  /**
+   * Rapid travel of the milling and drilling content, mm (PKG-2, CF-19): each candidate adds it at its OWN machine's
+   * sourced rapid (non-cut-time.ts), and the HMC / 5-axis candidates their indexes between sides. Absent: none.
+   */
+  rapidMm?: { mill?: number; drill?: number; lathe?: number; turnedSecondary?: number };
 }
 
 const fmtGBP = (v: number) => `£${v.toFixed(2)}`;
@@ -203,6 +211,7 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
   const handlingHrEach = (p.perPartHandlingMinPerSetup ?? 0.8) / 60;
   const dirs = Math.max(1, Math.round(p.principalDirections) || 1);
   const batch = Math.max(1, p.batchSize);
+  const rapidHr = (mm: number | undefined, machineId: string) => (mm && mm > 0 ? rapidMinutes(mm, machineId).min / 60 : 0);
 
   const candidates: RoutingCandidate[] = [];
   const labourRate = p.labourRatePerHr ?? activeLabourRate('lab-uk-skilled');
@@ -217,10 +226,14 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
     setups: number,
     detailPrefix: string,
     masked = false,
+    indexes = 0,
   ) => {
     if (!primary) return;
     const drill = p.drillHr > 0 ? (drillM ?? primary) : null;
-    const cutting = p.millingHr * primary.ratePerHr + p.drillHr * (drill?.ratePerHr ?? 0);
+    // the content's non-cutting rapids at THIS candidate's machines, and its indexes between sides (PKG-2)
+    const millHr = p.millingHr > 0 ? p.millingHr + rapidHr(p.rapidMm?.mill, primary.id) + indexMinutes(indexes, primary.id).min / 60 : 0;
+    const drillHr = p.drillHr > 0 ? p.drillHr + rapidHr(p.rapidMm?.drill, (drill ?? primary).id) : 0;
+    const cutting = millHr * primary.ratePerHr + drillHr * (drill?.ratePerHr ?? 0);
     const setupCost = setups * setupHrEach * primary.ratePerHr / batch;
     // A twin-pallet cell: the machine pays a pallet change, the operator loads the other pallet while it cuts.
     const handlingCost = masked ? setups * (PALLET_CHANGE_SEC / 3600) * primary.ratePerHr : setups * handlingHrEach * primary.ratePerHr;
@@ -234,13 +247,15 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
       envelopeMm: MACHINE_CATALOGUE.find(m => m.id === primary.id)?.envelopeMm ?? null,
       costPerPart: Math.round(cost * 10_000) / 10_000,
       // A masked load is paid inside the operator's share of the cut; only what the cut cannot cover is extra (M4).
-      labourPerPart: labourOf(p.millingHr + p.drillHr, masked
-        ? Math.max(0, setups * handlingHrEach - (p.millingHr + p.drillHr) * CUTTING_MANNING)
+      labourPerPart: labourOf(millHr + drillHr, masked
+        ? Math.max(0, setups * handlingHrEach - (millHr + drillHr) * CUTTING_MANNING)
         : setups * handlingHrEach),
       ...(masked ? { masked: true } : {}),
+      ...(indexes > 0 && p.millingHr > 0 ? { indexes } : {}),
       detail: `${detailPrefix}: ${machineName(primary.id)} £${primary.ratePerHr.toFixed(2)}/hr`
         + (drill && drill.id !== primary.id ? ` + ${machineName(drill.id)} £${drill.ratePerHr.toFixed(2)}/hr` : '')
-        + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
+        + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch} (change-over engineering-typical, not sourced)`
+        + (indexes > 0 && p.millingHr > 0 ? ` + ${indexes} index(es) between sides` : '')
         + (masked
           ? ` + ${PALLET_CHANGE_SEC} s pallet change per part per fixturing (${PALLET_CHANGE_SOURCE}), ${(handlingHrEach * 60).toFixed(1)} min load / unload masked by the cut`
           : ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`)
@@ -258,19 +273,21 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
     const lathe = cheapestCapable(library, 'turn', p.bboxSortedMm);
     const second = p.turned.millHr > 0 ? cheapestCapable(library, 'mill3', p.bboxSortedMm) : drillMachine;
     if (lathe) {
-      const secHr = p.turned.millHr + p.turned.drillHr;
+      const secRaw = p.turned.millHr + p.turned.drillHr;
+      const secHr = secRaw > 0 ? secRaw + rapidHr(p.rapidMm?.turnedSecondary, (second ?? lathe).id) : 0;
+      const latheHr = p.turned.latheHr + rapidHr(p.rapidMm?.lathe, lathe.id);
       const setups = p.turned.chuckings + (secHr > 0 ? 1 : 0);
-      const cost = p.turned.latheHr * lathe.ratePerHr + secHr * (second?.ratePerHr ?? lathe.ratePerHr)
+      const cost = latheHr * lathe.ratePerHr + secHr * (second?.ratePerHr ?? lathe.ratePerHr)
         + setups * setupHrEach * lathe.ratePerHr / batch + setups * handlingHrEach * lathe.ratePerHr;
       candidates.push({
         label: 'turned', primaryMachineId: lathe.id, drillMachineId: secHr > 0 ? (second?.id ?? lathe.id) : lathe.id,
         setups, oversize: lathe.oversize,
         envelopeMm: MACHINE_CATALOGUE.find(m => m.id === lathe.id)?.envelopeMm ?? null,
         costPerPart: Math.round(cost * 10_000) / 10_000,
-        labourPerPart: labourOf(p.turned.latheHr + secHr, setups * handlingHrEach),
-        detail: `turned from bar: ${machineName(lathe.id)} £${lathe.ratePerHr.toFixed(2)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
+        labourPerPart: labourOf(latheHr + secHr, setups * handlingHrEach),
+        detail: `turned from bar: ${machineName(lathe.id)} £${lathe.ratePerHr.toFixed(2)}/hr for ${(latheHr * 60).toFixed(1)} min`
           + (secHr > 0 ? ` + ${machineName(second?.id)} £${(second?.ratePerHr ?? 0).toFixed(2)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
-          + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
+          + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch} (change-over engineering-typical, not sourced)`
           + ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`,
       });
     }
@@ -293,8 +310,10 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
   // carries the drilling in the same clamping — except the face it is clamped
   // on, which a part cut from solid must have machined in a second clamping.
   const fiveAxisSetups = p.fromSolid && dirs > 1 ? 2 : 1;
+  // the sides of each clamping are reached by indexing: directions − clampings index moves a part (stated)
   push('consolidated-5axis', cheapestCapable(library, 'mill5', p.bboxSortedMm), null,
-    fiveAxisSetups, fiveAxisSetups === 2 ? '5-axis: op 10 five sides, op 20 the clamped face' : 'single-setup 5-axis consolidation');
+    fiveAxisSetups, fiveAxisSetups === 2 ? '5-axis: op 10 five sides, op 20 the clamped face' : 'single-setup 5-axis consolidation',
+    false, Math.max(0, dirs - fiveAxisSetups));
 
   // Volume cell: a twin-pallet HMC with a dedicated hydraulic fixture on a 4th-axis tombstone. Four approach
   // directions in one clamping (a fifth and sixth need a second), the drilling in the same clamping, the
@@ -304,7 +323,7 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
     const cellSetups = clampings + (p.fromSolid && dirs > 1 ? 1 : 0);
     push('volume-cell', cheapestCapable(library, 'hmc', p.bboxSortedMm), null, cellSetups,
       `twin-pallet HMC cell at ${(p.annualVolume ?? 0).toLocaleString('en-GB')}/yr: ${dirs} direction(s) in ${clampings} clamping(s) on a 4th-axis tombstone`
-      + (p.fromSolid && dirs > 1 ? ' + the clamped face' : '') + ', dedicated hydraulic fixture', true);
+      + (p.fromSolid && dirs > 1 ? ' + the clamped face' : '') + ', dedicated hydraulic fixture', true, Math.max(0, dirs - clampings));
   }
 
   const total = (c: RoutingCandidate) => c.costPerPart + c.labourPerPart;

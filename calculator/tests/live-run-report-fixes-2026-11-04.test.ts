@@ -281,7 +281,8 @@ describe('2. Casting and cast + machine rows that are the same costing are one r
     // UK award capex (the spindle is turned). Phase B (4 Nov 2026): 9.3923 → 10.1103 — the UK cast-steel charge is the
     // consumer-scrap level + trim ÷ 0.96 (£0.148 → £0.314/kg)
     // Part1 review (5 Nov 2026): 10.1103 → 10.1223 — one machining fixture set a machine the capacity implies
-    expect(castLike[0].total!).toBeCloseTo(10.1223, 3);
+    // PKG-2 (10 Nov 2026): 10.1223 → 9.0793 — non-cutting time per operation, tool wear on the cutting only, passes from stock
+    expect(castLike[0].total!).toBeCloseTo(9.0793, 3);
   }, 120_000);
 });
 

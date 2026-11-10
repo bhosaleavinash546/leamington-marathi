@@ -42,6 +42,8 @@ import { NARROW_SLIT_RULE_ID } from '../engine/dfm-geometry/commodities/slits.js
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
 import { assumedServiceFlagsIn } from '../engine/cost-input-rules/derive/service-context.js';
 import { formWeights, type CoreWeights } from './form-weights.js';
+import { buildCostBridge, isMachiningOp, type CostBridge } from './cost-bridge.js';
+import { buildMaterialBalance, type MaterialBalance } from './material-balance.js';
 import { compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
 import { ruleReportNotes, type RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
 import type { RuleContext } from '../engine/cost-input-rules/types.js';
@@ -482,6 +484,11 @@ export interface CoreReport {
   material: { lines: CoreMaterialLine[]; metalGbp: number; consumablesGbp: number; energyGbp: number; boughtInGbp: number; totalGbp: number };
   /** ONE weight set for a casting or forging, labelled the same on every page (`formWeights`), or null. */
   weights: CoreWeights | null;
+  /** The cost bridge, raw material in to finished part out (cost-bridge.ts, PKG-6): the same figures as the buckets,
+   *  grouped by what they pay for, re-adding to the headline. Printed by the cost card, section 2, the audit pack, the workbook. */
+  bridge: CostBridge;
+  /** A casting's or forging's material balance (material-balance.ts) — input, raw part, finished, removed, losses — or null. */
+  balance: MaterialBalance | null;
   perKg: { kg: number; kgLabel: string; pricePerKg: number; metalPerKg: number } | null;
   formMachine: CoreFormMachineSplit | null;
   commercial: Array<{ label: string; value: string; source: string }>;
@@ -780,7 +787,7 @@ export function capacityWarnings(rows: CoreCapacityRow[], annual: number): strin
   // Which minutes are sourced (Part1 review, Nov 2026: it said "machining minutes are engineering-typical and
   // conservative" after the cutting minutes moved onto the makers' published cutting data — cutting-catalogue.ts).
   if (dedicated) out.push(`The cycle times are the costing's${cutting
-    ? ': the CUTTING minutes are from the tool makers\' published cutting data (speeds and feeds, section 4 and the audit pack); the load / unload handling, the set-up and the fixed positioning allowances are engineering-typical, not sourced'
+    ? ': the CUTTING minutes are from the tool makers\' published cutting data (speeds and feeds, section 4 and the audit pack); the non-cutting time is built per operation from the makers\' tool-change, rapid and index times with stated approach distances and a datum-probe estimate; the load / unload handling and the set-up are engineering-typical, not sourced'
     : ' (their bases are in section 4)'} — confirm with a supplier cycle sheet (more than ${CAPACITY_DEDICATED_LINE} machines for one part: CostVision engineering heuristic, not sourced).`);
   return out;
 }
@@ -971,18 +978,6 @@ function usedFor(d: DecisionForUsed, input: UniversalStackInput, rvs: NonNullabl
   // ONE resolver with the screen's checks (decision-used.ts): what the costing holds for an unanswered advisory.
   const costedItems = [...input.operations.map(o => o.operationName), ...(input.rawMaterial.consumablesItems ?? []).map(i => i.label)];
   return decisionUsedValue(d, { costedItems, ruleValues: rvs });
-}
-
-/**
- * Machining inside a cast + machine or forge + machine costing: the machine is a cutting machine (the library's `mach-`
- * machines, or a class that says machining centre / lathe), or a bench deburr / gauge. The class test read "machin" and
- * "grind" anywhere: "Gravity Die Casting Machine", "Shot Blast Machine" and the "Robotic fettling / grinding cell" were
- * counted as machining, and page 1 put the casting route's robotic fettling (£0.44 on the bracket) in the machining half.
- */
-function isMachiningOp(o: { operationName: string; machineId: string; benchOperation?: boolean }, library: RateLibrary): boolean {
-  if (o.benchOperation) return /deburr|gauge|machin/i.test(o.operationName);
-  const m = library.machines.find(x => x.id === o.machineId);
-  return /^mach-/.test(o.machineId) || /\bmachining\b|\blathe\b/i.test(m?.machineClass ?? '');
 }
 
 /**
@@ -1244,6 +1239,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
 
   const material = materialSplit(result, input, library);
   const weights = formWeights(rvs, input, commodity);
+  const bridge = buildCostBridge({ result, input, library, commodity });
+  const balance = buildMaterialBalance({ input, result, commodity, ruleValues: rvs, measuredWeightKg: meta.measuredWeightKg ?? null });
   // £/kg as cast / as forged is on ONE forging's (casting's) weight — the knuckle printed "as forged (3.434 kg)", its
   // as-forged 3.365 kg with the 2 % scrap forgings folded in, while page 4 and page 5 read 3.365 (fresh review, 4 Nov 2026).
   const kgCostedOn = weights?.asFormedKg ?? input.rawMaterial.netWeightKg;
@@ -1466,7 +1463,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
         + 'reject rate, OEE, batch, weight) is listed without a figure.',
     },
     alerts, openQuestions, notIncluded, notModelled: std.notModelled ?? [], terms: deliveryTermsLine(input.deliveryTerms),
-    waterfall, partSummary, buckets, material, weights, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
+    waterfall, partSummary, buckets, material, weights, bridge, balance, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
     sensitivity, sensitivityPct, sensitivityDropped, volumeLine, routesNote, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
     routes, countries, dfm,
   };

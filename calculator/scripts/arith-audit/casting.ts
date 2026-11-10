@@ -286,17 +286,22 @@ for (const c of CASES) {
   const perMin = c.alloy === 'steel' ? 0.12 : 0.10;
   if (cam) {
     check('setup h / part (setup ÷ batch)', ops.find(o => /^Machining Setup/.test(o.operationName)).cycleTimeHr, pv('cam-mach-setup-time') / pv('cam-mach-batch-size'), { abs: 1e-9 });
-    const cutMin = (P.machiningOps as Array<any>).filter(o => !o.benchOperation && !/^Pallet change|load|clamp|unload/i.test(o.name))
+    // PKG-2 (CF-20): wear is on the CUTTING minutes only (chip-making — the machining auditor re-derives them, the £ to the
+    // 4th dp); here: the module carries the rule's figure, and it is below the spindle minutes × £/min (the spindle cycle
+    // carries the tool changes, rapids, feed-in and probing, which wear no tool)
+    const spinMin = (P.machiningOps as Array<any>).filter(o => !o.benchOperation && !/^Pallet change|load|clamp|unload/i.test(o.name))
       .reduce((s: number, o: any) => s + o.cycleTimeHr, 0) * 60;
-    check('tool wear £ (cutting min × £/min)', items.get('cutting-tool wear') ?? 0, cutMin * perMin, { abs: 0.0005 });
+    check('tool wear £ = the rule\'s (cutting min × £/min)', items.get('cutting-tool wear') ?? 0, Number(P.machiningToolWearCostPerPart ?? 0), { abs: 0.0005 });
+    check('tool wear £ < spindle min × £/min (wear on cutting only)', Number((items.get('cutting-tool wear') ?? 0) < spinMin * perMin), 1, { abs: 0 });
   } else {
     // The casting route's secondary machining is the near-net plan: the same change-over (efficiency 1), the same tool wear.
     const setupOp = ops.find(o => /^Machining Setup/.test(o.operationName));
     check('secondary machining: change-over at labour efficiency 1', setupOp?.labourEfficiency ?? NaN, 1, { abs: 0 });
-    const cutMin = (P.secondaryMachiningOps as Array<any>).filter(o => !o.benchOperation && !/^Machining Setup|^Pallet change|load|clamp|unload/i.test(o.operationName))
+    const spinMin = (P.secondaryMachiningOps as Array<any>).filter(o => !o.benchOperation && !/^Machining Setup|^Pallet change|load|clamp|unload/i.test(o.operationName))
       .reduce((s: number, o: any) => s + o.cycleTimeHr, 0) * 60;
-    // one name on both routes (Nov 2026): the casting route's tool wear is "cutting-tool wear", as cast + machine's
-    check('tool wear £ (cutting min × £/min)', items.get('cutting-tool wear') ?? 0, cutMin * perMin, { abs: 0.0005 });
+    // one name on both routes (Nov 2026): the casting route's tool wear is "cutting-tool wear", as cast + machine's. PKG-2
+    // (CF-20): it is on the cutting minutes only (the machining auditor re-derives them) — below the spindle minutes here.
+    check('tool wear £ ≤ spindle min × £/min (wear on cutting only)', Number((items.get('cutting-tool wear') ?? 0) <= spinMin * perMin + 1e-9), 1, { abs: 0 });
   }
 
   // ── 6. Tooling: the sand pattern build-up, sets over the programme, amortisation ──

@@ -48,6 +48,11 @@ const HEAT_KWH_PER_KG = 0.40, DESCALE_GBP_KG = 0.12;   // 0.40 = the heater's 50
 // × the country's inspection factor), the casting route's NDT_STATION.mpi — written out here from the rate book, not imported.
 const MPI_GBP = Math.round(75 / 3600 * (C.labourRate('lab-uk-inspector') * 1 + 4 * C.factor('inspection')) * 10_000) / 10_000;   // 4 dp, as the product (7-country review)
 const DIE_LIFE_BASE = 38_000;                                 // microalloyed steel
+// Forge-line die setting (PKG-2, CF-22, 10 Nov 2026): 141 min a change (Cavbozar, METU 2008 — a 1,000 t press, any size);
+// once a batch (annual ÷ 20, held 50–5,000 — the machining side's rule) or a die life if shorter; the press + crew, and the
+// trim press and heater idle beside it, OEE 1, labour efficiency 1.
+const DIE_SET_HR = Math.round(141 / 60 * 1000) / 1000;
+const BATCH = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
 const OVERHEAD = C.overheadPct, MARGIN = C.marginPct;
 const TN = 9806.65;
 
@@ -250,6 +255,15 @@ for (const name of PARTS) {
   check(name, 'forge op labour £', forgeLab, forgeOp?.labourCost, pence);
   check(name, 'trim op process £', trimProc, trimOp?.processCost, pence);
   check(name, 'trim op labour £', trimLab, trimOp?.labourCost, pence);
+  const perSetting = Math.max(1, Math.min(BATCH, life));
+  check(name, 'die setting h a change (141 min)', DIE_SET_HR, Number(P.dieSettingHr ?? 0), { abs: 0 });
+  check(name, 'forgings a die setting = min(batch, die life)', perSetting, Number(P.dieSettingBatch ?? 0), { abs: 0 });
+  const setHr = DIE_SET_HR / perSetting;
+  const setOps = fOps.filter(o => /^Forge-line die setting/.test(o.operationName));
+  const setProc = setHr * (machineRate(P.forgeId) + machineRate(P.trimmingMachineId) + machineRate('forge-induction-heater'));
+  const setLab = setHr * CREW * labourRate('lab-uk-forge');
+  check(name, 'die-setting ops process £ (press + trim + heater idle)', setProc, setOps.reduce((x, o) => x + o.processCost, 0), pence);
+  check(name, 'die-setting ops labour £ (the forge crew)', setLab, setOps.reduce((x, o) => x + o.labourCost, 0), pence);
   let secProc = 0, secLab = 0;
   for (const o of (P.secondaryMachiningOps ?? []) as Array<any>) {
     secProc += o.cycleTimeHr / o.partsPerCycle / o.oee * machineRate(o.machineId);
@@ -262,8 +276,8 @@ for (const name of PARTS) {
   const material = gross * mat.pricePerKg - (gross - P.partWeightKg * uplift) * mat.scrapRecoveryPricePerKg
     + consumables + kwh * tariff;
   const tooling = (die * Math.max(1, AMORT / life) + Number(P.secondaryMachiningToolingCost ?? 0)) / AMORT;
-  const process_ = forgeProc + trimProc + secProc + sawProc + heatProc;
-  const labour = forgeLab + trimLab + secLab + sawLab;
+  const process_ = forgeProc + trimProc + secProc + sawProc + heatProc + setProc;
+  const labour = forgeLab + trimLab + secLab + sawLab + setLab;
   const pkg = d.trace.stackInput.packagingPerPart, log = d.trace.stackInput.logisticsPerPart;   // shop defaults (not forging's)
   check(name, 'overhead % / margin %', `${OVERHEAD}/${MARGIN}`, `${d.trace.stackInput.overheadPct}/${d.trace.stackInput.marginPct}`);
   if (C.terms === 'EXW') check(name, 'ex-works: logistics £ = 0', 0, log, { abs: 0 });

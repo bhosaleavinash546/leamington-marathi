@@ -144,11 +144,14 @@ describe('X16 — cored bores are finish-bored on the machining centre, not dril
     // (4 Nov 2026) the Ø12 × 2 cylinder is a land (shallower than ¼ Ø), spot-faced, not drilled: 0.0574 h on this recorded
     // geometry (no axis lines, so its stepped bores are not grouped — tests/stepped-bores.test.ts covers those).
     const rows = (k.geometry as { featureTable: FeatureRow[] }).featureTable;
-    const whole = nearNetMachiningTime(rows, 'cast iron', 'sand').holeMin / 60;
+    // the cut opens the cored bores from the sand casting's 3 mm a side (PKG-2, CF-06); the rapids at the HMC add < 0.0005 h
+    const whole = nearNetMachiningTime(rows, 'cast iron', 'sand', { stockMm: 3 }).holeMin / 60;
     expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(whole, 3);
-    // with the kernel's axis lines the hub bore and the Ø10 / Ø11 pair are stepped bores, one approach each: 0.0449 h
+    // with the kernel's axis lines the hub bore and the Ø10 / Ø11 pair are stepped bores, one approach each: 0.0449 h.
+    // PKG-2 (10 Nov 2026): no fixed allowance a hole (a tool change a distinct tool, the rapids, one R-plane fed in a
+    // visit) and the cored bores rough-bored from the 3 mm stock before the finish pass: 0.0298 h.
     const axes = rows.some(r => r.axes?.length);
-    expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(axes ? 0.0449 : 0.0574, 4);
+    expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(axes ? 0.0298 : 0.0574, 4);
   });
 });
 

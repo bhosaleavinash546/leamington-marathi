@@ -84,15 +84,19 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     expect(nearNetTurnedAreaCm2(b.turning, b.surfaceArea!.cm2)).toBe(0);
   });
 
-  it('turning time by hand on the published cutting data: 1.72 min (cast iron) — it was 3.99 on unsourced rates', () => {
+  it('turning time by hand on the published cutting data: 1.45 min (cast iron) — 1.72 with the fixed lathe allowances, 3.99 on unsourced rates', () => {
     // Sandvik GC3005, nodular iron 09.2 pearlitic (data.json #52): rough vc 215 m/min at fn 0.3, ap 3 mm (assumed) →
     // 215 × 0.3 × 3 = 193.5 cm³/min in-cut ÷ 1.25 air moves = 154.8 cm³/min; 67.7 cm³ ÷ 154.8 = 0.44 min.
     // Finish vc 260 at fn 0.1 → 0.1 × 260 × 10 = 260 cm²/min; 225.75 ÷ 260 = 0.87 min.
-    // 3 tools × (0.10 min approach / retract + 2.2 s chip-to-chip) = 0.30 + 0.11 = 0.41 min. Total 1.72 min.
+    // 3 tools × 2.2 s chip-to-chip = 0.11 min + 3 × 2 mm R-plane fed in at the rough feed at Ø114 (215 m/min → 600 rev/min ×
+    // 0.3 = 180 mm/min) = 0.033 min — PKG-2: no 0.10 min allowance a tool (the 3 × 50 mm of rapid are added at the lathe).
+    // Total 1.45 min.
     const t = nearNetTurningTime(225.75, 'cast iron', 3, 114);
     expect(t.roughMin).toBeCloseTo(67.725 / 154.8, 2);
     expect(t.finishMin).toBeCloseTo(225.75 / 260, 2);
-    expect(t.totalMin).toBeCloseTo(67.725 / 154.8 + 225.75 / 260 + 3 * 0.10 + 3 * 2.2 / 60, 2);
+    expect(t.totalMin).toBeCloseTo(67.725 / 154.8 + 225.75 / 260 + 3 * 2.2 / 60 + 3 * 2 / (1000 * 215 / (Math.PI * 114) * 0.3), 2);
+    expect(t.cutMin).toBeCloseTo(67.725 / 193.5 + 225.75 / 260, 3);                 // the wear basis: in-cut only
+    expect(t.rapidMm).toBe(150);
     expect(t.basis).toMatch(/Sandvik Coromant Small Part Machining catalogue, turning cutting data/);
     expect(t.basis).toMatch(/ground bearing seats, if the drawing calls them, are extra/);
   });
@@ -103,7 +107,7 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     const turn = m.operations.find(o => /Turning — spindle/.test(o.name))!;
     expect(turn.machineId).toBe('mach-lathe-cnc');
     expect(turn.type).toBe('turning');
-    expect(turn.cycleTimeHr * 60).toBeCloseTo(1.72, 1);
+    expect(turn.cycleTimeHr * 60).toBeCloseTo(1.45, 1);   // + 150 mm at the lathe's 30 m/min (PKG-2; 1.72 before)
     // the 1.2 min load is its own operation at a whole operator (it rode in the turning op at crew 0.5 — arithmetic audit M3)
     const load = m.operations.find(o => /Load \/ clamp \/ unload — lathe fixture/.test(o.name))!;
     expect(load.machineId).toBe('mach-lathe-cnc');

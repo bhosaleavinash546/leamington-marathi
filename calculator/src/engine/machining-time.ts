@@ -22,8 +22,8 @@
  * | Facing (near-net) | passes × (face length + cutter Ø + clearances) ÷ the catalogue table feed n·z·fz |
  * | Turning | area ÷ (fn × vc), stock ÷ (vc × fn × ap) |
  * | Holes | drilled, bored and tapped at each hole's own Ø (n·f; tapping n × pitch) — `featureTime` |
- * | Non-cutting | fixed approach allowances (not scaled by the metal), load / clamp / unload per fixturing, 2.2 s tool changes |
- * | Cutting tools | tool wear per minute of cutting, by metal |
+ * | Non-cutting | per operation (PKG-2, non-cut-time.ts): tool changes 2.2 s, traverse between features at the machine's sourced rapid, approach / retract, datum probing; load / clamp / unload per fixturing |
+ * | Cutting tools | tool wear per minute of CUTTING (chip-making) only, by metal (PKG-2, CF-20) |
  *
  * Since the report standard round (3 Nov 2026) every cutting speed and feed is a maker's published recommendation for
  * the metal and operation (cutting-catalogue.ts — each basis names the catalogue and its data.json row); the cutter
@@ -35,11 +35,15 @@ import { serviceView } from './service-rates.js';
 import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
-import { featureTime, defaultInclude, holeWork, isLandRow, ALLOWANCE_STATUS } from './feature-machining.js';
+import type { ForgingProcess } from './modules/forging-advisor.js';
+import { featureTime, defaultInclude, holeWork, isLandRow, type HoleWork } from './feature-machining.js';
 import {
   millRoughEffective, turnRoughEffective, millRoughInCut, turnRoughInCut, sidePassCm2PerMin, turnFinishCm2PerMin,
-  sourcesLine, sourceName, MACHINABILITY_RATIO, ROUGH_AIR_SHARE, TURN_ROUGH_AP_MM, SIDE_PASS_AP_MM, ASSUMED,
+  sourcesLine, sourceName, MACHINABILITY_RATIO, ROUGH_AIR_SHARE, TURN_ROUGH_AP_MM, SIDE_PASS_AP_MM, ASSUMED, shoulderVf, catalogueFor,
 } from './cutting-catalogue.js';
+import {
+  TOOL_CHANGE_SEC, CLEARANCE_PLANE_MM, R_PLANE_MM, NON_CUT_STATUS, planNonCut, type Visit, type NonCutPlan,
+} from './non-cut-time.js';
 export { nearNetHoleMinutes } from './feature-machining.js';
 
 export interface CuttingData {
@@ -81,12 +85,14 @@ export const FINISH_RATE_CM2_PER_MIN = { wall: 40, surfacing: 10, turning: 120 }
 
 /** The status every cutting basis prints (arith audit, Oct 2026: rates were printed without one). */
 export const CUTTING_DATA_STATUS = 'cutting speeds and feeds from the makers\' published recommendations (sources named); cutter bodies, '
-  + 'side-pass depth, clearances, allowances and the air-move share are labelled assumptions — not a measured cycle';
-/** What the turning basis prints for the finish-turning rate (the old 3× derate is gone; approach is its own allowance). */
-export const TURN_FINISH_STATUS = 'finish-turning area ÷ (fn × vc) from the catalogue; approach / retract a stated allowance per tool, '
-  + `${ASSUMED}`;
-/** Approach / retract a lathe tool pays, minutes — engineering-typical, not sourced, not scaled by the metal. */
-export const TURN_TOOL_ALLOWANCE_MIN = 0.10;
+  + 'side-pass depth, clearances, approach distances and the air-move share are labelled assumptions — not a measured cycle';
+/** What the turning basis prints for the finish-turning rate (the old 3× derate is gone; approach is the non-cut model's). */
+export const TURN_FINISH_STATUS = 'finish-turning area ÷ (fn × vc) from the catalogue; each lathe tool approaches by the non-cutting model '
+  + `(${CLEARANCE_PLANE_MM} mm rapid plane + ${R_PLANE_MM} mm fed in, ${ASSUMED})`;
+/** @deprecated The lathe tool's fixed approach / retract allowance — 0 since PKG-2 (non-cut-time.ts builds it). */
+export const TURN_TOOL_ALLOWANCE_MIN = 0;
+/** The Ø a lathe tool's feed-in is timed at when the caller gives none, mm — engineering-typical, not sourced. */
+export const TURN_FEED_IN_DEFAULT_DIA_MM = 50;
 
 /** Load, clamp, unclamp and unload — every part, every fixturing, minutes (the default). */
 export const HANDLING_MIN_PER_FIXTURING = 0.8;
@@ -107,15 +113,13 @@ export function handlingMinPerFixturing(kg: number): number {
 }
 /** What the bases print for the handling, change-over, programming, tool-wear and deburr constants (arith audit, Oct 2026). */
 export const HOURS_STATUS = 'handling, change-over, programming hours and tool £/min engineering-typical, not sourced';
-/**
- * Chip-to-chip tool change, seconds: Okuma MA-4000H 2.15 s (ISO 10791-9, tool ≤ 4 kg; data.json #63), DMG MORI NHX 4000
- * 2.2 s (#69), Okuma MB-5000HII 2.1 s (#67); GROB G350 2.7 s to VDI 2852 (#68). No VMC or lathe figure was read — the
- * HMC figure is used for every machine and says so.
- */
-export const TOOL_CHANGE_SEC = 2.2;
+/** Chip-to-chip tool change, seconds — defined with the non-cutting model (non-cut-time.ts), sourced there. */
+export { TOOL_CHANGE_SEC };
 export const TOOL_CHANGE_STATUS = `${TOOL_CHANGE_SEC} s chip-to-chip (Okuma MA-4000H 2.15 s ISO 10791-9 / DMG MORI NHX 4000 2.2 s — ${sourceName('OKUMA-MA4000H')}; ${sourceName('DMG-NHX4000')}; an HMC figure, no VMC / lathe figure read)`;
 /** Fixture change-over, tool offsets and first-off inspection per fixturing, minutes a batch. */
 export const SETUP_MIN_PER_FIXTURING = 45;
+/** What a basis prints for the change-over constant (PKG-2, CF-16). */
+export const SETUP_STATUS = `${SETUP_MIN_PER_FIXTURING} min change-over a fixturing (fixture swap, tool offsets, first-off inspection) — engineering-typical, not sourced`;
 
 /** Surface types finished at the wall rate (the rest are free-form and surfaced). */
 const WALL_TYPES = new Set(['PLANE', 'CYLINDER', 'CONE', 'TORUS']);
@@ -204,6 +208,23 @@ export function stockSize(
 
 // ── Cutting time ────────────────────────────────────────────────────────────
 
+/**
+ * One group of work run on one machine (milling, drilling, boring): its machine-independent minutes, the cutting minutes
+ * inside them, and the rapid travel the machine adds at its own rate (PKG-2: non-cut-time.ts).
+ */
+export interface GroupTime {
+  /** Cutting + the non-cutting minutes that need no machine (feed-in, air moves, tool changes, probing). */
+  min: number;
+  /** Chip-making minutes — tool wear (CF-20). */
+  cutMin: number;
+  /** Rapid travel, mm — minutes at the machine's rapid (`rapidMinutes`). */
+  rapidMm: number;
+  tools: number;
+  toolChangeMin: number;
+  /** The non-cutting build-up, printed. */
+  text: string;
+}
+
 export interface CuttingTime {
   roughMin: number;
   /** Wall-rate finishing (flats, walls, fillets, chamfers) — or finish turning on a lathe. */
@@ -214,35 +235,60 @@ export interface CuttingTime {
   /** Distinct cutting tools the part calls for. */
   tools: number;
   toolChangeMin: number;
-  /** Everything above. */
+  /** Everything above (machine-independent): cutting + non-cutting at feed + tool changes + probing. */
   totalMin: number;
+  /** Chip-making minutes inside `totalMin` — what tool wear is charged on (PKG-2, CF-20). */
+  cutMin: number;
+  /** Non-cutting minutes inside `totalMin`. */
+  nonCutMin: number;
+  /** Rapid travel NOT in `totalMin`: minutes at the machine that runs it (`rapidMinutes`). */
+  rapidMm: number;
   basis: string;
+  /** The work split by where it runs (milling / drilling / boring), each with its own cutting and rapid. */
+  groups?: { mill?: GroupTime; hole?: GroupTime; bore?: GroupTime };
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
+const r4 = (n: number) => Math.round(n * 10_000) / 10_000;
 
-/** Distinct tools: roughing, finishing and chamfer cutters, a ball nose if surfaced, one per hole size. */
-function toolCount(rows: FeatureRow[], surfaced: boolean): number {
-  const holeSizes = new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2));
-  return 3 + (surfaced ? 1 : 0) + holeSizes.size;
+/** A group's time from its cutting, its own non-cutting minutes at feed (the visits' feed-in INCLUDED — the caller's) and
+ *  its visits (+ extra tools, probes): tool changes and probing are added here; the rapids stay as mm for the machine. */
+export function groupTime(cutMin: number, ownNonCutMin: number, visits: readonly Visit[], envelopeMm: readonly number[] | null | undefined,
+  opts: { extraTools?: number; probes?: number } = {}): GroupTime & { plan: NonCutPlan } {
+  const plan = planNonCut(visits, envelopeMm, opts);
+  const min = cutMin + ownNonCutMin + plan.toolChangeMin + plan.probeMin;
+  return { min, cutMin, rapidMm: plan.rapidMm, tools: plan.tools, toolChangeMin: plan.toolChangeMin, text: plan.text, plan };
 }
 
-/** Rough-milling minutes for a volume, and its basis: in-cut at the catalogue rate, + the air-move share. */
-function roughMilling(family: MaterialFamily, cm3: number): { min: number; text: string } {
+const holeGroup = (work: readonly HoleWork[], envelopeMm: readonly number[] | null | undefined, opts: { extraTools?: number; probes?: number } = {}, ff = 1) => {
+  const cut = work.reduce((s, w) => s + w.cutEach * w.count, 0) * ff;
+  const own = work.reduce((s, w) => s + (w.minEach - w.cutEach) * w.count, 0);
+  return groupTime(cut, own, work.flatMap(w => w.visits), envelopeMm, opts);
+};
+
+/** Holes, with each piece of work's arithmetic — coaxial steps of one bore timed as ONE stepped bore (`holeWork`). */
+export function holeTimes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number, stockMm?: number): { min: number; cutMin: number; text: string; work: HoleWork[] } {
+  const work = holeWork(rows, family, coredAboveMm, stockMm);
+  const min = work.reduce((s, w) => s + w.minEach * w.count, 0);
+  const cutMin = work.reduce((s, w) => s + w.cutEach * w.count, 0);
+  return { min, cutMin, text: work.map(w => `${w.count}× ${w.label} ${w.calc}`).join('; '), work };
+}
+
+/** Rough-milling minutes for a volume, and its basis: in-cut at the catalogue rate (cutting), + the air-move share (non-cutting). */
+function roughMilling(family: MaterialFamily, cm3: number): { min: number; inCut: number; text: string } {
   const rc = millRoughInCut(family);
   const inCut = cm3 / rc.q;
   const min = inCut * (1 + ROUGH_AIR_SHARE);
-  return { min, text: `rough ${cm3.toFixed(0)} cm³ ÷ ${rc.q.toFixed(0)} cm³/min in-cut (0.7 × Ø${rc.body.dc} × ap × ${rc.vf.toFixed(0)} mm/min; `
-    + `Pc ≈ ${rc.kw.toFixed(1)} kW by Sandvik's K — ${sourceName('SANDVIK-K')}; no spindle rating in the rate book, so no power cap) = ${inCut.toFixed(2)} min `
-    + `+ ${ROUGH_AIR_SHARE * 100}% air moves and step-downs (${ASSUMED}) = ${min.toFixed(2)} min` };
+  return { min, inCut, text: `rough ${cm3.toFixed(0)} cm³ ÷ ${rc.q.toFixed(0)} cm³/min in-cut (0.7 × Ø${rc.body.dc} × ap × ${rc.vf.toFixed(0)} mm/min; `
+    + `Pc ≈ ${rc.kw.toFixed(1)} kW by Sandvik's K — ${sourceName('SANDVIK-K')}; no spindle rating in the rate book, so no power cap) = ${inCut.toFixed(2)} min cutting `
+    + `+ ${ROUGH_AIR_SHARE * 100}% air moves and step-downs (non-cutting, ${ASSUMED}) = ${min.toFixed(2)} min` };
 }
 
-/** Holes, with each piece of work's arithmetic — coaxial steps of one bore timed as ONE stepped bore (`holeWork`). */
-export function holeTimes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): { min: number; text: string } {
-  const work = holeWork(rows, family, coredAboveMm);
-  const min = work.reduce((s, w) => s + w.minEach * w.count, 0);
-  return { min, text: work.map(w => `${w.count}× ${w.label} ${w.calc}`).join('; ') };
-}
+/** The visits' own feed-in minutes — a group's own non-cutting time includes them (groupTime adds the tool changes). */
+const feedInOf = (vs: readonly Visit[]) => vs.reduce((s, v) => s + v.feedInMin, 0);
+/** Milling tools that visit no measured feature: one approach each, the R-plane fed in at the shoulder feed. */
+const millToolVisits = (family: MaterialFamily, names: string[]): Visit[] =>
+  names.map(tool => ({ tool, feedInMin: R_PLANE_MM / shoulderVf(family) * catalogueFor(family).scale }));
 
 /**
  * From-solid cutting time on a machining centre.
@@ -260,6 +306,8 @@ export function fromSolidMillingTime(p: {
   /** Free-form faces ÷ all faces — splits the area when no area per type was measured. */
   freeFormFaceShare?: number;
   rows: FeatureRow[];
+  /** The part's envelope, mm — the traverse estimate where no feature position is measured. */
+  envelopeMm?: readonly number[];
 }): CuttingTime {
   const cd = cuttingDataFor(p.family);
   const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
@@ -285,22 +333,32 @@ export function fromSolidMillingTime(p: {
   const finishMin = wallCm2 / side;
   const surfRate = FINISH_RATE_CM2_PER_MIN.surfacing / cd.timeFactor;
   const surfacingMin = freeCm2 / surfRate;
+  const surfaced = freeCm2 > 0.5;
+  // Milling: roughing, finishing and chamfer cutters (+ a ball nose when surfaced), one approach each.
+  const mv = millToolVisits(p.family, ['roughing cutter', 'finishing cutter', 'chamfer cutter', ...(surfaced ? ['ball nose'] : [])]);
+  const mill = groupTime(rough.inCut + finishMin + surfacingMin, rough.min - rough.inCut + feedInOf(mv), mv, p.envelopeMm);
   const holes = holeTimes(p.rows, p.family);
-  const holeMin = holes.min;
-  const tools = toolCount(p.rows, freeCm2 > 0.5);
-  const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
-  const totalMin = roughMin + finishMin + surfacingMin + holeMin + toolChangeMin;
+  const hole = holeGroup(holes.work, p.envelopeMm);
+  const holeMin = hole.min;
+  const tools = mill.tools + hole.tools;
+  const toolChangeMin = mill.toolChangeMin + hole.toolChangeMin;
+  const totalMin = mill.min + hole.min;
+  const cutMin = mill.cutMin + hole.cutMin;
   return {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: r2(surfacingMin), holeMin: r2(holeMin),
     tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(totalMin),
+    cutMin: r4(cutMin), nonCutMin: r4(totalMin - cutMin), rapidMm: Math.round(mill.rapidMm + hole.rapidMm),
+    groups: { mill, hole },
     basis: `stock − part ${(p.stockCm3 - p.partCm3).toFixed(0)} cm³`
       + (inHoles > 0.05 ? ` − ${inHoles.toFixed(0)} cm³ in the holes (cut by the hole time)` : '')
       + `: ${rough.text}; `
       + `finish ${wallCm2.toFixed(0)} cm² of flats/walls/fillets by side passes ÷ ${side.toFixed(0)} cm²/min `
       + `(${SIDE_PASS_AP_MM} mm a pass, ${ASSUMED}) = ${finishMin.toFixed(1)} min; `
       + `surface ${freeCm2.toFixed(0)} cm² free-form ÷ ${surfRate.toFixed(1)} cm²/min (ball nose ${FINISH_RATE_CM2_PER_MIN.surfacing} cm²/min in aluminium ÷ machinability ratio ${cd.timeFactor} — no catalogue row read, ${ASSUMED}) = ${surfacingMin.toFixed(1)} min; `
-      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text})` : ''}; ${tools} tools × ${TOOL_CHANGE_SEC} s = ${toolChangeMin.toFixed(2)} min `
-      + `(${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(p.family, ['rough', 'side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
+      + `milling non-cutting: ${mill.text}; `
+      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text}; ${hole.text})` : ''}; `
+      + `${cutMin.toFixed(2)} min cutting of ${totalMin.toFixed(2)} min + the rapids at the machine `
+      + `(${TOOL_CHANGE_STATUS}; ${NON_CUT_STATUS}; sources — ${sourcesLine(p.family, ['rough', 'side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
   };
 }
 
@@ -308,6 +366,16 @@ export function fromSolidMillingTime(p: {
 function turnFinish(family: MaterialFamily, cm2: number): { min: number; rate: number } {
   const rate = turnFinishCm2PerMin(family);
   return { min: cm2 / rate, rate };
+}
+
+/** A lathe's tools (rough, finish, groove / part-off): one approach each, the R-plane fed in at the rough turning feed at Ø. */
+function latheVisits(family: MaterialFamily, diaMm?: number): { visits: Visit[]; text: string } {
+  const { row, scale } = catalogueFor(family);
+  const D = diaMm && diaMm > 0 ? diaMm : TURN_FEED_IN_DEFAULT_DIA_MM;
+  const vf = 1000 * row.turnRough.vc / (Math.PI * D) * row.turnRough.fn;
+  const fi = R_PLANE_MM / vf * scale;
+  return { visits: ['turning rough', 'turning finish', 'groove / part-off'].map(tool => ({ tool, feedInMin: fi })),
+    text: `fed in at the rough turning feed at Ø${D.toFixed(0)}${diaMm && diaMm > 0 ? '' : ` (no Ø given — ${ASSUMED})`} ${vf.toFixed(0)} mm/min` };
 }
 
 /**
@@ -323,49 +391,59 @@ export function fromBarTurningTime(p: {
   totalAreaCm2: number;
   turnedFraction: number;
   rows: FeatureRow[];
+  /** The bar's turned Ø, mm — the lathe tools' feed-in is timed at it. */
+  maxDiaMm?: number;
+  envelopeMm?: readonly number[];
 }): { lathe: CuttingTime; mill: CuttingTime } {
   // the holes' metal is cut by the hole time on the mill / drill, not turned away (arith audit, Oct 2026)
   const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
   const removed = Math.max(0, p.stockCm3 - p.partCm3 - inHoles);
   const turnedCm2 = p.totalAreaCm2 * p.turnedFraction;
+  const qIn = turnRoughInCut(p.family);
   const qTurn = turnRoughEffective(p.family);
+  const roughIn = removed / qIn;
   const roughMin = removed / qTurn;
   const fin = turnFinish(p.family, turnedCm2);
   const finishMin = fin.min;
-  const latheTools = 3;   // rough, finish, groove / part-off
-  const allowMin = latheTools * TURN_TOOL_ALLOWANCE_MIN;
+  const lv = latheVisits(p.family, p.maxDiaMm);
+  const lg = groupTime(roughIn + finishMin, roughMin - roughIn + feedInOf(lv.visits), lv.visits, p.envelopeMm);
   const lathe: CuttingTime = {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
-    tools: latheTools, toolChangeMin: r2(latheTools * TOOL_CHANGE_SEC / 60),
-    totalMin: r2(roughMin + finishMin + allowMin + latheTools * TOOL_CHANGE_SEC / 60),
-    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${qTurn} cm³/min (vc × fn × ${TURN_ROUGH_AP_MM} mm ap = ${turnRoughInCut(p.family).toFixed(0)} in-cut `
-      + `÷ (1 + ${ROUGH_AIR_SHARE} air moves); ap and air share ${ASSUMED}) = ${roughMin.toFixed(1)} min`
+    tools: lg.tools, toolChangeMin: r2(lg.toolChangeMin),
+    totalMin: r2(lg.min), cutMin: r4(lg.cutMin), nonCutMin: r4(lg.min - lg.cutMin), rapidMm: Math.round(lg.rapidMm),
+    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${qTurn} cm³/min (vc × fn × ${TURN_ROUGH_AP_MM} mm ap = ${qIn.toFixed(0)} in-cut `
+      + `÷ (1 + ${ROUGH_AIR_SHARE} air moves, non-cutting); ap and air share ${ASSUMED}) = ${roughMin.toFixed(1)} min`
       + (inHoles > 0.05 ? ` (stock − part − ${inHoles.toFixed(1)} cm³ in the holes)` : '') + '; '
       + `finish-turn ${turnedCm2.toFixed(0)} cm² ÷ ${fin.rate.toFixed(0)} cm²/min (fn × vc) = ${finishMin.toFixed(1)} min; `
-      + `${latheTools} tools × (${TURN_TOOL_ALLOWANCE_MIN} min approach / retract + ${TOOL_CHANGE_SEC} s change) `
+      + `non-cutting: ${lg.text}, ${lv.text} `
       + `(${p.family}; sources — ${sourcesLine(p.family, ['turn'])}; ${TURN_FINISH_STATUS})`,
   };
   const otherCm2 = Math.max(0, p.totalAreaCm2 - turnedCm2 - holeWallCm2(p.rows));
   const side = sidePassCm2PerMin(p.family);
   const millFinish = otherCm2 / side;
   const holes = holeTimes(p.rows, p.family);
-  const holeMin = holes.min;
-  const hasMill = otherCm2 > 0.5 || holeMin > 0;
-  const millTools = hasMill ? 1 + new Set(p.rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size : 0;
+  const hasMill = otherCm2 > 0.5;
+  const sv = hasMill ? millToolVisits(p.family, ['end mill']) : [];
+  const mg = groupTime(millFinish, feedInOf(sv), sv, p.envelopeMm);
+  const hg = holeGroup(holes.work, p.envelopeMm);
+  const holeMin = hg.min;
+  const total = mg.min + hg.min;
   const mill: CuttingTime = {
     roughMin: 0, finishMin: r2(millFinish), surfacingMin: 0, holeMin: r2(holeMin),
-    tools: millTools, toolChangeMin: r2(millTools * TOOL_CHANGE_SEC / 60),
-    totalMin: r2(millFinish + holeMin + millTools * TOOL_CHANGE_SEC / 60),
-    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) by side passes ÷ ${side.toFixed(0)} cm²/min = ${millFinish.toFixed(1)} min; `
-      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text})` : ''}; ${millTools} tools × ${TOOL_CHANGE_SEC} s `
-      + `(${ALLOWANCE_STATUS}; sources — ${sourcesLine(p.family, ['side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
+    tools: mg.tools + hg.tools, toolChangeMin: r2(mg.toolChangeMin + hg.toolChangeMin),
+    totalMin: r2(total), cutMin: r4(mg.cutMin + hg.cutMin), nonCutMin: r4(total - mg.cutMin - hg.cutMin), rapidMm: Math.round(mg.rapidMm + hg.rapidMm),
+    groups: { mill: mg, hole: hg },
+    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) by side passes ÷ ${side.toFixed(0)} cm²/min = ${millFinish.toFixed(1)} min`
+      + (hasMill ? ` (non-cutting: ${mg.text})` : '') + '; '
+      + `holes ${holeMin.toFixed(1)} min${holes.text ? ` (${holes.text}; ${hg.text})` : ''} `
+      + `(${NON_CUT_STATUS}; sources — ${sourcesLine(p.family, ['side', 'drill', 'tap'])}; ${CUTTING_DATA_STATUS})`,
   };
   return { lathe, mill };
 }
 
 /** Hole minutes at the metal's own catalogue rows (cored bores above `coredAboveMm` finish-bored). */
-export function holeMinutes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): number {
-  return holeTimes(rows, family, coredAboveMm).min;
+export function holeMinutes(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number, stockMm?: number): number {
+  return holeTimes(rows, family, coredAboveMm, stockMm).min;
 }
 
 // ── Near-net (casting / forging) finish machining ───────────────────────────
@@ -390,44 +468,68 @@ export function castMachiningStockMm(subtype: string | null, family: MaterialFam
 }
 
 /**
- * The finish machining a near-net part needs: its machined faces (the kernel's
- * `face` rows — the flats a casting has no draft on) faced once, its holes
- * drilled or finish-bored. Pockets and bosses are cast in.
+ * The finish machining a near-net part needs: its machined faces (the kernel's `face` rows — the flats a casting has no
+ * draft on) faced in passes from the route's per-side stock (PKG-2, CF-06), its holes drilled or — cored / pierced —
+ * opened by boring passes from the stock. Pockets and bosses are cast in unless ticked. Split by where the work runs:
+ * milling (faces, ticked pockets / bosses), drilling, boring — each with its tool changes and rapid travel; one datum
+ * probe cycle where the datum is set (the first group that has work).
  */
 export function nearNetMachiningTime(
   rows: FeatureRow[], family: MaterialFamily, subtype: string | null,
-  opts: { coredAboveMm?: number; finishFactor?: number } = {},
-): CuttingTime & { otherMin: number; otherTools: number } {
+  opts: { coredAboveMm?: number; finishFactor?: number; stockMm?: number; envelopeMm?: readonly number[]; excludeFaces?: boolean; probes?: number } = {},
+): CuttingTime & { otherMin: number; otherTools: number; groups: { mill: GroupTime; hole: GroupTime; bore: GroupTime } } {
   const cored = opts.coredAboveMm ?? CORED_ABOVE_MM[subtype ?? ''] ?? 20;
   const ff = opts.finishFactor && opts.finishFactor > 0 ? opts.finishFactor : 1;
-  const faces = rows.filter(r => r.kind === 'face');
-  const faceTimes = faces.map(r => featureTime(r, family));
-  const faceMin = faces.reduce((s, r, i) => s + faceTimes[i].min * r.count, 0) * ff;
+  const stockMm = opts.stockMm;
+  const faces = opts.excludeFaces ? [] : rows.filter(r => r.kind === 'face');
+  const faceTimes = faces.map(r => featureTime(r, family, undefined, stockMm));
   // A pocket, slot or boss the engineer ticked on the form is milled / turned on the machining centre at its own feature
   // time (featureTime) — the same minutes the feature table prints. None is in the default set (they are cast / forged in).
   const others = rows.filter(r => r.kind !== 'face' && r.kind !== 'hole');
-  const otherMin = others.reduce((s, r) => s + featureTime(r, family).min * r.count, 0) * ff;
-  const holes = holeTimes(rows, family, cored);
-  const holeMin = holes.min * ff;
-  // A face mill if any face is machined, an end mill if a pocket / slot / boss is, a chamfer tool, one tool per hole size.
-  const otherTools = others.length ? 1 : 0;
-  const tools = (faces.length ? 1 : 0) + otherTools + 1 + new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size;
-  const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
+  const otherTimes = others.map(r => featureTime(r, family));
+  const sum = (ts: Array<{ cutMin: number; nonCutMin: number }>, rs: FeatureRow[], k: 'cutMin' | 'nonCutMin') => ts.reduce((s, t, i) => s + t[k] * rs[i].count, 0);
+  const faceCut = sum(faceTimes, faces, 'cutMin') * ff;
+  const otherCut = sum(otherTimes, others, 'cutMin') * ff;
+  const millOwn = sum(faceTimes, faces, 'nonCutMin') + sum(otherTimes, others, 'nonCutMin');
+  const millVisits = [...faceTimes.flatMap((t, i) => Array.from({ length: faces[i].count }, () => t.visits).flat()),
+    ...otherTimes.flatMap((t, i) => Array.from({ length: others[i].count }, () => t.visits).flat())];
+  const work = holeWork(rows, family, cored, stockMm);
+  const boreWork = work.filter(w => w.bored);
+  const drillWork = work.filter(w => !w.bored);
+  // The chamfer tool rides with the first group that has work; the datum probe likewise (milling → boring → drilling).
+  const first = millVisits.length ? 'mill' : boreWork.length ? 'bore' : drillWork.length ? 'hole' : null;
+  const probes = opts.probes ?? 1;
+  const extra = (g: string) => (first === g ? { extraTools: 1, probes } : {});
+  const mill = groupTime(faceCut + otherCut, millOwn, millVisits, opts.envelopeMm, extra('mill'));
+  const bore = holeGroup(boreWork, opts.envelopeMm, extra('bore'), ff);
+  const hole = holeGroup(drillWork, opts.envelopeMm, extra('hole'), ff);
+  const otherMin = otherCut + sum(otherTimes, others, 'nonCutMin');
+  const totalMin = mill.min + bore.min + hole.min;
+  const cutMin = mill.cutMin + bore.cutMin + hole.cutMin;
+  const tools = mill.tools + bore.tools + hole.tools;
+  const toolChangeMin = mill.toolChangeMin + bore.toolChangeMin + hole.toolChangeMin;
   const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
-  const ops: Array<'face' | 'drill' | 'bore' | 'tap'> = ['face', 'drill', 'bore', 'tap'];
-  const finishNote = ff !== 1 ? ` × ${ff} tolerance / finish factor (as entered)` : '';
+  const faceMin = faceCut + sum(faceTimes, faces, 'nonCutMin');
+  const ops: Array<'face' | 'face-rough' | 'drill' | 'bore' | 'bore-rough' | 'tap'> = ['face', 'face-rough', 'drill', 'bore', 'bore-rough', 'tap'];
+  const finishNote = ff !== 1 ? ` × ${ff} tolerance / finish factor on the cutting (as entered)` : '';
+  const holeText = (ws: HoleWork[]) => ws.map(w => `${w.count}× ${w.label} ${w.calc}`).join('; ');
   return {
-    roughMin: 0, finishMin: r2(faceMin + otherMin), surfacingMin: 0, holeMin: r2(holeMin),
-    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(faceMin + otherMin + holeMin + toolChangeMin),
-    otherMin: r2(otherMin), otherTools,
-    basis: `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(1)} min `
-      + `(each: 0.2 min positioning + passes × (√area + cutter Ø + 2 × 5 mm clearance) ÷ the table feed n·z·fz — the face taken as √area square, `
-      + `clearance ${ASSUMED}${faceTimes.length ? `; e.g. ${faceTimes[0].text}` : ''}${finishNote}); `
-      + (others.length ? `${others.reduce((s, r) => s + r.count, 0)} pocket / slot / boss feature(s) ticked to machine, ${otherMin.toFixed(1)} min `
-        + `(${others.map(r => `${r.count}× ${featureTime(r, family).text}`).join('; ')}${finishNote}); ` : '')
-      + `holes ${holeMin.toFixed(1)} min (${cored === Infinity ? 'every hole drilled from solid' : `≤ Ø${cored} drilled from solid, larger cored and finish-bored`}${finishNote}); `
-      + `${tools} tools × ${TOOL_CHANGE_SEC} s (${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(family, ops)}; `
-      + `${CUTTING_DATA_STATUS})`,
+    roughMin: 0, finishMin: r2(mill.min), surfacingMin: 0, holeMin: r2(hole.min + bore.min),
+    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(totalMin),
+    cutMin: r4(cutMin), nonCutMin: r4(totalMin - cutMin), rapidMm: Math.round(mill.rapidMm + bore.rapidMm + hole.rapidMm),
+    otherMin: r2(otherMin), otherTools: others.length ? 1 : 0,
+    groups: { mill, hole, bore },
+    basis: (faces.length ? `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(2)} min `
+      + `(passes from ${stockMm !== undefined ? `the ${stockMm} mm a side of stock` : 'no stated stock — one finish pass'}; each pass × (√area + cutter Ø) ÷ the table feed n·z·fz — the face taken as √area square; `
+      + `2 × 5 mm clearance at feed non-cutting, ${ASSUMED}${faceTimes.length ? `; e.g. ${faceTimes[0].text}` : ''}${finishNote}); ` : '')
+      + (others.length ? `${others.reduce((s, r) => s + r.count, 0)} pocket / slot / boss feature(s) ticked to machine, ${otherMin.toFixed(2)} min `
+        + `(${others.map((r, i) => `${r.count}× ${otherTimes[i].text}`).join('; ')}${finishNote}); ` : '')
+      + (millVisits.length ? `milling non-cutting: ${mill.text}; ` : '')
+      + (drillWork.length ? `drilled ${hole.min.toFixed(2)} min (${holeText(drillWork)}; non-cutting: ${hole.text}${finishNote}); ` : '')
+      + (boreWork.length ? `cored / pierced bores opened by boring passes ${bore.min.toFixed(2)} min (${holeText(boreWork)}; non-cutting: ${bore.text}${finishNote}); ` : '')
+      + `${cored === Infinity ? 'every hole drilled from solid' : `≤ Ø${cored} drilled from solid, larger cored / pierced and bored`}; `
+      + `${cutMin.toFixed(2)} min cutting of ${totalMin.toFixed(2)} min + the rapids at the machine `
+      + `(${TOOL_CHANGE_STATUS}; ${NON_CUT_STATUS}; sources — ${sourcesLine(family, ops)}; ${CUTTING_DATA_STATUS})`,
   };
 }
 
@@ -502,21 +604,23 @@ export const MIN_NEAR_NET_TURNED_SHARE = 0.08;
  */
 export function nearNetTurningTime(externalAreaCm2: number, family: MaterialFamily, stockMm: number, maxDiaMm: number): CuttingTime {
   const stockCm3 = externalAreaCm2 * stockMm / 10;
+  const qIn = turnRoughInCut(family);
   const qTurn = turnRoughEffective(family);
+  const roughIn = stockCm3 / qIn;
   const roughMin = stockCm3 / qTurn;
   const fin = turnFinish(family, externalAreaCm2);
   const finishMin = fin.min;
-  const tools = 3;   // rough, finish, groove / thread
-  const allowMin = tools * TURN_TOOL_ALLOWANCE_MIN;
-  const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
+  const lv = latheVisits(family, maxDiaMm);
+  const g = groupTime(roughIn + finishMin, roughMin - roughIn + feedInOf(lv.visits), lv.visits, null);
   return {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
-    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(roughMin + finishMin + allowMin + toolChangeMin),
+    tools: g.tools, toolChangeMin: r2(g.toolChangeMin), totalMin: r2(g.min),
+    cutMin: r4(g.cutMin), nonCutMin: r4(g.min - g.cutMin), rapidMm: Math.round(g.rapidMm),
     basis: `outside of the turned axis ${externalAreaCm2.toFixed(0)} cm² (journals, taper, fillets; up to Ø${maxDiaMm.toFixed(0)} mm): `
       + `rough ${stockCm3.toFixed(0)} cm³ of ${stockMm} mm-a-side stock ÷ ${qTurn} cm³/min (vc × fn × ${TURN_ROUGH_AP_MM} mm ap = `
-      + `${turnRoughInCut(family).toFixed(0)} in-cut ÷ (1 + ${ROUGH_AIR_SHARE} air moves); ap and air share ${ASSUMED}) = ${roughMin.toFixed(2)} min; `
+      + `${qIn.toFixed(0)} in-cut ÷ (1 + ${ROUGH_AIR_SHARE} air moves, non-cutting); ap and air share ${ASSUMED}) = ${roughMin.toFixed(2)} min; `
       + `finish ${externalAreaCm2.toFixed(0)} cm² ÷ ${fin.rate.toFixed(0)} cm²/min (fn × vc) = ${finishMin.toFixed(2)} min; `
-      + `${tools} tools × (${TURN_TOOL_ALLOWANCE_MIN} min approach / retract + ${TOOL_CHANGE_SEC} s change) = ${(allowMin + toolChangeMin).toFixed(2)} min `
+      + `non-cutting: ${g.text}, ${lv.text} `
       + `(${family}; ground bearing seats, if the drawing calls them, are extra; sources — ${sourcesLine(family, ['turn'])}; ${TURN_FINISH_STATUS})`,
   };
 }
@@ -535,6 +639,32 @@ export function nearNetStockCm3(rows: FeatureRow[], stockMm: number, coredAboveM
     else if (r.kind === 'hole' && r.diaMm > coredAboveMm) mm3 += Math.PI * r.diaMm * Math.max(r.depthMm, 0) * r.count * stockMm;
   }
   return Math.round(mm3 / 100) / 10;
+}
+
+/** Per-side machining stock on a machined face, mm, by route (as-forged allowance) — CostVision engineering-typical, not
+ *  sourced (the closed-die figure is superseded by IS 3469, below). Moved here from the forging rules (PKG-2): the
+ *  secondary machining's passes read it too. */
+export const FORGING_MACHINING_STOCK_MM: Record<ForgingProcess, number> = {
+  'closed-die': 2.0, precision: 0.75, 'open-die': 5.0, 'ring-rolling': 3.0, 'cold-forming': 0,
+};
+
+/**
+ * Minimum finish (machining) stock a surface for drop and press forgings, by the forging's greatest dimension — IS 3469
+ * (Part I):1974 Table 1.5 (Bureau of Indian Standards, made public by Public.Resource.Org; DIN 7523-2 is withdrawn and
+ * EN 10243-1 gives tolerances, not allowances — phase-B research rows D2 / D4). It REPLACES the closed-die 2.0 mm of
+ * `FORGING_MACHINING_STOCK_MM`, an unsourced figure for exactly this quantity (phase B, 4 Nov 2026). The other routes
+ * keep theirs: the table is for drop and press (impression) forgings, not precision, open-die, ring or cold forming.
+ */
+export const IS3469_FINISH_STOCK_MM: ReadonlyArray<readonly [number, number]> = [[205, 1.5], [410, 2.5], [610, 3.0], [915, 4.0], [Infinity, 5.0]];
+export function forgingMachiningStockMm(process: ForgingProcess, greatestMm: number | null): { mm: number; basis: string } {
+  if (process !== 'closed-die' || !greatestMm || greatestMm <= 0) {
+    return { mm: FORGING_MACHINING_STOCK_MM[process], basis: `${FORGING_MACHINING_STOCK_MM[process]} mm a side on the machined faces, ${process} (CostVision engineering-typical, not sourced)` };
+  }
+  const i = IS3469_FINISH_STOCK_MM.findIndex(([upTo]) => greatestMm <= upTo);
+  const [upTo, mm] = IS3469_FINISH_STOCK_MM[i];
+  const from = i > 0 ? IS3469_FINISH_STOCK_MM[i - 1][0] : 0;
+  return { mm, basis: `${mm} mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5 minimum finish stock for a drop / press forging whose greatest dimension `
+    + `(${(Math.round(greatestMm * 10) / 10)} mm) is ${from > 0 ? `over ${from} mm${Number.isFinite(upTo) ? ' and ' : ''}` : ''}${Number.isFinite(upTo) ? `not over ${upTo} mm` : ''}` };
 }
 
 /**
@@ -577,7 +707,8 @@ export function asCastWeight(p: {
 
 // ── The cell's other costs ──────────────────────────────────────────────────
 
-/** Cutting tools worn per part, £. */
+/** Cutting tools worn per part, £ — on CUTTING (chip-making) minutes only: tools do not wear while they rapid, change,
+ *  feed in to the R-plane or probe (PKG-2, CF-20). */
 export function toolWearPerPart(cuttingMin: number, family: MaterialFamily): number {
   return Math.round(cuttingMin * cuttingDataFor(family).toolCostPerCutMin * 10_000) / 10_000;
 }
@@ -674,12 +805,12 @@ export function secondaryMachiningCell(p: {
       + `${asked} approach direction(s) in ${fixturings} clamping(s) on a 4th-axis tombstone, load / unload masked by the cut; ` : '')
       + `${fx.basis}; programming ${hrs} h (${PROGRAMMING_HR.perFixturing} h × ${fixturings} fixturing(s) + ${PROGRAMMING_HR.perFeatureRow} h × ${p.featureRows} feature group(s)) `
       + `× £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
-      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}; `
+      + `tool wear ${p.cuttingMin.toFixed(1)} min of cutting × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}; `
       + `handling ${handlingMinPerFixturing(p.weightKg)} min a fixturing by weight, ${SETUP_MIN_PER_FIXTURING} min change-over a fixturing a batch of ${batchSize} `
       + `(${HOURS_STATUS})`
       + (volumeCell ? `; pallet change ${PALLET_CHANGE_SEC} s (Okuma MA-4000H, ISO 10791-9 — Okuma MA-4000H brochure, Jul 2025)` : '')
       + `; cutting minutes on the published cutting data — ${sourcesLine(p.family, p.turned ? ['turn', 'drill', 'tap'] : ['face', 'drill', 'bore', 'tap'])}; `
-      + `${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}`,
+      + `${TOOL_CHANGE_STATUS}; ${NON_CUT_STATUS}`,
   };
 }
 

@@ -1063,6 +1063,21 @@ what is true** — nothing here has been compared with a price JLR paid.
     needs-validation. ISO 2768 / DIN 7168 never answer `service.toleranceClass` (it is the as-cast / as-forged class);
     EN 1706 Al designations map by `CAST_AL_DESIGNATIONS`; trade names are whole words ("GEOMETRIC" is not Geomet).
     ONE confidence grade: `costingConfidence` (distinct inputs) on screen, PDF and workbook.
+- Cast / forge + machining audit (10 Nov 2026, `calculator/docs/review/castforge-machining-audit-2026-11-10/`): arithmetic
+  verified, inputs heuristic; 22 gaps (CF-01…22) in seven packages. Approved and built: PKG-2 and PKG-6.
+  - PKG-2 cycle-time model (`src/engine/non-cut-time.ts`): non-cutting time is PER OPERATION — tool changes × 2.2 s,
+    rapid at the machine's own sourced rate (`MACHINE_RAPID`), traverse between measured hole centres, approach /
+    retract, one datum probe (12 s, estimate), B-axis indexes — never a fixed allowance per feature (`ALLOWANCE_MIN` is
+    zero / deprecated). Tool wear is charged on CUTTING minutes only (`cuttingMinutesOf`; `spindleMinutesOf` for the
+    masked-load check). Face and cored-bore passes follow the route's stock and the catalogue's rough / finish ap
+    (`facePassPlan`, `borePasses`). Forge-line die setting per batch (`forging.dieSettingHr` / `dieSettingBatch`, 141 min,
+    METU 2008). No tolerance-driven operations (reaming, fine boring, grinding) — that is PKG-1, not approved.
+  - PKG-6 cost bridge (`src/export/cost-bridge.ts`, `material-balance.ts`): ONE model from metal bought to the headline,
+    re-adding to the penny and per bucket, printed on the cost card, core PDF §2, audit pack §3C/§3D and the workbook;
+    stock is stated ("as cast X = finished Y + stock Z"), never "no extra material".
+  - Not approved (still open): PKG-1 machined surfaces + per-surface ISO 8062-3 / EN 10243-1 allowance + raw-to-finished
+    drawings, PKG-3 setups / sequence, PKG-4 forging balance + swarf credit, PKG-5 foundry build-ups (cores), PKG-7 bevel
+    gears (the tool costs a bevel gear as a helical one).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

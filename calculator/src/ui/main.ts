@@ -230,6 +230,7 @@ import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { CORED_ABOVE_MM, turnedPartFacts, asCastWeight, NEAR_NET_TURN_STOCK_MM } from '../engine/machining-time.js';
+import { nearNetStockText } from '../export/material-balance.js';
 import { nearNetSecondaryMachining } from '../engine/cost-input-rules/secondary-machining.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
@@ -4839,6 +4840,10 @@ function renderForgingForm(): string {
     <div class="field-row">
       <div class="field-group"><label>Die Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from area, steel, impressions and complexity.">ℹ</span></label><input type="number" id="forge-die-cost" step="1000" min="0" value="80000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Die Life (forgings) <span title="Forgings per die set. Leave 0 to auto-predict from alloy, part size and complexity.">ℹ</span></label><input type="number" id="forge-die-life" step="1000" min="0" value="50000" title="0 = auto-predict from alloy/size/complexity"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label for="forge-die-set-hr">Die Setting (hr a change, 0=none) <span title="Hours the forge line stands to change the die set — press, trim press and heater idle with the crew. From CAD: 141 min (a 1,000 t press set-up study, METU 2008).">ℹ</span></label><input type="number" id="forge-die-set-hr" step="0.05" min="0" value="0"/></div>
+      <div class="field-group"><label for="forge-die-set-batch">Forgings a Setting <span title="Forgings one die setting serves: the batch, or the die life when the set wears out first.">ℹ</span></label><input type="number" id="forge-die-set-batch" step="50" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Die Steel <span title="Die-cost estimator only (Die Cost=0): H13 ×1.0, premium 1.2367/PM ×1.4, hammer 1.2714 ×0.85.">ℹ</span></label><select id="forge-die-steel"><option value="h13" selected>H13 / 1.2344 (standard)</option><option value="premium">Premium (1.2367 / PM)</option><option value="hammer">Hammer die (1.2714)</option></select></div>
@@ -11191,7 +11196,7 @@ function populateMachinedFeatures(prefix: string): void {
     </div>
     <div class="field-row" style="margin-top:4px">
       <div class="field-group"><label>Stock condition</label><select id="${prefix}-mf-stock">
-        <option value="near_net" selected>Near-net (cast/forged — holes cored in, no extra material)</option>
+        <option value="near_net" selected>Near-net (cast/forged — machining stock in the as-cast / as-forged weight)</option>
         <option value="solid_billet">Machined from solid (charge removed metal)</option>
       </select></div>
       <div class="field-group"><label>Finish</label><select id="${prefix}-mf-finish">
@@ -11321,7 +11326,14 @@ function updateMachinedFeaturesReadout(prefix: string): void {
   const c = collectSecondaryMachining(prefix);
   if (!c) { out.textContent = 'No features selected — no machining cost added.'; return; }
   const mins = (c.result.totalCycleHr * 60).toFixed(1);
-  const matNote = c.result.materialRemovedKg > 0 ? ` · ${c.result.materialRemovedKg.toFixed(3)} kg metal removed` : ' · near-net (no extra material)';
+  // CF-18: a near-net casting / forging carries its machining stock in the as-cast / as-forged weight — state it.
+  const vol = cadOCCTGeometry?.volume?.cm3, dens = library.materials.find(m => m.id === sel(`${prefix}-mat`))?.densityKgPerM3;
+  const matNote = c.result.materialRemovedKg > 0 ? ` · ${c.result.materialRemovedKg.toFixed(3)} kg metal removed`
+    : prefix === 'cast' ? nearNetStockText('cast', c.rows && vol ? asCastWeight({ finishedKg: num('cast-part-wt'), volumeCm3: vol, rows: c.rows,
+      subtype: sel('cast-subtype') || 'hpdc', family: familyFromMaterialId(sel('cast-mat')) ?? null, turning: cadOCCTGeometry?.turning,
+      surfaceAreaCm2: cadOCCTGeometry?.surfaceArea?.cm2 ?? 0 }).kg : null, num('cast-part-wt') || null)
+    : prefix === 'forge' ? nearNetStockText('forged', num('forge-part-wt') || null, vol && dens ? Math.round(vol / 1e6 * dens * 1000) / 1000 : null)
+    : ' · near-net (machined from the supplied part)';
   out.textContent = `⇒ Adds ${c.result.featureCount} machined feature(s): ${mins} min CNC time${matNote}. Included in the total on Calculate.`;
 }
 
@@ -13763,6 +13775,9 @@ function collectForgingInput(): UniversalStackInput {
     ...(sawCt > 0 && sawMach ? { billetSawMachineId: sawMach, billetSawCycleHr: sawCt,
       billetSawManning: num('forge-saw-manning') || undefined, billetSawKerfKg: num('forge-saw-kerf') || undefined } : {}),
     ...(heaterCt > 0 && heaterMach ? { billetHeaterMachineId: heaterMach, billetHeaterCycleHr: heaterCt } : {}),
+    // forge-line die setting (PKG-2, CF-22) — as headless maps the rules
+    ...(num('forge-die-set-hr') > 0 && num('forge-die-set-batch') > 0
+      ? { dieSettingHr: num('forge-die-set-hr'), dieSettingBatch: num('forge-die-set-batch') } : {}),
     rejectRate: num('forge-reject') || undefined,
     ...(forgeSurfaceFinishing ? { surfaceFinishing: forgeSurfaceFinishing } : {}),
   });
@@ -21923,7 +21938,7 @@ function cadCardPage1(): CardPage1 | null {
     const m = buildCoreReport({ result: lastResult, input: lastInput, library, commodity: activeCommodity as CommodityType, region: _mfgRegion,
       cadMeta: buildCadReportMeta() as never, fx: _displayFxRate, sym: currencySymbol(_displayCurrency) });
     return { total: m.total, price: m.price, tooling: m.tooling, band: m.band, alerts: m.alerts, openQuestions: m.openQuestions,
-      confidence: { grade: m.confidence.grade, sentence: m.confidence.sentence, gradeNote: m.confidence.gradeNote } };
+      confidence: { grade: m.confidence.grade, sentence: m.confidence.sentence, gradeNote: m.confidence.gradeNote }, bridge: m.bridge, balance: m.balance };
   } catch (err) {
     console.warn('[cad card] page 1 model unavailable:', err instanceof Error ? err.message : String(err));
     return null;

@@ -24,6 +24,13 @@ export interface ForgingInputs {
   /** Effective heating tariff £/kWh for the selected fuel (see resolveFurnaceEnergyPricePerKwh). Default 0.23. */
   heatingEnergyPricePerKwh?: number;
   dieLife: number;           // forgings per die set
+  /**
+   * Forge-line die setting (PKG-2, CF-22): hours the line stands to change the die set, and the forgings one setting
+   * serves (the batch, or the die life when the set wears out first). The press, the trim press and the in-line heater
+   * stand idle with the forge crew; charged per forging, OEE 1. Absent or 0: no die-setting line.
+   */
+  dieSettingHr?: number;
+  dieSettingBatch?: number;
   /** Die-set cost £. Omit/≤0 to estimate parametrically (see estimateForgingDieCost). */
   dieCost?: number;
   // ── Parametric die-cost inputs (used only when dieCost is omitted/≤0) ──
@@ -94,6 +101,8 @@ export function getForgingInputSchema(): Record<string, string> {
       'number — wall-plug billet heating energy kWh/kg (induction basis); costed per part at the region fuel tariff',
     heatingEnergyPricePerKwh: 'number? — effective heating £/kWh for the selected fuel (default 0.23)',
     dieLife: 'number — forgings per die set; numDieSets = ceil(amortVol / dieLife)',
+    dieSettingHr: 'number? — forge-line die-setting hours a change (0 = none)',
+    dieSettingBatch: 'number? — forgings a die setting serves (the batch, or the die life if shorter)',
     dieCost: 'number? — die set cost £. Omit/≤0 to estimate from area, steel, impressions and complexity',
     projectedAreaCm2: 'number? — part projected (plan) area cm²; drives die-cost estimate and forging-load check',
     dieSteel: 'h13|premium|hammer — die steel grade (die-cost estimator only)',
@@ -212,6 +221,25 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     labourTimeHr: effectiveCycleHr * rejectUplift,
     labourEfficiency: inputs.labourEfficiency,
   });
+
+  // Forge-line die setting (PKG-2, CF-22): the line stands while the crew changes the die set — the press with its crew,
+  // the trim press and the in-line heater idle beside it — once a batch (or a die life), shared over its forgings.
+  if (inputs.dieSettingHr && inputs.dieSettingHr > 0 && inputs.dieSettingBatch && inputs.dieSettingBatch > 0) {
+    const per = inputs.dieSettingHr / inputs.dieSettingBatch;
+    operations.push({
+      operationName: `Forge-line die setting, amortised (${inputs.dieSettingHr} h ÷ ${inputs.dieSettingBatch.toLocaleString('en-GB')} forgings)`,
+      machineId: inputs.forgeId, labourId: inputs.labourId, cycleTimeHr: per, partsPerCycle: 1, oee: 1,
+      manning: inputs.manning, labourTimeHr: per, labourEfficiency: 1,
+    });
+    for (const [id, what] of [[inputs.trimmingCycleHr && inputs.trimmingCycleHr > 0 ? inputs.trimmingMachineId : undefined, 'trim press'],
+      [inputs.billetHeaterCycleHr && inputs.billetHeaterCycleHr > 0 ? inputs.billetHeaterMachineId : undefined, 'billet heater']] as const) {
+      if (!id) continue;
+      operations.push({
+        operationName: `Forge-line die setting — ${what} idle, amortised`, machineId: id, labourId: inputs.labourId,
+        cycleTimeHr: per, partsPerCycle: 1, oee: 1, manning: 1, labourTimeHr: 0, labourEfficiency: 1, untended: true,
+      });
+    }
+  }
 
   // Optional trimming operation
   if (

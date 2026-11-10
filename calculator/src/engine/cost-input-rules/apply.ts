@@ -261,6 +261,8 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'forging.yieldFraction': { to: 'forging.yieldFraction' },
   'forging.dieCost': { to: 'forging.dieCostGBP' },
   'forging.dieLife': { to: 'forging.dieLife' },
+  'forging.dieSettingHr': { to: 'forging.dieSettingHr' },
+  'forging.dieSettingBatch': { to: 'forging.dieSettingBatch' },
   'forging.strokesToForm': { to: 'forging.strokes' },
   'forging.timePerBlowSec': { to: 'forging.timePerBlowSec' },
 
@@ -327,6 +329,7 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'alExtrusion.finishAreaM2': { to: 'alExtrusion.finishAreaM2' },
   'alExtrusion.bends': { to: 'alExtrusion.bends' },
   'alExtrusion.cncMinutes': { to: 'alExtrusion.cncMinutes' },
+  'alExtrusion.cncCutMinutes': { to: 'alExtrusion.cncCutMinutes' },
   'alExtrusion.cncFixturings': { to: 'alExtrusion.cncFixturings' },
   'alExtrusion.fabFeatureRows': { to: 'alExtrusion.fabFeatureRows' },
   'alExtrusion.impactOuterDiaMm': { to: 'alExtrusion.impactOuterDiaMm' },

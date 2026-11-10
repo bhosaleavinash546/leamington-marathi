@@ -79,9 +79,10 @@ describe('M3 — loading a near-net part into the lathe fixture is a whole opera
     expect(load).toMatchObject({ machineId: 'mach-lathe-cnc', manning: 1 });
     expect(load.cycleTimeHr).toBeCloseTo(cut.handlingMin / 60, 4);
   });
-  it('tool wear is not charged on the handling minutes', () => {
+  it('tool wear is not charged on the handling minutes — nor on the non-cutting time of the cut (PKG-2, CF-20)', () => {
     const cutting = cuttingMinutesOf(ops);
-    expect(cutting).toBeCloseTo(ops.filter(o => !o.benchOperation && !/^(Load|Pallet)/.test(o.name)).reduce((s, o) => s + o.cycleTimeHr * 60, 0), 6);
+    expect(cutting).toBeCloseTo(ops.filter(o => !o.benchOperation && !/^(Load|Pallet)/.test(o.name)).reduce((s, o) => s + (o.cuttingMin ?? NaN), 0), 6);
+    expect(cutting).toBeLessThan(ops.filter(o => !o.benchOperation && !/^(Load|Pallet)/.test(o.name)).reduce((s, o) => s + o.cycleTimeHr * 60, 0));
     expect(ops.filter(o => /^Load \/ clamp/.test(o.name)).length).toBe(1);
   });
 });
@@ -126,17 +127,20 @@ describe('T — every printed basis states what its constants are and itemises i
     const ops = machiningOperationPlan(ctx('MACH_Hydraulic_Manifold.stp', 'aluminium'), 'aluminium');
     const drill = ops.find(o => o.type === 'drilling')!;
     expect(drill.basis).toContain('4×Ø5.0×12 drill + tap M6 (inferred from the tapping-drill size)');
-    // the per-row minutes add up to the op's time
-    const rowsText = drill.basis.split(' min: ').slice(1).join(' min: ').split(' (drilled at each hole')[0].split('; ');
-    const sum = rowsText.reduce((s, t) => s + Number(/^(\d+)×/.exec(t)![1]) * Number(/= ([0-9.]+) min$/.exec(t)![1]), 0);
+    // the per-row minutes (cutting + the non-cutting at feed) add up to the op's time with its tool changes and rapids (PKG-2)
+    const rowsText = drill.basis.split(' min cutting): ').slice(1).join(' min cutting): ').split(' (drilled at each hole')[0].split('; ');
+    const sum = rowsText.reduce((s, t) => s + Number(/^(\d+)×/.exec(t)![1])
+      * (Number(/= ([0-9.]+) min cutting/.exec(t)![1]) + Number(/= ([0-9.]+) min$/.exec(t)![1])), 0);
     expect(rowsText).toHaveLength(4);
     // each row prints its feed and the catalogue it came from (report standard, Nov 2026)
-    expect(drill.basis).toMatch(/Ø5\.0×12 drill \+ tap M6 \(inferred from the tapping-drill size\): 0\.06 \+ 12 ÷ 806 mm\/min/);
+    expect(drill.basis).toMatch(/Ø5\.0×12 drill \+ tap M6 \(inferred from the tapping-drill size\): drilled 12 ÷ 806 mm\/min/);
+    const tools = Number(/non-cutting: (\d+) tool\(s\) × 2\.2 s/.exec(drill.basis)![1]);
+    const rapid = Number(/rapids \d+ mm ÷ [0-9,]+ mm\/min = ([0-9.]+) min/.exec(drill.basis)![1]);
     // the maker and catalogue are printed; the research file's row ids are not (live run, 3 Nov 2026)
     expect(drill.basis).toContain('Mitsubishi Materials MVE solid carbide drill, recommended cutting conditions (2023)');
     expect(drill.basis).not.toMatch(/data\.json/);
     expect(drill.basis).toContain('OSG A-Tap flier n_102');
-    expect(Math.abs(sum - drill.cycleTimeHr * 60)).toBeLessThan(0.05);   // 2-dp rows v the 4-dp hour
+    expect(Math.abs(sum + tools * 2.2 / 60 + rapid - drill.cycleTimeHr * 60)).toBeLessThan(0.02);   // 3-dp rows v the 4-dp hour
   });
   it('a hydraulic fixture does not print the modular / dedicated volume rule', () => {
     const f = fixtureCostGBP(1, 0, 50_000, 'hydraulic');

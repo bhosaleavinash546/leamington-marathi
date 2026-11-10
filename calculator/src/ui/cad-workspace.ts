@@ -7,6 +7,9 @@
  * model or a user is escaped.
  */
 
+import { bridgePrintRows, type CostBridge } from '../export/cost-bridge.js';
+import { balancePrintRows, type MaterialBalance } from '../export/material-balance.js';
+
 export type CadStep = 1 | 2 | 3;
 
 const esc = (s: unknown): string => String(s ?? '')
@@ -411,6 +414,7 @@ export function cadCostCardHtml(m: CostCardModel): string {
           + (toolingDetail ? ` ${esc(toolingDetail)}` : '')
         : 'Tooling over the programme: none.'}</p>
       ${raisersHtml(m)}
+      ${p1?.balance?.stock ? `<p class="cad-cost-note" id="cad-stock-summary">${esc(p1.balance.stock.text)} (the material line and every per-kg figure are on the ${p1.balance.form === 'forged' ? 'as-forged' : 'as-cast'} weight).</p>` : ''}
       <div class="cad-answer-chips" role="list" aria-label="Costing context">
         ${m.chips.some(c => c.name === 'Process') ? '' : `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Route</span> <strong>${esc(m.commodityLabel)}</strong></span>`}
         <span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Country</span> <strong>${esc(m.country)}</strong></span>
@@ -418,6 +422,7 @@ export function cadCostCardHtml(m: CostCardModel): string {
         ${extraChips}
       </div>
       ${answerChipsHtml(m.chips, false)}
+      ${p1?.bridge ? costBridgeHtml(p1.bridge, p1.balance, { fmt: m.fmt, ...(m.fmt4 ? { fmt4: m.fmt4 } : {}), text }) : ''}
       <details class="cad-cost-more" id="cad-basis">
         <summary>Basis — every input by how it was set <span class="cad-cost-count">${esc(countText)}</span></summary>
         ${moversHtml}
@@ -537,7 +542,7 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
     const why = routeRowWhy(r, x, o.fmt);
     const cross = x.crossovers.find(c => c.route === r.route && c.process === r.process);
     const action = !isRef && r.total != null
-      ? `<button type="button" class="cad-answer-change" data-cost-route="${esc(r.route)}"${r.process ? ` data-cost-process="${esc(r.process)}"` : ''}>Cost this route</button>` : '';
+      ? `<button type="button" class="cad-answer-change" data-cost-route="${esc(r.route)}"${r.process ? ` data-cost-process="${esc(r.process)}"` : ''}${r.alsoRoutes?.length ? ` data-also-routes="${esc(r.alsoRoutes.join(' '))}"` : ''}>Cost this route</button>` : '';
     const detail = r.total != null && r.breakdown ? `<details class="cad-compare-detail"><summary>How this row is built</summary>
       <div class="cad-compare-grid">
         <div><h5>Buckets and the independent re-add</h5><table class="cad-compare-mini"><thead><tr><th scope="col">Bucket</th><th scope="col" class="num">Engine</th><th scope="col" class="num">Re-added</th><th scope="col">Closes</th></tr></thead><tbody>${BUCKETS.map(([k, l]) => {
@@ -685,6 +690,38 @@ export interface CardPage1 {
   confidence: { grade: string; sentence: string; gradeNote: string | null };
   alerts: Array<{ kind: 'blocking' | 'route' | 'scope' | 'costed'; title: string; lines: string[] }>;
   openQuestions: string[];
+  /** The cost bridge and the material balance (PKG-6) — the core report's own (cost-bridge.ts, material-balance.ts). */
+  bridge?: CostBridge | null;
+  balance?: MaterialBalance | null;
+}
+
+/**
+ * The cost bridge on the card (PKG-6 / CF-17): the buckets regrouped by what they pay for, raw material in to finished
+ * part out, with the running total ending at the should-cost — `bridgePrintRows`, the rows the PDFs and the workbook
+ * print. A casting or forging adds its material balance and the stock it carries (CF-18: "as cast X kg = finished Y kg +
+ * machining stock Z kg" — never "no extra material"). Nothing is computed here.
+ */
+export function costBridgeHtml(b: CostBridge, bal: MaterialBalance | null | undefined,
+  o: { fmt: (n: number) => string; fmt4?: (n: number) => string; text?: (s: string) => string }): string {
+  const text = o.text ?? ((s: string) => s);
+  const rows = bridgePrintRows(b, o.fmt, 4, o.fmt4 ?? o.fmt);
+  const balRows = bal ? balancePrintRows(bal) : [];
+  return `<details class="cad-cost-more" id="cad-bridge">
+        <summary>Cost bridge — raw material to finished part <span class="cad-cost-count">${rows.length} lines${b.reconciles ? ' · re-adds to the cost' : ' · DOES NOT CLOSE'}</span></summary>
+        <p class="cad-cost-note">${esc(b.note)}</p>
+        <div class="cad-compare-wrap"><table class="cad-compare-table" id="cad-bridge-table" aria-label="Cost bridge">
+          <thead><tr><th scope="col">Line</th><th scope="col">What it is</th><th scope="col" class="num">A part</th><th scope="col" class="num">Running total</th></tr></thead>
+          <tbody>${rows.map(r => `<tr><th scope="row">${esc(text(r.label))}</th><td>${esc(text(r.detail || r.basis))}</td><td class="num">${esc(o.fmt(r.gbp))}</td><td class="num">${esc(o.fmt(r.cumulativeGbp))}</td></tr>`).join('')}
+          <tr><th scope="row">Should-cost</th><td>the rows re-added${b.reconciles ? ' — closes to the cost and to each of the eight buckets' : ' — DOES NOT CLOSE: report this'}</td><td class="num">${esc(o.fmt(b.reAddGbp))}</td><td class="num">${esc(o.fmt(b.totalGbp))}</td></tr></tbody>
+        </table></div>
+        ${bal ? `<div class="cad-commercial-h">Material balance — a good part (${bal.form === 'forged' ? 'forging' : 'casting'})</div>
+        <div class="cad-compare-wrap"><table class="cad-compare-table" id="cad-balance-table" aria-label="Material balance">
+          <thead><tr><th scope="col">Stage</th><th scope="col">Stream</th><th scope="col" class="num">kg</th><th scope="col">Treatment</th></tr></thead>
+          <tbody>${balRows.map(l => `<tr><td>${esc(l.stage)}</td><th scope="row">${esc(l.label)}</th><td class="num">${esc(l.kg)}</td><td>${esc(l.recovery)}</td></tr>`).join('')}</tbody>
+        </table></div>
+        ${bal.stock ? `<p class="cad-cost-note" id="cad-stock-line">${esc(bal.stock.text)} — ${esc(text(bal.stock.partsNote))}.</p>` : ''}
+        ${bal.notItemised.length ? `<p class="cad-cost-note">Not itemised by this costing: ${esc(bal.notItemised.join('; '))}.</p>` : ''}` : ''}
+      </details>`;
 }
 
 /** The re-add page 1 prints: piece price + up-front tooling ÷ parts × its overhead and margin = the headline. */

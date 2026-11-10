@@ -62,11 +62,14 @@ describe('1. the volume machining cell', () => {
     expect(cell.drillMachineId).toBe(HMC_MACHINE_ID);          // drilled in the same clamping
     expect(cell.setups).toBe(1);                                // 3 directions ≤ 4 sides of the tombstone
     expect(cell.masked).toBe(true);
-    // machine: cutting + set-up / batch + pallet change; operator: cutting at the shared manning + handling at one
+    // machine: cutting + 2 B-axis indexes between the 3 sides (Okuma MA-4000H 0.8 s / 90°, PKG-2) + set-up / batch + pallet
+    // change; operator: the spindle time at the shared manning + handling at one
     const hmc = R(HMC_MACHINE_ID);
-    expect(cell.costPerPart).toBeCloseTo(0.40 * hmc + 0.75 * hmc / 2500 + PALLET_CHANGE_SEC / 3600 * hmc, 3);
+    const spindle = 0.40 + 2 * 0.8 / 3600;
+    expect(cell.indexes).toBe(2);
+    expect(cell.costPerPart).toBeCloseTo(spindle * hmc + 0.75 * hmc / 2500 + PALLET_CHANGE_SEC / 3600 * hmc, 3);
     // the load happens during the cut, inside the operator's share of it — only what the cut cannot cover is extra (M4)
-    expect(cell.labourPerPart).toBeCloseTo(27.95 * (0.40 * CUTTING_MANNING + Math.max(0, 0.8 / 60 - 0.40 * CUTTING_MANNING)), 3);
+    expect(cell.labourPerPart).toBeCloseTo(27.95 * (spindle * CUTTING_MANNING + Math.max(0, 0.8 / 60 - spindle * CUTTING_MANNING)), 3);
     for (const a of high.alternatives) expect(a.labourPerPart).toBeGreaterThan(0);
     expect(high.basis).toMatch(/machine \+ operator/);
     // a turned part stays on the lathe
@@ -95,8 +98,8 @@ describe('1. the volume machining cell', () => {
     expect(m.operations.find(o => o.name.startsWith('Drilling'))!.machineId).toBe(HMC_MACHINE_ID);
     expect(m.operations.find(o => o.name.startsWith('Turning — spindle'))!.machineId).toBe('mach-lathe-cnc');
     // 1 hydraulic tombstone fixture a cell + the lathe's dedicated fixture, one a machine the capacity implies (Part1 review,
-    // Nov 2026): 3.32 HMCs' hours at 100,000/yr → 4 cells, and 2 lathes
-    expect(m.toolingCost).toBe(4 * FIXTURE_GBP.hydraulic + 2 * FIXTURE_GBP.dedicated);
+    // Nov 2026): 3.32 HMCs' hours at 100,000/yr → 4 cells (2.x → 3 cells since PKG-2, 10 Nov 2026), and 2 lathes
+    expect(m.toolingCost).toBe(3 * FIXTURE_GBP.hydraulic + 2 * FIXTURE_GBP.dedicated);
   });
 
   it('the stub axle at 10,000/yr stays off the volume cell — a job-shop routing, ranked in £', () => {

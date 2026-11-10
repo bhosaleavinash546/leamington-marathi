@@ -24,9 +24,9 @@ import { amortisationParts } from './injection-moulding.js';
 import { AL_ALLOYS, AL_ALLOY_LIST, AL_DOWNSTREAM, type AlAlloy, type AlExtrusionRoute, type AlFinish } from '../../al-extrusion-data.js';
 import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
 import { buildAlExtrusionInputs, temperNeeds, type AlExtrusionSpec, type AlTemper, type AlExtrusionBuild } from '../../modules/aluminium-extrusion.js';
-import { featureMinutesEach, ALLOWANCE_STATUS } from '../../feature-machining.js';
-import { sourcesLine, ROUGH_AIR_SHARE } from '../../cutting-catalogue.js';
-import { CUTTING_DATA } from '../../machining-time.js';
+import { featureTime, axisMidPoint } from '../../feature-machining.js';
+import { planNonCut, rapidMinutes, NON_CUT_STATUS, type Visit } from '../../non-cut-time.js';
+import { sourcesLine, ROUGH_AIR_SHARE, millRoughInCut } from '../../cutting-catalogue.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
 import { serviceQuestionRules } from '../derive/service-questions.js';
 import { partNames } from '../derive/part-evidence.js';
@@ -138,10 +138,15 @@ export function measuredSection(ctx: RuleContext): MeasuredSection | null {
   };
 }
 
-/** Holes across the profile and volume machined away, minutes — aluminium. */
-export function fabrication(ctx: RuleContext, sec: MeasuredSection): { minutes: number; rows: number; fixturings: number; basis: string } {
-  let minutes = 0; let rows = 0; let holeMm3 = 0;
+/**
+ * Holes across the profile and volume machined away, minutes — aluminium. `minutes` is the spindle time (cutting + the
+ * non-cutting time: tool changes, approach, the rapids at the profile centre — PKG-2, non-cut-time.ts); `cutMinutes` the
+ * chip-making inside it, which tool wear is charged on (CF-20).
+ */
+export function fabrication(ctx: RuleContext, sec: MeasuredSection): { minutes: number; cutMinutes: number; rows: number; fixturings: number; basis: string } {
+  let cut = 0; let own = 0; let rows = 0; let holeMm3 = 0;
   const notes: string[] = [];
+  const visits: Visit[] = [];
   for (const r of ctx.geo.featureTable ?? []) {
     // A feature as deep as the part is long runs ALONG the extrusion — a bore or
     // a chamber, made by the die, not drilled.
@@ -151,24 +156,35 @@ export function fabrication(ctx: RuleContext, sec: MeasuredSection): { minutes: 
     // a pocket really milled across the profile removes metal, and that is
     // costed below from the measured volume, not from the feature table.
     if (r.kind !== 'hole') continue;
-    const each = featureMinutesEach(r, 'aluminium');   // the aluminium catalogue row at the hole's own Ø
-    if (r.kind === 'hole') holeMm3 += Math.PI / 4 * r.diaMm ** 2 * r.depthMm * (r.count ?? 1);
-    minutes += each * (r.count ?? 1); rows += 1;
-    notes.push(`${r.count ?? 1} × ${r.kind} Ø${fmt(r.diaMm, 1)} × ${fmt(r.depthMm, 1)} mm`);
+    const t = featureTime(r, 'aluminium');   // the aluminium catalogue row at the hole's own Ø
+    const n = r.count ?? 1;
+    holeMm3 += Math.PI / 4 * r.diaMm ** 2 * r.depthMm * n;
+    cut += t.cutMin * n; own += t.nonCutMin * n; rows += 1;
+    for (let k = 0; k < n; k++) visits.push(...t.visits.map(v => ({ ...v, pos: axisMidPoint(r.axes?.[k]) })));
+    notes.push(`${n} × ${r.kind} Ø${fmt(r.diaMm, 1)} × ${fmt(r.depthMm, 1)} mm`);
   }
   // Volume machined away beyond the holes already drilled above.
   const removedCm3 = Math.max(0, ((1 - sec.volumeShare) * sec.areaMm2 * sec.lengthMm - holeMm3) / 1000);
   if (sec.volumeShare < 0.98 && removedCm3 > 0.5) {
-    const m = removedCm3 / CUTTING_DATA.aluminium.millRoughCm3PerMin;
-    minutes += m + 0.5; rows += 1;
-    notes.push(`${fmt(removedCm3, 1)} cm³ machined away (volume ${(sec.volumeShare * 100).toFixed(1)}% of section × length) at ${CUTTING_DATA.aluminium.millRoughCm3PerMin} cm³/min `
-      + `(the catalogue's in-cut rate ÷ (1 + ${ROUGH_AIR_SHARE} air moves, engineering-typical, not sourced)) + 0.5 min set-on (engineering-typical, not sourced)`);
+    const q = millRoughInCut('aluminium').q;
+    const inCut = removedCm3 / q;
+    cut += inCut; own += inCut * ROUGH_AIR_SHARE + AL_FAB_SET_ON_MIN; rows += 1;
+    visits.push({ tool: 'roughing cutter', feedInMin: 0 });
+    notes.push(`${fmt(removedCm3, 1)} cm³ machined away (volume ${(sec.volumeShare * 100).toFixed(1)}% of section × length) at ${q.toFixed(0)} cm³/min in-cut `
+      + `(+ ${ROUGH_AIR_SHARE * 100}% air moves, non-cutting, engineering-typical, not sourced) + ${AL_FAB_SET_ON_MIN} min set-on (engineering-typical, not sourced)`);
   }
-  return { minutes: Math.round(minutes * 100) / 100, rows, fixturings: minutes > 0 ? 1 : 0,
+  const env = [sec.lengthMm, ...((): number[] => { const bb = ctx.geo.boundingBox; return bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a).slice(1) : []; })()];
+  const nc = visits.length ? planNonCut(visits, env) : null;
+  const rapid = nc ? rapidMinutes(nc.rapidMm, AL_DOWNSTREAM.cnc.id) : null;
+  const minutes = cut + own + (nc ? nc.toolChangeMin : 0) + (rapid?.min ?? 0);
+  return { minutes: Math.round(minutes * 100) / 100, cutMinutes: Math.round(cut * 100) / 100, rows, fixturings: minutes > 0 ? 1 : 0,
     basis: notes.length
-      ? `${notes.join('; ')} (holes drilled / tapped at each Ø, n·f; ${ALLOWANCE_STATUS}; sources — ${sourcesLine('aluminium', ['drill', 'tap', 'rough'])})`
+      ? `${notes.join('; ')} (holes drilled / tapped at each Ø, n·f; ${fmt(cut, 2)} min cutting; non-cutting: ${nc!.text}; rapids ${rapid!.text}; `
+        + `${NON_CUT_STATUS}; sources — ${sourcesLine('aluminium', ['drill', 'tap', 'rough'])})`
       : 'nothing machined across the profile — cut to length on the press saw' };
 }
+/** Setting a profile on the long-bed centre before roughing, minutes — engineering-typical, not sourced. */
+export const AL_FAB_SET_ON_MIN = 0.5;
 
 function isCup(ctx: RuleContext): { od: number } | null {
   const bb = ctx.geo.boundingBox; if (!bb) return null;
@@ -231,7 +247,7 @@ function advise(ctx: RuleContext): { advice: AlAdvice } | { blocked: RuleOutcome
   const temper = (ctx.answers[AL_TEMPER_DECISION_ID] as AlTemper | undefined) ?? declaredTemper ?? a.defaultTemper;
   const finish = (ctx.answers[AL_FINISH_DECISION_ID] as AlFinish | undefined) ?? 'mill';
   const bends = Math.max(0, Math.round(Number(ctx.answers[AL_BENDS_DECISION_ID] ?? 0)) || 0);
-  const fab = sec ? fabrication(ctx, sec) : { minutes: 0, rows: 0, fixturings: 0, basis: 'impact: trimmed in the press' };
+  const fab = sec ? fabrication(ctx, sec) : { minutes: 0, cutMinutes: 0, rows: 0, fixturings: 0, basis: 'impact: trimmed in the press' };
   const partKg = (ctx.geo.volume?.mm3 ?? 0) * 1e-9 * a.densityKgPerM3;
   const spec: AlExtrusionSpec = {
     alloy, route,
@@ -242,7 +258,7 @@ function advise(ctx: RuleContext): { advice: AlAdvice } | { blocked: RuleOutcome
     annualVolume: ctx.annualVolume, amortizationVolume: amortisationParts(ctx), temper, finish,
     finishAreaM2: Math.round((ctx.geo.surfaceArea?.mm2 ?? 0) / 1e6 * 10_000) / 10_000,
     ...(section.outerPerimeterMm ? { finishOutsideAreaM2: Math.round(section.outerPerimeterMm * section.lengthMm / 1e6 * 10_000) / 10_000 } : {}),
-    bends, cncMinutes: fab.minutes, cncFixturings: fab.fixturings, fabFeatureRows: fab.rows,
+    bends, cncMinutes: fab.minutes, cncCutMinutes: fab.cutMinutes, cncFixturings: fab.fixturings, fabFeatureRows: fab.rows,
     ...(route === 'impact' ? { impactOuterDiaMm: cup?.od ?? section.ccdMm } : {}),
   };
   return { advice: { spec, build: buildAlExtrusionInputs(spec), sec: section, fabBasis: fab.basis, routeBasis } };
@@ -332,6 +348,8 @@ export const ALUMINIUM_EXTRUSION_RULES: CommodityRuleSpec = {
       basis: a.spec.finishOutsideAreaM2 ? `outer outline ${fmt(a.sec.outerPerimeterMm ?? 0, 0)} mm × ${fmt(a.sec.lengthMm, 0)} mm — what powder coats` : 'not measured on this geometry — powder is charged on the whole surface' })),
     rule('alExtrusion.bends', 'alx-bends', 'bends', a => ({ value: a.spec.bends, source: 'rule', confidence: 0.6, basis: a.spec.bends ? `${a.spec.bends} stretch bend(s), stated` : 'straight' })),
     rule('alExtrusion.cncMinutes', 'alx-cnc-min', 'cncMinutes', a => ({ value: a.spec.cncMinutes, source: 'geometry', confidence: 0.7, basis: a.fabBasis })),
+    rule('alExtrusion.cncCutMinutes', 'alx-cnc-cut-min', 'cncCutMinutes', a => ({ value: a.spec.cncCutMinutes ?? a.spec.cncMinutes, source: 'geometry', confidence: 0.7,
+      basis: `the chip-making minutes inside the CNC time — tool wear is charged on these only (not the tool changes, approach or rapids): ${a.fabBasis}` })),
     rule('alExtrusion.cncFixturings', 'alx-cnc-fix', 'cncFixturings', a => ({ value: a.spec.cncFixturings, source: 'rule', confidence: 0.6, basis: a.spec.cncFixturings ? 'one set-up on the long-bed centre' : 'no fabrication' })),
     rule('alExtrusion.fabFeatureRows', 'alx-fab-rows', 'fabFeatureRows', a => ({ value: a.spec.fabFeatureRows, source: 'geometry', confidence: 0.7, basis: 'feature rows to programme' })),
     rule('alExtrusion.impactOuterDiaMm', 'alx-impact-dia', 'impactOuterDiaMm', a => ({ value: a.spec.impactOuterDiaMm ?? 0, source: 'geometry', confidence: 0.8, basis: a.spec.route === 'impact' ? 'outer Ø of the cup' : 'not an impact part' })),

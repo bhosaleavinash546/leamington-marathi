@@ -46,6 +46,7 @@ import {
   type DieSteel, type ComplexityLevel,
 } from '../../modules/forging-advisor.js';
 import { pickForgePressId, pickStampingPressId, FORGE_PRESS_TIERS } from '../../machine-sizing.js';
+import { standardBatchSize } from '../../routing-optimiser.js';
 import { NDT_STATION } from '../../modules/casting-advisor.js';
 import { activeLabourRate, gbpFigure } from '../../rate-context.js';
 import { countryFactor } from '../../regional-services.js';
@@ -258,32 +259,26 @@ export const FORGE_CREW: Record<ForgingProcess, number> = {
 };
 export const TRIM_CREW = 1;
 
+/**
+ * Forge-line die setting, minutes a change (PKG-2, CF-22): the internal set-up time of a 1,000-ton hot forging press after
+ * a die-holder redesign — Cavbozar, Ö., "Design of fixturing system for forging dies", MSc thesis, Middle East Technical
+ * University (2008), https://open.metu.edu.tr/handle/11511/18298: "the internal setup time of the forging press with
+ * 1000 ton capacity has been reduced from 220 minutes to 141 minutes". The improved figure is taken, for any impression
+ * press size (a judgement — no figure by press size was found).
+ */
+export const FORGE_DIE_SETTING_MIN = 141;
+export const FORGE_DIE_SETTING_HR = Math.round(FORGE_DIE_SETTING_MIN / 60 * 1000) / 1000;
+export const FORGE_DIE_SETTING_SOURCE = 'Cavbozar, "Design of fixturing system for forging dies", MSc thesis, METU (2008): internal set-up of a 1,000 t hot forging press 220 → 141 min (the 141 min taken, at any press size — a judgement)';
+/** The routes that change an impression die set. */
+export const IMPRESSION_PROCESSES: readonly ForgingProcess[] = ['closed-die', 'precision'];
+
 /** Forging scrap (laps, underfill, cracks found at inspection), fraction. */
 export const FORGING_REJECT = 0.02;
 
-/** Per-side machining stock on a machined face, mm, by route (as-forged allowance). */
-export const FORGING_MACHINING_STOCK_MM: Record<ForgingProcess, number> = {
-  'closed-die': 2.0, precision: 0.75, 'open-die': 5.0, 'ring-rolling': 3.0, 'cold-forming': 0,
-};
-
-/**
- * Minimum finish (machining) stock a surface for drop and press forgings, by the forging's greatest dimension — IS 3469
- * (Part I):1974 Table 1.5 (Bureau of Indian Standards, made public by Public.Resource.Org; DIN 7523-2 is withdrawn and
- * EN 10243-1 gives tolerances, not allowances — phase-B research rows D2 / D4). It REPLACES the closed-die 2.0 mm of
- * `FORGING_MACHINING_STOCK_MM`, an unsourced figure for exactly this quantity (phase B, 4 Nov 2026). The other routes
- * keep theirs: the table is for drop and press (impression) forgings, not precision, open-die, ring or cold forming.
- */
-export const IS3469_FINISH_STOCK_MM: ReadonlyArray<readonly [number, number]> = [[205, 1.5], [410, 2.5], [610, 3.0], [915, 4.0], [Infinity, 5.0]];
-export function machiningStockMm(process: ForgingProcess, greatestMm: number | null): { mm: number; basis: string } {
-  if (process !== 'closed-die' || !greatestMm || greatestMm <= 0) {
-    return { mm: FORGING_MACHINING_STOCK_MM[process], basis: `${FORGING_MACHINING_STOCK_MM[process]} mm a side on the machined faces, ${process} (CostVision engineering-typical, not sourced)` };
-  }
-  const i = IS3469_FINISH_STOCK_MM.findIndex(([upTo]) => greatestMm <= upTo);
-  const [upTo, mm] = IS3469_FINISH_STOCK_MM[i];
-  const from = i > 0 ? IS3469_FINISH_STOCK_MM[i - 1][0] : 0;
-  return { mm, basis: `${mm} mm a side on the machined faces — IS 3469 (Part I):1974 Table 1.5 minimum finish stock for a drop / press forging whose greatest dimension `
-    + `(${fmt(greatestMm, 1)} mm) is ${from > 0 ? `over ${from} mm${Number.isFinite(upTo) ? ' and ' : ''}` : ''}${Number.isFinite(upTo) ? `not over ${upTo} mm` : ''}` };
-}
+/** Per-side machining stock by forging route — defined in machining-time.ts (the secondary machining's passes read it too,
+ *  PKG-2 CF-06) and re-exported here for its callers. */
+import { FORGING_MACHINING_STOCK_MM, IS3469_FINISH_STOCK_MM, forgingMachiningStockMm as machiningStockMm } from '../../machining-time.js';
+export { FORGING_MACHINING_STOCK_MM, IS3469_FINISH_STOCK_MM, machiningStockMm };
 
 /**
  * Draft angles for drop and press forgings — IS 3469 (Part I):1974 Table 1.4, degrees, by surface (outside / inside) and
@@ -1156,6 +1151,42 @@ export const FORGING_RULES: CommodityRuleSpec = {
           complexity: r.advice.shape,
         });
         return decided('forging.dieLife', life.life, 'advisor', life.basis, 0.6);
+      },
+    },
+    // ── Forge-line die setting (PKG-2, CF-22 — 10 Nov 2026) ─────────────
+    {
+      id: 'forging.dieSettingHr',
+      path: 'forging.dieSettingHr',
+      fieldId: 'forge-die-set-hr',
+      label: 'dieSettingHr',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!IMPRESSION_PROCESSES.includes(r.advice.process)) {
+          return decided('forging.dieSettingHr', 0, 'rule', `no impression die set to change on a ${r.advice.process} route — not costed`, 0.5);
+        }
+        return decided('forging.dieSettingHr', FORGE_DIE_SETTING_HR, 'rule',
+          `${FORGE_DIE_SETTING_HR} h (${FORGE_DIE_SETTING_MIN} min) the line stands to change the die set — sourced: ${FORGE_DIE_SETTING_SOURCE}; `
+          + 'the press with its crew, the trim press and the in-line heater idle beside it', 0.5);
+      },
+    },
+    {
+      id: 'forging.dieSettingBatch',
+      path: 'forging.dieSettingBatch',
+      fieldId: 'forge-die-set-batch',
+      label: 'dieSettingBatch',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!IMPRESSION_PROCESSES.includes(r.advice.process)) return decided('forging.dieSettingBatch', 0, 'rule', 'no die setting costed on this route', 0.5);
+        const batch = standardBatchSize(ctx.annualVolume);
+        const life = forgingDieLifeFactors({ alloyFamily: r.advice.alloy, projectedAreaCm2: r.advice.areaCm2, complexity: r.advice.shape }).life;
+        const n = Math.max(1, Math.min(batch, life));
+        return decided('forging.dieSettingBatch', n, 'rule',
+          `one die setting a batch: ${ctx.annualVolume.toLocaleString('en-GB')}/yr ÷ 20 runs a year, held between 50 and 5,000 = ${batch.toLocaleString('en-GB')} `
+          + `(the machining side's batch rule; 20 runs a year engineering-typical, not sourced)`
+          + (life < batch ? `; the die set wears out first, at ${life.toLocaleString('en-GB')} forgings — a setting every die life` : `; die life ${life.toLocaleString('en-GB')} forgings outlasts the batch`)
+          + ` → ${n.toLocaleString('en-GB')} forgings a setting`, 0.5);
       },
     },
     {

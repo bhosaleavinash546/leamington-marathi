@@ -16,9 +16,10 @@ import type { FeatureRow } from './feature-ops.js';
 import { featureToOperation, tappedThread } from './feature-ops.js';
 import type { MaterialFamily } from './material-family.js';
 import {
-  catalogueFor, drillFeed, boreFeed, tapFeed, faceMillCutMinutes, sidePassCm2PerMin, turnFinishCm2PerMin, millRoughEffective,
-  familyForTimeFactor, MACHINABILITY_RATIO, ASSUMED,
+  catalogueFor, drillFeed, boreFeed, tapFeed, faceMillCutMinutes, sidePassCm2PerMin, turnFinishCm2PerMin, millRoughInCut,
+  familyForTimeFactor, MACHINABILITY_RATIO, ASSUMED, ROUGH_AIR_SHARE, borePasses, shoulderVf,
 } from './cutting-catalogue.js';
+import { R_PLANE_MM, NON_CUT_STATUS, planNonCut, rapidMinutes, type Visit } from './non-cut-time.js';
 import { PALLET_CHANGE_SEC } from './routing-optimiser.js';
 export { tappedThread, TAPPING_DRILL_MM } from './feature-ops.js';
 
@@ -56,6 +57,10 @@ export interface FeatureMachiningOptions {
   /** Near-net only: holes above this diameter are cored in, and finish-bored
    *  rather than drilled from solid. Omit to drill every hole from solid. */
   coredAboveMm?: number;
+  /** Near-net: the per-side stock a machined face / cored bore carries — passes follow it (PKG-2, CF-06). Omit: one finish pass. */
+  stockMm?: number;
+  /** The part's envelope, mm — the traverse between features is estimated from it where no position is measured. */
+  envelopeMm?: readonly number[];
   /** The machining cell's per-part time that is not cutting: load / clamp /
    *  unload at each fixturing and the batch change-over shared over the batch
    *  (`secondaryMachiningCell` in machining-time.ts). Omit for cutting only. */
@@ -93,7 +98,6 @@ export interface FeatureMachiningResult {
   summary: string;                   // e.g. "50×Ø6.0×10, 2×Ø16.0×20"
 }
 
-// Pocket floor roughing and wall finishing ride the catalogue's roughing and side-pass rates (cutting-catalogue.ts).
 /** Short human label for a feature, kind-aware (holes have Ø, faces have area). */
 export function featureLabel(l: { kind: FeatureRow['kind']; count: number; diaMm: number; depthMm: number; areaMm2?: number }): string {
   if (l.kind === 'face') return `${l.count}× face ${Math.round(l.areaMm2 ?? 0)}mm²`;
@@ -138,19 +142,24 @@ export function secondaryMachiningMachineId(
 }
 
 /**
- * Fixed per-feature allowances, minutes: positioning, approach and retract around the cut. Their values are the
- * long-standing ones; since the report standard round (3 Nov 2026) they are NOT multiplied by the metal (non-cutting
- * time does not depend on it — the reviewers' point) and every basis prints them as engineering-typical, not sourced.
+ * The fixed per-feature allowances (positioning, approach, retract) are GONE (PKG-2, CF-19 — 10 Nov 2026): non-cutting
+ * time is built per operation from tool changes, the traverse between features at the machine's sourced rapid, a stated
+ * approach / retract and datum probing (non-cut-time.ts). A feature's own minutes are now its CUTTING time plus the
+ * non-cutting time at feed that belongs to it (the R-plane fed in, a tap's way out, a peck's retracts, a pocket's air
+ * moves); the rapids and tool changes are the operation's. `ALLOWANCE_MIN` is kept, zeroed, for old callers only.
+ * @deprecated nothing reads it.
  */
 export const ALLOWANCE_MIN = {
-  drill: 0.15, microDrill: 0.06, borePass: 0.25, face: 0.20, blind: 0.10, tap: 0.10, feature: 0.30, helical: 0.50, land: 0.20,
+  drill: 0, microDrill: 0, borePass: 0, face: 0, blind: 0, tap: 0, feature: 0, helical: 0, land: 0,
 } as const;
-export const ALLOWANCE_STATUS = 'positioning / approach / retract allowances engineering-typical, not sourced, not scaled by the metal';
+/** What a basis prints for the non-cutting time (it printed the allowances' status before PKG-2). */
+export const ALLOWANCE_STATUS = NON_CUT_STATUS;
 
-/** Rigid tapping approach / reversal allowance (kept under its old name). */
-export const TAP_APPROACH_MIN = ALLOWANCE_MIN.tap;
+/** @deprecated The rigid-tapping approach allowance — 0 since PKG-2 (the tap's R-plane is fed in and out at its feed). */
+export const TAP_APPROACH_MIN = 0;
 /** Extra pecking on a hole deeper than 5 diameters (time × 1.5 on the drilling feed) — engineering-typical, not sourced.
- *  Within 5×D a hole is standard reach (DIN 338 jobber Ø14.5 reaches 92 mm = 6.4×D, data.json #43) and is not pecked. */
+ *  Within 5×D a hole is standard reach (DIN 338 jobber Ø14.5 reaches 92 mm = 6.4×D, data.json #43) and is not pecked.
+ *  The premium is the peck retracts: non-cutting time (PKG-2), no tool wear on it. */
 export const DEEP_HOLE_PECK = 1.5;
 /** @deprecated The aluminium-baseline drilling feed the costing used before the catalogue (3 Nov 2026). No costing reads
  *  it; the feed is now `drillFeed(family, Ø)`. Kept so older callers compile — use `deepHolePeckPremiumMin`. */
@@ -163,6 +172,8 @@ export const TAP_FEED_MM_PER_MIN = 500;
 export const HELICAL_ABOVE_MM = 26;
 /** Helical milling feed along the hole in aluminium, mm/min (0.050 min/mm) — engineering-typical, not sourced. */
 export const HELICAL_MIN_PER_MM = 0.050;
+/** A land's skim, minutes per mm of Ø — engineering-typical, not sourced. */
+export const LAND_MIN_PER_MM_DIA = 0.004;
 
 /**
  * A cylinder shallower than a quarter of its Ø is a LAND — a spot face, counterbore step, seat face, groove or chamfer —
@@ -172,34 +183,58 @@ export const HELICAL_MIN_PER_MM = 0.050;
  */
 export const isLandRow = (row: Pick<FeatureRow, 'kind' | 'diaMm' | 'depthMm'> & Partial<FeatureRow>) =>
   row.kind === 'hole' && row.diaMm > 0 && row.depthMm > 0 && row.depthMm < 0.25 * row.diaMm;
-const f2 = (n: number) => n.toFixed(2);
+const f3 = (n: number) => n.toFixed(3);
+
+/** One instance's position from the kernel's axis line ("foot x,y,z,direction x,y,z") and span: the axis mid-point, mm. */
+export function axisMidPoint(a: { line: string; s0: number; s1: number } | null | undefined): [number, number, number] | null {
+  if (!a || typeof a.line !== 'string') return null;
+  const v = a.line.split(',').map(Number);
+  if (v.length < 6 || v.some(x => !Number.isFinite(x)) || !Number.isFinite(a.s0) || !Number.isFinite(a.s1)) return null;
+  const m = (a.s0 + a.s1) / 2;
+  return [v[0] + v[3] * m, v[1] + v[4] * m, v[2] + v[5] * m];
+}
+
+/** The time of ONE instance: cutting, the non-cutting time at feed that is its own, and the tool visits it needs. */
+export interface InstanceTime {
+  /** cutMin + nonCutMin — the feature's own minutes (the operation adds its tool changes, rapids and probing). */
+  min: number;
+  /** Chip-making minutes — what tool wear is charged on (CF-20). */
+  cutMin: number;
+  /** Non-cutting minutes at feed: R-plane fed in, a tap's way out, peck retracts, a pocket's air moves. */
+  nonCutMin: number;
+  /** The tools that visit it, one entry a visit (positions are the caller's). */
+  visits: Visit[];
+  label: string;
+  calc: string;
+}
 
 // ── Stepped bores ───────────────────────────────────────────────────────────
 
 /** One hole instance on its axis line. */
-export interface HoleInstance { rowIndex: number; row: FeatureRow; line: string; s0: number; s1: number }
+export interface HoleInstance { rowIndex: number; row: FeatureRow; line: string; s0: number; s1: number; axisIndex?: number }
 
 /**
  * Coaxial hole instances that touch along the axis — ONE stepped bore (a bore with its counterbores, lands, grooves and
- * chamfer steps), machined from one approach with one tool per step Ø (fresh review, 4 Nov 2026: the stub axle's two
- * kingpin bores were timed as 10 cored bores, each with its own 0.25 min approach, and the knuckle's one hub bore as 4).
+ * chamfer steps), machined from one side with one tool per step Ø (fresh review, 4 Nov 2026: the stub axle's two
+ * kingpin bores were timed as 10 cored bores, and the knuckle's one hub bore as 4).
  *
  * Joined when the next instance on the same axis line starts no further along the axis than the run so far ends plus
  * the radial step between the two Ø (+ 0.1 mm): the transition between two steps is a cone or chamfer at most as long as
  * the step is deep (45°) — a CostVision geometric reading, not sourced. A ring inside a longer step (a circlip groove)
  * overlaps it and joins. Rows without `axes` (older recorded geometry, meshes) are never grouped.
  */
-export function steppedBoreGroups(rows: FeatureRow[]): { groups: HoleInstance[][]; leftover: number[] } {
+export function steppedBoreGroups(rows: FeatureRow[]): { groups: HoleInstance[][]; leftover: number[]; leftoverAxes: number[][] } {
   const leftover = rows.map(r => r.count);
+  const grouped = rows.map(() => new Set<number>());
   const byLine = new Map<string, HoleInstance[]>();
   rows.forEach((row, rowIndex) => {
     if (row.kind !== 'hole' || !row.axes || row.axes.length !== row.count) return;
-    for (const a of row.axes) {
-      if (!a || typeof a.line !== 'string' || !Number.isFinite(a.s0) || !Number.isFinite(a.s1)) continue;
+    row.axes.forEach((a, axisIndex) => {
+      if (!a || typeof a.line !== 'string' || !Number.isFinite(a.s0) || !Number.isFinite(a.s1)) return;
       const list = byLine.get(a.line) ?? [];
-      list.push({ rowIndex, row, line: a.line, s0: Math.min(a.s0, a.s1), s1: Math.max(a.s0, a.s1) });
+      list.push({ rowIndex, row, line: a.line, s0: Math.min(a.s0, a.s1), s1: Math.max(a.s0, a.s1), axisIndex });
       byLine.set(a.line, list);
-    }
+    });
   });
   const groups: HoleInstance[][] = [];
   for (const list of byLine.values()) {
@@ -209,7 +244,7 @@ export function steppedBoreGroups(rows: FeatureRow[]): { groups: HoleInstance[][
     const close = () => {
       if (run.length > 1 && new Set(run.map(h => h.row.diaMm)).size > 1) {
         groups.push(run);
-        for (const h of run) leftover[h.rowIndex] -= 1;
+        for (const h of run) { leftover[h.rowIndex] -= 1; grouped[h.rowIndex].add(h.axisIndex ?? -1); }
       }
     };
     for (const h of list) {
@@ -226,64 +261,35 @@ export function steppedBoreGroups(rows: FeatureRow[]): { groups: HoleInstance[][
     }
     close();
   }
-  return { groups, leftover };
+  const leftoverAxes = rows.map((r, i) => (r.axes && r.axes.length === r.count ? r.axes.map((_, k) => k).filter(k => !grouped[i].has(k)) : []));
+  return { groups, leftover, leftoverAxes };
 }
 
-/** The work one stepped bore is: one approach, each step cut at its own Ø; minutes by step (they add to `min`). */
-export function steppedBoreTime(steps: HoleInstance[], family: MaterialFamily, coredAboveMm?: number): {
-  min: number; stepMin: number[]; label: string; calc: string; bored: boolean; maxDiaMm: number;
+/** The work one stepped bore is: one tool a step Ø (lands are cut by the step beside them); minutes by step. */
+export function steppedBoreTime(steps: HoleInstance[], family: MaterialFamily, coredAboveMm?: number, stockMm?: number): {
+  min: number; cutMin: number; nonCutMin: number; stepMin: number[]; stepCutMin: number[]; visits: Visit[];
+  label: string; calc: string; bored: boolean; maxDiaMm: number;
 } {
-  const { scale, row: cat } = catalogueFor(family);
-  const A = ALLOWANCE_MIN;
+  const { scale } = catalogueFor(family);
   const ordered = [...steps].sort((p, q) => p.s0 - q.s0);
   const maxDiaMm = Math.max(...ordered.map(h => h.row.diaMm));
   const bored = coredAboveMm !== undefined && Number.isFinite(coredAboveMm) && ordered.some(h => h.row.diaMm > coredAboveMm);
-  const through = ordered.some(h => h.row.through === true);
+  const visits: Visit[] = [];
   const parts: string[] = [];
+  const stepCutMin: number[] = [];
   const stepMin = ordered.map(h => {
-    const d = h.row.diaMm, L = Math.max(h.row.depthMm, 1);
-    if (isLandRow(h.row)) {
-      const t = d * 0.004;
-      parts.push(`Ø${d.toFixed(1)}×${h.row.depthMm.toFixed(1)} land 0.004 min/mm Ø = ${f2(t)}`);
-      return t;
-    }
-    if (coredAboveMm !== undefined && d > coredAboveMm) {
-      const b = boreFeed(family, d);
-      const t = L / b.vf * scale;
-      parts.push(`Ø${d.toFixed(1)}×${L.toFixed(0)} bored ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min (n ${b.n.toFixed(0)} × f ${cat.bore.f}) = ${f2(t)}`);
-      return t;
-    }
-    if (d > HELICAL_ABOVE_MM) {
-      const ratio = MACHINABILITY_RATIO[family] ?? MACHINABILITY_RATIO.steel;
-      const t = L * HELICAL_MIN_PER_MM * ratio;
-      parts.push(`Ø${d.toFixed(1)}×${L.toFixed(0)} helical-milled ${L.toFixed(0)} × ${HELICAL_MIN_PER_MM} × ${ratio} = ${f2(t)}`);
-      return t;
-    }
-    const dr = drillFeed(family, d);
-    const deep = L > 5 * Math.max(d, 1) ? DEEP_HOLE_PECK : 1;
-    let t = L / dr.vf * deep * scale;
-    let text = `Ø${d.toFixed(1)}×${L.toFixed(0)} drilled ${L.toFixed(0)} ÷ ${dr.vf.toFixed(0)} mm/min${deep !== 1 ? ` × ${DEEP_HOLE_PECK} peck` : ''}`;
-    const thread = tappedThread(h.row);
-    if (thread) {
-      const tp = tapFeed(family, thread);
-      const tt = A.tap + 2 * L / tp.vf * scale;
-      t += tt;
-      text += ` + tap ${thread} ${A.tap} + 2 × ${L.toFixed(0)} ÷ ${tp.vf.toFixed(0)} mm/min`;
-    }
-    parts.push(`${text} = ${f2(t)}`);
-    return t;
+    const t = holeInstance(h.row, family, coredAboveMm, stockMm, true);
+    visits.push(...t.visits);
+    stepCutMin.push(t.cutMin);
+    parts.push(`${t.label} ${t.calc}`);
+    return t.min;
   });
-  // ONE approach for the bore: a boring pass's when a step is bored, else the drill's; a blind bore once.
-  const approach = bored ? A.borePass : maxDiaMm > 6 ? A.drill : A.microDrill;
-  const blind = through ? 0 : A.blind;
-  // the approach rides on the largest step (its tool goes in first) — so the minutes by step add to the total
-  const iMax = ordered.findIndex(h => h.row.diaMm === maxDiaMm);
-  stepMin[iMax] += approach + blind;
+  const cutMin = stepCutMin.reduce((s, t) => s + t, 0);
   const min = stepMin.reduce((s, t) => s + t, 0);
   const label = `stepped bore ${ordered.map(h => `Ø${h.row.diaMm.toFixed(1)}×${h.row.depthMm.toFixed(h.row.depthMm < 10 ? 1 : 0)}`).join(' / ')}`;
-  const calc = `one approach ${approach}${blind ? ` + ${blind} blind` : ''} + ${parts.join(' + ')} = ${f2(min)} min `
-    + `(${ordered.length} coaxial steps, one tool a step Ø; ${scale !== 1 ? `cut × ${+scale.toFixed(3)}; ` : ''}the 0.004 min/mm Ø land skim ${ASSUMED})`;
-  return { min, stepMin, label, calc, bored, maxDiaMm };
+  const calc = `${parts.join(' + ')} = ${f3(min)} min (${ordered.length} coaxial steps, one tool a step Ø, a land cut by the step beside it; `
+    + `${f3(cutMin)} min cutting${scale !== 1 ? `; cut × ${+scale.toFixed(3)}` : ''}; the ${LAND_MIN_PER_MM_DIA} min/mm Ø land skim ${ASSUMED})`;
+  return { min, cutMin, nonCutMin: min - cutMin, stepMin, stepCutMin, visits, label, calc, bored, maxDiaMm };
 }
 
 /** A piece of hole work: a hole on its own (× count) or a stepped bore (× count of identical bores). */
@@ -291,8 +297,10 @@ export interface HoleWork {
   kind: 'hole' | 'stepped';
   /** Identical instances of this work. */
   count: number;
-  /** Minutes for ONE instance. */
+  /** Minutes for ONE instance: cutting + its own non-cutting time at feed. */
   minEach: number;
+  /** Cutting minutes for ONE instance (tool wear). */
+  cutEach: number;
   label: string;
   calc: string;
   /** Finish-bored on the machining centre (a step above the cored size), not drilled. */
@@ -303,43 +311,56 @@ export interface HoleWork {
   /** Minutes this work puts on each row, all instances: they add to count × minEach. */
   minByRow: Map<number, number>;
   faceIds: number[];
+  /** Every tool visit of every instance, at the instance's measured position where the kernel gives one. */
+  visits: Visit[];
 }
 
 /**
  * The hole work of a set of rows, stepped bores grouped (`steppedBoreGroups`) — ONE reading for every route that times
  * holes: from solid, cast + machine, and the casting / forging routes' secondary machining. Identical stepped bores
- * (the same steps) are one work item with a count.
+ * (the same steps) are one work item with a count. `stockMm` (near-net): the per-side stock a cored bore is opened from.
  */
-export function holeWork(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): HoleWork[] {
-  const { groups, leftover } = steppedBoreGroups(rows);
+export function holeWork(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number, stockMm?: number): HoleWork[] {
+  const { groups, leftover, leftoverAxes } = steppedBoreGroups(rows);
   const out: HoleWork[] = [];
   rows.forEach((row, i) => {
     if (row.kind !== 'hole' || leftover[i] <= 0) return;
-    const t = featureTime(row, family, coredAboveMm);
+    const t = featureTime(row, family, coredAboveMm, stockMm);
+    const axes = leftoverAxes[i];
+    const visits: Visit[] = [];
+    for (let k = 0; k < leftover[i]; k++) {
+      const pos = axes.length === leftover[i] ? axisMidPoint(row.axes?.[axes[k]]) : null;
+      for (const v of t.visits) visits.push({ ...v, pos });
+    }
     out.push({
-      kind: 'hole', count: leftover[i], minEach: t.min, label: `Ø${row.diaMm.toFixed(1)}×${row.depthMm.toFixed(0)}`,
+      kind: 'hole', count: leftover[i], minEach: t.min, cutEach: t.cutMin, label: `Ø${row.diaMm.toFixed(1)}×${row.depthMm.toFixed(0)}`,
       calc: t.calc, bored: coredAboveMm !== undefined && Number.isFinite(coredAboveMm) && row.diaMm > coredAboveMm,
       maxDiaMm: row.diaMm, rowIndexes: [i], minByRow: new Map([[i, t.min * leftover[i]]]),
       faceIds: leftover[i] === row.count ? [...(row.faceIds ?? [])] : [],
+      visits,
     });
   });
   const bySig = new Map<string, HoleWork>();
   for (const g of groups) {
-    const t = steppedBoreTime(g, family, coredAboveMm);
+    const t = steppedBoreTime(g, family, coredAboveMm, stockMm);
     const ordered = [...g].sort((p, q) => p.s0 - q.s0);
+    const pos = axisMidPoint({ line: ordered[0].line, s0: ordered[0].s0, s1: ordered[ordered.length - 1].s1 });
+    const visits = t.visits.map(v => ({ ...v, pos }));
     const sig = ordered.map(h => `${h.row.diaMm}|${h.row.depthMm}|${h.row.through}`).join(';');
     const w = bySig.get(sig);
     if (w) {
       w.count += 1;
+      w.visits.push(...visits);
       ordered.forEach((h, k) => w.minByRow.set(h.rowIndex, (w.minByRow.get(h.rowIndex) ?? 0) + t.stepMin[k]));
       continue;
     }
     const minByRow = new Map<number, number>();
     ordered.forEach((h, k) => minByRow.set(h.rowIndex, (minByRow.get(h.rowIndex) ?? 0) + t.stepMin[k]));
     const item: HoleWork = {
-      kind: 'stepped', count: 1, minEach: t.min, label: t.label, calc: t.calc, bored: t.bored, maxDiaMm: t.maxDiaMm,
+      kind: 'stepped', count: 1, minEach: t.min, cutEach: t.cutMin, label: t.label, calc: t.calc, bored: t.bored, maxDiaMm: t.maxDiaMm,
       rowIndexes: [...new Set(ordered.map(h => h.rowIndex))], minByRow,
       faceIds: [...new Set(ordered.flatMap(h => h.row.faceIds ?? []))],
+      visits,
     };
     bySig.set(sig, item);
     out.push(item);
@@ -348,90 +369,127 @@ export function holeWork(rows: FeatureRow[], family: MaterialFamily, coredAboveM
 }
 
 /** Minutes of hole work on each row (all its instances), stepped bores apportioned by step — they add to the work. */
-export function holeMinutesByRow(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number): number[] {
+export function holeMinutesByRow(rows: FeatureRow[], family: MaterialFamily, coredAboveMm?: number, stockMm?: number): number[] {
   const out = rows.map(() => 0);
-  for (const w of holeWork(rows, family, coredAboveMm)) for (const [i, m] of w.minByRow) out[i] += m;
+  for (const w of holeWork(rows, family, coredAboveMm, stockMm)) for (const [i, m] of w.minByRow) out[i] += m;
   return out;
 }
 
+const drillKey = (d: number) => `drill Ø${(Math.round(d * 2) / 2).toFixed(1)}`;
+
 /**
- * Minutes for ONE instance of a feature, with the arithmetic as text. Cutting terms come from the published catalogue
- * for the metal at the feature's own size (cutting-catalogue.ts); the allowances are fixed. `coredAboveMm` (near-net):
- * a hole above it is cast / pierced in and finish-bored in one pass rather than drilled from solid.
+ * One hole instance: drilled (+ a boring pass on a blind Ø13–26, + tapping), helically milled above Ø26, a land skimmed,
+ * or — cored / pierced above `coredAboveMm` — opened by boring passes from the stock (`borePasses`). Each tool visit
+ * feeds the R-plane in at its own feed and retracts out of the hole at rapid; a tap feeds in and out.
  */
-export function featureTime(row: FeatureRow, family: MaterialFamily = 'aluminium', coredAboveMm?: number): { min: number; text: string; calc: string } {
-  const r = featureTimeInner(row, family, coredAboveMm);
+function holeInstance(row: FeatureRow, family: MaterialFamily, coredAboveMm: number | undefined, stockMm: number | undefined,
+  inStep: boolean): InstanceTime {
+  const { scale } = catalogueFor(family);
+  const ratio = MACHINABILITY_RATIO[family] ?? MACHINABILITY_RATIO.steel;
+  const d = row.diaMm;
+  const L = Math.max(row.depthMm, 1);
+  const label = `Ø${d.toFixed(1)}×${L.toFixed(0)}`;
+  const R = R_PLANE_MM;
+  const sc = scale !== 1 ? ` × ${+scale.toFixed(3)}` : '';
+  // A wide, shallow "hole" is a spot-face, counterbore land or seat face: one skim.
+  if (isLandRow(row)) {
+    const cut = d * LAND_MIN_PER_MM_DIA;
+    const b = boreFeed(family, d);
+    const feedIn = inStep ? 0 : R / b.vf * scale;
+    return { min: cut + feedIn, cutMin: cut, nonCutMin: feedIn, label: `Ø${d.toFixed(1)}×${row.depthMm.toFixed(1)} land`,
+      visits: inStep ? [] : [{ tool: `spot face Ø${d.toFixed(1)}`, feedInMin: feedIn }],
+      calc: `skim ${LAND_MIN_PER_MM_DIA} min/mm Ø × ${d.toFixed(1)} (${ASSUMED}) = ${f3(cut)} min cutting`
+        + (inStep ? ' (cut by the step beside it)' : ` + ${R} mm fed in at ${b.vf.toFixed(0)} mm/min = ${f3(feedIn)} min`) };
+  }
+  if (coredAboveMm !== undefined && d > coredAboveMm) {
+    // Cored / pierced: opened by boring passes from the stock — rough at the turning rough row, finish at the boring row.
+    const bp = borePasses(family, d, L, stockMm);
+    const cut = bp.passes.reduce((s, p) => s + p.cutMin, 0);
+    const visits: Visit[] = bp.passes.map(p => ({ tool: `${p.kind === 'rough' ? 'rough bore' : 'bore'} Ø${d.toFixed(1)}`, feedInMin: R / p.vf * scale, rapidMm: L }));
+    const feedIn = visits.reduce((s, v) => s + v.feedInMin, 0);
+    return { min: cut + feedIn, cutMin: cut, nonCutMin: feedIn, label: `${label} cored, bored`, visits,
+      calc: `${bp.text} = ${f3(cut)} min cutting + ${visits.length} × ${R} mm fed in = ${f3(feedIn)} min (retract at rapid)` };
+  }
+  if (d > HELICAL_ABOVE_MM) {
+    const cut = L * HELICAL_MIN_PER_MM * ratio;
+    const feedIn = R * HELICAL_MIN_PER_MM * ratio;
+    return { min: cut + feedIn, cutMin: cut, nonCutMin: feedIn, label, visits: [{ tool: 'helical end mill', feedInMin: feedIn, rapidMm: L }],
+      calc: `helical-milled ${L.toFixed(0)} × ${HELICAL_MIN_PER_MM} min/mm × ${ratio} (no catalogue row read: aluminium rate × machinability ratio, ${ASSUMED}) `
+        + `= ${f3(cut)} min cutting + ${R} mm fed in = ${f3(feedIn)} min` };
+  }
+  const dr = drillFeed(family, d);
+  const deep = L > 5 * Math.max(d, 1) ? DEEP_HOLE_PECK : 1;
+  let cut = L / dr.vf * scale;
+  let nonCut = R / dr.vf * scale + (deep - 1) * L / dr.vf * scale;
+  const visits: Visit[] = [{ tool: drillKey(d), feedInMin: R / dr.vf * scale + (deep - 1) * L / dr.vf * scale, rapidMm: L }];
+  let text = `drilled ${L.toFixed(0)} ÷ ${dr.vf.toFixed(0)} mm/min (n ${dr.n.toFixed(0)} × f ${dr.f.toFixed(3)})${sc}`;
+  // A blind 13–26 mm hole is a locating or bearing bore: drilled, then one boring pass. A through hole is a clearance
+  // hole and is drilled only, whatever its depth (report standard round: a 4.2×D through hole was reamed). A step of a
+  // stepped bore is drilled only.
+  if (!inStep && d > 13 && row.through === false) {
+    const b = boreFeed(family, d);
+    cut += L / b.vf * scale;
+    nonCut += R / b.vf * scale;
+    visits.push({ tool: `bore Ø${d.toFixed(1)}`, feedInMin: R / b.vf * scale, rapidMm: L });
+    text += ` + bore ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min`;
+  }
+  const thread = tappedThread(row);
+  if (thread) {
+    const tp = tapFeed(family, thread);
+    cut += 2 * L / tp.vf * scale;
+    nonCut += 2 * R / tp.vf * scale;
+    visits.push({ tool: `tap ${thread}`, feedInMin: 2 * R / tp.vf * scale });
+    text += ` + tap ${thread} in and out 2 × ${L.toFixed(0)} ÷ ${tp.vf.toFixed(0)} mm/min (n ${tp.n.toFixed(0)} × ${tp.pitch} pitch)`;
+  }
+  return { min: cut + nonCut, cutMin: cut, nonCutMin: nonCut, label, visits,
+    calc: `${text} = ${f3(cut)} min cutting + ${visits.length} visit(s) × ${R} mm fed in${thread ? ' (a tap in and out)' : ''}`
+      + `${deep !== 1 ? ` + ${DEEP_HOLE_PECK - 1} × the drilling time for peck retracts (> 5×D, ${ASSUMED})` : ''} = ${f3(nonCut)} min` };
+}
+
+/**
+ * ONE instance of a feature, with the arithmetic as text. Cutting terms come from the published catalogue for the metal
+ * at the feature's own size (cutting-catalogue.ts). `coredAboveMm` (near-net): a hole above it is cast / pierced in and
+ * opened by boring passes; `stockMm` (near-net): the per-side stock a machined face / cored bore carries — passes follow
+ * it (PKG-2, CF-06). `min` = cutting + this feature's own non-cutting time at feed (the operation adds tool changes,
+ * rapids and probing — non-cut-time.ts).
+ */
+export function featureTime(row: FeatureRow, family: MaterialFamily = 'aluminium', coredAboveMm?: number, stockMm?: number): InstanceTime & { text: string } {
+  const r = featureTimeInner(row, family, coredAboveMm, stockMm);
   return { ...r, text: r.label ? `${r.label} ${r.calc}` : r.calc };
 }
 
-function featureTimeInner(row: FeatureRow, family: MaterialFamily, coredAboveMm?: number): { min: number; label: string; calc: string } {
-  const { scale, row: cat } = catalogueFor(family);
-  const ratio = MACHINABILITY_RATIO[family] ?? MACHINABILITY_RATIO.steel;
-  const A = ALLOWANCE_MIN;
+function featureTimeInner(row: FeatureRow, family: MaterialFamily, coredAboveMm?: number, stockMm?: number): InstanceTime {
+  const R = R_PLANE_MM;
   if (row.kind === 'face') {
-    const cut = faceMillCutMinutes(family, row.areaMm2 ?? 0);
-    return { min: A.face + cut.min, label: `face ${Math.round(row.areaMm2 ?? 0)} mm²:`, calc: `${A.face} + ${cut.text}` };
+    const fm = faceMillCutMinutes(family, row.areaMm2 ?? 0, stockMm);
+    return { min: fm.min + fm.clearMin, cutMin: fm.min, nonCutMin: fm.clearMin, label: `face ${Math.round(row.areaMm2 ?? 0)} mm²:`,
+      visits: [{ tool: 'face mill', feedInMin: fm.clearMin, rapidMm: fm.returnMm }], calc: fm.text };
   }
   if (row.kind === 'pocket' || row.kind === 'slot') {
     const area = Math.max(row.areaMm2 ?? 0, 1);
     const depth = Math.max(row.depthMm, 1);
-    const rough = area * depth / 1000 / millRoughEffective(family);         // floor volume at the roughing rate
-    const wallCm2 = 4 * Math.sqrt(area) * depth / 100;                       // ≈ square perimeter × depth
+    const q = millRoughInCut(family).q;
+    const roughIn = area * depth / 1000 / q;                                  // floor volume at the in-cut roughing rate
+    const air = roughIn * ROUGH_AIR_SHARE;                                    // step-downs and air moves: non-cutting
+    const wallCm2 = 4 * Math.sqrt(area) * depth / 100;                        // ≈ square perimeter × depth
     const finish = wallCm2 / sidePassCm2PerMin(family);
-    return { min: A.feature + rough + finish, label: `${row.kind}:`,
-      calc: `${A.feature} + ${(area * depth / 1000).toFixed(1)} cm³ ÷ ${millRoughEffective(family)} cm³/min + ${wallCm2.toFixed(1)} cm² walls ÷ ${sidePassCm2PerMin(family).toFixed(0)} cm²/min = ${f2(A.feature + rough + finish)} min` };
+    const feedIn = R / shoulderVf(family) * catalogueFor(family).scale;
+    const cut = roughIn + finish;
+    return { min: cut + air + feedIn, cutMin: cut, nonCutMin: air + feedIn, label: `${row.kind}:`,
+      visits: [{ tool: 'end mill', feedInMin: air + feedIn }],
+      calc: `${(area * depth / 1000).toFixed(1)} cm³ ÷ ${q.toFixed(0)} cm³/min in-cut + ${wallCm2.toFixed(1)} cm² walls ÷ ${sidePassCm2PerMin(family).toFixed(0)} cm²/min `
+        + `= ${f3(cut)} min cutting + ${ROUGH_AIR_SHARE * 100}% air moves on the roughing (${ASSUMED}) + ${R} mm fed in = ${f3(air + feedIn)} min` };
   }
   const d = row.diaMm;
   const L = Math.max(row.depthMm, 1);
   if (row.kind === 'boss') {
     const areaCm2 = Math.PI * Math.max(d, 1) * L / 100;
-    const t = A.feature + areaCm2 / turnFinishCm2PerMin(family);
-    return { min: t, label: `boss Ø${d.toFixed(1)}:`, calc: `${A.feature} + ${areaCm2.toFixed(1)} cm² ÷ ${turnFinishCm2PerMin(family).toFixed(0)} cm²/min = ${f2(t)} min` };
+    const cut = areaCm2 / turnFinishCm2PerMin(family);
+    const feedIn = R / shoulderVf(family) * catalogueFor(family).scale;
+    return { min: cut + feedIn, cutMin: cut, nonCutMin: feedIn, label: `boss Ø${d.toFixed(1)}:`, visits: [{ tool: 'end mill', feedInMin: feedIn }],
+      calc: `${areaCm2.toFixed(1)} cm² ÷ ${turnFinishCm2PerMin(family).toFixed(0)} cm²/min = ${f3(cut)} min cutting + ${R} mm fed in = ${f3(feedIn)} min` };
   }
-  // A wide, shallow "hole" is a spot-face, counterbore land or seat face: the kernel reports every cylindrical land of
-  // a stepped bore separately (a real stub axle carried eight Ø40–46 lands 2–7 mm deep). One skim is what it costs.
-  if (isLandRow(row)) {
-    const t = A.land + d * 0.004;
-    return { min: t, label: `Ø${d.toFixed(1)} land spot-faced`, calc: `${A.land} + 0.004 min/mm Ø (${ASSUMED}) = ${f2(t)} min` };
-  }
-  if (coredAboveMm !== undefined && d > coredAboveMm) {
-    // Cored / pierced: one finish-boring pass down its depth at the boring row's n·f.
-    const b = boreFeed(family, d);
-    const t = A.borePass + L / b.vf * scale;
-    return { min: t, label: `Ø${d.toFixed(1)}×${L.toFixed(0)} cored, bored`, calc: `${A.borePass} + ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min (n ${b.n.toFixed(0)} × f ${cat.bore.f})${scale !== 1 ? ` × ${+scale.toFixed(3)}` : ''} = ${f2(t)} min` };
-  }
-  // Pecking only beyond 5×D: a 4–5×D hole is standard catalogue reach (DIN 338; MVS runs 3–8×D at one feed).
-  const deep = L > 5 * Math.max(d, 1) ? DEEP_HOLE_PECK : 1;
-  let t: number; let text: string;
-  const label = `Ø${d.toFixed(1)}×${L.toFixed(0)}`;
-  if (d > HELICAL_ABOVE_MM) {
-    t = A.helical + L * HELICAL_MIN_PER_MM * ratio;
-    text = `helical-milled ${A.helical} + ${L.toFixed(0)} × ${HELICAL_MIN_PER_MM} min/mm × ${ratio} (no catalogue row read: aluminium rate × machinability ratio, ${ASSUMED})`;
-  } else {
-    const dr = drillFeed(family, d);
-    const allow = d > 6 ? A.drill : A.microDrill;
-    const cut = L / dr.vf * deep * scale;
-    t = allow + cut;
-    text = `${allow} + ${L.toFixed(0)} ÷ ${dr.vf.toFixed(0)} mm/min (n ${dr.n.toFixed(0)} × f ${dr.f.toFixed(3)})`
-      + (deep !== 1 ? ` × ${DEEP_HOLE_PECK} peck (> 5×D)` : '') + (scale !== 1 ? ` × ${+scale.toFixed(3)}` : '');
-    // A blind 13–26 mm hole is a locating or bearing bore: drilled, then one boring pass. A through hole is a clearance
-    // hole and is drilled only, whatever its depth (report standard round: a 4.2×D through hole was reamed).
-    if (d > 13 && row.through === false) {
-      const b = boreFeed(family, d);
-      const bt = A.borePass + L / b.vf * scale;
-      t += bt;
-      text += ` + bore ${A.borePass} + ${L.toFixed(0)} ÷ ${b.vf.toFixed(0)} mm/min`;
-    }
-  }
-  if (row.through === false) { t += A.blind; text += ` + ${A.blind} blind`; }
-  const thread = tappedThread(row);
-  if (thread) {
-    const tp = tapFeed(family, thread);
-    const tt = A.tap + 2 * L / tp.vf * scale;
-    t += tt;
-    text += ` + tap ${thread} ${A.tap} + 2 × ${L.toFixed(0)} ÷ ${tp.vf.toFixed(0)} mm/min (n ${tp.n.toFixed(0)} × ${tp.pitch} pitch)`;
-  }
-  return { min: t, label, calc: `${text} = ${f2(t)} min` };
+  return holeInstance(row, family, coredAboveMm, stockMm, false);
 }
 
 /** Geometry-measured machining minutes for ONE instance of a feature (aluminium unless the metal is given). */
@@ -486,19 +544,25 @@ export function computeFeatureMachining(
   const finish = opts.finishFactor ?? 1.0;
   const flags = opts.includeFlags;
 
-  // The holes machined, timed as the costing times them: coaxial steps of one bore share one approach (holeWork).
+  // The holes machined, timed as the costing times them: coaxial steps of one bore are one stepped bore (holeWork).
   const all = rows ?? [];
+  const cored = stock === 'near_net' ? opts.coredAboveMm : undefined;
+  const stockMm = stock === 'near_net' ? opts.stockMm : undefined;
   const holeIdx = all.map((_, i) => i).filter(i => all[i].kind === 'hole' && (flags ? Boolean(flags[i]) : defaultInclude(all[i], stock)));
-  const holeByRow = holeMinutesByRow(holeIdx.map(i => all[i]), family, stock === 'near_net' ? opts.coredAboveMm : undefined);
+  const holeRowsIn = holeIdx.map(i => all[i]);
+  const works = holeWork(holeRowsIn, family, cored, stockMm);
+  const holeByRow = holeRowsIn.map(() => 0);
+  for (const w of works) for (const [i, m] of w.minByRow) holeByRow[i] += m;
   const holeMin = new Map(holeIdx.map((i, k) => [i, holeByRow[k]]));
+  const visits: Visit[] = works.flatMap(w => w.visits);
   const lines: FeatureMachiningLine[] = all.map((row, i) => {
     const auto = defaultInclude(row, stock);
     const included = flags ? Boolean(flags[i]) : auto;
+    const lathe = opts.turned && row.kind === 'face';
+    const t = holeMin.has(i) || lathe ? null : featureTime(row, family, row.kind === 'hole' ? cored : undefined, stockMm);
+    if (t && included) for (let k = 0; k < row.count; k++) visits.push(...t.visits);
     // A turned part's faces are faced on the lathe (in `turned.latheMin`), not milled.
-    const minutesEach = opts.turned && row.kind === 'face' ? 0
-      : (holeMin.has(i) ? holeMin.get(i)! / Math.max(1, row.count)
-        : stock === 'near_net' && opts.coredAboveMm !== undefined
-          ? nearNetHoleMinutes(row, opts.coredAboveMm, family) : featureMinutesEach(row, family)) * finish;
+    const minutesEach = lathe ? 0 : (holeMin.has(i) ? holeMin.get(i)! / Math.max(1, row.count) : t!.min) * finish;
     return {
       faceIds: row.faceIds,
       kind: row.kind,
@@ -507,7 +571,7 @@ export function computeFeatureMachining(
       through: row.through,
       count: row.count,
       areaMm2: row.areaMm2,
-      operation: opts.turned && row.kind === 'face' ? 'Faced on the lathe' : costedOperation(row),
+      operation: lathe ? 'Faced on the lathe' : costedOperation(row),
       minutesEach: Math.round(minutesEach * 1000) / 1000,
       totalMinutes: Math.round(minutesEach * row.count * 1000) / 1000,
       volumeCm3: Math.round(featureVolumeCm3(row) * row.count * 1000) / 1000,
@@ -519,7 +583,11 @@ export function computeFeatureMachining(
   const active = lines.filter(l => l.included);
   const featureCount = active.reduce((s, l) => s + l.count, 0);
   const latheMin = opts.turned && featureCount > 0 ? opts.turned.latheMin : 0;
-  const millMinutes = active.reduce((s, l) => s + l.totalMinutes, 0);
+  // The operation's non-cutting time beyond the features' own: tool changes and the rapids at this machine (PKG-2, CF-19).
+  const nc = planNonCut(visits, opts.envelopeMm ?? null);
+  const rapid = rapidMinutes(nc.rapidMm, opts.machineId);
+  const featureMinutes = active.reduce((s, l) => s + l.totalMinutes, 0);
+  const millMinutes = featureMinutes > 0 ? featureMinutes + nc.toolChangeMin + rapid.min : 0;
   const totalMinutes = millMinutes + latheMin;
   const totalCycleHr = totalMinutes / 60;
   const materialRemovedKg = stock === 'solid_billet'

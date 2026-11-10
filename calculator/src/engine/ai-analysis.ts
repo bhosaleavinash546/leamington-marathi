@@ -555,6 +555,9 @@ export interface CADAnalysisResult {
       billetSawKerfKg?: number;
       billetHeaterMachineId?: string;
       billetHeaterCycleHr?: number;
+      /** Forge-line die setting (PKG-2, CF-22): hours a change and forgings a setting. */
+      dieSettingHr?: number;
+      dieSettingBatch?: number;
     };
     sheetMetal?: {
       thicknessMm: number;
@@ -677,7 +680,7 @@ export interface CADAnalysisResult {
     alExtrusion?: {
       alloy?: string; route?: string; areaMm2?: number; perimeterMm?: number; ccdMm?: number; voids?: number;
       minWallMm?: number; partLengthMm?: number; partWeightKg?: number; temper?: string; finish?: string;
-      finishAreaM2?: number; bends?: number; cncMinutes?: number; cncFixturings?: number; fabFeatureRows?: number;
+      finishAreaM2?: number; bends?: number; cncMinutes?: number; cncCutMinutes?: number; cncFixturings?: number; fabFeatureRows?: number;
       impactOuterDiaMm?: number; tongueRatio?: number; finishOutsideAreaM2?: number;
     };
     /** Polymer extrusion, from the rules (extrusion build, Oct 2026). */

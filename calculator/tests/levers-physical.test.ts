@@ -110,7 +110,7 @@ describe('1 — multi-cavity acts on the forming operation only, by the rules\' 
       operations: c.input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, o.partsPerCycle * 2) })),
       tooling: { ...c.input.tooling, totalToolingCost: c.input.tooling.totalToolingCost * 1.7 } }, c.lib).total;
     expect(old).toBeGreaterThan(10 * Math.max(mine, MIN_LEVER_SAVING_GBP));
-    expect(old).toBeGreaterThan(2);
+    expect(old).toBeGreaterThan(1.5);   // £2+ before PKG-2 cut the machining's fixed allowances (10 Nov 2026)
   });
 
   it('the forming tooling is the rules\' figure for the next step — a dearer pattern takes its amortised £ off the saving', () => {

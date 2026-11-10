@@ -24,6 +24,7 @@
  */
 import { activeRates } from '../../rate-context.js';
 import { CUTTING_DATA, stockSize, fromBarTurningTime } from '../../machining-time.js';
+import { rapidMinutes } from '../../non-cut-time.js';
 import { sourcesLine, TURN_ROUGH_AP_MM, ROUGH_AIR_SHARE } from '../../cutting-catalogue.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -440,8 +441,10 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
     const rootOd = Math.max(0, od.od - 4.5 * m);
     const gapCm3 = Math.PI / 4 * (od.od * od.od - rootOd * rootOd) * face / 1000 * 0.5;
     const cut = fromBarTurningTime({ family: fam, partCm3: partCm3 + gapCm3, stockCm3: shaft.stock.cm3,
-      totalAreaCm2: ctx.geo.surfaceArea?.cm2 ?? 0, turnedFraction: shaft.turnedFraction, rows });
-    const prepMinS = GEAR_BLANK.loadDatumMin + cut.lathe.totalMin + cut.mill.totalMin;
+      totalAreaCm2: ctx.geo.surfaceArea?.cm2 ?? 0, turnedFraction: shaft.turnedFraction, rows, maxDiaMm: od.od });
+    // the lathe's rapids (the shaft is turned, drilled and flatted on the CNC lathe with live tooling) — PKG-2
+    const rapid = rapidMinutes(cut.lathe.rapidMm + cut.mill.rapidMm, 'mach-lathe-cnc');
+    const prepMinS = GEAR_BLANK.loadDatumMin + cut.lathe.totalMin + cut.mill.totalMin + rapid.min;
     const materialCostS = Math.round((stockKgS * mat.pricePerKg
       - Math.max(stockKgS - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
     return {
@@ -454,7 +457,7 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
         + 'MATERIAL only — turning is costed as an operation. Replace with the forged-blank quote (and zero the turning '
         + 'cycle) when one exists.',
       prepBasis: `shaft turned from bar on the CNC lathe (live tooling for holes and flats), the machining route's own `
-        + `build-up: ${cut.lathe.basis}; ${cut.mill.basis}; tooth spaces (${fmt(gapCm3, 1)} cm³) left to the hob; `
+        + `build-up: ${cut.lathe.basis}; ${cut.mill.basis}; rapids ${rapid.text}; tooth spaces (${fmt(gapCm3, 1)} cm³) left to the hob; `
         + `+ ${GEAR_BLANK.loadDatumMin} min load/datum (engineering-typical, not sourced) = ${fmt(prepMinS, 2)} min `
         + `= ${Math.round(prepMinS * 60)} s — a process operation with machine rate, labour and OEE.`,
     };

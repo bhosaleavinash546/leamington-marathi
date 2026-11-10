@@ -21,7 +21,7 @@ import { costedNearNetRows, toolWearPerPart, SETUP_MIN_PER_FIXTURING } from '../
 import { standardBatchSize } from '../routing-optimiser.js';
 import { machiningOperationInputs } from '../modules/cast-and-machine.js';
 import {
-  nearNetCut, routingFor, buildOperationPlan, machiningNRE, cuttingMinutesOf, MACHINE_LABOUR_EFFICIENCY,
+  nearNetCut, routingFor, buildOperationPlan, machiningNRE, cuttingMinutesOf, spindleMinutesOf, MACHINE_LABOUR_EFFICIENCY,
   type NearNetCutOptions, type OperationPlan, type MachiningCut,
 } from './commodities/machining.js';
 import type { RuleContext } from './types.js';
@@ -57,8 +57,10 @@ export interface NearNetSecondary {
   toolingGBP: number;
   toolingBasis: string;
   toolWearPerPart: number;
-  /** Minutes of cutting tool wear is paid on (machine operations, not handling or bench). */
+  /** Minutes of CUTTING (chip-making) tool wear is paid on (PKG-2, CF-20). */
   cuttingMin: number;
+  /** Minutes the spindles run a part — cutting and its non-cutting time (not handling, pallet change or bench). */
+  spindleMin: number;
   /** The rows the plan machines. */
   rows: FeatureRow[];
   /** The feature table as the form and the report's feature section show it, with THIS plan's operations. */
@@ -95,6 +97,7 @@ export function nearNetSecondaryMachining(
   const machineId = o.machineId ?? primaryMachineId;
   const nre = machiningNRE(ctx, cut, routing, { ops: plan, machineId });
   const cuttingMin = cuttingMinutesOf(plan);
+  const spindleMin = spindleMinutesOf(plan);
   const wear = toolWearPerPart(cuttingMin, o.family);
   // The rules' setup time (`machining.setupTimeHr`, 3 dp) and batch (`machining.batchSize`) — as cast + machine reads them.
   const setupTimeHr = Math.round(setups * SETUP_MIN_PER_FIXTURING / 60 * 1000) / 1000;
@@ -116,6 +119,7 @@ export function nearNetSecondaryMachining(
     machineId, labourId: o.labourId ?? PLAN_CUTTING_LABOUR, stockCondition: 'near_net', family: o.family,
     includeFlags: o.includeFlags, finishFactor: o.finishFactor,
     ...(cored !== undefined ? { coredAboveMm: cored } : {}),
+    ...(cut.stock ? { stockMm: cut.stock.mm } : {}),
     ...(cut.turnedPart && cut.spindle ? { turned: { latheMachineId: 'mach-lathe-cnc', latheMin: cut.spindle.totalMin, basis: cut.spindle.basis } } : {}),
   });
   const active = display.lines.filter(l => l.included);
@@ -123,7 +127,7 @@ export function nearNetSecondaryMachining(
     ...display,
     operations,
     featureCount: active.reduce((s, l) => s + l.count, 0),
-    totalCycleHr: cuttingMin / 60,
+    totalCycleHr: spindleMin / 60,
     materialRemovedKg: 0,
     summary: active.map(featureLabel).join(', '),
   };
@@ -131,6 +135,6 @@ export function nearNetSecondaryMachining(
     operations, plan, cut, setups, machineId, routingBasis: routing.basis,
     fixtureGBP: nre.fixtureGBP, programmingGBP: nre.programmingGBP, toolingGBP: nre.fixtureGBP + nre.programmingGBP,
     toolingBasis: `${nre.fixtureBasis}; ${nre.programmingBasis}`,
-    toolWearPerPart: wear, cuttingMin, rows, result,
+    toolWearPerPart: wear, cuttingMin, spindleMin, rows, result,
   };
 }

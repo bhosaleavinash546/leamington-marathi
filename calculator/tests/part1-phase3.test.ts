@@ -121,11 +121,11 @@ describe('4. the narrow slits are costed as a slitting operation from published 
     expect(t.min).toBeCloseTo((35 + Math.sqrt(20 * 80) + 10) / vf, 9);
     expect(t.min).toBeCloseTo(0.1068, 4);
   });
-  it('the kernel\'s slits reach the costing: one slitting op on the machining centre (2 × 0.107 + one 2.2 s tool change = 0.25 min)', () => {
+  it('the kernel\'s slits reach the costing: one slitting op on the machining centre (2 × 0.107 + one 2.2 s tool change + two approaches at the VF-2 rapid = 0.26 min)', () => {
     const slit = input.operations.find(o => /^Slitting — 2 narrow slits/.test(o.operationName));
     expect(slit, ops().join(' | ')).toBeTruthy();
     expect(slit!.machineId).toBe('mach-haas-vf2');
-    expect(slit!.cycleTimeHr * 60).toBeCloseTo(0.25, 2);
+    expect(slit!.cycleTimeHr * 60).toBeCloseTo(0.258, 2);   // PKG-2: + 2 × 2 × 25 mm and the traverse at 25.4 m/min
   });
   it('the slit walls are not face-milled: the feature table has no face row on faces 28 / 30 / 39 / 40', () => {
     const faced = (GEO.featureTable ?? []).filter(x => x.kind === 'face').flatMap(x => x.faceIds ?? []);

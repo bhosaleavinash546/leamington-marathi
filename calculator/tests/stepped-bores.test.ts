@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  steppedBoreGroups, steppedBoreTime, holeWork, isLandRow, featureTime, computeFeatureMachining, ALLOWANCE_MIN,
+  steppedBoreGroups, steppedBoreTime, holeWork, isLandRow, featureTime, computeFeatureMachining,
 } from '../src/engine/feature-machining.js';
 import { holeTimes } from '../src/engine/machining-time.js';
 import { boreFeed, drillFeed } from '../src/engine/cutting-catalogue.js';
@@ -64,16 +64,17 @@ describe('a stepped bore is one piece of work', () => {
     expect(leftover[knuckle.findIndex(r => r.diaMm === 12.5 && r.depthMm === 16)]).toBe(2);
   });
 
-  it('times the knuckle hub bore with ONE approach: 0.25 + the bored step + land skims (not 4 × an approach)', () => {
+  it('times the knuckle hub bore with ONE approach: the bored step (+ its R-plane) + land skims cut by it (not 4 approaches)', () => {
     const g = steppedBoreGroups(knuckle).groups.find(x => x.some(h => h.row.diaMm === 68))!;
     const t = steppedBoreTime(g, 'steel', 25);
-    const expected = ALLOWANCE_MIN.borePass + 40.3 / boreFeed('steel', 68).vf + 0.004 * (63 + 71 + 75);
+    const expected = (40.3 + 2) / boreFeed('steel', 68).vf + 0.004 * (63 + 71 + 75);
     expect(t.min).toBeCloseTo(expected, 6);
     expect(t.bored).toBe(true);
     expect(t.stepMin.reduce((s, x) => s + x, 0)).toBeCloseTo(t.min, 9);
-    // each step on its own (the old reading) paid an approach a step
-    const separate = g.reduce((s, h) => s + featureTime(h.row, 'steel', 25).min, 0);
-    expect(separate - t.min).toBeGreaterThan(3 * 0.2 - 1e-9);
+    expect(t.visits).toHaveLength(1);                         // one tool, one approach (PKG-2: the operation pays its change)
+    // each step on its own (the old reading) was a spot-face tool and an approach a land
+    const separate = g.flatMap(h => featureTime(h.row, 'steel', 25).visits);
+    expect(separate).toHaveLength(4);
   });
 
   it('holeTimes and the feature table read the same minutes', () => {
@@ -121,7 +122,8 @@ describe('a cylinder shallower than ¼ Ø is a land, not a drilled hole', () => 
     // Ø13 × 19 + Ø14 × 1: one drill approach + the drilled length + the land skim
     const w = stepped.find(x => x.label === 'stepped bore Ø13.0×19 / Ø14.0×1.0')!;
     expect(w.count).toBe(2);
-    expect(w.minEach).toBeCloseTo(ALLOWANCE_MIN.drill + 19 / drillFeed('steel', 13).vf + 0.004 * 14, 6);
+    expect(w.minEach).toBeCloseTo((19 + 2) / drillFeed('steel', 13).vf + 0.004 * 14, 6);
+    expect(w.visits).toHaveLength(2);                         // one drill visit a bore, × 2 bores
   });
 });
 
@@ -136,7 +138,8 @@ describe('the near-net plan on the knuckle', () => {
     const without = { ...geo, featureTable: (geo.featureTable as FeatureRow[]).map(({ axes: _a, ...r }) => r) };
     const ctx0 = { ...ctx, geo: without } as RuleContext;
     const cut0 = nearNetCut(ctx0, 'steel', 'forging');
-    expect(cut.boreMin!).toBeLessThan(cut0.boreMin! - 0.5);
+    // the lands no longer read as three spot-face tools of their own (PKG-2: a tool change and an approach each)
+    expect(cut.boreMin!).toBeLessThan(cut0.boreMin! - 3 * 2.2 / 60 + 1e-6);
     expect(plan.find(p => /^Drilling/.test(p.name))!.name).toMatch(/stepped bore Ø10\.0×12 \/ Ø11\.0×21/);
   });
 });

@@ -74,7 +74,22 @@ const CAT: Record<string, { face: [number, number]; bodies: Array<[number, numbe
 };
 // Labelled assumptions (cutting-catalogue.ts): step-over 0.7·Dc, 5 mm clearance a side, 10 mm side pass, +25 % air moves,
 // 3 mm rough-turning ap, 0.10 min approach a lathe tool; ISO 261 coarse pitches by tapping drill.
-const STEP = 0.7, CLEAR = 5, SIDE_AP = 10, AIR = 0.25, TURN_AP = 3, TURN_ALLOW = 0.10;
+const STEP = 0.7, CLEAR = 5, SIDE_AP = 10, AIR = 0.25, TURN_AP = 3;
+/**
+ * PKG-2 (10 Nov 2026) — the non-cutting model, restated (non-cut-time.ts): no fixed allowance a feature; each tool visit
+ * rapids 2 × 25 mm (clearance plane), feeds 2 mm of R-plane in at its own feed (a tap in AND out), retracts out of a hole
+ * at rapid; the operation pays 2.2 s a DISTINCT tool, the traverse between a tool's visits (nearest neighbour over the
+ * kernel's axis mid-points, else (n − 1) × √(plan ÷ n)), one 12 s datum probe on a near-net part (not a turned one), and
+ * 0.8 s an index between the sides of a clamping on the HMC / 5-axis. Rapids by machine (m/min): the makers' figures.
+ * Passes from the stock (CF-06): a face rough at ap ≤ 3 (fz 0.2) then finish ap ≤ 1 (steel / iron), aluminium ⌈stock ÷ 2⌉
+ * passes; a cored bore rough at the turning rough row, ap ≤ 4 / 5 / 3 (steel / iron / Al), then finish ap ≤ 1.
+ */
+const CLEAR_PLANE = 25, R_PLANE = 2, PROBE_S = 12, INDEX_S = 0.8, LAND = 0.004, HELICAL = 0.050;
+const RAPID: Record<string, number> = { 'mach-hmc-400': 60, 'mach-haas-vf2': 25.4, 'mach-vmc3': 25.4, 'mach-drill': 25.4,
+  'mach-haas-umc500': 22.9, 'mach-vmc5': 22.9, 'mach-dmg-dmu50': 42, 'mach-lathe-cnc': 30, 'mach-mazak-qt200': 30 };
+const rapidMin = (mm: number, id: string) => (mm > 0 ? mm / ((RAPID[id] ?? 22.9) * 1000) : 0);
+const FACE_FIN_AP: Record<string, number | null> = { steel: 1.0, 'cast iron': 1.0, aluminium: null };
+const BORE_AP: Record<string, [number, number]> = { steel: [4.0, 1.0], 'cast iron': [5.0, 1.0], aluminium: [3.0, 1.0] };
 const TAP: Array<[number, number, number]> = [[2.5, 3, 0.5], [3.3, 4, 0.7], [4.2, 5, 0.8], [5.0, 6, 1.0], [6.8, 8, 1.25], [8.5, 10, 1.5], [10.2, 12, 1.75]];
 const n = (vc: number, d: number) => 1000 * vc / (Math.PI * d);
 const r1 = (x: number) => Math.round(x * 10) / 10;
@@ -106,7 +121,7 @@ const fixtureSets = (ops: Array<{ hr: number; oee: number; machineId: string; be
   const run = ops.filter(o => !o.bench && o.machineId === machineId).reduce((h, o) => h + o.hr / (o.oee > 0 ? o.oee : 1), 0);
   return Math.max(1, Math.ceil(ANNUAL * (run + setups * SETUP_MIN / 60 / batch) / avail - 1e-6));
 };
-const PECK = 1.5, TAP_APPROACH = 0.10;
+const PECK = 1.5;
 const TAP_DRILLS = TAP.map(t => t[0]);
 const CORED: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6, forging: 25 };
 const CAST_STOCK_MM: Record<string, number> = { sand_ferrous: 3.0, sand: 2.0, gravity: 1.5, investment: 1.0, hpdc: 0.5 };
@@ -161,6 +176,11 @@ const fmt = (v: unknown) => typeof v === 'number' ? (Math.abs(v) < 1e4 ? v.toFix
 const checkRel = (part: string, what: string, e: number, a: unknown) => check(part, what, e, a, Math.abs(e) * 0.005 || 1e-9);
 
 // ── The pieces, restated ──────────────────────────────────────────────────────────────────────────────────────────
+type P3 = [number, number, number];
+/** A tool visit: its tool, its non-cutting minutes at feed, its rapid inside the visit (out of a hole / back), its position. */
+interface V { tool: string; fi: number; out: number; pos: P3 | null }
+/** One instance: cutting minutes, its own non-cutting minutes at feed, its visits. */
+interface Piece { cut: number; fi: number; visits: V[] }
 function tapped(r: Row): boolean {
   return r.kind === 'hole' && r.depthMm >= 1.5 * r.diaMm && TAP_DRILLS.some(d => Math.abs(d - r.diaMm) <= 0.1);
 }
@@ -175,66 +195,77 @@ function drillVf(fam: string, d: number): number {
   return n(vc, D) * f;
 }
 const boreVf = (fam: string, d: number) => n(CAT[fam].bore[0], Math.max(d, 1)) * CAT[fam].bore[1];
-/** One face: 0.2 + passes × (√A + Dc + 2c) ÷ n·z·fz, the smallest body whose 0.7·Dc covers √A. */
-function faceMin(fam: string, area: number): number {
+const sideVf = (fam: string) => { const sd = CAT[fam].side; return n(sd.vc, sd.dc) * sd.z * sd.fz; };
+/** One face from `stock` mm a side (none → one finish pass): each pass (√A + Dc) ÷ n·z·fz cut + 2 × 5 mm at feed. */
+function facePiece(fam: string, area: number, stock?: number): Piece {
   const c = CAT[fam]; const side = Math.sqrt(Math.max(area, 1));
   const [dc, z] = c.bodies.find(b => STEP * b[0] >= side) ?? c.bodies[c.bodies.length - 1];
-  const passes = Math.max(1, Math.ceil(side / (STEP * dc) - 1e-9));
-  return 0.20 + passes * (side + dc + 2 * CLEAR) / (n(c.face[0], dc) * z * c.face[1]);
-}
-/** One feature, minutes, at the metal's catalogue row (feature-machining.ts featureTime); allowances not scaled. */
-function holeMin(r: Row, fam: string, cored?: number): number {
-  if (r.kind === 'face') return faceMin(fam, r.areaMm2 ?? 0);
-  const d = r.diaMm, L = Math.max(r.depthMm, 1);
-  if (isLand(r)) return 0.20 + d * 0.004;
-  if (cored !== undefined && d > cored) return 0.25 + L / boreVf(fam, d);
-  const deep = L > 5 * Math.max(d, 1) ? PECK : 1;
-  let t: number;
-  if (d > 26) t = 0.50 + L * 0.050 * CUT[fam].tf;
-  else {
-    t = (d > 6 ? 0.15 : 0.06) + L / drillVf(fam, d) * deep;
-    if (d > 13 && r.through === false) t += 0.25 + L / boreVf(fam, d);     // blind 13–26: a boring pass; through: drilled only
+  const across = Math.max(1, Math.ceil(side / (STEP * dc) - 1e-9));
+  const fin = FACE_FIN_AP[fam];
+  let rough = 0, finish = 1;
+  if (stock !== undefined && stock > 0) {
+    if (fin === null) finish = Math.max(1, Math.ceil(stock / c.rough[1] - 1e-9));
+    else if (stock > fin + 1e-9) rough = Math.max(1, Math.ceil((stock - fin) / c.rough[1] - 1e-9));
   }
-  if (r.through === false) t += 0.10;
-  const tp = TAP.find(x => r.depthMm >= 1.5 * d && Math.abs(x[0] - d) <= 0.1);
-  if (tp) t += TAP_APPROACH + 2 * L / (n(CAT[fam].tap, tp[1]) * tp[2]);
-  return t;
+  const vfF = n(c.face[0], dc) * z * c.face[1], vfR = n(c.face[0], dc) * z * c.rough[0];
+  const cut = (rough / vfR + finish / vfF) * across * (side + dc);
+  const fi = (rough / vfR + finish / vfF) * across * 2 * CLEAR;
+  return { cut, fi, visits: [{ tool: 'face mill', fi, out: (rough + finish - 1) * across * (side + dc + 2 * CLEAR), pos: null }] };
 }
-const nearNetHoleMin = (r: Row, fam: string, cored?: number) => holeMin(r, fam, r.kind === 'hole' ? cored : undefined);
+const holeTool = (d: number) => `drill Ø${(Math.round(d * 2) / 2).toFixed(1)}`;
+/** One hole instance (feature-machining.ts holeInstance, restated). */
+function holePiece(r: Row, fam: string, cored?: number, stock?: number, inStep = false): Piece {
+  const d = r.diaMm, L = Math.max(r.depthMm, 1);
+  if (isLand(r)) {
+    const fi = inStep ? 0 : R_PLANE / boreVf(fam, d);
+    return { cut: d * LAND, fi, visits: inStep ? [] : [{ tool: `spot face Ø${d.toFixed(1)}`, fi, out: 0, pos: null }] };
+  }
+  if (cored !== undefined && d > cored) {
+    const [rap, fap] = BORE_AP[fam];
+    const nR = stock !== undefined && stock > fap + 1e-9 ? Math.max(1, Math.ceil((stock - fap) / rap - 1e-9)) : 0;
+    const vfR = n(CAT[fam].tRough[0], Math.max(d, 1)) * CAT[fam].tRough[1], vfF = boreVf(fam, d);
+    const visits: V[] = [...Array.from({ length: nR }, () => ({ tool: `rough bore Ø${d.toFixed(1)}`, fi: R_PLANE / vfR, out: L, pos: null })),
+      { tool: `bore Ø${d.toFixed(1)}`, fi: R_PLANE / vfF, out: L, pos: null }];
+    return { cut: nR * L / vfR + L / vfF, fi: visits.reduce((x, v) => x + v.fi, 0), visits };
+  }
+  if (d > 26) {
+    const fi = R_PLANE * HELICAL * CUT[fam].tf;
+    return { cut: L * HELICAL * CUT[fam].tf, fi, visits: [{ tool: 'helical end mill', fi, out: L, pos: null }] };
+  }
+  const vf = drillVf(fam, d);
+  const deep = L > 5 * Math.max(d, 1) ? PECK : 1;
+  let cut = L / vf; const visits: V[] = [{ tool: holeTool(d), fi: R_PLANE / vf + (deep - 1) * L / vf, out: L, pos: null }];
+  if (!inStep && d > 13 && r.through === false) { cut += L / boreVf(fam, d); visits.push({ tool: `bore Ø${d.toFixed(1)}`, fi: R_PLANE / boreVf(fam, d), out: L, pos: null }); }
+  const tp = TAP.find(x => r.depthMm >= 1.5 * d && Math.abs(x[0] - d) <= 0.1);
+  if (tp) { const tvf = n(CAT[fam].tap, tp[1]) * tp[2]; cut += 2 * L / tvf; visits.push({ tool: `tap M${tp[1]}`, fi: 2 * R_PLANE / tvf, out: 0, pos: null }); }
+  return { cut, fi: visits.reduce((x, v) => x + v.fi, 0), visits };
+}
+const mid = (a: { line: string; s0: number; s1: number } | undefined): P3 | null => {
+  if (!a) return null; const v = a.line.split(',').map(Number); const m = (a.s0 + a.s1) / 2;
+  return v.length >= 6 && v.every(Number.isFinite) ? [v[0] + v[3] * m, v[1] + v[4] * m, v[2] + v[5] * m] : null;
+};
 /**
  * Hole work with STEPPED BORES (4 Nov 2026), restated: instances on one axis line (kernel `axes`), sorted along it, join
  * while the next starts within the run's end + half the Ø difference + 0.1 mm and the run has 2+ diameters. A stepped bore
- * = ONE approach (0.25 bored if any step Ø > cored, else 0.15 / 0.06 by the largest Ø) + 0.10 if no step is through +
- * each step's cut: a land 0.004 × Ø; above the cored size L ÷ bore n·f; above Ø26 L × 0.050 × tf; else L ÷ drill n·f
- * (× peck beyond 5×D) + a tap's 0.10 + 2L ÷ tap feed. Every other instance is `holeMin`. Returns all and bored minutes.
+ * = each step's own piece (a land in it is cut by the step beside it — no visit of its own); bored when a step Ø > cored.
+ * Every other instance is its `holePiece`. Returns the drilled and the bored work: cutting, own non-cutting, visits.
  */
-function holeWorkMin(rows: Row[], fam: string, cored?: number): { all: number; bored: number } {
+function holeWork(rows: Row[], fam: string, cored?: number, stock?: number): { drill: Piece; bore: Piece } {
   const holes = rows.filter(r => r.kind === 'hole');
-  const left = new Map(holes.map(r => [r, r.count]));
-  const lines = new Map<string, Array<{ r: Row; s0: number; s1: number }>>();
+  const grouped = new Map<Row, Set<number>>(holes.map(r => [r, new Set<number>()]));
+  const lines = new Map<string, Array<{ r: Row; s0: number; s1: number; k: number }>>();
   for (const r of holes) {
     if (!r.axes || r.axes.length !== r.count) continue;
-    for (const a of r.axes) (lines.get(a.line) ?? lines.set(a.line, []).get(a.line)!).push({ r, s0: Math.min(a.s0, a.s1), s1: Math.max(a.s0, a.s1) });
+    r.axes.forEach((a, k) => (lines.get(a.line) ?? lines.set(a.line, []).get(a.line)!).push({ r, s0: Math.min(a.s0, a.s1), s1: Math.max(a.s0, a.s1), k }));
   }
-  let all = 0, bored = 0;
-  const bore = (run: Array<{ r: Row }>) => {
+  const drill: Piece = { cut: 0, fi: 0, visits: [] }, bore: Piece = { cut: 0, fi: 0, visits: [] };
+  const add = (into: Piece, p: Piece, pos: P3 | null) => { into.cut += p.cut; into.fi += p.fi; into.visits.push(...p.visits.map(v => ({ ...v, pos }))); };
+  const stepped = (run: Array<{ r: Row; s0: number; s1: number; k: number }>) => {
     if (run.length < 2 || new Set(run.map(h => h.r.diaMm)).size < 2) return;
-    for (const h of run) left.set(h.r, left.get(h.r)! - 1);
+    for (const h of run) grouped.get(h.r)!.add(h.k);
     const isBored = cored !== undefined && run.some(h => h.r.diaMm > cored);
-    const maxD = Math.max(...run.map(h => h.r.diaMm));
-    let t = (isBored ? 0.25 : maxD > 6 ? 0.15 : 0.06) + (run.some(h => h.r.through === true) ? 0 : 0.10);
-    for (const { r } of run) {
-      const d = r.diaMm, L = Math.max(r.depthMm, 1);
-      if (isLand(r)) t += d * 0.004;
-      else if (cored !== undefined && d > cored) t += L / boreVf(fam, d);
-      else if (d > 26) t += L * 0.050 * CUT[fam].tf;
-      else {
-        t += L / drillVf(fam, d) * (L > 5 * Math.max(d, 1) ? PECK : 1);
-        const tp = TAP.find(x => r.depthMm >= 1.5 * d && Math.abs(x[0] - d) <= 0.1);
-        if (tp) t += TAP_APPROACH + 2 * L / (n(CAT[fam].tap, tp[1]) * tp[2]);
-      }
-    }
-    all += t; if (isBored) bored += t;
+    const pos = mid({ line: (run[0].r.axes![run[0].k]).line, s0: run[0].s0, s1: run[run.length - 1].s1 });
+    for (const { r } of run) add(isBored ? bore : drill, holePiece(r, fam, cored, stock, true), pos);
   };
   for (const list of lines.values()) {
     list.sort((a, b) => a.s0 - b.s0 || a.s1 - b.s1);
@@ -242,23 +273,46 @@ function holeWorkMin(rows: Row[], fam: string, cored?: number): { all: number; b
     for (const h of list) {
       const prev = run[run.length - 1];
       if (prev && h.s0 <= end + Math.abs(h.r.diaMm - prev.r.diaMm) / 2 + 0.1) { run.push(h); end = Math.max(end, h.s1); }
-      else { bore(run); run = [h]; end = h.s1; }
+      else { stepped(run); run = [h]; end = h.s1; }
     }
-    bore(run);
+    stepped(run);
   }
   for (const r of holes) {
-    const k = left.get(r)!; if (k <= 0) continue;
-    const t = nearNetHoleMin(r, fam, cored) * k;
-    all += t; if (cored !== undefined && r.diaMm > cored) bored += t;
+    const g = grouped.get(r)!;
+    const ks = Array.from({ length: r.count }, (_, k) => k).filter(k => !g.has(k));
+    const into = cored !== undefined && r.diaMm > cored ? bore : drill;
+    const p = holePiece(r, fam, cored, stock);
+    const withAxes = !!r.axes && r.axes.length === r.count;
+    for (const k of ks) add(into, p, withAxes ? mid(r.axes![k]) : null);
   }
-  return { all, bored };
+  return { drill, bore };
+}
+/** A group's time: cutting + own non-cutting + 2.2 s a distinct tool + probes × 12 s; its rapid mm (machine-free). */
+function groupOf(p: Piece, env: number[], extraTools = 0, probes = 0): { min: number; cut: number; rapid: number; tools: number } {
+  const by = new Map<string, V[]>();
+  for (const v of p.visits) by.set(v.tool, [...(by.get(v.tool) ?? []), v]);
+  const tools = by.size + extraTools;
+  const area = [...env].sort((a, b) => b - a).slice(0, 2).reduce((a, b) => a * b, 1);
+  let trav = 0;
+  for (const vs of by.values()) {
+    if (vs.every(v => v.pos)) {
+      const left = vs.map(v => v.pos!).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+      let cur = left.shift()!;
+      while (left.length) {
+        let bi = 0, bd = Infinity;
+        left.forEach((q, i) => { const dd = Math.hypot(cur[0] - q[0], cur[1] - q[1], cur[2] - q[2]); if (dd < bd - 1e-9) { bd = dd; bi = i; } });
+        trav += bd; cur = left.splice(bi, 1)[0];
+      }
+    } else if (vs.length > 1 && env.length >= 2) trav += (vs.length - 1) * Math.sqrt(area / vs.length);
+  }
+  const rapid = p.visits.length * 2 * CLEAR_PLANE + trav + p.visits.reduce((x, v) => x + v.out, 0);
+  return { min: p.cut + p.fi + tools * TOOL_CHANGE_S / 60 + probes * PROBE_S / 60, cut: p.cut, rapid, tools };
 }
 /** Metal inside the drilled / bored holes, cm³ — cut by the hole time, so not roughed again (finding M1). */
 const holeVolCm3 = (rows: Row[]) => PRE ? 0 : rows.filter(r => r.kind === 'hole' && !isLand(r))
   .reduce((s, r) => s + Math.PI * r.diaMm * r.diaMm / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
 const holeWallCm2 = (rows: Row[]) => rows.filter(r => r.kind === 'hole')
   .reduce((s, r) => s + Math.PI * r.diaMm * Math.max(r.depthMm, 0) * r.count, 0) / 100;
-const holeSizes = (rows: Row[]) => new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size;
 
 function cheapest(cap: string, bb: number[]): { id: string; rate: number } {
   const m = CATALOGUE.filter(c => c.cap === cap && bb.every((d, i) => d <= c.env[i]))
@@ -266,7 +320,7 @@ function cheapest(cap: string, bb: number[]): { id: string; rate: number } {
   return m[0];
 }
 
-interface Op { name: string; machineId: string; ct: number; manning: number; oee: number; labourId: string; bench?: boolean }
+interface Op { name: string; machineId: string; ct: number; manning: number; oee: number; labourId: string; bench?: boolean; cut?: number }
 
 /** The 8 buckets from the module's inputs, restated (modules/machining.ts + core.ts). */
 function stack(p: { materialId: string; netKg: number; util: number; wear: number; ops: Op[]; setupHr: number; batch: number;
@@ -339,26 +393,39 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   const WALL = new Set(['PLANE', 'CYLINDER', 'CONE', 'TORUS']);
   const wall = Math.max(0, Object.entries(by).filter(([k]) => WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100 - holeWallCm2(rows));
   const free = Object.entries(by).filter(([k]) => !WALL.has(k)).reduce((s, [, a]) => s + a, 0) / 100;
-  const roughMin = removed / millQ(family) * (1 + AIR), finishMin = wall / sideRate(family), surfMin = free / (FIN.surf / cd.tf);
-  const holesMin = holeWorkMin(rows, family).all;
-  const tools = 3 + (free > 0.5 ? 1 : 0) + holeSizes(rows);
-  const toolMin = tools * TOOL_CHANGE_S / 60;
+  const roughIn = removed / millQ(family), roughMin = roughIn * (1 + AIR), finishMin = wall / sideRate(family), surfMin = free / (FIN.surf / cd.tf);
+  // PKG-2: the milling tools (roughing, finishing, chamfer, + a ball nose when surfaced) one visit each; holes their pieces
+  const millTools = ['roughing cutter', 'finishing cutter', 'chamfer cutter', ...(free > 0.5 ? ['ball nose'] : [])];
+  const env = sorted;
+  const millG = groupOf({ cut: roughIn + finishMin + surfMin, fi: roughMin - roughIn + millTools.length * R_PLANE / sideVf(family),
+    visits: millTools.map(tool => ({ tool, fi: R_PLANE / sideVf(family), out: 0, pos: null })) }, env);
+  const hw = holeWork(rows, family);
+  const holeP: Piece = { cut: hw.drill.cut + hw.bore.cut, fi: hw.drill.fi + hw.bore.fi, visits: [...hw.drill.visits, ...hw.bore.visits] };
+  const holeG = groupOf(holeP, env);
+  const holesMin = holeG.min;
+  const tools = millG.tools + holeG.tools;
   // machining-time.ts: totalMin = r2(all); the mill content is totalMin − r2(holes)
-  const millMinExact = r2(roughMin + finishMin + surfMin + holesMin + toolMin) - r2(holesMin);
+  const millMinExact = r2(millG.min + holeG.min) - r2(holesMin);
   const holeMinR = r2(holesMin);
   const handledKg = stockCm3 * rho, hMin = handlingMin(handledKg);
 
   // Turned
-  let lathe: { total: number; basisRough: number } | null = null; let sec: { finish: number; tc: number; hole: number; total: number } | null = null;
+  let lathe: { total: number; cut: number; rapid: number } | null = null;
+  let sec: { mill: number; hole: number; total: number; cut: number; rapid: number } | null = null;
   if (turned) {
     const removedT = Math.max(0, stockCm3 - vol - holeVolCm3(rows));
     const turnedCm2 = area * turned.fraction;
-    const rough = removedT / turnQ(family), fin = turnedCm2 / turnFin(family);
-    lathe = { total: r2(rough + fin + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60), basisRough: rough };
+    const qIn = CAT[family].tRough[0] * CAT[family].tRough[1] * TURN_AP;
+    const roughIn2 = removedT / qIn, rough = removedT / turnQ(family), fin = turnedCm2 / turnFin(family);
+    const lfi = R_PLANE / (n(CAT[family].tRough[0], turned.dia) * CAT[family].tRough[1]);
+    const lg = groupOf({ cut: roughIn2 + fin, fi: rough - roughIn2 + 3 * lfi,
+      visits: ['turning rough', 'turning finish', 'groove / part-off'].map(tool => ({ tool, fi: lfi, out: 0, pos: null })) }, env);
+    lathe = { total: r2(lg.min), cut: lg.cut, rapid: Math.round(lg.rapid) };
     const other = Math.max(0, area - turnedCm2 - holeWallCm2(rows));
-    const mf = other / sideRate(family), hm = holesMin;
-    const mt = (other > 0.5 || hm > 0) ? 1 + holeSizes(rows) : 0;
-    sec = { finish: r2(mf), tc: r2(mt * TOOL_CHANGE_S / 60), hole: r2(hm), total: r2(mf + hm + mt * TOOL_CHANGE_S / 60) };
+    const mf = other / sideRate(family);
+    const mg = other > 0.5 ? groupOf({ cut: mf, fi: R_PLANE / sideVf(family), visits: [{ tool: 'end mill', fi: R_PLANE / sideVf(family), out: 0, pos: null }] }, env)
+      : { min: mf, cut: mf, rapid: 0, tools: 0 };
+    sec = { mill: mg.min, hole: holeG.min, total: r2(mg.min + holeG.min), cut: mg.cut + holeG.cut, rapid: Math.round(mg.rapid + holeG.rapid) };
   }
 
   // Routing (machine + operator, ranked)
@@ -367,28 +434,33 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   const lab = labourRate('lab-uk-skilled');
   const setupHr = SETUP_MIN / 60, hHr = hMin / 60;
   const labourOf = (cutHr: number, handHr: number) => Math.round(lab * (cutHr * CUT_MANNING + handHr) * 10_000) / 10_000;
-  const cands: Array<{ label: string; primary: string; drill: string; setups: number; machine: number; labour: number; masked?: boolean }> = [];
-  const millHr = millMinExact / 60, drillHr = holeMinR / 60;
+  const cands: Array<{ label: string; primary: string; drill: string; setups: number; machine: number; labour: number; masked?: boolean; indexes?: number }> = [];
   const drillM = cheapest('drill', sorted);
   if (turned && lathe && sec) {
     const L = cheapest('turn', sorted);
-    const secMillHr = (sec.finish + sec.tc) / 60, secDrillHr = sec.hole / 60;
-    const second = secMillHr > 0 ? cheapest('mill3', sorted) : drillM;
-    const secHr = secMillHr + secDrillHr; const setups = 2 + (secHr > 0 ? 1 : 0);
-    const cost = lathe.total / 60 * L.rate + secHr * second.rate + setups * setupHr * L.rate / batch + setups * hHr * L.rate;
-    cands.push({ label: 'turned', primary: L.id, drill: secHr > 0 ? second.id : L.id, setups, machine: cost, labour: labourOf(lathe.total / 60 + secHr, setups * hHr) });
+    const secRaw = sec.mill / 60 + sec.hole / 60;
+    const second = sec.mill > 0 ? cheapest('mill3', sorted) : drillM;
+    const secHr = secRaw > 0 ? secRaw + rapidMin(sec.rapid, second.id) / 60 : 0;
+    const latheHr = lathe.total / 60 + rapidMin(lathe.rapid, L.id) / 60;
+    const setups = 2 + (secHr > 0 ? 1 : 0);
+    const cost = latheHr * L.rate + secHr * second.rate + setups * setupHr * L.rate / batch + setups * hHr * L.rate;
+    cands.push({ label: 'turned', primary: L.id, drill: secHr > 0 ? second.id : L.id, setups, machine: cost, labour: labourOf(latheHr + secHr, setups * hHr) });
   }
-  const push = (label: string, prim: { id: string; rate: number }, drill: { id: string; rate: number } | null, setups: number, masked = false) => {
-    const dr = drillHr > 0 ? (drill ?? prim) : null;
+  const push = (label: string, prim: { id: string; rate: number }, drill: { id: string; rate: number } | null, setups: number, masked = false, indexes = 0) => {
+    const dr = holeMinR > 0 ? (drill ?? prim) : null;
+    const millHr = millMinExact > 0 ? millMinExact / 60 + rapidMin(millG.rapid, prim.id) / 60 + indexes * INDEX_S / 3600 : 0;
+    const drillHr = holeMinR > 0 ? holeMinR / 60 + rapidMin(holeG.rapid, (dr ?? prim).id) / 60 : 0;
     const cost = millHr * prim.rate + drillHr * (dr?.rate ?? 0) + setups * setupHr * prim.rate / batch
       + (masked ? setups * PALLET_S / 3600 * prim.rate : setups * hHr * prim.rate);
     // lead's merge (M4): on the masked cell the load is inside the operator's share of the cut
-    cands.push({ label, primary: prim.id, drill: dr?.id ?? prim.id, setups, machine: cost, labour: labourOf(millHr + drillHr, masked ? Math.max(0, setups * hHr - (millHr + drillHr) * CUT_MANNING) : setups * hHr), ...(masked ? { masked } : {}) });
+    cands.push({ label, primary: prim.id, drill: dr?.id ?? prim.id, setups, machine: cost, labour: labourOf(millHr + drillHr, masked ? Math.max(0, setups * hHr - (millHr + drillHr) * CUT_MANNING) : setups * hHr), ...(masked ? { masked } : {}), indexes });
   };
   const millFix = Math.max(2, dirs);
-  push('split-3axis', cheapest('mill3', sorted), drillM, millFix + (drillHr > 0 ? 1 : 0));
-  push('consolidated-5axis', cheapest('mill5', sorted), null, dirs > 1 ? 2 : 1);
-  if (!turned) push('volume-cell', cheapest('hmc', sorted), null, (dirs <= 4 ? 1 : 2) + (dirs > 1 ? 1 : 0), true);
+  push('split-3axis', cheapest('mill3', sorted), drillM, millFix + (holeMinR > 0 ? 1 : 0));
+  const five = dirs > 1 ? 2 : 1;
+  push('consolidated-5axis', cheapest('mill5', sorted), null, five, false, Math.max(0, dirs - five));
+  const clamps = dirs <= 4 ? 1 : 2;
+  if (!turned) push('volume-cell', cheapest('hmc', sorted), null, clamps + (dirs > 1 ? 1 : 0), true, Math.max(0, dirs - clamps));
   cands.sort((a, b) => (a.machine + a.labour) - (b.machine + b.labour));
   const ch = cands[0];
   for (const c of cands) {
@@ -398,23 +470,24 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(prov['mach-setup-mach'].basis)?.[1]);
   check(part, 'machine (primary)', ch.primary, prov['mach-setup-mach'].value);
 
-  // Operations
+  // Operations — each op's time at ITS machine's rapid; the cutting minutes carried for the tool wear (PKG-2)
   const ops: Op[] = [];
   const M = { labourId: 'lab-uk-skilled', manning: CUT_MANNING, oee: OEE };
   if (ch.label === 'turned' && lathe && sec) {
-    ops.push({ ...M, name: 'Turning — op 10 / op 20 from bar', machineId: ch.primary, ct: hr4(lathe.total) });
-    if (sec.total > 0) ops.push({ ...M, name: 'Mill / drill after turning', machineId: ch.drill, ct: hr4(sec.total) });
+    ops.push({ ...M, name: 'Turning — op 10 / op 20 from bar', machineId: ch.primary, ct: hr4(lathe.total + rapidMin(lathe.rapid, ch.primary)), cut: lathe.cut });
+    if (sec.total > 0) ops.push({ ...M, name: 'Mill / drill after turning', machineId: ch.drill, ct: hr4(sec.total + rapidMin(sec.rapid, ch.drill)), cut: sec.cut });
   } else {
     const dirsList = geo.setupAnalysis.principalDirections as Array<{ directionLabel: string; faceCount: number }>;
     const tot = dirsList.reduce((s, d) => s + d.faceCount, 0);
-    for (const d of dirsList) ops.push({ ...M, name: `Milling — ${d.directionLabel} (${d.faceCount} faces)`, machineId: ch.primary, ct: hr4(millMinExact * d.faceCount / tot) });
-    if (holeMinR > 0) ops.push({ ...M, name: 'Drilling', machineId: ch.drill, ct: hr4(holeMinR) });
+    const millTotal = millMinExact + rapidMin(millG.rapid, ch.primary) + (millMinExact > 0 ? (ch.indexes ?? 0) * INDEX_S / 60 : 0);
+    for (const d of dirsList) ops.push({ ...M, name: `Milling — ${d.directionLabel} (${d.faceCount} faces)`, machineId: ch.primary, ct: hr4(millTotal * d.faceCount / tot), cut: millG.cut * d.faceCount / tot });
+    if (holeMinR > 0) ops.push({ ...M, name: 'Drilling', machineId: ch.drill, ct: hr4(holeMinR + rapidMin(holeG.rapid, ch.drill)), cut: holeG.cut });
   }
   if (ch.masked) {
     ops.push({ ...M, name: 'Pallet change', machineId: ch.primary, ct: hr4(ch.setups * PALLET_S / 60) });
-    // Lead's merge (M4): the load happens during the cut — only what the operator's 0.5 share of the cut cannot cover.
-    const cutMin = ops.filter(o => !o.bench && !/^Load \/ clamp|^Pallet change/.test(o.name)).reduce((s, o) => s + o.ct * 60, 0);
-    const extra = Math.max(0, ch.setups * hMin - 0.5 * cutMin);
+    // Lead's merge (M4): the load happens during the cut — only what the operator's 0.5 share of the spindle time cannot cover.
+    const spinMin = ops.filter(o => !o.bench && !/^Load \/ clamp|^Pallet change/.test(o.name)).reduce((s, o) => s + o.ct * 60, 0);
+    const extra = Math.max(0, ch.setups * hMin - 0.5 * spinMin);
     if (extra > 0) ops.push({ name: 'Load / unload on the pallet', machineId: ch.primary, ct: hr4(extra), labourId: 'lab-uk-skilled', manning: 1, oee: 1, bench: true });
   } else {
     ops.push({ ...M, manning: 1, name: 'Load / clamp / unload', machineId: ch.primary, ct: hr4(ch.setups * hMin) });
@@ -443,11 +516,13 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   const fixture = fixtureGBP(((ch.setups - chuck) * each + chuck * FIXTURE.softJaws) * sets);
   check(part, `fixtures £ (× toolroom factor, ${sets} set(s) — one a machine)`, fixture, P.toolingCost, 0.5);
   const progHr = Math.round((PROG.perFix * ch.setups + PROG.perRow * rows.length + (free > 0.5 && surfMin > 0 ? PROG.surf : 0)) * 100) / 100;
+  void tools;
   const prog = Math.round(progHr * labourRate('lab-uk-engineer'));
   check(part, 'programming £ = h × engineer', prog, P.programmingNRE, 0.5);
-  const cutMin = ops.filter(o => !o.bench && !o.name.startsWith('Load') && !o.name.startsWith('Pallet')).reduce((s, o) => s + o.ct * 60, 0);
+  // PKG-2 (CF-20): wear on the CUTTING minutes only — not the tool changes, rapids, feed-in, indexes or handling
+  const cutMin = ops.reduce((s, o) => s + (o.cut ?? 0), 0);
   const wear = Math.round(cutMin * cd.wear * 10_000) / 10_000;
-  check(part, 'tool wear £ = cutting min × £/min', wear, P.toolWearCostPerPart);
+  check(part, 'tool wear £ = CUTTING min × £/min', wear, P.toolWearCostPerPart);
   check(part, 'amortisation volume = annual × years', ANNUAL * YEARS, P.amortizationVolume, 0);
 
   // Stack
@@ -492,47 +567,70 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
     if (dia >= 0.9 * Math.max(...perp) && (t.externalAreaMm2 ?? 0) / 100 >= 20) tp = { ext: t.externalAreaMm2 / 100, dia };
   }
   const faces = rows.filter(r => r.kind === 'face');
-  const facesMin = faces.reduce((s, r) => s + holeMin(r, family) * r.count, 0);
-  const work = holeWorkMin(rows, family, cored);
-  const allHoleMin = work.all;
-  const tools = (faces.length ? 1 : 0) + 1 + holeSizes(rows);
-  const nn = { finish: r2(facesMin), tc: r2(tools * TOOL_CHANGE_S / 60), hole: r2(allHoleMin) };
-  const boreMin = r2(work.bored);
-  const drillMin = Math.max(0, r2(nn.hole - boreMin));
-  const millMin = tp ? 0 : nn.finish + nn.tc;
-  // the kernel's narrow slits: one saw, one approach a slit, one tool change (the walls are not in the face rows)
+  const sortedBb = [geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm].sort((a: number, b: number) => b - a);
+  // PKG-2 (CF-06): the faces and cored / pierced bores are opened from the route's own stock — a casting's ISO 8062-3
+  // typical by process (sand ferrous 3, sand 2, gravity 1.5, investment 1, HPDC 0.5 mm), an impression forging's IS 3469
+  // Table 1.5 by its greatest dimension, an open-die forging's 5 mm
+  const IS3469: Array<[number, number]> = [[205, 1.5], [410, 2.5], [610, 3.0], [915, 4.0], [Infinity, 5.0]];
+  const faceStock = subtype === 'forging'
+    ? (cored === Infinity ? 5.0 : IS3469.find(([u]) => sortedBb[0] <= u)![1])
+    : (subtype === 'sand' && (family === 'steel' || family === 'cast iron') ? CAST_STOCK_MM.sand_ferrous : CAST_STOCK_MM[subtype] ?? 1.5);
+  // the face rows (a turned part's faces are on the lathe), the hole work split drilled / bored, each a group with its tool
+  // changes; the chamfer tool and the one datum probe ride the first group with work (milling → boring → drilling); a turned
+  // part is chucked on its turned faces — no probe
+  const fp: Piece = { cut: 0, fi: 0, visits: [] };
+  if (!tp) for (const r of faces) { const q = facePiece(family, r.areaMm2 ?? 0, faceStock); for (let k = 0; k < r.count; k++) { fp.cut += q.cut; fp.fi += q.fi; fp.visits.push(...q.visits); } }
+  const hw = holeWork(rows, family, cored, faceStock);
+  const first = fp.visits.length ? 'mill' : hw.bore.visits.length ? 'bore' : hw.drill.visits.length ? 'hole' : '';
+  const probes = tp ? 0 : 1;
+  const g = (k: string, pc: Piece) => groupOf(pc, sortedBb, first === k ? 1 : 0, first === k ? probes : 0);
+  const millG = g('mill', fp), boreG = g('bore', hw.bore), drillG = g('hole', hw.drill);
+  const millMin = r2(millG.min), boreMin = r2(boreG.min), drillMin = r2(drillG.min);
+  // the kernel's narrow slits: one saw, one approach a slit (a visit each), one tool change (the walls are not in the face rows)
   const slits = (geo.slits ?? []) as Array<{ widthMm: number; depthMm: number; lengthMm: number | null; rootFaceIds: number[]; wallFaceIds: number[] }>;
   const slitGroups = new Set(slits.map(x => `${x.widthMm}|${x.depthMm}|${x.lengthMm}`)).size;
-  const slitTotal = slits.length ? r2(slits.reduce((t, x) => t + slitMin(family, x), 0) + TOOL_CHANGE_S / 60) : 0;
+  const slitG = slits.length ? groupOf({ cut: slits.reduce((t2, x) => t2 + slitMin(family, x), 0), fi: 0,
+    visits: slits.map(() => ({ tool: 'slitting saw', fi: 0, out: 0, pos: null })) }, sortedBb) : null;
+  const slitTotal = slitG ? r2(slitG.min) : 0;
   const ext = (geo.turning?.externalAreaMm2 ?? 0) / 100;
   const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
   const spindleCm2 = tp ? tp.ext + facedCm2 : ext >= 20 && ext / geo.surfaceArea.cm2 >= 0.08 ? ext : 0;
   const stockMm = turnStock ?? (subtype === 'sand' && (family === 'steel' || family === 'cast iron') ? CAST_STOCK_MM.sand_ferrous : CAST_STOCK_MM[subtype] ?? 1.5);
-  const sp = spindleCm2 * stockMm / 10 / turnQ(family) + spindleCm2 / turnFin(family) + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60;
-  const spindleMin = r2(sp);
+  // the lathe: rough in-cut (vc × fn × 3 mm) + finish cut; the air share, 3 tools' feed-in at the rough feed at Ø, 3 changes
+  const qIn = CAT[family].tRough[0] * CAT[family].tRough[1] * TURN_AP;
+  const spDia = (geo.turning?.externalMaxDiaMm ?? geo.turning?.maxDiaMm ?? 0) || 50;
+  const lfi = R_PLANE / (n(CAT[family].tRough[0], spDia) * CAT[family].tRough[1]);
+  const spStock = spindleCm2 * stockMm / 10;
+  const spG = groupOf({ cut: spStock / qIn + spindleCm2 / turnFin(family), fi: spStock / turnQ(family) - spStock / qIn + 3 * lfi,
+    visits: ['turning rough', 'turning finish', 'groove / part-off'].map(tool => ({ tool, fi: lfi, out: 0, pos: null })) }, []);
+  const spindleMin = r2(spG.min), spindleRapid = Math.round(spG.rapid);
   const hMin = handlingMin(geo.volume.cm3 * DENSITY[family]);
   const dirsList = geo.setupAnalysis.principalDirections as Array<{ directionLabel: string; faceCount: number }>;
   const tot = dirsList.reduce((s, d) => s + d.faceCount, 0);
   // Routing, cost-ranked like the from-solid part (machine + operator), on the near-net conventions: held on its cast
   // datums, so the split needs one fixturing a direction (not ≥ 2) and the 5-axis one clamping; the cored bores are
-  // milled-centre time. A turned part is one direction and never the HMC cell.
-  const sortedBb = [geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm].sort((a: number, b: number) => b - a);
+  // milled-centre time. A turned part is one direction and never the HMC cell. Each candidate prices the rapids at its own
+  // machine and the HMC / 5-axis its indexes between sides (PKG-2).
   const dirs = tp ? 1 : Math.max(1, geo.setupAnalysis?.estimatedSetupCount ?? 1);
   const batch = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
-  const millHr = (millMin + boreMin + slitTotal) / 60, drillHr = drillMin / 60, setupHr = SETUP_MIN / 60, hHr = hMin / 60;
+  const millRaw = millMin + boreMin + slitTotal, millRapid = millG.rapid + boreG.rapid + (slitG?.rapid ?? 0);
+  const setupHr = SETUP_MIN / 60, hHr = hMin / 60;
   const lab = labourRate('lab-uk-skilled');
   const labourOf = (cutHr: number, handHr: number) => Math.round(lab * (cutHr * CUT_MANNING + handHr) * 10_000) / 10_000;
-  const cands: Array<{ label: string; primary: string; drill: string; setups: number; total: number; masked: boolean }> = [];
-  const push = (label: string, prim: { id: string; rate: number }, drill: { id: string; rate: number } | null, setups: number, masked = false) => {
-    const dr = drillHr > 0 ? (drill ?? prim) : null;
+  const cands: Array<{ label: string; primary: string; drill: string; setups: number; total: number; masked: boolean; indexes: number }> = [];
+  const push = (label: string, prim: { id: string; rate: number }, drill: { id: string; rate: number } | null, setups: number, masked = false, indexes = 0) => {
+    const dr = drillMin > 0 ? (drill ?? prim) : null;
+    const millHr = millRaw > 0 ? millRaw / 60 + rapidMin(millRapid, prim.id) / 60 + indexes * INDEX_S / 3600 : 0;
+    const drillHr = drillMin > 0 ? drillMin / 60 + rapidMin(drillG.rapid, (dr ?? prim).id) / 60 : 0;
     const machine = millHr * prim.rate + drillHr * (dr?.rate ?? 0) + setups * setupHr * prim.rate / batch
       + (masked ? setups * PALLET_S / 3600 * prim.rate : setups * hHr * prim.rate);
     const labour = labourOf(millHr + drillHr, masked ? Math.max(0, setups * hHr - (millHr + drillHr) * CUT_MANNING) : setups * hHr);
-    cands.push({ label, primary: prim.id, drill: dr?.id ?? prim.id, setups, total: machine + labour, masked });
+    cands.push({ label, primary: prim.id, drill: dr?.id ?? prim.id, setups, total: machine + labour, masked, indexes });
   };
-  push('split-3axis', cheapest('mill3', sortedBb), cheapest('drill', sortedBb), dirs + (drillHr > 0 ? 1 : 0));
-  push('consolidated-5axis', cheapest('mill5', sortedBb), null, 1);
-  if (ANNUAL >= 25_000 && !tp) push('volume-cell', cheapest('hmc', sortedBb), null, dirs <= 4 ? 1 : 2, true);
+  push('split-3axis', cheapest('mill3', sortedBb), cheapest('drill', sortedBb), dirs + (drillMin > 0 ? 1 : 0));
+  push('consolidated-5axis', cheapest('mill5', sortedBb), null, 1, false, Math.max(0, dirs - 1));
+  const clamps = dirs <= 4 ? 1 : 2;
+  if (ANNUAL >= 25_000 && !tp) push('volume-cell', cheapest('hmc', sortedBb), null, clamps, true, Math.max(0, dirs - clamps));
   cands.sort((a, b) => a.total - b.total);
   const ch = cands[0];
   if (mode === 'cam') {
@@ -543,32 +641,34 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
     }
     check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(routeBasis)?.[1]);
   }
-  const expected: Array<[string, number, string, number]> = [];
-  if (millMin > 0) for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
-  if (drillMin > 0) expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
-  if (boreMin > 0) expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
-  if (slitTotal > 0) expected.push(['Slitting', hr4(slitTotal), ch.primary, 0.5]);
+  // [name, hr, machine, crew, cutting min] — each op at its machine's rapid (+ the indexes on the milling), PKG-2
+  const expected: Array<[string, number, string, number, number]> = [];
+  const millTotal = millMin + rapidMin(millG.rapid, ch.primary) + (millMin > 0 ? ch.indexes * INDEX_S / 60 : 0);
+  if (millMin > 0) for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millTotal * d.faceCount / tot), ch.primary, 0.5, millG.cut * d.faceCount / tot]);
+  if (drillMin > 0) expected.push(['Drilling', hr4(drillMin + rapidMin(drillG.rapid, ch.drill)), ch.drill, 0.5, drillG.cut]);
+  if (boreMin > 0) expected.push(['Finish boring', hr4(boreMin + rapidMin(boreG.rapid, ch.primary)), ch.primary, 0.5, boreG.cut]);
+  if (slitTotal > 0) expected.push(['Slitting', hr4(slitTotal + rapidMin(slitG!.rapid, ch.primary)), ch.primary, 0.5, slitG!.cut]);
   // The lathe op is the cut; loading the part into the lathe fixture is a whole operator's (finding M3).
   if (!spindleCm2) { /* no turned axis (a bracket): no lathe op */ }
-  else if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
+  else if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5, spG.cut]);
   else {
-    expected.push([tp ? 'Turning — outside and faces' : 'Turning — spindle', hr4(spindleMin), 'mach-lathe-cnc', 0.5]);
-    expected.push(['Load / clamp / unload — lathe', hr4(hMin), 'mach-lathe-cnc', 1]);
+    expected.push([tp ? 'Turning — outside and faces' : 'Turning — spindle', hr4(spindleMin + rapidMin(spindleRapid, 'mach-lathe-cnc')), 'mach-lathe-cnc', 0.5, spG.cut]);
+    expected.push(['Load / clamp / unload — lathe', hr4(hMin), 'mach-lathe-cnc', 1, 0]);
   }
   if (ch.masked) {
-    expected.push(['Pallet change', hr4(ch.setups * PALLET_S / 60), ch.primary, 0.5]);
-    // Lead's merge (M4): only the load the operator's 0.5 share of the cut does not cover.
-    const cutMin = expected.filter(e => !/^Load \/ clamp|^Pallet change|^Deburr/.test(String(e[0]))).reduce((s, e) => s + Number(e[1]) * 60, 0);
-    const extra = Math.max(0, ch.setups * hMin - 0.5 * cutMin);
-    if (extra > 0) expected.push(['Load / unload on the pallet', hr4(extra), ch.primary, 1]);
+    expected.push(['Pallet change', hr4(ch.setups * PALLET_S / 60), ch.primary, 0.5, 0]);
+    // Lead's merge (M4): only the load the operator's 0.5 share of the spindle time does not cover.
+    const spinMin = expected.filter(e => !/^Load \/ clamp|^Pallet change|^Deburr/.test(String(e[0]))).reduce((s, e) => s + Number(e[1]) * 60, 0);
+    const extra = Math.max(0, ch.setups * hMin - 0.5 * spinMin);
+    if (extra > 0) expected.push(['Load / unload on the pallet', hr4(extra), ch.primary, 1, 0]);
   } else {
-    expected.push(['Load / clamp / unload', hr4(ch.setups * hMin), ch.primary, 1]);
+    expected.push(['Load / clamp / unload', hr4(ch.setups * hMin), ch.primary, 1, 0]);
   }
   // The deburr counts the MACHINED faces: the costed rows' B-rep faces, once each (a row without ids, one an instance).
   const ids = new Set<number>(); let unnamed = 0;
   for (const r of rows as Array<Row & { faceIds?: number[] }>) { if (r.faceIds?.length) r.faceIds.forEach(x => ids.add(x)); else unnamed += Math.max(1, r.count); }
   const machinedFaces = ids.size + unnamed + new Set(slits.flatMap(x => [...x.rootFaceIds, ...x.wallFaceIds])).size;
-  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * machinedFaces) * 100) / 100), ch.primary, 1]);
+  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * machinedFaces) * 100) / 100), ch.primary, 1, 0]);
   const lathe = spindleCm2 ? 1 : 0;
   const setups = ch.setups + lathe;
   // The ops as costed: cast + machine's plan (P.machiningOps) or the secondary machining (P.secondaryMachiningOps, the
@@ -594,9 +694,10 @@ function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' 
     check(part, `op ${name.slice(0, 40)} machine`, mach, d.machineId);
     check(part, `op ${name.slice(0, 40)} crew`, man, d.manning, 0);
   });
-  const cutMin = expected.filter(e => !/^(Load|Pallet|Deburr)/.test(e[0])).reduce((s, e) => s + e[1] * 60, 0);
+  // PKG-2 (CF-20): wear on the CUTTING minutes only — not the tool changes, rapids, feed-in, probing, indexes or handling
+  const cutMin = expected.reduce((s, e) => s + e[4], 0);
   const wear = Math.round(cutMin * cd.wear * 10_000) / 10_000;
-  check(part, 'tool wear £ = cutting min (no handling) × £/min', wear, mode === 'cam' ? P.machiningToolWearCostPerPart : P.secondaryMachiningConsumablesPerPart);
+  check(part, 'tool wear £ = CUTTING min × £/min', wear, mode === 'cam' ? P.machiningToolWearCostPerPart : P.secondaryMachiningConsumablesPerPart);
   // the cell's fixture(s) — a hydraulic tombstone fixture on the HMC, dedicated fixtures on a split / 5-axis routing — and
   // the lathe's own dedicated fixture, each a toolroom build (× the book's toolroom factor, rounded per fixture set)
   // one fixture set a machine the capacity implies (the mill on its plan ops + change-over; the lathe on its own ops)

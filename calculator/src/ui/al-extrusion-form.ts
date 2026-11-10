@@ -62,7 +62,8 @@ export function renderAlExtrusionForm(): string {
         ${['H112', 'O', 'F', 'T3', 'T3510', 'T3511', 'T4', 'T5', 'T6', 'T64', 'T66', 'T7', 'T73', 'T76', 'T8'].map(t => `<option value="${t}"${t === 'T6' ? ' selected' : ''}>${t}</option>`).join('')}
       </select></div>
       ${f('alx-bends', 'Stretch bends', '0', 'Bends after extrusion (swept bumper beams, roof rails).', '1')}
-      ${f('alx-cnc-min', 'CNC cutting (min)', '0', 'Holes, slots and end machining across the profile.')}
+      ${f('alx-cnc-min', 'CNC time (min)', '0', 'Holes, slots and end machining across the profile: cutting + tool changes, approach and rapids.')}
+      ${f('alx-cnc-cut-min', 'CNC cutting (min)', '0', 'The chip-making minutes inside the CNC time — tool wear is charged on these only.')}
       ${f('alx-cnc-fix', 'CNC set-ups', '0', 'Fixturings on the long-bed centre.', '1')}
       ${f('alx-fab-rows', 'Feature rows', '0', 'Rows to programme.', '1')}
     </div>
@@ -103,6 +104,7 @@ export function buildFromForm(r: AlFormReader, annualVolumeFallback: number): Al
     finish: (r.sel('alx-finish') || 'mill') as AlFinish, finishAreaM2: r.num('alx-finish-area'),
     ...(r.num('alx-finish-out') > 0 ? { finishOutsideAreaM2: r.num('alx-finish-out') } : {}),
     bends: Math.round(r.num('alx-bends')), cncMinutes: r.num('alx-cnc-min'),
+    ...(r.num('alx-cnc-cut-min') > 0 ? { cncCutMinutes: r.num('alx-cnc-cut-min') } : {}),
     cncFixturings: Math.round(r.num('alx-cnc-fix')), fabFeatureRows: Math.round(r.num('alx-fab-rows')),
     ...(r.num('alx-impact-dia') > 0 ? { impactOuterDiaMm: r.num('alx-impact-dia') } : {}),
   });
