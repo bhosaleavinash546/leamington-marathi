@@ -155,6 +155,7 @@
 .kd-table .is-neg { color: var(--danger); }
 .kd-table th.is-dim { font-weight: 500; }
 .kd-table .kd-total > * { font-weight: 700; border-top: 1px solid var(--border-strong); }
+.kd-table-ccy thead th { white-space: normal; vertical-align: bottom; }   /* headers wrap so the totals fit the card (F-12 follow-up) */
 .kd-table-sm { font-size: 0.76rem; }
 .kd-table-sm th, .kd-table-sm td { padding: 5px 8px; }
 .kd-records .kd-table td { white-space: nowrap; }

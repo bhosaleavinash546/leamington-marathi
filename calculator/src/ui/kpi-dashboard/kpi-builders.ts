@@ -173,13 +173,13 @@ export function operationalCardsHtml(s: DashboardSummary): string {
 
 export function currencyTotalsHtml(rows: CurrencyTotal[]): string {
   if (!rows.length) return `<p class="kd-empty-s">No current record carries a cost in this view.</p>`;
-  return `<div class="kd-table-wrap"><table class="kd-table">
+  return `<div class="kd-table-wrap"><table class="kd-table kd-table-ccy">
     <caption class="kd-visually-hidden">Totals in each original currency — currencies are never added together</caption>
-    <thead><tr><th scope="col">Currency</th><th scope="col" class="num">Records with current cost</th><th scope="col" class="num">Σ current cost</th>
-      <th scope="col" class="num">Records with should-cost</th><th scope="col" class="num">Σ should-cost</th><th scope="col" class="num">Same-currency records</th><th scope="col" class="num">Σ gap (same currency, same basis)</th></tr></thead>
+    <thead><tr><th scope="col">Currency</th><th scope="col" class="num">Records with a current cost</th><th scope="col" class="num">Σ current cost</th>
+      <th scope="col" class="num">Records with a should-cost</th><th scope="col" class="num">Σ should-cost</th><th scope="col" class="num">Same currency and terms</th><th scope="col" class="num">Σ gap (same currency and terms)</th></tr></thead>
     <tbody>${rows.map(r => `<tr><th scope="row">${esc(r.currency)} <span class="kd-muted">${esc(r.symbol)}</span></th>
-      <td class="num">${int(r.currentRecords)}</td><td class="num">${money(r.sumCurrent, r.currency)}</td>
-      <td class="num">${int(r.shouldRecords)}</td><td class="num">${money(r.sumShould, r.currency)}</td>
+      <td class="num">${int(r.currentRecords)}</td><td class="num">${r.currentRecords ? money(r.sumCurrent, r.currency) : '—'}</td>
+      <td class="num">${int(r.shouldRecords)}</td><td class="num">${r.shouldRecords ? money(r.sumShould, r.currency) : '—'}</td>
       <td class="num">${int(r.sameCcyRecords)}</td><td class="num">${r.sameCcyRecords ? money(r.sumGap, r.currency) : '—'}</td></tr>`).join('')}</tbody>
   </table></div>`;
 }
