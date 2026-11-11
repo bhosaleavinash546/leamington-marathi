@@ -232,17 +232,30 @@ export interface RecordRowView {
   fx: { current?: FxApplied | null; should?: FxApplied | null };
 }
 
-export const TABLE_COLUMNS: { key: string; label: string; sort?: string; num?: boolean }[] = [
-  { key: 'id', label: 'Costing ID', sort: 'id' }, { key: 'componentName', label: 'Component', sort: 'componentName' },
-  { key: 'partNumber', label: 'Part number', sort: 'partNumber' }, { key: 'commodity', label: 'Commodity', sort: 'commodity' },
-  { key: 'programme', label: 'Programme', sort: 'programme' }, { key: 'modelYear', label: 'MY', sort: 'modelYear' },
-  { key: 'powertrain', label: 'Powertrain', sort: 'powertrain' }, { key: 'country', label: 'Country', sort: 'country' },
-  { key: 'currentOrig', label: 'Current cost (original)', num: true }, { key: 'shouldOrig', label: 'Should-cost (original)', num: true },
-  { key: 'gbpCurrent', label: 'GBP current', sort: 'gbpCurrent', num: true }, { key: 'gbpShould', label: 'GBP should-cost', sort: 'gbpShould', num: true },
-  { key: 'gapGbp', label: 'GBP gap', sort: 'gapGbp', num: true }, { key: 'gapPct', label: 'Gap %', sort: 'gapPct', num: true },
-  { key: 'sourceTool', label: 'Tool', sort: 'sourceTool' }, { key: 'status', label: 'Status', sort: 'status' },
-  { key: 'ownerName', label: 'Created by', sort: 'ownerName' }, { key: 'costingDate', label: 'Created', sort: 'costingDate' },
-  { key: 'updatedAt', label: 'Last updated', sort: 'updatedAt' },
+/** Records table columns, most-used first (F-03): identity, then the GBP money, then status and classification,
+ *  then the original-currency values, provenance and the ID. No column removed. `cell` renders the <td> body. */
+export const TABLE_COLUMNS: { key: string; label: string; sort?: string; num?: boolean; mode?: 'gbp' | 'original'; cell: (r: RecordRowView) => string }[] = [
+  { key: 'partNumber', label: 'Part number', sort: 'partNumber',
+    cell: r => `<button type="button" class="kd-link kd-mono" data-open="${esc(r.id)}" aria-label="Open costing ${esc(r.partNumber ?? r.componentName)}">${r.partNumber ? esc(r.partNumber) : '<span class="kd-muted">no part no.</span>'}</button>${roleNote(r)}` },
+  { key: 'componentName', label: 'Component', sort: 'componentName', cell: r => `<span class="kd-cell-text" title="${esc(r.componentName)}">${esc(r.componentName)}</span>` },
+  { key: 'commodity', label: 'Commodity', sort: 'commodity', cell: r => esc(r.commodity ?? '—') },
+  { key: 'programme', label: 'Programme', sort: 'programme', cell: r => esc(r.programme ?? '—') },
+  { key: 'gapGbp', label: 'GBP gap', sort: 'gapGbp', num: true, mode: 'gbp',
+    cell: r => (r.eligible ? gbp(r.gapGbp) : `<span class="kd-muted" title="${esc(r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : '')}">${r.ineligible ? esc(INELIGIBLE_LABEL[r.ineligible]) : '—'}</span>`) },
+  { key: 'gapPct', label: 'Gap %', sort: 'gapPct', num: true, mode: 'gbp', cell: r => (r.eligible ? pct(r.gapPct) : '—') },
+  { key: 'gbpCurrent', label: 'GBP current', sort: 'gbpCurrent', num: true, mode: 'gbp', cell: r => `${gbp(r.gbpCurrent)}${fxFlag(r.fx.current)}` },
+  { key: 'gbpShould', label: 'GBP should-cost', sort: 'gbpShould', num: true, mode: 'gbp', cell: r => `${gbp(r.gbpShould)}${fxFlag(r.fx.should)}` },
+  { key: 'status', label: 'Status', sort: 'status', cell: r => statusBadge(r.status) },
+  { key: 'modelYear', label: 'MY', sort: 'modelYear', cell: r => String(r.modelYear ?? '—') },
+  { key: 'powertrain', label: 'Powertrain', sort: 'powertrain', cell: r => esc(r.powertrain ?? '—') },
+  { key: 'country', label: 'Country', sort: 'country', cell: r => esc(r.country ?? '—') },
+  { key: 'currentOrig', label: 'Current cost (original)', num: true, mode: 'original', cell: r => money(r.currentCost, r.currentCcy) },
+  { key: 'shouldOrig', label: 'Should-cost (original)', num: true, mode: 'original', cell: r => money(r.shouldCost, r.shouldCcy) },
+  { key: 'sourceTool', label: 'Tool', sort: 'sourceTool', cell: r => esc(r.sourceTool) },
+  { key: 'ownerName', label: 'Created by', sort: 'ownerName', cell: r => esc(r.ownerName) },
+  { key: 'costingDate', label: 'Created', sort: 'costingDate', cell: r => day(r.costingDate) },
+  { key: 'updatedAt', label: 'Last updated', sort: 'updatedAt', cell: r => dateTime(r.updatedAt) },
+  { key: 'id', label: 'Costing ID', sort: 'id', cell: r => `<span class="kd-mono kd-muted">${esc(r.id.replace(/^rec-/, '').slice(0, 8))}</span>` },
 ];
 
 export function statusBadge(s: RecordStatus): string {
@@ -262,20 +275,14 @@ export function recordsTableHtml(rows: RecordRowView[], sort: string, dir: 'asc'
     const active = c.sort && c.sort === sort;
     const aria = active ? ` aria-sort="${dir === 'asc' ? 'ascending' : 'descending'}"` : '';
     const inner = c.sort ? `<button type="button" class="kd-sort" data-sort="${c.sort}">${c.label}<span aria-hidden="true">${active ? (dir === 'asc' ? ' ▲' : ' ▼') : ''}</span></button>` : c.label;
-    const dim = currencyMode === 'original' && ['gbpCurrent', 'gbpShould', 'gapGbp'].includes(c.key) ? ' is-dim' : currencyMode === 'gbp' && ['currentOrig', 'shouldOrig'].includes(c.key) ? ' is-dim' : '';
+    const dim = c.mode && c.mode !== currencyMode ? ' is-dim' : '';
     return `<th scope="col"${aria} class="${c.num ? 'num' : ''}${dim}">${inner}</th>`;
   }).join('');
-  const body = rows.map(r => `<tr data-row="${esc(r.id)}">
-    <td><button type="button" class="kd-link kd-mono" data-open="${esc(r.id)}" aria-label="Open costing ${esc(r.id)}">${esc(r.id.replace(/^rec-/, '').slice(0, 8))}</button>${roleNote(r)}</td>
-    <td>${esc(r.componentName)}</td><td class="kd-mono">${esc(r.partNumber ?? '—')}</td><td>${esc(r.commodity ?? '—')}</td>
-    <td>${esc(r.programme ?? '—')}</td><td>${r.modelYear ?? '—'}</td><td>${esc(r.powertrain ?? '—')}</td><td>${esc(r.country ?? '—')}</td>
-    <td class="num">${money(r.currentCost, r.currentCcy)}</td><td class="num">${money(r.shouldCost, r.shouldCcy)}</td>
-    <td class="num">${gbp(r.gbpCurrent)}${fxFlag(r.fx.current)}</td><td class="num">${gbp(r.gbpShould)}${fxFlag(r.fx.should)}</td>
-    <td class="num${r.gapGbp !== null ? (r.gapGbp > 0 ? ' is-pos' : r.gapGbp < 0 ? ' is-neg' : '') : ''}">${r.eligible ? gbp(r.gapGbp) : `<span class="kd-muted" title="${esc(r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : '')}">${r.ineligible ? esc(INELIGIBLE_LABEL[r.ineligible]) : '—'}</span>`}</td>
-    <td class="num">${r.eligible ? pct(r.gapPct) : '—'}</td>
-    <td>${esc(r.sourceTool)}</td><td>${statusBadge(r.status)}</td><td>${esc(r.ownerName)}</td><td>${day(r.costingDate)}</td><td>${dateTime(r.updatedAt)}</td>
-  </tr>`).join('');
-  return `<div class="kd-table-wrap kd-records"><table class="kd-table">
+  const gapClass = (r: RecordRowView) => (r.gapGbp !== null ? (r.gapGbp > 0 ? ' is-pos' : r.gapGbp < 0 ? ' is-neg' : '') : '');
+  const body = rows.map(r => `<tr data-row="${esc(r.id)}">${TABLE_COLUMNS.map(c =>
+    `<td${c.num ? ` class="num${c.key === 'gapGbp' ? gapClass(r) : ''}"` : ''}>${c.cell(r)}</td>`).join('')}</tr>`).join('');
+  // The wrapper scrolls in both directions, so the header stays in view (F-09) and the part number column is pinned.
+  return `<div class="kd-table-wrap kd-records" tabindex="0" role="region" aria-label="Costing records table — scrolls in both directions"><table class="kd-table">
     <caption class="kd-visually-hidden">Costing records — select a column heading to sort</caption>
     <thead><tr>${th}</tr></thead><tbody>${body}</tbody></table></div>`;
 }

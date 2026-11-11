@@ -138,6 +138,13 @@
 .kd-table-sm { font-size: 0.76rem; }
 .kd-table-sm th, .kd-table-sm td { padding: 5px 8px; }
 .kd-records .kd-table td { white-space: nowrap; }
+/* F-09: the records table scrolls inside its own box, so the sticky header holds; F-03: part number pinned left. */
+.kd-table-wrap.kd-records { max-height: min(72vh, 760px); overflow: auto; }
+.kd-records thead th { z-index: 2; }
+.kd-records th:first-child, .kd-records td:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
+.kd-records thead th:first-child { z-index: 3; background: var(--surface-elevated); }
+.kd-records tbody tr:hover td:first-child { background: var(--surface-hover); }
+.kd-cell-text { display: inline-block; max-width: 28ch; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 .kd-scroll-sm { max-height: 300px; overflow: auto; }
 .kd-sort { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; cursor: pointer; }
 .kd-sort:hover { color: var(--text-primary); }
