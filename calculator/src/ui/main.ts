@@ -21570,8 +21570,10 @@ async function init(): Promise<void> {
     }
   });
 
-  // Initial view: show home on load
-  showHome();
+  // Initial view: show home on load — or, for a shared KPI-dashboard record link (#kpi-record=<id>), the dashboard,
+  // which then opens that record (dashboard audit F-16, approved at Stop 2). Every other address is unchanged.
+  if (/^#kpi-record=/.test(location.hash)) showKpiDashboard();
+  else showHome();
 }
 
 
