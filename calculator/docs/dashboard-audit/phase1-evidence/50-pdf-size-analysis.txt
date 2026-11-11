@@ -1,0 +1,13 @@
+file bytes 10901505
+image 1: 1000x418 filter=NONE stored=1254000 flate9=13964
+image 2: 1000x372 filter=NONE stored=1116000 flate9=14749
+image 3: 1000x494 filter=NONE stored=1482000 flate9=20786
+image 4: 1000x342 filter=NONE stored=1026000 flate9=10290
+image 5: 1000x418 filter=NONE stored=1254000 flate9=8553
+image 6: 1000x418 filter=NONE stored=1254000 flate9=19152
+image 7: 1000x418 filter=NONE stored=1254000 flate9=8935
+image 8: 1000x304 filter=NONE stored=912000 flate9=11398
+image 9: 1000x418 filter=NONE stored=1254000 flate9=9067
+images 9 image bytes 10806000 share 99.1 %
+sum flate9 116894
+Lossless Flate (zlib level 9) of the same raw RGB pixels — no quality change. Non-image content ~95 KB.

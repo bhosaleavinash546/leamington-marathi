@@ -1,0 +1,104 @@
+# Git state at end of Phase 1 audit — 2026-11-11T10:54:19Z
+branch: dashboard-audit-fixes
+HEAD: a618cd4d Rebuild dist: F-15 follow-up (first card's explanation opens to the right)
+--- git status --short
+?? calculator/docs/dashboard-audit/phase1-evidence/
+?? calculator/docs/dashboard-audit/phase1-independent-audit.md
+--- git diff --stat (tracked files)
+(empty = no tracked file changed)
+--- git stash list
+--- untracked files
+calculator/docs/dashboard-audit/phase1-evidence/00-git-state-start.txt
+calculator/docs/dashboard-audit/phase1-evidence/10-npm-test.log
+calculator/docs/dashboard-audit/phase1-evidence/11-typecheck-build.log
+calculator/docs/dashboard-audit/phase1-evidence/12-typecheck-full.log
+calculator/docs/dashboard-audit/phase1-evidence/20-probes.json
+calculator/docs/dashboard-audit/phase1-evidence/30-perf-20000.json
+calculator/docs/dashboard-audit/phase1-evidence/30-perf-50000.json
+calculator/docs/dashboard-audit/phase1-evidence/31-perf-20000.log
+calculator/docs/dashboard-audit/phase1-evidence/31-perf-50000.log
+calculator/docs/dashboard-audit/phase1-evidence/32-perf-export-rowcheck.txt
+calculator/docs/dashboard-audit/phase1-evidence/40-screenshots.log
+calculator/docs/dashboard-audit/phase1-evidence/41-e2e-live.log
+calculator/docs/dashboard-audit/phase1-evidence/50-pdf-size-analysis.txt
+calculator/docs/dashboard-audit/phase1-evidence/99-git-state-end.txt
+calculator/docs/dashboard-audit/phase1-evidence/agent-financial-review.md
+calculator/docs/dashboard-audit/phase1-evidence/agent-scratch/fin-api.ts
+calculator/docs/dashboard-audit/phase1-evidence/agent-scratch/fin-classify.ts
+calculator/docs/dashboard-audit/phase1-evidence/agent-scratch/fin-guard.ts
+calculator/docs/dashboard-audit/phase1-evidence/agent-scratch/sec-probe.ts
+calculator/docs/dashboard-audit/phase1-evidence/agent-security-review.md
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/costvision-kpi-dashboard-2026-11-11-1047.pdf
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/costvision-kpi-dashboard-2026-11-11-1047.xlsx
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/costvision-kpi-records-2026-11-11.csv
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/dashboard-dark.png
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/dashboard-light.png
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/dashboard-phone.png
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/results.json
+calculator/docs/dashboard-audit/phase1-evidence/e2e-live/server.log
+calculator/docs/dashboard-audit/phase1-evidence/evidence/screenshots-metrics.json
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/20000/costvision-kpi-dashboard-2026-11-11-1048.pdf
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/20000/costvision-kpi-dashboard-2026-11-11-1048.xlsx
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/20000/costvision-kpi-dashboard-2026-11-11-1049.pdf
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/20000/costvision-kpi-dashboard-2026-11-11-1049.xlsx
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/20000/costvision-kpi-records-2026-11-11.csv
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/50000/costvision-kpi-dashboard-2026-11-11-1050.pdf
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/50000/costvision-kpi-dashboard-2026-11-11-1050.xlsx
+calculator/docs/dashboard-audit/phase1-evidence/perf-downloads/50000/costvision-kpi-records-2026-11-11.csv
+calculator/docs/dashboard-audit/phase1-evidence/perf.ts
+calculator/docs/dashboard-audit/phase1-evidence/probes.ts
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1024-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1024-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1366-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1366-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1440-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1920-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-1920-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-390-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-390-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-768-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/dark-768-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1024-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1024-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1366-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1366-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1440-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1920-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-1920-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-390-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-390-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-768-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/light-768-full.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-cad-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-casting-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-forging-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-machining-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-pcb-image-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-plastic-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/regression-tile-sheet-metal-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-admin-dialog-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-chart-tooltip-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-chart-tooltip-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-drill-chip-light-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-empty-no-records-dark-1500.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-error-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-export-menu-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-export-menu-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-filter-popover-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-filter-popover-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-filtered-casting-dark-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-filtered-casting-light-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-loading-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-original-currency-light-1440-fold.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-pasted-record-link-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-phone-filters-open-dark-390.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-record-drawer-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-record-drawer-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-records-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-records-header-dark-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-records-header-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-records-light-1440.png
+calculator/docs/dashboard-audit/phase1-evidence/screenshots/state-save-dialog-dark-1500.png
+calculator/docs/dashboard-audit/phase1-independent-audit.md

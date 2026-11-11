@@ -1,0 +1,19 @@
+# Git state at start of Phase 1 audit — 2026-11-11T10:37:03Z
+branch: dashboard-audit-fixes
+HEAD: a618cd4d Rebuild dist: F-15 follow-up (first card's explanation opens to the right)
+--- git status --short (untracked included)
+?? calculator/docs/dashboard-audit/phase1-evidence/00-git-state-start.txt
+--- git stash list
+--- last 8 commits
+a618cd4d Rebuild dist: F-15 follow-up (first card's explanation opens to the right)
+0ebc18d0 Dashboard feature report (PDF, 24 pages, 42 live screenshots) + the tour capture script
+26f3aa3e F-15 follow-up: the first card's explanation opens to the right, not under the left navigation
+21d97a20 Dashboard audit: final regression on the last code (npm test 368 / 5,998 passed, 0 failed; typechecks exit 0)
+b041ec31 Dashboard audit: independent check + follow-ups recorded; rebuilt dist; final after screenshots
+d0c382e3 Dashboard audit harness: measure the sticky header below the filter bar; remove the cloned rows
+b8093b20 F-01, F-02, F-13, F-15 follow-ups (independent review)
+9072b877 F-17 follow-up (independent review): status chart on a one-hue ordinal ramp
+--- dist up to date with source? last commit touching src/ui or server:
+26f3aa3e F-15 follow-up: the first card's explanation opens to the right, not under the left navigation
+last commit touching dist:
+a618cd4d Rebuild dist: F-15 follow-up (first card's explanation opens to the right)

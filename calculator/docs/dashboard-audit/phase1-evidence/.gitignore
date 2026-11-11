@@ -1,0 +1,7 @@
+# Phase 1 export files — the live-run and volume-run downloads (~81 MB). They can be regenerated with
+# e2e/kpi-dashboard-live.ts and phase1-evidence/perf.ts; their sizes and row counts are recorded in
+# 30-perf-*.json, 32-perf-export-rowcheck.txt and 50-pdf-size-analysis.txt.
+perf-downloads/
+e2e-live/*.pdf
+e2e-live/*.xlsx
+e2e-live/*.csv
