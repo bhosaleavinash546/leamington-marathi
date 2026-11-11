@@ -93,6 +93,9 @@ function cardHtml(s: ChartSpec, showTable: boolean): string {
 }
 
 const label = (k: string) => (k === NOT_SET ? 'Not set' : k);
+/** Σ gap ÷ Σ current of one row, as a signed % (display of the engine's row sums). */
+export const weightedPct = (r: CategoryRow): string =>
+  r.currentGbp && r.currentGbp > 0 ? `${r.gapGbp! >= 0 ? '+' : '−'}${Math.abs((r.gapGbp! / r.currentGbp) * 100).toFixed(1)}%` : '—';
 const myLabel = (k: string) => (k === NOT_SET ? 'Not set' : `MY${k}`);
 
 function barConfig(rows: CategoryRow[], value: (r: CategoryRow) => number, opts: { horizontal?: boolean; money?: boolean; name: string; labelOf?: (k: string) => string }): () => ChartConfiguration {
@@ -154,9 +157,11 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
 
   const cost = c.costByCommodity.slice(0, 12);
   specs.push({
-    id: 'cost', title: 'Current cost v should-cost by commodity', basis: 'GBP per piece, summed over eligible current records', height: 260,
+    id: 'cost', title: 'Current cost v should-cost by commodity', basis: 'GBP per piece, summed over eligible current records · hover or Table for the weighted gap %', height: 260,
     empty: !cost.length, emptyText: finEmpty,
-    table: { head: ['Commodity', 'Eligible records', 'GBP current (Σ per piece)', 'GBP should-cost (Σ per piece)', 'GBP gap'], rows: c.costByCommodity.map(r => [label(r.key), r.eligible!, gbp(r.currentGbp), gbp(r.shouldGbp), gbp(r.gapGbp)]) },
+    // F-20: the weighted gap % per commodity (Σ gap ÷ Σ current — the engine's own row sums, same rule as the KPI card)
+    // answers "where is current above should-cost" without the bar height being driven by how many parts there are.
+    table: { head: ['Commodity', 'Eligible records', 'GBP current (Σ per piece)', 'GBP should-cost (Σ per piece)', 'GBP gap', 'Weighted gap %'], rows: c.costByCommodity.map(r => [label(r.key), r.eligible!, gbp(r.currentGbp), gbp(r.shouldGbp), gbp(r.gapGbp), weightedPct(r)]) },
     config: () => {
       const t = theme();
       const ds = (name: string, v: number[], col: string) => ({ label: name, data: v, backgroundColor: col, borderColor: t.surface, borderWidth: 2, borderRadius: 4, borderSkipped: 'start' as const, maxBarThickness: 22 });
@@ -165,7 +170,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
         data: { labels: cost.map(r => label(r.key)), datasets: [ds('Current cost', cost.map(r => r.currentGbp!), t.cat[0]), ds('Should-cost', cost.map(r => r.shouldGbp!), t.cat[1])] },
         options: {
           responsive: true, maintainAspectRatio: false, animation: false,
-          plugins: { legend: { display: true, position: 'top', align: 'end', labels: { color: t.text, boxWidth: 10, boxHeight: 10, useBorderRadius: true, borderRadius: 2 } }, tooltip: { callbacks: { label: (x: Tip) => `${x.dataset.label}: ${gbp(x.parsed.y)} (${int(cost[x.dataIndex].eligible!)} records)` } } },
+          plugins: { legend: { display: true, position: 'top', align: 'end', labels: { color: t.text, boxWidth: 10, boxHeight: 10, useBorderRadius: true, borderRadius: 2 } }, tooltip: { callbacks: { label: (x: Tip) => `${x.dataset.label}: ${gbp(x.parsed.y)} (${int(cost[x.dataIndex].eligible!)} records)`, afterBody: (items: Tip[]) => (items[0] ? `Weighted gap: ${weightedPct(cost[items[0].dataIndex])}` : '') } } },
           scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text } }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, callback: (v: unknown) => gbp(Number(v), 0) } } },
         },
       } as ChartConfiguration;

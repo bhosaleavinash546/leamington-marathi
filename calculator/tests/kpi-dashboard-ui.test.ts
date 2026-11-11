@@ -121,3 +121,12 @@ describe('F-16: record links', () => {
     expect(recordIdFromHash('#other')).toBeNull();
   });
 });
+
+describe('F-20: weighted gap % per commodity', () => {
+  it('is Σ gap ÷ Σ current of the row', async () => {
+    const { weightedPct } = await import('../src/ui/kpi-dashboard/kpi-charts');
+    expect(weightedPct({ key: 'Casting', count: 2, currentGbp: 43.432773, gapGbp: 1.523680 })).toBe('+3.5%');
+    expect(weightedPct({ key: 'Forging', count: 1, currentGbp: 14.0458, gapGbp: -1.1542 })).toBe('−8.2%');
+    expect(weightedPct({ key: 'X', count: 0, currentGbp: 0, gapGbp: 0 })).toBe('—');
+  });
+});
