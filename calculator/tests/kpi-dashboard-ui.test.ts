@@ -63,12 +63,21 @@ describe('screen builders', () => {
 });
 
 describe('Excel report', () => {
+  it('F-08: "Costing records" holds current records only; revisions and duplicates on their own sheet', async () => {
+    const recs = classifyRecords([rec('p1', { partNumber: 'P', costingDate: '2026-09-01' }), rec('p2', { partNumber: 'P', costingDate: '2026-10-01' }), rec('p3', { partNumber: 'P', ownerId: 'u2', costingDate: '2026-08-01' })]) as unknown as ExportRow[];
+    const sum = buildDashboard(recs as unknown as KpiRecord[], { ...DEFAULT_FILTERS, datePreset: 'all' }, opts);
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await (await buildExcel(sum, recs)).arrayBuffer());
+    expect(wb.getWorksheet('Costing records')!.rowCount).toBe(2);                 // header + p2
+    expect(wb.getWorksheet('Older revisions & duplicates')!.rowCount).toBe(3);    // header + p1 + p3
+  });
+
   it('has the required sheets and reconciliation formulas over the right columns', async () => {
     const blob = await buildExcel(summary, rows);
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(await blob.arrayBuffer());
     const names = wb.worksheets.map(w => w.name);
-    for (const n of ['Executive summary', 'Commodity analysis', 'Programme analysis', 'Powertrain analysis', 'Costing records', 'Data quality', 'Reconciliation', 'Original currencies', 'Method & FX']) expect(names).toContain(n);
+    for (const n of ['Executive summary', 'Commodity analysis', 'Programme analysis', 'Powertrain analysis', 'Costing records', 'Older revisions & duplicates', 'Data quality', 'Reconciliation', 'Original currencies', 'Method & FX']) expect(names).toContain(n);
     const recs = wb.getWorksheet('Costing records')!;
     const header = recs.getRow(1).values as string[];
     const letter = (h: string) => recs.getColumn(header.indexOf(h)).letter;   // values[] is 1-based

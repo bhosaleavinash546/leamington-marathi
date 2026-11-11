@@ -150,16 +150,25 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promis
   for (const t of s.currencyTotals) oc.addRow([t.currency, t.currentRecords, t.sumCurrent, t.shouldRecords, t.sumShould, t.sameCcyRecords, t.sameCcyRecords ? t.sumGap : null]);
   oc.addRow([]); oc.addRow(['Each row is in its own currency. Rows are never added together.']);
 
-  // Costing records
-  const rec = wb.addWorksheet('Costing records');
-  rec.columns = COLS.map(col => ({ width: col.w ?? 14 }));
-  head(rec, COLS.map(col => col.h));
-  for (const r of rows) {
-    const row = rec.addRow(COLS.map(col => col.get(r) ?? null));
-    COLS.forEach((col, i) => { if (col.fmt) row.getCell(i + 1).numFmt = col.fmt; });
-  }
-  rec.views = [{ state: 'frozen', ySplit: 1, xSplit: 3 }];
-  rec.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: COLS.length } };
+  // Costing records = the CURRENT records (one per application), as on the screen; older revisions and duplicate
+  // candidates go on their own sheet so summing a GBP column never counts a part twice (F-08).
+  const current = rows.filter(r => r.role === 'current');
+  const older = rows.filter(r => r.role === 'superseded' || r.role === 'duplicate');
+  const recordSheet = (name: string, list: ExportRow[]) => {
+    const ws = wb.addWorksheet(name);
+    ws.columns = COLS.map(col => ({ width: col.w ?? 14 }));
+    head(ws, COLS.map(col => col.h));
+    for (const r of list) {
+      const row = ws.addRow(COLS.map(col => col.get(r) ?? null));
+      COLS.forEach((col, i) => { if (col.fmt) row.getCell(i + 1).numFmt = col.fmt; });
+    }
+    ws.views = [{ state: 'frozen', ySplit: 1, xSplit: 3 }];
+    ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: COLS.length } };
+    return ws;
+  };
+  recordSheet('Costing records', current);
+  const old = recordSheet('Older revisions & duplicates', older);
+  if (!older.length) old.addRow(['None in this view.']);
 
   // Data quality
   const dq = wb.addWorksheet('Data quality');
@@ -171,7 +180,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promis
   const rc = wb.addWorksheet('Reconciliation');
   rc.columns = [{ width: 40 }, { width: 20 }, { width: 20 }, { width: 14 }];
   head(rc, ['Financial KPI', 'Dashboard', 'Re-added from "Costing records"', 'Match']);
-  const n = rows.length + 1;
+  const n = current.length + 1;
   const col = (h: string) => `'Costing records'!$${colLetter(COLS.findIndex(x => x.h === h))}$2:$${colLetter(COLS.findIndex(x => x.h === h))}$${Math.max(2, n)}`;
   const el = col('Financial eligibility'), cur = col('GBP current cost'), sh = col('GBP should-cost'), gap = col('GBP cost gap');
   const f = s.financial;
@@ -200,6 +209,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promis
     'Gap = GBP current − GBP should-cost. Gap % = Σ gap ÷ Σ GBP current (weighted). Missing costs are never treated as zero.',
     'One current record per application (part number × programme × model year × powertrain): the newest non-draft. Older revisions and other users\' costings of the same application are kept for activity, not financial KPIs.',
     'Records without a part number cannot be de-duplicated and are counted on their own. Names are never used to merge parts.',
+    '"Costing records" holds the current records only (one per application), so its GBP columns can be summed. Older revisions and other users\' costings of the same application are on "Older revisions & duplicates" — do not add the two sheets together.',
     'Opportunity is a sum of per-piece gaps, not programme spend or an annual saving. An annualised figure uses only admin-validated annual volumes.',
   ]) { const r = me.addRow([l]); r.getCell(1).alignment = { wrapText: true }; }
 

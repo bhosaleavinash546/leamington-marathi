@@ -280,11 +280,12 @@ async function main(): Promise<void> {
       };
       const csvPath = await dl('export-csv');
       const csv = readFileSync(csvPath, 'utf8');
-      check('CSV downloaded with every record of the view', csv.trim().split(/\r?\n/).length - 1 === sumAll.operational.totalRecords, `${csv.trim().split(/\r?\n/).length - 1} rows`);
+      check('CSV downloaded with the records table (current records, as on screen)', csv.trim().split(/\r?\n/).length - 1 === sumAll.operational.currentRecords, `${csv.trim().split(/\r?\n/).length - 1} rows`);
       const xlsxPath = await dl('export-xlsx');
       const wb = new ExcelJS.Workbook(); await wb.xlsx.readFile(xlsxPath);
       const names = wb.worksheets.map(w => w.name);
       check('Excel has the six required sheets', ['Executive summary', 'Commodity analysis', 'Programme analysis', 'Powertrain analysis', 'Costing records', 'Data quality'].every(n => names.includes(n)), names.join(', '));
+      check('Excel "Costing records" = current records; revisions on their own sheet', wb.getWorksheet('Costing records')!.rowCount - 1 === sumAll.operational.currentRecords && wb.getWorksheet('Older revisions & duplicates')!.rowCount - 1 === sumAll.operational.totalRecords - sumAll.operational.currentRecords, `${wb.getWorksheet('Costing records')!.rowCount - 1} + ${wb.getWorksheet('Older revisions & duplicates')!.rowCount - 1}`);
       // Independent re-add from the exported records (this script, not the tool)
       const ws = wb.getWorksheet('Costing records')!;
       const hdr = (ws.getRow(1).values as string[]);

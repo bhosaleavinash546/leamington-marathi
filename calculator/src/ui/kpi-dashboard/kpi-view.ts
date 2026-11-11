@@ -143,7 +143,7 @@ function shell(): string {
           <div class="kd-menu-pop" id="kd-export-menu" role="menu" hidden>
             <button type="button" role="menuitem" data-act="export-pdf">PDF dashboard report</button>
             <button type="button" role="menuitem" data-act="export-xlsx">Excel report</button>
-            <button type="button" role="menuitem" data-act="export-csv">CSV of filtered records</button></div></div>
+            <button type="button" role="menuitem" data-act="export-csv">CSV of the records table</button></div></div>
         <button type="button" class="btn btn-secondary btn-sm" data-act="admin" id="kd-admin-btn" hidden>Admin</button>
       </div>
     </div>
@@ -490,7 +490,8 @@ async function doExport(kind: 'pdf' | 'xlsx' | 'csv'): Promise<void> {
   try {
     const ex = await import('./kpi-export.js');
     if (kind === 'csv') {
-      const r = await fetch(`${apiBase}/api/kpi/records.csv?${fParam()}&scope=${S.q.scope === 'excluded' ? 'excluded' : 'all'}`);
+      // The CSV follows the table's "Which records" selector — current records unless the user chose otherwise (F-08).
+      const r = await fetch(`${apiBase}/api/kpi/records.csv?${fParam()}&scope=${S.q.scope}`);
       if (!r.ok) throw new Error(`CSV export failed (${r.status})`);
       ex.download(await r.blob(), `costvision-kpi-records-${new Date().toISOString().slice(0, 10)}.csv`);
     } else {
