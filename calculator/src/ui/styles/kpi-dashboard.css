@@ -121,8 +121,9 @@
 .kd-dim { opacity: .55; transition: opacity .15s; }
 
 /* insights */
-.kd-insights { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.kd-insight { display: flex; gap: 10px; padding: 10px 12px; border-radius: var(--radius); background: var(--bg-secondary); border: 1px solid var(--border); }
+.kd-insights { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+.kd-insight { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.kd-insight:last-child { border-bottom: 0; }
 .kd-insight-ic { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-size: 0.75rem; font-weight: 700; background: var(--info-bg); color: var(--info); }
 .kd-insight.is-good .kd-insight-ic { background: var(--success-bg); color: var(--success); }
 .kd-insight.is-warn .kd-insight-ic { background: var(--warning-bg); color: var(--warning); }
@@ -137,7 +138,9 @@
 .kd-dq-meter span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
 
 /* tables */
-.kd-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.kd-table-wrap { overflow-x: auto; border-radius: var(--radius); }
+.kd-dialog .kd-table-wrap { border: 1px solid var(--border); }
+.kd-table-wrap.kd-records { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; }
 .kd-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--text-primary); }
 .kd-table th, .kd-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
 .kd-table thead th { position: sticky; top: 0; background: var(--surface-elevated); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
@@ -177,8 +180,9 @@
 .kd-badge.is-muted { color: var(--text-muted); }
 
 /* charts */
-.kd-charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 14px; }
-.kd-chart-card { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-secondary); min-width: 0; }
+.kd-charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 28px 32px; }
+/* F-11: the section is the only card — chart blocks, insight rows and tables inside it carry no border or fill of their own. */
+.kd-chart-card { display: flex; flex-direction: column; gap: 10px; padding: 0; min-width: 0; }
 .kd-chart-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .kd-chart-h h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
 .kd-chart-h p { margin: 2px 0 0; font-size: 0.74rem; color: var(--text-muted); }
