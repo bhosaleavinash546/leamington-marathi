@@ -147,7 +147,9 @@ function shell(): string {
         <button type="button" class="btn btn-secondary btn-sm" data-act="admin" id="kd-admin-btn" hidden>Admin</button>
       </div>
     </div>
-    <section class="kd-filters" aria-label="Filters"><div class="kd-filter-row" id="kd-filter-row"></div><div id="kd-chips"></div></section>
+    <section class="kd-filters" aria-label="Filters">
+      <button type="button" class="btn btn-secondary btn-sm kd-filter-toggle" data-act="filters-toggle" aria-expanded="false" aria-controls="kd-filter-row">Filters <span id="kd-filter-count"></span></button>
+      <div class="kd-filter-row" id="kd-filter-row"></div><div id="kd-chips"></div></section>
     <p class="kd-fxnote" id="kd-fxnote"></p>
     <div id="kd-body" aria-busy="false"></div>
   </div>
@@ -176,6 +178,8 @@ function renderFilters(focusSel?: string): void {
   const opts = S.summary?.options;
   row.innerHTML = dateControlHtml(S.filters) + DIMENSIONS.map(d => multiSelectHtml(d, opts?.[d] ?? [], S.filters[d], S.openDim === d, S.openDim === d ? S.msQuery : '')).join('');
   S.root!.querySelector('#kd-chips')!.innerHTML = chipsHtml(S.filters);
+  const n = DIMENSIONS.reduce((a, d) => a + S.filters[d].length, 0) + (S.filters.datePreset !== '12m' ? 1 : 0);
+  S.root!.querySelector('#kd-filter-count')!.textContent = n ? `(${n})` : '';
   if (focusSel) S.root!.querySelector<HTMLElement>(focusSel)?.focus();
 }
 
@@ -561,6 +565,11 @@ function onClick(e: MouseEvent): void {
     if (act === 'export-menu') { toggleMenu(); return; }
     if (act.startsWith('export-')) { toggleMenu(false); void doExport(act.slice(7) as 'pdf' | 'xlsx' | 'csv'); return; }
     if (act === 'admin') { void openAdmin('fx'); return; }
+    if (act === 'filters-toggle') {   // phone / tablet: the filter controls fold behind one button (F-06)
+      const box = S.root!.querySelector<HTMLElement>('.kd-filters')!;
+      const open = !box.classList.contains('is-open');
+      box.classList.toggle('is-open', open); x.setAttribute('aria-expanded', String(open)); return;
+    }
     if (act === 'delete-ask') { x.parentElement!.querySelector<HTMLElement>('.kd-del-confirm')!.hidden = false; return; }
     if (act === 'delete-no') { x.closest<HTMLElement>('.kd-del-confirm')!.hidden = true; return; }
     if (act === 'delete-yes') {

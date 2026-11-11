@@ -52,6 +52,7 @@
 
 /* filters */
 .kd-filters { position: sticky; top: 64px; z-index: 20; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+.kd-filter-toggle { display: none !important; align-self: flex-start; }
 .kd-filter-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .kd-date { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .kd-ms { position: relative; }
@@ -263,9 +264,13 @@
 @media (max-width: 720px) {
   .kpi-view { padding: 0 max(16px, env(safe-area-inset-left, 0px)) 48px max(16px, env(safe-area-inset-right, 0px)); }
   .kd-filters { position: static; }
-  .kd-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  /* F-06: on narrow screens the ten filter controls fold behind one "Filters (n)" button; the chips stay visible. */
+  .kd-filter-toggle { display: inline-flex !important; }
+  .kd-filters:not(.is-open) .kd-filter-row { display: none; }
+  .kd-cards-fin { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .kd-cards-ops { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .kd-card { padding: 12px; } .kd-card-v { font-size: 1.25rem; }
   .kd-head-a { width: 100%; }
   .kd-dialog-in { padding: 14px; }
 }
-@media (max-width: 420px) { .kd-cards { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { .kd-cards-ops { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kd-card-v { font-size: 1.1rem; } .kd-card-l { font-size: 0.68rem; } }
