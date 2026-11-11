@@ -9,7 +9,7 @@ import {
   type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset,
 } from '../../engine/kpi-dashboard.js';
 import {
-  esc, gbp, money, pct, int, day, dateTime, fxLine, statusBadge, roleNote, kpiCardsHtml, currencyTotalsHtml, insightsHtml,
+  esc, gbp, money, pct, int, day, dateTime, fxLine, statusBadge, roleNote, financialCardsHtml, operationalCardsHtml, dqSummaryHtml, currencyTotalsHtml, insightsHtml,
   dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml,
   type RecordRowView,
 } from './kpi-builders.js';
@@ -17,6 +17,8 @@ import { renderCharts, destroyCharts } from './kpi-charts.js';
 import { showToast } from '../toast.js';
 
 const STORE_KEY = 'cv-kpi-dashboard';
+/** Charts in the 'Where to act' block (F-02): where the money is and where coverage is missing. */
+const ACT_CHARTS = ['opportunity', 'heatmap'];
 const AUTO_REFRESH_MS = 5 * 60_000;
 
 interface Meta { isAdmin: boolean; userId: string; statuses: RecordStatus[]; fxPolicy: string; currencies: { code: string; symbol: string }[] }
@@ -215,11 +217,13 @@ function renderBody(): void {
   const empty = !s.dataQuality.retrieved;
   body.innerHTML = `${S.error ? `<p class="kd-banner is-error" role="alert">Refresh failed: ${esc(S.error)} — showing the last loaded figures.</p>` : ''}
     ${empty ? `<div class="kd-empty"><p class="kd-empty-t">No costing records match these filters</p><p>Widen the reporting period or clear a filter.</p><button type="button" class="btn btn-secondary" data-clear-all>Clear all filters</button></div>` : ''}
-    <div class="${S.loading ? 'kd-dim' : ''}">
-    ${kpiCardsHtml(s)}
+    <div class="kd-content${S.loading ? ' kd-dim' : ''}">
+    ${dqSummaryHtml(s)}
+    ${financialCardsHtml(s)}
     ${S.currencyMode === 'original' ? section('ccy', 'Original-currency totals', 'Each currency on its own row — never added together. GBP KPIs above use the frozen FX snapshots.', currencyTotalsHtml(s.currencyTotals)) : ''}
-    <div class="kd-two">${section('insights', 'Management insights', `Only what the data in this view shows. Thresholds: fewer than ${3} current costings = limited coverage; a gap of 15% or more = significant.`, insightsHtml(s))}
-      ${section('dq', 'Data quality', 'What the KPIs are built on, and what was left out.', dataQualityHtml(s, !!S.meta?.isAdmin))}</div>
+    ${operationalCardsHtml(s)}
+    ${section('act', 'Where to act', 'Potential opportunity by commodity and current coverage by programme. Select a bar or cell to filter.', '<div class="kd-charts kd-charts-act" id="kd-charts-act"></div>')}
+    ${section('insights', 'Management insights', `Only what the data in this view shows. Thresholds: fewer than ${3} current costings = limited coverage; a gap of 15% or more = significant.`, insightsHtml(s))}
     ${section('charts', 'Analysis', 'Financial charts use consolidated GBP. Select a bar, segment or cell to filter.', '<div class="kd-charts" id="kd-charts"></div>')}
     ${section('drill', 'Drill-down', 'Commodity → programme → powertrain → model year → component → costing record. Active filters stay applied.', '<div id="kd-drill"></div>')}
     ${section('records', 'Costing records', '', `<div class="kd-rec-tools">
@@ -231,10 +235,14 @@ function renderBody(): void {
           <option value="all"${S.q.scope === 'all' ? ' selected' : ''}>All saves, revisions included</option>
           ${S.meta?.isAdmin ? `<option value="excluded"${S.q.scope === 'excluded' ? ' selected' : ''}>Excluded records (admin)</option>` : ''}
         </select></div><div id="kd-records"></div>`)}
+    ${section('dq', 'Data quality', 'What the KPIs are built on, and what was left out.', dataQualityHtml(s, !!S.meta?.isAdmin))}
     </div>`;
-  renderCharts(body.querySelector('#kd-charts')!, s, S.tables, (dim, value) => addFilter(dim, value), (from, to) => {
-    S.filters.datePreset = 'custom'; S.filters.dateFrom = from; S.filters.dateTo = to; filtersChanged();
-  });
+  // "Where to act" (F-02) sits directly under the KPIs; the rest of the charts follow the insights.
+  destroyCharts();
+  const onFilter = (dim: Dimension, value: string) => addFilter(dim, value);
+  const onPeriod = (from: string, to: string) => { S.filters.datePreset = 'custom'; S.filters.dateFrom = from; S.filters.dateTo = to; filtersChanged(); };
+  renderCharts(body.querySelector('#kd-charts-act')!, s, S.tables, onFilter, onPeriod, ACT_CHARTS);
+  renderCharts(body.querySelector('#kd-charts')!, s, S.tables, onFilter, onPeriod, undefined, ACT_CHARTS);
   renderDrill(); renderRecords();
 }
 
@@ -532,6 +540,7 @@ function onClick(e: MouseEvent): void {
     filtersChanged(); return;
   }
   if ((x = el('[data-status]'))) { addFilter('status', x.dataset.status!); return; }
+  if ((x = el('[data-goto]'))) { e.preventDefault(); scrollTo(x.dataset.goto!); S.root?.querySelector<HTMLElement>(`#kd-h-${x.dataset.goto}`)?.setAttribute('tabindex', '-1'); S.root?.querySelector<HTMLElement>(`#kd-h-${x.dataset.goto}`)?.focus({ preventScroll: true }); return; }
   if ((x = el('[data-scope]'))) { S.q.scope = x.dataset.scope as Scope; S.q.page = 1; renderBody(); void loadRecords().then(() => scrollTo('records')); return; }
   if ((x = el('[data-drill-key]'))) {
     S.drillPath.push({ level: S.drill.level, key: x.dataset.drillKey!, label: x.dataset.drillLabel! });

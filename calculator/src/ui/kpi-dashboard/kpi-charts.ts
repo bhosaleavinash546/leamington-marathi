@@ -260,9 +260,10 @@ const CLICK_DIM: Record<string, Dimension> = {
   modelyear: 'modelYear', tool: 'tool', 'opp-powertrain': 'powertrain',
 };
 
-export function renderCharts(host: HTMLElement, s: DashboardSummary, tables: Set<string>, onFilter: FilterClick, onPeriod: PeriodClick): void {
-  destroyCharts();
-  const specs = chartSpecs(s);
+/** Draw a group of charts into `host` (`only` = these ids, `except` = all but these). The caller destroys the
+ *  previous charts once (`destroyCharts`) before drawing its groups. */
+export function renderCharts(host: HTMLElement, s: DashboardSummary, tables: Set<string>, onFilter: FilterClick, onPeriod: PeriodClick, only?: string[], except?: string[]): void {
+  const specs = chartSpecs(s).filter(sp => (!only || only.includes(sp.id)) && (!except || !except.includes(sp.id)));
   host.innerHTML = specs.map(sp => cardHtml(sp, tables.has(sp.id))).join('');
   for (const sp of specs) {
     if (sp.empty || tables.has(sp.id) || !sp.config) continue;

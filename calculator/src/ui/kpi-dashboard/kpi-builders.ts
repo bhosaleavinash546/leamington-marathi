@@ -194,6 +194,20 @@ export function insightsHtml(s: DashboardSummary): string {
     ${i.filter ? `<button type="button" class="kd-link" data-insight="${n}">Filter to this</button>` : ''}</div></li>`).join('')}</ul>`;
 }
 
+/** One line at the top (F-02): how much of the view can be compared in GBP and what was left out; the full table is at
+ *  the bottom of the page. */
+export function dqSummaryHtml(s: DashboardSummary): string {
+  const q = s.dataQuality;
+  const cur = s.operational.currentRecords;
+  const notComparable = Math.max(0, cur - q.financiallyEligible);
+  const parts = [`<strong>${int(q.financiallyEligible)} of ${int(cur)}</strong> current record${cur === 1 ? '' : 's'} compared in GBP`];
+  if (notComparable) parts.push(`${int(notComparable)} not comparable (missing cost, FX or a different delivery basis)`);
+  if (q.duplicateCandidates) parts.push(`${int(q.duplicateCandidates)} duplicate candidate${q.duplicateCandidates === 1 ? '' : 's'}`);
+  if (q.excluded) parts.push(`${int(q.excluded)} excluded`);
+  if (q.unapprovedFx) parts.push(`${int(q.unapprovedFx)} at a reference FX rate`);
+  return `<p class="kd-dqline"><span class="kd-dqline-k">Data quality</span> ${parts.join(' · ')} · <a class="kd-link" href="#kd-sec-dq" data-goto="dq">Details</a></p>`;
+}
+
 export function dataQualityHtml(s: DashboardSummary, isAdmin: boolean): string {
   const q = s.dataQuality;
   const row = (label: string, n: number, note = '', action = '') =>
@@ -322,8 +336,12 @@ export function fxLine(fx: FxApplied | null | undefined): string {
   return `£${fx.gbpPerUnit.toPrecision(6)} per ${esc(fx.currency)} · ${esc(fx.source)} · effective ${esc(fx.effectiveDate)} · ${esc(FX_METHOD_LABEL[fx.method] ?? fx.method)} · frozen ${dateTime(fx.retrievedAt)}${fx.approved ? '' : ' · <strong>reference, not approved</strong>'}`;
 }
 
+/** Loading placeholder in the page's own shape (F-14): the financial band, the compact tiles, two chart blocks. */
 export function skeletonHtml(): string {
   const box = (cls: string) => `<div class="kd-skel ${cls}" aria-hidden="true"></div>`;
-  return `<div class="kd-cards">${Array.from({ length: 10 }, () => box('kd-skel-card')).join('')}</div>
-    <div class="kd-charts">${Array.from({ length: 4 }, () => box('kd-skel-chart')).join('')}</div>`;
+  return `<div class="kd-content" aria-label="Loading the dashboard">
+    <div class="kd-skel kd-skel-line" aria-hidden="true"></div>
+    <div class="kd-cards kd-cards-fin">${Array.from({ length: 5 }, () => box('kd-skel-card')).join('')}</div>
+    <div class="kd-cards kd-cards-ops">${Array.from({ length: 6 }, () => box('kd-skel-tile')).join('')}</div>
+    <div class="kd-charts kd-charts-act">${Array.from({ length: 2 }, () => box('kd-skel-chart')).join('')}</div></div>`;
 }

@@ -112,7 +112,10 @@
 .kd-sec-h h2 { margin: 0; font-size: 1rem; font-weight: 650; color: var(--text-primary); }
 .kd-sec-h p { margin: 3px 0 0; font-size: 0.78rem; color: var(--text-muted); max-width: 80ch; }
 .kd-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
-#kd-body > div { display: flex; flex-direction: column; gap: 16px; }
+.kd-content { display: flex; flex-direction: column; gap: 16px; }   /* F-14: only the content wrapper is a column — the card grids stay grids */
+.kd-charts-act { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.kd-dqline { margin: 0; font-size: 0.8rem; color: var(--text-secondary); }
+.kd-dqline-k { font-weight: 600; color: var(--text-primary); margin-right: 4px; }
 .kd-dim { opacity: .55; transition: opacity .15s; }
 
 /* insights */
@@ -210,7 +213,7 @@
 .kd-banner { margin: 0; padding: 8px 12px; border-radius: var(--radius); font-size: 0.82rem; }
 .kd-banner.is-error { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--text-primary); }
 .kd-skel { border-radius: var(--radius-card); background: linear-gradient(90deg, var(--bg-secondary), var(--surface-hover), var(--bg-secondary)); background-size: 200% 100%; animation: kd-shimmer 1.4s ease-in-out infinite; }
-.kd-skel-card { height: 104px; } .kd-skel-chart { height: 280px; }
+.kd-skel-card { height: 128px; } .kd-skel-tile { height: 72px; } .kd-skel-chart { height: 300px; } .kd-skel-line { height: 18px; width: 60%; }
 @keyframes kd-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 @media (prefers-reduced-motion: reduce) { .kd-skel { animation: none; } .kd-dim { transition: none; } }
 
