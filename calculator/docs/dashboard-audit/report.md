@@ -12,31 +12,32 @@ questions first. The financial position sat behind ten equal cards, "where to ac
 dialogs opened in the top-left corner, keyboard focus was lost after a filter change, the records table hid its GBP columns,
 and buttons / selects were the dashboard's own rather than the app's.
 
-Findings: **P0 0 · P1 7 · P2 12 · P3 9** (28). Approved at Stop 1: P1 + P2. **Fixed: 19** (all 7 P1, 12 P2).
-Open: 9 P3, X-01, one F-16 remainder (§F). No financial P0: the figures reconcile by hand before and after (§D).
+Findings: **P0 0 · P1 7 · P2 12 · P3 9** (28). Approved at Stop 1: P1 + P2. **Fixed: 18, partly fixed: 1 (F-02)**.
+Open: 9 P3, X-01, the F-02 remainder and one F-16 remainder (§F). No financial P0: the figures reconcile by hand before and
+after (§D).
 
 ## B. Changes made
 
 | Area | Finding | What changed | Files | Commit |
 |---|---|---|---|---|
-| Layout and hierarchy | F-01, F-18 | Two bands: "Financial position" (opportunity with annualised line, weighted gap, **unfavourable gaps as its own card**, validated, implemented) first; "Coverage and workflow" as compact tiles. Same figures. | `kpi-builders.ts`, `kpi-dashboard.css` | 7d38787e |
-| Layout and hierarchy | F-02 | Order: data-quality line → financial position → coverage → **Where to act** (opportunity by commodity + commodity × programme) → insights → other charts → drill-down → records → full data-quality table. Header compacted. | `kpi-view.ts`, `kpi-charts.ts`, `kpi-builders.ts`, css | 65897b64, 22792e11 |
+| Layout and hierarchy | F-01, F-18 | Two bands: "Financial position" (opportunity with annualised line, weighted gap, **unfavourable gaps as its own card**, validated, implemented) first; "Coverage and workflow" as compact tiles. Same figures. | `kpi-builders.ts`, `kpi-dashboard.css` | 7d38787e, b8093b20 (labels restored) |
+| Layout and hierarchy | F-02 (partly) | Order: data-quality line → financial position → coverage → **Where to act** (opportunity by commodity + commodity × programme) → insights → other charts → drill-down → records → full data-quality table. Header compacted. Data-quality line lists the engine's counts. "Where to act" heading in the first screen at 1920 / 1440; chart bodies just below the fold at 1440; below the first screen at 1366 / 1024. | `kpi-view.ts`, `kpi-charts.ts`, `kpi-builders.ts`, css | 65897b64, 22792e11, b8093b20 |
 | Layout | F-11 | One card per section; no bordered blocks inside it. | css | 90ff245b |
 | Layout | F-14 | Skeleton in the page's own shape (a flex rule had flattened the card grid). | `kpi-builders.ts`, css | 65897b64 |
 | Components | F-07 | App's `.btn / .btn-primary / .btn-secondary / .btn-sm` and styled select (`.hdr-select`) reused; filter buttons match. Follow-up: buttons no longer shrink in flex headers. | all dashboard modules, css | ac858d15, 6ca0c695 |
 | Dialogs | F-04 | `margin:auto` on `.kd-dialog` (the global reset removed dialog centring). Global reset unchanged. | css | 2414057b |
 | Filters | F-05 | Focus restored on every filter-row redraw; Escape closes the popover / menu from anywhere. | `kpi-view.ts` | 50df871b |
-| Filters | F-13 | Drill-down path shown as a removable chip; CSV / Excel / PDF apply it. | `kpi-view.ts`, `kpi-builders.ts`, `kpi-export.ts` | 9065d876 |
+| Filters | F-13 | Drill-down path shown as a removable chip; CSV / Excel / PDF apply the commodity / programme / powertrain / model-year levels to KPIs and records alike (a component level is screen-only and stated, so the workbook reconciles). | `kpi-view.ts`, `kpi-builders.ts`, `kpi-export.ts` | 9065d876, b8093b20 |
 | KPIs / currency | F-12 | "Original currency" replaces the GBP band with per-currency totals in the first screen. Follow-ups: table fits its card; empty sums show —. | `kpi-view.ts`, `kpi-builders.ts`, css | 54b5640b, fd9daaf0, a7459fd0 |
-| KPIs | F-15 | Card "i" is a real button (aria-expanded) showing the explanation. | `kpi-builders.ts`, `kpi-view.ts`, css | 6c440421 |
+| KPIs | F-15 | Card "i" is a real button (aria-expanded) showing the explanation; stays open while hovered. | `kpi-builders.ts`, `kpi-view.ts`, css | 6c440421, b8093b20 |
 | Charts | F-10 | Colour follows the entity (powertrain, status). | `kpi-charts.ts` | 064a5344 |
 | Charts | F-20 | Current v should by commodity: weighted gap % in tooltip and table. | `kpi-charts.ts` | 74ef9ba6 |
-| Colour | F-17 | Amber = data-quality warning only; statuses neutral word badges; success = opportunity, danger = unfavourable / excluded. | css, `kpi-builders.ts` | 1c92b94c |
+| Colour | F-17 | Amber = data-quality warning only; statuses neutral word badges and a one-hue ordinal ramp in the status chart (validator PASS); success = opportunity, danger = unfavourable / excluded. | css, `kpi-builders.ts`, `kpi-charts.ts` | 1c92b94c, 9072b877 |
 | Table | F-03, F-09 | Columns most-used first (part number, component, commodity, programme, GBP gap, gap %, GBP current, GBP should, status, …, ID last; none removed); part number pinned and opens the record; header sticks inside the table's own scroll box. | `kpi-builders.ts`, css | f04e27cf |
 | Exports | F-08 | Excel "Costing records" = current records; older revisions / duplicates on their own sheet; CSV follows the table's selector. | `kpi-export.ts`, `kpi-view.ts` | 354870b1 |
 | Navigation | F-16 | "Copy link" on every record; `#kpi-record=<id>` opens it; a pasted link opens the dashboard at start-up (**main.ts, approved at Stop 2**). | `kpi-view.ts`, css, `main.ts` (+4/−2) | 4a885665, e35be4ff |
 | Responsive | F-06 | ≤ 720 px: filters behind "Filters (n)", financial band two columns, tiles three (two ≤ 420 px). | `kpi-view.ts`, css | 9eeaf5ee |
-| Build | — | `calculator/dist` rebuilt from a7459fd0. | dist | 88808a91 |
+| Build | — | `calculator/dist` rebuilt (first from a7459fd0; again after the review follow-ups). | dist | 88808a91, see §G |
 
 Tests added: `tests/kpi-dashboard-ui.test.ts` (F-08, F-10, F-13, F-16, F-20). Updated to the approved rules: two
 expectations in `e2e/kpi-dashboard-live.ts` (CSV / Excel now current records) — plus one new check.
@@ -116,6 +117,9 @@ popover, menu, tooltip and dialogs; the currency switch is a radio group (arrow 
 - **X-01** — "Save to KPI Dashboard" stays in the costing results "More" menu (your decision).
 - **F-16 remainder** — a link pasted into an ALREADY-OPEN CostVision tab changes only the address hash; the dashboard does
   not open because the approved hook runs at start-up only. Needs a `hashchange` hook in `main.ts` (protected; not done).
+- **F-02 remainder** — at 1440 the "Where to act" charts start just below the first screen, and at 1366 / 1024 the whole
+  section is below it. Bringing it up further means shrinking the header / financial band or moving the coverage tiles
+  below it — a layout decision for you.
 - **Not tested live:** a drilled export (the API path is covered by unit tests); realistic data volumes in the browser (the
   fixture has 9 records; volume is covered by the 50,000-record engine test only).
 - **Observed, not changed:** below 1024 px the drill-down table (7 columns) and at 390 px the heatmap scroll sideways inside
@@ -123,4 +127,27 @@ popover, menu, tooltip and dialogs; the currency switch is a radio group (arrow 
 
 ## G. Independent check
 
-(See below — added from the separate reviewer's report.)
+A separate agent that made none of the fixes reviewed `git diff b22408a7..HEAD` against `findings.md`, the screenshots and
+the metrics (read-only).
+
+**Confirmed by the reviewer:** every code commit maps to an approved finding (none to a P3 or X-01); no protected area
+changed except the approved `main.ts` start-up hook, which matches the Stop 2 approval exactly; `src/engine`, `server`,
+`index.html`, `saas-shell.ts` and the global CSS files are untouched; no colour literal and no unscoped selector was added;
+tests 5,993 → 5,998 with no weakened assertion; F-03, F-04, F-05, F-06, F-07, F-08, F-10, F-11, F-12, F-14, F-16, F-18
+confirmed against the after evidence.
+
+**Raised by the reviewer, and what was done:**
+
+| # | Reviewer's point | Action |
+|---|---|---|
+| 1 | F-13: a component-level drill narrowed the exported records but not the exported KPIs → the workbook Reconciliation would show ✗ (path not run live). | Fixed (b8093b20): the component level is not applied to exports and the export says so. |
+| 2 | F-13: exported KPIs follow the drill while the screen's cards do not; the chip suggests a page filter. | Chip now reads "Drill-down (table and exports)"; the export states that the on-screen cards show the filters without the drill. |
+| 3 | F-17 not fixed: the status chart used the categorical palette (green on Reviewed, amber on Approved). | Fixed (9072b877): one-hue ordinal ramp, validated. |
+| 4 | F-09 evidence put the header under the sticky filter bar; F-02 overstated; cloned rows leaked into later screenshots. | Harness re-measures below the bar (headerVisible: true) and removes the clones (d0c382e3); F-02 re-graded **partly fixed**. |
+| 5 | Figures computed in the UI: `weightedPct` (F-20) and the data-quality "not comparable" subtraction. | Data-quality line now lists the engine's counts (b8093b20). `weightedPct` kept: it is the display arithmetic F-20 was approved as (Σgap ÷ Σcurrent of the engine's row sums); moving it into the engine is KPI logic (protected). |
+| 6 | F-01 shortened the labels against "same labels". | Restored (b8093b20). |
+| 7 | `calculator/dist` not rebuilt. | Not so — the reviewer's diff predates commit 88808a91 (21 dist files changed); rebuilt again after the follow-ups. |
+| 8 | F-15 tip closes when the pointer moves onto it. | Fixed (b8093b20). |
+
+After the follow-ups everything in §D was re-run on the final build: live e2e 59/59, after screenshots re-shot, 0 overflow /
+0 axe failures at all 12 views, full `npm test` and both typechecks (results in §D and `evidence/`).

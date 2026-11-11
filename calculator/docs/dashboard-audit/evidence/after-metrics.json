@@ -1,9 +1,9 @@
 {
  "phase": "after",
- "generated": "2026-11-11T09:05:35.939Z",
+ "generated": "2026-11-11T09:17:42.514Z",
  "data": "e2e/kpi-dashboard-live.ts fixture (see header)",
  "summaryAllTime": {
-  "generatedAt": "2026-11-11T09:06:12.374Z",
+  "generatedAt": "2026-11-11T09:17:48.396Z",
   "window": {
    "from": null,
    "to": null,
@@ -781,208 +781,13 @@
    "approvedRates": 4,
    "reference": "CostVision rate-book FX, Oct 2026 round (ECB reference rates; national central-bank rates where the ECB publishes none) — reference only, not an approved JLR rate"
   },
-  "refreshedAt": "2026-11-11T09:06:12.375Z",
+  "refreshedAt": "2026-11-11T09:17:48.397Z",
   "version": 11
  },
  "recordsAllTime": {
   "rows": [
    {
-    "id": "rec-00955a17-0210-4cf5-b3a0-256f1f09bfe5",
-    "sourceTool": "CostVision",
-    "sourceRef": "sc-b2",
-    "ownerId": "bob",
-    "ownerName": "Bob Baker",
-    "partNumber": "LR-HSG-220",
-    "componentName": "Inverter housing",
-    "commodity": "Casting",
-    "programme": "EMA",
-    "modelYear": 2028,
-    "powertrain": "BEV",
-    "country": "CN",
-    "status": "completed",
-    "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.254Z",
-    "updatedAt": "2026-11-11T09:06:12.254Z",
-    "shouldCost": 41,
-    "shouldCcy": "GBP",
-    "shouldTerms": "DAP",
-    "currentCost": 420,
-    "currentCcy": "CNY",
-    "currentTerms": "EXW",
-    "currentSource": null,
-    "annualVolume": null,
-    "volumeValidated": false,
-    "savingStatus": null,
-    "savingPerPiece": null,
-    "savingCcy": null,
-    "fx": {
-     "should": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
-      "method": "identity",
-      "approved": true
-     },
-     "current": {
-      "currency": "CNY",
-      "gbpPerUnit": 0.10582010582010583,
-      "source": "JLR Treasury approved 2026-11",
-      "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
-      "method": "monthly",
-      "approved": true
-     },
-     "saving": null
-    },
-    "gbpShould": 41,
-    "gbpCurrent": 44.44444444444445,
-    "gbpSaving": null,
-    "gapGbp": null,
-    "gapPct": null,
-    "role": "current",
-    "eligible": false,
-    "ineligible": "basis-mismatch",
-    "excluded": null,
-    "invalidReasons": [],
-    "duplicateOf": null,
-    "isTest": false,
-    "deleted": false,
-    "notes": ""
-   },
-   {
-    "id": "rec-01238b12-c1aa-40e8-a6dd-b4fd990ac4f2",
-    "sourceTool": "CostVision",
-    "sourceRef": "sc-1794387972074-oax87",
-    "ownerId": "alice",
-    "ownerName": "Alice Able",
-    "partNumber": "LR-BRK-001",
-    "componentName": "Al6061 Bracket",
-    "commodity": "Machining",
-    "programme": "L460",
-    "modelYear": 2027,
-    "powertrain": "BEV",
-    "country": "UK",
-    "status": "completed",
-    "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.089Z",
-    "updatedAt": "2026-11-11T09:06:12.089Z",
-    "shouldCost": 14.809092817902815,
-    "shouldCcy": "GBP",
-    "shouldTerms": "DAP",
-    "currentCost": 14.2,
-    "currentCcy": "EUR",
-    "currentTerms": "DAP",
-    "currentSource": "quote",
-    "annualVolume": 10000,
-    "volumeValidated": false,
-    "savingStatus": null,
-    "savingPerPiece": null,
-    "savingCcy": null,
-    "fx": {
-     "should": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
-      "method": "identity",
-      "approved": true
-     },
-     "current": {
-      "currency": "EUR",
-      "gbpPerUnit": 0.8403361344537815,
-      "source": "JLR Treasury approved 2026-11",
-      "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
-      "method": "monthly",
-      "approved": true
-     },
-     "saving": null
-    },
-    "gbpShould": 14.809092817902815,
-    "gbpCurrent": 11.932773109243698,
-    "gbpSaving": null,
-    "gapGbp": -2.8763197086591177,
-    "gapPct": -24.104369389467255,
-    "role": "current",
-    "eligible": true,
-    "ineligible": null,
-    "excluded": null,
-    "invalidReasons": [],
-    "duplicateOf": null,
-    "isTest": false,
-    "deleted": false,
-    "notes": ""
-   },
-   {
-    "id": "rec-1da6909b-6803-41a9-9eb0-629f8df19fff",
-    "sourceTool": "CostVision",
-    "sourceRef": "sc-b1",
-    "ownerId": "bob",
-    "ownerName": "Bob Baker",
-    "partNumber": "LR-KNK-100",
-    "componentName": "Front knuckle",
-    "commodity": "Casting",
-    "programme": "L460",
-    "modelYear": 2027,
-    "powertrain": "BEV",
-    "country": "UK",
-    "status": "completed",
-    "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.236Z",
-    "updatedAt": "2026-11-11T09:06:12.324Z",
-    "shouldCost": 27.1,
-    "shouldCcy": "GBP",
-    "shouldTerms": "DAP",
-    "currentCost": 31.5,
-    "currentCcy": "GBP",
-    "currentTerms": "DAP",
-    "currentSource": null,
-    "annualVolume": 60000,
-    "volumeValidated": true,
-    "savingStatus": null,
-    "savingPerPiece": null,
-    "savingCcy": null,
-    "fx": {
-     "should": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.236Z",
-      "method": "identity",
-      "approved": true
-     },
-     "current": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.236Z",
-      "method": "identity",
-      "approved": true
-     },
-     "saving": null
-    },
-    "gbpShould": 27.1,
-    "gbpCurrent": 31.5,
-    "gbpSaving": null,
-    "gapGbp": 4.399999999999999,
-    "gapPct": 13.968253968253963,
-    "role": "current",
-    "eligible": true,
-    "ineligible": null,
-    "excluded": null,
-    "invalidReasons": [],
-    "duplicateOf": null,
-    "isTest": false,
-    "deleted": false,
-    "notes": ""
-   },
-   {
-    "id": "rec-2b01004c-c995-4b5d-b17b-c81fb6c7407e",
+    "id": "rec-10f9539c-4fec-4465-ba38-b5ee18f4ece4",
     "sourceTool": "CostVision",
     "sourceRef": "sc-a4",
     "ownerId": "alice",
@@ -996,8 +801,8 @@
     "country": "UK",
     "status": "completed",
     "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.281Z",
-    "updatedAt": "2026-11-11T09:06:12.281Z",
+    "createdAt": "2026-11-11T09:17:48.356Z",
+    "updatedAt": "2026-11-11T09:17:48.356Z",
     "shouldCost": 6.1,
     "shouldCcy": "GBP",
     "shouldTerms": "DAP",
@@ -1016,7 +821,7 @@
       "gbpPerUnit": 1,
       "source": "GBP — no conversion",
       "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.281Z",
+      "retrievedAt": "2026-11-11T09:17:48.356Z",
       "method": "identity",
       "approved": true
      },
@@ -1039,7 +844,7 @@
     "notes": ""
    },
    {
-    "id": "rec-55fb386d-69b8-477b-876d-fa59dc28a1d7",
+    "id": "rec-18d5c9cd-92c7-4b09-8434-936385b3ec62",
     "sourceTool": "CostVision",
     "sourceRef": "sc-a2",
     "ownerId": "alice",
@@ -1053,8 +858,8 @@
     "country": "UK",
     "status": "completed",
     "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.182Z",
-    "updatedAt": "2026-11-11T09:06:12.182Z",
+    "createdAt": "2026-11-11T09:17:48.292Z",
+    "updatedAt": "2026-11-11T09:17:48.292Z",
     "shouldCost": 26.4,
     "shouldCcy": "GBP",
     "shouldTerms": "DAP",
@@ -1073,7 +878,7 @@
       "gbpPerUnit": 1,
       "source": "GBP — no conversion",
       "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.182Z",
+      "retrievedAt": "2026-11-11T09:17:48.292Z",
       "method": "identity",
       "approved": true
      },
@@ -1082,7 +887,7 @@
       "gbpPerUnit": 1,
       "source": "GBP — no conversion",
       "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.182Z",
+      "retrievedAt": "2026-11-11T09:17:48.292Z",
       "method": "identity",
       "approved": true
      },
@@ -1104,72 +909,7 @@
     "notes": ""
    },
    {
-    "id": "rec-99458790-e46d-4b3b-97e4-d1836619c160",
-    "sourceTool": "CostVision",
-    "sourceRef": "sc-a3",
-    "ownerId": "alice",
-    "ownerName": "Alice Able",
-    "partNumber": "LR-KNK-100",
-    "componentName": "Front knuckle",
-    "commodity": "Casting",
-    "programme": "L460",
-    "modelYear": 2027,
-    "powertrain": "BEV",
-    "country": "UK",
-    "status": "completed",
-    "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.223Z",
-    "updatedAt": "2026-11-11T09:06:12.223Z",
-    "shouldCost": 25.9,
-    "shouldCcy": "GBP",
-    "shouldTerms": "DAP",
-    "currentCost": 31.5,
-    "currentCcy": "GBP",
-    "currentTerms": "DAP",
-    "currentSource": null,
-    "annualVolume": null,
-    "volumeValidated": false,
-    "savingStatus": null,
-    "savingPerPiece": null,
-    "savingCcy": null,
-    "fx": {
-     "should": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.223Z",
-      "method": "identity",
-      "approved": true
-     },
-     "current": {
-      "currency": "GBP",
-      "gbpPerUnit": 1,
-      "source": "GBP — no conversion",
-      "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.223Z",
-      "method": "identity",
-      "approved": true
-     },
-     "saving": null
-    },
-    "gbpShould": 25.9,
-    "gbpCurrent": 31.5,
-    "gbpSaving": null,
-    "gapGbp": null,
-    "gapPct": null,
-    "role": "duplicate",
-    "eligible": false,
-    "ineligible": "not-current",
-    "excluded": null,
-    "invalidReasons": [],
-    "duplicateOf": "rec-1da6909b-6803-41a9-9eb0-629f8df19fff",
-    "isTest": false,
-    "deleted": false,
-    "notes": ""
-   },
-   {
-    "id": "rec-f97f2ed0-6360-4230-93e0-48648ddea934",
+    "id": "rec-361270b8-a35e-4c72-a848-ca02e4ffba60",
     "sourceTool": "CostVision",
     "sourceRef": "sc-b3",
     "ownerId": "bob",
@@ -1183,8 +923,8 @@
     "country": "UK",
     "status": "completed",
     "costingDate": "2026-11-11",
-    "createdAt": "2026-11-11T09:06:12.266Z",
-    "updatedAt": "2026-11-11T09:06:12.266Z",
+    "createdAt": "2026-11-11T09:17:48.337Z",
+    "updatedAt": "2026-11-11T09:17:48.337Z",
     "shouldCost": 15.2,
     "shouldCcy": "GBP",
     "shouldTerms": "DAP",
@@ -1203,7 +943,7 @@
       "gbpPerUnit": 1,
       "source": "GBP — no conversion",
       "effectiveDate": "2026-11-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
       "method": "identity",
       "approved": true
      },
@@ -1212,7 +952,7 @@
       "gbpPerUnit": 0.7633587786259541,
       "source": "JLR Treasury approved 2026-11",
       "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.348Z",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
       "method": "monthly",
       "approved": true
      },
@@ -1234,7 +974,267 @@
     "notes": ""
    },
    {
-    "id": "rec-45e550fd-3499-4bbb-ba9f-81109641e162",
+    "id": "rec-56d5547b-071a-46d5-b66f-7c456d08cc85",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-b2",
+    "ownerId": "bob",
+    "ownerName": "Bob Baker",
+    "partNumber": "LR-HSG-220",
+    "componentName": "Inverter housing",
+    "commodity": "Casting",
+    "programme": "EMA",
+    "modelYear": 2028,
+    "powertrain": "BEV",
+    "country": "CN",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T09:17:48.330Z",
+    "updatedAt": "2026-11-11T09:17:48.330Z",
+    "shouldCost": 41,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 420,
+    "currentCcy": "CNY",
+    "currentTerms": "EXW",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "CNY",
+      "gbpPerUnit": 0.10582010582010583,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 41,
+    "gbpCurrent": 44.44444444444445,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "current",
+    "eligible": false,
+    "ineligible": "basis-mismatch",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-aea9b3b1-302c-4507-83d9-4ee6fbed70a5",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-b1",
+    "ownerId": "bob",
+    "ownerName": "Bob Baker",
+    "partNumber": "LR-KNK-100",
+    "componentName": "Front knuckle",
+    "commodity": "Casting",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T09:17:48.322Z",
+    "updatedAt": "2026-11-11T09:17:48.365Z",
+    "shouldCost": 27.1,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 31.5,
+    "currentCcy": "GBP",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": 60000,
+    "volumeValidated": true,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.322Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.322Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 27.1,
+    "gbpCurrent": 31.5,
+    "gbpSaving": null,
+    "gapGbp": 4.399999999999999,
+    "gapPct": 13.968253968253963,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-c91b7bc3-1794-4771-8191-383541bc06ab",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-1794388668194-kcrsu",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-BRK-001",
+    "componentName": "Al6061 Bracket",
+    "commodity": "Machining",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T09:17:48.205Z",
+    "updatedAt": "2026-11-11T09:17:48.205Z",
+    "shouldCost": 14.809092817902815,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 14.2,
+    "currentCcy": "EUR",
+    "currentTerms": "DAP",
+    "currentSource": "quote",
+    "annualVolume": 10000,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "EUR",
+      "gbpPerUnit": 0.8403361344537815,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T09:17:48.380Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 14.809092817902815,
+    "gbpCurrent": 11.932773109243698,
+    "gbpSaving": null,
+    "gapGbp": -2.8763197086591177,
+    "gapPct": -24.104369389467255,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-cc9513f0-3283-4ef9-8e91-bb19f883a8e1",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-a3",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-KNK-100",
+    "componentName": "Front knuckle",
+    "commodity": "Casting",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T09:17:48.311Z",
+    "updatedAt": "2026-11-11T09:17:48.311Z",
+    "shouldCost": 25.9,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 31.5,
+    "currentCcy": "GBP",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.311Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T09:17:48.311Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 25.9,
+    "gbpCurrent": 31.5,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "duplicate",
+    "eligible": false,
+    "ineligible": "not-current",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": "rec-aea9b3b1-302c-4507-83d9-4ee6fbed70a5",
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-d51c1d40-5da0-4b77-8713-2a63685d0da1",
     "sourceTool": "CPSC II",
     "sourceRef": "CP-77",
     "ownerId": "import:CPSC II:J. Lee",
@@ -1248,8 +1248,8 @@
     "country": "PL",
     "status": "reviewed",
     "costingDate": "2026-11-04",
-    "createdAt": "2026-11-11T09:06:12.368Z",
-    "updatedAt": "2026-11-11T09:06:12.368Z",
+    "createdAt": "2026-11-11T09:17:48.387Z",
+    "updatedAt": "2026-11-11T09:17:48.387Z",
     "shouldCost": 2.1,
     "shouldCcy": "EUR",
     "shouldTerms": "DAP",
@@ -1268,7 +1268,7 @@
       "gbpPerUnit": 0.8403361344537815,
       "source": "JLR Treasury approved 2026-11",
       "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.368Z",
+      "retrievedAt": "2026-11-11T09:17:48.387Z",
       "method": "monthly",
       "approved": true
      },
@@ -1277,7 +1277,7 @@
       "gbpPerUnit": 0.8403361344537815,
       "source": "JLR Treasury approved 2026-11",
       "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.368Z",
+      "retrievedAt": "2026-11-11T09:17:48.387Z",
       "method": "monthly",
       "approved": true
      },
@@ -1299,7 +1299,7 @@
     "notes": ""
    },
    {
-    "id": "rec-ae68ee63-c403-442a-a1a2-2ec9e60a2c64",
+    "id": "rec-51ec3405-28d0-4f82-83c4-18cbaaa1a33e",
     "sourceTool": "CSS System",
     "sourceRef": "CSS-100",
     "ownerId": "import:CSS System:R. Rao",
@@ -1313,8 +1313,8 @@
     "country": "IN",
     "status": "approved",
     "costingDate": "2026-11-03",
-    "createdAt": "2026-11-11T09:06:12.368Z",
-    "updatedAt": "2026-11-11T09:06:12.368Z",
+    "createdAt": "2026-11-11T09:17:48.387Z",
+    "updatedAt": "2026-11-11T09:17:48.387Z",
     "shouldCost": 1450,
     "shouldCcy": "INR",
     "shouldTerms": "DAP",
@@ -1333,7 +1333,7 @@
       "gbpPerUnit": 0.008992805755395683,
       "source": "JLR Treasury approved 2026-11",
       "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.368Z",
+      "retrievedAt": "2026-11-11T09:17:48.387Z",
       "method": "monthly",
       "approved": true
      },
@@ -1342,7 +1342,7 @@
       "gbpPerUnit": 0.008992805755395683,
       "source": "JLR Treasury approved 2026-11",
       "effectiveDate": "2026-11",
-      "retrievedAt": "2026-11-11T09:06:12.368Z",
+      "retrievedAt": "2026-11-11T09:17:48.387Z",
       "method": "monthly",
       "approved": true
      },
@@ -1384,7 +1384,7 @@
     1920,
     1080
    ],
-   "pageHeight": 4601,
+   "pageHeight": 4604,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1395,17 +1395,17 @@
    ],
    "foldPx": 1080,
    "sectionTops": {
-    "act": 747,
-    "insights": 1176,
-    "dq": 3763,
-    "charts": 1844,
-    "drill": 2890,
-    "records": 3293
+    "act": 749,
+    "insights": 1179,
+    "dq": 3766,
+    "charts": 1846,
+    "drill": 2892,
+    "records": 3296
    },
    "cardBottoms": {
     "opportunity": 587,
     "gap": 587,
-    "review": 731
+    "review": 733
    },
    "filterRowHeight": 33,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1439,7 +1439,7 @@
     1440,
     900
    ],
-   "pageHeight": 5043,
+   "pageHeight": 5045,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1450,17 +1450,17 @@
    ],
    "foldPx": 900,
    "sectionTops": {
-    "act": 747,
-    "insights": 1176,
-    "dq": 4205,
-    "charts": 1844,
-    "drill": 3331,
-    "records": 3735
+    "act": 749,
+    "insights": 1179,
+    "dq": 4207,
+    "charts": 1846,
+    "drill": 3334,
+    "records": 3737
    },
    "cardBottoms": {
     "opportunity": 587,
     "gap": 587,
-    "review": 731
+    "review": 733
    },
    "filterRowHeight": 33,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1492,7 +1492,7 @@
     1366,
     768
    ],
-   "pageHeight": 5078,
+   "pageHeight": 5092,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1503,17 +1503,17 @@
    ],
    "foldPx": 768,
    "sectionTops": {
-    "act": 782,
-    "insights": 1212,
-    "dq": 4240,
-    "charts": 1879,
-    "drill": 3367,
-    "records": 3770
+    "act": 796,
+    "insights": 1225,
+    "dq": 4254,
+    "charts": 1893,
+    "drill": 3380,
+    "records": 3784
    },
    "cardBottoms": {
     "opportunity": 620,
     "gap": 620,
-    "review": 766
+    "review": 780
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1545,7 +1545,7 @@
     1024,
     768
    ],
-   "pageHeight": 6850,
+   "pageHeight": 6863,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1556,17 +1556,17 @@
    ],
    "foldPx": 768,
    "sectionTops": {
-    "act": 1109,
-    "insights": 1800,
-    "dq": 5971,
-    "charts": 2487,
-    "drill": 5077,
-    "records": 5501
+    "act": 1123,
+    "insights": 1814,
+    "dq": 5984,
+    "charts": 2500,
+    "drill": 5090,
+    "records": 5514
    },
    "cardBottoms": {
     "opportunity": 707,
     "gap": 707,
-    "review": 1093
+    "review": 1107
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1596,7 +1596,7 @@
     768,
     1024
    ],
-   "pageHeight": 6866,
+   "pageHeight": 6880,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1607,17 +1607,17 @@
    ],
    "foldPx": 1024,
    "sectionTops": {
-    "act": 1105,
-    "insights": 1796,
-    "dq": 5967,
-    "charts": 2483,
-    "drill": 5073,
-    "records": 5497
+    "act": 1119,
+    "insights": 1810,
+    "dq": 5980,
+    "charts": 2496,
+    "drill": 5086,
+    "records": 5510
    },
    "cardBottoms": {
     "opportunity": 703,
     "gap": 703,
-    "review": 1089
+    "review": 1103
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1647,7 +1647,7 @@
     390,
     844
    ],
-   "pageHeight": 8275,
+   "pageHeight": 8305,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1657,17 +1657,17 @@
    ],
    "foldPx": 844,
    "sectionTops": {
-    "act": 1414,
-    "insights": 2186,
-    "dq": 6761,
-    "charts": 3090,
-    "drill": 5806,
-    "records": 6250
+    "act": 1444,
+    "insights": 2215,
+    "dq": 6791,
+    "charts": 3120,
+    "drill": 5836,
+    "records": 6280
    },
    "cardBottoms": {
     "opportunity": 778,
     "gap": 778,
-    "review": 1398
+    "review": 1428
    },
    "filterRowHeight": 0,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1694,7 +1694,7 @@
     1920,
     1080
    ],
-   "pageHeight": 4601,
+   "pageHeight": 4604,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1705,17 +1705,17 @@
    ],
    "foldPx": 1080,
    "sectionTops": {
-    "act": 747,
-    "insights": 1176,
-    "dq": 3763,
-    "charts": 1844,
-    "drill": 2890,
-    "records": 3293
+    "act": 749,
+    "insights": 1179,
+    "dq": 3766,
+    "charts": 1846,
+    "drill": 2892,
+    "records": 3296
    },
    "cardBottoms": {
     "opportunity": 587,
     "gap": 587,
-    "review": 731
+    "review": 733
    },
    "filterRowHeight": 33,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1749,7 +1749,7 @@
     1440,
     900
    ],
-   "pageHeight": 5043,
+   "pageHeight": 5045,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1760,17 +1760,17 @@
    ],
    "foldPx": 900,
    "sectionTops": {
-    "act": 747,
-    "insights": 1176,
-    "dq": 4205,
-    "charts": 1844,
-    "drill": 3331,
-    "records": 3735
+    "act": 749,
+    "insights": 1179,
+    "dq": 4207,
+    "charts": 1846,
+    "drill": 3334,
+    "records": 3737
    },
    "cardBottoms": {
     "opportunity": 587,
     "gap": 587,
-    "review": 731
+    "review": 733
    },
    "filterRowHeight": 33,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1802,7 +1802,7 @@
     1366,
     768
    ],
-   "pageHeight": 5078,
+   "pageHeight": 5092,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1813,17 +1813,17 @@
    ],
    "foldPx": 768,
    "sectionTops": {
-    "act": 782,
-    "insights": 1212,
-    "dq": 4240,
-    "charts": 1879,
-    "drill": 3367,
-    "records": 3770
+    "act": 796,
+    "insights": 1225,
+    "dq": 4254,
+    "charts": 1893,
+    "drill": 3380,
+    "records": 3784
    },
    "cardBottoms": {
     "opportunity": 620,
     "gap": 620,
-    "review": 766
+    "review": 780
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1855,7 +1855,7 @@
     1024,
     768
    ],
-   "pageHeight": 6850,
+   "pageHeight": 6863,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1866,17 +1866,17 @@
    ],
    "foldPx": 768,
    "sectionTops": {
-    "act": 1109,
-    "insights": 1800,
-    "dq": 5971,
-    "charts": 2487,
-    "drill": 5077,
-    "records": 5501
+    "act": 1123,
+    "insights": 1814,
+    "dq": 5984,
+    "charts": 2500,
+    "drill": 5090,
+    "records": 5514
    },
    "cardBottoms": {
     "opportunity": 707,
     "gap": 707,
-    "review": 1093
+    "review": 1107
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1906,7 +1906,7 @@
     768,
     1024
    ],
-   "pageHeight": 6866,
+   "pageHeight": 6880,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1917,17 +1917,17 @@
    ],
    "foldPx": 1024,
    "sectionTops": {
-    "act": 1105,
-    "insights": 1796,
-    "dq": 5967,
-    "charts": 2483,
-    "drill": 5073,
-    "records": 5497
+    "act": 1119,
+    "insights": 1810,
+    "dq": 5980,
+    "charts": 2496,
+    "drill": 5086,
+    "records": 5510
    },
    "cardBottoms": {
     "opportunity": 703,
     "gap": 703,
-    "review": 1089
+    "review": 1103
    },
    "filterRowHeight": 66,
    "recordsColumnsVisibleWithoutScroll": [
@@ -1957,7 +1957,7 @@
     390,
     844
    ],
-   "pageHeight": 8275,
+   "pageHeight": 8305,
    "horizontalOverflowPx": 0,
    "offRight": [],
    "clippedText": [
@@ -1967,17 +1967,17 @@
    ],
    "foldPx": 844,
    "sectionTops": {
-    "act": 1414,
-    "insights": 2186,
-    "dq": 6761,
-    "charts": 3090,
-    "drill": 5806,
-    "records": 6250
+    "act": 1444,
+    "insights": 2215,
+    "dq": 6791,
+    "charts": 3120,
+    "drill": 5836,
+    "records": 6280
    },
    "cardBottoms": {
     "opportunity": 778,
     "gap": 778,
-    "review": 1398
+    "review": 1428
    },
    "filterRowHeight": 0,
    "recordsColumnsVisibleWithoutScroll": [
@@ -2011,9 +2011,11 @@
  },
  "stickyHeaderAfterScroll": {
   "boxScrolls": true,
-  "boxTop": 105,
-  "headerTop": 106,
-  "scrolledBy": 300
+  "filterBarBottom": 155,
+  "boxTop": 163,
+  "headerTop": 164,
+  "scrolledBy": 300,
+  "headerVisible": true
  },
  "keyboardTabStops": [
   {
@@ -2105,19 +2107,19 @@
    "visible": true
   },
   {
-   "el": "button.kd-card-hit Completed: 7 — show these reco",
+   "el": "button.kd-card-hit Completed costings: 7 — show t",
    "visible": true
   },
   {
-   "el": "button.kd-tip About Completed",
+   "el": "button.kd-tip About Completed costings",
    "visible": true
   },
   {
-   "el": "button.kd-tip About Commodities",
+   "el": "button.kd-tip About Commodities covered",
    "visible": true
   },
   {
-   "el": "button.kd-tip About Programmes",
+   "el": "button.kd-tip About Programmes covered",
    "visible": true
   },
   {
@@ -2269,7 +2271,7 @@
  },
  "pastedRecordLink": {
   "opened": true,
-  "hash": "#kpi-record=rec-00955a17-0210-4cf5-b3a0-256f1f09bfe5",
+  "hash": "#kpi-record=rec-10f9539c-4fec-4465-ba38-b5ee18f4ece4",
   "errors": [
    "Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
   ]
@@ -2277,7 +2279,7 @@
  "pastedRecordLinkClosedHash": "",
  "plainStartLandsOnHome": true,
  "originalCurrencyTableFits": true,
- "drillChip": "\n    Period: Last 12 months\n    \n    Drill-down: Casting×\n    \n  ",
+ "drillChip": "\n    Period: Last 12 months\n    \n    Drill-down (table and exports): Casting×\n    \n  ",
  "phoneFilters": {
   "rowVisibleBeforeToggle": false,
   "rowVisibleAfterToggle": true,
