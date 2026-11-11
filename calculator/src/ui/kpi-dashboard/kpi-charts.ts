@@ -12,7 +12,7 @@ import {
   Chart, BarController, LineController, DoughnutController, BarElement, LineElement, PointElement, ArcElement,
   CategoryScale, LinearScale, Tooltip, Legend,
 } from 'chart.js';
-import { STATUS_LABEL, NOT_SET, type DashboardSummary, type CategoryRow, type Dimension, type RecordStatus } from '../../engine/kpi-dashboard.js';
+import { STATUS_LABEL, NOT_SET, STANDARD_POWERTRAINS, RECORD_STATUSES, type DashboardSummary, type CategoryRow, type Dimension, type RecordStatus } from '../../engine/kpi-dashboard.js';
 import { esc, gbp, int } from './kpi-builders.js';
 
 /** Chart configs are kept loosely typed ON PURPOSE: Chart.js's generic types are checked by
@@ -45,6 +45,16 @@ function theme() {
     grid: cssVar('--border', dark ? 'rgba(150,166,204,0.14)' : 'rgba(37,99,235,0.12)'),
     surface: cssVar('--surface', dark ? '#111513' : '#ffffff'),
   };
+}
+
+/** Colour follows the ENTITY, never its rank (F-10): a standard key keeps its slot in the standard list; any other
+ *  key takes one of the remaining slots by a stable hash of its name, so a filter never repaints the survivors. */
+export function slotFor(key: string, standard: readonly string[]): number {
+  const i = standard.indexOf(key);
+  if (i >= 0) return i % 8;
+  let h = 0; for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const free = 8 - Math.min(standard.length, 8);
+  return free > 0 ? standard.length + (h % free) : h % 8;
 }
 
 export type FilterClick = (dim: Dimension, value: string) => void;
@@ -187,7 +197,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
       const total = pt.reduce((a, r) => a + r.count, 0);
       return {
         type: 'doughnut',
-        data: { labels: pt.map(r => label(r.key)), datasets: [{ data: pt.map(r => r.count), backgroundColor: pt.map((r, i) => (r.key === NOT_SET ? t.muted : t.cat[i % 8])), borderColor: t.surface, borderWidth: 2 }] },
+        data: { labels: pt.map(r => label(r.key)), datasets: [{ data: pt.map(r => r.count), backgroundColor: pt.map(r => (r.key === NOT_SET ? t.muted : t.cat[slotFor(r.key, STANDARD_POWERTRAINS)])), borderColor: t.surface, borderWidth: 2 }] },
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, cutout: '62%',
           plugins: { legend: { position: 'right', labels: { color: t.text, boxWidth: 10, boxHeight: 10, useBorderRadius: true, borderRadius: 2 } }, tooltip: { callbacks: { label: (x: Tip) => `${x.label}: ${int(x.parsed)} (${((x.parsed / Math.max(1, total)) * 100).toFixed(1)}%)` } } },
@@ -243,8 +253,8 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
   const st = c.byStatus; const stTotal = st.reduce((a, r) => a + r.count, 0);
   const t = theme();
   const stHtml = `<div class="kd-seg" role="group" aria-label="Costing status — select a segment to filter">
-    ${st.map((r, i) => `<button type="button" class="kd-seg-part" style="flex:${r.count};background:${t.cat[i % 8]}" data-status="${esc(r.key)}" title="${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}: ${r.count} (${((r.count / Math.max(1, stTotal)) * 100).toFixed(1)}%)" aria-label="Filter to ${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}"></button>`).join('')}</div>
-    <ul class="kd-legend">${st.map((r, i) => `<li><i style="background:${t.cat[i % 8]}"></i>${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)} <strong>${int(r.count)}</strong> <span class="kd-muted">${((r.count / Math.max(1, stTotal)) * 100).toFixed(0)}%</span></li>`).join('')}</ul>`;
+    ${st.map(r => `<button type="button" class="kd-seg-part" style="flex:${r.count};background:${t.cat[slotFor(r.key, RECORD_STATUSES)]}" data-status="${esc(r.key)}" title="${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}: ${r.count} (${((r.count / Math.max(1, stTotal)) * 100).toFixed(1)}%)" aria-label="Filter to ${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}"></button>`).join('')}</div>
+    <ul class="kd-legend">${st.map(r => `<li><i style="background:${t.cat[slotFor(r.key, RECORD_STATUSES)]}"></i>${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)} <strong>${int(r.count)}</strong> <span class="kd-muted">${((r.count / Math.max(1, stTotal)) * 100).toFixed(0)}%</span></li>`).join('')}</ul>`;
   specs.push({
     id: 'status', title: 'Costing status', basis: 'Current records · select a segment to filter',
     empty: !st.length, emptyText: 'No current records in this view.',

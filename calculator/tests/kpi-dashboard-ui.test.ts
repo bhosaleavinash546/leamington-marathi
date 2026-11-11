@@ -89,3 +89,14 @@ describe('Excel report', () => {
     for (const [k] of kpiRows(summary)) expect(kpis).toContain(k);
   });
 });
+
+describe('F-10: chart colour follows the entity', () => {
+  it('a powertrain keeps its slot whatever else is in the view', async () => {
+    const { slotFor } = await import('../src/ui/kpi-dashboard/kpi-charts');
+    const { STANDARD_POWERTRAINS } = await import('../src/engine/kpi-dashboard');
+    expect(slotFor('BEV', STANDARD_POWERTRAINS)).toBe(4);
+    expect(slotFor('MHEV', STANDARD_POWERTRAINS)).toBe(0);
+    expect(slotFor('Hydrogen', STANDARD_POWERTRAINS)).toBe(slotFor('Hydrogen', STANDARD_POWERTRAINS));
+    expect(slotFor('Hydrogen', STANDARD_POWERTRAINS)).toBeGreaterThanOrEqual(5);
+  });
+});
