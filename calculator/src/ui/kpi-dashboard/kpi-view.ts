@@ -153,9 +153,24 @@ function shell(): string {
   <dialog class="kd-dialog" id="kd-admin" aria-labelledby="kd-admin-title"></dialog>`;
 }
 
+/** A selector that finds the focused filter control again after the row is redrawn (F-05). */
+function focusedFilterSelector(): string | undefined {
+  const a = document.activeElement as HTMLElement | null;
+  if (!a || !a.closest('#kd-filter-row')) return undefined;
+  for (const attr of ['data-ms-opt', 'data-ms-search', 'data-ms-toggle', 'data-ms-clear', 'data-ms-close']) {
+    const v = a.getAttribute(attr);
+    if (v === null) continue;
+    return attr === 'data-ms-opt' ? `[data-ms-opt="${CSS.escape(v)}"][value="${CSS.escape((a as HTMLInputElement).value)}"]` : `[${attr}="${CSS.escape(v)}"]`;
+  }
+  return a.id ? `#${CSS.escape(a.id)}` : undefined;
+}
+
 function renderFilters(focusSel?: string): void {
   const row = S.root?.querySelector('#kd-filter-row');
   if (!row) return;
+  // Every redraw (a data reload included) keeps the control the user was on — it used to drop focus to <body>, so
+  // Escape no longer reached the view and the open popover stayed over the chips.
+  focusSel = focusSel ?? focusedFilterSelector();
   const opts = S.summary?.options;
   row.innerHTML = dateControlHtml(S.filters) + DIMENSIONS.map(d => multiSelectHtml(d, opts?.[d] ?? [], S.filters[d], S.openDim === d, S.openDim === d ? S.msQuery : '')).join('');
   S.root!.querySelector('#kd-chips')!.innerHTML = chipsHtml(S.filters);
@@ -623,6 +638,12 @@ export async function mountKpiDashboard(host: HTMLElement): Promise<void> {
   host.addEventListener('change', onChange);
   host.addEventListener('input', onInput);
   host.addEventListener('keydown', onKey);
+  // Escape closes an open filter popover or the export menu wherever focus is (F-05).
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !host.offsetParent || host.contains(e.target as Node)) return;
+    if (S.openDim) { const d = S.openDim; S.openDim = null; renderFilters(`[data-ms-toggle="${d}"]`); }
+    else if (!host.querySelector<HTMLElement>('#kd-export-menu')!.hidden) toggleMenu(false);
+  });
   host.addEventListener('submit', e => {
     const f = e.target as HTMLFormElement;
     if (f.id === 'kd-edit-form') { e.preventDefault(); void submitEdit(f); }
