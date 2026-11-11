@@ -1,0 +1,2232 @@
+{
+ "phase": "before",
+ "generated": "2026-11-11T08:27:33.244Z",
+ "data": "e2e/kpi-dashboard-live.ts fixture (see header)",
+ "summaryAllTime": {
+  "generatedAt": "2026-11-11T08:27:38.960Z",
+  "window": {
+   "from": null,
+   "to": null,
+   "preset": "all"
+  },
+  "filters": {
+   "commodity": [],
+   "programme": [],
+   "modelYear": [],
+   "powertrain": [],
+   "tool": [],
+   "country": [],
+   "currency": [],
+   "status": [],
+   "createdBy": [],
+   "datePreset": "all"
+  },
+  "operational": {
+   "totalRecords": 9,
+   "currentRecords": 7,
+   "uniqueComponents": 7,
+   "unidentified": 0,
+   "completedRecords": 7,
+   "commodities": 6,
+   "programmes": 5,
+   "awaitingReview": 5,
+   "awaitingApproval": 1,
+   "needsReview": 6
+  },
+  "financial": {
+   "eligible": 5,
+   "sumCurrentGbp": 74.8612903121598,
+   "sumShouldGbp": 71.9133670455795,
+   "sumGapGbp": 2.9479232665802932,
+   "weightedGapPct": 3.937847256289489,
+   "opportunity": {
+    "n": 3,
+    "gbp": 6.978441448521854
+   },
+   "unfavourable": {
+    "n": 2,
+    "gbp": -4.030518181941561
+   },
+   "annualised": {
+    "n": 1,
+    "gbp": 263999.99999999994
+   },
+   "validatedSavings": {
+    "n": 0,
+    "gbp": 0
+   },
+   "implementedSavings": {
+    "n": 0,
+    "gbp": 0
+   }
+  },
+  "charts": {
+   "activity": [
+    {
+     "bucket": "2026-11-03",
+     "label": "3 Nov",
+     "count": 1
+    },
+    {
+     "bucket": "2026-11-04",
+     "label": "4 Nov",
+     "count": 1
+    },
+    {
+     "bucket": "2026-11-05",
+     "label": "5 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-06",
+     "label": "6 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-07",
+     "label": "7 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-08",
+     "label": "8 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-09",
+     "label": "9 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-10",
+     "label": "10 Nov",
+     "count": 0
+    },
+    {
+     "bucket": "2026-11-11",
+     "label": "11 Nov",
+     "count": 7
+    }
+   ],
+   "activityGranularity": "day",
+   "byCommodity": [
+    {
+     "key": "Casting",
+     "count": 4
+    },
+    {
+     "key": "Forging",
+     "count": 1
+    },
+    {
+     "key": "Machining",
+     "count": 1
+    },
+    {
+     "key": "PCBA",
+     "count": 1
+    },
+    {
+     "key": "Pressed sheet metal",
+     "count": 1
+    },
+    {
+     "key": "Rubber",
+     "count": 1
+    }
+   ],
+   "costByCommodity": [
+    {
+     "key": "Casting",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 31.5,
+     "shouldGbp": 27.1,
+     "gapGbp": 4.399999999999999,
+     "opportunityGbp": 4.399999999999999
+    },
+    {
+     "key": "PCBA",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 15.197841726618705,
+     "shouldGbp": 13.03956834532374,
+     "gapGbp": 2.158273381294965,
+     "opportunityGbp": 2.158273381294965
+    },
+    {
+     "key": "Forging",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 14.045801526717556,
+     "shouldGbp": 15.2,
+     "gapGbp": -1.1541984732824435,
+     "opportunityGbp": 0
+    },
+    {
+     "key": "Machining",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 11.932773109243698,
+     "shouldGbp": 14.809092817902815,
+     "gapGbp": -2.8763197086591177,
+     "opportunityGbp": 0
+    },
+    {
+     "key": "Rubber",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 2.184873949579832,
+     "shouldGbp": 1.7647058823529413,
+     "gapGbp": 0.4201680672268908,
+     "opportunityGbp": 0.4201680672268908
+    }
+   ],
+   "opportunityByCommodity": [
+    {
+     "key": "Casting",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 31.5,
+     "shouldGbp": 27.1,
+     "gapGbp": 4.399999999999999,
+     "opportunityGbp": 4.399999999999999
+    },
+    {
+     "key": "PCBA",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 15.197841726618705,
+     "shouldGbp": 13.03956834532374,
+     "gapGbp": 2.158273381294965,
+     "opportunityGbp": 2.158273381294965
+    },
+    {
+     "key": "Rubber",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 2.184873949579832,
+     "shouldGbp": 1.7647058823529413,
+     "gapGbp": 0.4201680672268908,
+     "opportunityGbp": 0.4201680672268908
+    }
+   ],
+   "byProgramme": [
+    {
+     "key": "L460",
+     "count": 2
+    },
+    {
+     "key": "L461",
+     "count": 2
+    },
+    {
+     "key": "L663",
+     "count": 1
+    },
+    {
+     "key": "EMA",
+     "count": 1
+    },
+    {
+     "key": "JEA",
+     "count": 1
+    }
+   ],
+   "byPowertrain": [
+    {
+     "key": "Petrol PHEV",
+     "count": 1
+    },
+    {
+     "key": "Diesel PHEV",
+     "count": 1
+    },
+    {
+     "key": "Petrol",
+     "count": 1
+    },
+    {
+     "key": "BEV",
+     "count": 4
+    }
+   ],
+   "byModelYear": [
+    {
+     "key": "2026",
+     "count": 2
+    },
+    {
+     "key": "2027",
+     "count": 3
+    },
+    {
+     "key": "2028",
+     "count": 2
+    }
+   ],
+   "byTool": [
+    {
+     "key": "CostVision",
+     "count": 7
+    },
+    {
+     "key": "CPSC II",
+     "count": 1
+    },
+    {
+     "key": "CSS System",
+     "count": 1
+    }
+   ],
+   "heatmap": {
+    "commodities": [
+     "Casting",
+     "Forging",
+     "Machining",
+     "PCBA",
+     "Pressed sheet metal",
+     "Rubber"
+    ],
+    "programmes": [
+     "L460",
+     "L461",
+     "L663",
+     "EMA",
+     "JEA"
+    ],
+    "cells": [
+     {
+      "commodity": "Machining",
+      "programme": "L460",
+      "count": 1,
+      "opportunityGbp": 0
+     },
+     {
+      "commodity": "Casting",
+      "programme": "L460",
+      "count": 1,
+      "opportunityGbp": 4.399999999999999
+     },
+     {
+      "commodity": "Casting",
+      "programme": "EMA",
+      "count": 1,
+      "opportunityGbp": 0
+     },
+     {
+      "commodity": "Forging",
+      "programme": "L663",
+      "count": 1,
+      "opportunityGbp": 0
+     },
+     {
+      "commodity": "Pressed sheet metal",
+      "programme": "L461",
+      "count": 1,
+      "opportunityGbp": 0
+     },
+     {
+      "commodity": "PCBA",
+      "programme": "JEA",
+      "count": 1,
+      "opportunityGbp": 2.158273381294965
+     },
+     {
+      "commodity": "Rubber",
+      "programme": "L461",
+      "count": 1,
+      "opportunityGbp": 0.4201680672268908
+     }
+    ]
+   },
+   "opportunityByPowertrain": [
+    {
+     "key": "Petrol PHEV",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 2.184873949579832,
+     "shouldGbp": 1.7647058823529413,
+     "gapGbp": 0.4201680672268908,
+     "opportunityGbp": 0.4201680672268908
+    },
+    {
+     "key": "BEV",
+     "count": 3,
+     "eligible": 3,
+     "currentGbp": 58.6306148358624,
+     "shouldGbp": 54.94866116322656,
+     "gapGbp": 3.6819536726358457,
+     "opportunityGbp": 6.558273381294963
+    }
+   ],
+   "byStatus": [
+    {
+     "key": "completed",
+     "count": 5
+    },
+    {
+     "key": "reviewed",
+     "count": 1
+    },
+    {
+     "key": "approved",
+     "count": 1
+    }
+   ],
+   "costByProgramme": [
+    {
+     "key": "L460",
+     "count": 2,
+     "eligible": 2,
+     "currentGbp": 43.4327731092437,
+     "shouldGbp": 41.90909281790282,
+     "gapGbp": 1.523680291340881,
+     "opportunityGbp": 4.399999999999999
+    },
+    {
+     "key": "L461",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 2.184873949579832,
+     "shouldGbp": 1.7647058823529413,
+     "gapGbp": 0.4201680672268908,
+     "opportunityGbp": 0.4201680672268908
+    },
+    {
+     "key": "L663",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 14.045801526717556,
+     "shouldGbp": 15.2,
+     "gapGbp": -1.1541984732824435,
+     "opportunityGbp": 0
+    },
+    {
+     "key": "JEA",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 15.197841726618705,
+     "shouldGbp": 13.03956834532374,
+     "gapGbp": 2.158273381294965,
+     "opportunityGbp": 2.158273381294965
+    }
+   ],
+   "costByPowertrain": [
+    {
+     "key": "Petrol PHEV",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 2.184873949579832,
+     "shouldGbp": 1.7647058823529413,
+     "gapGbp": 0.4201680672268908,
+     "opportunityGbp": 0.4201680672268908
+    },
+    {
+     "key": "Petrol",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 14.045801526717556,
+     "shouldGbp": 15.2,
+     "gapGbp": -1.1541984732824435,
+     "opportunityGbp": 0
+    },
+    {
+     "key": "BEV",
+     "count": 3,
+     "eligible": 3,
+     "currentGbp": 58.6306148358624,
+     "shouldGbp": 54.94866116322656,
+     "gapGbp": 3.6819536726358457,
+     "opportunityGbp": 6.558273381294963
+    }
+   ],
+   "costByModelYear": [
+    {
+     "key": "2026",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 14.045801526717556,
+     "shouldGbp": 15.2,
+     "gapGbp": -1.1541984732824435,
+     "opportunityGbp": 0
+    },
+    {
+     "key": "2027",
+     "count": 3,
+     "eligible": 3,
+     "currentGbp": 45.61764705882353,
+     "shouldGbp": 43.67379870025576,
+     "gapGbp": 1.9438483585677717,
+     "opportunityGbp": 4.82016806722689
+    },
+    {
+     "key": "2028",
+     "count": 1,
+     "eligible": 1,
+     "currentGbp": 15.197841726618705,
+     "shouldGbp": 13.03956834532374,
+     "gapGbp": 2.158273381294965,
+     "opportunityGbp": 2.158273381294965
+    }
+   ]
+  },
+  "currencyTotals": [
+   {
+    "currency": "GBP",
+    "symbol": "£",
+    "currentRecords": 1,
+    "sumCurrent": 31.5,
+    "shouldRecords": 5,
+    "sumShould": 104.20909281790281,
+    "sameCcyRecords": 1,
+    "sumGap": 4.399999999999999
+   },
+   {
+    "currency": "CNY",
+    "symbol": "¥",
+    "currentRecords": 1,
+    "sumCurrent": 420,
+    "shouldRecords": 0,
+    "sumShould": 0,
+    "sameCcyRecords": 0,
+    "sumGap": 0
+   },
+   {
+    "currency": "EUR",
+    "symbol": "€",
+    "currentRecords": 2,
+    "sumCurrent": 16.8,
+    "shouldRecords": 1,
+    "sumShould": 2.1,
+    "sameCcyRecords": 1,
+    "sumGap": 0.5
+   },
+   {
+    "currency": "INR",
+    "symbol": "₹",
+    "currentRecords": 1,
+    "sumCurrent": 1690,
+    "shouldRecords": 1,
+    "sumShould": 1450,
+    "sameCcyRecords": 1,
+    "sumGap": 240
+   },
+   {
+    "currency": "USD",
+    "symbol": "$",
+    "currentRecords": 1,
+    "sumCurrent": 18.4,
+    "shouldRecords": 0,
+    "sumShould": 0,
+    "sameCcyRecords": 0,
+    "sumGap": 0
+   }
+  ],
+  "dataQuality": {
+   "retrieved": 9,
+   "included": 9,
+   "excluded": 0,
+   "excludedBy": {
+    "deleted": 0,
+    "test": 0,
+    "invalid": 0
+   },
+   "financiallyEligible": 5,
+   "missingShouldCost": 0,
+   "missingCurrentCost": 1,
+   "missingFx": 0,
+   "basisMismatch": 1,
+   "unapprovedFx": 0,
+   "duplicateCandidates": 1,
+   "supersededRevisions": 1,
+   "missingClassification": {
+    "partNumber": 0,
+    "commodity": 0,
+    "programme": 0,
+    "modelYear": 0,
+    "powertrain": 0
+   }
+  },
+  "insights": [
+   {
+    "id": "top-activity",
+    "tone": "info",
+    "title": "Most costing activity: Casting",
+    "detail": "4 of 9 saved costings (44.4%) in this view.",
+    "filter": {
+     "commodity": [
+      "Casting"
+     ]
+    }
+   },
+   {
+    "id": "top-opportunity",
+    "tone": "good",
+    "title": "Largest potential unit cost opportunity: Casting",
+    "detail": "£4.40 per piece summed over 1 component application(s) where the current cost is above should-cost. Not an annual saving.",
+    "filter": {
+     "commodity": [
+      "Casting"
+     ]
+    }
+   },
+   {
+    "id": "coverage",
+    "tone": "warn",
+    "title": "Coverage: 5 of 5 programmes, 4 of 5 powertrains",
+    "detail": "Every programme has a current costing. No current costing for MHEV."
+   },
+   {
+    "id": "limited-coverage",
+    "tone": "warn",
+    "title": "6 commodities have fewer than 3 current costings",
+    "detail": "Casting (2), Forging (1), Machining (1), PCBA (1), Pressed sheet metal (1), Rubber (1)."
+   },
+   {
+    "id": "significant-gaps",
+    "tone": "warn",
+    "title": "2 component application(s) with a gap of 15% or more",
+    "detail": "LR-BRK-001: £-2.88 (-24.1%); LR-SEAL-9: £0.42 (19.2%)."
+   },
+   {
+    "id": "needs-review",
+    "tone": "info",
+    "title": "6 costing(s) awaiting review or approval",
+    "detail": "5 completed and not yet reviewed, 1 reviewed and not yet approved.",
+    "filter": {
+     "status": [
+      "completed",
+      "reviewed"
+     ]
+    }
+   },
+   {
+    "id": "recent-activity",
+    "tone": "info",
+    "title": "9 costing(s) saved in the last 30 days",
+    "detail": "0 in the 30 days before. Counts every save, revisions included."
+   }
+  ],
+  "options": {
+   "commodity": [
+    {
+     "value": "Casting",
+     "count": 4
+    },
+    {
+     "value": "Forging",
+     "count": 1
+    },
+    {
+     "value": "Machining",
+     "count": 1
+    },
+    {
+     "value": "PCBA",
+     "count": 1
+    },
+    {
+     "value": "Pressed sheet metal",
+     "count": 1
+    },
+    {
+     "value": "Rubber",
+     "count": 1
+    }
+   ],
+   "programme": [
+    {
+     "value": "L460",
+     "count": 4
+    },
+    {
+     "value": "L461",
+     "count": 2
+    },
+    {
+     "value": "L663",
+     "count": 1
+    },
+    {
+     "value": "EMA",
+     "count": 1
+    },
+    {
+     "value": "JEA",
+     "count": 1
+    }
+   ],
+   "modelYear": [
+    {
+     "value": "2028",
+     "count": 2
+    },
+    {
+     "value": "2027",
+     "count": 5
+    },
+    {
+     "value": "2026",
+     "count": 2
+    }
+   ],
+   "powertrain": [
+    {
+     "value": "Petrol PHEV",
+     "count": 1
+    },
+    {
+     "value": "Diesel PHEV",
+     "count": 1
+    },
+    {
+     "value": "Petrol",
+     "count": 1
+    },
+    {
+     "value": "BEV",
+     "count": 6
+    }
+   ],
+   "tool": [
+    {
+     "value": "CostVision",
+     "count": 7
+    },
+    {
+     "value": "CPSC II",
+     "count": 1
+    },
+    {
+     "value": "CSS System",
+     "count": 1
+    }
+   ],
+   "country": [
+    {
+     "value": "CN",
+     "count": 1
+    },
+    {
+     "value": "IN",
+     "count": 1
+    },
+    {
+     "value": "PL",
+     "count": 1
+    },
+    {
+     "value": "UK",
+     "count": 6
+    }
+   ],
+   "currency": [
+    {
+     "value": "CNY",
+     "count": 1
+    },
+    {
+     "value": "EUR",
+     "count": 2
+    },
+    {
+     "value": "GBP",
+     "count": 7
+    },
+    {
+     "value": "INR",
+     "count": 1
+    },
+    {
+     "value": "USD",
+     "count": 1
+    }
+   ],
+   "status": [
+    {
+     "value": "completed",
+     "count": 7
+    },
+    {
+     "value": "reviewed",
+     "count": 1
+    },
+    {
+     "value": "approved",
+     "count": 1
+    }
+   ],
+   "createdBy": [
+    {
+     "value": "Alice Able",
+     "count": 4
+    },
+    {
+     "value": "Bob Baker",
+     "count": 3
+    },
+    {
+     "value": "J. Lee",
+     "count": 1
+    },
+    {
+     "value": "R. Rao",
+     "count": 1
+    }
+   ]
+  },
+  "fx": {
+   "policy": "monthly",
+   "approvedRates": 4,
+   "reference": "CostVision rate-book FX, Oct 2026 round (ECB reference rates; national central-bank rates where the ECB publishes none) — reference only, not an approved JLR rate"
+  },
+  "refreshedAt": "2026-11-11T08:27:38.961Z",
+  "version": 11
+ },
+ "recordsAllTime": {
+  "rows": [
+   {
+    "id": "rec-1fa04ad4-3e4f-494f-bc9b-ae97c6aa5509",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-b1",
+    "ownerId": "bob",
+    "ownerName": "Bob Baker",
+    "partNumber": "LR-KNK-100",
+    "componentName": "Front knuckle",
+    "commodity": "Casting",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.878Z",
+    "updatedAt": "2026-11-11T08:27:38.907Z",
+    "shouldCost": 27.1,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 31.5,
+    "currentCcy": "GBP",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": 60000,
+    "volumeValidated": true,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.878Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.878Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 27.1,
+    "gbpCurrent": 31.5,
+    "gbpSaving": null,
+    "gapGbp": 4.399999999999999,
+    "gapPct": 13.968253968253963,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-599bb907-cff4-4470-993c-3ef501113bd7",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-a2",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-KNK-100",
+    "componentName": "Front knuckle",
+    "commodity": "Casting",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.841Z",
+    "updatedAt": "2026-11-11T08:27:38.841Z",
+    "shouldCost": 26.4,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 31.5,
+    "currentCcy": "GBP",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": 60000,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.841Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.841Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 26.4,
+    "gbpCurrent": 31.5,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "superseded",
+    "eligible": false,
+    "ineligible": "not-current",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-74947ed0-668c-4576-8e51-93f01ba76059",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-b3",
+    "ownerId": "bob",
+    "ownerName": "Bob Baker",
+    "partNumber": "LR-SHF-310",
+    "componentName": "Output shaft",
+    "commodity": "Forging",
+    "programme": "L663",
+    "modelYear": 2026,
+    "powertrain": "Petrol",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.891Z",
+    "updatedAt": "2026-11-11T08:27:38.891Z",
+    "shouldCost": 15.2,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 18.4,
+    "currentCcy": "USD",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "USD",
+      "gbpPerUnit": 0.7633587786259541,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 15.2,
+    "gbpCurrent": 14.045801526717556,
+    "gbpSaving": null,
+    "gapGbp": -1.1541984732824435,
+    "gapPct": -8.217391304347831,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-aafa8b41-9054-4a5e-95db-16b87d875347",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-1794385658762-y5gyi",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-BRK-001",
+    "componentName": "Al6061 Bracket",
+    "commodity": "Machining",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.770Z",
+    "updatedAt": "2026-11-11T08:27:38.770Z",
+    "shouldCost": 14.809092817902815,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 14.2,
+    "currentCcy": "EUR",
+    "currentTerms": "DAP",
+    "currentSource": "quote",
+    "annualVolume": 10000,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "EUR",
+      "gbpPerUnit": 0.8403361344537815,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 14.809092817902815,
+    "gbpCurrent": 11.932773109243698,
+    "gbpSaving": null,
+    "gapGbp": -2.8763197086591177,
+    "gapPct": -24.104369389467255,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-ae83313e-3f77-4a57-af57-65df2315bc4d",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-b2",
+    "ownerId": "bob",
+    "ownerName": "Bob Baker",
+    "partNumber": "LR-HSG-220",
+    "componentName": "Inverter housing",
+    "commodity": "Casting",
+    "programme": "EMA",
+    "modelYear": 2028,
+    "powertrain": "BEV",
+    "country": "CN",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.885Z",
+    "updatedAt": "2026-11-11T08:27:38.885Z",
+    "shouldCost": 41,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 420,
+    "currentCcy": "CNY",
+    "currentTerms": "EXW",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "CNY",
+      "gbpPerUnit": 0.10582010582010583,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.943Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 41,
+    "gbpCurrent": 44.44444444444445,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "current",
+    "eligible": false,
+    "ineligible": "basis-mismatch",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-d479c3bf-d5c6-40c1-8acb-789d4f4f2a06",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-a3",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-KNK-100",
+    "componentName": "Front knuckle",
+    "commodity": "Casting",
+    "programme": "L460",
+    "modelYear": 2027,
+    "powertrain": "BEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.867Z",
+    "updatedAt": "2026-11-11T08:27:38.867Z",
+    "shouldCost": 25.9,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": 31.5,
+    "currentCcy": "GBP",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.867Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.867Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 25.9,
+    "gbpCurrent": 31.5,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "duplicate",
+    "eligible": false,
+    "ineligible": "not-current",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": "rec-1fa04ad4-3e4f-494f-bc9b-ae97c6aa5509",
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-ecdad043-6c80-4e11-a9b2-2f71012e8040",
+    "sourceTool": "CostVision",
+    "sourceRef": "sc-a4",
+    "ownerId": "alice",
+    "ownerName": "Alice Able",
+    "partNumber": "LR-BKT-410",
+    "componentName": "Bracket",
+    "commodity": "Pressed sheet metal",
+    "programme": "L461",
+    "modelYear": 2026,
+    "powertrain": "Diesel PHEV",
+    "country": "UK",
+    "status": "completed",
+    "costingDate": "2026-11-11",
+    "createdAt": "2026-11-11T08:27:38.899Z",
+    "updatedAt": "2026-11-11T08:27:38.899Z",
+    "shouldCost": 6.1,
+    "shouldCcy": "GBP",
+    "shouldTerms": "DAP",
+    "currentCost": null,
+    "currentCcy": null,
+    "currentTerms": null,
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-11",
+      "retrievedAt": "2026-11-11T08:27:38.899Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": null,
+     "saving": null
+    },
+    "gbpShould": 6.1,
+    "gbpCurrent": null,
+    "gbpSaving": null,
+    "gapGbp": null,
+    "gapPct": null,
+    "role": "current",
+    "eligible": false,
+    "ineligible": "missing-current-cost",
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-70e75697-ec0b-4521-b013-8170f3f6ed4d",
+    "sourceTool": "CPSC II",
+    "sourceRef": "CP-77",
+    "ownerId": "import:CPSC II:J. Lee",
+    "ownerName": "J. Lee",
+    "partNumber": "LR-SEAL-9",
+    "componentName": "Door seal",
+    "commodity": "Rubber",
+    "programme": "L461",
+    "modelYear": 2027,
+    "powertrain": "Petrol PHEV",
+    "country": "PL",
+    "status": "reviewed",
+    "costingDate": "2026-11-04",
+    "createdAt": "2026-11-11T08:27:38.954Z",
+    "updatedAt": "2026-11-11T08:27:38.954Z",
+    "shouldCost": 2.1,
+    "shouldCcy": "EUR",
+    "shouldTerms": "DAP",
+    "currentCost": 2.6,
+    "currentCcy": "EUR",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "EUR",
+      "gbpPerUnit": 0.8403361344537815,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.954Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "current": {
+      "currency": "EUR",
+      "gbpPerUnit": 0.8403361344537815,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.954Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 1.7647058823529413,
+    "gbpCurrent": 2.184873949579832,
+    "gbpSaving": null,
+    "gapGbp": 0.4201680672268908,
+    "gapPct": 19.230769230769234,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   },
+   {
+    "id": "rec-8495563a-08b3-42db-80d0-9025d66a4171",
+    "sourceTool": "CSS System",
+    "sourceRef": "CSS-100",
+    "ownerId": "import:CSS System:R. Rao",
+    "ownerName": "R. Rao",
+    "partNumber": "LR-PCB-500",
+    "componentName": "Camera board",
+    "commodity": "PCBA",
+    "programme": "JEA",
+    "modelYear": 2028,
+    "powertrain": "BEV",
+    "country": "IN",
+    "status": "approved",
+    "costingDate": "2026-11-03",
+    "createdAt": "2026-11-11T08:27:38.954Z",
+    "updatedAt": "2026-11-11T08:27:38.954Z",
+    "shouldCost": 1450,
+    "shouldCcy": "INR",
+    "shouldTerms": "DAP",
+    "currentCost": 1690,
+    "currentCcy": "INR",
+    "currentTerms": "DAP",
+    "currentSource": null,
+    "annualVolume": null,
+    "volumeValidated": false,
+    "savingStatus": null,
+    "savingPerPiece": null,
+    "savingCcy": null,
+    "fx": {
+     "should": {
+      "currency": "INR",
+      "gbpPerUnit": 0.008992805755395683,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.954Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "current": {
+      "currency": "INR",
+      "gbpPerUnit": 0.008992805755395683,
+      "source": "JLR Treasury approved 2026-11",
+      "effectiveDate": "2026-11",
+      "retrievedAt": "2026-11-11T08:27:38.954Z",
+      "method": "monthly",
+      "approved": true
+     },
+     "saving": null
+    },
+    "gbpShould": 13.03956834532374,
+    "gbpCurrent": 15.197841726618705,
+    "gbpSaving": null,
+    "gapGbp": 2.158273381294965,
+    "gapPct": 14.201183431952668,
+    "role": "current",
+    "eligible": true,
+    "ineligible": null,
+    "excluded": null,
+    "invalidReasons": [],
+    "duplicateOf": null,
+    "isTest": false,
+    "deleted": false,
+    "notes": ""
+   }
+  ],
+  "total": 9,
+  "page": 1,
+  "pages": 1,
+  "query": {
+   "search": "",
+   "sort": "costingDate",
+   "dir": "desc",
+   "page": 1,
+   "pageSize": 25,
+   "scope": "all",
+   "drill": {}
+  }
+ },
+ "views": {
+  "dark-1920": {
+   "device": "desktop",
+   "viewport": [
+    1920,
+    1080
+   ],
+   "pageHeight": 3926,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 1080,
+   "sectionTops": {
+    "insights": 654,
+    "dq": 654,
+    "charts": 1473,
+    "drill": 2965,
+    "records": 3370
+   },
+   "cardBottoms": {
+    "opportunity": 638,
+    "gap": 638,
+    "review": 638
+   },
+   "filterRowHeight": 35,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)",
+    "Should-cost (original)",
+    "GBP current"
+   ],
+   "recordsTableScrollWidth": [
+    1396,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "dark-1440": {
+   "device": "desktop",
+   "viewport": [
+    1440,
+    900
+   ],
+   "pageHeight": 4512,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 900,
+   "sectionTops": {
+    "insights": 723,
+    "dq": 723,
+    "charts": 1624,
+    "drill": 3551,
+    "records": 3957
+   },
+   "cardBottoms": {
+    "opportunity": 707,
+    "gap": 707,
+    "review": 707
+   },
+   "filterRowHeight": 35,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)"
+   ],
+   "recordsTableScrollWidth": [
+    1156,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "dark-1366": {
+   "device": "laptop",
+   "viewport": [
+    1366,
+    768
+   ],
+   "pageHeight": 4596,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 768,
+   "sectionTops": {
+    "insights": 766,
+    "dq": 766,
+    "charts": 1707,
+    "drill": 3634,
+    "records": 4040
+   },
+   "cardBottoms": {
+    "opportunity": 750,
+    "gap": 750,
+    "review": 750
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)"
+   ],
+   "recordsTableScrollWidth": [
+    1082,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "dark-1024": {
+   "device": "small-laptop",
+   "viewport": [
+    1024,
+    768
+   ],
+   "pageHeight": 6930,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 768,
+   "sectionTops": {
+    "insights": 1018,
+    "dq": 1760,
+    "charts": 2558,
+    "drill": 5949,
+    "records": 6375
+   },
+   "cardBottoms": {
+    "opportunity": 864,
+    "gap": 672,
+    "review": 1002
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain"
+   ],
+   "recordsTableScrollWidth": [
+    740,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "dark-768": {
+   "device": "tablet",
+   "viewport": [
+    768,
+    1024
+   ],
+   "pageHeight": 6947,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 1024,
+   "sectionTops": {
+    "insights": 1014,
+    "dq": 1756,
+    "charts": 2575,
+    "drill": 5965,
+    "records": 6391
+   },
+   "cardBottoms": {
+    "opportunity": 860,
+    "gap": 668,
+    "review": 998
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY"
+   ],
+   "recordsTableScrollWidth": [
+    684,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "dark-390": {
+   "device": "mobile",
+   "viewport": [
+    390,
+    844
+   ],
+   "pageHeight": 8845,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 844,
+   "sectionTops": {
+    "insights": 1755,
+    "dq": 2734,
+    "charts": 4147,
+    "drill": 7781,
+    "records": 8227
+   },
+   "cardBottoms": {
+    "opportunity": 1428,
+    "gap": 1285,
+    "review": 1739
+   },
+   "filterRowHeight": 197,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number"
+   ],
+   "recordsTableScrollWidth": [
+    322,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-1920": {
+   "device": "desktop",
+   "viewport": [
+    1920,
+    1080
+   ],
+   "pageHeight": 3926,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 1080,
+   "sectionTops": {
+    "insights": 654,
+    "dq": 654,
+    "charts": 1473,
+    "drill": 2965,
+    "records": 3370
+   },
+   "cardBottoms": {
+    "opportunity": 638,
+    "gap": 638,
+    "review": 638
+   },
+   "filterRowHeight": 35,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)",
+    "Should-cost (original)",
+    "GBP current"
+   ],
+   "recordsTableScrollWidth": [
+    1396,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-1440": {
+   "device": "desktop",
+   "viewport": [
+    1440,
+    900
+   ],
+   "pageHeight": 4512,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 900,
+   "sectionTops": {
+    "insights": 723,
+    "dq": 723,
+    "charts": 1624,
+    "drill": 3551,
+    "records": 3957
+   },
+   "cardBottoms": {
+    "opportunity": 707,
+    "gap": 707,
+    "review": 707
+   },
+   "filterRowHeight": 35,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)"
+   ],
+   "recordsTableScrollWidth": [
+    1156,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-1366": {
+   "device": "laptop",
+   "viewport": [
+    1366,
+    768
+   ],
+   "pageHeight": 4596,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 768,
+   "sectionTops": {
+    "insights": 766,
+    "dq": 766,
+    "charts": 1707,
+    "drill": 3634,
+    "records": 4040
+   },
+   "cardBottoms": {
+    "opportunity": 750,
+    "gap": 750,
+    "review": 750
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain",
+    "Country",
+    "Current cost (original)"
+   ],
+   "recordsTableScrollWidth": [
+    1082,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-1024": {
+   "device": "small-laptop",
+   "viewport": [
+    1024,
+    768
+   ],
+   "pageHeight": 6930,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 768,
+   "sectionTops": {
+    "insights": 1018,
+    "dq": 1760,
+    "charts": 2558,
+    "drill": 5949,
+    "records": 6375
+   },
+   "cardBottoms": {
+    "opportunity": 864,
+    "gap": 672,
+    "review": 1002
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY",
+    "Powertrain"
+   ],
+   "recordsTableScrollWidth": [
+    740,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-768": {
+   "device": "tablet",
+   "viewport": [
+    768,
+    1024
+   ],
+   "pageHeight": 6947,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 1024,
+   "sectionTops": {
+    "insights": 1014,
+    "dq": 1756,
+    "charts": 2575,
+    "drill": 5965,
+    "records": 6391
+   },
+   "cardBottoms": {
+    "opportunity": 860,
+    "gap": 668,
+    "review": 998
+   },
+   "filterRowHeight": 75,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number",
+    "Commodity",
+    "Programme",
+    "MY"
+   ],
+   "recordsTableScrollWidth": [
+    684,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  },
+  "light-390": {
+   "device": "mobile",
+   "viewport": [
+    390,
+    844
+   ],
+   "pageHeight": 8845,
+   "horizontalOverflowPx": 0,
+   "offRight": [],
+   "clippedText": [
+    "label.kd-visually-hidden \"Reporting period\"",
+    "label.kd-visually-hidden \"Search records\"",
+    "label.kd-visually-hidden \"Which records\"",
+    "label.kd-visually-hidden \"Rows per page\""
+   ],
+   "foldPx": 844,
+   "sectionTops": {
+    "insights": 1755,
+    "dq": 2734,
+    "charts": 4147,
+    "drill": 7781,
+    "records": 8227
+   },
+   "cardBottoms": {
+    "opportunity": 1428,
+    "gap": 1285,
+    "review": 1739
+   },
+   "filterRowHeight": 197,
+   "recordsColumnsVisibleWithoutScroll": [
+    "Costing ID",
+    "Component",
+    "Part number"
+   ],
+   "recordsTableScrollWidth": [
+    322,
+    2145
+   ],
+   "axe": [],
+   "errors": [],
+   "failed": [
+    "HEAD /api/health net::ERR_ABORTED"
+   ]
+  }
+ },
+ "checkboxDirectlyClickable": true,
+ "apiCallsForOneFilterChange": [
+  "/api/kpi/summary",
+  "/api/kpi/records",
+  "/api/kpi/drill"
+ ],
+ "filterPopover": {
+  "focusAfterPick": "body ",
+  "popoverOpenAfterEscape": true
+ },
+ "stickyHeaderAfterScroll": {
+  "tableTop": 451,
+  "headerTop": 451
+ },
+ "keyboardTabStops": [
+  {
+   "el": "button.kd-btn Refresh now",
+   "visible": true
+  },
+  {
+   "el": "button.is-on Consolidated GBP",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Export",
+   "visible": true
+  },
+  {
+   "el": "select#kd-date-preset.kd-select Last 7 daysLast 30 daysLast 90",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Commodity",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Programme",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Model year",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Powertrain",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Costing tool",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Country / market",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Currency",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Status",
+   "visible": true
+  },
+  {
+   "el": "button.kd-ms-btn Created by",
+   "visible": true
+  },
+  {
+   "el": "button.kd-card-hit Costing records: 9 — show thes",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Costing records",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Unique components",
+   "visible": true
+  },
+  {
+   "el": "button.kd-card-hit Completed costings: 7 — show t",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Completed costings",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Commodities covered",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Programmes covered",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Weighted cost gap",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Potential unit cost oppo",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Validated savings",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Implemented savings",
+   "visible": true
+  },
+  {
+   "el": "button.kd-card-hit Awaiting review / approval: 6 ",
+   "visible": true
+  },
+  {
+   "el": "span.kd-tip About Awaiting review / approv",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Filter to this",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Filter to this",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Filter to this",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link View all revisions",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Casting, L460: 1 records, oppo",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Casting, EMA: 1 records, oppor",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Forging, L663: 1 records, oppo",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Machining, L460: 1 records, op",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c PCBA, JEA: 1 records, opportun",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Pressed sheet metal, L461: 1 r",
+   "visible": true
+  },
+  {
+   "el": "button.kd-heat-c Rubber, L461: 1 records, oppor",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-btn Table",
+   "visible": true
+  },
+  {
+   "el": "button.kd-seg-part Filter to Completed",
+   "visible": true
+  },
+  {
+   "el": "button.kd-seg-part Filter to Reviewed",
+   "visible": true
+  },
+  {
+   "el": "button.kd-seg-part Filter to Approved",
+   "visible": true
+  },
+  {
+   "el": "button.kd-crumb All commodities",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Casting",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link PCBA",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Rubber",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Forging",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Machining",
+   "visible": true
+  },
+  {
+   "el": "button.kd-link Pressed sheet metal",
+   "visible": true
+  },
+  {
+   "el": "input#kd-search.kd-input ",
+   "visible": true
+  },
+  {
+   "el": "select#kd-scope.kd-select Current records (one per appli",
+   "visible": true
+  }
+ ],
+ "pageErrors1440": [],
+ "themePersistence": {
+  "toggledTo": "dark",
+  "afterReload": "dark"
+ },
+ "noPermission": {
+  "excludedListAsUser": 403,
+  "fxUploadAsUser": 403,
+  "noToken": 401
+ },
+ "newUserSeesShared": 9,
+ "serverKpiErrors": []
+}

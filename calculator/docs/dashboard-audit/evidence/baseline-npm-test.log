@@ -1,0 +1,16 @@
+
+> should-cost-calculator@4.2.0 test
+> vitest run
+
+
+ RUN  v5.0.2 /home/user/leamington-marathi/calculator
+
+Warning: failed to launch javaldx - java may not function correctly
+Warning: failed to launch javaldx - java may not function correctly
+
+ Test Files  368 passed (368)
+      Tests  5993 passed (5993)
+   Start at  08:20:25
+   Duration  424.94s (tests 87%, import 11%, transform 2%)
+
+EXIT 0
