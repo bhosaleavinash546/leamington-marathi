@@ -214,17 +214,24 @@ async function main(): Promise<void> {
       await page.waitForTimeout(200);
       await page.screenshot({ path: join(SHOTS, `state-records-${t}-1440.png`) });
       const sticky = await page.evaluate(() => {
-        // Layout check only: clone the rendered rows in the DOM (no data is added) so the table's own box scrolls.
+        // Layout check only: clone the rendered rows in the DOM (no data is added) so the table's own box scrolls, place
+        // the box just below the sticky filter bar, scroll INSIDE it, and check the header is visible below the bar.
+        // The clones are removed afterwards so later screenshots show the real rows.
         const wrap = document.querySelector<HTMLElement>('#kd-records .kd-table-wrap'); const tb = wrap?.querySelector('tbody');
-        const th = wrap?.querySelector('thead th');
-        if (!wrap || !tb || !th) return null;
-        const rows = [...tb.children]; for (let i = 0; i < 6; i++) rows.forEach(r => tb.appendChild(r.cloneNode(true)));
-        const boxScrolls = wrap.scrollHeight > wrap.clientHeight;
+        const th = wrap?.querySelector('thead th'); const bar = document.querySelector<HTMLElement>('.kd-filters');
+        if (!wrap || !tb || !th || !bar) return null;
+        const originals = [...tb.children]; const clones: Node[] = [];
+        for (let i = 0; i < 6; i++) originals.forEach(r => { const c = r.cloneNode(true); clones.push(c); tb.appendChild(c); });
+        const barBottom = bar.getBoundingClientRect().bottom;
+        window.scrollBy(0, wrap.getBoundingClientRect().top - barBottom - 8);
         wrap.scrollTop = 300;
-        const res = { boxScrolls, boxTop: Math.round(wrap.getBoundingClientRect().top), headerTop: Math.round(th.getBoundingClientRect().top), scrolledBy: wrap.scrollTop };
-        rows.forEach(() => undefined);
-        return res;
-      });      if (t === 'dark') metrics.stickyHeaderAfterScroll = sticky;
+        const r = { boxScrolls: wrap.scrollHeight > wrap.clientHeight, filterBarBottom: Math.round(barBottom), boxTop: Math.round(wrap.getBoundingClientRect().top),
+          headerTop: Math.round(th.getBoundingClientRect().top), scrolledBy: wrap.scrollTop,
+          headerVisible: th.getBoundingClientRect().top >= barBottom - 1 && th.getBoundingClientRect().top <= wrap.getBoundingClientRect().top + 1 };
+        wrap.scrollTop = 0; clones.forEach(c => tb.removeChild(c));
+        return r;
+      });
+      await page.screenshot({ path: join(SHOTS, `state-records-header-${t}-1440.png`) });      if (t === 'dark') metrics.stickyHeaderAfterScroll = sticky;
       // drawer
       await page.click('#kd-records [data-open]');
       await page.waitForSelector('#kd-drawer[open] h2');
