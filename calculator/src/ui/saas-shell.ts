@@ -13,7 +13,7 @@
 
 export const ACTION_GROUPS: Array<{ label: string; ids: string[] }> = [
   { label: 'Report', ids: ['export-excel-btn', 'export-pdf-btn', 'export-audit-pdf-btn', 'export-all-pdf-btn', 'export-card-btn'] },
-  { label: 'Save', ids: ['save-library-btn', 'save-scenario-btn', 'log-actual-btn'] },
+  { label: 'Save', ids: ['save-library-btn', 'save-scenario-btn', 'save-dashboard-btn', 'log-actual-btn'] },
   { label: 'Tools', ids: ['calibration-btn', 'rates-btn'] },
 ];
 

@@ -29,6 +29,7 @@ import './styles/saas-polish.css';
 import './styles/dark-green.css';   // dark theme only: black + green (every rule scoped to not-light)
 import './styles/cad-viewer.css';  // 3D viewer (theme-aware, --v-* tokens)
 import './styles/drawing-review.css';  // "From the drawing" review panel (theme tokens only)
+import './styles/kpi-dashboard.css';  // Global Cost Engineering KPI Dashboard (kd- prefix, theme tokens only)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { installPageActions } from './page-actions.js';
 import { watchActionBarHeight } from './sticky-cta.js';
@@ -1021,12 +1022,13 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
 
 
 // ─── App-nav active state (sidebar) ──────────────────────────────────────────
-function setNavActive(id: 'home-btn' | 'analytics-btn' | 'news-btn' | 'negotiation-btn' | 'viewer-btn' | null): void {
+function setNavActive(id: 'home-btn' | 'analytics-btn' | 'news-btn' | 'negotiation-btn' | 'viewer-btn' | 'kpi-btn' | null): void {
   document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
   if (id) document.getElementById(id)?.classList.add('active');
   // every view switch passes through here — hide the standalone 3D viewer page
   // (showViewer re-shows it right after calling this)
   document.getElementById('viewer-view')?.style.setProperty('display', 'none');
+  document.getElementById('kpi-view')?.style.setProperty('display', 'none');   // KPI dashboard (showKpiDashboard re-shows it)
   // Every view switch passes through here — close the demo-gallery modal so it
   // can't stay glued on top of the next view, and restore page scroll (its
   // opener sets body overflow:hidden).
@@ -1091,6 +1093,40 @@ function showNegotiation(): void {
   if (el) el.style.display = '';
   renderNegotiationPanel();
   window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+// Global Cost Engineering KPI Dashboard — shared, read-only reporting over every user's saved
+// costings (src/ui/kpi-dashboard/). Loaded on first open; main.ts only switches the view.
+function showKpiDashboard(): void {
+  setNavActive('kpi-btn');
+  document.getElementById('wizard-overlay')?.remove();
+  document.body.classList.remove('cv-new-costing');
+  setPickerCollapsed(false);
+  for (const id of ['home-view', 'commodity-picker-view', 'news-view', 'negotiation-view', 'picker-backdrop']) document.getElementById(id)?.style.setProperty('display', 'none');
+  const costingEl = document.getElementById('costing-view');
+  if (costingEl) { costingEl.classList.remove('wf-panel', 'wf-panel--open'); costingEl.style.display = 'none'; }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display', 'none');
+  const host = document.getElementById('kpi-view');
+  if (!host) return;
+  host.style.display = '';
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  void import('./kpi-dashboard/kpi-view.js').then(m => m.mountKpiDashboard(host)).catch(err => {
+    host.innerHTML = '<p role="alert" style="padding:24px">The KPI dashboard could not be loaded. Reload the page and try again.</p>';
+    console.error('[kpi] load failed', err);
+  });
+}
+
+/** "Save to KPI Dashboard" on a costing result — the details step (part number, programme, current cost …). */
+function openSaveToDashboard(): void {
+  if (!lastResult || !lastInput) return;
+  const input = lastInput as unknown as Record<string, unknown>;
+  void Promise.all([import('./kpi-dashboard/kpi-save-modal.js'), import('./data/commodity-meta.js')]).then(([m, meta]) => m.openKpiSaveModal({
+    name: lastInput!.partName || 'Costing',
+    commodity: activeCommodity,
+    commodityLabel: meta.COMMODITY_REPORT_LABELS[activeCommodity] ?? activeCommodity,
+    region: _mfgRegion || 'UK',
+    input, result: lastResult as unknown as { total: number } & Record<string, unknown>,
+  }));
 }
 
 // 3D CAD Viewer — standalone open-for-analysis page (its own left-nav view).
@@ -2949,7 +2985,7 @@ function _applyAgentActionAndCompute(): void {
       el('export-pdf-btn').style.display = '';
       showAuditPackButton();
       el('export-all-pdf-btn').style.display = '';
-      el('save-scenario-btn').style.display = '';
+      el('save-scenario-btn').style.display = ''; document.getElementById('save-dashboard-btn')?.style.setProperty('display', '');
 
       // Send result to agent for interpretation (return to agent mode after brief delay)
       agentLastResult = {
@@ -15617,7 +15653,7 @@ function compute(): void {
     showAuditPackButton();
     el('export-card-btn').style.display = '';
     el('export-all-pdf-btn').style.display = '';
-    el('save-scenario-btn').style.display = '';
+    el('save-scenario-btn').style.display = ''; document.getElementById('save-dashboard-btn')?.style.setProperty('display', '');
   } catch (err) {
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
@@ -21213,6 +21249,8 @@ async function init(): Promise<void> {
 
   // ─── Negotiation Intelligence section wiring ──────────────────────────────
   document.getElementById('negotiation-btn')?.addEventListener('click', showNegotiation);
+  document.getElementById('kpi-btn')?.addEventListener('click', showKpiDashboard);
+  document.getElementById('save-dashboard-btn')?.addEventListener('click', openSaveToDashboard);
 
   // 3D CAD Viewer (standalone) — nav + open/back + drag-drop
   document.getElementById('viewer-btn')?.addEventListener('click', showViewer);

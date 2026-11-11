@@ -1078,6 +1078,18 @@ what is true** — nothing here has been compared with a price JLR paid.
   - Not approved (still open): PKG-1 machined surfaces + per-surface ISO 8062-3 / EN 10243-1 allowance + raw-to-finished
     drawings, PKG-3 setups / sequence, PKG-4 forging balance + swarf credit, PKG-5 foundry build-ups (cores), PKG-7 bevel
     gears (the tool costs a bevel gear as a helical one).
+- Global Cost Engineering KPI Dashboard (11 Nov 2026, `calculator/docs/dashboard/kpi-dashboard-2026-11-11.md`, audit +
+  decisions `docs/dashboard/kpi-dashboard-audit-2026-11-11.md`): shared, read-only reporting over saved costings. ONE model
+  `src/engine/kpi-dashboard.ts` (`buildFromClassified`) — screen, CSV, Excel and PDF never compute a figure. Records are
+  `costing_records` (`server/data/kpi-store.ts`; the costing stays in `scenarios`), saved by "Save to KPI Dashboard"
+  (details step) or imported (CSS System / CPSC II template, admin). Identity = PART NUMBER; application = part ×
+  programme × model year × powertrain; names never merge; classification runs BEFORE filters. Money: each value × its
+  own FROZEN GBP-per-unit FX; recalculation is admin preview → apply with `fx_history`; missing cost is never zero;
+  same delivery terms only; opportunity = Σ per-piece gaps (never "savings"); annualised only on admin-validated
+  volume. Every signed-in user sees eligible records; excluded / FX / import / audit are admin-only. UI prefix `kd-`
+  (the old home tiles own `.kpi-*`); never put `<header>` / `<footer>` in it (the app styles them as the top bar).
+  Chart configs stay loosely typed (a strictly typed second Chart.js user broke main.ts's chart types). Live:
+  `npm run test:e2e:kpi`. `/api/quotes` is owner-only (admin sees all).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

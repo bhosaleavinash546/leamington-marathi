@@ -39,6 +39,7 @@ import { JWT_SECRET_CONFIGURED, requireAuth } from './middleware/auth-middleware
 import { aiLimit } from './middleware/ai-limit.js';
 import knowledgeRouter from './routes/knowledge.js';
 import shareRouter from './routes/share.js';
+import kpiRouter from './routes/kpi.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
 import db from './db.js';
 
@@ -114,6 +115,7 @@ app.use('/api/news', requireAuth, newsRouter);
 app.use('/api/prices', requireAuth, pricesRouter);
 app.use('/api/quotes', requireAuth, quotesRouter);
 app.use('/api/bom', requireAuth, bomRouter);
+app.use('/api/kpi', requireAuth, kpiRouter);                // KPI dashboard: read for all signed-in users, admin writes guarded inside
 app.use('/api/rfq', requireAuth, rfqRouter);
 app.use('/api/knowledge', knowledgeRouter);             // router-wide guard inside
 app.use('/api/share', shareRouter);                     // POST guarded inside; GET /:id public by design
