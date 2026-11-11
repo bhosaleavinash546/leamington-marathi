@@ -505,11 +505,15 @@ async function adminAction(act: string): Promise<void> {
  *  levels become filters; a component level narrows the record list and is stated on the report. */
 function exportFilters(): { filters: DashboardFilters; componentParam: string; note: string } {
   const f = structuredClone(S.filters) as DashboardFilters;
-  let componentParam = ''; let note = '';
+  const componentParam = ''; let note = '';
   for (const p of S.drillPath) {
     if (p.level === 'commodity' || p.level === 'programme' || p.level === 'powertrain' || p.level === 'modelYear') f[p.level] = [p.key];
-    else if (p.level === 'component') { componentParam = `&drill_component=${encodeURIComponent(p.key)}`; note = `Drill-down: component ${p.label} (records list only)`; }
+    // A component level is NOT applied: the KPI summary cannot be narrowed to one component, and exporting a narrowed
+    // record list beside the wider KPIs would break the workbook's reconciliation (independent review). It is stated.
+    else if (p.level === 'component') note = `Drill-down to component ${p.label} is shown on screen only; the export covers the levels above it.`;
   }
+  const levels = S.drillPath.filter(p => p.level !== 'component').map(p => p.label);
+  if (levels.length) note = [`Drill-down applied: ${levels.join(' › ')} (the on-screen KPI cards show the filters without the drill-down).`, note].filter(Boolean).join(' ');
   return { filters: f, componentParam, note };
 }
 const fParamOf = (f: DashboardFilters) => `f=${encodeURIComponent(JSON.stringify(f))}`;

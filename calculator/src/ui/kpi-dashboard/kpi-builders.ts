@@ -97,7 +97,7 @@ export function chipsHtml(f: DashboardFilters, drill: { level: string; key: stri
   return `<div class="kd-chips" aria-live="polite">
     <span class="kd-chip kd-chip-period"><span class="kd-chip-k">Period:</span> ${esc(period)}</span>
     ${chips.join('')}
-    ${drill.length ? `<span class="kd-chip kd-chip-drill"><span class="kd-chip-k">Drill-down:</span> ${drill.map(p => esc(p.label)).join(' › ')}<button type="button" class="kd-chip-x" data-drill-to="-1" aria-label="Leave the drill-down">×</button></span>` : ''}
+    ${drill.length ? `<span class="kd-chip kd-chip-drill"><span class="kd-chip-k">Drill-down (table and exports):</span> ${drill.map(p => esc(p.label)).join(' › ')}<button type="button" class="kd-chip-x" data-drill-to="-1" aria-label="Leave the drill-down">×</button></span>` : ''}
     ${chips.length || f.datePreset !== '12m' ? `<button type="button" class="kd-link" data-clear-all>Clear all</button>` : ''}
   </div>`;
 }
@@ -154,14 +154,14 @@ export function financialCardsHtml(s: DashboardSummary): string {
 export function operationalCardsHtml(s: DashboardSummary): string {
   const o = s.operational;
   const cards: Card[] = [
-    { id: 'records', label: 'Costing records', value: int(o.totalRecords), sub: `${int(o.currentRecords)} current · ${int(o.totalRecords - o.currentRecords)} older / duplicates`,
+    { id: 'records', label: 'Costing records', value: int(o.totalRecords), sub: `${int(o.currentRecords)} current · ${int(o.totalRecords - o.currentRecords)} older revisions / duplicates`,
       tip: 'Every eligible saved costing in this view, revisions included. Deleted, test and invalid records are excluded.', action: 'scope:all' },
-    { id: 'components', label: 'Unique components', value: int(o.uniqueComponents), sub: o.unidentified ? `${int(o.unidentified)} without a part number not counted` : 'By part number',
+    { id: 'components', label: 'Unique components', value: int(o.uniqueComponents), sub: o.unidentified ? `${int(o.unidentified)} record${o.unidentified === 1 ? '' : 's'} without a part number not counted` : 'Counted by part number',
       tip: 'Distinct part numbers among current records. Revisions and other users’ costings of the same part count once. Names are never used to merge parts.' },
-    { id: 'completed', label: 'Completed', value: int(o.completedRecords), sub: `of ${int(o.currentRecords)} current`,
+    { id: 'completed', label: 'Completed costings', value: int(o.completedRecords), sub: `of ${int(o.currentRecords)} current (completed, reviewed or approved)`,
       tip: 'Current records whose status is completed, reviewed or approved — drafts are not counted.', action: 'status:completed,reviewed,approved' },
-    { id: 'commodities', label: 'Commodities', value: int(o.commodities), sub: 'with a current costing', tip: 'Distinct commodities among current records.' },
-    { id: 'programmes', label: 'Programmes', value: int(o.programmes), sub: 'with a current costing', tip: 'Distinct vehicle programmes among current records.' },
+    { id: 'commodities', label: 'Commodities covered', value: int(o.commodities), sub: 'with a current costing', tip: 'Distinct commodities among current records.' },
+    { id: 'programmes', label: 'Programmes covered', value: int(o.programmes), sub: 'with a current costing', tip: 'Distinct vehicle programmes among current records.' },
     { id: 'review', label: 'Awaiting review / approval', value: int(o.needsReview), sub: `${int(o.awaitingReview)} to review · ${int(o.awaitingApproval)} to approve`,
       tip: 'Current records marked completed (waiting for review) or reviewed (waiting for approval).', action: 'status:completed,reviewed' },   // workflow, not a warning (F-17)
   ].map(c => ({ ...c, compact: true } as Card));
@@ -200,9 +200,12 @@ export function insightsHtml(s: DashboardSummary): string {
 export function dqSummaryHtml(s: DashboardSummary): string {
   const q = s.dataQuality;
   const cur = s.operational.currentRecords;
-  const notComparable = Math.max(0, cur - q.financiallyEligible);
   const parts = [`<strong>${int(q.financiallyEligible)} of ${int(cur)}</strong> current record${cur === 1 ? '' : 's'} compared in GBP`];
-  if (notComparable) parts.push(`${int(notComparable)} not comparable (missing cost, FX or a different delivery basis)`);
+  // the engine's own counts, listed as they are (no arithmetic here)
+  if (q.missingCurrentCost) parts.push(`${int(q.missingCurrentCost)} without a current cost`);
+  if (q.missingShouldCost) parts.push(`${int(q.missingShouldCost)} without a should-cost`);
+  if (q.missingFx) parts.push(`${int(q.missingFx)} without an FX rate`);
+  if (q.basisMismatch) parts.push(`${int(q.basisMismatch)} on a different delivery basis`);
   if (q.duplicateCandidates) parts.push(`${int(q.duplicateCandidates)} duplicate candidate${q.duplicateCandidates === 1 ? '' : 's'}`);
   if (q.excluded) parts.push(`${int(q.excluded)} excluded`);
   if (q.unapprovedFx) parts.push(`${int(q.unapprovedFx)} at a reference FX rate`);
