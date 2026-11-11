@@ -4,7 +4,11 @@ Branch `dashboard-audit-fixes` (from `b22408a7`). Audit brief: `CostVision_Dashb
 `CostVision_KPI_Dashboard_Spec.md`. The record lives in `calculator/docs/dashboard-audit/` (the application and all its docs
 live under `calculator/`; the repo root has no `docs/`).
 
-Status: **Stop 1** — audit complete, no application code changed. The one file added is the audit harness
+**Decisions at Stop 1 (user, 11 Nov 2026):** fix **P1 + P2**; P3 stays open. F-16 → **Option A, record link only**
+(no costing-tool change). X-01 → **leave in the More menu** (open). F-08 → **current records by default** (Excel puts older
+revisions / duplicates on their own sheet; CSV follows the table's "Which records" selector).
+
+Status at Stop 1: audit complete, no application code changed. The one file added is the audit harness
 `calculator/e2e/kpi-dashboard-audit.ts` (screenshots + measurements; it changes nothing in the app).
 
 ---
