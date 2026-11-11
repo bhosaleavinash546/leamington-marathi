@@ -139,7 +139,7 @@ export function financialCardsHtml(s: DashboardSummary): string {
     { id: 'unfavourable', label: 'Unfavourable gaps', value: f.unfavourable.n ? gbpCompact(f.unfavourable.gbp) : '—', exact: f.unfavourable.n ? gbp(f.unfavourable.gbp) : undefined,
       sub: f.unfavourable.n ? `${int(f.unfavourable.n)} record${f.unfavourable.n === 1 ? '' : 's'} below should-cost · per piece, summed` : 'No current record is below its should-cost',
       tip: 'Sum of per-piece gaps where the current cost is BELOW should-cost (the should-cost is higher than the price). Shown apart from the opportunity, never netted against it.',
-      tone: f.unfavourable.n ? undefined : 'muted' },
+      tone: f.unfavourable.n ? 'bad' : 'muted' },
     { id: 'validated', label: 'Validated savings', value: f.validatedSavings.n ? gbpCompact(f.validatedSavings.gbp) : 'Not tracked', exact: f.validatedSavings.n ? gbp(f.validatedSavings.gbp) : undefined,
       sub: f.validatedSavings.n ? `${int(f.validatedSavings.n)} record${f.validatedSavings.n === 1 ? '' : 's'} · per piece` : 'No saving has been marked validated',
       tip: 'Per-piece savings an admin has marked validated. A should-cost gap is never counted as a saving.', tone: f.validatedSavings.n ? undefined : 'muted' },
@@ -163,7 +163,7 @@ export function operationalCardsHtml(s: DashboardSummary): string {
     { id: 'commodities', label: 'Commodities', value: int(o.commodities), sub: 'with a current costing', tip: 'Distinct commodities among current records.' },
     { id: 'programmes', label: 'Programmes', value: int(o.programmes), sub: 'with a current costing', tip: 'Distinct vehicle programmes among current records.' },
     { id: 'review', label: 'Awaiting review / approval', value: int(o.needsReview), sub: `${int(o.awaitingReview)} to review · ${int(o.awaitingApproval)} to approve`,
-      tip: 'Current records marked completed (waiting for review) or reviewed (waiting for approval).', tone: o.needsReview ? 'warn' : undefined, action: 'status:completed,reviewed' },
+      tip: 'Current records marked completed (waiting for review) or reviewed (waiting for approval).', action: 'status:completed,reviewed' },   // workflow, not a warning (F-17)
   ].map(c => ({ ...c, compact: true } as Card));
   return `<section class="kd-band" aria-labelledby="kd-band-ops"><h2 class="kd-band-h" id="kd-band-ops">Coverage and workflow</h2>
     <div class="kd-cards kd-cards-ops">${cards.map(cardHtml).join('')}</div></section>`;

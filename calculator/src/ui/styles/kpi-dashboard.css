@@ -101,6 +101,7 @@
 .kd-card-v { font-size: 1.55rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1.15; }
 .kd-card-v.is-good { color: var(--success); }
 .kd-card-v.is-warn { color: var(--warning); }
+.kd-card-v.is-bad { color: var(--danger); }
 .kd-card-v.is-muted { color: var(--text-muted); font-size: 1.15rem; font-weight: 600; }
 .kd-card-s { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; }
 .kd-tipwrap { position: relative; z-index: 2; flex: none; }
@@ -173,10 +174,11 @@
 .kd-ref { margin-left: 4px; padding: 0 4px; border-radius: 3px; border: 1px solid var(--warning-border); color: var(--warning); font-size: 0.66rem; text-decoration: none; cursor: help; }
 
 .kd-badge { display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; border: 1px solid var(--border-strong); color: var(--text-secondary); white-space: nowrap; }
-.kd-badge.is-draft { color: var(--text-muted); }
-.kd-badge.is-completed { color: var(--info); border-color: var(--info-border); }
-.kd-badge.is-reviewed { color: var(--warning); border-color: var(--warning-border); }
-.kd-badge.is-approved { color: var(--success); border-color: var(--success-border); }
+/* F-17 colour meaning: workflow status = neutral word badges; amber = a data-quality warning only;
+   success = opportunity (current above should-cost); danger = unfavourable gap or an excluded record. */
+.kd-badge.is-draft { color: var(--text-muted); border-style: dashed; }
+.kd-badge.is-completed, .kd-badge.is-reviewed, .kd-badge.is-approved { color: var(--text-secondary); border-color: var(--border-strong); }
+.kd-badge.is-approved { font-weight: 700; color: var(--text-primary); }
 .kd-badge.is-warn { color: var(--warning); border-color: var(--warning-border); }
 .kd-badge.is-excluded { color: var(--danger); border-color: var(--danger-border); }
 .kd-badge.is-muted { color: var(--text-muted); }
