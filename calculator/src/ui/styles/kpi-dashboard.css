@@ -188,6 +188,7 @@
 /* F-11: the section is the only card — chart blocks, insight rows and tables inside it carry no border or fill of their own. */
 .kd-chart-card { display: flex; flex-direction: column; gap: 10px; padding: 0; min-width: 0; }
 .kd-chart-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.kd-chart-h .btn, .kd-sec-h .btn, .kd-inline .btn { flex: none; }   /* app buttons must not shrink and clip their label (F-07 follow-up) */
 .kd-chart-h h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
 .kd-chart-h p { margin: 2px 0 0; font-size: 0.74rem; color: var(--text-muted); }
 .kd-chart-box { position: relative; width: 100%; }
