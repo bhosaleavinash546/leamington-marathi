@@ -223,8 +223,10 @@ function renderBody(): void {
     ${empty ? `<div class="kd-empty"><p class="kd-empty-t">No costing records match these filters</p><p>Widen the reporting period or clear a filter.</p><button type="button" class="btn btn-secondary" data-clear-all>Clear all filters</button></div>` : ''}
     <div class="kd-content${S.loading ? ' kd-dim' : ''}">
     ${dqSummaryHtml(s)}
-    ${financialCardsHtml(s)}
-    ${S.currencyMode === 'original' ? section('ccy', 'Original-currency totals', 'Each currency on its own row — never added together. GBP KPIs above use the frozen FX snapshots.', currencyTotalsHtml(s.currencyTotals)) : ''}
+    ${S.currencyMode === 'original'
+      // F-12: the mode switch changes the first screen — the totals in each original currency take the GBP band's place.
+      ? section('ccy', 'Financial position in original currencies', 'Each currency on its own row — currencies are never added together. Charts, insights and the drill-down stay in consolidated GBP (frozen FX snapshots); switch to Consolidated GBP for the GBP figures.', currencyTotalsHtml(s.currencyTotals))
+      : financialCardsHtml(s)}
     ${operationalCardsHtml(s)}
     ${section('act', 'Where to act', 'Potential opportunity by commodity and current coverage by programme. Select a bar or cell to filter.', '<div class="kd-charts kd-charts-act" id="kd-charts-act"></div>')}
     ${section('insights', 'Management insights', `Only what the data in this view shows. Thresholds: fewer than ${3} current costings = limited coverage; a gap of 15% or more = significant.`, insightsHtml(s))}
