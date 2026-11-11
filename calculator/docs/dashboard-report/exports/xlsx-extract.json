@@ -1,0 +1,424 @@
+{
+"Executive summary": [
+[
+"CostVision | Global Cost Engineering KPI Dashboard",
+"",
+""
+],
+[
+"Generated 11/11/2026, 09:42:07 \u00b7 data refreshed 11/11/2026, 09:42:28",
+"",
+""
+],
+[
+"Period: Last 12 months (2025-11-12 to 2026-11-11)",
+"",
+""
+],
+[
+"No other filter \u2014 all commodities, programmes, model years and powertrains",
+"",
+""
+],
+[
+"GBP at each record's frozen FX snapshot. Policy: Approved monthly rate for the costing month. 4 approved rate(s) loaded; 0 current record(s) converted at the built-in reference (not approved).",
+"",
+""
+],
+[
+"KPI",
+"Value",
+"Basis"
+],
+[
+"Total eligible costing records",
+"9",
+"7 current; revisions included"
+],
+[
+"Unique components analysed",
+"7",
+"By part number; 0 record(s) without one not counted"
+],
+[
+"Completed costing records",
+"7",
+"Current records completed, reviewed or approved"
+],
+[
+"Commodities covered",
+"6",
+"Current records"
+],
+[
+"Vehicle programmes covered",
+"5",
+"Current records"
+],
+[
+"Weighted average cost gap",
+"3.9%",
+"Sum of gaps / sum of GBP current cost; 5 eligible record(s)"
+],
+[
+"Potential unit cost opportunity",
+"\u00a36.98",
+"Sum of per-piece gaps above should-cost; 3 record(s). Not an annual saving."
+],
+[
+"Unfavourable gaps (below should-cost)",
+"\u00a3-4.03",
+"2 record(s)"
+],
+[
+"Annualised opportunity",
+"\u00a3264,000.00",
+"1 record(s) with an admin-validated annual volume"
+],
+[
+"Validated savings",
+"Not tracked",
+"0 record(s), per piece"
+],
+[
+"Implemented savings",
+"Not tracked",
+"0 record(s), per piece"
+],
+[
+"Records requiring review or approval",
+"6",
+"5 to review, 1 to approve"
+],
+[
+"Insight",
+"",
+""
+],
+[
+"Most costing activity: Casting",
+"",
+"4 of 9 saved costings (44.4%) in this view."
+],
+[
+"Largest potential unit cost opportunity: Casting",
+"",
+"\u00a34.40 per piece summed over 1 component application(s) where the current cost is above should-cost. Not an annual saving."
+],
+[
+"Coverage: 5 of 5 programmes, 4 of 5 powertrains",
+"",
+"Every programme has a current costing. No current costing for MHEV."
+],
+[
+"6 commodities have fewer than 3 current costings",
+"",
+"Casting (2), Forging (1), Machining (1), PCBA (1), Pressed sheet metal (1), Rubber (1)."
+],
+[
+"2 component application(s) with a gap of 15% or more",
+"",
+"LR-BRK-001: \u00a3-2.88 (-24.1%); LR-SEAL-9: \u00a30.42 (19.2%)."
+],
+[
+"6 costing(s) awaiting review or approval",
+"",
+"5 completed and not yet reviewed, 1 reviewed and not yet approved."
+],
+[
+"9 costing(s) saved in the last 30 days",
+"",
+"0 in the 30 days before. Counts every save, revisions included."
+]
+],
+"Reconciliation": [
+[
+"Financial KPI",
+"Dashboard",
+"Re-added from \"Costing records\"",
+"Match"
+],
+[
+"Financially eligible records",
+5,
+5,
+"\u2713"
+],
+[
+"\u03a3 GBP current cost",
+74.8613,
+74.8613,
+"\u2713"
+],
+[
+"\u03a3 GBP should-cost",
+71.9134,
+71.9134,
+"\u2713"
+],
+[
+"\u03a3 GBP cost gap",
+2.9479,
+2.9479,
+"\u2713"
+],
+[
+"Potential unit cost opportunity",
+6.9784,
+6.9784,
+"\u2713"
+],
+[
+"Unfavourable gaps",
+-4.0305,
+-4.0305,
+"\u2713"
+],
+[
+"Weighted cost gap %",
+0.0394,
+0.0394,
+"\u2713"
+],
+[
+"The re-added column recomputes each KPI from the exported records. Every row should show \u2713.",
+"",
+"",
+""
+]
+],
+"Commodity analysis": [
+[
+"Commodity",
+"Records",
+"Eligible",
+"GBP current (\u03a3 per piece)",
+"GBP should-cost (\u03a3 per piece)",
+"GBP gap",
+"Opportunity (\u03a3 per piece)"
+],
+[
+"Casting",
+4,
+1,
+31.5,
+27.1,
+4.4,
+4.4
+],
+[
+"Forging",
+1,
+1,
+14.0458,
+15.2,
+-1.1542,
+0
+],
+[
+"Machining",
+1,
+1,
+11.9328,
+14.8091,
+-2.8763,
+0
+],
+[
+"PCBA",
+1,
+1,
+15.1978,
+13.0396,
+2.1583,
+2.1583
+],
+[
+"Pressed sheet metal",
+1,
+0,
+"",
+"",
+"",
+""
+],
+[
+"Rubber",
+1,
+1,
+2.1849,
+1.7647,
+0.4202,
+0.4202
+],
+[
+"Records = current records except the commodity sheet, which counts every save. GBP columns use eligible current records only.",
+"",
+"",
+"",
+"",
+"",
+""
+]
+],
+"Original currencies": [
+[
+"Currency",
+"Records (current)",
+"\u03a3 current cost",
+"Records (should)",
+"\u03a3 should-cost",
+"Same-currency records",
+"\u03a3 gap (same currency, same basis)"
+],
+[
+"GBP",
+1,
+31.5,
+5,
+104.2091,
+1,
+4.4
+],
+[
+"CNY",
+1,
+420,
+0,
+0,
+0,
+""
+],
+[
+"EUR",
+2,
+16.8,
+1,
+2.1,
+1,
+0.5
+],
+[
+"INR",
+1,
+1690,
+1,
+1450,
+1,
+240
+],
+[
+"USD",
+1,
+18.4,
+0,
+0,
+0,
+""
+],
+[
+"Each row is in its own currency. Rows are never added together.",
+"",
+"",
+"",
+"",
+"",
+""
+]
+],
+"Data quality": [
+[
+"Check",
+"Records"
+],
+[
+"Total retrieved records",
+9
+],
+[
+"Included (all revisions)",
+9
+],
+[
+"Records excluded",
+0
+],
+[
+"  deleted",
+0
+],
+[
+"  test",
+0
+],
+[
+"  invalid",
+0
+],
+[
+"Financially eligible",
+5
+],
+[
+"Missing should-cost",
+0
+],
+[
+"Missing current cost",
+1
+],
+[
+"Missing FX rate",
+0
+],
+[
+"Different cost basis",
+1
+],
+[
+"Reference FX (not approved)",
+0
+],
+[
+"Duplicate candidates",
+1
+],
+[
+"Older revisions",
+1
+],
+[
+"No part number",
+0
+],
+[
+"No commodity",
+0
+],
+[
+"No programme",
+0
+],
+[
+"No model year",
+0
+],
+[
+"No powertrain",
+0
+]
+],
+"sheets": [
+"Executive summary",
+"Commodity analysis",
+"Programme analysis",
+"Powertrain analysis",
+"Model year & status",
+"Original currencies",
+"Costing records",
+"Older revisions & duplicates",
+"Data quality",
+"Reconciliation",
+"Method & FX"
+]
+}
