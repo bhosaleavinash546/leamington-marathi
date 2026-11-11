@@ -88,7 +88,7 @@ export function dateControlHtml(f: DashboardFilters): string {
   </div>`;
 }
 
-export function chipsHtml(f: DashboardFilters): string {
+export function chipsHtml(f: DashboardFilters, drill: { level: string; key: string; label: string }[] = []): string {
   const chips: string[] = [];
   for (const dim of DIMENSIONS) for (const v of f[dim]) {
     chips.push(`<span class="kd-chip"><span class="kd-chip-k">${DIM_LABEL[dim]}:</span> ${esc(optionLabel(dim, v))}<button type="button" class="kd-chip-x" data-chip-dim="${dim}" data-chip-val="${esc(v)}" aria-label="Remove ${esc(DIM_LABEL[dim])} ${esc(optionLabel(dim, v))}">×</button></span>`);
@@ -97,6 +97,7 @@ export function chipsHtml(f: DashboardFilters): string {
   return `<div class="kd-chips" aria-live="polite">
     <span class="kd-chip kd-chip-period"><span class="kd-chip-k">Period:</span> ${esc(period)}</span>
     ${chips.join('')}
+    ${drill.length ? `<span class="kd-chip kd-chip-drill"><span class="kd-chip-k">Drill-down:</span> ${drill.map(p => esc(p.label)).join(' › ')}<button type="button" class="kd-chip-x" data-drill-to="-1" aria-label="Leave the drill-down">×</button></span>` : ''}
     ${chips.length || f.datePreset !== '12m' ? `<button type="button" class="kd-link" data-clear-all>Clear all</button>` : ''}
   </div>`;
 }

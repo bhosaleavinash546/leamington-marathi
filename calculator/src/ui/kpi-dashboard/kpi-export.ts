@@ -20,7 +20,7 @@ export interface ExportRow extends RecordRowView {
 
 const lbl = (k: string) => (k === NOT_SET ? 'Not set' : k);
 
-export function filterLines(s: DashboardSummary): string[] {
+export function filterLines(s: DashboardSummary, note = ''): string[] {
   const f = s.filters;
   const period = f.datePreset === 'custom'
     ? `Custom: ${s.window.from ?? 'start'} to ${s.window.to ?? 'today'}`
@@ -28,6 +28,7 @@ export function filterLines(s: DashboardSummary): string[] {
   const lines = [`Period: ${period}`];
   for (const d of DIMENSIONS) if (f[d].length) lines.push(`${DIM_LABEL[d]}: ${f[d].map(v => optionLabel(d, v)).join(', ')}`);
   if (lines.length === 1) lines.push('No other filter — all commodities, programmes, model years and powertrains');
+  if (note) lines.push(note);
   return lines;
 }
 
@@ -95,7 +96,7 @@ const COLS: { h: string; get: (r: ExportRow) => unknown; fmt?: string; w?: numbe
 ];
 const colLetter = (i: number) => { let s = '', n = i + 1; while (n) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
 
-export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promise<Blob> {
+export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<Blob> {
   const ExcelJS = (await import('exceljs')).default;
   const wb = new ExcelJS.Workbook();
   wb.creator = 'CostVision'; wb.created = new Date();
@@ -110,7 +111,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promis
   ex.columns = [{ width: 40 }, { width: 22 }, { width: 80 }];
   ex.addRow([REPORT_TITLE]).font = { bold: true, size: 14 };
   ex.addRow([`Generated ${new Date(s.generatedAt).toLocaleString('en-GB')} · data refreshed ${new Date().toLocaleString('en-GB')}`]);
-  for (const l of filterLines(s)) ex.addRow([l]);
+  for (const l of filterLines(s, note)) ex.addRow([l]);
   ex.addRow([fxNote(s)]);
   ex.addRow([]);
   head(ex, ['KPI', 'Value', 'Basis']);
@@ -217,8 +218,8 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[]): Promis
   return new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }
 
-export async function exportExcel(s: DashboardSummary, rows: ExportRow[]): Promise<void> {
-  download(await buildExcel(s, rows), `costvision-kpi-dashboard-${stamp()}.xlsx`);
+export async function exportExcel(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<void> {
+  download(await buildExcel(s, rows, note), `costvision-kpi-dashboard-${stamp()}.xlsx`);
 }
 
 // ─── PDF ──────────────────────────────────────────────────────────────────────
@@ -251,7 +252,7 @@ async function chartImages(s: DashboardSummary): Promise<{ title: string; basis:
   return out;
 }
 
-export async function buildPdf(s: DashboardSummary, rows: ExportRow[]): Promise<Blob> {
+export async function buildPdf(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<Blob> {
   const [{ jsPDF }, at] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
   const autoTable = (at as unknown as { default: (d: unknown, o: unknown) => void }).default;
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
@@ -265,7 +266,7 @@ export async function buildPdf(s: DashboardSummary, rows: ExportRow[]): Promise<
   txt(REPORT_TITLE, M, 16);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(70);
   let y = 22;
-  for (const l of [`Generated ${new Date(s.generatedAt).toLocaleString('en-GB')}`, ...filterLines(s)]) { txt(l, M, y); y += 4.2; }
+  for (const l of [`Generated ${new Date(s.generatedAt).toLocaleString('en-GB')}`, ...filterLines(s, note)]) { txt(l, M, y); y += 4.2; }
   const fx = doc.splitTextToSize(pdfSafe(fxNote(s)), W - 2 * M) as string[]; doc.text(fx, M, y); y += fx.length * 4 + 2;
 
   autoTable(doc, { ...tableOpts, startY: y, head: [['KPI', 'Value', 'Basis']], body: kpiRows(s).map(r => r.map(pdfSafe)),
@@ -330,8 +331,8 @@ export async function buildPdf(s: DashboardSummary, rows: ExportRow[]): Promise<
   return doc.output('blob');
 }
 
-export async function exportPdf(s: DashboardSummary, rows: ExportRow[]): Promise<void> {
-  download(await buildPdf(s, rows), `costvision-kpi-dashboard-${stamp()}.pdf`);
+export async function exportPdf(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<void> {
+  download(await buildPdf(s, rows, note), `costvision-kpi-dashboard-${stamp()}.pdf`);
 }
 
 export { download };

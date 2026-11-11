@@ -100,3 +100,13 @@ describe('F-10: chart colour follows the entity', () => {
     expect(slotFor('Hydrogen', STANDARD_POWERTRAINS)).toBeGreaterThanOrEqual(5);
   });
 });
+
+describe('F-13: the drill-down path is visible and removable', () => {
+  it('renders a drill chip with a leave button', () => {
+    const html = chipsHtml(DEFAULT_FILTERS, [{ level: 'commodity', key: 'Casting', label: 'Casting' }, { level: 'programme', key: 'L460', label: 'L460' }]);
+    expect(html).toContain('Drill-down:');
+    expect(html).toContain('Casting › L460');
+    expect(html).toContain('data-drill-to="-1"');
+    expect(chipsHtml(DEFAULT_FILTERS)).not.toContain('Drill-down');
+  });
+});

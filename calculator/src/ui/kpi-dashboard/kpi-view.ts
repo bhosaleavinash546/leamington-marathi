@@ -177,7 +177,7 @@ function renderFilters(focusSel?: string): void {
   focusSel = focusSel ?? focusedFilterSelector();
   const opts = S.summary?.options;
   row.innerHTML = dateControlHtml(S.filters) + DIMENSIONS.map(d => multiSelectHtml(d, opts?.[d] ?? [], S.filters[d], S.openDim === d, S.openDim === d ? S.msQuery : '')).join('');
-  S.root!.querySelector('#kd-chips')!.innerHTML = chipsHtml(S.filters);
+  S.root!.querySelector('#kd-chips')!.innerHTML = chipsHtml(S.filters, S.drillPath);
   const n = DIMENSIONS.reduce((a, d) => a + S.filters[d].length, 0) + (S.filters.datePreset !== '12m' ? 1 : 0);
   S.root!.querySelector('#kd-filter-count')!.textContent = n ? `(${n})` : '';
   if (focusSel) S.root!.querySelector<HTMLElement>(focusSel)?.focus();
@@ -482,23 +482,37 @@ async function adminAction(act: string): Promise<void> {
 
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
-async function exportRows(): Promise<import('./kpi-export.js').ExportRow[]> {
-  const r = await api<RecordsPage>(`/records?${fParam()}&scope=all&all=1`);
-  return r.rows as import('./kpi-export.js').ExportRow[];
+/** The filters an export uses: the active filters with the drill-down path applied (F-13). The four dimension
+ *  levels become filters; a component level narrows the record list and is stated on the report. */
+function exportFilters(): { filters: DashboardFilters; componentParam: string; note: string } {
+  const f = structuredClone(S.filters) as DashboardFilters;
+  let componentParam = ''; let note = '';
+  for (const p of S.drillPath) {
+    if (p.level === 'commodity' || p.level === 'programme' || p.level === 'powertrain' || p.level === 'modelYear') f[p.level] = [p.key];
+    else if (p.level === 'component') { componentParam = `&drill_component=${encodeURIComponent(p.key)}`; note = `Drill-down: component ${p.label} (records list only)`; }
+  }
+  return { filters: f, componentParam, note };
 }
+const fParamOf = (f: DashboardFilters) => `f=${encodeURIComponent(JSON.stringify(f))}`;
+
 async function doExport(kind: 'pdf' | 'xlsx' | 'csv'): Promise<void> {
   if (!S.summary) return;
   showToast(`Preparing the ${kind === 'xlsx' ? 'Excel' : kind.toUpperCase()} export…`, 'info');
   try {
     const ex = await import('./kpi-export.js');
+    const { filters, componentParam, note } = exportFilters();
     if (kind === 'csv') {
       // The CSV follows the table's "Which records" selector — current records unless the user chose otherwise (F-08).
-      const r = await fetch(`${apiBase}/api/kpi/records.csv?${fParam()}&scope=${S.q.scope}`);
+      const r = await fetch(`${apiBase}/api/kpi/records.csv?${fParamOf(filters)}&scope=${S.q.scope}${componentParam}`);
       if (!r.ok) throw new Error(`CSV export failed (${r.status})`);
       ex.download(await r.blob(), `costvision-kpi-records-${new Date().toISOString().slice(0, 10)}.csv`);
     } else {
-      const rows = await exportRows();
-      if (kind === 'pdf') await ex.exportPdf(S.summary, rows); else await ex.exportExcel(S.summary, rows);
+      const drilled = S.drillPath.length > 0;
+      const [summary, rows] = await Promise.all([
+        drilled ? api<DashboardSummary>(`/summary?${fParamOf(filters)}`) : Promise.resolve(S.summary),
+        api<RecordsPage>(`/records?${fParamOf(filters)}&scope=all&all=1${componentParam}`).then(r => r.rows as import('./kpi-export.js').ExportRow[]),
+      ]);
+      if (kind === 'pdf') await ex.exportPdf(summary, rows, note); else await ex.exportExcel(summary, rows, note);
     }
   } catch (e) { showToast((e as Error).message || 'The export failed.', 'error'); }
 }
@@ -551,9 +565,9 @@ function onClick(e: MouseEvent): void {
   if ((x = el('[data-scope]'))) { S.q.scope = x.dataset.scope as Scope; S.q.page = 1; renderBody(); void loadRecords().then(() => scrollTo('records')); return; }
   if ((x = el('[data-drill-key]'))) {
     S.drillPath.push({ level: S.drill.level, key: x.dataset.drillKey!, label: x.dataset.drillLabel! });
-    S.q.page = 1; void loadRecords(); return;
+    S.q.page = 1; renderFilters(); void loadRecords(); return;
   }
-  if ((x = el('[data-drill-to]'))) { S.drillPath = S.drillPath.slice(0, Number(x.dataset.drillTo) + 1); S.q.page = 1; void loadRecords(); return; }
+  if ((x = el('[data-drill-to]'))) { S.drillPath = S.drillPath.slice(0, Number(x.dataset.drillTo) + 1); S.q.page = 1; renderFilters(); void loadRecords(); return; }
   if ((x = el('[data-sort]'))) {
     const k = x.dataset.sort!;
     S.q.dir = S.q.sort === k && S.q.dir === 'desc' ? 'asc' : 'desc'; S.q.sort = k; S.q.page = 1;
