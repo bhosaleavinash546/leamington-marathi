@@ -5,3 +5,12 @@
 
  RUN  v5.0.2 /home/user/leamington-marathi/calculator
 
+Warning: failed to launch javaldx - java may not function correctly
+Warning: failed to launch javaldx - java may not function correctly
+
+ Test Files  368 passed (368)
+      Tests  5998 passed (5998)
+   Start at  09:16:44
+   Duration  401.94s (tests 88%, import 10%, transform 2%)
+
+EXIT 0

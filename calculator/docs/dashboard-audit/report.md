@@ -150,4 +150,4 @@ confirmed against the after evidence.
 | 8 | F-15 tip closes when the pointer moves onto it. | Fixed (b8093b20). |
 
 After the follow-ups everything in §D was re-run on the final build: live e2e 59/59, after screenshots re-shot, 0 overflow /
-0 axe failures at all 12 views, full `npm test` and both typechecks (results in §D and `evidence/`).
+0 axe failures at all 12 views, full `npm test` (368 files, 5,998 passed, 0 failed) and both typechecks (exit 0) on the final code.
