@@ -26,6 +26,11 @@ Chart.register(BarController, LineController, DoughnutController, BarElement, Li
 
 const CAT_LIGHT = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
 const CAT_DARK = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#008300', '#9085e9', '#e66767'];
+/** Status is an ORDERED stage (draft → completed → reviewed → approved): one-hue ordinal ramp, validated with
+ *  validate_palette.js --ordinal on #ffffff (light) and #111513 (dark) — never the categorical hues, whose green / amber
+ *  read as success / warning (F-17, independent review). */
+const STATUS_LIGHT = ['#86b6ef', '#5598e7', '#256abf', '#104281'];
+const STATUS_DARK = ['#184f95', '#256abf', '#5598e7', '#9ec5f4'];
 const SEQ = ['#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', '#3987e5', '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b'];
 
 let _forceLight = false;
@@ -40,6 +45,7 @@ function theme() {
   const dark = isDark();
   return {
     cat: dark ? CAT_DARK : CAT_LIGHT,
+    status: dark ? STATUS_DARK : STATUS_LIGHT,
     text: cssVar('--text-secondary', dark ? '#aeb9d4' : '#374769'),
     muted: cssVar('--text-muted', '#7c8aa6'),
     grid: cssVar('--border', dark ? 'rgba(150,166,204,0.14)' : 'rgba(37,99,235,0.12)'),
@@ -258,8 +264,8 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
   const st = c.byStatus; const stTotal = st.reduce((a, r) => a + r.count, 0);
   const t = theme();
   const stHtml = `<div class="kd-seg" role="group" aria-label="Costing status — select a segment to filter">
-    ${st.map(r => `<button type="button" class="kd-seg-part" style="flex:${r.count};background:${t.cat[slotFor(r.key, RECORD_STATUSES)]}" data-status="${esc(r.key)}" title="${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}: ${r.count} (${((r.count / Math.max(1, stTotal)) * 100).toFixed(1)}%)" aria-label="Filter to ${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}"></button>`).join('')}</div>
-    <ul class="kd-legend">${st.map(r => `<li><i style="background:${t.cat[slotFor(r.key, RECORD_STATUSES)]}"></i>${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)} <strong>${int(r.count)}</strong> <span class="kd-muted">${((r.count / Math.max(1, stTotal)) * 100).toFixed(0)}%</span></li>`).join('')}</ul>`;
+    ${st.map(r => `<button type="button" class="kd-seg-part" style="flex:${r.count};background:${t.status[Math.max(0, RECORD_STATUSES.indexOf(r.key as RecordStatus))]}" data-status="${esc(r.key)}" title="${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}: ${r.count} (${((r.count / Math.max(1, stTotal)) * 100).toFixed(1)}%)" aria-label="Filter to ${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)}"></button>`).join('')}</div>
+    <ul class="kd-legend">${st.map(r => `<li><i style="background:${t.status[Math.max(0, RECORD_STATUSES.indexOf(r.key as RecordStatus))]}"></i>${esc(STATUS_LABEL[r.key as RecordStatus] ?? r.key)} <strong>${int(r.count)}</strong> <span class="kd-muted">${((r.count / Math.max(1, stTotal)) * 100).toFixed(0)}%</span></li>`).join('')}</ul>`;
   specs.push({
     id: 'status', title: 'Costing status', basis: 'Current records · select a segment to filter',
     empty: !st.length, emptyText: 'No current records in this view.',
