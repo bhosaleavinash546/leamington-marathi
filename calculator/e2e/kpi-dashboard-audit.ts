@@ -153,14 +153,18 @@ async function main(): Promise<void> {
           const visibleCols: string[] = [];
           if (wrap) { const wr = wrap.getBoundingClientRect(); wrap.querySelectorAll('thead th').forEach(th => { const r = th.getBoundingClientRect(); if (r.right <= wr.right + 1) visibleCols.push((th.textContent ?? '').trim()); }); }
           const filterRow = document.getElementById('kd-filter-row')?.getBoundingClientRect();
+          // Tables wider than their box (scroll sideways) — the records table scrolls on purpose and is reported apart.
+          const wideTables = [...root.querySelectorAll<HTMLElement>('.kd-table-wrap')].filter(w => !w.classList.contains('kd-records') && w.offsetParent && w.scrollWidth > w.clientWidth + 1)
+            .map(w => `${w.closest('section')?.id ?? '?'} ${w.clientWidth}/${w.scrollWidth}`);
           return {
             viewport: [vw, vh], pageHeight: document.documentElement.scrollHeight, horizontalOverflowPx: document.documentElement.scrollWidth - vw,
             offRight: offRight.slice(0, 15), clippedText: clipped.slice(0, 15),
-            foldPx: vh, sectionTops: { insights: secTop('kd-sec-insights'), dq: secTop('kd-sec-dq'), charts: secTop('kd-sec-charts'), drill: secTop('kd-sec-drill'), records: secTop('kd-sec-records') },
+            foldPx: vh, sectionTops: { act: secTop('kd-sec-act'), insights: secTop('kd-sec-insights'), dq: secTop('kd-sec-dq'), charts: secTop('kd-sec-charts'), drill: secTop('kd-sec-drill'), records: secTop('kd-sec-records') },
             cardBottoms: { opportunity: cardTop('opportunity'), gap: cardTop('gap-pct'), review: cardTop('review') },
             filterRowHeight: filterRow ? Math.round(filterRow.height) : null,
             recordsColumnsVisibleWithoutScroll: visibleCols,
             recordsTableScrollWidth: wrap ? [wrap.clientWidth, wrap.scrollWidth] : null,
+            wideTables,
           };
         });
         const ax = await axeOn(page, '#kpi-view');
@@ -210,12 +214,17 @@ async function main(): Promise<void> {
       await page.waitForTimeout(200);
       await page.screenshot({ path: join(SHOTS, `state-records-${t}-1440.png`) });
       const sticky = await page.evaluate(() => {
-        const th = document.querySelector('#kd-records thead th'); const tbl = document.querySelector('#kd-records table');
-        if (!th || !tbl) return null;
-        window.scrollBy(0, (tbl.getBoundingClientRect().top) + 60);
-        return { tableTop: Math.round(tbl.getBoundingClientRect().top), headerTop: Math.round(th.getBoundingClientRect().top) };
-      });
-      if (t === 'dark') metrics.stickyHeaderAfterScroll = sticky;
+        // Layout check only: clone the rendered rows in the DOM (no data is added) so the table's own box scrolls.
+        const wrap = document.querySelector<HTMLElement>('#kd-records .kd-table-wrap'); const tb = wrap?.querySelector('tbody');
+        const th = wrap?.querySelector('thead th');
+        if (!wrap || !tb || !th) return null;
+        const rows = [...tb.children]; for (let i = 0; i < 6; i++) rows.forEach(r => tb.appendChild(r.cloneNode(true)));
+        const boxScrolls = wrap.scrollHeight > wrap.clientHeight;
+        wrap.scrollTop = 300;
+        const res = { boxScrolls, boxTop: Math.round(wrap.getBoundingClientRect().top), headerTop: Math.round(th.getBoundingClientRect().top), scrolledBy: wrap.scrollTop };
+        rows.forEach(() => undefined);
+        return res;
+      });      if (t === 'dark') metrics.stickyHeaderAfterScroll = sticky;
       // drawer
       await page.click('#kd-records [data-open]');
       await page.waitForSelector('#kd-drawer[open] h2');
@@ -283,6 +292,61 @@ async function main(): Promise<void> {
       };
     }
     // a brand-new user with nothing filtered sees the same shared data
+    // ── After-phase checks: pasted record link, original-currency + drill states, phone filters, regression smoke ──
+    {
+      const recId = (metrics.recordsAllTime as { rows: { id: string; role: string }[] }).rows.find(r => r.role === 'current')!.id;
+      const { page, ctx, errors } = await open('bob', 'Bob Baker', 1440, 900, 'light');
+      // A FRESH load of the pasted address (from about:blank) — a hash change in an open tab is a different case.
+      await page.goto('about:blank');
+      await page.goto(`${base}/calculator/#kpi-record=${recId}`, { waitUntil: 'networkidle' });
+      const opened = await page.waitForSelector('#kd-drawer[open] h2', { timeout: 20_000 }).then(() => true).catch(() => false);
+      await page.screenshot({ path: join(SHOTS, 'state-pasted-record-link-light-1440.png') });
+      metrics.pastedRecordLink = { opened, hash: await page.evaluate(() => location.hash), errors };
+      await page.keyboard.press('Escape');
+      metrics.pastedRecordLinkClosedHash = await page.evaluate(() => location.hash);
+      // a plain start still lands on Home
+      await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+      metrics.plainStartLandsOnHome = await page.evaluate(() => getComputedStyle(document.getElementById('home-view')!).display !== 'none' && getComputedStyle(document.getElementById('kpi-view')!).display === 'none');
+      // original-currency mode + drill chip
+      await openDash(page);
+      await page.click('[data-ccy-mode="original"]'); await page.waitForTimeout(400);
+      await page.screenshot({ path: join(SHOTS, 'state-original-currency-light-1440-fold.png') });
+      metrics.originalCurrencyTableFits = await page.evaluate(() => { const w = document.querySelector<HTMLElement>('#kd-sec-ccy .kd-table-wrap'); return w ? w.scrollWidth <= w.clientWidth + 1 : null; });
+      await page.click('[data-ccy-mode="gbp"]'); await page.waitForTimeout(300);
+      await page.evaluate(() => document.getElementById('kd-sec-drill')?.scrollIntoView({ block: 'start' }));
+      await page.click('[data-drill-key="Casting"]'); await page.waitForSelector('[data-drill-key="L460"]');
+      await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(200);
+      metrics.drillChip = await page.textContent('#kd-chips');
+      await page.screenshot({ path: join(SHOTS, 'state-drill-chip-light-1440-fold.png') });
+      await ctx.close();
+    }
+    {
+      const { page, ctx } = await open('bob', 'Bob Baker', 390, 844, 'dark');
+      await openDash(page);
+      const before = await page.isVisible('#kd-filter-row');
+      await page.click('[data-act="filters-toggle"]'); await page.waitForTimeout(200);
+      metrics.phoneFilters = { rowVisibleBeforeToggle: before, rowVisibleAfterToggle: await page.isVisible('#kd-filter-row'), expanded: await page.getAttribute('[data-act="filters-toggle"]', 'aria-expanded') };
+      await page.screenshot({ path: join(SHOTS, 'state-phone-filters-open-dark-390.png') });
+      await ctx.close();
+    }
+    {
+      // Regression smoke: every left-nav page and the costing tool tiles open without errors
+      const { page, ctx, errors, failed } = await open('alice', 'Alice Able', 1440, 900, 'dark');
+      const nav: Record<string, string> = {};
+      for (const id of ['home-btn', 'analytics-btn', 'kpi-btn', 'news-btn', 'negotiation-btn', 'viewer-btn', 'home-btn']) {
+        await page.evaluate(i => (document.getElementById(i) as HTMLElement).click(), id); await page.waitForTimeout(700);
+        nav[id] = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('section[id$="-view"]')].filter(e => getComputedStyle(e).display !== 'none').map(e => e.id).join(','));
+      }
+      const tiles: Record<string, boolean> = {};
+      for (const t of ['tile-machining', 'tile-casting', 'tile-sheet-metal', 'tile-forging', 'tile-plastic', 'tile-pcb-image', 'tile-cad']) {
+        await page.evaluate(() => (document.getElementById('home-btn') as HTMLElement).click()); await page.waitForTimeout(300);
+        await page.evaluate(i => (document.getElementById(i) as HTMLElement)?.click(), t); await page.waitForTimeout(900);
+        tiles[t] = await page.evaluate(() => getComputedStyle(document.getElementById('costing-view')!).display !== 'none');
+        await page.screenshot({ path: join(SHOTS, `regression-${t}-dark-1440.png`) });
+      }
+      metrics.regressionSmoke = { nav, tiles, errors, failed: failed.filter(f => !/HEAD \/api\/health/.test(f)) };
+      await ctx.close();
+    }
     metrics.newUserSeesShared = (await api('nora', 'GET', `/api/kpi/summary?f=${encodeURIComponent(JSON.stringify({ datePreset: 'all' }))}`)).json?.operational?.totalRecords;
     metrics.serverKpiErrors = serverLog.match(/\[kpi\][^\n]*/g) ?? [];
   } finally {
