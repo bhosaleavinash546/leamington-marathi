@@ -539,6 +539,12 @@ function onClick(e: MouseEvent): void {
   if (S.openDim && !el('.kd-ms')) { const d = S.openDim; S.openDim = null; renderFilters(); void d; }
 
   if ((x = el('[data-ccy-mode]'))) { S.currencyMode = x.dataset.ccyMode as 'gbp' | 'original'; persist(); renderHead(); renderBody(); return; }
+  if ((x = el('[data-tip]'))) {   // F-15: toggle one card explanation; any other open one closes
+    const open = x.getAttribute('aria-expanded') !== 'true';
+    S.root!.querySelectorAll('[data-tip][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+    x.setAttribute('aria-expanded', String(open)); return;
+  }
+  if (!el('.kd-tipwrap')) S.root?.querySelectorAll('[data-tip][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
   if ((x = el('[data-card-action]'))) {
     const [k, v] = x.dataset.cardAction!.split(':');
     if (k === 'scope') { S.q.scope = v as Scope; S.q.page = 1; void loadRecords().then(() => scrollTo('records')); renderBody(); return; }
@@ -650,6 +656,7 @@ function onInput(e: Event): void {
 
 function onKey(e: KeyboardEvent): void {
   const t = e.target as HTMLElement;
+  if (e.key === 'Escape' && t.matches('[data-tip][aria-expanded="true"]')) { t.setAttribute('aria-expanded', 'false'); e.preventDefault(); return; }
   if (e.key === 'Escape' && S.openDim) { const d = S.openDim; S.openDim = null; renderFilters(`[data-ms-toggle="${d}"]`); e.preventDefault(); return; }
   if (e.key === 'Escape' && !S.root!.querySelector<HTMLElement>('#kd-export-menu')!.hidden) { toggleMenu(false); S.root!.querySelector<HTMLElement>('[data-act="export-menu"]')?.focus(); return; }
   if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && t.matches('[data-ccy-mode]')) {

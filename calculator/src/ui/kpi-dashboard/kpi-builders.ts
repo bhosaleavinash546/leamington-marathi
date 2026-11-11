@@ -109,7 +109,7 @@ interface Card { id: string; label: string; value: string; exact?: string; sub: 
 function cardHtml(c: Card): string {
   const tipId = `kd-tip-${c.id}`;
   const body = `<div class="kd-card-top"><span class="kd-card-l">${c.label}</span>
-      <span class="kd-tip" tabindex="0" role="button" aria-label="About ${esc(c.label)}" aria-describedby="${tipId}">i<span class="kd-tip-pop" role="tooltip" id="${tipId}">${c.tip}</span></span></div>
+      <span class="kd-tipwrap"><button type="button" class="kd-tip" data-tip aria-expanded="false" aria-label="About ${esc(c.label)}" aria-describedby="${tipId}">i</button><span class="kd-tip-pop" role="tooltip" id="${tipId}">${c.tip}</span></span></div>
     <div class="kd-card-v${c.tone ? ` is-${c.tone}` : ''}"${c.exact ? ` title="${esc(c.exact)}"` : ''}>${c.value}</div>
     <div class="kd-card-s">${c.sub}</div>`;
   return c.action
