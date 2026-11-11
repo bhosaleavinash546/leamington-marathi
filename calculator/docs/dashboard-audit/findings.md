@@ -8,6 +8,9 @@ live under `calculator/`; the repo root has no `docs/`).
 (no costing-tool change). X-01 → **leave in the More menu** (open). F-08 → **current records by default** (Excel puts older
 revisions / duplicates on their own sheet; CSV follows the table's "Which records" selector).
 
+**Stop 2 (user, 11 Nov 2026):** F-16 — approved a start-up hook in `src/ui/main.ts` (protected: navigation) so a pasted
+`#kpi-record=<id>` link opens the dashboard and the record; every other address unchanged.
+
 Status at Stop 1: audit complete, no application code changed. The one file added is the audit harness
 `calculator/e2e/kpi-dashboard-audit.ts` (screenshots + measurements; it changes nothing in the app).
 
