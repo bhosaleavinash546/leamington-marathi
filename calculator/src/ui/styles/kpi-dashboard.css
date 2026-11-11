@@ -15,7 +15,8 @@
 
 /* header */
 .kd-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-top: 18px; }
-.kd-head-t { min-width: 0; }
+.kd-head-t { min-width: 0; flex: 1 1 420px; }
+.kd-refreshed { display: block; margin-top: 2px; font-size: 0.76rem; color: var(--text-muted); }
 .kd-eyebrow { margin: 0 0 2px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .kd-head h1 { margin: 0; font-size: clamp(1.25rem, 2.2vw, 1.6rem); font-weight: 700; color: var(--text-primary); text-wrap: balance; }
 .kd-head-s { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.86rem; }

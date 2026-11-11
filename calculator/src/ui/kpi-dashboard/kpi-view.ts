@@ -133,9 +133,9 @@ function shell(): string {
   return `<div class="kd-wrap">
     <div class="kd-head">
       <div class="kd-head-t"><p class="kd-eyebrow">CostVision</p><h1>Global Cost Engineering KPI Dashboard</h1>
-        <p class="kd-head-s">Saved should-costs across every authorised user, consolidated in GBP. Read-only reporting.</p></div>
+        <p class="kd-head-s">Saved should-costs across every authorised user, consolidated in GBP. Read-only reporting. <span id="kd-refreshed" class="kd-refreshed" aria-live="polite"></span></p></div>
       <div class="kd-head-a">
-        <div class="kd-refresh"><span id="kd-refreshed" aria-live="polite"></span>
+        <div class="kd-refresh">
           <button type="button" class="btn btn-secondary btn-sm" data-act="refresh" aria-label="Refresh now"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></svg> Refresh</button></div>
         <div class="kd-seg-ctl" role="radiogroup" aria-label="Currency view">
           <button type="button" role="radio" data-ccy-mode="gbp">Consolidated GBP</button><button type="button" role="radio" data-ccy-mode="original">Original currency</button></div>
