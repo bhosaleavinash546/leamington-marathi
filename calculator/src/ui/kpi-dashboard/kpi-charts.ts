@@ -78,7 +78,7 @@ function cardHtml(s: ChartSpec, showTable: boolean): string {
       : s.html ?? `<div class="kd-chart-box" style="height:${s.height ?? 240}px"><canvas id="kd-c-${s.id}" role="img" aria-label="${esc(s.title)} chart. Use the Table button for the values."></canvas></div>`;
   return `<section class="kd-chart-card" data-chart="${s.id}" aria-labelledby="kd-ct-${s.id}">
     <div class="kd-chart-h"><div><h3 id="kd-ct-${s.id}">${esc(s.title)}</h3><p>${esc(s.basis)}</p></div>
-      ${s.empty ? '' : `<button type="button" class="kd-btn kd-btn-ghost kd-btn-sm" data-chart-table="${s.id}" aria-pressed="${showTable}">${showTable ? 'Chart' : 'Table'}</button>`}</div>
+      ${s.empty ? '' : `<button type="button" class="btn btn-secondary btn-sm" data-chart-table="${s.id}" aria-pressed="${showTable}">${showTable ? 'Chart' : 'Table'}</button>`}</div>
     ${body}</section>`;
 }
 

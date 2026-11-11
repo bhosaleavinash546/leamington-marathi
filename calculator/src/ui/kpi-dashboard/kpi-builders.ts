@@ -73,7 +73,7 @@ export function multiSelectHtml(dim: Dimension, options: FilterOption[], selecte
           <input type="checkbox" data-ms-opt="${dim}" value="${esc(o.value)}"${selected.includes(o.value) ? ' checked' : ''} id="${id}-o${i}">
           <span class="kd-ms-opt-l">${esc(optionLabel(dim, o.value))}</span><span class="kd-ms-opt-n">${int(o.count)}</span>
         </label>`).join('') : `<p class="kd-ms-none">No ${DIM_LABEL[dim].toLowerCase()} matches “${esc(query)}”.</p>`}</div>
-      <div class="kd-ms-foot"><button type="button" class="kd-link" data-ms-clear="${dim}"${n ? '' : ' disabled'}>Clear</button><button type="button" class="kd-btn kd-btn-sm" data-ms-close="${dim}">Done</button></div>
+      <div class="kd-ms-foot"><button type="button" class="kd-link" data-ms-clear="${dim}"${n ? '' : ' disabled'}>Clear</button><button type="button" class="btn btn-secondary btn-sm" data-ms-close="${dim}">Done</button></div>
     </div>` : ''}
   </div>`;
 }
@@ -82,7 +82,7 @@ export function dateControlHtml(f: DashboardFilters): string {
   const opts = (Object.keys(DATE_PRESET_LABEL) as DatePreset[]).map(p => `<option value="${p}"${f.datePreset === p ? ' selected' : ''}>${DATE_PRESET_LABEL[p]}</option>`).join('');
   return `<div class="kd-date">
     <label class="kd-visually-hidden" for="kd-date-preset">Reporting period</label>
-    <select id="kd-date-preset" class="kd-select" data-date-preset>${opts}</select>
+    <select id="kd-date-preset" class="kd-select hdr-select" data-date-preset>${opts}</select>
     ${f.datePreset === 'custom' ? `<label class="kd-visually-hidden" for="kd-date-from">From</label><input type="date" id="kd-date-from" class="kd-input" data-date-from value="${esc(f.dateFrom ?? '')}">
       <span aria-hidden="true">–</span><label class="kd-visually-hidden" for="kd-date-to">To</label><input type="date" id="kd-date-to" class="kd-input" data-date-to value="${esc(f.dateTo ?? '')}">` : ''}
   </div>`;
@@ -284,10 +284,10 @@ export function pagerHtml(page: number, pages: number, total: number, pageSize: 
   const from = total ? (page - 1) * pageSize + 1 : 0, to = Math.min(total, page * pageSize);
   return `<div class="kd-pager"><span>${int(from)}–${int(to)} of ${int(total)}</span>
     <label class="kd-visually-hidden" for="kd-page-size">Rows per page</label>
-    <select id="kd-page-size" class="kd-select kd-select-sm" data-page-size>${[10, 25, 50, 100].map(n => `<option value="${n}"${n === pageSize ? ' selected' : ''}>${n} / page</option>`).join('')}</select>
-    <button type="button" class="kd-btn kd-btn-sm" data-page="${page - 1}"${page <= 1 ? ' disabled' : ''} aria-label="Previous page">‹</button>
+    <select id="kd-page-size" class="kd-select kd-select-sm hdr-select" data-page-size>${[10, 25, 50, 100].map(n => `<option value="${n}"${n === pageSize ? ' selected' : ''}>${n} / page</option>`).join('')}</select>
+    <button type="button" class="btn btn-secondary btn-sm" data-page="${page - 1}"${page <= 1 ? ' disabled' : ''} aria-label="Previous page">‹</button>
     <span aria-live="polite">Page ${page} of ${pages}</span>
-    <button type="button" class="kd-btn kd-btn-sm" data-page="${page + 1}"${page >= pages ? ' disabled' : ''} aria-label="Next page">›</button></div>`;
+    <button type="button" class="btn btn-secondary btn-sm" data-page="${page + 1}"${page >= pages ? ' disabled' : ''} aria-label="Next page">›</button></div>`;
 }
 
 export function fxLine(fx: FxApplied | null | undefined): string {

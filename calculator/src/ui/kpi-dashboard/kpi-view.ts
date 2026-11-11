@@ -134,15 +134,15 @@ function shell(): string {
         <p class="kd-head-s">Saved should-costs across every authorised user, consolidated in GBP. Read-only reporting.</p></div>
       <div class="kd-head-a">
         <div class="kd-refresh"><span id="kd-refreshed" aria-live="polite"></span>
-          <button type="button" class="kd-btn kd-btn-ghost kd-btn-sm" data-act="refresh" aria-label="Refresh now"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></svg> Refresh</button></div>
+          <button type="button" class="btn btn-secondary btn-sm" data-act="refresh" aria-label="Refresh now"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></svg> Refresh</button></div>
         <div class="kd-seg-ctl" role="radiogroup" aria-label="Currency view">
           <button type="button" role="radio" data-ccy-mode="gbp">Consolidated GBP</button><button type="button" role="radio" data-ccy-mode="original">Original currency</button></div>
-        <div class="kd-menu"><button type="button" class="kd-btn kd-btn-primary kd-btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
+        <div class="kd-menu"><button type="button" class="btn btn-primary btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
           <div class="kd-menu-pop" id="kd-export-menu" role="menu" hidden>
             <button type="button" role="menuitem" data-act="export-pdf">PDF dashboard report</button>
             <button type="button" role="menuitem" data-act="export-xlsx">Excel report</button>
             <button type="button" role="menuitem" data-act="export-csv">CSV of filtered records</button></div></div>
-        <button type="button" class="kd-btn kd-btn-sm" data-act="admin" id="kd-admin-btn" hidden>Admin</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-act="admin" id="kd-admin-btn" hidden>Admin</button>
       </div>
     </div>
     <section class="kd-filters" aria-label="Filters"><div class="kd-filter-row" id="kd-filter-row"></div><div id="kd-chips"></div></section>
@@ -201,7 +201,7 @@ function renderBody(): void {
   if (!body) return;
   body.setAttribute('aria-busy', String(S.loading));
   if (S.error && !S.summary) {
-    body.innerHTML = `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">The dashboard could not be loaded</p><p>${esc(S.error)}</p><button type="button" class="kd-btn" data-act="refresh">Try again</button></div>`;
+    body.innerHTML = `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">The dashboard could not be loaded</p><p>${esc(S.error)}</p><button type="button" class="btn btn-secondary" data-act="refresh">Try again</button></div>`;
     return;
   }
   if (!S.summary) { body.innerHTML = skeletonHtml(); return; }   // first load (or before it starts)
@@ -214,7 +214,7 @@ function renderBody(): void {
   }
   const empty = !s.dataQuality.retrieved;
   body.innerHTML = `${S.error ? `<p class="kd-banner is-error" role="alert">Refresh failed: ${esc(S.error)} — showing the last loaded figures.</p>` : ''}
-    ${empty ? `<div class="kd-empty"><p class="kd-empty-t">No costing records match these filters</p><p>Widen the reporting period or clear a filter.</p><button type="button" class="kd-btn" data-clear-all>Clear all filters</button></div>` : ''}
+    ${empty ? `<div class="kd-empty"><p class="kd-empty-t">No costing records match these filters</p><p>Widen the reporting period or clear a filter.</p><button type="button" class="btn btn-secondary" data-clear-all>Clear all filters</button></div>` : ''}
     <div class="${S.loading ? 'kd-dim' : ''}">
     ${kpiCardsHtml(s)}
     ${S.currencyMode === 'original' ? section('ccy', 'Original-currency totals', 'Each currency on its own row — never added together. GBP KPIs above use the frozen FX snapshots.', currencyTotalsHtml(s.currencyTotals)) : ''}
@@ -226,7 +226,7 @@ function renderBody(): void {
         <label class="kd-visually-hidden" for="kd-search">Search records</label>
         <input type="search" id="kd-search" class="kd-input" placeholder="Search part number, component, owner, ID…" value="${esc(S.q.search)}" autocomplete="off">
         <label class="kd-visually-hidden" for="kd-scope">Which records</label>
-        <select id="kd-scope" class="kd-select" data-scope-select>
+        <select id="kd-scope" class="kd-select hdr-select" data-scope-select>
           <option value="current"${S.q.scope === 'current' ? ' selected' : ''}>Current records (one per application)</option>
           <option value="all"${S.q.scope === 'all' ? ' selected' : ''}>All saves, revisions included</option>
           ${S.meta?.isAdmin ? `<option value="excluded"${S.q.scope === 'excluded' ? ' selected' : ''}>Excluded records (admin)</option>` : ''}
@@ -273,7 +273,7 @@ async function openRecord(id: string): Promise<void> {
   if (!dlg.open) dlg.showModal();
   let d: Detail;
   try { d = await api<Detail>(`/records/${encodeURIComponent(id)}`); } catch (e) {
-    dlg.innerHTML = `<div class="kd-dialog-in"><p role="alert">${esc((e as Error).message)}</p><button type="button" class="kd-btn" data-close>Close</button></div>`; return;
+    dlg.innerHTML = `<div class="kd-dialog-in"><p role="alert">${esc((e as Error).message)}</p><button type="button" class="btn btn-secondary" data-close>Close</button></div>`; return;
   }
   const r = d.record;
   const fxS = r.fx as { current?: import('../../engine/kpi-dashboard.js').FxApplied | null; should?: import('../../engine/kpi-dashboard.js').FxApplied | null; saving?: import('../../engine/kpi-dashboard.js').FxApplied | null };
@@ -324,27 +324,27 @@ function editFormHtml(d: Detail): string {
   return `<details class="kd-details kd-edit"${a ? ' open' : ''}><summary>Edit this record</summary>
     <form id="kd-edit-form" novalidate>
       <div class="kd-form-grid">
-        <div class="kd-field"><label for="kd-e-status">Status</label><select id="kd-e-status" class="kd-select" name="status">${statuses.map(s => `<option value="${s}"${s === r.status ? ' selected' : ''}${!a && (s === 'reviewed' || s === 'approved') ? ' disabled' : ''}>${STATUS_LABEL[s]}</option>`).join('')}</select></div>
+        <div class="kd-field"><label for="kd-e-status">Status</label><select id="kd-e-status" class="kd-select hdr-select" name="status">${statuses.map(s => `<option value="${s}"${s === r.status ? ' selected' : ''}${!a && (s === 'reviewed' || s === 'approved') ? ' disabled' : ''}>${STATUS_LABEL[s]}</option>`).join('')}</select></div>
         <div class="kd-field"><label for="kd-e-pn">Part number</label><input id="kd-e-pn" class="kd-input" name="partNumber" maxlength="60" value="${esc(r.partNumber ?? '')}"></div>
         <div class="kd-field"><label for="kd-e-prog">Programme</label><input id="kd-e-prog" class="kd-input" name="programme" maxlength="40" value="${esc(r.programme ?? '')}"></div>
         <div class="kd-field"><label for="kd-e-my">Model year</label><input id="kd-e-my" class="kd-input" name="modelYear" type="number" min="2000" max="2100" value="${n(r.modelYear)}"></div>
         <div class="kd-field"><label for="kd-e-pt">Powertrain</label><input id="kd-e-pt" class="kd-input" name="powertrain" maxlength="40" value="${esc(r.powertrain ?? '')}"></div>
         <div class="kd-field"><label for="kd-e-cc">Current cost per piece</label><input id="kd-e-cc" class="kd-input" name="currentCost" type="number" min="0" step="any" value="${n(r.currentCost)}"></div>
-        <div class="kd-field"><label for="kd-e-ccy">Currency</label><select id="kd-e-ccy" class="kd-select" name="currentCcy">${ccyOpts(r.currentCcy)}</select></div>
-        <div class="kd-field"><label for="kd-e-ct">Delivery terms</label><select id="kd-e-ct" class="kd-select" name="currentTerms">${termOpts(r.currentTerms)}</select></div>
+        <div class="kd-field"><label for="kd-e-ccy">Currency</label><select id="kd-e-ccy" class="kd-select hdr-select" name="currentCcy">${ccyOpts(r.currentCcy)}</select></div>
+        <div class="kd-field"><label for="kd-e-ct">Delivery terms</label><select id="kd-e-ct" class="kd-select hdr-select" name="currentTerms">${termOpts(r.currentTerms)}</select></div>
         <div class="kd-field"><label for="kd-e-vol">Annual volume</label><input id="kd-e-vol" class="kd-input" name="annualVolume" type="number" min="0" step="1" value="${n(r.annualVolume)}"></div>
         ${a ? `<div class="kd-field"><label class="kd-check"><input type="checkbox" name="volumeValidated"${r.volumeValidated ? ' checked' : ''}> Annual volume validated</label></div>
-        <div class="kd-field"><label for="kd-e-ss">Saving status</label><select id="kd-e-ss" class="kd-select" name="savingStatus"><option value="">None</option><option value="validated"${r.savingStatus === 'validated' ? ' selected' : ''}>Validated</option><option value="implemented"${r.savingStatus === 'implemented' ? ' selected' : ''}>Implemented</option></select></div>
+        <div class="kd-field"><label for="kd-e-ss">Saving status</label><select id="kd-e-ss" class="kd-select hdr-select" name="savingStatus"><option value="">None</option><option value="validated"${r.savingStatus === 'validated' ? ' selected' : ''}>Validated</option><option value="implemented"${r.savingStatus === 'implemented' ? ' selected' : ''}>Implemented</option></select></div>
         <div class="kd-field"><label for="kd-e-sp">Saving per piece</label><input id="kd-e-sp" class="kd-input" name="savingPerPiece" type="number" min="0" step="any" value="${n(r.savingPerPiece)}"></div>
-        <div class="kd-field"><label for="kd-e-sc">Saving currency</label><select id="kd-e-sc" class="kd-select" name="savingCcy">${ccyOpts(r.savingCcy)}</select></div>
+        <div class="kd-field"><label for="kd-e-sc">Saving currency</label><select id="kd-e-sc" class="kd-select hdr-select" name="savingCcy">${ccyOpts(r.savingCcy)}</select></div>
         <div class="kd-field"><label class="kd-check"><input type="checkbox" name="isTest"${r.isTest ? ' checked' : ''}> Test record (exclude)</label></div>` : ''}
         <div class="kd-field kd-field-wide"><label for="kd-e-notes">Notes</label><textarea id="kd-e-notes" class="kd-input" name="notes" rows="2" maxlength="1000">${esc(r.notes ?? '')}</textarea></div>
       </div>
       <p class="kd-muted">Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.${!a && (r.status === 'reviewed' || r.status === 'approved') ? ' Changing the current cost sends this costing back for review.' : ''}</p>
       <p class="kd-form-err" role="alert" hidden></p>
-      <div class="kd-dialog-f"><button type="button" class="kd-btn kd-btn-danger" data-act="delete-ask">Delete record</button>
-        <span class="kd-del-confirm" hidden>Delete this record from the dashboard? <button type="button" class="kd-btn kd-btn-danger kd-btn-sm" data-act="delete-yes">Delete</button> <button type="button" class="kd-btn kd-btn-sm" data-act="delete-no">Keep</button></span>
-        <button type="submit" class="kd-btn kd-btn-primary">Save changes</button></div>
+      <div class="kd-dialog-f"><button type="button" class="btn btn-secondary kd-danger" data-act="delete-ask">Delete record</button>
+        <span class="kd-del-confirm" hidden>Delete this record from the dashboard? <button type="button" class="btn btn-secondary btn-sm kd-danger" data-act="delete-yes">Delete</button> <button type="button" class="btn btn-secondary btn-sm" data-act="delete-no">Keep</button></span>
+        <button type="submit" class="btn btn-primary">Save changes</button></div>
     </form></details>`;
 }
 
@@ -381,13 +381,13 @@ async function openAdmin(tab: 'fx' | 'import' | 'audit' = 'fx'): Promise<void> {
     if (tab === 'fx') {
       const fx = await api<{ policy: string; labels: Record<string, string>; rates: { currency: string; period: string; gbpPerUnit: number; source: string; loadedAt: string }[]; reference: { source: string; effectiveDate: string } }>('/fx');
       panel = `<h3>Default FX policy</h3><p class="kd-muted">Approved 11 Nov 2026: approved monthly rates. Changing the policy does not change saved records until a recalculation is applied.</p>
-        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-fx-policy">FX policy</label><select id="kd-fx-policy" class="kd-select">${(['monthly', 'costing-date', 'reporting-date'] as const).map(p => `<option value="${p}"${p === fx.policy ? ' selected' : ''}>${esc(fx.labels[p])}</option>`).join('')}</select>
-          <button type="button" class="kd-btn kd-btn-sm" data-act="fx-policy">Save policy</button></div>
+        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-fx-policy">FX policy</label><select id="kd-fx-policy" class="kd-select hdr-select">${(['monthly', 'costing-date', 'reporting-date'] as const).map(p => `<option value="${p}"${p === fx.policy ? ' selected' : ''}>${esc(fx.labels[p])}</option>`).join('')}</select>
+          <button type="button" class="btn btn-secondary btn-sm" data-act="fx-policy">Save policy</button></div>
         <h3>Load approved rates</h3><p class="kd-muted">CSV or Excel with columns <code>currency, period, gbp_per_unit</code> (or <code>units_per_gbp</code>)<code>, source</code>. Period is YYYY-MM (monthly) or YYYY-MM-DD (daily). The whole file is refused on any error.</p>
-        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-fx-file">FX rate file</label><input type="file" id="kd-fx-file" accept=".csv,.xlsx,.xls"><button type="button" class="kd-btn kd-btn-sm" data-act="fx-upload">Load rates</button></div>
+        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-fx-file">FX rate file</label><input type="file" id="kd-fx-file" accept=".csv,.xlsx,.xls"><button type="button" class="btn btn-secondary btn-sm" data-act="fx-upload">Load rates</button></div>
         <div id="kd-fx-msg" aria-live="polite"></div>
         <h3>Controlled recalculation</h3><p class="kd-muted">Re-applies the current policy and table to every saved record. Preview first; applying keeps each record’s previous snapshot in its FX history. Original values never change.</p>
-        <div class="kd-inline"><button type="button" class="kd-btn kd-btn-sm" data-act="recalc-preview">Preview</button><button type="button" class="kd-btn kd-btn-sm kd-btn-danger" data-act="recalc-apply" disabled>Apply recalculation</button></div>
+        <div class="kd-inline"><button type="button" class="btn btn-secondary btn-sm" data-act="recalc-preview">Preview</button><button type="button" class="btn btn-secondary btn-sm kd-danger" data-act="recalc-apply" disabled>Apply recalculation</button></div>
         <div id="kd-recalc-msg" aria-live="polite"></div>
         <h3>Loaded rates (${fx.rates.length})</h3>
         ${fx.rates.length ? `<div class="kd-table-wrap kd-scroll-sm" tabindex="0" role="region" aria-label="Scrollable table"><table class="kd-table kd-table-sm"><caption class="kd-visually-hidden">Approved FX rates</caption><thead><tr><th scope="col">Currency</th><th scope="col">Period</th><th scope="col" class="num">GBP per unit</th><th scope="col">Source</th><th scope="col">Loaded</th></tr></thead><tbody>${fx.rates.map(r => `<tr><th scope="row">${esc(r.currency)}</th><td>${esc(r.period)}</td><td class="num">${r.gbpPerUnit.toPrecision(6)}</td><td>${esc(r.source)}</td><td>${dateTime(r.loadedAt)}</td></tr>`).join('')}</tbody></table></div>` : `<p class="kd-muted">None loaded. Until rates are loaded every foreign-currency value uses the built-in reference: ${esc(fx.reference.source)} (${esc(fx.reference.effectiveDate)}).</p>`}`;
@@ -395,7 +395,7 @@ async function openAdmin(tab: 'fx' | 'import' | 'audit' = 'fx'): Promise<void> {
       panel = `<h3>Import from CSS System, CPSC II or another tool</h3>
         <p class="kd-muted">One row per costing in the template’s columns. Re-importing the same <code>source_tool</code> + <code>source_record_id</code> updates that record. The whole file is refused on any error, with the row and column named.</p>
         <p><a class="kd-link" href="#" data-act="template">Download the import template (CSV)</a></p>
-        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-imp-file">Import file</label><input type="file" id="kd-imp-file" accept=".csv,.xlsx,.xls"><button type="button" class="kd-btn kd-btn-sm" data-act="import">Import</button></div>
+        <div class="kd-inline"><label class="kd-visually-hidden" for="kd-imp-file">Import file</label><input type="file" id="kd-imp-file" accept=".csv,.xlsx,.xls"><button type="button" class="btn btn-secondary btn-sm" data-act="import">Import</button></div>
         <div id="kd-imp-msg" aria-live="polite"></div>`;
     } else {
       const a = await api<{ rows: { ts: string; action: string; target: string; detail: string; user: string | null }[] }>('/audit');

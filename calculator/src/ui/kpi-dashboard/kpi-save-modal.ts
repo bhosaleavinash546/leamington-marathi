@@ -33,7 +33,7 @@ const PREFERRED = ['GBP', 'EUR', 'USD', 'CNY', 'INR', 'JPY', 'KRW', 'PLN', 'CZK'
 
 function selectOrOther(id: string, label: string, opts: readonly string[]): string {
   return `<div class="kd-field"><label for="${id}">${label}</label>
-    <select id="${id}" class="kd-select" data-other="${id}-other"><option value="">Not set</option>${opts.map(o => `<option>${esc(o)}</option>`).join('')}<option value="__other">Other…</option></select>
+    <select id="${id}" class="kd-select hdr-select" data-other="${id}-other"><option value="">Not set</option>${opts.map(o => `<option>${esc(o)}</option>`).join('')}<option value="__other">Other…</option></select>
     <input id="${id}-other" class="kd-input" type="text" maxlength="40" placeholder="Type the ${label.toLowerCase()}" hidden aria-label="Other ${label.toLowerCase()}"></div>`;
 }
 
@@ -58,22 +58,22 @@ export async function openKpiSaveModal(ctx: SaveContext): Promise<void> {
       ${selectOrOther('kd-s-prog', 'Programme', STANDARD_PROGRAMMES)}
       <div class="kd-field"><label for="kd-s-my">Model year</label><input id="kd-s-my" class="kd-input" type="number" min="2000" max="2100" step="1" placeholder="e.g. 2027"></div>
       ${selectOrOther('kd-s-pt', 'Powertrain', STANDARD_POWERTRAINS)}
-      <div class="kd-field"><label for="kd-s-status">Status</label><select id="kd-s-status" class="kd-select"><option value="draft">Draft</option><option value="completed" selected>Completed</option></select><small>Reviewed and approved are set by an admin.</small></div>
+      <div class="kd-field"><label for="kd-s-status">Status</label><select id="kd-s-status" class="kd-select hdr-select"><option value="draft">Draft</option><option value="completed" selected>Completed</option></select><small>Reviewed and approved are set by an admin.</small></div>
     </div>
     <fieldset class="kd-fieldset"><legend>Current cost (optional)</legend>
       <p class="kd-muted">The price paid or quoted per piece, in the currency it was given in. It is converted to GBP at the approved rate for this month and the rate is frozen on the record.</p>
       <div class="kd-form-grid">
         <div class="kd-field"><label for="kd-s-cc">Amount per piece</label><input id="kd-s-cc" class="kd-input" type="number" min="0" step="any" inputmode="decimal"></div>
-        <div class="kd-field"><label for="kd-s-ccy">Currency</label><select id="kd-s-ccy" class="kd-select"><option value="">Choose…</option>${ordered.map(c => `<option>${esc(c)}</option>`).join('')}</select></div>
-        <div class="kd-field"><label for="kd-s-terms">Delivery terms</label><select id="kd-s-terms" class="kd-select"><option value="">Choose…</option><option value="DAP">DAP (delivered)</option><option value="EXW">EXW (ex works)</option></select><small>Compared with the should-cost only on the same terms (${terms}).</small></div>
-        <div class="kd-field"><label for="kd-s-src">Source</label><select id="kd-s-src" class="kd-select"><option value="quote">Supplier quote</option><option value="purchase order">Purchase order</option><option value="contract">Contract price</option><option value="other">Other</option></select></div>
+        <div class="kd-field"><label for="kd-s-ccy">Currency</label><select id="kd-s-ccy" class="kd-select hdr-select"><option value="">Choose…</option>${ordered.map(c => `<option>${esc(c)}</option>`).join('')}</select></div>
+        <div class="kd-field"><label for="kd-s-terms">Delivery terms</label><select id="kd-s-terms" class="kd-select hdr-select"><option value="">Choose…</option><option value="DAP">DAP (delivered)</option><option value="EXW">EXW (ex works)</option></select><small>Compared with the should-cost only on the same terms (${terms}).</small></div>
+        <div class="kd-field"><label for="kd-s-src">Source</label><select id="kd-s-src" class="kd-select hdr-select"><option value="quote">Supplier quote</option><option value="purchase order">Purchase order</option><option value="contract">Contract price</option><option value="other">Other</option></select></div>
       </div></fieldset>
     <div class="kd-form-grid">
       <div class="kd-field"><label for="kd-s-vol">Annual volume</label><input id="kd-s-vol" class="kd-input" type="number" min="0" step="1" value="${Number.isFinite(ctx.input.annualVolume) ? Number(ctx.input.annualVolume) : ''}"><small>Used for an annualised figure only after an admin validates it.</small></div>
       <div class="kd-field kd-field-wide"><label for="kd-s-notes">Notes</label><textarea id="kd-s-notes" class="kd-input" rows="2" maxlength="1000"></textarea></div>
     </div>
     <p class="kd-form-err" role="alert" hidden></p>
-    <div class="kd-dialog-f"><button type="button" class="kd-btn kd-btn-ghost" data-close>Cancel</button><button type="submit" class="kd-btn kd-btn-primary">Save to dashboard</button></div>
+    <div class="kd-dialog-f"><button type="button" class="btn btn-secondary" data-close>Cancel</button><button type="submit" class="btn btn-primary">Save to dashboard</button></div>
   </form>`;
   document.body.appendChild(dlg);
   const $ = <T extends HTMLElement>(sel: string) => dlg.querySelector<T>(sel)!;
