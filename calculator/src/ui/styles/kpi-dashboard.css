@@ -260,6 +260,7 @@
 .kd-details summary { cursor: pointer; font-weight: 600; font-size: 0.86rem; }
 .kd-details ul { font-size: 0.8rem; color: var(--text-secondary); }
 .kd-edit form { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+.kd-linkout { margin: 0; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.76rem; overflow-wrap: anywhere; user-select: all; }
 .kd-notes { white-space: pre-wrap; font-size: 0.84rem; margin: 0; }
 .kd-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
 .kd-tabs button { padding: 8px 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-secondary); font: inherit; font-size: 0.84rem; cursor: pointer; }

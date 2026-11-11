@@ -303,7 +303,9 @@ async function openRecord(id: string): Promise<void> {
   dlg.innerHTML = `<div class="kd-dialog-in">
     <div class="kd-dialog-h"><div><p class="kd-eyebrow">${esc(r.sourceTool)} · <span class="kd-mono">${esc(r.id)}</span></p>
       <h2 id="kd-drawer-title">${esc(r.componentName)}</h2><p>${esc(r.partNumber ?? 'No part number')} ${statusBadge(r.status)} ${roleNote(r)}</p></div>
-      <button type="button" class="kd-icon-btn" data-close aria-label="Close">×</button></div>
+      <div class="kd-inline"><button type="button" class="btn btn-secondary btn-sm" data-act="copy-link" aria-describedby="kd-link-out">Copy link</button>
+      <button type="button" class="kd-icon-btn" data-close aria-label="Close">×</button></div></div>
+    <p class="kd-linkout" id="kd-link-out" hidden></p>
     <dl class="kd-dl">
       <div><dt>Commodity</dt><dd>${esc(r.commodity ?? '—')}</dd></div><div><dt>Programme</dt><dd>${esc(r.programme ?? '—')}</dd></div>
       <div><dt>Model year</dt><dd>${r.modelYear ?? '—'}</dd></div><div><dt>Powertrain</dt><dd>${esc(r.powertrain ?? '—')}</dd></div>
@@ -327,6 +329,23 @@ async function openRecord(id: string): Promise<void> {
     ${edit}
   </div>`;
   dlg.dataset.id = r.id;
+  // F-16 (option A): the open record is in the address — #kpi-record=<id> — so the link can be shared and reopened.
+  if (location.hash !== `#kpi-record=${encodeURIComponent(r.id)}`) history.replaceState(null, '', `${location.pathname}${location.search}#kpi-record=${encodeURIComponent(r.id)}`);
+}
+
+export const recordLinkFor = (id: string, loc: { origin: string; pathname: string; search: string } = location): string =>
+  `${loc.origin}${loc.pathname}${loc.search}#kpi-record=${encodeURIComponent(id)}`;
+export function recordIdFromHash(hash: string): string | null {
+  const m = /^#kpi-record=([^&]+)$/.exec(hash);
+  if (!m) return null;
+  try { const id = decodeURIComponent(m[1]); return /^[\w-]{1,80}$/.test(id) ? id : null; } catch { return null; }
+}
+async function copyRecordLink(): Promise<void> {
+  const dlg = S.root!.querySelector<HTMLDialogElement>('#kd-drawer')!;
+  const link = recordLinkFor(dlg.dataset.id!);
+  const out = dlg.querySelector<HTMLElement>('#kd-link-out')!;
+  try { await navigator.clipboard.writeText(link); showToast('Link to this costing record copied.', 'info'); out.hidden = true; }
+  catch { out.hidden = false; out.textContent = link; const sel = getSelection(); const rg = document.createRange(); rg.selectNodeContents(out); sel?.removeAllRanges(); sel?.addRange(rg); }
 }
 
 function editFormHtml(d: Detail): string {
@@ -588,6 +607,7 @@ function onClick(e: MouseEvent): void {
     if (act === 'export-menu') { toggleMenu(); return; }
     if (act.startsWith('export-')) { toggleMenu(false); void doExport(act.slice(7) as 'pdf' | 'xlsx' | 'csv'); return; }
     if (act === 'admin') { void openAdmin('fx'); return; }
+    if (act === 'copy-link') { void copyRecordLink(); return; }
     if (act === 'filters-toggle') {   // phone / tablet: the filter controls fold behind one button (F-06)
       const box = S.root!.querySelector<HTMLElement>('.kd-filters')!;
       const open = !box.classList.contains('is-open');
@@ -699,6 +719,13 @@ export async function mountKpiDashboard(host: HTMLElement): Promise<void> {
     if (document.visibilityState === 'visible' && host.offsetParent && Date.now() - Date.parse(S.refreshedAt || '0') > 60_000) void loadAll({ quiet: true });
   });
   document.addEventListener('cv-kpi-saved', () => { if (S.root) void loadAll({ quiet: true }); });
+  // F-16: a #kpi-record=<id> address opens that record's panel; closing the panel clears it.
+  const openFromHash = () => { const id = recordIdFromHash(location.hash); if (id && host.offsetParent) void openRecord(id); };
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+  host.querySelector<HTMLDialogElement>('#kd-drawer')!.addEventListener('close', () => {
+    if (recordIdFromHash(location.hash)) history.replaceState(null, '', `${location.pathname}${location.search}`);
+  });
   // Theme switch → charts redraw in the new palette.
   S.observer = new MutationObserver(() => { if (S.summary && host.offsetParent) renderBody(); });
   S.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

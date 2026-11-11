@@ -110,3 +110,14 @@ describe('F-13: the drill-down path is visible and removable', () => {
     expect(chipsHtml(DEFAULT_FILTERS)).not.toContain('Drill-down');
   });
 });
+
+describe('F-16: record links', () => {
+  it('round-trips a record id through the address and refuses anything else', async () => {
+    const { recordLinkFor, recordIdFromHash } = await import('../src/ui/kpi-dashboard/kpi-view');
+    const link = recordLinkFor('rec-1fa04ad4-3e4f', { origin: 'https://cv.example', pathname: '/calculator/', search: '' });
+    expect(link).toBe('https://cv.example/calculator/#kpi-record=rec-1fa04ad4-3e4f');
+    expect(recordIdFromHash('#kpi-record=rec-1fa04ad4-3e4f')).toBe('rec-1fa04ad4-3e4f');
+    expect(recordIdFromHash('#kpi-record=<script>')).toBeNull();
+    expect(recordIdFromHash('#other')).toBeNull();
+  });
+});
