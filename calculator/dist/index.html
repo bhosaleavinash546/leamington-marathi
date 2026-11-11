@@ -50,15 +50,15 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-BH7r5_P_.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-O4e5e_At.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/page-actions-nKHQQblO.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/book-tariff-CdfR7nKy.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/money-text-BPlZrKhL.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-dMwVVYy3.js">
-  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
+  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-OD0bcebM.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-CvDoa17S.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-Bo0nzBTh.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-Bw0koHCE.css">
 </head>
 <body>
 
@@ -193,6 +193,7 @@
   <div class="anav-group">
     <button class="anav-item" id="home-btn" aria-label="Go to dashboard"><svg class="ic"><use href="#i-home"/></svg><span class="anav-label">Home</span></button>
     <button class="anav-item" id="analytics-btn" aria-label="Portfolio analytics" title="Portfolio KPIs, filters &amp; charts" data-cv-tip="Aggregate portfolio analytics — KPIs, filters and cost charts across all your costings." data-cv-tip-title="Portfolio Analytics"><svg class="ic"><use href="#i-chart"/></svg><span class="anav-label">Portfolio</span></button>
+    <button class="anav-item" id="kpi-btn" aria-label="KPI dashboard" title="Global cost engineering KPI dashboard" data-cv-tip="Shared, read-only view of every saved costing across all users — coverage, should-cost gap and opportunity in GBP." data-cv-tip-title="KPI Dashboard"><svg class="ic"><use href="#i-gauge"/></svg><span class="anav-label">KPIs</span></button>
     <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across the 19 manufacturing processes. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
     <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
     <button class="anav-item" id="negotiation-btn" aria-label="Negotiation Intelligence" title="Supplier-quote teardown vs should-cost" data-cv-tip="Paste a supplier quote — the agent tears it down against should-cost and hands you the levers, questions and closing plays. Export to PDF or PowerPoint." data-cv-tip-title="Negotiation Intelligence"><svg class="ic"><use href="#i-trend-up"/></svg><span class="anav-label">Negotiation</span></button>
@@ -610,6 +611,9 @@
   <div id="compare-panel" class="compare-panel" style="display:none;margin-top:16px"></div>
 
 </section>
+
+<!-- ── Global Cost Engineering KPI Dashboard (src/ui/kpi-dashboard, built on first open) ── -->
+<section id="kpi-view" class="kpi-view" style="display:none" aria-label="Global Cost Engineering KPI Dashboard"></section>
 
 <!-- ─── News View ──────────────────────────────────────────────────────── -->
 <!-- ── Negotiation Intelligence view (its own left-nav section) ──────────────── -->
@@ -1181,6 +1185,7 @@
       <button class="btn btn-secondary" id="export-all-pdf-btn" style="display:none" title="Export everything into one PDF: Should-Cost + DFM/DFA + CAD Analysis + PCB Analysis">Export All to PDF</button>
       <button class="btn btn-secondary" id="export-card-btn"  style="display:none" title="Export a one-page shareable cost summary card">Share Card</button>
       <button class="btn btn-secondary" id="save-scenario-btn" style="display:none">Save Scenario</button>
+      <button class="btn btn-secondary" id="save-dashboard-btn" style="display:none" title="Save this costing to the shared KPI dashboard with its part number, programme and current cost">Save to KPI Dashboard</button>
       <button class="btn btn-secondary" id="save-library-btn" title="Save this costing to your Parts Library — appears in the dashboard and saved results">Save to Library</button>
       <button class="btn btn-secondary" id="log-actual-btn" title="Log the real quoted/PO price so the model learns and self-calibrates for this commodity">Log Actual £</button>
       <button class="btn btn-secondary" id="calibration-btn" title="Bulk-import real PO/quote actuals and see where the model has calibrated (per commodity × material × region)">Calibration</button>
