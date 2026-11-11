@@ -103,7 +103,7 @@ export function chipsHtml(f: DashboardFilters): string {
 
 // ─── KPI cards ────────────────────────────────────────────────────────────────
 
-interface Card { id: string; label: string; value: string; exact?: string; sub: string; tip: string; tone?: 'good' | 'warn' | 'bad' | 'muted'; action?: string }
+interface Card { id: string; label: string; value: string; exact?: string; sub: string; tip: string; tone?: 'good' | 'warn' | 'bad' | 'muted'; action?: string; compact?: boolean }
 
 function cardHtml(c: Card): string {
   const tipId = `kd-tip-${c.id}`;
@@ -112,41 +112,60 @@ function cardHtml(c: Card): string {
     <div class="kd-card-v${c.tone ? ` is-${c.tone}` : ''}"${c.exact ? ` title="${esc(c.exact)}"` : ''}>${c.value}</div>
     <div class="kd-card-s">${c.sub}</div>`;
   return c.action
-    ? `<article class="kd-card is-action" data-card="${c.id}"><button type="button" class="kd-card-hit" data-card-action="${c.action}" aria-label="${esc(c.label)}: ${esc(c.value)} — show these records"></button>${body}</article>`
-    : `<article class="kd-card" data-card="${c.id}">${body}</article>`;
+    ? `<article class="kd-card is-action${c.compact ? ' is-compact' : ''}" data-card="${c.id}"><button type="button" class="kd-card-hit" data-card-action="${c.action}" aria-label="${esc(c.label)}: ${esc(c.value)} — show these records"></button>${body}</article>`
+    : `<article class="kd-card${c.compact ? ' is-compact' : ''}" data-card="${c.id}">${body}</article>`;
 }
 
+/** Two bands (F-01): the financial position first — opportunity, weighted gap, unfavourable gaps (its own card, F-18),
+ *  validated and implemented savings — then coverage and workflow as compact tiles. Same figures, same labels. */
 export function kpiCardsHtml(s: DashboardSummary): string {
-  const o = s.operational, f = s.financial;
+  return financialCardsHtml(s) + operationalCardsHtml(s);
+}
+
+export function financialCardsHtml(s: DashboardSummary): string {
+  const f = s.financial;
   const elig = `${int(f.eligible)} eligible record${f.eligible === 1 ? '' : 's'}`;
   const cards: Card[] = [
-    { id: 'records', label: 'Costing records', value: int(o.totalRecords), sub: `${int(o.currentRecords)} current · ${int(o.totalRecords - o.currentRecords)} older revisions / duplicates`,
-      tip: 'Every eligible saved costing in this view, revisions included. Deleted, test and invalid records are excluded.', action: 'scope:all' },
-    { id: 'components', label: 'Unique components', value: int(o.uniqueComponents), sub: o.unidentified ? `${int(o.unidentified)} record${o.unidentified === 1 ? '' : 's'} without a part number not counted` : 'Counted by part number',
-      tip: 'Distinct part numbers among current records. Revisions and other users’ costings of the same part count once. Names are never used to merge parts.' },
-    { id: 'completed', label: 'Completed costings', value: int(o.completedRecords), sub: `of ${int(o.currentRecords)} current (completed, reviewed or approved)`,
-      tip: 'Current records whose status is completed, reviewed or approved — drafts are not counted.', action: 'status:completed,reviewed,approved' },
-    { id: 'commodities', label: 'Commodities covered', value: int(o.commodities), sub: 'with a current costing', tip: 'Distinct commodities among current records.' },
-    { id: 'programmes', label: 'Programmes covered', value: int(o.programmes), sub: 'with a current costing', tip: 'Distinct vehicle programmes among current records.' },
-    { id: 'gap-pct', label: 'Weighted cost gap', value: f.weightedGapPct === null ? '—' : pct(f.weightedGapPct), sub: elig,
-      tip: 'Σ (GBP current − GBP should-cost) ÷ Σ GBP current cost, over financially eligible current records. Weighted by cost — never an average of percentages.',
-      tone: f.weightedGapPct === null ? 'muted' : undefined },
     { id: 'opportunity', label: 'Potential unit cost opportunity', value: gbpCompact(f.opportunity.gbp), exact: gbp(f.opportunity.gbp),
-      sub: `${int(f.opportunity.n)} record${f.opportunity.n === 1 ? '' : 's'} above should-cost · per piece, summed${f.unfavourable.n ? ` · ${int(f.unfavourable.n)} below (${gbp(f.unfavourable.gbp)})` : ''}`
+      sub: `${int(f.opportunity.n)} record${f.opportunity.n === 1 ? '' : 's'} above should-cost · per piece, summed`
         + (f.annualised.n ? `<span class="kd-card-x" data-annualised>Annualised: <strong title="${gbp(f.annualised.gbp)}">${gbpCompact(f.annualised.gbp)}</strong> over ${int(f.annualised.n)} validated volume${f.annualised.n === 1 ? '' : 's'}</span>`
           : '<span class="kd-card-x" data-annualised>Not annualised — no admin-validated annual volume</span>'),
       tip: 'Sum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual saving. Records below should-cost are shown separately as unfavourable. An annualised figure (gap × annual volume) appears only where an admin has validated the volume.',
       tone: f.opportunity.n ? 'good' : 'muted' },
+    { id: 'gap-pct', label: 'Weighted cost gap', value: f.weightedGapPct === null ? '—' : pct(f.weightedGapPct), sub: `${elig} · current above should-cost when positive`,
+      tip: 'Σ (GBP current − GBP should-cost) ÷ Σ GBP current cost, over financially eligible current records. Weighted by cost — never an average of percentages.',
+      tone: f.weightedGapPct === null ? 'muted' : undefined },
+    { id: 'unfavourable', label: 'Unfavourable gaps', value: f.unfavourable.n ? gbpCompact(f.unfavourable.gbp) : '—', exact: f.unfavourable.n ? gbp(f.unfavourable.gbp) : undefined,
+      sub: f.unfavourable.n ? `${int(f.unfavourable.n)} record${f.unfavourable.n === 1 ? '' : 's'} below should-cost · per piece, summed` : 'No current record is below its should-cost',
+      tip: 'Sum of per-piece gaps where the current cost is BELOW should-cost (the should-cost is higher than the price). Shown apart from the opportunity, never netted against it.',
+      tone: f.unfavourable.n ? undefined : 'muted' },
     { id: 'validated', label: 'Validated savings', value: f.validatedSavings.n ? gbpCompact(f.validatedSavings.gbp) : 'Not tracked', exact: f.validatedSavings.n ? gbp(f.validatedSavings.gbp) : undefined,
       sub: f.validatedSavings.n ? `${int(f.validatedSavings.n)} record${f.validatedSavings.n === 1 ? '' : 's'} · per piece` : 'No saving has been marked validated',
       tip: 'Per-piece savings an admin has marked validated. A should-cost gap is never counted as a saving.', tone: f.validatedSavings.n ? undefined : 'muted' },
     { id: 'implemented', label: 'Implemented savings', value: f.implementedSavings.n ? gbpCompact(f.implementedSavings.gbp) : 'Not tracked', exact: f.implementedSavings.n ? gbp(f.implementedSavings.gbp) : undefined,
       sub: f.implementedSavings.n ? `${int(f.implementedSavings.n)} record${f.implementedSavings.n === 1 ? '' : 's'} · per piece` : 'No saving has been marked implemented',
       tip: 'Per-piece savings an admin has marked implemented (in the price paid).', tone: f.implementedSavings.n ? undefined : 'muted' },
+  ];
+  return `<section class="kd-band" aria-labelledby="kd-band-fin"><h2 class="kd-band-h" id="kd-band-fin">Financial position <span>GBP · current records · per piece</span></h2>
+    <div class="kd-cards kd-cards-fin">${cards.map(cardHtml).join('')}</div></section>`;
+}
+
+export function operationalCardsHtml(s: DashboardSummary): string {
+  const o = s.operational;
+  const cards: Card[] = [
+    { id: 'records', label: 'Costing records', value: int(o.totalRecords), sub: `${int(o.currentRecords)} current · ${int(o.totalRecords - o.currentRecords)} older / duplicates`,
+      tip: 'Every eligible saved costing in this view, revisions included. Deleted, test and invalid records are excluded.', action: 'scope:all' },
+    { id: 'components', label: 'Unique components', value: int(o.uniqueComponents), sub: o.unidentified ? `${int(o.unidentified)} without a part number not counted` : 'By part number',
+      tip: 'Distinct part numbers among current records. Revisions and other users’ costings of the same part count once. Names are never used to merge parts.' },
+    { id: 'completed', label: 'Completed', value: int(o.completedRecords), sub: `of ${int(o.currentRecords)} current`,
+      tip: 'Current records whose status is completed, reviewed or approved — drafts are not counted.', action: 'status:completed,reviewed,approved' },
+    { id: 'commodities', label: 'Commodities', value: int(o.commodities), sub: 'with a current costing', tip: 'Distinct commodities among current records.' },
+    { id: 'programmes', label: 'Programmes', value: int(o.programmes), sub: 'with a current costing', tip: 'Distinct vehicle programmes among current records.' },
     { id: 'review', label: 'Awaiting review / approval', value: int(o.needsReview), sub: `${int(o.awaitingReview)} to review · ${int(o.awaitingApproval)} to approve`,
       tip: 'Current records marked completed (waiting for review) or reviewed (waiting for approval).', tone: o.needsReview ? 'warn' : undefined, action: 'status:completed,reviewed' },
-  ];
-  return `<div class="kd-cards">${cards.map(cardHtml).join('')}</div>`;
+  ].map(c => ({ ...c, compact: true } as Card));
+  return `<section class="kd-band" aria-labelledby="kd-band-ops"><h2 class="kd-band-h" id="kd-band-ops">Coverage and workflow</h2>
+    <div class="kd-cards kd-cards-ops">${cards.map(cardHtml).join('')}</div></section>`;
 }
 
 // ─── Original-currency totals ────────────────────────────────────────────────

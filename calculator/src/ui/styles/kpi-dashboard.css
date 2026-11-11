@@ -78,8 +78,17 @@
 .kd-fxnote { margin: 0; font-size: 0.78rem; color: var(--text-muted); }
 
 /* KPI cards */
-.kd-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
-@media (max-width: 1280px) { .kd-cards { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } }
+.kd-band { display: flex; flex-direction: column; gap: 8px; }
+.kd-band-h { margin: 0; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+.kd-band-h span { margin-left: 6px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-muted); }
+.kd-cards { display: grid; gap: 12px; }
+.kd-cards-fin { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.kd-cards-ops { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1280px) { .kd-cards-fin { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } .kd-cards-ops { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
+.kd-card.is-compact { padding: 10px 12px; gap: 2px; }
+.kd-card.is-compact .kd-card-v { font-size: 1.2rem; }
+.kd-card.is-compact .kd-card-l { font-size: 0.7rem; }
+.kd-card.is-compact .kd-card-s { font-size: 0.72rem; }
 .kd-card-x { display: block; margin-top: 4px; color: var(--text-muted); }
 .kd-card-x strong { color: var(--text-primary); }
 .kd-card { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); min-width: 0; }
