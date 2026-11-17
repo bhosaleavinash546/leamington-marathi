@@ -5,12 +5,12 @@
  */
 import { apiBase } from '../../api-base.js';
 import {
-  DEFAULT_FILTERS, DIMENSIONS, STATUS_LABEL, INELIGIBLE_LABEL, FX_METHOD_LABEL,
+  DEFAULT_FILTERS, DIMENSIONS, STATUS_LABEL, INELIGIBLE_LABEL, FX_METHOD_LABEL, validateFilters,
   type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset, type ShouldBasis,
 } from '../../engine/kpi-dashboard.js';
 import {
   esc, gbp, money, pct, int, day, dateTime, fxLine, statusBadge, roleNote, financialCardsHtml, operationalCardsHtml, dqSummaryHtml, currencyTotalsHtml, insightsHtml,
-  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml, shouldBasisHtml,
+  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml, shouldBasisHtml, badFilterHtml,
   type RecordRowView,
 } from './kpi-builders.js';
 import { renderCharts, destroyCharts } from './kpi-charts.js';
@@ -40,6 +40,8 @@ const S = {
   msQuery: '',
   loading: false,
   error: '',
+  /** A-18: the server refused the filter (400 BAD_FILTER); no figures are shown until it is cleared. */
+  badFilter: '',
   refreshedAt: '',
   seq: 0,
   timer: 0 as unknown as ReturnType<typeof setInterval>,
@@ -53,7 +55,12 @@ function restore(): void {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return;
     const v = JSON.parse(raw) as { filters?: DashboardFilters; currencyMode?: 'gbp' | 'original'; pageSize?: number };
-    if (v.filters) S.filters = { ...structuredClone(DEFAULT_FILTERS), ...v.filters };
+    if (v.filters) {
+      // A-18: a stored filter this version cannot apply is reported (with "Clear filters"), never dropped silently.
+      const ok = validateFilters({ ...structuredClone(DEFAULT_FILTERS), ...v.filters });
+      if (ok.ok) S.filters = { ...structuredClone(DEFAULT_FILTERS), ...v.filters };
+      else S.badFilter = `This filter could not be applied: ${ok.reason}. It is the filter saved in this browser from an earlier visit.`;
+    }
     if (v.currencyMode === 'original') S.currencyMode = 'original';
     if (v.pageSize && [10, 25, 50, 100].includes(v.pageSize)) S.q.pageSize = v.pageSize;
   } catch { /* storage blocked */ }
@@ -81,6 +88,7 @@ function recordsQuery(extra = ''): string {
 // ─── Loading ──────────────────────────────────────────────────────────────────
 
 async function loadAll(opts: { quiet?: boolean } = {}): Promise<void> {
+  if (S.badFilter) return;   // A-18: nothing loads under a refused filter until it is changed or cleared
   const seq = ++S.seq;
   if (!opts.quiet) { S.loading = true; S.error = ''; renderBody(); }
   try {
@@ -91,10 +99,13 @@ async function loadAll(opts: { quiet?: boolean } = {}): Promise<void> {
     ]);
     if (seq !== S.seq) return;
     S.summary = summary; S.records = records; S.drill = drill;
-    S.refreshedAt = summary.refreshedAt; S.error = '';
+    S.refreshedAt = summary.refreshedAt; S.error = ''; S.badFilter = '';
   } catch (e) {
     if (seq !== S.seq) return;
-    S.error = (e as Error).message || 'The dashboard could not be loaded.';
+    if ((e as { body?: { code?: string } }).body?.code === 'BAD_FILTER') {
+      // A-18: never keep showing the previous view's totals under a filter the server could not apply.
+      S.badFilter = (e as Error).message; S.summary = null; S.records = null; S.error = '';
+    } else S.error = (e as Error).message || 'The dashboard could not be loaded.';
   } finally {
     if (seq === S.seq) { S.loading = false; renderAll(); }
   }
@@ -118,7 +129,7 @@ async function loadRecords(): Promise<void> {
 
 let debounce = 0 as unknown as ReturnType<typeof setTimeout>;
 function filtersChanged(): void {
-  S.q.page = 1; S.drillPath = [];
+  S.q.page = 1; S.drillPath = []; S.badFilter = '';
   persist();
   renderFilters();
   const body = S.root?.querySelector('#kd-body');
@@ -206,6 +217,7 @@ function renderBody(): void {
   const body = S.root?.querySelector<HTMLElement>('#kd-body');
   if (!body) return;
   body.setAttribute('aria-busy', String(S.loading));
+  if (S.badFilter && !S.loading) { destroyCharts(); body.innerHTML = badFilterHtml(S.badFilter); return; }
   if (S.error && !S.summary) {
     body.innerHTML = `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">The dashboard could not be loaded</p><p>${esc(S.error)}</p><button type="button" class="btn btn-secondary" data-act="refresh">Try again</button></div>`;
     return;

@@ -21,7 +21,7 @@ import {
 } from '../data/kpi-store.js';
 import { readSheet, parseFxRows, parseImportRows, importTemplateCsv, IMPORT_COLUMNS, FX_TEMPLATE_COLUMNS } from '../utils/kpi-import.js';
 import {
-  classifyRecords, buildFromClassified, parseFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
+  classifyRecords, buildFromClassified, parseFilters, validateFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
   isIsoCurrency, iso4217Codes, currencySymbol, STANDARD_PROGRAMMES, STANDARD_POWERTRAINS, RECORD_STATUSES, FX_METHOD_LABEL,
   INSIGHT_THRESHOLDS, reAddCheck, type ClassifiedRecord, type DashboardFilters, type RecordStatus,
 } from '../../src/engine/kpi-dashboard.js';
@@ -67,12 +67,18 @@ function adminOnly(req: AuthenticatedRequest, res: Response): boolean {
   return false;
 }
 
-/** Filters arrive as one JSON query parameter `f` (values may contain commas). */
-function filtersOf(req: AuthenticatedRequest): DashboardFilters {
+/** Filters arrive as one JSON query parameter `f` (values may contain commas). A-18: a malformed or
+ *  unknown filter is answered 400 BAD_FILTER with the reason — never the unfiltered totals. Returns null
+ *  when the response has been sent. */
+function filtersOf(req: AuthenticatedRequest, res: Response): DashboardFilters | null {
   const raw = typeof req.query.f === 'string' ? req.query.f : '';
   if (!raw) return parseFilters({});
-  if (raw.length > 20_000) return parseFilters({});
-  try { return parseFilters(JSON.parse(raw)); } catch { return parseFilters({}); }
+  const refuse = (reason: string) => { res.status(400).json({ error: `This filter could not be applied: ${reason}.`, code: 'BAD_FILTER' }); return null; };
+  if (raw.length > 20_000) return refuse('it is longer than 20,000 characters');
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { return refuse('it is not valid JSON (the link may be cut off)'); }
+  const v = validateFilters(parsed);
+  return v.ok ? v.filters : refuse(v.reason);
 }
 
 function log(err: unknown, where: string): void {
@@ -144,7 +150,8 @@ router.get('/meta', (req: AuthenticatedRequest, res: Response) => {
 
 router.get('/summary', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const o = buildOpts();
     const body = cached(`s|${version}|${o.today}|${o.fxPolicy}|${JSON.stringify(f)}`, () => buildFromClassified(loadClassified(), f, o));
     res.json({ ...body, refreshedAt: new Date().toISOString(), version });
@@ -153,7 +160,8 @@ router.get('/summary', (req: AuthenticatedRequest, res: Response) => {
 
 router.get('/records', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const q = parseRecordQuery(req.query as Record<string, unknown>);
     if (q.scope === 'excluded' && !adminOnly(req, res)) return;
     const admin = isAdmin(req);
@@ -166,7 +174,8 @@ router.get('/records', (req: AuthenticatedRequest, res: Response) => {
 
 router.get('/records.csv', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const q = parseRecordQuery(req.query as Record<string, unknown>);
     if (q.scope === 'excluded' && !adminOnly(req, res)) return;
     const rows = selectRecords(loadClassified(), f, q, today());
@@ -179,7 +188,9 @@ router.get('/records.csv', (req: AuthenticatedRequest, res: Response) => {
 router.get('/drill', (req: AuthenticatedRequest, res: Response) => {
   try {
     const q = parseRecordQuery(req.query as Record<string, unknown>);
-    res.json(drillGroups(loadClassified(), filtersOf(req), q.drill, today()));
+    const f = filtersOf(req, res);
+    if (!f) return;
+    res.json(drillGroups(loadClassified(), f, q.drill, today()));
   } catch (e) { log(e, 'drill'); res.status(500).json({ error: 'The drill-down could not be built.' }); }
 });
 

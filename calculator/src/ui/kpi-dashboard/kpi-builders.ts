@@ -342,6 +342,14 @@ export function fxLine(fx: FxApplied | null | undefined): string {
   return `£${fx.gbpPerUnit.toPrecision(6)} per ${esc(fx.currency)} · ${esc(fx.source)} · effective ${esc(fx.effectiveDate)} · ${esc(FX_METHOD_LABEL[fx.method] ?? fx.method)} · frozen ${dateTime(fx.retrievedAt)}${fx.approved ? '' : ' · <strong>reference, not approved</strong>'}`;
 }
 
+/** A-18: the server refused the filter (malformed or unknown) — say so and offer to clear it, never
+ *  show totals that are not what the filter asked for. */
+export function badFilterHtml(message: string): string {
+  const reason = message.replace(/^This filter could not be applied:\s*/, '');
+  return `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">This filter could not be applied</p><p>${esc(reason.charAt(0).toUpperCase() + reason.slice(1))}</p>
+    <p>No figures are shown, because they would not be the ones this filter asks for.</p><button type="button" class="btn btn-secondary" data-clear-all>Clear filters</button></div>`;
+}
+
 /** A-04: the record panel's line on whether the should-cost re-adds from its breakdown. */
 export function shouldBasisHtml(b: ShouldBasis | null | undefined): string {
   if (!b) return '';

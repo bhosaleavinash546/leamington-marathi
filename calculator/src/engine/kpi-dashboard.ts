@@ -464,6 +464,38 @@ export function parseFilters(raw: unknown): DashboardFilters {
   return f;
 }
 
+/**
+ * A-18 (Phase 2): STRICT check of an untrusted filter object. `parseFilters` silently drops what it cannot
+ * use, so a malformed filter became the unfiltered (company-wide) view. This refuses instead, with the
+ * reason: not an object, an unknown key, a dimension that is not a list of 1–120-character strings (at most
+ * 200), an unknown date preset, a custom date that is not YYYY-MM-DD, an unknown status, a currency that is
+ * not ISO 4217, a model year that is not a year. A well-formed filter that matches nothing is valid.
+ */
+export function validateFilters(raw: unknown): { ok: true; filters: DashboardFilters } | { ok: false; reason: string } {
+  const bad = (reason: string) => ({ ok: false as const, reason });
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return bad('the filter must be an object');
+  const o = raw as Record<string, unknown>;
+  const allowed = new Set<string>([...DIMENSIONS, 'datePreset', 'dateFrom', 'dateTo']);
+  for (const k of Object.keys(o)) if (!allowed.has(k)) return bad(`unknown filter "${k.slice(0, 40)}"`);
+  for (const d of DIMENSIONS) {
+    const v = o[d];
+    if (v === undefined) continue;
+    if (!Array.isArray(v)) return bad(`"${d}" must be a list of values`);
+    if (v.length > 200) return bad(`"${d}" has more than 200 values`);
+    for (const x of v) {
+      if (typeof x !== 'string' || !x.length || x.length > 120) return bad(`"${d}" values must be text of 1–120 characters`);
+      if (d === 'status' && !RECORD_STATUSES.includes(x as RecordStatus)) return bad(`unknown status "${x.slice(0, 40)}"`);
+      if (d === 'currency' && x !== NOT_SET && !isIsoCurrency(x)) return bad(`"${String(x).slice(0, 40)}" is not an ISO 4217 currency code`);
+      if (d === 'modelYear' && x !== NOT_SET && !/^\d{4}$/.test(x)) return bad(`"${x.slice(0, 40)}" is not a model year`);
+    }
+  }
+  if (o.datePreset !== undefined && !(typeof o.datePreset === 'string' && o.datePreset in DATE_PRESET_LABEL)) return bad('unknown date preset');
+  for (const k of ['dateFrom', 'dateTo'] as const) {
+    if (o[k] !== undefined && !isIsoDate(o[k])) return bad(`"${k}" must be a date YYYY-MM-DD`);
+  }
+  return { ok: true, filters: parseFilters(o) };
+}
+
 // ─── Aggregation ──────────────────────────────────────────────────────────────
 
 export interface Sum { n: number; gbp: number }
