@@ -128,7 +128,8 @@ export function financialCardsHtml(s: DashboardSummary): string {
   const elig = `${int(f.eligible)} eligible record${f.eligible === 1 ? '' : 's'}`;
   const cards: Card[] = [
     { id: 'opportunity', label: 'Potential unit cost opportunity', value: gbpCompact(f.opportunity.gbp), exact: gbp(f.opportunity.gbp),
-      sub: `${int(f.opportunity.n)} record${f.opportunity.n === 1 ? '' : 's'} above should-cost · per piece, summed`
+      // F-21: the eligible base, as on the gap card ("x of y eligible").
+      sub: `${int(f.opportunity.n)} of ${elig} above should-cost · per piece, summed`
         + (f.annualised.n ? `<span class="kd-card-x" data-annualised>Annualised: <strong title="${gbp(f.annualised.gbp)}">${gbpCompact(f.annualised.gbp)}</strong> over ${int(f.annualised.n)} validated volume${f.annualised.n === 1 ? '' : 's'}</span>`
           : '<span class="kd-card-x" data-annualised>Not annualised — no admin-validated annual volume</span>'),
       tip: 'Sum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual saving. Records below should-cost are shown separately as unfavourable. An annualised figure (gap × annual volume) appears only where an admin has validated the volume.',
