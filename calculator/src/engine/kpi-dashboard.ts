@@ -215,6 +215,18 @@ export function normalisePartNumber(pn: string | null | undefined): string | nul
   return k.length ? k : null;
 }
 
+/**
+ * A-11 (Phase 2): fold a part number or programme code to one key — upper case, with spaces, hyphens,
+ * underscores, full stops and slashes removed — so LR-VAR-100, LRVAR100 and LR_VAR_100 are one key and
+ * Q900 / q900 are one key. NOT USED for grouping, identity or KPIs: switching it on needs the user's
+ * approval (see scripts/kpi-identity-dry-run.ts for what it would merge). Null when nothing is left.
+ */
+export function foldIdentityCode(code: string | null | undefined): string | null {
+  if (typeof code !== 'string') return null;
+  const k = code.toUpperCase().replace(/[\s\-_./]+/g, '');
+  return k.length ? k : null;
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const isIsoDate = (s: unknown): s is string =>
   typeof s === 'string' && DATE_RE.test(s) && !Number.isNaN(Date.parse(s + 'T00:00:00Z'));
