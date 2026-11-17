@@ -106,7 +106,7 @@ const myLabel = (k: string) => (k === NOT_SET ? 'Not set' : `MY${k}`);
 
 /** F-19: an axis title in the theme's text colour (never a series colour). */
 const axisTitle = (text: string, color: string) => ({ display: true, text, color });
-const MONEY_GAPS = '£ per piece (Σ of gaps above should-cost)';
+const MONEY_GAPS = 'Gap, £ per piece (Σ)';
 
 function barConfig(rows: CategoryRow[], value: (r: CategoryRow) => number, opts: { horizontal?: boolean; money?: boolean; name: string; labelOf?: (k: string) => string; axis: string; valueAxis: string }): () => ChartConfiguration {
   return () => {
@@ -182,7 +182,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false,
           plugins: { legend: { display: true, position: 'top', align: 'end', labels: { color: t.text, boxWidth: 10, boxHeight: 10, useBorderRadius: true, borderRadius: 2 } }, tooltip: { callbacks: { label: (x: Tip) => `${x.dataset.label}: ${gbp(x.parsed.y)} (${int(cost[x.dataIndex].eligible!)} records)`, afterBody: (items: Tip[]) => (items[0] ? `Weighted gap: ${weightedPct(cost[items[0].dataIndex])}` : '') } } },
-          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text }, title: axisTitle('Commodity', t.text) }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, callback: (v: unknown) => gbp(Number(v), 0) }, title: axisTitle('£ per piece (Σ of eligible records)', t.text) } },
+          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text }, title: axisTitle('Commodity', t.text) }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, callback: (v: unknown) => gbp(Number(v), 0) }, title: axisTitle('£ per piece (Σ)', t.text) } },
         },
       } as ChartConfiguration;
     },

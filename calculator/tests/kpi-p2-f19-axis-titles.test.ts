@@ -55,9 +55,9 @@ describe('F-19: chart axis titles with units', () => {
     expect(title(all.activity.x)).toBe('Costing date');
     expect(title(all.commodity.x)).toBe('Records (count)');
     expect(title(all.commodity.y)).toBe('Commodity');
-    expect(title(all.cost.y)).toBe('£ per piece (Σ of eligible records)');
+    expect(title(all.cost.y)).toBe('£ per piece (Σ)');
     expect(title(all.cost.x)).toBe('Commodity');
-    expect(title(all.opportunity.x)).toBe('£ per piece (Σ of gaps above should-cost)');
+    expect(title(all.opportunity.x)).toBe('Gap, £ per piece (Σ)');
     expect(title(all.opportunity.y)).toBe('Commodity');
     expect(title(all.programme.y)).toBe('Current records (count)');
     expect(title(all.programme.x)).toBe('Programme');
@@ -65,7 +65,7 @@ describe('F-19: chart axis titles with units', () => {
     expect(title(all.modelyear.x)).toBe('Model year');
     expect(title(all.tool.x)).toBe('Records (count)');
     expect(title(all.tool.y)).toBe('Costing tool');
-    expect(title(all['opp-powertrain'].y)).toBe('£ per piece (Σ of gaps above should-cost)');
+    expect(title(all['opp-powertrain'].y)).toBe('Gap, £ per piece (Σ)');
     expect(title(all['opp-powertrain'].x)).toBe('Powertrain');
   });
   it('titles are drawn in the theme text colour, not a series colour', async () => {
