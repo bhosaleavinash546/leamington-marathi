@@ -101,6 +101,28 @@ function publicRow(r: ClassifiedRecord) {
   };
 }
 
+/** The eight buckets the record panel prints. */
+const PANEL_BUCKETS = ['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'] as const;
+
+/** A-02: what the record panel shows of a saved costing — commodity, region, total, the eight
+ *  buckets and each operation's name and cost. Nothing else of the costing leaves the server. */
+function panelCosting(raw: unknown) {
+  const c = (raw && typeof raw === 'object' ? raw : {}) as { commodity?: unknown; region?: unknown; result?: unknown };
+  const r = (c.result && typeof c.result === 'object' ? c.result : {}) as { total?: unknown; breakdown?: unknown; operationDetails?: unknown };
+  const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+  const bd = (r.breakdown && typeof r.breakdown === 'object' ? r.breakdown : null) as Record<string, unknown> | null;
+  const breakdown = bd ? Object.fromEntries(PANEL_BUCKETS.filter(k => num(bd[k]) !== null).map(k => [k, bd[k] as number])) : undefined;
+  const ops = Array.isArray(r.operationDetails) ? (r.operationDetails as unknown[]).map(o => {
+    const op = (o && typeof o === 'object' ? o : {}) as { name?: unknown; cost?: unknown };
+    return { name: typeof op.name === 'string' ? op.name : '', cost: num(op.cost) };
+  }) : undefined;
+  return {
+    commodity: typeof c.commodity === 'string' ? c.commodity : null,
+    region: typeof c.region === 'string' ? c.region : null,
+    result: { total: num(r.total), ...(breakdown ? { breakdown } : {}), ...(ops ? { operationDetails: ops } : {}) },
+  };
+}
+
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
 router.get('/meta', (req: AuthenticatedRequest, res: Response) => {
@@ -169,6 +191,9 @@ router.get('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   if (c.sourceTool === 'CostVision' && c.sourceRef) {
     const s = db.prepare('SELECT data FROM scenarios WHERE id = ?').get(c.sourceRef) as { data: string } | undefined;
     if (s) { try { costing = JSON.parse(s.data); } catch { costing = null; } }
+    // A-02: the full saved costing (inputs, target prices, quotes, traces) goes only to its owner or an
+    // admin; anyone else gets what the record panel shows.
+    if (costing && !admin && c.ownerId !== req.user!.userId) costing = panelCosting(costing);
   }
   const revisions = loadClassified()
     .filter(r => r.applicationKey === c.applicationKey && r.id !== c.id && (!r.excluded || admin))
