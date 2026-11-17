@@ -302,6 +302,16 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
     if ((row.status === 'reviewed' || row.status === 'approved') && MONEY_FIELDS.some(k => k in p) && !p.status) p.status = 'completed';
   }
   if (row.sourceTool === 'CostVision' && ('shouldCost' in (req.body ?? {}))) { res.status(400).json({ error: 'A CostVision should-cost comes from its costing and cannot be edited here' }); return; }
+  // A-03: a validated volume is validated only for the value an admin validated. Changing it clears the
+  // flag, whoever makes the change; re-validating is a separate save (so each is its own audit entry).
+  // The edit form sends every field, so "changed" is a value comparison, not the key being present.
+  if (row.volumeValidated && 'annualVolume' in p && (p.annualVolume ?? null) !== (row.annualVolume ?? null)) {
+    if (p.volumeValidated === true) {
+      res.status(400).json({ error: 'The annual volume changed, so its validation is cleared. Save the new volume first (with "Annual volume validated" unticked), then validate it as a separate save.' });
+      return;
+    }
+    p.volumeValidated = false;
+  }
   const next = { ...row, ...p };
   if (next.currentCost !== null && (!next.currentCcy || !next.currentTerms)) { res.status(400).json({ error: 'A current cost needs its currency and delivery terms' }); return; }
   if (next.savingStatus && (next.savingPerPiece === null || !next.savingCcy)) { res.status(400).json({ error: 'A saving status needs the saving per piece and its currency' }); return; }
