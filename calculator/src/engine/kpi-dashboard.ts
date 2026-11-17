@@ -756,8 +756,13 @@ export const INSIGHT_THRESHOLDS = {
   significantGapPct: 15,
 } as const;
 
-const gbp0 = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
-const gbp2 = (n: number) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+/** A-27: the ONE money formatter — sign first, "−£4.03" (U+2212), as the screen prints it. The screen's `gbp`,
+ *  the insights and the exports all use it (the PDF's font turns − into - via pdfSafe: still sign-first). */
+export function gbpSigned(n: number, dp = 2): string {
+  return `${n < 0 ? '−' : ''}£${Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+}
+const gbp0 = (n: number) => gbpSigned(Math.round(n), 0);
+const gbp2 = (n: number) => gbpSigned(n, 2);
 const pct1 = (n: number) => `${n.toFixed(1)}%`;
 
 export function buildInsights(filtered: ClassifiedRecord[], today: string): Insight[] {

@@ -4,7 +4,7 @@
  * from a user, a file or a tool goes through `esc`.
  */
 import {
-  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL, SHOULD_BASIS_LABEL,
+  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL, SHOULD_BASIS_LABEL, gbpSigned,
   type ShouldBasis, type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type FilterOption,
   type CurrencyTotal, type RecordStatus, type FxApplied, type DatePreset,
 } from '../../engine/kpi-dashboard.js';
@@ -16,8 +16,7 @@ export const esc = (s: unknown): string =>
 
 export function gbp(n: number | null | undefined, dp = 2): string {
   if (n === null || n === undefined || !Number.isFinite(n)) return '—';
-  const s = Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
-  return `${n < 0 ? '−' : ''}£${s}`;
+  return gbpSigned(n, dp);   // A-27: the engine's one sign-first formatter
 }
 /** Compact £ for big headline numbers (£1.2m, £45.3k) — the exact figure goes in the title. */
 export function gbpCompact(n: number | null | undefined): string {

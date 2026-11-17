@@ -19,6 +19,9 @@ export interface ExportRow extends RecordRowView {
 }
 
 const lbl = (k: string) => (k === NOT_SET ? 'Not set' : k);
+/** A-27: Excel GBP formats, sign first as on the screen ("−£4.03"; a one-section format printed "-£4.03"). */
+const XL_GBP = '£#,##0.00;"−"£#,##0.00';
+const XL_GBP_RED = '£#,##0.00;[Red]"−"£#,##0.00';
 
 export function filterLines(s: DashboardSummary, note = ''): string[] {
   const f = s.filters;
@@ -88,8 +91,8 @@ const COLS: { h: string; get: (r: ExportRow) => unknown; fmt?: string; w?: numbe
   { h: 'FX current (GBP per unit)', get: r => r.fx.current?.gbpPerUnit ?? null, fmt: '0.000000' },
   { h: 'FX current source', get: r => (r.fx.current ? `${r.fx.current.source} (${r.fx.current.effectiveDate})${r.fx.current.approved ? '' : ' — reference'}` : null), w: 30 },
   { h: 'FX should (GBP per unit)', get: r => r.fx.should?.gbpPerUnit ?? null, fmt: '0.000000' },
-  { h: 'GBP current cost', get: r => r.gbpCurrent, fmt: '£#,##0.00' }, { h: 'GBP should-cost', get: r => r.gbpShould, fmt: '£#,##0.00' },
-  { h: 'GBP cost gap', get: r => r.gapGbp, fmt: '£#,##0.00;[Red]-£#,##0.00' }, { h: 'Cost gap %', get: r => (r.gapPct === null ? null : r.gapPct / 100), fmt: '0.0%' },
+  { h: 'GBP current cost', get: r => r.gbpCurrent, fmt: XL_GBP }, { h: 'GBP should-cost', get: r => r.gbpShould, fmt: XL_GBP },
+  { h: 'GBP cost gap', get: r => r.gapGbp, fmt: XL_GBP_RED }, { h: 'Cost gap %', get: r => (r.gapPct === null ? null : r.gapPct / 100), fmt: '0.0%' },
   { h: 'Annual volume', get: r => r.annualVolume, fmt: '#,##0' }, { h: 'Volume validated', get: r => (r.volumeValidated ? 'yes' : 'no') },
   { h: 'Costing tool', get: r => r.sourceTool }, { h: 'Status', get: r => STATUS_LABEL[r.status] ?? r.status },
   { h: 'Reporting role', get: r => r.role }, { h: 'Financial eligibility', get: r => (r.eligible ? 'eligible' : r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : '') },
@@ -129,7 +132,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
     for (const c of counts) {
       const m = money.find(x => x.key === c.key);
       const r = ws.addRow([lbl(c.key), c.count, m?.eligible ?? 0, m?.currentGbp ?? null, m?.shouldGbp ?? null, m?.gapGbp ?? null, m?.opportunityGbp ?? null]);
-      for (const i of [4, 5, 6, 7]) r.getCell(i).numFmt = '£#,##0.00';
+      for (const i of [4, 5, 6, 7]) r.getCell(i).numFmt = XL_GBP;
     }
     ws.addRow([]);
     ws.addRow(['Records = current records except the commodity sheet, which counts every save. GBP columns use eligible current records only.']);
@@ -188,11 +191,11 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
   const f = s.financial;
   const lines: [string, number | null, string, string][] = [
     ['Financially eligible records', f.eligible, `COUNTIF(${el},"eligible")`, '0'],
-    ['Σ GBP current cost', f.sumCurrentGbp, `SUMIFS(${cur},${el},"eligible")`, '£#,##0.00'],
-    ['Σ GBP should-cost', f.sumShouldGbp, `SUMIFS(${sh},${el},"eligible")`, '£#,##0.00'],
-    ['Σ GBP cost gap', f.sumGapGbp, `SUMIFS(${gap},${el},"eligible")`, '£#,##0.00'],
-    ['Potential unit cost opportunity', f.opportunity.gbp, `SUMIFS(${gap},${el},"eligible",${gap},">0")`, '£#,##0.00'],
-    ['Unfavourable gaps', f.unfavourable.gbp, `SUMIFS(${gap},${el},"eligible",${gap},"<0")`, '£#,##0.00'],
+    ['Σ GBP current cost', f.sumCurrentGbp, `SUMIFS(${cur},${el},"eligible")`, XL_GBP],
+    ['Σ GBP should-cost', f.sumShouldGbp, `SUMIFS(${sh},${el},"eligible")`, XL_GBP],
+    ['Σ GBP cost gap', f.sumGapGbp, `SUMIFS(${gap},${el},"eligible")`, XL_GBP],
+    ['Potential unit cost opportunity', f.opportunity.gbp, `SUMIFS(${gap},${el},"eligible",${gap},">0")`, XL_GBP],
+    ['Unfavourable gaps', f.unfavourable.gbp, `SUMIFS(${gap},${el},"eligible",${gap},"<0")`, XL_GBP],
     ['Weighted cost gap %', f.weightedGapPct === null ? null : f.weightedGapPct / 100, `IF(C3=0,"",C5/C3)`, '0.00%'],
   ];
   lines.forEach(([k, v, formula, fmt], i) => {
