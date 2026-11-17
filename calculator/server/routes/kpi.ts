@@ -442,8 +442,17 @@ router.post('/import', (req: AuthenticatedRequest, res: Response) => {
   if (!buf) { res.status(400).json({ error: 'Send the file as fileBase64 (CSV or XLSX)' }); return; }
   try {
     const { rows, headers } = readSheet(buf);
-    const r = parseImportRows(rows, headers);
+    const r = parseImportRows(rows, headers, { today: today() });
     if (r.errors.length) { res.status(400).json({ error: 'Nothing was imported', errors: r.errors.slice(0, 100) }); return; }
+    // A-10: a row that points at a record deleted from the dashboard is refused (a re-import used to
+    // rewrite the hidden record silently). Restoring a deleted record is not an import's job.
+    const deletedErrors = r.records.flatMap((rec, i) => {
+      const existing = findImported(db, rec.sourceTool, rec.sourceRef);
+      return existing && getRecordRow(db, existing)?.deleted
+        ? [{ row: r.rowNumbers[i], column: 'source_record_id', message: `${rec.sourceTool} ${rec.sourceRef} was deleted from the dashboard; an import cannot change or restore it` }]
+        : [];
+    });
+    if (deletedErrors.length) { res.status(400).json({ error: 'Nothing was imported', errors: deletedErrors.slice(0, 100) }); return; }
     const ctx = fxContext(db);
     let added = 0, updated = 0;
     db.transaction(() => {

@@ -137,11 +137,19 @@ export const IMPORT_COLUMNS: { key: string; required: boolean; note: string }[] 
 
 export type ImportRow = Omit<RecordInput, 'ownerId'> & { sourceTool: string; sourceRef: string; ownerLabel: string };
 
-export function parseImportRows(rows: Record<string, unknown>[], headers: string[]): { records: ImportRow[]; errors: ParseError[] } {
+/** A-10: a costing date later than today + 1 day (server date, UTC) is refused as a future date. */
+export function latestImportDate(today: string): string {
+  return new Date(Date.parse(today + 'T00:00:00Z') + 86_400_000).toISOString().slice(0, 10);
+}
+
+/** `rowNumbers[i]` is the sheet row of `records[i]`, so a later check can name the row it refuses. */
+export function parseImportRows(rows: Record<string, unknown>[], headers: string[], opts: { today?: string } = {}): { records: ImportRow[]; rowNumbers: number[]; errors: ParseError[] } {
   const errors: ParseError[] = [];
   for (const c of IMPORT_COLUMNS) if (c.required && !headers.includes(c.key)) errors.push({ row: 1, column: c.key, message: `Missing column "${c.key}"` });
-  if (errors.length) return { records: [], errors };
+  if (errors.length) return { records: [], rowNumbers: [], errors };
+  const latest = latestImportDate(opts.today ?? new Date().toISOString().slice(0, 10));
   const records: ImportRow[] = [];
+  const rowNumbers: number[] = [];
   const seen = new Set<string>();
   rows.forEach((r, i) => {
     const row = i + 2;
@@ -158,6 +166,7 @@ export function parseImportRows(rows: Record<string, unknown>[], headers: string
     if (!status || !RECORD_STATUSES.includes(status as RecordStatus)) err('status', `"${r.status ?? ''}" must be one of ${RECORD_STATUSES.join(', ')}`);
     const cd = date(r.costing_date);
     if (cd === null || cd === 'bad') err('costing_date', `"${r.costing_date ?? ''}" must be a date YYYY-MM-DD`);
+    else if (cd > latest) err('costing_date', `${cd} is in the future — a costing date can be at most ${latest} (today + 1 day, UTC)`);
     const my = num(r.model_year);
     if (my === 'bad' || (my !== null && (!Number.isInteger(my) || my < 2000 || my > 2100))) err('model_year', `"${r.model_year}" must be a four-digit year`);
     const money = (vk: string, ck: string, tk: string | null) => {
@@ -180,6 +189,7 @@ export function parseImportRows(rows: Record<string, unknown>[], headers: string
     const key = `${tool}|${ref}`;
     if (tool && ref) { if (seen.has(key)) err('source_record_id', `${tool} ${ref} appears twice in the file`); seen.add(key); }
     if (errors.length > before) return;
+    rowNumbers.push(row);
     records.push({
       sourceTool: tool!, sourceRef: ref!, ownerLabel: owner!, partNumber: str(r.part_number), componentName: name!,
       commodity: str(r.commodity), programme: str(r.programme), modelYear: typeof my === 'number' ? my : null,
@@ -192,7 +202,7 @@ export function parseImportRows(rows: Record<string, unknown>[], headers: string
     });
   });
   if (!records.length && !errors.length) errors.push({ row: 2, column: 'source_tool', message: 'The file has no record rows' });
-  return { records: errors.length ? [] : records, errors };
+  return { records: errors.length ? [] : records, rowNumbers: errors.length ? [] : rowNumbers, errors };
 }
 
 /** A blank import template (CSV) with one illustrative row marked is_test = yes. */
