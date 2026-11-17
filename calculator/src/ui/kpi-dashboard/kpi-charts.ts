@@ -104,7 +104,11 @@ export const weightedPct = (r: CategoryRow): string =>
   r.currentGbp && r.currentGbp > 0 ? `${r.gapGbp! >= 0 ? '+' : '−'}${Math.abs((r.gapGbp! / r.currentGbp) * 100).toFixed(1)}%` : '—';
 const myLabel = (k: string) => (k === NOT_SET ? 'Not set' : `MY${k}`);
 
-function barConfig(rows: CategoryRow[], value: (r: CategoryRow) => number, opts: { horizontal?: boolean; money?: boolean; name: string; labelOf?: (k: string) => string }): () => ChartConfiguration {
+/** F-19: an axis title in the theme's text colour (never a series colour). */
+const axisTitle = (text: string, color: string) => ({ display: true, text, color });
+const MONEY_GAPS = '£ per piece (Σ of gaps above should-cost)';
+
+function barConfig(rows: CategoryRow[], value: (r: CategoryRow) => number, opts: { horizontal?: boolean; money?: boolean; name: string; labelOf?: (k: string) => string; axis: string; valueAxis: string }): () => ChartConfiguration {
   return () => {
     const t = theme();
     const lf = opts.labelOf ?? label;
@@ -120,9 +124,10 @@ function barConfig(rows: CategoryRow[], value: (r: CategoryRow) => number, opts:
           const money = { callback: (v: unknown) => gbp(Number(v), 0) };
           const valueTicks = { color: t.text, precision: 0, ...(opts.money ? money : {}) };
           const catTicks = { color: t.text, autoSkip: false };
+          const valueTitle = axisTitle(opts.valueAxis, t.text), catTitle = axisTitle(opts.axis, t.text);
           return {
-            x: { grid: { display: !!opts.horizontal, color: t.grid }, border: { color: t.grid }, ticks: opts.horizontal ? valueTicks : catTicks, ...(opts.horizontal ? { beginAtZero: true } : {}) },
-            y: { grid: { display: !opts.horizontal, color: t.grid }, border: { color: t.grid }, ticks: opts.horizontal ? catTicks : valueTicks, ...(opts.horizontal ? {} : { beginAtZero: true }) },
+            x: { grid: { display: !!opts.horizontal, color: t.grid }, border: { color: t.grid }, ticks: opts.horizontal ? valueTicks : catTicks, title: opts.horizontal ? valueTitle : catTitle, ...(opts.horizontal ? { beginAtZero: true } : {}) },
+            y: { grid: { display: !opts.horizontal, color: t.grid }, border: { color: t.grid }, ticks: opts.horizontal ? catTicks : valueTicks, title: opts.horizontal ? catTitle : valueTitle, ...(opts.horizontal ? {} : { beginAtZero: true }) },
           };
         })(),
       },
@@ -147,7 +152,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: (x: Tip) => `Costings saved: ${int(x.parsed.y ?? 0)}` } } },
-          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, precision: 0 } } },
+          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }, title: axisTitle('Costing date', t.text) }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, precision: 0 }, title: axisTitle('Costings saved (count)', t.text) } },
         },
       } as ChartConfiguration;
     },
@@ -158,7 +163,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
     id: 'commodity', title: 'Costing records by commodity', basis: 'Saves, revisions included · select a bar to filter', height: Math.max(180, byCom.length * 26 + 40),
     empty: !byCom.length, emptyText: 'No records in this view.',
     table: { head: ['Commodity', 'Records'], rows: c.byCommodity.map(r => [label(r.key), r.count]) },
-    config: barConfig(byCom, r => r.count, { horizontal: true, name: 'Records' }),
+    config: barConfig(byCom, r => r.count, { horizontal: true, name: 'Records', axis: 'Commodity', valueAxis: 'Records (count)' }),
   });
 
   const cost = c.costByCommodity.slice(0, 12);
@@ -177,7 +182,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false,
           plugins: { legend: { display: true, position: 'top', align: 'end', labels: { color: t.text, boxWidth: 10, boxHeight: 10, useBorderRadius: true, borderRadius: 2 } }, tooltip: { callbacks: { label: (x: Tip) => `${x.dataset.label}: ${gbp(x.parsed.y)} (${int(cost[x.dataIndex].eligible!)} records)`, afterBody: (items: Tip[]) => (items[0] ? `Weighted gap: ${weightedPct(cost[items[0].dataIndex])}` : '') } } },
-          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text } }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, callback: (v: unknown) => gbp(Number(v), 0) } } },
+          scales: { x: { grid: { display: false }, border: { color: t.grid }, ticks: { color: t.text }, title: axisTitle('Commodity', t.text) }, y: { beginAtZero: true, grid: { color: t.grid }, border: { display: false }, ticks: { color: t.text, callback: (v: unknown) => gbp(Number(v), 0) }, title: axisTitle('£ per piece (Σ of eligible records)', t.text) } },
         },
       } as ChartConfiguration;
     },
@@ -188,14 +193,14 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
     id: 'opportunity', title: 'Potential cost opportunity by commodity', basis: 'Ranked · per-piece gaps above should-cost, summed — not an annual saving', height: Math.max(180, opp.length * 26 + 40),
     empty: !opp.length, emptyText: 'No current record is above its should-cost in this view.',
     table: { head: ['Commodity', 'Records', 'Opportunity (GBP per piece, Σ)'], rows: c.opportunityByCommodity.map(r => [label(r.key), r.eligible!, gbp(r.opportunityGbp)]) },
-    config: barConfig(opp, r => r.opportunityGbp!, { horizontal: true, money: true, name: 'Opportunity' }),
+    config: barConfig(opp, r => r.opportunityGbp!, { horizontal: true, money: true, name: 'Opportunity', axis: 'Commodity', valueAxis: MONEY_GAPS }),
   });
 
   specs.push({
     id: 'programme', title: 'Programme distribution', basis: 'Current records · select a bar to filter', height: 220,
     empty: !c.byProgramme.length, emptyText: 'No current records in this view.',
     table: { head: ['Programme', 'Current records'], rows: c.byProgramme.map(r => [label(r.key), r.count]) },
-    config: barConfig(c.byProgramme, r => r.count, { name: 'Current records' }),
+    config: barConfig(c.byProgramme, r => r.count, { name: 'Current records', axis: 'Programme', valueAxis: 'Current records (count)' }),
   });
 
   const pt = c.byPowertrain;
@@ -221,14 +226,14 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
     id: 'modelyear', title: 'Model year analysis', basis: 'Current records · select a column to filter', height: 220,
     empty: !c.byModelYear.length, emptyText: 'No current records in this view.',
     table: { head: ['Model year', 'Current records'], rows: c.byModelYear.map(r => [myLabel(r.key), r.count]) },
-    config: barConfig(c.byModelYear, r => r.count, { name: 'Current records', labelOf: myLabel }),
+    config: barConfig(c.byModelYear, r => r.count, { name: 'Current records', labelOf: myLabel, axis: 'Model year', valueAxis: 'Current records (count)' }),
   });
 
   specs.push({
     id: 'tool', title: 'Costing tool contribution', basis: 'Saves, revisions included · select a bar to filter', height: Math.max(160, c.byTool.length * 30 + 40),
     empty: !c.byTool.length, emptyText: 'No records in this view.',
     table: { head: ['Tool', 'Records'], rows: c.byTool.map(r => [label(r.key), r.count]) },
-    config: barConfig(c.byTool, r => r.count, { horizontal: true, name: 'Records' }),
+    config: barConfig(c.byTool, r => r.count, { horizontal: true, name: 'Records', axis: 'Costing tool', valueAxis: 'Records (count)' }),
   });
 
   // Heatmap: HTML grid, one hue light → dark on the count; every cell is a button.
@@ -257,7 +262,7 @@ export function chartSpecs(s: DashboardSummary): ChartSpec[] {
     id: 'opp-powertrain', title: 'Cost opportunity by powertrain', basis: 'Per-piece gaps above should-cost, summed · select a bar to filter', height: 220,
     empty: !c.opportunityByPowertrain.length, emptyText: 'No current record is above its should-cost in this view.',
     table: { head: ['Powertrain', 'Records', 'Opportunity (GBP per piece, Σ)'], rows: c.opportunityByPowertrain.map(r => [label(r.key), r.eligible!, gbp(r.opportunityGbp)]) },
-    config: barConfig(c.opportunityByPowertrain, r => r.opportunityGbp!, { money: true, name: 'Opportunity' }),
+    config: barConfig(c.opportunityByPowertrain, r => r.opportunityGbp!, { money: true, name: 'Opportunity', axis: 'Powertrain', valueAxis: MONEY_GAPS }),
   });
 
   // Status: one segmented bar (part-to-whole, ≤ 4 segments) with a legend that names every count.
