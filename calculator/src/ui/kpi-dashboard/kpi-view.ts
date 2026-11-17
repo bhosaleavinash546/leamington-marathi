@@ -667,7 +667,11 @@ function toggleMenu(force?: boolean): void {
   if (open) pop.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
 }
 
-function scrollTo(id: string): void { S.root?.querySelector(`#kd-sec-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+/** F-26: an in-page jump is instant under prefers-reduced-motion, smooth otherwise. */
+export function scrollBehavior(): ScrollBehavior {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+function scrollTo(id: string): void { S.root?.querySelector(`#kd-sec-${id}`)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }); }
 
 function onChange(e: Event): void {
   const t = e.target as HTMLInputElement;
