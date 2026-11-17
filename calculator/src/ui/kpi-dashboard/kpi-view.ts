@@ -14,6 +14,7 @@ import {
   type RecordRowView,
 } from './kpi-builders.js';
 import { renderCharts, destroyCharts } from './kpi-charts.js';
+import { COMMODITY_REPORT_LABELS } from '../data/commodity-meta.js';
 import { showToast } from '../toast.js';
 
 const STORE_KEY = 'cv-kpi-dashboard';
@@ -293,6 +294,27 @@ interface Detail {
 
 const BUCKETS: [string, string][] = [['rawMaterial', 'Material'], ['process', 'Process'], ['labour', 'Labour'], ['tooling', 'Tooling'], ['packaging', 'Packaging'], ['logistics', 'Logistics'], ['overhead', 'Overhead'], ['margin', 'Margin']];
 
+/** F-25: the panel's "Original costing analysis" — the heading only when there is an analysis to show (an
+ *  eight-bucket breakdown or operations), otherwise one line; the commodity by its display name (the same labels
+ *  the record's Commodity field uses), never the raw id. Imported records keep their source note. */
+export function costingAnalysisHtml(costing: Detail['costing'], r: { sourceTool: string; sourceRef: string }): string {
+  const res = costing?.result;
+  if (!costing || !res) {
+    return r.sourceTool !== 'CostVision' ? `<h3>Original costing</h3><p>This record was imported from <strong>${esc(r.sourceTool)}</strong>; its costing lives in that tool under record <span class="kd-mono">${esc(r.sourceRef)}</span>.</p>` : '';
+  }
+  const bd = res.breakdown;
+  const rows = bd ? BUCKETS.filter(([k]) => typeof bd[k] === 'number') : [];
+  const ops = res.operationDetails ?? [];
+  const what = [costing.commodity ? COMMODITY_REPORT_LABELS[costing.commodity] ?? costing.commodity : '', costing.region ?? ''].filter(Boolean).map(esc).join(', ');
+  if (!rows.length && !ops.length) return `<p class="kd-muted" data-costing-note>No cost breakdown was saved with this costing${what ? ` (${what})` : ''}.</p>`;
+  return `<h3>Original costing analysis</h3>
+    <p class="kd-muted">The costing as saved from CostVision${what ? ` (${what})` : ''}. It is not re-run here.</p>
+    ${rows.length ? `<div class="kd-table-wrap"><table class="kd-table kd-table-sm"><caption class="kd-visually-hidden">Eight-bucket breakdown</caption><thead><tr><th scope="col">Bucket</th><th scope="col" class="num">£ per piece</th></tr></thead>
+      <tbody>${rows.map(([k, l]) => `<tr><th scope="row">${l}</th><td class="num">${gbp(bd![k])}</td></tr>`).join('')}
+      <tr class="kd-total"><th scope="row">Should-cost</th><td class="num">${gbp(res.total ?? null)}</td></tr></tbody></table></div>` : ''}
+    ${ops.length ? `<details class="kd-details"><summary>Operations (${ops.length})</summary><ul>${ops.slice(0, 40).map(o => `<li>${esc(o.name ?? '')}${typeof o.cost === 'number' ? ` — ${gbp(o.cost)}` : ''}</li>`).join('')}</ul></details>` : ''}`;
+}
+
 async function openRecord(id: string): Promise<void> {
   const dlg = S.root!.querySelector<HTMLDialogElement>('#kd-drawer')!;
   dlg.innerHTML = `<div class="kd-dialog-in"><p class="kd-muted">Loading…</p></div>`;
@@ -303,14 +325,7 @@ async function openRecord(id: string): Promise<void> {
   }
   const r = d.record;
   const fxS = r.fx as { current?: import('../../engine/kpi-dashboard.js').FxApplied | null; should?: import('../../engine/kpi-dashboard.js').FxApplied | null; saving?: import('../../engine/kpi-dashboard.js').FxApplied | null };
-  const bd = d.costing?.result?.breakdown;
-  const costingHtml = d.costing?.result ? `<h3>Original costing analysis</h3>
-    <p class="kd-muted">The costing as saved from CostVision (${esc(d.costing.commodity ?? '')}, ${esc(d.costing.region ?? '')}). It is not re-run here.</p>
-    ${bd ? `<div class="kd-table-wrap"><table class="kd-table kd-table-sm"><caption class="kd-visually-hidden">Eight-bucket breakdown</caption><thead><tr><th scope="col">Bucket</th><th scope="col" class="num">£ per piece</th></tr></thead>
-      <tbody>${BUCKETS.filter(([k]) => typeof bd[k] === 'number').map(([k, l]) => `<tr><th scope="row">${l}</th><td class="num">${gbp(bd[k])}</td></tr>`).join('')}
-      <tr class="kd-total"><th scope="row">Should-cost</th><td class="num">${gbp(d.costing.result.total ?? null)}</td></tr></tbody></table></div>` : ''}
-    ${d.costing.result.operationDetails?.length ? `<details class="kd-details"><summary>Operations (${d.costing.result.operationDetails.length})</summary><ul>${d.costing.result.operationDetails.slice(0, 40).map(o => `<li>${esc(o.name ?? '')}${typeof o.cost === 'number' ? ` — ${gbp(o.cost)}` : ''}</li>`).join('')}</ul></details>` : ''}`
-    : r.sourceTool !== 'CostVision' ? `<h3>Original costing</h3><p>This record was imported from <strong>${esc(r.sourceTool)}</strong>; its costing lives in that tool under record <span class="kd-mono">${esc(r.sourceRef)}</span>.</p>` : '';
+  const costingHtml = costingAnalysisHtml(d.costing, r);
   const edit = d.canEdit ? editFormHtml(d) : '';
   dlg.innerHTML = `<div class="kd-dialog-in">
     <div class="kd-dialog-h"><div><p class="kd-eyebrow">${esc(r.sourceTool)} · <span class="kd-mono">${esc(r.id)}</span></p>
