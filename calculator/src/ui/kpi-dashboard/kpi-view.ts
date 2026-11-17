@@ -141,7 +141,7 @@ function filtersChanged(): void {
 
 // ─── Rendering ───────────────────────────────────────────────────────────────
 
-function shell(): string {
+export function shell(): string {
   return `<div class="kd-wrap">
     <div class="kd-head">
       <div class="kd-head-t"><p class="kd-eyebrow">CostVision</p><h1>Global Cost Engineering KPI Dashboard</h1>
@@ -151,7 +151,7 @@ function shell(): string {
           <button type="button" class="btn btn-secondary btn-sm" data-act="refresh" aria-label="Refresh now"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></svg> Refresh</button></div>
         <div class="kd-seg-ctl" role="radiogroup" aria-label="Currency view">
           <button type="button" role="radio" data-ccy-mode="gbp">Consolidated GBP</button><button type="button" role="radio" data-ccy-mode="original">Original currency</button></div>
-        <div class="kd-menu"><button type="button" class="btn btn-primary btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
+        <div class="kd-menu"><button type="button" class="btn btn-secondary btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
           <div class="kd-menu-pop" id="kd-export-menu" role="menu" hidden>
             <button type="button" role="menuitem" data-act="export-pdf">PDF dashboard report</button>
             <button type="button" role="menuitem" data-act="export-xlsx">Excel report</button>
