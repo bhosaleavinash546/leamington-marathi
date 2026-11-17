@@ -293,7 +293,7 @@ export const TABLE_COLUMNS: { key: string; label: string; sort?: string; num?: b
   { key: 'shouldOrig', label: 'Should-cost (original)', num: true, mode: 'original', cell: r => money(r.shouldCost, r.shouldCcy) },
   { key: 'sourceTool', label: 'Tool', sort: 'sourceTool', cell: r => esc(r.sourceTool) },
   { key: 'ownerName', label: 'Created by', sort: 'ownerName', cell: r => esc(r.ownerName) },
-  { key: 'costingDate', label: 'Created', sort: 'costingDate', cell: r => day(r.costingDate) },
+  { key: 'costingDate', label: 'Costing date', sort: 'costingDate', cell: r => day(r.costingDate) },   // F-24: what it shows
   { key: 'updatedAt', label: 'Last updated', sort: 'updatedAt', cell: r => dateTime(r.updatedAt) },
   { key: 'id', label: 'Costing ID', sort: 'id', cell: r => `<span class="kd-mono kd-muted">${esc(r.id.replace(/^rec-/, '').slice(0, 8))}</span>` },
 ];
