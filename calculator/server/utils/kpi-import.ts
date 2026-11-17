@@ -6,7 +6,9 @@
  * rate-book parser. Nothing is guessed: a blank cell stays missing, a currency must be a
  * real ISO 4217 code, a rate must be GBP per ONE unit (or given as units per GBP in its
  * own column and inverted, stated), and a rate more than 10× away from the built-in
- * reference is refused — that is almost always an inverted rate.
+ * reference is refused — that is almost always an inverted rate. A rate closer (log scale) to
+ * 1 ÷ reference than to the reference is refused as inverted too (A-07; a warning only when the
+ * reference is within 10 % of 1.0).
  */
 import * as XLSX from 'xlsx';
 import {
@@ -81,6 +83,14 @@ export function parseFxRows(rows: Record<string, unknown>[], headers: string[], 
     if (refRate && (rate > refRate * 10 || rate < refRate / 10)) {
       errors.push({ row, column: gpu !== null ? 'gbp_per_unit' : 'units_per_gbp', message: `£${rate.toPrecision(4)} per ${ccy} is more than 10× away from the reference £${refRate.toPrecision(4)} — is the rate inverted?` });
       return;
+    }
+    // A-07: an inverted rate (units per £1 typed as GBP per unit) can sit inside the 10× band (EUR, USD,
+    // SGD, CAD). On a log scale it is closer to 1 ÷ reference than to the reference. When the reference is
+    // within 10 % of 1.0 the two cannot be told apart reliably, so the row loads with a warning.
+    if (refRate && Math.abs(Math.log(rate) + Math.log(refRate)) < Math.abs(Math.log(rate) - Math.log(refRate))) {
+      const msg = `£${rate.toPrecision(4)} per ${ccy} is closer to the inverse of the reference (1 ÷ £${refRate.toPrecision(4)} = £${(1 / refRate).toPrecision(4)}) than to the reference £${refRate.toPrecision(4)} — the rate looks inverted. Give GBP for ONE ${ccy}, or put units per £1 in the units_per_gbp column.`;
+      if (Math.abs(refRate - 1) > 0.1) { errors.push({ row, column: gpu !== null ? 'gbp_per_unit' : 'units_per_gbp', message: msg }); return; }
+      notes.push(`Row ${row}: ${msg} Loaded, because the reference is within 10% of 1.0 — check it.`);
     }
     const source = str(r.source);
     if (!source) { errors.push({ row, column: 'source', message: 'Every rate needs a source (e.g. "JLR Treasury approved rate, Nov 2026")' }); return; }
