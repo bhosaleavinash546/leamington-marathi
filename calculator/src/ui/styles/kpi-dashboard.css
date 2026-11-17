@@ -51,7 +51,7 @@
 .kd-menu-pop button:hover, .kd-menu-pop button:focus-visible { background: var(--surface-hover); outline: none; }
 
 /* filters */
-.kd-filters { position: sticky; top: 64px; z-index: 20; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+.kd-filters { position: sticky; top: 56px; z-index: 20; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
 .kd-filter-toggle { display: none !important; align-self: flex-start; }
 .kd-filter-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .kd-date { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
