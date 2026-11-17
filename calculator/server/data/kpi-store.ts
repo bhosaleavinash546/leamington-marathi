@@ -145,12 +145,24 @@ interface Row {
 
 const terms = (v: string | null): DeliveryTerms | null => (v === 'DAP' || v === 'EXW' ? v : null);
 
+/** A-23: never show an e-mail address as a display name — the trimmed full name, else an import's owner
+ *  label (the name the tool holds), else "Unnamed user". A value shaped like an e-mail is never used. */
+const EMAIL_LIKE = /^\S+@\S+$/;
+export const UNNAMED_USER = 'Unnamed user';
+export function displayName(fullName: string | null | undefined, ownerLabel: string | null | undefined): string {
+  for (const v of [fullName, ownerLabel]) {
+    const t = typeof v === 'string' ? v.trim() : '';
+    if (t && !EMAIL_LIKE.test(t)) return t;
+  }
+  return UNNAMED_USER;
+}
+
 export function rowToRecord(r: Row): KpiRecord {
   let fx: FxSnapshot = {};
   try { fx = JSON.parse(r.fx) as FxSnapshot; } catch { /* keep empty → missing FX */ }
   return {
     id: r.id, sourceTool: r.source_tool, sourceRef: r.source_ref, ownerId: r.owner_id,
-    ownerName: r.owner_name || r.owner_label || 'Unknown user',
+    ownerName: displayName(r.owner_name, r.owner_label),
     partNumber: r.part_number, componentName: r.component_name, commodity: r.commodity, programme: r.programme,
     modelYear: r.model_year, powertrain: r.powertrain, country: r.country, status: r.status as RecordStatus,
     costingDate: r.costing_date, createdAt: r.created_at, updatedAt: r.updated_at,

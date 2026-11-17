@@ -85,10 +85,11 @@ function buildOpts() {
   return { today: today(), nowIso: new Date().toISOString(), fxPolicy: policy, approvedRates, referenceLabel: builtInFxReference().source };
 }
 
-/** What a non-admin may see of a record list: never excluded records. */
-function publicRow(r: ClassifiedRecord) {
+/** What a non-admin may see of a record list: never excluded records. A-23: the internal owner id goes
+ *  to admins only (the client never reads it; who may edit is `canEdit`, worked out on the server). */
+function publicRow(r: ClassifiedRecord, admin: boolean) {
   return {
-    id: r.id, sourceTool: r.sourceTool, sourceRef: r.sourceRef, ownerId: r.ownerId, ownerName: r.ownerName,
+    id: r.id, sourceTool: r.sourceTool, sourceRef: r.sourceRef, ...(admin ? { ownerId: r.ownerId } : {}), ownerName: r.ownerName,
     partNumber: r.partNumber, componentName: r.componentName, commodity: r.commodity, programme: r.programme,
     modelYear: r.modelYear, powertrain: r.powertrain, country: r.country, status: r.status, costingDate: r.costingDate,
     createdAt: r.createdAt, updatedAt: r.updatedAt,
@@ -155,10 +156,11 @@ router.get('/records', (req: AuthenticatedRequest, res: Response) => {
     const f = filtersOf(req);
     const q = parseRecordQuery(req.query as Record<string, unknown>);
     if (q.scope === 'excluded' && !adminOnly(req, res)) return;
+    const admin = isAdmin(req);
     const rows = selectRecords(loadClassified(), f, q, today());
     // all=1: every matching row in one response, for the Excel / PDF exports (capped).
     const p = req.query.all === '1' ? pageOf(rows.slice(0, 100_000), 1, Math.max(1, Math.min(rows.length, 100_000))) : pageOf(rows, q.page, q.pageSize);
-    res.json({ ...p, rows: p.rows.map(publicRow), query: q });
+    res.json({ ...p, rows: p.rows.map(r => publicRow(r, admin)), query: q });
   } catch (e) { log(e, 'records'); res.status(500).json({ error: 'Records could not be listed.' }); }
 });
 
@@ -199,7 +201,7 @@ router.get('/records/:id', (req: AuthenticatedRequest, res: Response) => {
     .filter(r => r.applicationKey === c.applicationKey && r.id !== c.id && (!r.excluded || admin))
     .map(r => ({ id: r.id, costingDate: r.costingDate, status: r.status, role: r.role, ownerName: r.ownerName, gbpShould: r.gbpShould, gbpCurrent: r.gbpCurrent }));
   res.json({
-    record: publicRow(c), fxHistory: admin || c.ownerId === req.user!.userId ? row?.fxHistory ?? [] : undefined,
+    record: publicRow(c, admin), fxHistory: admin || c.ownerId === req.user!.userId ? row?.fxHistory ?? [] : undefined,
     costing, revisions, canEdit: admin || c.ownerId === req.user!.userId, isAdmin: admin,
   });
 });
@@ -287,7 +289,7 @@ router.post('/records', (req: AuthenticatedRequest, res: Response) => {
     audit(db, userId, 'record.save', id, { scenario: sc.id, partNumber: d.partNumber });
     invalidateKpiCache();
     const saved = loadClassified().find(r => r.id === id)!;
-    res.status(201).json({ record: publicRow(saved) });
+    res.status(201).json({ record: publicRow(saved, isAdmin(req)) });
   } catch (e) { log(e, 'save'); res.status(500).json({ error: 'The record could not be saved.' }); }
 });
 
@@ -369,7 +371,7 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
     updateRecord(db, row.id, p, fxContext(db));
     audit(db, req.user!.userId, 'record.edit', row.id, p);
     invalidateKpiCache();
-    res.json({ record: publicRow(loadClassified().find(r => r.id === row.id)!) });
+    res.json({ record: publicRow(loadClassified().find(r => r.id === row.id)!, admin) });
   } catch (e) { log(e, 'patch'); res.status(500).json({ error: 'The record could not be updated.' }); }
 });
 
