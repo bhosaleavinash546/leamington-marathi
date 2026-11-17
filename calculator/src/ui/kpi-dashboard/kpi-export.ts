@@ -253,10 +253,15 @@ async function chartImages(s: DashboardSummary): Promise<{ title: string; basis:
   return out;
 }
 
+/** A-17: lossless compression — the document's streams (`compress`) and each chart image (Flate, 'FAST').
+ *  jsPDF otherwise stores a PNG's decoded pixels as raw RGB (~1.25 MB a chart). */
+export const PDF_DOC_OPTIONS = { orientation: 'landscape', unit: 'mm', format: 'a4', compress: true } as const;
+export const PDF_IMAGE_COMPRESSION = 'FAST' as const;
+
 export async function buildPdf(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<Blob> {
   const [{ jsPDF }, at] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
   const autoTable = (at as unknown as { default: (d: unknown, o: unknown) => void }).default;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const doc = new jsPDF({ ...PDF_DOC_OPTIONS });
   const W = doc.internal.pageSize.getWidth(), M = 12;
   const NAVY: [number, number, number] = [22, 50, 92];
   const txt = (t: string, x: number, y: number, o?: Record<string, unknown>) => doc.text(pdfSafe(t), x, y, o);
@@ -291,7 +296,7 @@ export async function buildPdf(s: DashboardSummary, rows: ExportRow[], note = ''
         const x = M + k * (cw + 8);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(30); txt(im.title, x, y + 4);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110); txt(im.basis, x, y + 8);
-        doc.addImage(im.url, 'PNG', x, y + 10, cw, hOf(im.url));
+        doc.addImage(im.url, 'PNG', x, y + 10, cw, hOf(im.url), undefined, PDF_IMAGE_COMPRESSION);
       });
       y += rowH + 16;
     }
