@@ -6,11 +6,11 @@
 import { apiBase } from '../../api-base.js';
 import {
   DEFAULT_FILTERS, DIMENSIONS, STATUS_LABEL, INELIGIBLE_LABEL, FX_METHOD_LABEL,
-  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset,
+  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset, type ShouldBasis,
 } from '../../engine/kpi-dashboard.js';
 import {
   esc, gbp, money, pct, int, day, dateTime, fxLine, statusBadge, roleNote, financialCardsHtml, operationalCardsHtml, dqSummaryHtml, currencyTotalsHtml, insightsHtml,
-  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml,
+  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml, shouldBasisHtml,
   type RecordRowView,
 } from './kpi-builders.js';
 import { renderCharts, destroyCharts } from './kpi-charts.js';
@@ -321,6 +321,7 @@ async function openRecord(id: string): Promise<void> {
       <tr class="kd-total"><th scope="row">Gap</th><td></td><td></td><td class="num">${r.eligible ? `${gbp(r.gapGbp)} (${pct(r.gapPct)})` : esc(r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : r.excluded ?? '—')}</td><td class="kd-muted">${r.eligible ? 'GBP current − GBP should-cost, each converted on its own rate' : 'Not in financial KPIs'}</td></tr>
       ${r.savingStatus ? `<tr><th scope="row">Saving (${esc(r.savingStatus)})</th><td class="num">${money(r.savingPerPiece, r.savingCcy)}</td><td></td><td class="num">${gbp(r.gbpSaving)}</td><td class="kd-fx">${fxLine(fxS.saving)}</td></tr>` : ''}
       </tbody></table></div>
+    ${shouldBasisHtml(r.shouldBasis as ShouldBasis | null | undefined)}
     ${r.excluded && r.invalidReasons.length ? `<p class="kd-banner is-error">Excluded: ${esc(r.invalidReasons.join('; '))}</p>` : ''}
     ${d.revisions.length ? `<h3>Other costings of this application</h3><ul class="kd-revs">${d.revisions.map(v => `<li><button type="button" class="kd-link" data-open="${esc(v.id)}">${day(v.costingDate)} · ${esc(v.ownerName)}</button> ${statusBadge(v.status)} <span class="kd-muted">${esc(v.role === 'current' ? 'current' : v.role === 'duplicate' ? 'duplicate candidate' : v.role === 'superseded' ? 'older revision' : 'excluded')} · should ${gbp(v.gbpShould)} · current ${gbp(v.gbpCurrent)}</span></li>`).join('')}</ul>` : ''}
     ${costingHtml}

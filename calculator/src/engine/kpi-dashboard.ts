@@ -115,6 +115,41 @@ export interface KpiRecord {
   isTest: boolean;
   deleted: boolean;
   notes: string;
+  /** A-04: does the should-cost re-add from its saved breakdown? Derived when read (no stored field). */
+  shouldBasis?: ShouldBasis | null;
+}
+
+// ─── Should-cost re-add (A-04) ────────────────────────────────────────────────
+
+/** 're-added': the total re-adds from its breakdown within rounding; 'not-re-added': it does not (saved
+ *  before the rule); 'total-only': no breakdown to re-add from (an import, or a save without one). */
+export type ShouldBasis = 're-added' | 'not-re-added' | 'total-only';
+export const SHOULD_BASIS_LABEL: Record<ShouldBasis, string> = {
+  're-added': 'Re-adds from its breakdown',
+  'not-re-added': 'Does not re-add from its breakdown',
+  'total-only': 'Total only, not re-added',
+};
+/** The most rounding ONE breakdown line to two decimals can move the sum (confirmed at Stop 1, Phase 2). */
+export const READD_TOLERANCE_PER_LINE = 0.005;
+
+/**
+ * Re-add a should-cost total from its breakdown: every finite numeric value of the breakdown object is
+ * a line. Tolerance = lines × 0.005 (8 lines → 0.04). Null when there is no breakdown with a numeric line.
+ */
+export function reAddCheck(total: number, breakdown: unknown): { lines: number; sum: number; diff: number; tolerance: number; ok: boolean } | null {
+  if (!breakdown || typeof breakdown !== 'object' || Array.isArray(breakdown)) return null;
+  const vals = Object.values(breakdown as Record<string, unknown>).filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+  if (!vals.length) return null;
+  const sum = vals.reduce((a, b) => a + b, 0);
+  const tolerance = Math.round(vals.length * READD_TOLERANCE_PER_LINE * 1000) / 1000;
+  const diff = total - sum;
+  return { lines: vals.length, sum, diff, tolerance, ok: Math.abs(diff) <= tolerance + 1e-9 };
+}
+
+export function shouldCostBasis(shouldCost: number | null, breakdown: unknown): ShouldBasis | null {
+  if (shouldCost === null || !Number.isFinite(shouldCost)) return null;
+  const c = reAddCheck(shouldCost, breakdown);
+  return !c ? 'total-only' : c.ok ? 're-added' : 'not-re-added';
 }
 
 export type ExcludeReason = 'deleted' | 'test' | 'invalid';
@@ -471,6 +506,8 @@ export interface DataQuality {
   duplicateCandidates: number;
   supersededRevisions: number;
   missingClassification: { partNumber: number; commodity: number; programme: number; modelYear: number; powertrain: number };
+  /** A-04: current records with a should-cost, by whether it re-adds from its breakdown. */
+  shouldBasis: { reAdded: number; notReAdded: number; totalOnly: number };
 }
 
 export interface Insight { id: string; tone: 'info' | 'good' | 'warn'; title: string; detail: string; filter?: Partial<Record<Dimension, string[]>> }
@@ -658,6 +695,11 @@ export function dataQuality(all: ClassifiedRecord[], filtered: ClassifiedRecord[
       programme: cur.filter(r => !r.programme).length,
       modelYear: cur.filter(r => r.modelYear === null).length,
       powertrain: cur.filter(r => !r.powertrain).length,
+    },
+    shouldBasis: {
+      reAdded: cur.filter(r => r.shouldBasis === 're-added').length,
+      notReAdded: cur.filter(r => r.shouldBasis === 'not-re-added').length,
+      totalOnly: cur.filter(r => r.shouldBasis === 'total-only').length,
     },
   };
 }

@@ -15,7 +15,7 @@ import type { Database } from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import {
   type KpiRecord, type FxSnapshot, type FxRateRow, type FxReference, type FxMethod, type FxApplied,
-  type RecordStatus, type DeliveryTerms, type SavingStatus, resolveFx, toGbp,
+  type RecordStatus, type DeliveryTerms, type SavingStatus, resolveFx, toGbp, shouldCostBasis,
 } from '../../src/engine/kpi-dashboard.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
 
@@ -139,6 +139,8 @@ interface Row {
   saving_status: string | null; saving_per_piece: number | null; saving_ccy: string | null;
   fx: string; fx_history: string; gbp_should: number | null; gbp_current: number | null; gbp_saving: number | null;
   is_test: number; deleted_at: string | null; notes: string; created_at: string; updated_at: string;
+  /** A-04: the linked CostVision costing's `result.breakdown` (JSON text), read with the row. */
+  should_breakdown?: string | null;
 }
 
 const terms = (v: string | null): DeliveryTerms | null => (v === 'DAP' || v === 'EXW' ? v : null);
@@ -159,16 +161,31 @@ export function rowToRecord(r: Row): KpiRecord {
     savingPerPiece: r.saving_per_piece, savingCcy: r.saving_ccy,
     fx, gbpShould: r.gbp_should, gbpCurrent: r.gbp_current, gbpSaving: r.gbp_saving,
     isTest: r.is_test === 1, deleted: !!r.deleted_at, notes: r.notes,
+    shouldBasis: shouldCostBasis(r.should_cost, breakdownOf(r.should_breakdown)),
   };
 }
 
-const SELECT = `SELECT c.*, u.full_name AS owner_name FROM costing_records c LEFT JOIN users u ON u.id = c.owner_id`;
+function breakdownOf(text: string | null | undefined): unknown {
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return null; }
+}
+
+// A-04: the linked costing's breakdown is read with the record (no stored copy, no schema change). An
+// imported record has none ("total only"); a malformed costing row reads as none rather than failing the list.
+// A database without a `scenarios` table (a bare test database) reads every record as having none.
+const SELECT_PLAIN = `SELECT c.*, u.full_name AS owner_name FROM costing_records c LEFT JOIN users u ON u.id = c.owner_id`;
+const SELECT_WITH_COSTING = `SELECT c.*, u.full_name AS owner_name,
+    CASE WHEN json_valid(s.data) THEN json_extract(s.data, '$.result.breakdown') END AS should_breakdown
+  FROM costing_records c LEFT JOIN users u ON u.id = c.owner_id
+  LEFT JOIN scenarios s ON c.source_tool = 'CostVision' AND s.id = c.source_ref`;
+const selectFor = (db: Database): string =>
+  db.prepare(`SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'scenarios'`).get() ? SELECT_WITH_COSTING : SELECT_PLAIN;
 
 export function listRecords(db: Database): KpiRecord[] {
-  return (db.prepare(SELECT).all() as Row[]).map(rowToRecord);
+  return (db.prepare(selectFor(db)).all() as Row[]).map(rowToRecord);
 }
 export function getRecordRow(db: Database, id: string): (KpiRecord & { fxHistory: unknown[] }) | null {
-  const r = db.prepare(`${SELECT} WHERE c.id = ?`).get(id) as Row | undefined;
+  const r = db.prepare(`${selectFor(db)} WHERE c.id = ?`).get(id) as Row | undefined;
   if (!r) return null;
   let fxHistory: unknown[] = [];
   try { fxHistory = JSON.parse(r.fx_history) as unknown[]; } catch { /* empty */ }
@@ -282,9 +299,10 @@ export interface RecalcChange { id: string; field: 'should' | 'current' | 'savin
 
 /** Re-resolve every value's FX under the CURRENT policy + table. `apply` writes it, keeping history. */
 export function recalculateFx(db: Database, ids: string[] | 'all', ctx: FxContext, apply: boolean, userId: string): { examined: number; changed: number; changes: RecalcChange[] } {
+  const sel = selectFor(db);
   const rows = (ids === 'all'
-    ? db.prepare(`${SELECT} WHERE c.deleted_at IS NULL`).all()
-    : ids.map(i => db.prepare(`${SELECT} WHERE c.id = ?`).get(i)).filter(Boolean)) as Row[];
+    ? db.prepare(`${sel} WHERE c.deleted_at IS NULL`).all()
+    : ids.map(i => db.prepare(`${sel} WHERE c.id = ?`).get(i)).filter(Boolean)) as Row[];
   const changes: RecalcChange[] = [];
   const write = db.prepare('UPDATE costing_records SET fx = ?, fx_history = ?, gbp_should = ?, gbp_current = ?, gbp_saving = ? WHERE id = ?');
   let changedRecords = 0;

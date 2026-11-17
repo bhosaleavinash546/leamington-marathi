@@ -4,8 +4,8 @@
  * from a user, a file or a tool goes through `esc`.
  */
 import {
-  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL,
-  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type FilterOption,
+  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL, SHOULD_BASIS_LABEL,
+  type ShouldBasis, type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type FilterOption,
   type CurrencyTotal, type RecordStatus, type FxApplied, type DatePreset,
 } from '../../engine/kpi-dashboard.js';
 
@@ -232,6 +232,8 @@ export function dataQualityHtml(s: DashboardSummary, isAdmin: boolean): string {
     ${row('Missing FX rate', q.missingFx, 'No approved or reference rate for the currency')}
     ${row('Different cost basis', q.basisMismatch, 'Current and should-cost on different delivery terms (DAP / EXW)')}
     ${row('Reference FX (not approved)', q.unapprovedFx, 'Converted at the built-in reference rate until an approved rate is loaded')}
+    ${row('Should-cost total only, not re-added', q.shouldBasis.totalOnly, 'No breakdown to re-add the should-cost from (imported, or saved without one)')}
+    ${row('Should-cost does not re-add', q.shouldBasis.notReAdded, 'The saved total differs from its breakdown by more than rounding (saved before the re-add check)')}
     ${row('Duplicate candidates', q.duplicateCandidates, 'Another user’s costing of the same part, programme, model year and powertrain', ' <button type="button" class="kd-link" data-scope="all">View all revisions</button>')}
     ${row('Older revisions', q.supersededRevisions, 'Kept for activity, not in financial KPIs')}
     ${row('No part number', mc.partNumber, 'Cannot be de-duplicated — counted on its own')}
@@ -338,6 +340,12 @@ export function fxLine(fx: FxApplied | null | undefined): string {
   if (!fx) return '<span class="kd-muted">No rate — not converted</span>';
   if (fx.method === 'identity') return 'GBP — no conversion';
   return `£${fx.gbpPerUnit.toPrecision(6)} per ${esc(fx.currency)} · ${esc(fx.source)} · effective ${esc(fx.effectiveDate)} · ${esc(FX_METHOD_LABEL[fx.method] ?? fx.method)} · frozen ${dateTime(fx.retrievedAt)}${fx.approved ? '' : ' · <strong>reference, not approved</strong>'}`;
+}
+
+/** A-04: the record panel's line on whether the should-cost re-adds from its breakdown. */
+export function shouldBasisHtml(b: ShouldBasis | null | undefined): string {
+  if (!b) return '';
+  return `<p class="kd-muted">Should-cost basis: <strong>${esc(SHOULD_BASIS_LABEL[b])}</strong>${b === 'total-only' ? ' — no breakdown was saved with it, so the total could not be checked.' : b === 'not-re-added' ? ' — the saved total differs from its breakdown by more than rounding.' : '.'}</p>`;
 }
 
 /** Loading placeholder in the page's own shape (F-14): the financial band, the compact tiles, two chart blocks. */

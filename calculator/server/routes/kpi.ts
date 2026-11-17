@@ -23,7 +23,7 @@ import { readSheet, parseFxRows, parseImportRows, importTemplateCsv, IMPORT_COLU
 import {
   classifyRecords, buildFromClassified, parseFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
   isIsoCurrency, iso4217Codes, currencySymbol, STANDARD_PROGRAMMES, STANDARD_POWERTRAINS, RECORD_STATUSES, FX_METHOD_LABEL,
-  INSIGHT_THRESHOLDS, type ClassifiedRecord, type DashboardFilters, type RecordStatus,
+  INSIGHT_THRESHOLDS, reAddCheck, type ClassifiedRecord, type DashboardFilters, type RecordStatus,
 } from '../../src/engine/kpi-dashboard.js';
 import { COMMODITY_REPORT_LABELS } from '../../src/ui/data/commodity-meta.js';
 
@@ -97,7 +97,7 @@ function publicRow(r: ClassifiedRecord) {
     annualVolume: r.annualVolume, volumeValidated: r.volumeValidated, savingStatus: r.savingStatus, savingPerPiece: r.savingPerPiece, savingCcy: r.savingCcy,
     fx: r.fx, gbpShould: r.gbpShould, gbpCurrent: r.gbpCurrent, gbpSaving: r.gbpSaving, gapGbp: r.gapGbp, gapPct: r.gapPct,
     role: r.role, eligible: r.eligible, ineligible: r.ineligible, excluded: r.excluded, invalidReasons: r.invalidReasons,
-    duplicateOf: r.duplicateOf, isTest: r.isTest, deleted: r.deleted, notes: r.notes,
+    duplicateOf: r.duplicateOf, isTest: r.isTest, deleted: r.deleted, notes: r.notes, shouldBasis: r.shouldBasis ?? null,
   };
 }
 
@@ -252,6 +252,13 @@ router.post('/records', (req: AuthenticatedRequest, res: Response) => {
     return;
   }
   const { scenario: sc, details: d } = parsed.data;
+  // A-04: a should-cost total must re-add from its breakdown (tolerance: lines × 0.005, the most that
+  // rounding each line to two decimals can add up to). A costing with no breakdown is saved as "total only".
+  const readd = reAddCheck(sc.result.total, (sc.result as { breakdown?: unknown }).breakdown);
+  if (readd && !readd.ok) {
+    res.status(400).json({ error: `The should-cost total ${sc.result.total} does not re-add from its breakdown: ${readd.lines} line(s) sum to ${Math.round(readd.sum * 10000) / 10000}, a difference of ${Math.round(readd.diff * 10000) / 10000} (rounding allows ±${readd.tolerance}). Re-run the costing and save it again.` });
+    return;
+  }
   const userId = req.user!.userId;
   const nowIso = new Date().toISOString();
   // The full costing stays in `scenarios` — the record links to it (no second copy of the costing).
