@@ -315,8 +315,12 @@ const patchSchema = z.object({
   notes: shortText(1000).optional(),
 }).strict();
 
-const ADMIN_ONLY_FIELDS = ['volumeValidated', 'savingStatus', 'savingPerPiece', 'savingCcy'] as const;
+// A-05: the test flag, commodity and country are admin-only as well.
+const ADMIN_ONLY_FIELDS = ['volumeValidated', 'savingStatus', 'savingPerPiece', 'savingCcy', 'isTest', 'commodity', 'country'] as const;
 const MONEY_FIELDS = ['currentCost', 'currentCcy', 'currentTerms'] as const;
+/** A-05: a change to any of these on a reviewed / approved costing returns it to "completed", whoever makes it. */
+const IDENTITY_FIELDS = ['partNumber', 'programme', 'modelYear', 'powertrain', 'annualVolume'] as const;
+const ADMIN_STATUSES: readonly RecordStatus[] = ['reviewed', 'approved'];
 
 router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   const row = getRecordRow(db, String(req.params.id));
@@ -326,12 +330,26 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   const parsed = patchSchema.safeParse(req.body);
   if (!parsed.success) { const i = parsed.error.issues[0]; res.status(400).json({ error: `${i.path.join('.') || 'body'}: ${i.message}` }); return; }
   const p = parsed.data as Partial<RecordInput> & { status?: RecordStatus };
+  // The edit form sends every field (the current status included), so "changed" is a value comparison.
+  const changed = (k: keyof RecordInput) => k in p && ((p as Record<string, unknown>)[k] ?? null) !== ((row as unknown as Record<string, unknown>)[k] ?? null);
+  const statusChanged = p.status !== undefined && p.status !== row.status;
+  const adminSet = ADMIN_STATUSES.includes(row.status);
+  // A-05: identity / volume changes reset a reviewed or approved costing for everyone; the owner's money
+  // changes too (the existing rule, now value-compared).
+  const resetting = [...IDENTITY_FIELDS.filter(changed), ...(admin ? [] : MONEY_FIELDS.filter(changed))];
   if (!admin) {
     const bad = ADMIN_ONLY_FIELDS.filter(k => k in p);
     if (bad.length) { res.status(403).json({ error: `Only an admin can set ${bad.join(', ')}` }); return; }
-    if (p.status === 'reviewed' || p.status === 'approved') { res.status(403).json({ error: 'Only an admin can mark a costing reviewed or approved' }); return; }
-    // A reviewed / approved costing whose money changes goes back for review.
-    if ((row.status === 'reviewed' || row.status === 'approved') && MONEY_FIELDS.some(k => k in p) && !p.status) p.status = 'completed';
+    if (statusChanged && p.status && ADMIN_STATUSES.includes(p.status)) { res.status(403).json({ error: 'Only an admin can mark a costing reviewed or approved' }); return; }
+    // An owner cannot change a status an admin set — except to "completed" with a change that resets it anyway.
+    if (adminSet && statusChanged && !(p.status === 'completed' && resetting.length)) { res.status(403).json({ error: 'Only an admin can change the status of a reviewed or approved costing' }); return; }
+  }
+  if (adminSet && resetting.length) {
+    if (p.status && ADMIN_STATUSES.includes(p.status)) {
+      res.status(400).json({ error: `Changing ${resetting.join(', ')} returns a ${row.status} costing to Completed. Save the change with the status set to Completed; an admin then re-approves it as a separate save.` });
+      return;
+    }
+    if (!p.status) p.status = 'completed';
   }
   if (row.sourceTool === 'CostVision' && ('shouldCost' in (req.body ?? {}))) { res.status(400).json({ error: 'A CostVision should-cost comes from its costing and cannot be edited here' }); return; }
   // A-03: a validated volume is validated only for the value an admin validated. Changing it clears the
