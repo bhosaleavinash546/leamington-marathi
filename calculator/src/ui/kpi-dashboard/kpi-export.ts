@@ -16,6 +16,8 @@ export const REPORT_TITLE = 'CostVision | Global Cost Engineering KPI Dashboard'
 
 export interface ExportRow extends RecordRowView {
   sourceRef: string; currentTerms: string | null; shouldTerms: string | null; annualVolume: number | null; volumeValidated: boolean;
+  /** A-28 (b): carried so the Reconciliation sheet can re-add the savings KPIs. */
+  savingStatus?: string | null; gbpSaving?: number | null;
 }
 
 const lbl = (k: string) => (k === NOT_SET ? 'Not set' : k);
@@ -94,6 +96,7 @@ const COLS: { h: string; get: (r: ExportRow) => unknown; fmt?: string; w?: numbe
   { h: 'GBP current cost', get: r => r.gbpCurrent, fmt: XL_GBP }, { h: 'GBP should-cost', get: r => r.gbpShould, fmt: XL_GBP },
   { h: 'GBP cost gap', get: r => r.gapGbp, fmt: XL_GBP_RED }, { h: 'Cost gap %', get: r => (r.gapPct === null ? null : r.gapPct / 100), fmt: '0.0%' },
   { h: 'Annual volume', get: r => r.annualVolume, fmt: '#,##0' }, { h: 'Volume validated', get: r => (r.volumeValidated ? 'yes' : 'no') },
+  { h: 'Saving status', get: r => r.savingStatus ?? null }, { h: 'GBP saving (per piece)', get: r => r.gbpSaving ?? null, fmt: XL_GBP },
   { h: 'Costing tool', get: r => r.sourceTool }, { h: 'Status', get: r => STATUS_LABEL[r.status] ?? r.status },
   { h: 'Reporting role', get: r => r.role }, { h: 'Financial eligibility', get: r => (r.eligible ? 'eligible' : r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : '') },
   { h: 'Created by', get: r => r.ownerName, w: 18 }, { h: 'Costing date', get: r => r.costingDate }, { h: 'Created', get: r => r.createdAt, w: 20 }, { h: 'Last updated', get: r => r.updatedAt, w: 20 },
@@ -188,6 +191,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
   const n = current.length + 1;
   const col = (h: string) => `'Costing records'!$${colLetter(COLS.findIndex(x => x.h === h))}$2:$${colLetter(COLS.findIndex(x => x.h === h))}$${Math.max(2, n)}`;
   const el = col('Financial eligibility'), cur = col('GBP current cost'), sh = col('GBP should-cost'), gap = col('GBP cost gap');
+  const vv = col('Volume validated'), vol = col('Annual volume'), sst = col('Saving status'), sav = col('GBP saving (per piece)');
   const f = s.financial;
   const lines: [string, number | null, string, string][] = [
     ['Financially eligible records', f.eligible, `COUNTIF(${el},"eligible")`, '0'],
@@ -197,6 +201,10 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
     ['Potential unit cost opportunity', f.opportunity.gbp, `SUMIFS(${gap},${el},"eligible",${gap},">0")`, XL_GBP],
     ['Unfavourable gaps', f.unfavourable.gbp, `SUMIFS(${gap},${el},"eligible",${gap},"<0")`, XL_GBP],
     ['Weighted cost gap %', f.weightedGapPct === null ? null : f.weightedGapPct / 100, `IF(C3=0,"",C5/C3)`, '0.00%'],
+    // A-28 (b): the remaining headline figures — annualised (eligible, gap > 0, admin-validated volume > 0) and the savings
+    ['Annualised opportunity (validated volumes)', f.annualised.gbp, `SUMPRODUCT((${el}="eligible")*(${gap}>0)*(${vv}="yes")*(${vol}>0),${gap},${vol})`, XL_GBP],
+    ['Validated savings', f.validatedSavings.gbp, `SUMIFS(${sav},${sst},"validated",${sav},">=0")`, XL_GBP],
+    ['Implemented savings', f.implementedSavings.gbp, `SUMIFS(${sav},${sst},"implemented",${sav},">=0")`, XL_GBP],
   ];
   lines.forEach(([k, v, formula, fmt], i) => {
     const r = rc.addRow([k, v, { formula }, { formula: `IF(ABS(N(B${i + 2})-N(C${i + 2}))<0.005,"✓","✗")` }]);
