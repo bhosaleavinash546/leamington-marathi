@@ -319,7 +319,9 @@ export function classifyRecords(records: KpiRecord[]): ClassifiedRecord[] {
     g.sort((a, b) =>
       statusRank(b.status) - statusRank(a.status)
       || b.costingDate.localeCompare(a.costingDate)
-      || b.updatedAt.localeCompare(a.updatedAt)
+      // A-06: same-day ties break on when the costing was CREATED — an edit (a note, an admin PATCH)
+      // must not make an older costing current again. Ranking by status beyond draft is decision D-3.
+      || b.createdAt.localeCompare(a.createdAt)
       || b.id.localeCompare(a.id));
     const cur = g[0];
     cur.role = 'current';
