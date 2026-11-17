@@ -376,6 +376,16 @@ async function copyRecordLink(): Promise<void> {
   catch { out.hidden = false; out.textContent = link; const sel = getSelection(); const rg = document.createRange(); rg.selectNodeContents(out); sel?.removeAllRanges(); sel?.addRange(rg); }
 }
 
+/** The note under the record edit form. An owner's change to the current cost, a part detail or the annual volume
+ *  of a reviewed / approved costing is saved only with the status set to Completed (A-05); an admin then approves
+ *  it again as a separate save. */
+export function editFormNote(isAdmin: boolean, status: string): string {
+  const base = 'Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.';
+  return !isAdmin && (status === 'reviewed' || status === 'approved')
+    ? `${base} To change the current cost, a part detail or the annual volume, set the status to Completed: an admin then approves the costing again.`
+    : base;
+}
+
 function editFormHtml(d: Detail): string {
   const r = d.record; const a = d.isAdmin;
   const statuses: RecordStatus[] = a ? ['draft', 'completed', 'reviewed', 'approved'] : (r.status === 'reviewed' || r.status === 'approved') ? [r.status, 'draft', 'completed'] : ['draft', 'completed'];
@@ -401,7 +411,7 @@ function editFormHtml(d: Detail): string {
         <div class="kd-field"><label class="kd-check"><input type="checkbox" name="isTest"${r.isTest ? ' checked' : ''}> Test record (exclude)</label></div>` : ''}
         <div class="kd-field kd-field-wide"><label for="kd-e-notes">Notes</label><textarea id="kd-e-notes" class="kd-input" name="notes" rows="2" maxlength="1000">${esc(r.notes ?? '')}</textarea></div>
       </div>
-      <p class="kd-muted">Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.${!a && (r.status === 'reviewed' || r.status === 'approved') ? ' Changing the current cost sends this costing back for review.' : ''}</p>
+      <p class="kd-muted">${esc(editFormNote(a, r.status))}</p>
       <p class="kd-form-err" role="alert" hidden></p>
       <div class="kd-dialog-f"><button type="button" class="btn btn-secondary kd-danger" data-act="delete-ask">Delete record</button>
         <span class="kd-del-confirm" hidden>Delete this record from the dashboard? <button type="button" class="btn btn-secondary btn-sm kd-danger" data-act="delete-yes">Delete</button> <button type="button" class="btn btn-secondary btn-sm" data-act="delete-no">Keep</button></span>

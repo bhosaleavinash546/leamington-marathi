@@ -20,6 +20,7 @@ import {
   getFxPolicy, setFxPolicy, listFxRates, upsertFxRates, builtInFxReference, recalculateFx, audit, type RecordInput, type FxPolicy,
 } from '../data/kpi-store.js';
 import { readSheet, parseFxRows, parseImportRows, importTemplateCsv, IMPORT_COLUMNS, FX_TEMPLATE_COLUMNS } from '../utils/kpi-import.js';
+import { resetRefusal } from '../utils/kpi-edit-wording.js';
 import {
   classifyRecords, buildFromClassified, parseFilters, validateFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
   isIsoCurrency, iso4217Codes, currencySymbol, STANDARD_PROGRAMMES, STANDARD_POWERTRAINS, RECORD_STATUSES, FX_METHOD_LABEL,
@@ -359,7 +360,7 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   }
   if (adminSet && resetting.length) {
     if (p.status && ADMIN_STATUSES.includes(p.status)) {
-      res.status(400).json({ error: `Changing ${resetting.join(', ')} returns a ${row.status} costing to Completed. Save the change with the status set to Completed; an admin then re-approves it as a separate save.` });
+      res.status(400).json({ error: resetRefusal(resetting, row.status) });
       return;
     }
     if (!p.status) p.status = 'completed';
