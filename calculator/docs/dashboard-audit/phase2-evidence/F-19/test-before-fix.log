@@ -1,0 +1,74 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-f19-axis-titles.test.ts (3 tests | 3 failed) 15ms
+   ❯ F-19: chart axis titles with units (3)
+     × every chart with axes titles both axes 9ms
+     × the value axis carries its unit: £ per piece for money, a count otherwise 2ms
+     × titles are drawn in the theme text colour, not a series colour 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-f19-axis-titles.test.ts > F-19: chart axis titles with units > every chart with axes titles both axes
+AssertionError: activity x: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-f19-axis-titles.test.ts:47:37
+     45|     expect(withAxes.length).toBe(8);
+     46|     for (const [id, c] of withAxes) {
+     47|       expect(title(c.x), `${id} x`).toBeTruthy();
+       |                                     ^
+     48|       expect(title(c.y), `${id} y`).toBeTruthy();
+     49|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-f19-axis-titles.test.ts > F-19: chart axis titles with units > the value axis carries its unit: £ per piece for money, a count otherwise
+AssertionError: expected undefined to be 'Costings saved (count)' // Object.is equality
+
+- Expected:
+"Costings saved (count)"
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-f19-axis-titles.test.ts:54:35
+     52|     const all = await scalesOf();
+     53|     // vertical charts: value on y; horizontal: value on x
+     54|     expect(title(all.activity.y)).toBe('Costings saved (count)');
+       |                                   ^
+     55|     expect(title(all.activity.x)).toBe('Costing date');
+     56|     expect(title(all.commodity.x)).toBe('Records (count)');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-f19-axis-titles.test.ts > F-19: chart axis titles with units > titles are drawn in the theme text colour, not a series colour
+AssertionError: expected +0 to be 16 // Object.is equality
+
+- Expected
++ Received
+
+- 16
++ 0
+
+ ❯ tests/kpi-p2-f19-axis-titles.test.ts:74:27
+     72|     const all = await scalesOf();
+     73|     const titled = Object.values(all).flatMap(c => [c.x, c.y]).filter(…
+     74|     expect(titled.length).toBe(16);
+       |                           ^
+     75|     for (const s of titled) expect(s!.title!.color).toBe('#374769');
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  22:20:35
+   Duration  336ms (transform 67%, import 24%, tests 7%, worker 2%)
+

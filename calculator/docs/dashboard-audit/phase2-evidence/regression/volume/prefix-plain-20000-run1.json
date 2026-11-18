@@ -1,0 +1,183 @@
+{
+ "generated": "2026-11-17T23:37:09.797Z",
+ "records": 20000,
+ "codeTree": "/tmp/cv-phase2-prefix/calculator",
+ "seededCostings": false,
+ "database": "throwaway SQLite at /tmp/cv-phase2-perf-Zg0scR/should-cost.db (created by the real server, filled via insertRecord, deleted after the run)",
+ "insertMs": 1000,
+ "dbBytes": 18583552,
+ "api": {
+  "summary_cold_default12m": {
+   "status": 200,
+   "ms": 604,
+   "bytes": 17396
+  },
+  "summary_warm_default12m": {
+   "status": 200,
+   "ms": 4,
+   "bytes": 17396
+  },
+  "summary_new_filter_commodity": {
+   "status": 200,
+   "ms": 102,
+   "bytes": 11261
+  },
+  "summary_all_time": {
+   "status": 200,
+   "ms": 165,
+   "bytes": 17380
+  },
+  "records_page1_sorted_gap": {
+   "status": 200,
+   "ms": 22,
+   "bytes": 71650
+  },
+  "records_search": {
+   "status": 200,
+   "ms": 18,
+   "bytes": 69906
+  },
+  "drill_commodity": {
+   "status": 200,
+   "ms": 15,
+   "bytes": 1490
+  },
+  "records_csv": {
+   "status": 200,
+   "ms": 154,
+   "bytes": 5713064
+  },
+  "records_all_json": {
+   "status": 200,
+   "ms": 373,
+   "bytes": 27830407
+  },
+  "record_detail": {
+   "status": 200,
+   "ms": 8,
+   "bytes": 1661
+  },
+  "summary_after_write": {
+   "status": 200,
+   "ms": 179,
+   "bytes": 17396
+  }
+ },
+ "browser": {
+  "openDashboardToCardsAndTableMs": 383,
+  "jsHeapUsedMB": 15.7,
+  "domNodes": 21480,
+  "changeDateToAllTimeMs": 468,
+  "exportCsv": {
+   "ms": 271,
+   "bytes": 5713064,
+   "file": "/tmp/cv-phase2-perf-dl/prefix-plain-20000-run1/costvision-kpi-records-2026-11-17.csv"
+  },
+  "exportXlsx": {
+   "ms": 3451,
+   "bytes": 2985413,
+   "file": "/tmp/cv-phase2-perf-dl/prefix-plain-20000-run1/costvision-kpi-dashboard-2026-11-17-2337.xlsx"
+  },
+  "exportPdf": {
+   "ms": 2240,
+   "bytes": 13075670,
+   "file": "/tmp/cv-phase2-perf-dl/prefix-plain-20000-run1/costvision-kpi-dashboard-2026-11-17-2337.pdf"
+  },
+  "jsHeapUsedAfterExportsMB": 352.7,
+  "pageErrors": []
+ },
+ "ux": {
+  "w390": {
+   "interactive": 137,
+   "under24px": 64,
+   "under24Examples": [
+    "a 41x15",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18"
+   ],
+   "under44px": 133,
+   "runningAnimations": 0,
+   "elementsWithTransitions": 0,
+   "headings": [
+    "H1:Global Cost Engineering KPI Dashboard",
+    "H2:Financial position GBP · current records",
+    "H2:Coverage and workflow",
+    "H2:Where to act",
+    "H3:Potential cost opportunity by commodity",
+    "H3:Commodity v programme",
+    "H2:Management insights",
+    "H2:Analysis",
+    "H3:Costing activity over time",
+    "H3:Costing records by commodity",
+    "H3:Current cost v should-cost by commodity",
+    "H3:Programme distribution",
+    "H3:Powertrain distribution",
+    "H3:Model year analysis",
+    "H3:Costing tool contribution",
+    "H3:Cost opportunity by powertrain",
+    "H3:Costing status",
+    "H2:Drill-down",
+    "H2:Costing records",
+    "H2:Data quality"
+   ],
+   "landmarkRegions": 22,
+   "unnamedControls": [],
+   "reducedMotion": "reduce"
+  },
+  "w1440": {
+   "interactive": 146,
+   "under24px": 66,
+   "under24Examples": [
+    "a 41x15",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18",
+    "button 18x18"
+   ],
+   "under44px": 142,
+   "runningAnimations": 0,
+   "elementsWithTransitions": 21,
+   "headings": [
+    "H1:Global Cost Engineering KPI Dashboard",
+    "H2:Financial position GBP · current records",
+    "H2:Coverage and workflow",
+    "H2:Where to act",
+    "H3:Potential cost opportunity by commodity",
+    "H3:Commodity v programme",
+    "H2:Management insights",
+    "H2:Analysis",
+    "H3:Costing activity over time",
+    "H3:Costing records by commodity",
+    "H3:Current cost v should-cost by commodity",
+    "H3:Programme distribution",
+    "H3:Powertrain distribution",
+    "H3:Model year analysis",
+    "H3:Costing tool contribution",
+    "H3:Cost opportunity by powertrain",
+    "H3:Costing status",
+    "H2:Drill-down",
+    "H2:Costing records",
+    "H2:Data quality"
+   ],
+   "landmarkRegions": 22,
+   "unnamedControls": [],
+   "reducedMotion": "no-preference"
+  }
+ }
+}

@@ -1,0 +1,299 @@
+{
+ "checks": [
+  {
+   "check": "costing tool still costs a part and offers \"Save to KPI Dashboard\"",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "save refuses a missing part number",
+   "ok": true,
+   "detail": "Enter the part number."
+  },
+  {
+   "check": "save refuses a current cost without its currency",
+   "ok": true,
+   "detail": "Choose the currency of the current cost."
+  },
+  {
+   "check": "the costing is saved to the dashboard (201)",
+   "ok": true,
+   "detail": "should-cost £14.81"
+  },
+  {
+   "check": "saved should-cost equals the costing result shown",
+   "ok": true,
+   "detail": "14.809092817902815 v £14.81"
+  },
+  {
+   "check": "the record carries a frozen FX snapshot for EUR (reference, not approved)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "Alice: no page errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "API saves (incl. revision + other-user duplicate)",
+   "ok": true,
+   "detail": "201,201,201,201,201,201"
+  },
+  {
+   "check": "an admin validates an annual volume",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "a normal user cannot validate a volume",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "admin sees the Admin button",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "admin UI: inverted FX rate refused with row and column",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "admin UI: approved FX rates loaded",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "admin UI: recalculation preview lists the records that would change",
+   "ok": true,
+   "detail": "Preview: 3 of 7 record(s) would change."
+  },
+  {
+   "check": "admin UI: recalculation applied",
+   "ok": true,
+   "detail": "Applied: 3 of 7 record(s) changed."
+  },
+  {
+   "check": "admin UI: CSS System + CPSC II rows imported",
+   "ok": true,
+   "detail": "2 record(s) added, 0 updated."
+  },
+  {
+   "check": "admin UI: audit log lists the changes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "axe WCAG 2.1 AA — admin dialog",
+   "ok": true,
+   "detail": "0 violations"
+  },
+  {
+   "check": "Admin: no page errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "a normal user does not see the Admin button",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "default period is the last 12 months",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "card: total records = API",
+   "ok": true,
+   "detail": "9 v 9"
+  },
+  {
+   "check": "card: unique components = API",
+   "ok": true,
+   "detail": "7"
+  },
+  {
+   "check": "card: programmes covered = API",
+   "ok": true,
+   "detail": "5"
+  },
+  {
+   "check": "card: potential unit opportunity = API (exact £)",
+   "ok": true,
+   "detail": "£6.98 v 6.978441448521854"
+  },
+  {
+   "check": "card: validated savings shows \"Not tracked\" with no status data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "annualised opportunity = gap × validated volume only",
+   "ok": true,
+   "detail": "£264,000.00 (1 record)"
+  },
+  {
+   "check": "duplicate + revision counted in data quality",
+   "ok": true,
+   "detail": "dup 1, rev 1"
+  },
+  {
+   "check": "multi-select search narrows the options",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "filter chip appears and every card follows",
+   "ok": true,
+   "detail": "4 v 4"
+  },
+  {
+   "check": "records table follows the filter",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "heatmap cell click filters commodity and programme",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "drill: commodity → programme → powertrain → model year → component",
+   "ok": true,
+   "detail": "All commodities›Commodity: Casting›Programme: L460›Powertrain: BEV›Model year: 2027"
+  },
+  {
+   "check": "drill to component lists its current costing record",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "search finds Alice's saved part by part number",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "record drawer shows original + GBP + FX source",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "record drawer shows the original costing analysis",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "another user's record has no edit form",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "axe WCAG 2.1 AA — record drawer",
+   "ok": true,
+   "detail": "0 violations"
+  },
+  {
+   "check": "original-currency view lists INR, CNY, EUR, USD and GBP separately",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "empty state when no record matches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "CSV downloaded with the records table (current records, as on screen)",
+   "ok": true,
+   "detail": "7 rows"
+  },
+  {
+   "check": "Excel has the six required sheets",
+   "ok": true,
+   "detail": "Executive summary, Commodity analysis, Programme analysis, Powertrain analysis, Model year & status, Original currencies, Costing records, Older revisions & duplicates, Data quality, Reconciliation, Method & FX"
+  },
+  {
+   "check": "Excel \"Costing records\" = current records; revisions on their own sheet",
+   "ok": true,
+   "detail": "7 + 2"
+  },
+  {
+   "check": "independent re-add: eligible records",
+   "ok": true,
+   "detail": "5 v 5"
+  },
+  {
+   "check": "independent re-add: Σ GBP current (original × frozen rate)",
+   "ok": true,
+   "detail": "74.8613 v 74.8613"
+  },
+  {
+   "check": "independent re-add: Σ GBP should-cost",
+   "ok": true,
+   "detail": "71.9134 v 71.9134"
+  },
+  {
+   "check": "independent re-add: potential unit opportunity",
+   "ok": true,
+   "detail": "6.9784 v 6.9784"
+  },
+  {
+   "check": "independent re-add: weighted gap %",
+   "ok": true,
+   "detail": "3.9378 v 3.9378"
+  },
+  {
+   "check": "Reconciliation sheet carries live formulas",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "PDF dashboard report downloaded",
+   "ok": true,
+   "detail": "186 KB"
+  },
+  {
+   "check": "axe WCAG 2.1 AA — dashboard",
+   "ok": true,
+   "detail": "0 violations"
+  },
+  {
+   "check": "Bob: no page errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "axe WCAG 2.1 AA — dashboard-light",
+   "ok": true,
+   "detail": "0 violations"
+  },
+  {
+   "check": "dashboard-light: no page errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "phone width: no horizontal page scroll",
+   "ok": true,
+   "detail": "0px"
+  },
+  {
+   "check": "axe WCAG 2.1 AA — dashboard-phone",
+   "ok": true,
+   "detail": "0 violations"
+  },
+  {
+   "check": "dashboard-phone: no page errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "check": "server log: no unhandled KPI error",
+   "ok": true,
+   "detail": "none"
+  }
+ ]
+}

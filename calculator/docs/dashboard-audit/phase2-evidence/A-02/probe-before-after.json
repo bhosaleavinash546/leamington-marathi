@@ -1,0 +1,172 @@
+{
+ "P01b_record_view_fields": {
+  "before": {
+   "saveStatus": 201,
+   "bob": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   },
+   "alice": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   },
+   "ada": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   }
+  },
+  "after": {
+   "saveStatus": 201,
+   "bob": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": false,
+    "bodyMentionsSecretQuote": false,
+    "opKeys": [
+     "cost",
+     "name"
+    ]
+   },
+   "alice": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   },
+   "ada": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   }
+  }
+ },
+ "P01_open_signup": {
+  "before": {
+   "signupStatus": 201,
+   "devOtpReturnedToSameMachineRequest": true,
+   "verifyStatus": 200,
+   "gotToken": true,
+   "note": "devOtp is returned only to a same-machine request (devOtpAllowed); from another machine the code is emailed \u2014 the point is that ANY email domain may sign up.",
+   "strangerSeesRecords": 1,
+   "strangerSeesSupplierPrice": true,
+   "strangerDetailStatus": 200,
+   "detailIncludesFullCostingBreakdown": true,
+   "strangerCsvStatus": 200,
+   "csvContainsPrice": true
+  },
+  "after": {
+   "signupStatus": 201,
+   "devOtpReturnedToSameMachineRequest": true,
+   "verifyStatus": 200,
+   "gotToken": true,
+   "note": "devOtp is returned only to a same-machine request (devOtpAllowed); from another machine the code is emailed \u2014 the point is that ANY email domain may sign up.",
+   "strangerSeesRecords": 1,
+   "strangerSeesSupplierPrice": true,
+   "strangerDetailStatus": 200,
+   "detailIncludesFullCostingBreakdown": true,
+   "strangerCsvStatus": 200,
+   "csvContainsPrice": true
+  }
+ }
+}

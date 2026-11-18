@@ -1,0 +1,114 @@
+{
+ "file": "docs/dashboard-audit/phase2-evidence/A-17/live-after/costvision-kpi-dashboard-2026-11-17-2152.pdf",
+ "bytes": 190583,
+ "images": [
+  {
+   "obj": 1,
+   "w": 1000,
+   "h": 418,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 20030,
+   "rawBytes": 1254000,
+   "sha256": "af965e1f581d4485bf08b3e1c35609e874f128f62cc6a1a0458b007d8c0da40d",
+   "hasSMask": false
+  },
+  {
+   "obj": 34,
+   "w": 1000,
+   "h": 372,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 22164,
+   "rawBytes": 1116000,
+   "sha256": "aff7fd1c1529445614492895049268306c58f67ae09e24e948f369a48878edbd",
+   "hasSMask": false
+  },
+  {
+   "obj": 35,
+   "w": 1000,
+   "h": 494,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 30541,
+   "rawBytes": 1482000,
+   "sha256": "cd68191fa951294cd811c9b45319fbcb06cc3945cd7129a569e30214485b0109",
+   "hasSMask": false
+  },
+  {
+   "obj": 36,
+   "w": 1000,
+   "h": 342,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 15827,
+   "rawBytes": 1026000,
+   "sha256": "988ec564139949dc0d56d8640c7d71a762faca7b05465463ad35bef1efa42805",
+   "hasSMask": false
+  },
+  {
+   "obj": 37,
+   "w": 1000,
+   "h": 418,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 12107,
+   "rawBytes": 1254000,
+   "sha256": "50a6ede4312ad5643087d36fb806c7673a176186262e56f3b6e530e60210fdf3",
+   "hasSMask": false
+  },
+  {
+   "obj": 38,
+   "w": 1000,
+   "h": 418,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 26904,
+   "rawBytes": 1254000,
+   "sha256": "999f283e9c7e28855af0487e07307606e2410ebda82c422fca1e5dee4a4811d9",
+   "hasSMask": false
+  },
+  {
+   "obj": 39,
+   "w": 1000,
+   "h": 418,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 12377,
+   "rawBytes": 1254000,
+   "sha256": "8b32829a3666a5487860b8f94839abc4122791b5a67f8218bb8f9da417dc5fa5",
+   "hasSMask": false
+  },
+  {
+   "obj": 40,
+   "w": 1000,
+   "h": 304,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 17711,
+   "rawBytes": 912000,
+   "sha256": "09009358a966f43de5f08113e46d8b44c44f84e56434f0ee033dd6000ff3071a",
+   "hasSMask": false
+  },
+  {
+   "obj": 41,
+   "w": 1000,
+   "h": 418,
+   "colorSpace": "DeviceRGB",
+   "filter": "FlateDecode",
+   "predictor": 11,
+   "storedBytes": 13224,
+   "rawBytes": 1254000,
+   "sha256": "3acbef981ec00c94061794af98b9d87c9b879def18131b1ce94c0c64bc3a3ced",
+   "hasSMask": false
+  }
+ ]
+}

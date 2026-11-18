@@ -1,0 +1,124 @@
+{
+ "generated": "2026-11-17T21:44:54.014Z",
+ "database": "/tmp/cv-phase1-probe-XSgz3x/should-cost.db",
+ "readOnly": true,
+ "summary": {
+  "records": 31,
+  "includedRecords": 29,
+  "applicationsNow": 25,
+  "applicationsFolded": 22,
+  "mergingGroups": 2,
+  "recordsInMergingGroups": 5,
+  "currentRecordsNow": 25,
+  "currentRecordsFolded": 22,
+  "financialNow": {
+   "eligible": 20,
+   "opportunityGbp": 73.67592979523612,
+   "unfavourableGbp": 0,
+   "annualisedGbp": 240000
+  },
+  "financialFolded": {
+   "eligible": 17,
+   "opportunityGbp": 69.67592979523612,
+   "unfavourableGbp": 0,
+   "annualisedGbp": 240000
+  }
+ },
+ "groups": [
+  {
+   "foldedKey": "LRVARB100|L460|2027|BEV",
+   "keysNow": [
+    "LR-VARB-100|L460|2027|BEV",
+    "LRVARB100|L460|2027|BEV",
+    "LR_VARB_100|L460|2027|BEV"
+   ],
+   "records": [
+    {
+     "id": "rec-82e6c76f-8be3-401c-a466-43c760fe363c",
+     "sourceTool": "CSS System",
+     "sourceRef": "VB-1",
+     "ownerName": "R. Rao",
+     "partNumber": "LR-VARB-100",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-01",
+     "keyNow": "LR-VARB-100|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "superseded"
+    },
+    {
+     "id": "rec-45aa768f-d5c4-4d3f-947b-5da8d59c105f",
+     "sourceTool": "CSS System",
+     "sourceRef": "VB-2",
+     "ownerName": "R. Rao",
+     "partNumber": "LRVARB100",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-02",
+     "keyNow": "LRVARB100|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "superseded"
+    },
+    {
+     "id": "rec-1a70ddc3-3e97-4388-8f45-3287caf17d56",
+     "sourceTool": "CSS System",
+     "sourceRef": "VB-3",
+     "ownerName": "R. Rao",
+     "partNumber": "LR_VARB_100",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-03",
+     "keyNow": "LR_VARB_100|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "current"
+    }
+   ]
+  },
+  {
+   "foldedKey": "P16CASE|Q900|2028|BEV",
+   "keysNow": [
+    "P16-CASE|Q900|2028|BEV",
+    "P16-CASE|q900|2028|BEV"
+   ],
+   "records": [
+    {
+     "id": "rec-c066fa05-b9c6-4b3a-be2f-92616350c59b",
+     "sourceTool": "CostVision",
+     "sourceRef": "sc-p16b",
+     "ownerName": "Bob Baker",
+     "partNumber": "P16-CASE",
+     "programme": "q900",
+     "modelYear": 2028,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-11-17",
+     "keyNow": "P16-CASE|q900|2028|BEV",
+     "roleNow": "current",
+     "roleFolded": "current"
+    },
+    {
+     "id": "rec-eba488fb-249b-4e9f-8788-8b134b4cb0b2",
+     "sourceTool": "CostVision",
+     "sourceRef": "sc-p16a",
+     "ownerName": "Alice Able",
+     "partNumber": "P16-CASE",
+     "programme": "Q900",
+     "modelYear": 2028,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-11-17",
+     "keyNow": "P16-CASE|Q900|2028|BEV",
+     "roleNow": "current",
+     "roleFolded": "duplicate"
+    }
+   ]
+  }
+ ],
+ "excludedRecordsWithFoldedMatch": []
+}

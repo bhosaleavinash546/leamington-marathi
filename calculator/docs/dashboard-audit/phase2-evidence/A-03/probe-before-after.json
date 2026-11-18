@@ -1,0 +1,62 @@
+{
+ "P14_owner_inflates_validated_volume": {
+  "before": {
+   "ownerPatchStatus": 200,
+   "stillValidated": true,
+   "statusAfter": "approved",
+   "volumeAfter": 6000000,
+   "annualisedBefore": {
+    "n": 1,
+    "gbp": 120000
+   },
+   "annualisedAfter": {
+    "n": 1,
+    "gbp": 12000000
+   }
+  },
+  "after": {
+   "ownerPatchStatus": 200,
+   "stillValidated": false,
+   "statusAfter": "approved",
+   "volumeAfter": 6000000,
+   "annualisedBefore": {
+    "n": 1,
+    "gbp": 120000
+   },
+   "annualisedAfter": {
+    "n": 0,
+    "gbp": 0
+   }
+  }
+ },
+ "P14b_admin_and_same_request": {
+  "before": {
+   "adminChangesValidatedVolume": {
+    "status": 200,
+    "validatedAfter": true
+   },
+   "ownerSameValueSave": {
+    "status": 200,
+    "validatedAfter": true
+   },
+   "changeAndRevalidateInOneRequest": {
+    "status": 200,
+    "validatedAfter": true
+   }
+  },
+  "after": {
+   "adminChangesValidatedVolume": {
+    "status": 200,
+    "validatedAfter": false
+   },
+   "ownerSameValueSave": {
+    "status": 200,
+    "validatedAfter": true
+   },
+   "changeAndRevalidateInOneRequest": {
+    "status": 400,
+    "error": "The annual volume changed, so its validation is cleared. Save the new volume first (with \"Annual volume validated\" unticked), then validate it as a separate save."
+   }
+  }
+ }
+}

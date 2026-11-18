@@ -1,0 +1,89 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a18-bad-filter.test.ts (18 tests | 17 failed) 162ms
+   ❯ A-18 server (16)
+     × truncated JSON (P17) → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 15ms
+     × not an object → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × null → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × unknown key → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × a value that is not a list → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × a list with a non-string → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 3ms
+     × an empty value → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × a value over 120 characters → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 3ms
+     × more than 200 values → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 4ms
+     × unknown date preset → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 8ms
+     × a bad custom date → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 3ms
+     × a date that is not a string → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 2ms
+     × an unknown status → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 2ms
+     × a non-ISO currency → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 2ms
+     × a model year that is not a year → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals 2ms
+   ❯ A-18 engine + screen (2)
+     × validateFilters returns the same filters parseFilters builds for a valid object 1ms
+     × the error state says the filter could not be applied and offers "Clear filters" 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > truncated JSON (P17) → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > not an object → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > null → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > unknown key → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a value that is not a list → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a list with a non-string → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > an empty value → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a value over 120 characters → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > more than 200 values → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > unknown date preset → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a bad custom date → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a date that is not a string → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > an unknown status → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a non-ISO currency → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 server > a model year that is not a year → 400 BAD_FILTER on every filtered endpoint, never the unfiltered totals
+AssertionError: /api/kpi/summary: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/kpi-p2-a18-bad-filter.test.ts:72:37
+     70|       for (const path of ['/api/kpi/summary', '/api/kpi/records', '/ap…
+     71|         const r = await get(`${path}?${q}`);
+     72|         expect(r.status, `${path}`).toBe(400);
+       |                                     ^
+     73|         expect(r.json).toMatchObject({ code: 'BAD_FILTER' });
+     74|         expect(r.json.error).toMatch(/^This filter could not be applie…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 engine + screen > validateFilters returns the same filters parseFilters builds for a valid object
+TypeError: validateFilters is not a function
+ ❯ tests/kpi-p2-a18-bad-filter.test.ts:93:15
+     91|   it('validateFilters returns the same filters parseFilters builds for…
+     92|     const raw = { datePreset: 'custom', dateFrom: '2026-01-01', dateTo…
+     93|     const v = validateFilters(raw);
+       |               ^
+     94|     expect(v).toEqual({ ok: true, filters: parseFilters(raw) });
+     95|     expect(validateFilters({ datePreset: 'nope' })).toEqual({ ok: fals…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  |unit| tests/kpi-p2-a18-bad-filter.test.ts > A-18 engine + screen > the error state says the filter could not be applied and offers "Clear filters"
+TypeError: badFilterHtml is not a function
+ ❯ tests/kpi-p2-a18-bad-filter.test.ts:98:18
+     96|   });
+     97|   it('the error state says the filter could not be applied and offers …
+     98|     const html = badFilterHtml('This filter could not be applied: unkn…
+       |                  ^
+     99|     expect(html).toContain('role="alert"');
+    100|     expect(html).toContain('This filter could not be applied');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  17 failed | 1 passed (18)
+   Start at  21:58:09
+   Duration  2.22s (transform 66%, import 26%, tests 8%)
+

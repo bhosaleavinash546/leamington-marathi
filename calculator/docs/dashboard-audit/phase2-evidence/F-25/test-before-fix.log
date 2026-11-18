@@ -1,0 +1,74 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-f25-costing-panel.test.ts (5 tests | 5 failed) 13ms
+   ❯ F-25: record panel — original costing analysis (5)
+     × a costing saved with a total only: no empty heading, one line, the display name 7ms
+     × a costing with a breakdown keeps the heading and the table, with the display name 1ms
+     × operations alone are an analysis too 1ms
+     × an unknown commodity id is printed as it is, escaped 1ms
+     × an imported record keeps its source note; a CostVision record with no costing shows nothing 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-f25-costing-panel.test.ts > F-25: record panel — original costing analysis > a costing saved with a total only: no empty heading, one line, the display name
+TypeError: costingAnalysisHtml is not a function
+ ❯ tests/kpi-p2-f25-costing-panel.test.ts:16:18
+     14| describe('F-25: record panel — original costing analysis', () => {
+     15|   it('a costing saved with a total only: no empty heading, one line, t…
+     16|     const html = costingAnalysisHtml({ commodity: 'sheet_metal', regio…
+       |                  ^
+     17|     expect(html).not.toContain('Original costing analysis');
+     18|     expect(html).not.toContain('<h3');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  |unit| tests/kpi-p2-f25-costing-panel.test.ts > F-25: record panel — original costing analysis > a costing with a breakdown keeps the heading and the table, with the display name
+TypeError: costingAnalysisHtml is not a function
+ ❯ tests/kpi-p2-f25-costing-panel.test.ts:24:18
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  |unit| tests/kpi-p2-f25-costing-panel.test.ts > F-25: record panel — original costing analysis > operations alone are an analysis too
+TypeError: costingAnalysisHtml is not a function
+ ❯ tests/kpi-p2-f25-costing-panel.test.ts:32:18
+     30|   });
+     31|   it('operations alone are an analysis too', () => {
+     32|     const html = costingAnalysisHtml({ commodity: 'machining', region:…
+       |                  ^
+     33|     expect(html).toContain('<h3>Original costing analysis</h3>');
+     34|     expect(html).toContain('(Machining, UK)');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  |unit| tests/kpi-p2-f25-costing-panel.test.ts > F-25: record panel — original costing analysis > an unknown commodity id is printed as it is, escaped
+TypeError: costingAnalysisHtml is not a function
+ ❯ tests/kpi-p2-f25-costing-panel.test.ts:38:18
+     36|   });
+     37|   it('an unknown commodity id is printed as it is, escaped', () => {
+     38|     const html = costingAnalysisHtml({ commodity: '<b>x</b>', region: …
+       |                  ^
+     39|     expect(html).toContain('&lt;b&gt;x&lt;/b&gt;, UK');
+     40|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  |unit| tests/kpi-p2-f25-costing-panel.test.ts > F-25: record panel — original costing analysis > an imported record keeps its source note; a CostVision record with no costing shows nothing
+TypeError: costingAnalysisHtml is not a function
+ ❯ tests/kpi-p2-f25-costing-panel.test.ts:42:18
+     40|   });
+     41|   it('an imported record keeps its source note; a CostVision record wi…
+     42|     const html = costingAnalysisHtml(null, imp);
+       |                  ^
+     43|     expect(html).toContain('<h3>Original costing</h3>');
+     44|     expect(html).toContain('imported from <strong>CSS System</strong>'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  22:23:16
+   Duration  418ms (transform 77%, import 16%, tests 5%, worker 1%)
+

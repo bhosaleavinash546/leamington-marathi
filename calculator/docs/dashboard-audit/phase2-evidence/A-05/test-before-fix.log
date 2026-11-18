@@ -1,0 +1,165 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a05-owner-powers.test.ts (20 tests | 16 failed) 544ms
+   ❯ A-05 admin-only fields (1)
+     × an owner cannot set the test flag, commodity or country; an admin can 99ms
+   ❯ A-05 status an admin set (3)
+     × an owner cannot downgrade an approved or reviewed costing 30ms
+     × a notes-only save from the edit form (status sent unchanged) keeps an approved costing approved 22ms
+   ❯ A-05 identity or volume change on an approved / reviewed costing → completed (16)
+     × owner changes partNumber → completed 31ms
+     × owner changes programme → completed 24ms
+     × owner changes modelYear → completed 22ms
+     × owner changes powertrain → completed 23ms
+     × owner changes annualVolume → completed 24ms
+     × admin changes partNumber → completed 25ms
+     × admin changes programme → completed 21ms
+     × admin changes modelYear → completed 22ms
+     × admin changes powertrain → completed 22ms
+     × admin changes annualVolume → completed 22ms
+     × a reviewed costing goes back to completed too 22ms
+     × the same value sent again is not a change 26ms
+     × a change that asks to keep or set reviewed / approved in the same request is refused; nothing is written 16ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 admin-only fields > an owner cannot set the test flag, commodity or country; an admin can
+AssertionError: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:71:24
+     69|     for (const patch of [{ isTest: true }, { commodity: 'Forging' }, {…
+     70|       const r = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, p…
+     71|       expect(r.status).toBe(403);
+       |                        ^
+     72|       expect(r.json.error).toMatch(/Only an admin/);
+     73|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 status an admin set > an owner cannot downgrade an approved or reviewed costing
+AssertionError: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:87:26
+     85|       for (const to of ['draft', 'completed']) {
+     86|         const r = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`,…
+     87|         expect(r.status).toBe(403);
+       |                          ^
+     88|       }
+     89|       expect((await get(id)).status).toBe(st);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 status an admin set > a notes-only save from the edit form (status sent unchanged) keeps an approved costing approved
+AssertionError: expected 403 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 403
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:96:22
+     94|     const id = await adminSet();
+     95|     const r = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, for…
+     96|     expect(r.status).toBe(200);
+       |                      ^
+     97|     expect(r.json.record).toMatchObject({ status: 'approved', notes: '…
+     98|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > owner changes partNumber → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > owner changes programme → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > owner changes modelYear → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > owner changes powertrain → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > owner changes annualVolume → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > admin changes partNumber → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > admin changes programme → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > admin changes modelYear → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > admin changes powertrain → completed
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > admin changes annualVolume → completed
+AssertionError: expected 'approved' to be 'completed' // Object.is equality
+
+Expected: "completed"
+Received: "approved"
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:115:38
+    113|         const r = await call(who, 'PATCH', `/api/kpi/records/${id}`, c…
+    114|         expect(r.status).toBe(200);
+    115|         expect(r.json.record.status).toBe('completed');
+       |                                      ^
+    116|         expect(r.json.record).toMatchObject(ch);
+    117|       });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > a reviewed costing goes back to completed too
+AssertionError: expected 'reviewed' to be 'completed' // Object.is equality
+
+Expected: "completed"
+Received: "reviewed"
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:123:110
+    121|   it('a reviewed costing goes back to completed too', async () => {
+    122|     const id = await adminSet('reviewed');
+    123|     expect((await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { pro…
+       |                                                                                                              ^
+    124|   });
+    125|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > the same value sent again is not a change
+AssertionError: expected 'completed' to be 'approved' // Object.is equality
+
+Expected: "approved"
+Received: "completed"
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:129:34
+    127|     const id = await adminSet();
+    128|     const r = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { p…
+    129|     expect(r.json.record.status).toBe('approved');
+       |                                  ^
+    130|   });
+    131|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  |unit| tests/kpi-p2-a05-owner-powers.test.ts > A-05 identity or volume change on an approved / reviewed costing → completed > a change that asks to keep or set reviewed / approved in the same request is refused; nothing is written
+AssertionError: expected 403 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 403
+
+ ❯ tests/kpi-p2-a05-owner-powers.test.ts:135:26
+    133|     const id = await adminSet();
+    134|     const owner = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`,…
+    135|     expect(owner.status).toBe(400);
+       |                          ^
+    136|     expect(owner.json.error).toMatch(/separate/i);
+    137|     const admin = await call(ADMIN, 'PATCH', `/api/kpi/records/${id}`,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 4 passed (20)
+   Start at  21:36:45
+   Duration  2.60s (transform 54%, import 24%, tests 22%)
+

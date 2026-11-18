@@ -1,0 +1,64 @@
+{
+ "P03_fx_guard": {
+  "before": {
+   "invertedEurUsdAcceptedStatus": 200,
+   "invertedEurUsdLoaded": 2,
+   "referenceEUR": 0.8357709987463435,
+   "referenceUSD": 0.7509198768491402,
+   "ratioInvertedEurToReference": 1.423835,
+   "currenciesWithReferenceRate": 27,
+   "ZARinReference": true,
+   "AEDinReference": false,
+   "noReferenceCurrencyInvertedAcceptedStatus": 200,
+   "noReferenceAbsurdAcceptedStatus": 200,
+   "zarInvertedStatus": 400,
+   "zarInvertedMessage": "The FX file was not loaded",
+   "referenceZAR": 0.04512411387521377,
+   "chfRowsAfterTwoUploads": [
+    {
+     "currency": "CHF",
+     "period": "2026-02",
+     "gbpPerUnit": 0.95,
+     "source": "Treasury v2",
+     "loadedAt": "2026-11-17T21:24:52.408Z"
+    }
+   ],
+   "auditEntriesForFxLoad": [
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"AED\"]}",
+    "{\"currencies\":[\"AED\"]}",
+    "{\"currencies\":[\"EUR\",\"USD\"]}"
+   ]
+  },
+  "after": {
+   "invertedEurUsdAcceptedStatus": 400,
+   "referenceEUR": 0.8357709987463435,
+   "referenceUSD": 0.7509198768491402,
+   "ratioInvertedEurToReference": 1.423835,
+   "currenciesWithReferenceRate": 27,
+   "ZARinReference": true,
+   "AEDinReference": false,
+   "noReferenceCurrencyInvertedAcceptedStatus": 200,
+   "noReferenceAbsurdAcceptedStatus": 200,
+   "zarInvertedStatus": 400,
+   "zarInvertedMessage": "The FX file was not loaded",
+   "referenceZAR": 0.04512411387521377,
+   "chfRowsAfterTwoUploads": [
+    {
+     "currency": "CHF",
+     "period": "2026-02",
+     "gbpPerUnit": 0.95,
+     "source": "Treasury v2",
+     "loadedAt": "2026-11-17T21:40:09.452Z"
+    }
+   ],
+   "auditEntriesForFxLoad": [
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"AED\"]}",
+    "{\"currencies\":[\"AED\"]}"
+   ]
+  }
+ }
+}

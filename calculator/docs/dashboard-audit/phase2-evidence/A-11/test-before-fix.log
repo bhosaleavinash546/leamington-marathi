@@ -1,0 +1,25 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a11-identity-fold.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a11-identity-fold.test.ts [ tests/kpi-p2-a11-identity-fold.test.ts ]
+Error: Cannot find module '../scripts/kpi-identity-dry-run' imported from /home/user/cv-phase2/calculator/tests/kpi-p2-a11-identity-fold.test.ts
+ ❯ tests/kpi-p2-a11-identity-fold.test.ts:12:1
+     10| import Database from 'better-sqlite3';
+     11| import { foldIdentityCode, normalisePartNumber, classifyRecords, type …
+     12| import { identityDryRun, runDryRun } from '../scripts/kpi-identity-dry…
+       | ^
+     13| import { ensureKpiTables, insertRecord, fxContext, type RecordInput } …
+     14|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:43:51
+   Duration  247ms (worker 97%, environment 3%)
+

@@ -1,0 +1,17 @@
+[audit] dark-1920: overflow 0px, page 4604px, charts top 1846, axe 0
+[audit] dark-1440: overflow 0px, page 5045px, charts top 1846, axe 0
+[audit] dark-1366: overflow 0px, page 5092px, charts top 1893, axe 0
+[audit] dark-1024: overflow 0px, page 6863px, charts top 2500, axe 0
+[audit] dark-768: overflow 0px, page 6880px, charts top 2496, axe 0
+[audit] dark-390: overflow 0px, page 8305px, charts top 3120, axe 0
+[audit] light-1920: overflow 0px, page 4604px, charts top 1846, axe 0
+[audit] light-1440: overflow 0px, page 5045px, charts top 1846, axe 0
+[audit] light-1366: overflow 0px, page 5092px, charts top 1893, axe 0
+[audit] light-1024: overflow 0px, page 6863px, charts top 2500, axe 0
+[audit] light-768: overflow 0px, page 6880px, charts top 2496, axe 0
+[audit] light-390: overflow 0px, page 8305px, charts top 3120, axe 0
+[audit] done → /home/user/cv-phase2/calculator/docs/dashboard-audit/phase2-evidence/screens/before
+
+real	1m39.966s
+user	0m25.099s
+sys	0m4.255s

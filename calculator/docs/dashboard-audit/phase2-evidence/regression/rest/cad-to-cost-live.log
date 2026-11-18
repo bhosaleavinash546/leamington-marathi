@@ -1,0 +1,47 @@
+[cad2cost] knuckle-cam-ecoat: answered material.family = steel
+[cad2cost] knuckle-cam-ecoat: answered service.toleranceClass = standard
+[cad2cost] knuckle-cam-ecoat: answered service.finish = e_coat
+[cad2cost] knuckle-cam-ecoat: Get cost (service.pressureTight=no, service.safetyCritical=yes, material.grade=mat-gs-c25, service.finish=e_coat)
+[cad2cost] knuckle-cam-ecoat: Get cost (service.pressureTight=no, service.safetyCritical=yes, material.grade=mat-gs-c25, service.finish=e_coat)
+[cad2cost] PASS knuckle-cam-ecoat: costed — £13.32
+[cad2cost] PASS knuckle-cam-ecoat: finish on the form — {"route":"e_coat","rack":"40","racks":"20","area":"0.0789"}
+[cad2cost] PASS knuckle-cam-ecoat: finish load sized from the part — rack 40 × 20/h, area 0.0789 m²
+[cad2cost] PASS knuckle-cam-ecoat: compare: reference row = headline (screen = headless) — row £13.32± 7.2% v headline £13.32
+[cad2cost] PASS knuckle-cam-ecoat: axe on the cost card — 0 violations
+[cad2cost] PASS knuckle-cam-ecoat: stamp on the cost card — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026
+[cad2cost] PASS knuckle-cam-ecoat: Excel opened: the stamp, word for word — 1-Summary: "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS knuckle-cam-ecoat: PDF opened: the stamp, word for word — "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS knuckle-cam-ecoat: PDF opened: the headline — £13.32 found in 26177 characters
+[cad2cost] PASS knuckle-cam-ecoat: no page errors — none
+[cad2cost] bracket-zinc: answered material.family = steel
+[cad2cost] bracket-zinc: answered service.finish = zinc_plate
+[cad2cost] bracket-zinc: Get cost (material.grade=mat-hsla340, service.finish=zinc_plate, service.safetyCritical=yes)
+[cad2cost] PASS bracket-zinc: costed — £1.83
+[cad2cost] PASS bracket-zinc: finish on the form — {"route":"zinc_plate","rack":"162","racks":"10","area":"0.0919"}
+[cad2cost] PASS bracket-zinc: finish load sized from the part — rack 162 × 10/h, area 0.0919 m²
+[cad2cost] PASS bracket-zinc: compare: reference row = headline (screen = headless) — row £1.83± 8.5% v headline £1.83
+[cad2cost] PASS bracket-zinc: axe on the cost card — 0 violations
+[cad2cost] PASS bracket-zinc: stamp on the cost card — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026
+[cad2cost] PASS bracket-zinc: Excel opened: the stamp, word for word — 1-Summary: "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS bracket-zinc: PDF opened: the stamp, word for word — "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS bracket-zinc: PDF opened: the headline — £1.83 found in 15470 characters
+[cad2cost] PASS bracket-zinc: no page errors — none
+[cad2cost] hub-zinc-then-casting: answered service.toleranceClass = standard
+[cad2cost] hub-zinc-then-casting: answered service.finish = zinc_plate
+[cad2cost] hub-zinc-then-casting: Get cost (material.grade=mat-steel-38mnvs6, service.finish=zinc_plate)
+[cad2cost] PASS hub-zinc-then-casting: costed — £14.79
+[cad2cost] PASS hub-zinc-then-casting: finish on the form — {"route":"zinc_plate","rack":"41","racks":"10","area":"0.0534"}
+[cad2cost] PASS hub-zinc-then-casting: finish load sized from the part — rack 41 × 10/h, area 0.0534 m²
+[cad2cost] PASS hub-zinc-then-casting: compare: reference row = headline (screen = headless) — row £14.79± 8.6% v headline £14.79
+[cad2cost] PASS hub-zinc-then-casting: axe on the cost card — 0 violations
+[cad2cost] PASS hub-zinc-then-casting: stamp on the cost card — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026
+[cad2cost] PASS hub-zinc-then-casting: Excel opened: the stamp, word for word — 1-Summary: "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS hub-zinc-then-casting: PDF opened: the stamp, word for word — "United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026"
+[cad2cost] PASS hub-zinc-then-casting: PDF opened: the headline — £14.79 found in 21662 characters
+[cad2cost] hub-zinc-then-casting: casting is folded into the cast_and_machine row (same costing to the penny)
+[cad2cost] PASS hub-zinc-then-casting: cost this route: casting opens its questions — Costing as Cast+Machine: one question for this route — check the suggested answer and press Get cost.
+[cad2cost] hub-zinc-then-casting→cast_and_machine: Get cost (service.pressureTight=no, material.grade=mat-gs-c25)
+[cad2cost] PASS hub-zinc-then-casting: cost this route: casting = its row — £10.29 v row £10.29± 7.4%
+[cad2cost] PASS hub-zinc-then-casting: no page errors — none
+[cad2cost] 32 / 32 checks passed — /tmp/cv-phase2-c2c-live/results.json
+exit 0

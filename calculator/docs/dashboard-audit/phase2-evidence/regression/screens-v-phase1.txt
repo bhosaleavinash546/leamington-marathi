@@ -1,0 +1,83 @@
+Phase 1 metrics 2026-11-11T10:44:58.856Z  v  Phase 2 final 2026-11-17T22:54:15.734Z
+view keys: ['device', 'viewport', 'pageHeight', 'horizontalOverflowPx', 'offRight', 'clippedText', 'foldPx', 'sectionTops', 'cardBottoms', 'filterRowHeight', 'recordsColumnsVisibleWithoutScroll', 'recordsTableScrollWidth', 'wideTables', 'axe', 'errors', 'failed']
+dark-1920 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [1398, 2145]  ->  [1398, 2170]
+     pageHeight : 4604  ->  4675
+dark-1440 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [1158, 2145]  ->  [1158, 2170]
+     pageHeight : 5045  ->  5116
+dark-1366 overflow None -> None | axe [] -> []
+     sectionTops : {'act': 796, 'insights': 1225, 'dq': 4254, 'charts': 1893, 'drill': 3380, 'records': 3784}  ->  {'act': 813, 'insights': 1242, 'dq': 4271, 'charts': 1910, 'drill': 3397, 'records': 3801}
+     recordsTableScrollWidth : [1084, 2145]  ->  [1084, 2170]
+     pageHeight : 5092  ->  5180
+     cardBottoms : {'opportunity': 620, 'gap': 620, 'review': 780}  ->  {'opportunity': 637, 'gap': 637, 'review': 797}
+dark-1024 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [742, 2145]  ->  [742, 2170]
+     pageHeight : 6863  ->  6955
+dark-768 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [686, 2145]  ->  [686, 2170]
+     pageHeight : 6880  ->  6991
+dark-390 overflow None -> None | axe [] -> []
+     sectionTops : {'act': 1444, 'insights': 2215, 'dq': 6791, 'charts': 3120, 'drill': 5836, 'records': 6280  ->  {'act': 1463, 'insights': 2234, 'dq': 6810, 'charts': 3139, 'drill': 5855, 'records': 6299
+     recordsTableScrollWidth : [324, 2145]  ->  [324, 2170]
+     pageHeight : 8305  ->  8558
+     cardBottoms : {'opportunity': 778, 'gap': 778, 'review': 1428}  ->  {'opportunity': 797, 'gap': 797, 'review': 1447}
+light-1920 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [1398, 2145]  ->  [1398, 2170]
+     pageHeight : 4604  ->  4675
+light-1440 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [1158, 2145]  ->  [1158, 2170]
+     pageHeight : 5045  ->  5116
+light-1366 overflow None -> None | axe [] -> []
+     sectionTops : {'act': 796, 'insights': 1225, 'dq': 4254, 'charts': 1893, 'drill': 3380, 'records': 3784}  ->  {'act': 813, 'insights': 1242, 'dq': 4271, 'charts': 1910, 'drill': 3397, 'records': 3801}
+     recordsTableScrollWidth : [1084, 2145]  ->  [1084, 2170]
+     pageHeight : 5092  ->  5180
+     cardBottoms : {'opportunity': 620, 'gap': 620, 'review': 780}  ->  {'opportunity': 637, 'gap': 637, 'review': 797}
+light-1024 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [742, 2145]  ->  [742, 2170]
+     pageHeight : 6863  ->  6955
+light-768 overflow None -> None | axe [] -> []
+     recordsTableScrollWidth : [686, 2145]  ->  [686, 2170]
+     pageHeight : 6880  ->  6991
+light-390 overflow None -> None | axe [] -> []
+     sectionTops : {'act': 1444, 'insights': 2215, 'dq': 6791, 'charts': 3120, 'drill': 5836, 'records': 6280  ->  {'act': 1463, 'insights': 2234, 'dq': 6810, 'charts': 3139, 'drill': 5855, 'records': 6299
+     recordsTableScrollWidth : [324, 2145]  ->  [324, 2170]
+     pageHeight : 8305  ->  8558
+     cardBottoms : {'opportunity': 778, 'gap': 778, 'review': 1428}  ->  {'opportunity': 797, 'gap': 797, 'review': 1447}
+
+same data
+DIFF summaryAllTime : {"generatedAt": "2026-11-11T10:45:35.107Z", "window": {"from": null, "to": null, "preset": "all"}, "filters": {"commodity": [], "programme": [], "modelYear": [], "powertrain": [], "tool": [], "country": [], "currency": [], "status": [], "createdBy": [], "datePreset": "all"}, "operational": {"totalRe 
+      -> {"generatedAt": "2026-11-17T22:54:21.038Z", "window": {"from": null, "to": null, "preset": "all"}, "filters": {"commodity": [], "programme": [], "modelYear": [], "powertrain": [], "tool": [], "country": [], "currency": [], "status": [], "createdBy": [], "datePreset": "all"}, "operational": {"totalRe
+DIFF recordsAllTime : {"rows": [{"id": "rec-3a3db967-806f-4e2c-b16d-d59710e50428", "sourceTool": "CostVision", "sourceRef": "sc-a4", "ownerId": "alice", "ownerName": "Alice Able", "partNumber": "LR-BKT-410", "componentName": "Bracket", "commodity": "Pressed sheet metal", "programme": "L461", "modelYear": 2026, "powertrai 
+      -> {"rows": [{"id": "rec-3e693686-3ba7-47d6-90fa-ed6e87597f0e", "sourceTool": "CostVision", "sourceRef": "sc-1794956060914-qndvj", "ownerName": "Alice Able", "partNumber": "LR-BRK-001", "componentName": "Al6061 Bracket", "commodity": "Machining", "programme": "L460", "modelYear": 2027, "powertrain": "B
+same checkboxDirectlyClickable
+same apiCallsForOneFilterChange
+same filterPopover
+DIFF stickyHeaderAfterScroll : {"boxScrolls": true, "filterBarBottom": 155, "boxTop": 163, "headerTop": 164, "scrolledBy": 300, "headerVisible": true} 
+      -> {"boxScrolls": true, "filterBarBottom": 147, "boxTop": 155, "headerTop": 156, "scrolledBy": 300, "headerVisible": true}
+same keyboardTabStops
+same pageErrors1440
+same themePersistence
+same noPermission
+DIFF pastedRecordLink : {"opened": true, "hash": "#kpi-record=rec-3a3db967-806f-4e2c-b16d-d59710e50428", "errors": ["Failed to read the 'localStorage' property from 'Window': Access is denied for this document."]} 
+      -> {"opened": true, "hash": "#kpi-record=rec-3e693686-3ba7-47d6-90fa-ed6e87597f0e", "errors": ["Failed to read the 'localStorage' property from 'Window': Access is denied for this document."]}
+same pastedRecordLinkClosedHash
+same plainStartLandsOnHome
+same originalCurrencyTableFits
+same drillChip
+same phoneFilters
+same regressionSmoke
+same newUserSeesShared
+same serverKpiErrors
+
+summaryAllTime: keys differing (generatedAt aside):
+   charts . activity : [{"bucket": "2026-11-03", "label": "3 Nov", "count": 1}, {"bucket": "2026-11-04", "label": "4 Nov", "count": 1}, {"bucket": "2026-11-05", "label": "5 Nov", "count": 0}, {"bucket": "2026-11-06", "label -> [{"bucket": "2026-11-03", "label": "3 Nov", "count": 1}, {"bucket": "2026-11-04", "label": "4 Nov", "count": 1}, {"bucket": "2026-11-05", "label": "5 Nov", "count": 0}, {"bucket": "2026-11-06", "label
+   dataQuality . shouldBasis : null -> {"reAdded": 1, "notReAdded": 0, "totalOnly": 6}
+   insights [{"id": "top-activity", "tone": "info", "title": "Most costing activity: Casting", "detail": "4 of 9 saved costings (44.4%) in this view.", "filter": {"commodity": ["Casting"]}}, {"id": "top-opportuni -> [{"id": "top-activity", "tone": "info", "title": "Most costing activity: Casting", "detail": "4 of 9 saved costings (44.4%) in this view.", "filter": {"commodity": ["Casting"]}}, {"id": "top-opportuni
+financial identical: True
+operational identical: True
+records: 9 9
+row keys added: ['shouldBasis'] removed: ['ownerId']
+insight significant-gaps : 2 component application(s) with a gap of 15% or more | LR-BRK-001: £-2.88 (-24.1%); LR-SEAL-9: £0.42 (19.2%). 
+   -> 2 component application(s) with a gap of 15% or more | LR-BRK-001: −£2.88 (-24.1%); LR-SEAL-9: £0.42 (19.2%).
+activity buckets 9 15 counts 9 9 (window follows today: Phase 1 ran 11 Nov, Phase 2 17 Nov)

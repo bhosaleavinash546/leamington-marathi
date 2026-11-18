@@ -1,0 +1,5 @@
+
+> should-cost-calculator@4.2.0 typecheck
+> tsc --noEmit
+
+EXIT 0

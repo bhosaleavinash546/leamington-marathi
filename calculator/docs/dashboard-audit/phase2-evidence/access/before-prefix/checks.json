@@ -1,0 +1,315 @@
+{
+ "generated": "2026-11-17T22:49:19.374Z",
+ "codeTree": "/tmp/cv-phase2-prefix/calculator",
+ "passed": 8,
+ "failed": 8,
+ "checks": [
+  {
+   "id": "S1",
+   "finding": "all",
+   "check": "Signed-out users get 401 on every /api/kpi route (16 routes)",
+   "pass": true,
+   "evidence": {
+    "GET /api/kpi/meta": 401,
+    "GET /api/kpi/summary": 401,
+    "GET /api/kpi/records": 401,
+    "GET /api/kpi/records.csv": 401,
+    "GET /api/kpi/drill": 401,
+    "GET /api/kpi/records/:id": 401,
+    "GET /api/kpi/fx": 401,
+    "POST /api/kpi/records": 401,
+    "PATCH /api/kpi/records/:id": 401,
+    "DELETE /api/kpi/records/:id": 401,
+    "PUT /api/kpi/fx/policy": 401,
+    "POST /api/kpi/fx/rates": 401,
+    "POST /api/kpi/fx/recalculate": 401,
+    "GET /api/kpi/import/template.csv": 401,
+    "POST /api/kpi/import": 401,
+    "GET /api/kpi/audit": 401
+   }
+  },
+  {
+   "id": "S6",
+   "finding": "all",
+   "check": "Admin-only routes return 403 to an ordinary user",
+   "pass": true,
+   "evidence": {
+    "GET /records?scope=excluded": 403,
+    "GET /records.csv?scope=excluded": 403,
+    "PUT /fx/policy": 403,
+    "POST /fx/rates": 403,
+    "POST /fx/recalculate": 403,
+    "POST /import": 403,
+    "GET /audit": 403
+   }
+  },
+  {
+   "id": "S3a",
+   "finding": "A-02",
+   "check": "Ordinary user (not the owner) gets only the panel fields of another user's costing",
+   "pass": false,
+   "evidence": {
+    "status": 200,
+    "costingKeys": [
+     "input",
+     "result",
+     "region",
+     "commodity"
+    ],
+    "resultKeys": [
+     "total",
+     "breakdown",
+     "operationDetails",
+     "internalTrace"
+    ],
+    "opKeys": [
+     "name",
+     "cost",
+     "cycleTimeSec",
+     "machineId"
+    ],
+    "canEdit": false,
+    "fxHistoryShown": false
+   }
+  },
+  {
+   "id": "S3b",
+   "finding": "A-02",
+   "check": "The owner and an admin still get the full saved costing",
+   "pass": true,
+   "evidence": {
+    "aliceKeys": [
+     "input",
+     "result",
+     "region",
+     "commodity"
+    ],
+    "adaKeys": [
+     "input",
+     "result",
+     "region",
+     "commodity"
+    ],
+    "aliceCanEdit": true
+   }
+  },
+  {
+   "id": "S3c",
+   "finding": "A-23",
+   "check": "Ordinary user: no internal user id in list rows, record view, summary, CSV or drill",
+   "pass": false,
+   "evidence": {
+    "rowsWithOwnerIdKey": 4,
+    "internalIdFoundIn": {
+     "list": true,
+     "recordView": true,
+     "summary": false,
+     "csv": false,
+     "drill": false
+    }
+   }
+  },
+  {
+   "id": "S3d",
+   "finding": "A-23",
+   "check": "Ordinary user: no e-mail address anywhere in the responses (blank-name user and an e-mail-shaped import owner show \"Unnamed user\")",
+   "pass": false,
+   "evidence": {
+    "emailsFound": {
+     "list": [
+      "noname@corp.test",
+      "r.rao@supplier.test"
+     ],
+     "recordView": [],
+     "summary": [
+      "noname@corp.test",
+      "r.rao@supplier.test"
+     ],
+     "csv": [
+      "noname@corp.test",
+      "r.rao@supplier.test"
+     ],
+     "drill": []
+    },
+    "ownerNames": [
+     "noname@corp.test",
+     "Alice Able",
+     "r.rao@supplier.test",
+     "R. Rao"
+    ]
+   }
+  },
+  {
+   "id": "S3e",
+   "finding": "A-23",
+   "check": "An admin still gets the owner id in rows",
+   "pass": true,
+   "evidence": {
+    "adminRowsWithOwnerId": 4,
+    "of": 4
+   }
+  },
+  {
+   "id": "S3f",
+   "finding": "A-23",
+   "check": "/meta returns only the caller's OWN id (not a list row; not in the approved fix)",
+   "pass": true,
+   "evidence": {
+    "userId": "bob"
+   }
+  },
+  {
+   "id": "S4a",
+   "finding": "A-05",
+   "check": "Owner cannot change test flag, commodity, country or an admin-set status (each 403, record unchanged)",
+   "pass": false,
+   "evidence": {
+    "statuses": {
+     "isTest": 200,
+     "commodity": 200,
+     "country": 200,
+     "approvedToDraft": 200,
+     "approvedToCompleted": 200,
+     "approveOwn": 403,
+     "volumeValidated": 403,
+     "savingStatus": 403
+    },
+    "after": {
+     "isTest": true,
+     "excluded": "test",
+     "commodity": "Forging",
+     "country": "CN",
+     "status": "completed"
+    }
+   }
+  },
+  {
+   "id": "S4b",
+   "finding": "A-05",
+   "check": "Owner: an identity (part number, programme, model year, powertrain) or volume change on an approved record → \"completed\"",
+   "pass": false,
+   "evidence": {
+    "partNumber": {
+     "status": 200,
+     "statusAfter": "approved"
+    },
+    "programme": {
+     "status": 200,
+     "statusAfter": "approved"
+    },
+    "modelYear": {
+     "status": 200,
+     "statusAfter": "approved"
+    },
+    "powertrain": {
+     "status": 200,
+     "statusAfter": "approved"
+    },
+    "annualVolume": {
+     "status": 200,
+     "statusAfter": "approved"
+    }
+   }
+  },
+  {
+   "id": "S4c",
+   "finding": "A-05",
+   "check": "Owner: a notes-only full-form save of an approved record is accepted and stays approved",
+   "pass": false,
+   "evidence": {
+    "status": 403,
+    "error": "Only an admin can mark a costing reviewed or approved"
+   }
+  },
+  {
+   "id": "S4d",
+   "finding": "A-03 / A-05",
+   "check": "Owner changes a validated volume on an approved record → validation cleared AND status \"completed\"",
+   "pass": false,
+   "evidence": {
+    "status": 200,
+    "volumeValidated": true,
+    "statusAfter": "approved"
+   }
+  },
+  {
+   "id": "S4e",
+   "finding": "A-03 / A-05",
+   "check": "Admin changes a validated volume → cleared + completed; change + re-validate in one request → 400; separate re-validate and re-approve → 200",
+   "pass": false,
+   "evidence": {
+    "adminChange": {
+     "status": 200,
+     "validated": true,
+     "statusAfter": "approved"
+    },
+    "changeAndRevalidate": {
+     "status": 200
+    },
+    "revalidate": {
+     "status": 200,
+     "validated": true
+    },
+    "reapprove": {
+     "status": 200,
+     "statusAfter": "approved"
+    }
+   }
+  },
+  {
+   "id": "S4f",
+   "finding": "all",
+   "check": "An ordinary user cannot edit or delete another user's record (403)",
+   "pass": true,
+   "evidence": {
+    "edit": 403,
+    "delete": 403
+   }
+  },
+  {
+   "id": "S5",
+   "finding": "all",
+   "check": "Admin can still approve / review, set commodity, country, validated volume, saving, test flag, read excluded, load FX, set policy, recalculate, import, read audit, edit and delete others' records",
+   "pass": true,
+   "evidence": {
+    "statuses": {
+     "approve": 200,
+     "review": 200,
+     "commodity": 200,
+     "country": 200,
+     "volume": 200,
+     "saving": 200,
+     "isTest": 200,
+     "isTestOff": 200,
+     "excludedList": 200,
+     "fxRates": 200,
+     "fxPolicy": 200,
+     "fxRecalcPreview": 200,
+     "fxRecalcApply": 200,
+     "importTemplate": 200,
+     "import": 200,
+     "audit": 200,
+     "editOthers": 200,
+     "deleteOthers": 200
+    },
+    "finalRecord": {
+     "status": "approved",
+     "commodity": "Forging",
+     "country": "CN",
+     "volumeValidated": true,
+     "savingStatus": "validated",
+     "isTest": false
+    }
+   }
+  },
+  {
+   "id": "S4g",
+   "finding": "A-05 (D-4)",
+   "check": "Owner delete of an approved record — UNCHANGED by design (D-4 blank): expected 200 before and after",
+   "pass": true,
+   "evidence": {
+    "status": 200
+   }
+  }
+ ]
+}

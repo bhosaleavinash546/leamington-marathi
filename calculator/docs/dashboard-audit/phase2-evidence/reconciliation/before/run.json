@@ -1,0 +1,2704 @@
+{
+ "generated": "2026-11-17T22:46:53.408Z",
+ "codeTree": "/tmp/cv-phase2-prefix/calculator",
+ "database": "/tmp/cv-phase2-recon-GzTvzD/should-cost.db (throwaway, synthetic data only)",
+ "today": "2026-11-17",
+ "actions": [
+  {
+   "step": "FX table (synthetic: EUR 1.19, USD 1.31 units per GBP; Sep–Nov 2026)",
+   "method": "POST",
+   "path": "/api/kpi/fx/rates",
+   "status": 200
+  },
+  {
+   "step": "R1 save (GBP, 8-line breakdown = 10.00)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": 10000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-GBP-01",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R1 admin validates volume 10,000",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+   "status": 200,
+   "record": {
+    "id": "rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+    "status": "completed",
+    "volumeValidated": true,
+    "annualVolume": 10000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-GBP-01",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R1 admin validated saving £0.50",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+   "status": 200,
+   "record": {
+    "id": "rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+    "status": "completed",
+    "volumeValidated": true,
+    "annualVolume": 10000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-GBP-01",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.613Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.725Z",
+      "method": "identity",
+      "approved": true
+     }
+    }
+   }
+  },
+  {
+   "step": "R2–R6 import (CSS System + CPSC II)",
+   "method": "POST",
+   "path": "/api/kpi/import",
+   "status": 200
+  },
+  {
+   "step": "R7 save first same-day costing (should 15)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-ed91e905-1095-4f29-a7a5-ba6111bd13b8",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TIE-07",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.782Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.782Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R8 save second same-day costing (should 17)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-c2502f94-8b2f-4ec1-bca2-f838c35999c8",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TIE-07",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.845Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.845Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R7 owner adds a note to the FIRST costing",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-ed91e905-1095-4f29-a7a5-ba6111bd13b8",
+   "status": 200,
+   "record": {
+    "id": "rec-ed91e905-1095-4f29-a7a5-ba6111bd13b8",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TIE-07",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.782Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.782Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R9 save (volume 50,000)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": 50000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-VOL-09",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R9 admin: volume 60,000 validated + approved",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+   "status": 200,
+   "record": {
+    "id": "rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+    "status": "approved",
+    "volumeValidated": true,
+    "annualVolume": 60000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-VOL-09",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R9 OWNER changes volume 60,000 → 600,000",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+   "status": 200,
+   "record": {
+    "id": "rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+    "status": "approved",
+    "volumeValidated": true,
+    "annualVolume": 600000,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-VOL-09",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:52.964Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R10 save",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TST-10",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R10 admin approves",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+   "status": 200,
+   "record": {
+    "id": "rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TST-10",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R10 OWNER sets isTest",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+   "status": 200,
+   "record": {
+    "id": "rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": true,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-TST-10",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.077Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R11 save (casting)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-COM-11",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R11 admin approves",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+   "status": 200,
+   "record": {
+    "id": "rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-COM-11",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R11 OWNER changes commodity → Forging",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+   "status": 200,
+   "record": {
+    "id": "rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Forging",
+    "country": "UK",
+    "partNumber": "REC-COM-11",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R11 OWNER changes country → CN",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+   "status": 200,
+   "record": {
+    "id": "rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Forging",
+    "country": "CN",
+    "partNumber": "REC-COM-11",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.133Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R12 save",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-PN-12",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R12 admin approves",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+   "status": 200,
+   "record": {
+    "id": "rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-PN-12",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R12 OWNER changes part number → REC-PN-12B",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+   "status": 200,
+   "record": {
+    "id": "rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-PN-12B",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.178Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R13 save",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-DRF-13",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R13 admin approves",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+   "status": 200,
+   "record": {
+    "id": "rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+    "status": "approved",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-DRF-13",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R13 OWNER sets status draft",
+   "method": "PATCH",
+   "path": "/api/kpi/records/rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+   "status": 200,
+   "record": {
+    "id": "rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+    "status": "draft",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-DRF-13",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.220Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R14 save total 0.01 with breakdown 999 + 999",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-65ca0f91-99c4-4304-9b66-b8c7413f087f",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-FAKE-14",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.266Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.266Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R15 save total 13.04, 8 lines sum 13.00",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-60ec4de5-a21f-4c60-9616-10a3c564a8af",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-RND-15",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.274Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.274Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R16 save (current below should)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-195ea262-3b85-487a-a512-9ab498347fb8",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-NEG-16",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.341Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.341Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R17 import part-number variants",
+   "method": "POST",
+   "path": "/api/kpi/import",
+   "status": 200
+  },
+  {
+   "step": "R18 save programme Q901 (alice)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-33cba3bc-17f4-4b82-9c2c-3eb081d91ae5",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-CASE-18",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.362Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.362Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  },
+  {
+   "step": "R18 save programme q901 (bob)",
+   "method": "POST",
+   "path": "/api/kpi/records",
+   "status": 201,
+   "record": {
+    "id": "rec-528cb6d2-9b2c-45ab-8327-072183b70248",
+    "status": "completed",
+    "volumeValidated": false,
+    "annualVolume": null,
+    "isTest": false,
+    "commodity": "Casting",
+    "country": "UK",
+    "partNumber": "REC-CASE-18",
+    "fx": {
+     "should": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.371Z",
+      "method": "identity",
+      "approved": true
+     },
+     "current": {
+      "currency": "GBP",
+      "gbpPerUnit": 1,
+      "source": "GBP — no conversion",
+      "effectiveDate": "2026-11-17",
+      "retrievedAt": "2026-11-17T22:46:53.371Z",
+      "method": "identity",
+      "approved": true
+     },
+     "saving": null
+    }
+   }
+  }
+ ],
+ "summary": {
+  "operational": {
+   "totalRecords": 21,
+   "currentRecords": 17,
+   "uniqueComponents": 16,
+   "unidentified": 0,
+   "completedRecords": 16,
+   "commodities": 3,
+   "programmes": 7,
+   "awaitingReview": 13,
+   "awaitingApproval": 0,
+   "needsReview": 13
+  },
+  "financial": {
+   "eligible": 17,
+   "sumCurrentGbp": 283.5427545063827,
+   "sumShouldGbp": 241.8567226890756,
+   "sumGapGbp": 41.686031817307075,
+   "weightedGapPct": 14.701850481024618,
+   "opportunity": {
+    "n": 16,
+    "gbp": 43.686031817307075
+   },
+   "unfavourable": {
+    "n": 1,
+    "gbp": -2
+   },
+   "annualised": {
+    "n": 2,
+    "gbp": 1220000
+   },
+   "validatedSavings": {
+    "n": 1,
+    "gbp": 0.5
+   },
+   "implementedSavings": {
+    "n": 0,
+    "gbp": 0
+   }
+  },
+  "currencyTotals": [
+   {
+    "currency": "GBP",
+    "symbol": "£",
+    "currentRecords": 15,
+    "sumCurrent": 232,
+    "shouldRecords": 16,
+    "sumShould": 225.04999999999998,
+    "sameCcyRecords": 15,
+    "sumGap": 36.95
+   },
+   {
+    "currency": "EUR",
+    "symbol": "€",
+    "currentRecords": 1,
+    "sumCurrent": 25,
+    "shouldRecords": 1,
+    "sumShould": 20,
+    "sameCcyRecords": 1,
+    "sumGap": 5
+   },
+   {
+    "currency": "USD",
+    "symbol": "$",
+    "currentRecords": 1,
+    "sumCurrent": 40,
+    "shouldRecords": 0,
+    "sumShould": 0,
+    "sameCcyRecords": 0,
+    "sumGap": 0
+   }
+  ],
+  "dataQuality": {
+   "retrieved": 22,
+   "included": 21,
+   "excluded": 1,
+   "excludedBy": {
+    "deleted": 0,
+    "test": 1,
+    "invalid": 0
+   },
+   "financiallyEligible": 17,
+   "missingShouldCost": 0,
+   "missingCurrentCost": 0,
+   "missingFx": 0,
+   "basisMismatch": 0,
+   "unapprovedFx": 0,
+   "duplicateCandidates": 0,
+   "supersededRevisions": 4,
+   "missingClassification": {
+    "partNumber": 0,
+    "commodity": 0,
+    "programme": 0,
+    "modelYear": 0,
+    "powertrain": 0
+   }
+  },
+  "costByCommodity": [
+   {
+    "key": "Casting",
+    "count": 14,
+    "eligible": 14,
+    "currentGbp": 160.00840336134453,
+    "shouldGbp": 126.85672268907564,
+    "gapGbp": 33.15168067226891,
+    "opportunityGbp": 35.15168067226891
+   },
+   {
+    "key": "Forging",
+    "count": 2,
+    "eligible": 2,
+    "currentGbp": 63.534351145038165,
+    "shouldGbp": 60,
+    "gapGbp": 3.5343511450381655,
+    "opportunityGbp": 3.5343511450381655
+   },
+   {
+    "key": "Machining",
+    "count": 1,
+    "eligible": 1,
+    "currentGbp": 60,
+    "shouldGbp": 55,
+    "gapGbp": 5,
+    "opportunityGbp": 5
+   }
+  ],
+  "byStatus": [
+   {
+    "key": "draft",
+    "count": 1
+   },
+   {
+    "key": "completed",
+    "count": 13
+   },
+   {
+    "key": "approved",
+    "count": 3
+   }
+  ],
+  "insights": [
+   {
+    "id": "top-activity",
+    "tone": "info",
+    "title": "Most costing activity: Casting",
+    "detail": "16 of 21 saved costings (76.2%) in this view.",
+    "filter": {
+     "commodity": [
+      "Casting"
+     ]
+    }
+   },
+   {
+    "id": "top-opportunity",
+    "tone": "good",
+    "title": "Largest potential unit cost opportunity: Casting",
+    "detail": "£35.15 per piece summed over 14 component application(s) where the current cost is above should-cost. Not an annual saving.",
+    "filter": {
+     "commodity": [
+      "Casting"
+     ]
+    }
+   },
+   {
+    "id": "coverage",
+    "tone": "warn",
+    "title": "Coverage: 5 of 5 programmes, 4 of 5 powertrains",
+    "detail": "Every programme has a current costing. No current costing for Diesel PHEV."
+   },
+   {
+    "id": "limited-coverage",
+    "tone": "warn",
+    "title": "2 commodities have fewer than 3 current costings",
+    "detail": "Forging (2), Machining (1)."
+   },
+   {
+    "id": "significant-gaps",
+    "tone": "warn",
+    "title": "11 component application(s) with a gap of 15% or more",
+    "detail": "REC-FAKE-14: £11.99 (99.9%); REC-TIE-07: £5.00 (25.0%); REC-EUR-02: £4.20 (20.0%); …"
+   },
+   {
+    "id": "needs-review",
+    "tone": "info",
+    "title": "13 costing(s) awaiting review or approval",
+    "detail": "13 completed and not yet reviewed, 0 reviewed and not yet approved.",
+    "filter": {
+     "status": [
+      "completed",
+      "reviewed"
+     ]
+    }
+   },
+   {
+    "id": "recent-activity",
+    "tone": "info",
+    "title": "14 costing(s) saved in the last 30 days",
+    "detail": "6 in the 30 days before (+133.3%). Counts every save, revisions included."
+   }
+  ]
+ },
+ "summaryAsUser": {
+  "eligible": 17,
+  "sumCurrentGbp": 283.5427545063827,
+  "sumShouldGbp": 241.8567226890756,
+  "sumGapGbp": 41.686031817307075,
+  "weightedGapPct": 14.701850481024618,
+  "opportunity": {
+   "n": 16,
+   "gbp": 43.686031817307075
+  },
+  "unfavourable": {
+   "n": 1,
+   "gbp": -2
+  },
+  "annualised": {
+   "n": 2,
+   "gbp": 1220000
+  },
+  "validatedSavings": {
+   "n": 1,
+   "gbp": 0.5
+  },
+  "implementedSavings": {
+   "n": 0,
+   "gbp": 0
+  }
+ },
+ "rows": [
+  {
+   "id": "rec-195ea262-3b85-487a-a512-9ab498347fb8",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r16",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-NEG-16",
+   "componentName": "R16 unfavourable",
+   "commodity": "Casting",
+   "programme": "L663",
+   "modelYear": 2028,
+   "powertrain": "Petrol",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.341Z",
+   "updatedAt": "2026-11-17T22:46:53.341Z",
+   "shouldCost": 20,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 18,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.341Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.341Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 20,
+   "gbpCurrent": 18,
+   "gbpSaving": null,
+   "gapGbp": -2,
+   "gapPct": -11.11111111111111,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-33cba3bc-17f4-4b82-9c2c-3eb081d91ae5",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r18a",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-CASE-18",
+   "componentName": "R18 programme case",
+   "commodity": "Casting",
+   "programme": "Q901",
+   "modelYear": 2028,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.362Z",
+   "updatedAt": "2026-11-17T22:46:53.362Z",
+   "shouldCost": 7,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 9,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.362Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.362Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 7,
+   "gbpCurrent": 9,
+   "gbpSaving": null,
+   "gapGbp": 2,
+   "gapPct": 22.22222222222222,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-528cb6d2-9b2c-45ab-8327-072183b70248",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r18b",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-CASE-18",
+   "componentName": "R18 programme case",
+   "commodity": "Casting",
+   "programme": "q901",
+   "modelYear": 2028,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.371Z",
+   "updatedAt": "2026-11-17T22:46:53.371Z",
+   "shouldCost": 7,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 9,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.371Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.371Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 7,
+   "gbpCurrent": 9,
+   "gbpSaving": null,
+   "gapGbp": 2,
+   "gapPct": 22.22222222222222,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-60ec4de5-a21f-4c60-9616-10a3c564a8af",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r15",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-RND-15",
+   "componentName": "R15 rounding only",
+   "commodity": "Casting",
+   "programme": "L461",
+   "modelYear": 2028,
+   "powertrain": "MHEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.274Z",
+   "updatedAt": "2026-11-17T22:46:53.274Z",
+   "shouldCost": 13.04,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 14,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.274Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.274Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 13.04,
+   "gbpCurrent": 14,
+   "gbpSaving": null,
+   "gapGbp": 0.9600000000000009,
+   "gapPct": 6.857142857142863,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-65ca0f91-99c4-4304-9b66-b8c7413f087f",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r14",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-FAKE-14",
+   "componentName": "R14 forged total",
+   "commodity": "Casting",
+   "programme": "EMA",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.266Z",
+   "updatedAt": "2026-11-17T22:46:53.266Z",
+   "shouldCost": 0.01,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 12,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.266Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.266Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 0.01,
+   "gbpCurrent": 12,
+   "gbpSaving": null,
+   "gapGbp": 11.99,
+   "gapPct": 99.91666666666667,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-68193648-e3e2-46bd-a6ac-f13b25f790bf",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r9",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-VOL-09",
+   "componentName": "R9 validated volume",
+   "commodity": "Casting",
+   "programme": "L461",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "approved",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:52.964Z",
+   "updatedAt": "2026-11-17T22:46:53.034Z",
+   "shouldCost": 10,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 12,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": 600000,
+   "volumeValidated": true,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.964Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.964Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 10,
+   "gbpCurrent": 12,
+   "gbpSaving": null,
+   "gapGbp": 2,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-7911cac0-2aa9-41da-8a21-ba65dd1066ad",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r1",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-GBP-01",
+   "componentName": "R1 GBP bracket",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:52.613Z",
+   "updatedAt": "2026-11-17T22:46:52.725Z",
+   "shouldCost": 10,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 12,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": 10000,
+   "volumeValidated": true,
+   "savingStatus": "validated",
+   "savingPerPiece": 0.5,
+   "savingCcy": "GBP",
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.613Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.613Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.725Z",
+     "method": "identity",
+     "approved": true
+    }
+   },
+   "gbpShould": 10,
+   "gbpCurrent": 12,
+   "gbpSaving": 0.5,
+   "gapGbp": 2,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-a11bf48f-38d0-4815-a599-41fb31cfbe0b",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r11",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-COM-11",
+   "componentName": "R11 owner commodity",
+   "commodity": "Forging",
+   "programme": "JEA",
+   "modelYear": 2028,
+   "powertrain": "BEV",
+   "country": "CN",
+   "status": "approved",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.133Z",
+   "updatedAt": "2026-11-17T22:46:53.170Z",
+   "shouldCost": 30,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 33,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.133Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.133Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 30,
+   "gbpCurrent": 33,
+   "gbpSaving": null,
+   "gapGbp": 3,
+   "gapPct": 9.090909090909092,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-c2502f94-8b2f-4ec1-bca2-f838c35999c8",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r8",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-TIE-07",
+   "componentName": "R7 same-day tie",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2028,
+   "powertrain": "MHEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:52.845Z",
+   "updatedAt": "2026-11-17T22:46:52.845Z",
+   "shouldCost": 17,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 20,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.845Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.845Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 17,
+   "gbpCurrent": 20,
+   "gbpSaving": null,
+   "gapGbp": null,
+   "gapPct": null,
+   "role": "superseded",
+   "eligible": false,
+   "ineligible": "not-current",
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-dbf62e0f-8f51-4378-8a08-bf0eba634253",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r13",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-DRF-13",
+   "componentName": "R13 owner downgrade",
+   "commodity": "Casting",
+   "programme": "L663",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "draft",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.220Z",
+   "updatedAt": "2026-11-17T22:46:53.257Z",
+   "shouldCost": 5,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 6,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.220Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.220Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 5,
+   "gbpCurrent": 6,
+   "gbpSaving": null,
+   "gapGbp": 1,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-e97f5dc8-cad8-49fd-94ac-76780207daca",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r12",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-PN-12B",
+   "componentName": "R12 owner part number",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "Petrol PHEV",
+   "country": "UK",
+   "status": "approved",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.178Z",
+   "updatedAt": "2026-11-17T22:46:53.193Z",
+   "shouldCost": 8,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 9,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.178Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.178Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 8,
+   "gbpCurrent": 9,
+   "gbpSaving": null,
+   "gapGbp": 1,
+   "gapPct": 11.11111111111111,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-ed91e905-1095-4f29-a7a5-ba6111bd13b8",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r7",
+   "ownerId": "alice",
+   "ownerName": "Alice Able",
+   "partNumber": "REC-TIE-07",
+   "componentName": "R7 same-day tie",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2028,
+   "powertrain": "MHEV",
+   "country": "UK",
+   "status": "completed",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:52.782Z",
+   "updatedAt": "2026-11-17T22:46:52.936Z",
+   "shouldCost": 15,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 20,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.782Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:52.782Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 15,
+   "gbpCurrent": 20,
+   "gbpSaving": null,
+   "gapGbp": 5,
+   "gapPct": 25,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": "a note on the older costing"
+  },
+  {
+   "id": "rec-f61152fb-bd27-4a86-8b24-75634db2e14c",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-REV-3",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "REC-REV-04",
+   "componentName": "R4 three revisions",
+   "commodity": "Machining",
+   "programme": "L663",
+   "modelYear": 2026,
+   "powertrain": "Petrol",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-11-10",
+   "createdAt": "2026-11-17T22:46:52.752Z",
+   "updatedAt": "2026-11-17T22:46:52.752Z",
+   "shouldCost": 55,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 60,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 55,
+   "gbpCurrent": 60,
+   "gbpSaving": null,
+   "gapGbp": 5,
+   "gapPct": 8.333333333333332,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-9df4f714-c210-4e5d-b540-0f1334518390",
+   "sourceTool": "CPSC II",
+   "sourceRef": "RC-MIX",
+   "ownerId": "import:CPSC II:J. Lee",
+   "ownerName": "J. Lee",
+   "partNumber": "REC-MIX-03",
+   "componentName": "R3 mixed-currency forging",
+   "commodity": "Forging",
+   "programme": "L461",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "US",
+   "status": "completed",
+   "costingDate": "2026-10-20",
+   "createdAt": "2026-11-17T22:46:52.752Z",
+   "updatedAt": "2026-11-17T22:46:52.752Z",
+   "shouldCost": 30,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 40,
+   "currentCcy": "USD",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-20",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "USD",
+     "gbpPerUnit": 0.7633587786259541,
+     "source": "Synthetic reconciliation rate",
+     "effectiveDate": "2026-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "monthly",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 30,
+   "gbpCurrent": 30.534351145038165,
+   "gbpSaving": null,
+   "gapGbp": 0.5343511450381655,
+   "gapPct": 1.7499999999999922,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-4a3df77d-0527-41ee-9576-c5153123965c",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-EUR",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "REC-EUR-02",
+   "componentName": "R2 EUR casting",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "DE",
+   "status": "completed",
+   "costingDate": "2026-10-15",
+   "createdAt": "2026-11-17T22:46:52.752Z",
+   "updatedAt": "2026-11-17T22:46:52.752Z",
+   "shouldCost": 20,
+   "shouldCcy": "EUR",
+   "shouldTerms": "DAP",
+   "currentCost": 25,
+   "currentCcy": "EUR",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "EUR",
+     "gbpPerUnit": 0.8403361344537815,
+     "source": "Synthetic reconciliation rate",
+     "effectiveDate": "2026-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "monthly",
+     "approved": true
+    },
+    "current": {
+     "currency": "EUR",
+     "gbpPerUnit": 0.8403361344537815,
+     "source": "Synthetic reconciliation rate",
+     "effectiveDate": "2026-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "monthly",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 16.80672268907563,
+   "gbpCurrent": 21.008403361344538,
+   "gbpSaving": null,
+   "gapGbp": 4.201680672268907,
+   "gapPct": 19.999999999999996,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-345c61de-e5a4-450e-92c0-cdec0bf44cdf",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-REV-2",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "REC-REV-04",
+   "componentName": "R4 three revisions",
+   "commodity": "Machining",
+   "programme": "L663",
+   "modelYear": 2026,
+   "powertrain": "Petrol",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-10-10",
+   "createdAt": "2026-11-17T22:46:52.752Z",
+   "updatedAt": "2026-11-17T22:46:52.752Z",
+   "shouldCost": 52,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 60,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 52,
+   "gbpCurrent": 60,
+   "gbpSaving": null,
+   "gapGbp": null,
+   "gapPct": null,
+   "role": "superseded",
+   "eligible": false,
+   "ineligible": "not-current",
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-05b858dd-00c4-41d8-b43f-6103a876cc03",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-V4",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "LR_REC_200",
+   "componentName": "R17 variant",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-10-04",
+   "createdAt": "2026-11-17T22:46:53.354Z",
+   "updatedAt": "2026-11-17T22:46:53.354Z",
+   "shouldCost": 5,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 6,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-04",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-04",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 5,
+   "gbpCurrent": 6,
+   "gbpSaving": null,
+   "gapGbp": 1,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-420c664d-ac17-4d88-ba80-ba3c52bf3297",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-V3",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "LRREC200",
+   "componentName": "R17 variant",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-10-03",
+   "createdAt": "2026-11-17T22:46:53.354Z",
+   "updatedAt": "2026-11-17T22:46:53.354Z",
+   "shouldCost": 5,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 6,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-03",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-03",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 5,
+   "gbpCurrent": 6,
+   "gbpSaving": null,
+   "gapGbp": 1,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-0fdb21e7-72ab-4f37-8274-cfc935a834f3",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-V2",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "lr-rec-200",
+   "componentName": "R17 variant",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-10-02",
+   "createdAt": "2026-11-17T22:46:53.354Z",
+   "updatedAt": "2026-11-17T22:46:53.354Z",
+   "shouldCost": 5,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 6,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-02",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-02",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 5,
+   "gbpCurrent": 6,
+   "gbpSaving": null,
+   "gapGbp": 1,
+   "gapPct": 16.666666666666664,
+   "role": "current",
+   "eligible": true,
+   "ineligible": null,
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-b95cc561-0072-4cd8-92bd-82afc2de7df7",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-V1",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "LR-REC-200",
+   "componentName": "R17 variant",
+   "commodity": "Casting",
+   "programme": "L460",
+   "modelYear": 2027,
+   "powertrain": "BEV",
+   "country": "GB",
+   "status": "completed",
+   "costingDate": "2026-10-01",
+   "createdAt": "2026-11-17T22:46:53.354Z",
+   "updatedAt": "2026-11-17T22:46:53.354Z",
+   "shouldCost": 5,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 6,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-01",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-10-01",
+     "retrievedAt": "2026-11-17T22:46:53.354Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 5,
+   "gbpCurrent": 6,
+   "gbpSaving": null,
+   "gapGbp": null,
+   "gapPct": null,
+   "role": "superseded",
+   "eligible": false,
+   "ineligible": "not-current",
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  },
+  {
+   "id": "rec-d16c6014-331c-4809-afda-5ce801e4e35c",
+   "sourceTool": "CSS System",
+   "sourceRef": "RC-REV-1",
+   "ownerId": "import:CSS System:R. Rao",
+   "ownerName": "R. Rao",
+   "partNumber": "REC-REV-04",
+   "componentName": "R4 three revisions",
+   "commodity": "Machining",
+   "programme": "L663",
+   "modelYear": 2026,
+   "powertrain": "Petrol",
+   "country": "GB",
+   "status": "approved",
+   "costingDate": "2026-09-10",
+   "createdAt": "2026-11-17T22:46:52.752Z",
+   "updatedAt": "2026-11-17T22:46:52.752Z",
+   "shouldCost": 50,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 60,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-09-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-09-10",
+     "retrievedAt": "2026-11-17T22:46:52.752Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 50,
+   "gbpCurrent": 60,
+   "gbpSaving": null,
+   "gapGbp": null,
+   "gapPct": null,
+   "role": "superseded",
+   "eligible": false,
+   "ineligible": "not-current",
+   "excluded": null,
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": false,
+   "deleted": false,
+   "notes": ""
+  }
+ ],
+ "excludedRows": [
+  {
+   "id": "rec-93b78e0b-7104-47fa-8180-b416a971e0bd",
+   "sourceTool": "CostVision",
+   "sourceRef": "rc-r10",
+   "ownerId": "bob",
+   "ownerName": "Bob Baker",
+   "partNumber": "REC-TST-10",
+   "componentName": "R10 owner test flag",
+   "commodity": "Casting",
+   "programme": "EMA",
+   "modelYear": 2028,
+   "powertrain": "BEV",
+   "country": "UK",
+   "status": "approved",
+   "costingDate": "2026-11-17",
+   "createdAt": "2026-11-17T22:46:53.077Z",
+   "updatedAt": "2026-11-17T22:46:53.127Z",
+   "shouldCost": 40,
+   "shouldCcy": "GBP",
+   "shouldTerms": "DAP",
+   "currentCost": 50,
+   "currentCcy": "GBP",
+   "currentTerms": "DAP",
+   "currentSource": null,
+   "annualVolume": null,
+   "volumeValidated": false,
+   "savingStatus": null,
+   "savingPerPiece": null,
+   "savingCcy": null,
+   "fx": {
+    "should": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.077Z",
+     "method": "identity",
+     "approved": true
+    },
+    "current": {
+     "currency": "GBP",
+     "gbpPerUnit": 1,
+     "source": "GBP — no conversion",
+     "effectiveDate": "2026-11-17",
+     "retrievedAt": "2026-11-17T22:46:53.077Z",
+     "method": "identity",
+     "approved": true
+    },
+    "saving": null
+   },
+   "gbpShould": 40,
+   "gbpCurrent": 50,
+   "gbpSaving": null,
+   "gapGbp": null,
+   "gapPct": null,
+   "role": null,
+   "eligible": false,
+   "ineligible": null,
+   "excluded": "test",
+   "invalidReasons": [],
+   "duplicateOf": null,
+   "isTest": true,
+   "deleted": false,
+   "notes": ""
+  }
+ ],
+ "serverErrors": []
+}

@@ -1,0 +1,139 @@
+{
+ "generated": "2026-11-17T22:53:02.085Z",
+ "database": "/tmp/cv-phase2-recon-TaqWvm/should-cost.db",
+ "readOnly": true,
+ "summary": {
+  "records": 21,
+  "includedRecords": 21,
+  "applicationsNow": 17,
+  "applicationsFolded": 14,
+  "mergingGroups": 2,
+  "recordsInMergingGroups": 6,
+  "currentRecordsNow": 17,
+  "currentRecordsFolded": 14,
+  "financialNow": {
+   "eligible": 17,
+   "opportunityGbp": 39.69603181730707,
+   "unfavourableGbp": -2,
+   "annualisedGbp": 20000
+  },
+  "financialFolded": {
+   "eligible": 14,
+   "opportunityGbp": 35.69603181730707,
+   "unfavourableGbp": -2,
+   "annualisedGbp": 20000
+  }
+ },
+ "groups": [
+  {
+   "foldedKey": "LRREC200|L460|2027|BEV",
+   "keysNow": [
+    "LR-REC-200|L460|2027|BEV",
+    "LRREC200|L460|2027|BEV",
+    "LR_REC_200|L460|2027|BEV"
+   ],
+   "records": [
+    {
+     "id": "rec-e516d19c-4724-40cb-a6f5-ba54ef54bdb7",
+     "sourceTool": "CSS System",
+     "sourceRef": "RC-V1",
+     "ownerName": "R. Rao",
+     "partNumber": "LR-REC-200",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-01",
+     "keyNow": "LR-REC-200|L460|2027|BEV",
+     "roleNow": "superseded",
+     "roleFolded": "superseded"
+    },
+    {
+     "id": "rec-dbd9dd83-e015-46e5-abd7-29a00de13825",
+     "sourceTool": "CSS System",
+     "sourceRef": "RC-V2",
+     "ownerName": "R. Rao",
+     "partNumber": "lr-rec-200",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-02",
+     "keyNow": "LR-REC-200|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "superseded"
+    },
+    {
+     "id": "rec-b2570a09-4123-4444-b3ad-90532868acb6",
+     "sourceTool": "CSS System",
+     "sourceRef": "RC-V3",
+     "ownerName": "R. Rao",
+     "partNumber": "LRREC200",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-03",
+     "keyNow": "LRREC200|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "superseded"
+    },
+    {
+     "id": "rec-b0fc411b-d77c-4031-8095-f17b4b533064",
+     "sourceTool": "CSS System",
+     "sourceRef": "RC-V4",
+     "ownerName": "R. Rao",
+     "partNumber": "LR_REC_200",
+     "programme": "L460",
+     "modelYear": 2027,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-10-04",
+     "keyNow": "LR_REC_200|L460|2027|BEV",
+     "roleNow": "current",
+     "roleFolded": "current"
+    }
+   ]
+  },
+  {
+   "foldedKey": "RECCASE18|Q901|2028|BEV",
+   "keysNow": [
+    "REC-CASE-18|Q901|2028|BEV",
+    "REC-CASE-18|q901|2028|BEV"
+   ],
+   "records": [
+    {
+     "id": "rec-5733bd74-0cd5-4234-bfb0-5f26a8c643c4",
+     "sourceTool": "CostVision",
+     "sourceRef": "rc-r18b",
+     "ownerName": "Bob Baker",
+     "partNumber": "REC-CASE-18",
+     "programme": "q901",
+     "modelYear": 2028,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-11-17",
+     "keyNow": "REC-CASE-18|q901|2028|BEV",
+     "roleNow": "current",
+     "roleFolded": "current"
+    },
+    {
+     "id": "rec-cc500e00-a634-4ec0-bdbd-1f84e4017cda",
+     "sourceTool": "CostVision",
+     "sourceRef": "rc-r18a",
+     "ownerName": "Alice Able",
+     "partNumber": "REC-CASE-18",
+     "programme": "Q901",
+     "modelYear": 2028,
+     "powertrain": "BEV",
+     "status": "completed",
+     "costingDate": "2026-11-17",
+     "keyNow": "REC-CASE-18|Q901|2028|BEV",
+     "roleNow": "current",
+     "roleFolded": "duplicate"
+    }
+   ]
+  }
+ ],
+ "excludedRecordsWithFoldedMatch": []
+}

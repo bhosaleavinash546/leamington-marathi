@@ -1,0 +1,13 @@
+[audit] dark-1920: overflow 0px, page 4675px, charts top 1846, axe 0
+[audit] dark-1440: overflow 0px, page 5116px, charts top 1846, axe 0
+[audit] dark-1366: overflow 0px, page 5180px, charts top 1910, axe 0
+[audit] dark-1024: overflow 0px, page 6955px, charts top 2500, axe 0
+[audit] dark-768: overflow 0px, page 6991px, charts top 2496, axe 0
+[audit] dark-390: overflow 0px, page 8558px, charts top 3139, axe 0
+[audit] light-1920: overflow 0px, page 4675px, charts top 1846, axe 0
+[audit] light-1440: overflow 0px, page 5116px, charts top 1846, axe 0
+[audit] light-1366: overflow 0px, page 5180px, charts top 1910, axe 0
+[audit] light-1024: overflow 0px, page 6955px, charts top 2500, axe 0
+[audit] light-768: overflow 0px, page 6991px, charts top 2496, axe 0
+[audit] light-390: overflow 0px, page 8558px, charts top 3139, axe 0
+[audit] done → /home/user/cv-phase2/calculator/docs/dashboard-audit/phase2-evidence/regression/screens/final

@@ -1,0 +1,58 @@
+{
+ "P06b_same_day_tie": {
+  "before": {
+   "rolesAfterTwoSaves": [
+    "first:superseded",
+    "second:current"
+   ],
+   "rolesAfterNoteOnFirst": [
+    "first:current",
+    "second:superseded"
+   ]
+  },
+  "after": {
+   "rolesAfterTwoSaves": [
+    "first:superseded",
+    "second:current"
+   ],
+   "rolesAfterNoteOnFirst": [
+    "first:superseded",
+    "second:current"
+   ]
+  }
+ },
+ "P06_newer_unapproved_wins": {
+  "before": [
+   {
+    "tool": "CPSC II",
+    "status": "completed",
+    "costingDate": "2026-10-15",
+    "role": "current",
+    "gapGbp": 2
+   },
+   {
+    "tool": "CSS System",
+    "status": "approved",
+    "costingDate": "2026-09-01",
+    "role": "duplicate",
+    "gapGbp": null
+   }
+  ],
+  "after": [
+   {
+    "tool": "CPSC II",
+    "status": "completed",
+    "costingDate": "2026-10-15",
+    "role": "current",
+    "gapGbp": 2
+   },
+   {
+    "tool": "CSS System",
+    "status": "approved",
+    "costingDate": "2026-09-01",
+    "role": "duplicate",
+    "gapGbp": null
+   }
+  ]
+ }
+}

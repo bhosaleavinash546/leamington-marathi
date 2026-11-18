@@ -1,0 +1,102 @@
+{
+ "source": "copy of the pre-fix reconciliation database (/tmp/cv-phase2-recon-GzTvzD/should-cost.db) read by the fixed server",
+ "financial": {
+  "eligible": 17,
+  "sumCurrentGbp": 283.5427545063827,
+  "sumShouldGbp": 243.8567226890756,
+  "sumGapGbp": 39.686031817307075,
+  "weightedGapPct": 13.996489484062524,
+  "opportunity": {
+   "n": 16,
+   "gbp": 41.686031817307075
+  },
+  "unfavourable": {
+   "n": 1,
+   "gbp": -2
+  },
+  "annualised": {
+   "n": 2,
+   "gbp": 1220000
+  },
+  "validatedSavings": {
+   "n": 1,
+   "gbp": 0.5
+  },
+  "implementedSavings": {
+   "n": 0,
+   "gbp": 0
+  }
+ },
+ "operational": {
+  "totalRecords": 21,
+  "currentRecords": 17,
+  "uniqueComponents": 16,
+  "unidentified": 0,
+  "completedRecords": 16,
+  "commodities": 3,
+  "programmes": 7,
+  "awaitingReview": 13,
+  "awaitingApproval": 0,
+  "needsReview": 13
+ },
+ "dataQualityShouldBasis": {
+  "reAdded": 10,
+  "notReAdded": 1,
+  "totalOnly": 6
+ },
+ "excludedBy": {
+  "deleted": 0,
+  "test": 1,
+  "invalid": 0
+ },
+ "R14_forged_total": [
+  {
+   "part": "REC-FAKE-14",
+   "role": "current",
+   "eligible": true,
+   "gapGbp": 11.99,
+   "shouldBasis": "not-re-added",
+   "status": "completed",
+   "volumeValidated": false
+  }
+ ],
+ "R7_first_same_day": [
+  {
+   "part": "REC-TIE-07",
+   "role": "superseded",
+   "eligible": false,
+   "gapGbp": null,
+   "shouldBasis": "re-added",
+   "status": "completed",
+   "volumeValidated": false
+  }
+ ],
+ "R8_second_same_day": [
+  {
+   "part": "REC-TIE-07",
+   "role": "current",
+   "eligible": true,
+   "gapGbp": 3,
+   "shouldBasis": "re-added",
+   "status": "completed",
+   "volumeValidated": false
+  }
+ ],
+ "R9_volume": [
+  {
+   "part": "REC-VOL-09",
+   "role": "current",
+   "eligible": true,
+   "gapGbp": 2,
+   "shouldBasis": "re-added",
+   "status": "approved",
+   "volumeValidated": true
+  }
+ ],
+ "R10_test": [
+  {
+   "part": "REC-TST-10",
+   "excluded": "test"
+  }
+ ]
+}

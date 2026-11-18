@@ -1,0 +1,73 @@
+vite v8.3.1 building client environment for production...
+transforming...
+
+/calculator/fonts/inter-latin-400-normal.woff2 referenced in /calculator/fonts/inter-latin-400-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/calculator/fonts/inter-latin-600-normal.woff2 referenced in /calculator/fonts/inter-latin-600-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/calculator/fonts/inter-latin-700-normal.woff2 referenced in /calculator/fonts/inter-latin-700-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/calculator/fonts/inter-latin-800-normal.woff2 referenced in /calculator/fonts/inter-latin-800-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/calculator/fonts/inter-latin-500-normal.woff2 referenced in /calculator/fonts/inter-latin-500-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/calculator/fonts/inter-latin-300-normal.woff2 referenced in /calculator/fonts/inter-latin-300-normal.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 642 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/cad-section-worker-DxyOBwCS.js           3.28 kB
+dist/auth.html                                      58.52 kB │ gzip:    13.77 kB
+dist/assets/cad-edges-worker-BG_3i-3a.js           111.06 kB
+dist/assets/cad-bvh-worker-Dw3AP97E.js             165.03 kB
+dist/assets/hero-ev-exploded-CoPYbaxt.jpg          275.36 kB
+dist/index.html                                    412.57 kB │ gzip:    91.99 kB
+dist/assets/index-CHklCfeU.css                     265.69 kB │ gzip:    46.32 kB
+dist/assets/__vite-browser-external-CKnVkMRn.js      0.10 kB │ gzip:     0.11 kB
+dist/assets/auth-D-0Vk7t3.js                         0.38 kB │ gzip:     0.24 kB
+dist/assets/svg-raster-CQvQTMiB.js                   0.64 kB │ gzip:     0.42 kB
+dist/assets/rolldown-runtime-Dd_uD5pT.js             1.10 kB │ gzip:     0.62 kB
+dist/assets/page-actions-nKHQQblO.js                 1.21 kB │ gzip:     0.61 kB
+dist/assets/export-workbook-ByOj-wVw.js              1.66 kB │ gzip:     0.91 kB
+dist/assets/cad-views-B2O2839G.js                    2.64 kB │ gzip:     1.43 kB
+dist/assets/cad-viewcube-BU2iRrtR.js                 2.70 kB │ gzip:     1.49 kB
+dist/assets/cad-navigation-D-WpvK-T.js               4.22 kB │ gzip:     1.79 kB
+dist/assets/rates-export-u_qfVr9S.js                 5.49 kB │ gzip:     2.30 kB
+dist/assets/kpi-save-modal-CNXLY7b-.js               7.49 kB │ gzip:     2.98 kB
+dist/assets/sw-report-skeleton-Cy1TQu5P.js          10.80 kB │ gzip:     4.85 kB
+dist/assets/pcba-report-data-BRv7eyWZ.js            12.13 kB │ gzip:     5.32 kB
+dist/assets/negotiation-template-DMl6D5Ho.js        13.95 kB │ gzip:     4.72 kB
+dist/assets/kpi-export-dFLEjg_g.js                  17.92 kB │ gzip:     6.86 kB
+dist/assets/negotiation-report-CXjKIPR2.js          19.17 kB │ gzip:     6.20 kB
+dist/assets/kpi-builders-CAsK5162.js                27.04 kB │ gzip:     8.72 kB
+dist/assets/purify.es-Bvo9QlJ8.js                   28.08 kB │ gzip:    11.08 kB
+dist/assets/pcb-workbook-BaMyATuk.js                29.77 kB │ gzip:    11.62 kB
+dist/assets/money-text-BPlZrKhL.js                  31.55 kB │ gzip:    12.05 kB
+dist/assets/sw-report-pdf-vwpN1sZ7.js               46.00 kB │ gzip:    16.32 kB
+dist/assets/kpi-view-Dm6Mcv0v.js                    55.58 kB │ gzip:    16.81 kB
+dist/assets/sw-report-xlsx-D3ISgjpl.js              57.84 kB │ gzip:    19.79 kB
+dist/assets/vendor-motion-CvDoa17S.js               69.58 kB │ gzip:    27.29 kB
+dist/assets/cad-viewer-Cve9hw0d.js                  96.94 kB │ gzip:    33.97 kB
+dist/assets/pdf-IxCe3JHn.js                        131.36 kB │ gzip:    41.64 kB
+dist/assets/vendor-chart-OD0bcebM.js               181.68 kB │ gzip:    63.23 kB
+dist/assets/html2canvas-CJ4rRp4d.js                199.49 kB │ gzip:    46.78 kB
+dist/assets/vendor-pdf-DgZl-mR3.js                 356.61 kB │ gzip:   115.73 kB
+dist/assets/xlsx-BKER4Xe2.js                       423.91 kB │ gzip:   141.25 kB
+dist/assets/book-tariff-CdfR7nKy.js                445.35 kB │ gzip:    81.57 kB
+dist/assets/vendor-three-Cc82IsCd.js               793.81 kB │ gzip:   204.73 kB
+dist/assets/vendor-dMwVVYy3.js                   1,526.10 kB │ gzip:   452.89 kB
+dist/assets/index-84z2ycD1.js                    7,044.55 kB │ gzip: 1,220.65 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/ui/data/commodity-meta.ts is dynamically imported by src/ui/main.ts but also statically imported by src/export/excel.ts, src/export/executive-summary.ts, src/export/pdf.ts, src/ui/kpi-dashboard/kpi-view.ts, src/ui/main.ts, dynamic import will not move module into another chunk.
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/ui/animations.ts is dynamically imported by src/ui/panels/sw-charts.ts, src/ui/panels/sw-cockpit-ui.ts but also statically imported by src/ui/main.ts, dynamic import will not move module into another chunk.
+
+✓ built in 1.91s
+
+real	0m2.432s
+user	0m4.286s
+sys	0m0.653s

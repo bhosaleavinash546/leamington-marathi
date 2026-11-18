@@ -1,0 +1,17 @@
+[b3] dark-1920: seam 0px, overflow 0px, axe 0
+[b3] dark-1440: seam 0px, overflow 0px, axe 0
+[b3] dark-1366: seam 0px, overflow 0px, axe 0
+[b3] dark-1024: seam 0px, overflow 0px, axe 0
+[b3] dark-768: seam 0px, overflow 0px, axe 0
+[b3] dark-390: seam -2844.1px, overflow 0px, axe 0
+[b3] light-1920: seam 0px, overflow 0px, axe 0
+[b3] light-1440: seam 0px, overflow 0px, axe 0
+[b3] light-1366: seam 0px, overflow 0px, axe 0
+[b3] light-1024: seam 0px, overflow 0px, axe 0
+[b3] light-768: seam 0px, overflow 0px, axe 0
+[b3] light-390: seam -2844.1px, overflow 0px, axe 0
+[b3] done → /home/user/cv-phase2/calculator/docs/dashboard-audit/phase2-evidence/block3/after
+
+real	1m19.017s
+user	0m12.677s
+sys	0m3.005s
