@@ -1,0 +1,729 @@
+[
+ {
+  "mfr": "Skyworks",
+  "family": "SKYA21003",
+  "orderableCode": "SKYA21003",
+  "desc": "AEC-Q100 SPDT RF switch, 100 MHz to 6 GHz",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "telematics",
+   "V2X",
+   "antenna switching"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Page text: 'AEC-Q100 SPDT switch'. Named in the page intro, not in a product grid.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "SKYA21041",
+  "orderableCode": "SKYA21041",
+  "desc": "AEC-Q100 5 GHz switch / low-noise-amplifier front-end module",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "automotive Wi-Fi",
+   "V2X"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Page text: 'AEC-Q100 5 GHz switch/low noise amplifier FEM module'. Named in the page intro.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Sony Semiconductor Solutions",
+  "family": "IMX623",
+  "desc": "3.0 MP 1/2.42-type 3.0 um automotive CMOS image sensor, MIPI CSI-2",
+  "category": "ic_bga",
+  "pkg": "see Sony specification",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "surround-view camera",
+   "rear camera"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.sony-semicon.com/en/products/is/automotive/automotive.html",
+  "note": "Marked \"New\" on Sony's automotive sensor page; page-level AEC-Q100 statement only. No orderable suffix seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Sony Semiconductor Solutions",
+  "family": "IMX728",
+  "desc": "8.39 MP 1/1.72-type 2.1 um automotive CMOS image sensor, MIPI CSI-2",
+  "category": "ic_bga",
+  "pkg": "see Sony specification",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "front camera",
+   "ADAS camera"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.sony-semicon.com/en/products/is/automotive/automotive.html",
+  "note": "Marked \"New\" on Sony's automotive sensor page. aecq from the page-level statement that the automotive products meet reliability standards \"such as AEC-Q100\" (no per-part line). No orderable suffix or distributor listing seen - likely quote via Sony agents.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "A6985F automotive step-down",
+  "orderableCode": "A6985F",
+  "desc": "38 V, 500 mA synchronous step-down switching regulator with low quiescent current (automotive A69xx line)",
+  "category": "ic_soic",
+  "pkg": "HTSSOP16 (not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU supply",
+   "sensor supply",
+   "body module"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=A698",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Code as listed by TME ('A6985F' - the tape-and-reel / fixed-voltage suffixes were not seen). Ratings from the ST family, not from a page read. Catalogue holds A6986TR and A6983 parts.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ALED7709",
+  "orderableCode": "ALED7709ATR",
+  "desc": "automotive LED driver: boost / SEPIC controller with four low-side constant-current sinks",
+  "category": "ic_qfn",
+  "pkg": "not read",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "display backlight",
+   "instrument cluster",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/en/power-management/aled7709.html",
+  "note": "ST page: AEC-Q100 Grade 1. Code ALED7709ATR from the ST page's distributor availability listing; Mouser new-product page https://www.mouser.com/new/stmicroelectronics/stm-aled7709-drivers/ .",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ASM330LHHG1",
+  "orderableCode": "ASM330LHHG1TR",
+  "desc": "automotive 6-axis inertial module for positioning and motion sensing",
+  "category": "ic_qfn",
+  "pkg": "LGA-14L 2.5 x 3.0 mm",
+  "aecq": true,
+  "launched": "2026-05",
+  "usedIn": [
+   "navigation / dead reckoning",
+   "telematics",
+   "ADAS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/mems-and-sensors/asm330lhhg1.html",
+  "note": "Press item 'ST automotive inertial module boosts positioning and motion sensing accuracy' (https://aitg.wpgholdings.com/tech-highlights/en/productnews/detail/2610): AEC-Q100 qualified, in production - date May 2026 per the search summary, not read directly. Code from ST eStore https://estore.st.com/en/asm330lhhg1tr-cpn.html ; no franchised listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ASM330LHHXG1",
+  "orderableCode": "ASM330LHHXG1TR",
+  "desc": "automotive 6-axis IMU (3-axis accelerometer + 3-axis gyroscope), operating to 125 C",
+  "category": "ic_qfn",
+  "pkg": "LGA-14 2.5 x 3.0 x 0.83 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "navigation / dead reckoning",
+   "ADAS",
+   "telematics"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/mems-and-sensors/asm330lhhxg1.html",
+  "note": "ST: AEC-Q100 qualified, in production. Arrow and Future list ASM330LHHXG1TR (https://www.arrow.com/en/products/asm330lhhxg1tr/stmicroelectronics). Catalogue holds ASM330LHHXTR (the 105 C part); this is the Grade-1 orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L99DZ100G door-zone driver",
+  "orderableCode": "L99DZ100GTR",
+  "desc": "automotive door-module (door zone) driver IC",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 64 10x10x1.4",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "door module"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/content/st_com/en/products/automotive-analog-and-power/door-module-drivers/l99dz100g.html",
+  "note": "ST page lists L99DZ100GTR (active); the Japanese page marks it AEC-Q100 qualified. ST also has L99DZ100GP and L99DZ300G pages (not read). Catalogue holds L99DZ200GTR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L99LDLH32",
+  "orderableCode": "L99LDLH32TR",
+  "desc": "automotive 32-channel LED driver with CAN FD Light interface",
+  "category": "ic_qfn",
+  "pkg": "not read",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "OLED / LED rear lamp",
+   "animated lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/l99ldlh32.html",
+  "note": "RS Components lists L99LDLH32TR and states AEC-Q100 (https://uk.rs-online.com/web/p/led-driver-ics/2523650P).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L99MH98 octal half-bridge pre-driver",
+  "orderableCode": "L99MH98-TR",
+  "desc": "eight-channel (octal half-bridge) MOSFET gate driver / pre-driver, ISO 26262 up to ASIL B",
+  "category": "ic_qfn",
+  "pkg": "not read",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "seat / door / tailgate motors",
+   "zonal controller",
+   "body motor control"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.electronicsforu.com/press-releases/stmicroelectronics-automotive-gate-driver-boosts-motor-control-flexibility",
+  "note": "Search summary of ST press coverage: AEC-Q100 qualified, ASIL B. Code L99MH98-TR per the ST eStore listing (in stock) as summarised by the search - not read directly. Launch date not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "LMV321 automotive (IY) LMV321IYLT",
+  "orderableCode": "LMV321IYLT",
+  "desc": "single low-power rail-to-rail op amp",
+  "category": "ic_soic",
+  "pkg": "SOT23-5 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYLT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M24C64-A125 automotive EEPROM",
+  "orderableCode": "M24C64-DRMN3TP/K",
+  "desc": "automotive 64-Kbit serial I2C bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form. Catalogue holds only the industrial M24C64-RMN6TP.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95160-A125 automotive EEPROM",
+  "orderableCode": "M95160-DRMN3TP/K",
+  "desc": "automotive 16-Kbit SPI bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95320-A125 automotive EEPROM",
+  "orderableCode": "M95320-DRMN3TP/K",
+  "desc": "automotive 32-Kbit SPI bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "NCS101x automotive safety combination sensor NCS1012BAEP",
+  "orderableCode": "NCS1012BAEP",
+  "desc": "combination sensor: z-axis (yaw) gyroscope + xy low-g accelerometer",
+  "category": "ic_qfn",
+  "pkg": "QFN-24 6 x 6 x 1.90 mm, wettable flanks",
+  "aecq": false,
+  "launched": "2026-10",
+  "usedIn": [
+   "airbag ECU",
+   "ESC / chassis",
+   "ADAS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.eejournal.com/industry_news/stmicroelectronics-introduces-first-automotive-safety-combination-sensors-for-mass-market-applications/",
+  "note": "Press release 26 Oct 2026 (article dated 27 Oct): ISO 26262 compliant with internal diagnostics, SafeSPI, in production now; first products from the NXP MEMS business ST acquired in early 2026. AEC-Q100 is not stated on the page. No distributor listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "NCS101x automotive safety combination sensor NCS1012CAEP",
+  "orderableCode": "NCS1012CAEP",
+  "desc": "combination sensor: x-axis (roll) gyroscope + yz low-g accelerometer",
+  "category": "ic_qfn",
+  "pkg": "QFN-24 6 x 6 x 1.90 mm, wettable flanks",
+  "aecq": false,
+  "launched": "2026-10",
+  "usedIn": [
+   "airbag ECU",
+   "ESC / chassis",
+   "ADAS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.eejournal.com/industry_news/stmicroelectronics-introduces-first-automotive-safety-combination-sensors-for-mass-market-applications/",
+  "note": "Press release 26 Oct 2026 (article dated 27 Oct): ISO 26262 compliant with internal diagnostics, SafeSPI, in production now; first products from the NXP MEMS business ST acquired in early 2026. AEC-Q100 is not stated on the page. No distributor listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "NCS101x automotive safety combination sensor NCS1012EAEP",
+  "orderableCode": "NCS1012EAEP",
+  "desc": "combination sensor: x-axis (roll) gyroscope + xy medium-g accelerometer",
+  "category": "ic_qfn",
+  "pkg": "QFN-24 6 x 6 x 1.90 mm, wettable flanks",
+  "aecq": false,
+  "launched": "2026-10",
+  "usedIn": [
+   "airbag ECU",
+   "ESC / chassis",
+   "ADAS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.eejournal.com/industry_news/stmicroelectronics-introduces-first-automotive-safety-combination-sensors-for-mass-market-applications/",
+  "note": "Press release 26 Oct 2026 (article dated 27 Oct): ISO 26262 compliant with internal diagnostics, SafeSPI, in production now; first products from the NXP MEMS business ST acquired in early 2026. AEC-Q100 is not stated on the page. No distributor listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "NCS101x automotive safety combination sensor NCS10135AEP",
+  "orderableCode": "NCS10135AEP",
+  "desc": "combination sensor: z-axis (yaw) gyroscope + xyz low-g accelerometer",
+  "category": "ic_qfn",
+  "pkg": "QFN-24 6 x 6 x 1.90 mm, wettable flanks",
+  "aecq": false,
+  "launched": "2026-10",
+  "usedIn": [
+   "airbag ECU",
+   "ESC / chassis",
+   "ADAS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.eejournal.com/industry_news/stmicroelectronics-introduces-first-automotive-safety-combination-sensors-for-mass-market-applications/",
+  "note": "Press release 26 Oct 2026 (article dated 27 Oct): ISO 26262 compliant with internal diagnostics, SafeSPI, in production now; first products from the NXP MEMS business ST acquired in early 2026. AEC-Q100 is not stated on the page. No distributor listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT011HU75G3AG",
+  "orderableCode": "SCT011HU75G3AG",
+  "desc": "automotive-grade SiC power MOSFET 750 V, 11.4 mOhm typ., 110 A, top-side cooled",
+  "category": "ic_soic",
+  "pkg": "HU3PAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/",
+  "note": "Mouser 'Automotive-Grade Silicon Carbide Power MOSFETs' listing. ST HU3PAK campaign page: Gen 3 SiC MOSFETs in HU3PAK are AEC-Q101 qualified (https://www.st.com/content/st_com/en/campaigns/automotive-grade-sic-mosfets-with-breakdown-voltages-up-to-1200v-devices-for-higher-design-flexibility.html). Also listed by TME (https://www.tme.eu/en/katalog/?search=G3AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT020H120G3AG",
+  "orderableCode": "SCT020H120G3AG",
+  "desc": "automotive-grade SiC power MOSFET 1200 V, 18.5 mOhm typ., 100 A",
+  "category": "ic_soic",
+  "pkg": "H2PAK-7",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://estore.st.com/en/sct020h120g3ag-cpn.html",
+  "note": "ST page: active, AEC-Q101 qualified (per search summary of the ST pages). Not on the TME page read; no franchised listing read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT020HU120G3AG",
+  "orderableCode": "SCT020HU120G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 1200 V, 20 mOhm class, top-side cooled",
+  "category": "ic_soic",
+  "pkg": "HU3PAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/automotive-grade-sic-mosfets-with-breakdown-voltages-up-to-1200v-devices-for-higher-design-flexibility.html",
+  "note": "Listed by TME (https://www.tme.eu/en/katalog/?search=G3AG). ST HU3PAK campaign page: Gen 3 SiC MOSFETs in HU3PAK (650 / 750 / 1200 V series) are AEC-Q101 qualified. Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT055HU65G3AG",
+  "orderableCode": "SCT055HU65G3AG",
+  "desc": "automotive-grade SiC power MOSFET 650 V, 30 A, 58 mOhm typ., top-side cooled",
+  "category": "ic_soic",
+  "pkg": "HU3PAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/sct055hu65g3ag-650v-sic-in-hu3pak-for-electric-vehicle-on-board-chargers-and-dc-dc-converters.html",
+  "note": "ST campaign page (OBC and DC-DC). HU3PAK Gen 3 parts AEC-Q101 qualified per https://www.st.com/content/st_com/en/campaigns/automotive-grade-sic-mosfets-with-breakdown-voltages-up-to-1200v-devices-for-higher-design-flexibility.html. Also listed by TME (https://www.tme.eu/en/katalog/?search=G3AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC560B body MCU SPC560B64L7",
+  "orderableCode": "SPC560B64L7C6E0X",
+  "desc": "32-bit Power Architecture automotive MCU for body and gateway applications",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 176",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "door / seat / HVAC ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://estore.st.com/en/products/automotive-microcontrollers/spc5-32-bit-automotive-mcus-page10.html?cat=21088",
+  "note": "No AEC statement was read for this exact code; ST eStore category 'SPC5 32-bit automotive MCUs' (family evidence). Code as listed by TME (https://www.tme.eu/en/katalog/?search=SPC56). Package read from ST's order-code scheme (L1 = LQFP64, L3 = LQFP100, L7 = LQFP176) unless stated. ST eStore lists this exact code as active in LQFP 176 for body and gateway applications.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC58EC",
+  "orderableCode": "SPC58EC80E3QMC1Y",
+  "desc": "32-bit Power Architecture automotive MCU (SPC58ECx, replaces SPC564Cx / SPC56ECx per Mouser)",
+  "category": "ic_tqfp",
+  "pkg": "TQFP 100 (eStore, for the ...C1X packing)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/microcontrollers-microprocessors/spc58ec80e3.html",
+  "note": "ST product page: AEC-Q100 qualified; Mouser SPC58ECx page says the same (https://www.mouser.in/stm-spc58ecx-mcus/). Code SPC58EC80E3QMC1Y as listed by TME (https://www.tme.eu/en/katalog/?search=SPC58); ST eStore lists the SPC58EC80E3QMC1X packing. Replaces the catalogue's family ESTIMATE 'SPC58EC'.",
+  "catalogue": "estimate",
+  "catalogueKey": "SPC58EC"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC58 E line SPC58NE84E7",
+  "orderableCode": "SPC58NE84E7QMSAR",
+  "desc": "32-bit Power Architecture automotive MCU for high-performance applications (SPC58 E line)",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 176",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "gateway",
+   "powertrain",
+   "domain controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/ja/automotive-microcontrollers/spc58-e-line-mcus/products.html",
+  "note": "No AEC statement was read for this exact code; ST SPC58 E line product list prints SPC58NE84E7; ST eStore lists SPC58NE84E7QMSAR active in LQFP 176; Digi-Key lists it. Code also listed by TME (https://www.tme.eu/en/katalog/?search=SPC58).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "Smart STripFET F8 40 V automotive STL059N4S8AG",
+  "orderableCode": "STL059N4S8AG",
+  "desc": "N-channel 40 V, 0.59 mOhm, 420 A Smart STripFET F8 power MOSFET, 175 C, wettable flanks",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT 5x6",
+  "aecq": true,
+  "launched": "2026-04",
+  "usedIn": [
+   "battery systems",
+   "power distribution / e-fuse",
+   "motor drive"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.militaryaerospace.com/power/product/55372341/stmicroelectronics-introduces-low-rdson-mosfets-for-automotive-power-and-battery-systems",
+  "note": "Trade-press item dated 22 Apr 2026: AEC-Q101 qualified, in production in automotive grade. No distributor listing was read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL140N4F7AG",
+  "orderableCode": "STL140N4F7AG",
+  "desc": "automotive-grade N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F8 40 V automotive STL165N4F8AG",
+  "orderableCode": "STL165N4F8AG",
+  "desc": "N-channel 40 V, 2.6 mOhm max, 154 A STripFET F8 power MOSFET, 175 C",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT 5x6",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/en/power-transistors/stl165n4f8ag.html",
+  "note": "Datasheet: AEC-Q101 qualified, MSL1. Avnet / EBV list it as a 2025 new product (https://my.avnet.com/ebv/products/new-products/npi/2025/stmicroelectronics-stl165n4f8ag/). Also listed by TME (https://www.tme.eu/en/katalog/?search=F8AG). First pass found the sibling STL325N4LF8AG; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 40 V automotive STL210N4F7AG",
+  "orderableCode": "STL210N4F7AG",
+  "desc": "automotive-grade N-channel 40 V, 1.3 mOhm typ., 120 A STripFET F7 power MOSFET",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT 5x6",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/power-transistors/stl210n4f7ag.html",
+  "note": "Arrow lists it AEC-Q101 / Automotive (https://www.arrow.com/en/products/stl210n4f7ag/stmicroelectronics.html). Also listed by TME (https://www.tme.eu/en/katalog/?search=F7AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 60 V automotive STL225N6F7AG",
+  "orderableCode": "STL225N6F7AG",
+  "desc": "automotive-grade N-channel 60 V, 1.2 mOhm typ., 120 A STripFET F7 power MOSFET",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT 5x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/power-transistors/stl225n6f7ag.html",
+  "note": "No AEC statement was read for this exact code; ST page / eStore: grade Automotive. Also listed by TME (https://www.tme.eu/en/katalog/?search=F7AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F8 40 V automotive STL325N4F8AG",
+  "orderableCode": "STL325N4F8AG",
+  "desc": "N-channel 40 V STripFET F8 power MOSFET, standard-level gate (ratings not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F8AG",
+  "note": "Mouser's STripFET F8 page states that parts ending in AG are AEC-Q101 qualified (https://www.mouser.in/en/new/stmicroelectronics/stmicroelectronics-stripfet-f8-mosfets/, via search summary). First pass found the logic-level sibling STL325N4LF8AG; this is the standard-level orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F8 40 V automotive",
+  "orderableCode": "STL325N4LF8AG",
+  "desc": "N-MOSFET 40 V 0.55 mOhm logic level 373 A, STripFET F8, PowerFLAT 5x6 wettable flank",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT 5x6 (wettable flank)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "12 V battery protection",
+   "48 V battery protection (per ST brochure)",
+   "motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/stmicroelectronics/STL325N4LF8AG/16546730",
+  "note": "Digi-Key and Mouser list it (26-week lead time shown). 'Automotive-grade' on the listing; the words AEC-Q101 were not in the result. Digi-Key highlight: https://www.digikey.com/en/product-highlight/s/stmicroelectronics/stl320n4lf8-and-stl325n4lf8ag-automotive-mosfets",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STPS5H100-Y automotive Schottky",
+  "orderableCode": "STPS5H100BY-TR",
+  "desc": "automotive 100 V, 5 A power Schottky rectifier, Tj max 175 C",
+  "category": "ic_soic",
+  "pkg": "DPAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC",
+   "reverse-polarity protection",
+   "freewheeling",
+   "on-board charger"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/en/diodes-and-rectifiers/stps5h100-y.html",
+  "note": "Datasheet and Digi-Key state AEC-Q101 (https://www.digikey.bg/en/products/detail/stmicroelectronics/STPS5H100BY-TR/2826742). Also listed by TME (https://www.tme.eu/en/katalog/?search=BY-TR).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STPSC10H065-Y automotive SiC diode",
+  "orderableCode": "STPSC10H065BY-TR",
+  "desc": "automotive 650 V, 10 A silicon-carbide power Schottky diode",
+  "category": "ic_soic",
+  "pkg": "DPAK",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "PFC",
+   "HV DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://estore.st.com/en/products/diodes-and-rectifiers/automotive-grade-diodes-page12.html?inStock=1",
+  "note": "No AEC statement was read for this exact code; ST eStore (automotive-grade diodes) describes it as 'Automotive 650 V, 10 A DPAK Silicon Carbide Power Schottky Diode'. Also listed by TME (https://www.tme.eu/en/katalog/?search=BY-TR).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSB572 automotive op amp",
+  "orderableCode": "TSB572IYST",
+  "desc": "dual low-power 2.5 MHz rail-to-rail input / output 36 V BiCMOS op amp, automotive grade",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/stmicroelectronics/TSB572IYST/5872329",
+  "note": "Digi-Key: Grade Automotive, AEC-Q100, -40 to 125 C, 4-36 V. ST eStore automotive op amps category lists TSB572IYST and TSB572IYQ2T (DFN8 3x3). Also listed by TME (https://www.tme.eu/en/katalog/?search=IYST).",
+  "catalogue": "no"
+ }
+]

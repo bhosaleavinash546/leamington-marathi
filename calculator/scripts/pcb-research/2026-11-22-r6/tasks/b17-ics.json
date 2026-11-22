@@ -1,0 +1,100 @@
+[
+ {
+  "mfr": "Texas Instruments",
+  "family": "AM2732-Q1",
+  "orderableCode": "AM2732CDRFHQZCERQ1",
+  "desc": "Automotive dual Cortex-R5F 400 MHz MCU with C66x DSP, Ethernet, for radar processing",
+  "category": "ic_bga",
+  "pkg": "NFBGA 285 (ZCE) 13x13 mm 0.65 mm; also NFBGA 225",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "radar ECU processing",
+   "audio"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.ti.com/product/AM2732-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. TI page: 'AEC-Q100 Qualified', ACTIVE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPSI3100-Q1",
+  "orderableCode": "TPSI3100QDVXRQ1",
+  "desc": "Automotive reinforced isolated switch driver with integrated 15 V gate supply (solid-state relay / precharge)",
+  "category": "ic_soic",
+  "pkg": "SSOP16",
+  "aecq": true,
+  "launched": "2024-09",
+  "usedIn": [
+   "TI TIDA-050080 HV passive precharge with overcurrent protection"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDB8",
+  "note": "Listed by Digi-Key (search 22 Nov 2026), AEC-Q100. Related codes in the same design set: TPSI3052QDWZRQ1 (TIDA-050063), TPSI31P1QDVXRQ1 (TIDA-050082).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "SQJ140EP",
+  "orderableCode": "SQJ140EP-T1_GE3",
+  "desc": "Automotive N-channel 40 V, 266 A, 1.7 mΩ TrenchFET Gen IV MOSFET, AEC-Q101",
+  "category": "ic_qfn",
+  "pkg": "PowerPAK SO-8L",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC/DC",
+   "battery switch"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.vishay.com/en/product/77368",
+  "note": "vishay.com product page found by web search (title '… PRODUCT INFORMATION'); ratings from the search result, page not opened. Mouser lists SQJ140EP-T1_GE3 (search result). Variants SQJ140ELP and SQJ140ER have their own product pages.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "VOMDA1271",
+  "orderableCode": "VOMDA1271",
+  "desc": "Optically isolated photovoltaic MOSFET driver with integrated fast turn-off, no VCC needed",
+  "category": "ic_soic",
+  "pkg": "SOP-4",
+  "aecq": true,
+  "launched": "2024-09",
+  "usedIn": [
+   "pre-charge relay",
+   "BMS",
+   "custom solid-state relay",
+   "HV MOSFET gate drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/rutronik-introduces-vishay-s-vomda1271-high-speed-mosfet-driver-for-automotive-applications/",
+  "note": "AEC-Q102; in stock at Rutronik (tape and reel).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Winbond",
+  "family": "W25Q64JV (automotive)",
+  "orderableCode": "W25Q64JVSSAQ",
+  "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
+  "category": "ic_soic",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU boot / config flash",
+   "cluster",
+   "camera"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+  "note": "Part # examples printed in Winbond's automotive brief (Aug 2024): W25Q64JVSSAQ = Grade 2, W25Q64JVSSSQ = Grade 1. Catalogue holds W25Q64JW (1.8 V) as an estimate only.",
+  "catalogue": "no"
+ }
+]

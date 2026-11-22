@@ -1,0 +1,702 @@
+[
+ {
+  "mfr": "Alps Alpine",
+  "family": "SKRP (SMD tact switch)",
+  "orderableCode": "SKRPABE010",
+  "desc": "SMD tact switch, SKRP series (operating-force variant by code, not read)",
+  "category": "relay_switch",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "HMI",
+   "steering-wheel / door switch module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SKRP",
+  "note": "TME lists it under tact microswitches (code only). No automotive qualification statement was read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Alps Alpine",
+  "family": "SKRP (SMD tact switch)",
+  "orderableCode": "SKRPACE010",
+  "desc": "SMD tact switch, SKRP series (operating-force variant by code, not read)",
+  "category": "relay_switch",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "HMI",
+   "steering-wheel / door switch module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SKRP",
+  "note": "TME lists it under tact microswitches (code only). No automotive qualification statement was read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Alps Alpine",
+  "family": "SKRP (SMD tact switch)",
+  "orderableCode": "SKRPADE010",
+  "desc": "SMD tact switch, SKRP series (operating-force variant by code, not read)",
+  "category": "relay_switch",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "HMI",
+   "steering-wheel / door switch module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SKRP",
+  "note": "TME lists it under tact microswitches (code only). No automotive qualification statement was read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes",
+  "family": "FW4000044Q",
+  "orderableCode": "FW4000044Q",
+  "desc": "40MHz ±10ppm Crystal 8pF 50 Ohms 4-SMD, No Lead",
+  "category": "crystal_osc",
+  "pkg": "4-SMD-2.0x1.6mm",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDEP-01036 mmWave radar kick-to-open",
+   "TI TIDEP-01037 low-power in-cabin radar",
+   "TI TIDEP-01034 entry-level blind-spot detection radar",
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+  ],
+  "boards": 4,
+  "qtyPerBoardMax": 1,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDF3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ECS Inc.",
+  "family": "ECS-2520MVQ MultiVolt",
+  "orderableCode": "ECS-2520MVQ-1250-BN-TR",
+  "desc": "AEC-Q200 MultiVolt HCMOS crystal oscillator 2.5x2.0 mm, 1.6–3.6 V, 125 MHz example",
+  "category": "crystal_osc",
+  "pkg": "2.5x2.0 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "MCU / PHY clock"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/use-multivolt-automotive-crystal-oscillators-for-stable-timing-under-variable-supply-conditions/",
+  "note": "DigiKey-authored article (Oct 2026) linking DigiKey listings.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ECS Inc.",
+  "family": "ECS-327ATQMV",
+  "orderableCode": "ECS-327ATQMV-AS-TR",
+  "desc": "AEC-Q200 32.768 kHz MultiVolt HCMOS oscillator 3.2x2.5 mm, 1.62–3.63 V",
+  "category": "crystal_osc",
+  "pkg": "3.2x2.5 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "RTC / timekeeping clock"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/use-multivolt-automotive-crystal-oscillators-for-stable-timing-under-variable-supply-conditions/",
+  "note": "DigiKey-authored article (Oct 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Epson",
+  "family": "SG2016CAA",
+  "desc": "Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.0x1.6 mm, -40..125 C",
+  "category": "crystal_osc",
+  "pkg": "2.0x1.6 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "MCU / SoC clock",
+   "Ethernet PHY clock"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+  "note": "AEC-Q100/200 mark.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Epson",
+  "family": "SG2520CAA",
+  "desc": "Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.5x2.0 mm, -40..125 C",
+  "category": "crystal_osc",
+  "pkg": "2.5x2.0 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "MCU / SoC clock",
+   "Ethernet PHY clock"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+  "note": "AEC-Q100/200 mark.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hirose",
+  "family": "FH28K (0.5 mm FPC / FFC connector)",
+  "orderableCode": "FH28K-40S-0.5SH",
+  "desc": "FPC / FFC connector 0.5 mm pitch, 40 positions, FH28K variant",
+  "category": "connector_smt",
+  "pkg": "SMT 40P 0.5mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display",
+   "infotainment",
+   "camera"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FH28-",
+  "note": "TME lists it under 0.5 mm FFC / FPC connectors (62 FH28 results; FH28K in 10 to 68 positions, also with the (98) suffix). What the K variant adds (the maker's automotive version, as far as known) was not read on a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hirose",
+  "family": "FH28K (0.5 mm FPC / FFC connector)",
+  "orderableCode": "FH28K-20S-0.5SH",
+  "desc": "FPC / FFC connector 0.5 mm pitch, 20 positions, FH28K variant",
+  "category": "connector_smt",
+  "pkg": "SMT 20P 0.5mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display",
+   "infotainment",
+   "camera"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FH28-",
+  "note": "TME lists it under 0.5 mm FFC / FPC connectors (62 FH28 results; FH28K in 10 to 68 positions, also with the (98) suffix). What the K variant adds (the maker's automotive version, as far as known) was not read on a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hirose",
+  "family": "FH28K (0.5 mm FPC / FFC connector)",
+  "orderableCode": "FH28K-30S-0.5SH",
+  "desc": "FPC / FFC connector 0.5 mm pitch, 30 positions, FH28K variant",
+  "category": "connector_smt",
+  "pkg": "SMT 30P 0.5mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display",
+   "infotainment",
+   "camera"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FH28-",
+  "note": "TME lists it under 0.5 mm FFC / FPC connectors (62 FH28 results; FH28K in 10 to 68 positions, also with the (98) suffix). What the K variant adds (the maker's automotive version, as far as known) was not read on a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hirose",
+  "family": "GT8E (2 mm wire-to-board, high contact pressure)",
+  "orderableCode": "GT8E-8P-2H(55)",
+  "desc": "Wire-to-board PCB header, 8 contacts, GT8E",
+  "category": "connector_smt",
+  "pkg": "8P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "lighting module",
+   "sensor / actuator"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com.br/en/product-highlight/h/hirose/gt8e-series",
+  "note": "Listed on Digi-Key's GT8E series page per the search summary; mounting / orientation not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKA (automotive PCB relay)",
+  "orderableCode": "HFKA/012-1ZST",
+  "desc": "Automotive PCB relay, 12 V coil, 1Z as coded, HFKA series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKC (automotive PCB relay)",
+  "orderableCode": "HFKC/012-HT",
+  "desc": "Automotive PCB relay, 12 V coil, contact form H (normally open) as coded, HFKC series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKC (automotive PCB relay)",
+  "orderableCode": "HFKC/012-ZSPT",
+  "desc": "Automotive PCB relay, 12 V coil, contact form Z (changeover) as coded, HFKC series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKW (automotive PCB relay)",
+  "orderableCode": "HFKW/012-1ZW",
+  "desc": "Automotive PCB relay, 12 V coil, contact form 1Z (changeover) as coded, HFKW series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKA-T (automotive PCB relay)",
+  "orderableCode": "HFKA-T/012-2ZT",
+  "desc": "Automotive PCB twin relay, 12 V coil, 2Z as coded, HFKA-T series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Hongfa",
+  "family": "HFKC-T (automotive PCB relay)",
+  "orderableCode": "HFKC-T/012-2ZT",
+  "desc": "Automotive PCB twin relay, 12 V coil, 2Z as coded, HFKC-T series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=HFK",
+  "note": "TME lists it under automotive electromagnetic relays (84 HFK results; the page shows the code only, contact form read from the code, current rating not read). Relays carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "JAE",
+  "family": "MX34 (2.2 mm board-to-cable)",
+  "orderableCode": "MX34032NF2",
+  "desc": "PCB header, right angle, through-hole, 32 positions, 2.2 mm pitch, 2 rows, shrouded",
+  "category": "through_hole",
+  "pkg": "THT 32P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "BMS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://uk.rs-online.com/web/p/pcb-headers/6908907",
+  "note": "RS lists a 32-contact right-angle MX34 header; the code MX34032NF2 is as given in the search summary for the Digi-Key record — confirm the code on the listing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "JAE",
+  "family": "MX34 (2.2 mm board-to-cable)",
+  "orderableCode": "MX34036NF2",
+  "desc": "PCB header, right angle, through-hole, 36 positions, 2.20 mm pitch, 2 rows, shrouded, 3 A, tin",
+  "category": "through_hole",
+  "pkg": "THT 36P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "BMS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/jae-electronics/MX34036NF2/2139264",
+  "note": "Digi-Key and RS listings (via search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Stac64 34691 (right-angle header)",
+  "orderableCode": "0346919623",
+  "desc": "Stac64 right-angle PCB header, 12 circuits",
+  "category": "through_hole",
+  "pkg": "THT 12P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/datasheet/2/276/0346919623_PCB_HEADERS-1542118.pdf",
+  "note": "Molex drawing hosted by Mouser, as described by the search summary (series 34691, right angle, 12 circuits); Molex style 34691-9623. Mounting (through-hole) assumed from the series — check.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Mini50 34912 (unsealed header)",
+  "orderableCode": "34912-8040",
+  "desc": "Mini50 unsealed PCB header, 4 circuits (from the code), ...80x0 option",
+  "category": "connector_smt",
+  "pkg": "SMT 4P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "camera / sensor module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=34912",
+  "note": "TME lists it under automotive connectors (also 34912-6080, -6043, -6081, -8022, -8041, -8082). Different option / circuit count from the catalogue part 34912-6040; what the 6xxx / 8xxx option means (key / colour) was not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "DuraClik 502352 (2.00 mm wire-to-board header)",
+  "orderableCode": "502352-0200",
+  "desc": "DuraClik wire-to-board PCB header, 2.00 mm pitch, 2 circuits (from the code), SMT",
+  "category": "connector_smt",
+  "pkg": "SMT 2P 2.0mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "lighting module",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=502352",
+  "note": "TME lists it under 2.00 mm signal connectors (25 codes of series 502352, 2 to 15 circuits; code only — orientation and plating not read). Connectors carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "DuraClik 502352 (2.00 mm wire-to-board header)",
+  "orderableCode": "502352-0400",
+  "desc": "DuraClik wire-to-board PCB header, 2.00 mm pitch, 4 circuits (from the code), SMT",
+  "category": "connector_smt",
+  "pkg": "SMT 4P 2.0mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "lighting module",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=502352",
+  "note": "TME lists it under 2.00 mm signal connectors (25 codes of series 502352, 2 to 15 circuits; code only — orientation and plating not read). Connectors carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Stac64 34708 (right-angle header)",
+  "orderableCode": "0347086400",
+  "desc": "Stac64 right-angle PCB header, 58 circuits",
+  "category": "through_hole",
+  "pkg": "THT 58P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.com/datasheet/2/276/0347086400_PCB_HEADERS-1543629.pdf",
+  "note": "Molex drawing hosted by Mouser, as described by the search summary (series 34708, 58 circuits); Molex style 34708-6400. Mounting assumed from the series — check.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Mini50 34912 (unsealed header)",
+  "orderableCode": "34912-8020",
+  "desc": "Mini50 unsealed PCB header, 2 circuits (from the code), ...80x0 option",
+  "category": "connector_smt",
+  "pkg": "SMT 2P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "camera / sensor module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=34912",
+  "note": "TME lists it under automotive connectors (also 34912-6080, -6043, -6081, -8022, -8041, -8082). Different option / circuit count from the catalogue part 34912-6040; what the 6xxx / 8xxx option means (key / colour) was not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Mini50 34912 (unsealed header)",
+  "orderableCode": "34912-8080",
+  "desc": "Mini50 unsealed PCB header, 8 circuits (from the code), ...80x0 option",
+  "category": "connector_smt",
+  "pkg": "SMT 8P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "camera / sensor module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=34912",
+  "note": "TME lists it under automotive connectors (also 34912-6080, -6043, -6081, -8022, -8041, -8082). Different option / circuit count from the catalogue part 34912-6040; what the 6xxx / 8xxx option means (key / colour) was not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "DuraClik 502352 (2.00 mm wire-to-board header)",
+  "orderableCode": "502352-0600",
+  "desc": "DuraClik wire-to-board PCB header, 2.00 mm pitch, 6 circuits (from the code), SMT",
+  "category": "connector_smt",
+  "pkg": "SMT 6P 2.0mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "lighting module",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=502352",
+  "note": "TME lists it under 2.00 mm signal connectors (25 codes of series 502352, 2 to 15 circuits; code only — orientation and plating not read). Connectors carry no AEC-Q grade.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Molex",
+  "family": "Micro-Lock Plus 505432",
+  "orderableCode": "505432-3001",
+  "desc": "Micro-Lock Plus horizontal surface-mount PCB header, 30 contacts, 1.25 mm pitch, 2 rows, shrouded",
+  "category": "connector_smt",
+  "pkg": "SMT 30P 1.25mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display",
+   "infotainment",
+   "lighting module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://uk.rs-online.com/web/p/pcb-headers/1865070",
+  "note": "RS listing title (via search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Murata",
+  "family": "CSTNE (CERALOCK ceramic resonator)",
+  "orderableCode": "CSTNE8M00G55A000R0",
+  "desc": "Ceramic resonator 8 MHz with built-in load capacitors, CSTNE, variant ...55A",
+  "category": "crystal_osc",
+  "pkg": "SMD 3.2x1.3",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "MCU clock"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=CSTNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. A different orderable variant from the catalogue parts CSTNE8M00G550000R0 / CSTNE16M0V530000R0; what the variant letters mean (tolerance / temperature grade) was not read. TME lists 129 CSTNE codes (also ...GH5L, ...VH3L, ...G55Z, ...V53C).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Murata",
+  "family": "CSTNE (CERALOCK ceramic resonator)",
+  "orderableCode": "CSTNE12M0GH5C000R0",
+  "desc": "Ceramic resonator 12 MHz with built-in load capacitors, CSTNE, variant ...H5C",
+  "category": "crystal_osc",
+  "pkg": "SMD 3.2x1.3",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "MCU clock"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=CSTNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. A different orderable variant from the catalogue parts CSTNE8M00G550000R0 / CSTNE16M0V530000R0; what the variant letters mean (tolerance / temperature grade) was not read. TME lists 129 CSTNE codes (also ...GH5L, ...VH3L, ...G55Z, ...V53C).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Murata",
+  "family": "CSTNE (CERALOCK ceramic resonator)",
+  "orderableCode": "CSTNE16M0VH3C000R0",
+  "desc": "Ceramic resonator 16 MHz with built-in load capacitors, CSTNE, variant ...H3C",
+  "category": "crystal_osc",
+  "pkg": "SMD 3.2x1.3",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "MCU clock"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=CSTNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. A different orderable variant from the catalogue parts CSTNE8M00G550000R0 / CSTNE16M0V530000R0; what the variant letters mean (tolerance / temperature grade) was not read. TME lists 129 CSTNE codes (also ...GH5L, ...VH3L, ...G55Z, ...V53C).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NDK",
+  "family": "NX1612SA (automotive)",
+  "desc": "Automotive crystal unit 1.6x1.2x0.3 mm, 24–96 MHz, ±40 ppm total incl. 15-year ageing, -40..125 C",
+  "category": "crystal_osc",
+  "pkg": "1.6x1.2 mm",
+  "aecq": false,
+  "launched": "2025-09",
+  "usedIn": [
+   "ADAS",
+   "BLE / Wi-Fi",
+   "Ethernet",
+   "UWB"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ndk.com/en/news/article/NX1612SA_20250930.html",
+  "note": "Page says 'Automotive Use'; AEC-Q200 not stated on that page. Mass production expected Apr 2026.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Omron",
+  "family": "G8N (micro automotive PCB relay)",
+  "orderableCode": "G8N-1U-DC12",
+  "desc": "Automotive PCB relay SPDT, 12 V coil, 30 A (Digi-Key)",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com.mx/en/product-highlight/o/omron/g8n-as-automotive-pcb-mnt-relays",
+  "note": "Code and rating as given in the search summary of Digi-Key listings (G8N-1H-AS DC12, G8N-1L-DC12, G8N-1U-DC12 as 30 A 12 V SPDT; Mouser lists G8N-1U-AS DC12) — check the exact spacing / suffix on the listing before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Omron",
+  "family": "G8ND (twin / H-bridge PCB relay)",
+  "orderableCode": "G8ND-2S-DC12",
+  "desc": "Automotive twin PCB relay (8 terminals, H-bridge), 12 V coil, 30 A (Digi-Key)",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "door / seat module",
+   "window lift"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tti.com/content/ttiinc/en/manufacturers/omron/products/omron-automotive-relays.html",
+  "note": "Code as given in the search summary of the Digi-Key listing (30 A, 12 V); TTI describes G8ND as an 8-terminal dual relay; Mouser lists G8ND-2S-AS SK.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Omron",
+  "family": "G8G (DC automotive PCB relay)",
+  "orderableCode": "G8G-17R DC12",
+  "desc": "Automotive PCB relay, 12 V coil, G8G series",
+  "category": "relay_switch",
+  "pkg": "PCB",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "fuse / relay box"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.in/en/new/omronelectronics/omron-g8g-pcb-relays/",
+  "note": "Mouser stocks it per the search summary; contact rating not read. Digi-Key highlight: digikey.com.au/en/product-highlight/o/omron/g8g-dc-automotive-pcb-relay.",
+  "catalogue": "no"
+ }
+]

@@ -1,0 +1,734 @@
+[
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSC2010 automotive (IY) TSC2010IYST",
+  "orderableCode": "TSC2010IYST",
+  "desc": "bidirectional current-sense amplifier, gain 20 V/V (TSC201x series)",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor phase current sensing",
+   "DC-DC",
+   "battery monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSC2011 automotive (IY) TSC2011IYST",
+  "orderableCode": "TSC2011IYST",
+  "desc": "bidirectional current-sense amplifier, gain 60 V/V (TSC201x series)",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor phase current sensing",
+   "DC-DC",
+   "battery monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSV7722 automotive op amp",
+  "orderableCode": "TSV7722IYDT",
+  "desc": "dual general-purpose op amp, rail-to-rail output, 5.5 V, automotive",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.arrow.com/en/products/tsv7722iydt/stmicroelectronics",
+  "note": "Arrow: 'Op Amp Dual GP R-R O/P 5.5V Automotive AEC-Q100 8-Pin SO'. TME lists the MiniSO-8 code TSV7722IYST (https://www.tme.eu/en/katalog/?search=IYST).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7020AJ",
+  "orderableCode": "VN7020AJTR",
+  "desc": "single-channel high-side driver, VIPower M0-7 (20 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Family evidence: ST VIPower M0-7 brochure https://www.st.com/resource/ja/brochure/brvipowerm07.pdf (URL seen, not read). Catalogue holds siblings VN7016AJTR / VND7020AJTR; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7050AJ",
+  "orderableCode": "VN7050AJTR",
+  "desc": "single-channel smart high-side driver with MultiSense analog feedback, VIPower M0-7 (50 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/product/vn7050aj",
+  "note": "ST product page: AEC-Q100 qualified. Orderable code VN7050AJTR as listed by TME (https://www.tme.eu/en/katalog/?search=VN7).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7140AJ",
+  "orderableCode": "VN7140AJTR",
+  "desc": "single-channel high-side driver with MultiSense current feedback and configurable latch-off, VIPower M0-7 (140 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/en/product/vn7140aj.html",
+  "note": "No AEC statement was read for this exact code; ST product page describes it as an M0-7 automotive high-side driver in PowerSSO-16 and SO-8. Code VN7140AJTR as listed by TME (https://www.tme.eu/en/katalog/?search=VN7). The catalogue holds the SO-8 sibling VN7140ASTR - this is the PowerSSO-16 orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-9 high-side driver VN9016AJ",
+  "orderableCode": "VN9016AJTR",
+  "desc": "single-channel high-side driver, VIPower M0-9 (16 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=AJTR",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. M0-9 is ST's current high-side generation (first pass found VNQ9050LAJ / VNF9Q20F; catalogue holds VNQ9080AJTR, VN9D30Q100FTR). This is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VND7050AJ",
+  "orderableCode": "VND7050AJ12TR",
+  "desc": "double-channel high-side driver, VIPower M0-7 (50 mOhm class from the part code); the '12' variant as listed",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/vnd7050aj.html",
+  "note": "No AEC statement was read for this exact code; ST page exists under automotive analog and power (not read). Code VND7050AJ12TR as listed by TME (https://www.tme.eu/en/katalog/?search=VND7); the plain VND7050AJTR code was not seen on a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VND7140AJ",
+  "orderableCode": "VND7140AJTR",
+  "desc": "double-channel high-side driver, VIPower M0-7, 0.14 Ohm per channel, 4-28 V (TME parameters)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/vnd7140aj.html",
+  "note": "No AEC statement was read for this exact code; ST page (automotive analog and power) describes a double-channel M0-7 high-side driver in PowerSSO-16. Code and parameters read on TME: https://www.tme.eu/en/details/vnd7140ajtr/drivers-integrated-circuits/stmicroelectronics/ . TME also lists VND7140AJ12TR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STi2Fuse / VIPower M0-9",
+  "orderableCode": "VNF9Q20F",
+  "desc": "Quad-channel high-side switch with I2t intelligent fuse protection, SPI diagnostics, 64 programmable current limits",
+  "category": "ic_qfn",
+  "pkg": "QFN 6x6 mm",
+  "aecq": false,
+  "launched": "2024-06",
+  "usedIn": [
+   "zonal controller",
+   "power distribution box"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://newsroom.st.com/media-center/press-item.html/n4635.html",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Mass production from June 2024 per the press coverage.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 H-bridge VNH7070AS",
+  "orderableCode": "VNH7070ASTR",
+  "desc": "fully integrated H-bridge motor driver, VIPower M0-7 (70 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "SO-16N",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "door / window lift",
+   "seat",
+   "throttle / valve actuator",
+   "DC motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://st.com/content/st_com/ja/campaigns/h-bridge-automotive-motor-drivers.html",
+  "note": "No AEC statement was read for this exact code; ST campaign page 'VIPower M0-7 H-Bridge family of automotive DC motor drivers' names VNH7070AS and VNH7100AS in SO-16N. Code as listed by TME (https://www.tme.eu/en/katalog/?search=VNH); TME also lists VNH7070BASTR and VNH7070AYTR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 H-bridge VNHD7008AY",
+  "orderableCode": "VNHD7008AYTR",
+  "desc": "H-bridge motor driver for automotive DC motor driving (high-side half, paired with external low-side MOSFETs per the ST campaign table)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-36 (AY code - not read on a page)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "door / window lift",
+   "seat",
+   "throttle / valve actuator",
+   "DC motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/motor-drivers/vnhd7008ay.html",
+  "note": "ST product page: AEC-Q100 qualified. Sources disagree on the output current (product page 51 A, campaign table 12 A) - not recorded. Code as listed by TME (https://www.tme.eu/en/katalog/?search=VNH).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VNQ7140AJ",
+  "orderableCode": "VNQ7140AJTR",
+  "desc": "quad-channel high-side driver, VIPower M0-7 (140 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VNQ7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. The search for an ST page on VNQ7140AJ returned none. Catalogue holds VNQ7040AYTR-E (different part).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-9 VNQ9050LAJ",
+  "orderableCode": "VNQ9050LAJ",
+  "desc": "Four-channel high-side driver for 12 V loads, cold-crank operation down to 2.7 V",
+  "category": "ic_soic",
+  "pkg": "unknown",
+  "aecq": false,
+  "launched": "2026-03",
+  "usedIn": [
+   "body control",
+   "zonal controller",
+   "lighting / load switching"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://eepower.com/new-industry-products/st-intros-automotive-drivers-for-load-protection-high-voltage-switching/",
+  "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. Announced Mar 2026. The catalogue has the sibling VNQ9080AJ. Packing suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L9026",
+  "desc": "Eight-channel driver: 2 fixed high-side + 6 configurable high / low-side outputs for LEDs and relays, ASIL-B systems ready",
+  "category": "ic_soic",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control",
+   "powertrain / relay driving",
+   "zonal controller"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/l9026.html",
+  "note": "Datasheet: AEC-Q100 qualified, ISO 26262 compliant; in volume production. No orderable code seen (package options on the datasheet).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L9965 BMS chipset",
+  "desc": "L9965A - 18s battery monitor / cell AFE, ASIL-D target",
+  "category": "ic_tqfp",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring unit"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/resource/en/data_brief/l9965a.pdf",
+  "note": "Data brief: AEC-Q100 qualified. The catalogue holds only the pyro-fuse member L9965P. No orderable code seen (data brief stage).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "A6983N automotive step-down (low-noise variant)",
+  "orderableCode": "A6983NQTR",
+  "desc": "38 V, 3 A synchronous step-down converter, low-noise-mode variant of the A6983",
+  "category": "ic_qfn",
+  "pkg": "QFN16 3x3 (Q code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU supply",
+   "infotainment",
+   "ADAS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=A698",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Catalogue holds the A6983CQTR and A6983IQTR siblings; this is a different orderable part (N variant).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "A7986A automotive step-down",
+  "orderableCode": "A7986A",
+  "desc": "38 V, 3 A step-down switching regulator",
+  "category": "ic_soic",
+  "pkg": "HSOP8 (not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU supply",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=A798",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Code as listed by TME ('A7986A' - reel suffix not seen). Ratings from the ST family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "A7987 automotive step-down",
+  "orderableCode": "A7987TR",
+  "desc": "61 V, 3 A asynchronous step-down switching regulator (24 V / 48 V capable)",
+  "category": "ic_soic",
+  "pkg": "HTSSOP16 (not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "truck / 24 V ECU supply",
+   "48 V auxiliaries"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=A798",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Ratings from the ST family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L4995 automotive LDO",
+  "orderableCode": "L4995AJTR",
+  "desc": "5 V low-drop voltage regulator with reset and watchdog (L4995 family)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO (J code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "MCU supply",
+   "body module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=AJTR",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Function from the ST family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L9678P airbag IC",
+  "orderableCode": "L9678P-S",
+  "desc": "automotive airbag system IC",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 64",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "airbag ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.arrow.com/en/products/l9678p-s/stmicroelectronics",
+  "note": "Arrow: 'Airbag IC Automotive AEC-Q100 64-Pin LQFP Tray'. Catalogue holds L9679ETR / L9680TR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "L9945 8-channel MOSFET pre-driver",
+  "orderableCode": "L9945TR",
+  "desc": "automotive fully configurable 8-channel high / low side MOSFET pre-driver",
+  "category": "ic_tqfp",
+  "pkg": "not read",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "powertrain",
+   "transmission",
+   "12 / 24 / 48 V loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=L99",
+  "note": "No AEC statement was read for this exact code; ST eStore describes L9945 as 'automotive fully configurable 8-channel High/Low side MOSFET driver' (https://estore.st.com/en/products/automotive-analog-and-power.html?p=22). Code as listed by TME.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "LDLL16EN",
+  "orderableCode": "LDLL16ENTR",
+  "desc": "automotive LED driver IC, 5-40 V, 32-pin QFN (RS listing)",
+  "category": "ic_qfn",
+  "pkg": "QFN-32L",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "rear lamp",
+   "animated lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/ldll16en.html",
+  "note": "RS Components lists LDLL16ENTR, AEC-Q100, QFN-32L (https://uk.rs-online.com/web/p/led-driver-ics/0719455). Channel count not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "LMV358 automotive (IY) LMV358IYDT",
+  "orderableCode": "LMV358IYDT",
+  "desc": "dual low-power rail-to-rail op amp",
+  "category": "ic_soic",
+  "pkg": "SO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYDT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M24512-A125 automotive EEPROM",
+  "orderableCode": "M24512-DRMN3TP/K",
+  "desc": "automotive 512-Kbit serial I2C bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M24C04-A125 automotive EEPROM",
+  "orderableCode": "M24C04-DRMN3TP/K",
+  "desc": "automotive 4-Kbit serial I2C bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M24M01-A125 automotive EEPROM",
+  "orderableCode": "M24M01-DWMN3TP/K",
+  "desc": "automotive 1-Mbit serial I2C bus EEPROM, 2.5-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95040-A125 automotive EEPROM",
+  "orderableCode": "M95040-DRMN3TP/K",
+  "desc": "automotive 4-Kbit SPI bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95080-A125 automotive EEPROM",
+  "orderableCode": "M95080-DRMN3TP/K",
+  "desc": "automotive 8-Kbit SPI bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95512-A125 automotive EEPROM",
+  "orderableCode": "M95512-DRMN3TP/K",
+  "desc": "automotive 512-Kbit SPI bus EEPROM, 1.8-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M95M02-A125 automotive EEPROM",
+  "orderableCode": "M95M02-DWMN3TP/K",
+  "desc": "automotive 2-Mbit SPI bus EEPROM, 2.5-5.5 V",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form. Arrow lists M95M02-DWMN3TP/K as AEC-Q100 qualified.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT012H90G3AG",
+  "orderableCode": "SCT012H90G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 900 V, 12 mOhm class",
+  "category": "ic_soic",
+  "pkg": "H2PAK-7 (H code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=G3AG",
+  "note": "No AEC statement was read for this exact code; 'AG' = ST automotive grade; Mouser groups the G3AG parts as 'Automotive-Grade Silicon Carbide Power MOSFETs' (https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/). Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT018H65G3AG",
+  "orderableCode": "SCT018H65G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 650 V, 18 mOhm class",
+  "category": "ic_soic",
+  "pkg": "H2PAK-7 (H code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=G3AG",
+  "note": "No AEC statement was read for this exact code; 'AG' = ST automotive grade; Mouser groups the G3AG parts as 'Automotive-Grade Silicon Carbide Power MOSFETs' (https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/). Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT040H120G3AG",
+  "orderableCode": "SCT040H120G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 1200 V, 40 mOhm class",
+  "category": "ic_soic",
+  "pkg": "H2PAK-7 (H code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=G3AG",
+  "note": "No AEC statement was read for this exact code; 'AG' = ST automotive grade; Mouser groups the G3AG parts as 'Automotive-Grade Silicon Carbide Power MOSFETs' (https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/). Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT040H65G3AG",
+  "orderableCode": "SCT040H65G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 650 V, 40 mOhm class",
+  "category": "ic_soic",
+  "pkg": "H2PAK-7 (H code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/power-transistors/sct040h65g3ag.html",
+  "note": "No AEC statement was read for this exact code; 'AG' = ST automotive grade; Mouser groups the G3AG parts as 'Automotive-Grade Silicon Carbide Power MOSFETs' (https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/). Voltage / mOhm class read from the part code. Listed by TME (https://www.tme.eu/en/katalog/?search=G3AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT040HU65G3AG",
+  "orderableCode": "SCT040HU65G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 650 V, 40 mOhm class, top-side cooled",
+  "category": "ic_soic",
+  "pkg": "HU3PAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/automotive-grade-sic-mosfets-with-breakdown-voltages-up-to-1200v-devices-for-higher-design-flexibility.html",
+  "note": "Listed by TME (https://www.tme.eu/en/katalog/?search=G3AG). ST HU3PAK campaign page: Gen 3 SiC MOSFETs in HU3PAK (650 / 750 / 1200 V series) are AEC-Q101 qualified. Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ }
+]

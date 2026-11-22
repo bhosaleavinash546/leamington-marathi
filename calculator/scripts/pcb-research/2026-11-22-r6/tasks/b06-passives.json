@@ -1,0 +1,509 @@
+[
+ {
+  "mfr": "Vishay",
+  "family": "NTCS0402E3....XT (glass protected)",
+  "orderableCode": "NTCS0402E3104FXT",
+  "desc": "NTC thermistor 100 k 1% B4311, 0402, glass protected, -55..150 C, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "2025-12",
+  "usedIn": [
+   "BMS",
+   "inverter",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://passive-components.eu/vishay-releases-automotive-glass-protected-0402-ntc-thermistor/",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "RCA-HP e3 (automotive, high power)",
+  "orderableCode": "RCA060310K0FKEAHP",
+  "desc": "Thick film resistor 10 k 1%, 0603, RCA ...HP (high power / pulse) version",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME also lists RCA120610K0FKEAHP.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "RCA e3 (automotive thick film)",
+  "orderableCode": "RCA080510K0FKEA",
+  "desc": "Thick film resistor 10 k 1%, 0805 (RCA series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the RCA sibling RCA060310K0FKEA, not read for this exact code. TME also lists RCA121010K0FKEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "RCA e3 (automotive thick film)",
+  "orderableCode": "RCA120610K0FKEA",
+  "desc": "Thick film resistor 10 k 1%, 1206 (RCA series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the RCA sibling RCA060310K0FKEA, not read for this exact code. TME also lists RCA121010K0FKEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "RCS e3 (anti-surge, high power)",
+  "orderableCode": "RCS060310K0FKEA",
+  "desc": "Thick film anti-surge high-power resistor 10 k 1%, 0603 (RCS series)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "TNPW e3 (thin film)",
+  "orderableCode": "TNPW120610K0BEEA",
+  "desc": "Thin film resistor 10 k 0.1% 25 ppm, 1206 (TNPW e3)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0BEEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Digi-Key's Vishay automotive pages describe the TNPW e3 family as \"AEC-Q200 qualified, automotive grade\" (digikey.com/en/product-highlight/v/vishay/automotive-body-electronics) — series level, not this exact code. Catalogue holds TNPW0805 12 k / 13 k only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSK1206 (4-terminal Kelvin)",
+  "orderableCode": "WSK1206R0100FEA",
+  "desc": "Current-sense resistor 10 mohm 1%, 1206, 4-terminal Kelvin (WSK1206)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=R0100FEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds WSL0603 / WSL1206 / WSL2512 / WSLP2512 siblings (recorded AEC-Q200); TME also lists WSR2R0100FEA and WSR3R0100FEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSLF1206 (Power Metal Strip)",
+  "orderableCode": "WSLF1206L5000FE6",
+  "desc": "Current-sense resistor 0.5 mohm 1% 5 W 1206, AEC-Q200 per datasheet",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "2025-10",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://uk.rs-online.com/web/p/surface-mount-resistors/0866916",
+  "note": "RS listing; also WSLF1206L3000FE6, WSLF12061L000FE6. Vishay release: vishay.com/en/company/press/releases/2025/WSLF1206.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSLP0603",
+  "orderableCode": "WSLP0603R0100FEA",
+  "desc": "Power Metal Strip current-sense 10 mohm 1% 0.4 W 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "LED lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=WSLP0603R0100FEA",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSLP0805 (high power)",
+  "orderableCode": "WSLP0805R0100FEA",
+  "desc": "Current-sense resistor 10 mohm 1%, 0805, high power (WSLP)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=R0100FEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds WSL0603 / WSL1206 / WSL2512 / WSLP2512 siblings (recorded AEC-Q200); TME also lists WSR2R0100FEA and WSR3R0100FEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSLP2010 (high power)",
+  "orderableCode": "WSLP2010R0100FEA",
+  "desc": "Current-sense resistor 10 mohm 1%, 2010, high power (WSLP)",
+  "category": "passive_1206",
+  "pkg": "2010",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=R0100FEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds WSL0603 / WSL1206 / WSL2512 / WSLP2512 siblings (recorded AEC-Q200); TME also lists WSR2R0100FEA and WSR3R0100FEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSHP2818",
+  "orderableCode": "WSHP2818R0100FEA",
+  "desc": "Power Metal Strip current-sense 10 mohm 1% 10 W 2818, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2818",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=WSHP2818R0100FEA",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSL3637 (4-terminal)",
+  "orderableCode": "WSL3637R0100FEA",
+  "desc": "Current-sense resistor 10 mohm 1%, 3637 case (WSL3637)",
+  "category": "passive_1206",
+  "pkg": "3637",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=R0100FEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds WSL0603 / WSL1206 / WSL2512 / WSLP2512 siblings (recorded AEC-Q200); TME also lists WSR2R0100FEA and WSR3R0100FEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "WSLT2512 (high temperature)",
+  "orderableCode": "WSLT2512R0100FEA",
+  "desc": "Current-sense resistor 10 mohm 1%, 2512, WSLT high-temperature version",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=R0100FEA",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds WSL0603 / WSL1206 / WSL2512 / WSLP2512 siblings (recorded AEC-Q200); TME also lists WSR2R0100FEA and WSR3R0100FEA.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wurth Elektronik",
+  "family": "WE-MAIA (metal alloy power inductor, automotive)",
+  "orderableCode": "784383230033",
+  "desc": "SMT metal-alloy power inductor, WE-MAIA series (value / size not read), -40..125 C, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "SMD",
+  "aecq": true,
+  "launched": "2024",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "camera",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.futureelectronics.com/resources/featured-products/wurth-elektronik-we-maia-smt-power-inductor",
+  "note": "Order code as listed on Future Electronics' WE-MAIA page per the search summary; Wurth calls WE-MAIA the smallest wound inductor with AEC-Q200 qualification. Series datasheet v1.0 is dated 2024-06-27.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wurth Elektronik",
+  "family": "WE-MAIA (metal alloy power inductor, automotive)",
+  "orderableCode": "784383560033",
+  "desc": "SMT metal-alloy power inductor, WE-MAIA series (value / size not read), -40..125 C, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "SMD",
+  "aecq": true,
+  "launched": "2024",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "camera",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.futureelectronics.com/resources/featured-products/wurth-elektronik-we-maia-smt-power-inductor",
+  "note": "Order code as listed on Future Electronics' WE-MAIA page per the search summary; Wurth calls WE-MAIA the smallest wound inductor with AEC-Q200 qualification. Series datasheet v1.0 is dated 2024-06-27.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Yageo",
+  "family": "RC0402",
+  "orderableCode": "RC0402FR-074K7L",
+  "desc": "4.7 kΩ ±1% 0.063W, 1/16W Chip Resistor 0402 (1005 Metric) Moisture Resistant Thick Film",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "2026-06",
+  "usedIn": [
+   "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+   "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit",
+   "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+   "TI TIDEP-01037 low-power in-cabin radar"
+  ],
+  "boards": 4,
+  "qtyPerBoardMax": 3,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/44/infineon-kit-a3g-tc487-lite-aurix-tm-a3g-lite-kit-user-guide-usermanual-en.pdf",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive thick film)",
+  "orderableCode": "AC0603FR-0710KL",
+  "desc": "Thick film resistor 10 k 1%, 0603 (AC automotive series)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of the catalogue part AC0402FR-0710KL (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive MLCC)",
+  "orderableCode": "AC0603KRX7R9BB104",
+  "desc": "MLCC 0.1 uF 50 V X7R 10% 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive thick film)",
+  "orderableCode": "AC0805FR-0710KL",
+  "desc": "Thick film resistor 10 k 1%, 0805 (AC automotive series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of the catalogue part AC0402FR-0710KL (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive MLCC)",
+  "orderableCode": "AC0805KRX7R9BB104",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805 (AC automotive series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=KRX7R9BB104",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of AC0603KRX7R9BB104, which the first pass confirmed as AEC-Q200 on Digi-Key. TME also lists soft-termination CS0805 / CS1206KRX7R9BB104 (grade not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive thick film)",
+  "orderableCode": "AC0201FR-0710KL",
+  "desc": "Thick film resistor 10 k 1%, 0201 (AC automotive series)",
+  "category": "passive_0402",
+  "pkg": "0201",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of the catalogue part AC0402FR-0710KL (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AC (automotive thick film)",
+  "orderableCode": "AC1206FR-0710KL",
+  "desc": "Thick film resistor 10 k 1%, 1206 (AC automotive series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of the catalogue part AC0402FR-0710KL (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AF (anti-sulfur thick film)",
+  "orderableCode": "AF0402FR-0710KL",
+  "desc": "Thick film anti-sulfur resistor 10 k 1%, 0402 (AF series)",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "AF (anti-sulfur thick film)",
+  "orderableCode": "AF0603FR-0710KL",
+  "desc": "Thick film anti-sulfur resistor 10 k 1%, 0603 (AF series)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=FR-0710KL",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "YAGEO",
+  "family": "PA (automotive current sense)",
+  "orderableCode": "PA2512FKF7W0R002E",
+  "desc": "Metal current-sense resistor 2 mohm 1% 2 W 2512, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=PA2512FKF7W0R002E",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ }
+]

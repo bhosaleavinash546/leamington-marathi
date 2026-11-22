@@ -1,0 +1,715 @@
+[
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7010AJ",
+  "orderableCode": "VN7010AJTR",
+  "desc": "single-channel high-side driver, VIPower M0-7 (10 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VND7030AJ",
+  "orderableCode": "VND7030AJTR",
+  "desc": "double-channel high-side driver, VIPower M0-7 (30 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VND7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 H-bridge VNH7040AY",
+  "orderableCode": "VNH7040AYTR",
+  "desc": "fully integrated H-bridge motor driver, VIPower M0-7 (40 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-36 (AY code - not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "door / window lift",
+   "seat",
+   "throttle / valve actuator",
+   "DC motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/content/st_com/ja/campaigns/h-bridge-automotive-motor-drivers.html",
+  "note": "No AEC statement was read for this exact code; Family page: 'VIPower M0-7 H-Bridge family of automotive DC motor drivers'. Code as listed by TME (https://www.tme.eu/en/katalog/?search=VNH).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 H-bridge VNH7100BAS",
+  "orderableCode": "VNH7100BASTR",
+  "desc": "fully integrated H-bridge motor driver, VIPower M0-7 (100 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "SO-16N (AS code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "door / window lift",
+   "seat",
+   "throttle / valve actuator",
+   "DC motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/content/st_com/ja/campaigns/h-bridge-automotive-motor-drivers.html",
+  "note": "No AEC statement was read for this exact code; The ST campaign page names VNH7100AS; the 'BAS' orderable code is as listed by TME (https://www.tme.eu/en/katalog/?search=VNH) - the difference between AS and BAS was not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 H-bridge VNHD7012AY",
+  "orderableCode": "VNHD7012AYTR",
+  "desc": "H-bridge motor driver for automotive DC motors, VIPower M0-7 (12 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-36 (AY code - not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "door / window lift",
+   "seat",
+   "throttle / valve actuator",
+   "DC motor drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/content/st_com/ja/campaigns/h-bridge-automotive-motor-drivers.html",
+  "note": "No AEC statement was read for this exact code; ST campaign page 'VIPower M0-7 H-Bridge family of automotive DC motor drivers'. Code as listed by TME (https://www.tme.eu/en/katalog/?search=VNH).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VNL5050 OMNIFET III low-side driver (SOT-223)",
+  "orderableCode": "VNL5050N3TR-E",
+  "desc": "fully protected low-side driver, OMNIFET III (50 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "SOT-223 (N3 code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "relay / valve / lamp loads",
+   "body control module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VNL",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. TME also lists VNL5160N3TR-E.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VNQ7003SY",
+  "orderableCode": "VNQ7003SYTR",
+  "desc": "quad-channel high-side driver with SPI, VIPower M0-7 (3 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO (SY code - pin count not read)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "power distribution",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VNQ7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Ratings and package read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "M93C86-A125 automotive EEPROM",
+  "orderableCode": "M93C86-RMN3TP/K",
+  "desc": "automotive 16-Kbit MICROWIRE serial EEPROM",
+  "category": "ic_soic",
+  "pkg": "SO8N (MN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every ECU - calibration / configuration data",
+   "body control module",
+   "instrument cluster",
+   "ADAS camera / radar"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://st.com/resource/en/selection_guide/automotive-serial-eeprom-selection-guide.pdf",
+  "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS7B8133QDRVRQ1",
+  "orderableCode": "TPS7B8133QDRVRQ1",
+  "desc": "Automotive 150-mA high-voltage ultra-low-IQ low-dropout (LDO) linear",
+  "category": "ic_qfn",
+  "pkg": "DRV0006A",
+  "aecq": true,
+  "launched": "2024-08",
+  "usedIn": [
+   "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+  ],
+  "boards": 4,
+  "qtyPerBoardMax": 1,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD68",
+  "note": "has.py prefix-matches TPS7B8150QDGNRQ1 (a different family member); this exact code is not held.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LM63635DQDRRRQ1",
+  "orderableCode": "LM63635DQDRRRQ1",
+  "desc": "3.5-V to 36-V, 1.5-A, and 2.5-A Automotive Step-down Voltage Converter",
+  "category": "ic_qfn",
+  "pkg": "WSON12",
+  "aecq": true,
+  "launched": "2024-06",
+  "usedIn": [
+   "TI TIDEP-01034 entry-level blind-spot detection radar",
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)",
+   "TI TIDM-02014 SiC traction inverter"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 1,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD02",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AM263P4-Q1",
+  "orderableCode": "AM263P4AFONFZCZRQ1",
+  "desc": "Automotive 400 MHz quad-core Cortex-R5F MCU with real-time control and flash-in-package option, 3 MB RAM",
+  "category": "ic_bga",
+  "pkg": "NFBGA 324 (ZCZ) 15x15 mm 0.8 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter",
+   "on-board charger",
+   "domain controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/AM263P4-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. Other -Q1 codes listed: AM263P4ASOKFZCZRQ1, AM263P4ACOKFZCZRQ1. TI page: 'AEC-Q100 qualified for automotive applications', ACTIVE. Digi-Key keyword AM263P4: 9 Microcontrollers items.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AWR2E44P",
+  "orderableCode": "AWR2E44PBGAMXRQ1",
+  "desc": "76-81 GHz 4T4R radar SoC, launch-on-package variant of AWR2944P (C66x DSP + R5F)",
+  "category": "ic_bga",
+  "pkg": "FCCSP (LoP)",
+  "aecq": true,
+  "launched": "2024-11",
+  "usedIn": [
+   "corner radar",
+   "front radar"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/gpn/awr2944p",
+  "note": "Shares datasheet SWRS318 with AWR2944P / AWR2944-ECO / AWR2944LC (\"AEC-Q100 qualified\"). has.py: AWR2E44P not in catalogue (AWR2944 BGA part is). Sibling codes on the datasheet: AWR2E44EBGAMXRQ1, AWR2E44LBGAMXRQ1.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AWRL1432",
+  "orderableCode": "AWRL1432BDBGAMFRQ1",
+  "desc": "76-81 GHz low-power single-chip automotive radar sensor (blind-spot, door obstacle, parking)",
+  "category": "ic_bga",
+  "pkg": "FCCSP 102-ball 6.45x6.45 mm (AMF)",
+  "aecq": true,
+  "launched": "2023-07",
+  "usedIn": [
+   "corner radar",
+   "blind-spot radar",
+   "door obstacle radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/AWRL1432",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "DP83TC817S-Q1",
+  "orderableCode": "DP83TC817SRHARQ1",
+  "desc": "Automotive 100BASE-T1 Ethernet PHY with MACsec, precise time synchronisation and TC-10",
+  "category": "ic_qfn",
+  "pkg": "VQFN-36 6x6 (RHA)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "radar / camera ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/DP83TC817S-Q1",
+  "note": "Data sheet Rev. A dated 30 Oct 2024. Digi-Key lists DP83TC817SRHARQ1 (keyword search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "DRV8245-Q1",
+  "orderableCode": "DRV8245SQRXZRQ1",
+  "desc": "Automotive H-bridge driver with integrated current sense and diagnostics",
+  "category": "ic_qfn",
+  "pkg": "VQFN-HR16",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-020094 48 V zone reference design"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Listed by Digi-Key (search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMS320F2800157-Q1",
+  "orderableCode": "F2800157QPMRQ1",
+  "desc": "Automotive C2000 32-bit MCU: 120 MHz dual lockstep C28x, 256 KB flash, HRPWM, CAN FD, ASIL B",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 64 (PM); also HTQFP 48, LQFP 80, VQFN 32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor control",
+   "HVAC compressor",
+   "OBC",
+   "pump"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TMS320F2800157-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 14 codes listed (F2800157QPNRQ1 80-pin, F2800157QRHBRQ1 QFN, F2800157EPHPRQ1). Family: F2800156 / 154 / 152-Q1. TI page: rating 'Automotive'; AEC-Q100 wording not on the page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMS320F28P559SJ-Q1",
+  "orderableCode": "F28P559SJ9PZRQ1",
+  "desc": "Automotive C2000 32-bit MCU: 150 MHz C28x + CLA, 1.1 MB flash, five ADCs, CLB, AES, NPU",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 100 (PZ); also LQFP 64, TQFP 80 / 128",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "DC-DC",
+   "HVAC compressor",
+   "motor control"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TMS320F28P559SJ-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 13 codes listed (e.g. F28P559SJ9PMRQ1 64-pin, F28P559SG8PZRQ1). TI page: rating 'Automotive', ACTIVE; AEC-Q100 wording not on the page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LMQ66430-Q1",
+  "orderableCode": "LMQ66430MC3RXBRQ1",
+  "desc": "3 V to 36 V 3 A synchronous buck converter optimised for ultra-low EMI",
+  "category": "ic_qfn",
+  "pkg": "WQFN-FCRLF14",
+  "aecq": false,
+  "launched": "2026-06",
+  "usedIn": [
+   "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier",
+   "TI TIDA-050071 off-battery processor power for ADAS and infotainment"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDME72",
+  "note": "BOM text does not state AEC-Q; -Q1 suffix only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LP8866S-Q1",
+  "orderableCode": "LP8866SQDCPRQ1",
+  "desc": "Display LED-backlight driver, six 150 mA channels, boost controller",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-38 (DCP) / VQFN-32 (RHB)",
+  "aecq": true,
+  "launched": "2020-08",
+  "usedIn": [
+   "instrument cluster",
+   "centre display",
+   "head-up display"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/LP8866S-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Catalogue holds the 4-channel LP8864S only. QFN code: LP8866SQRHBRQ1.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0C1104-Q1",
+  "orderableCode": "M0C1104QDGS20RQ1",
+  "desc": "Automotive 24 MHz Cortex-M0+ MCU, 16 KB flash, 1 KB RAM, 12-bit ADC, LIN-capable UART",
+  "category": "ic_soic",
+  "pkg": "VSSOP 20 (DGS); also WSON 8, SOT-23-THN 8 / 16, WQFN 20",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "housekeeping MCU",
+   "LED driver control",
+   "sensor node"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/MSPM0C1104-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 5 codes listed (M0C1104QDSGRQ1 WSON-8, M0C1104QDDFRQ1, M0C1104QDYYRQ1, M0C1104QRUKRQ1). TI page: AEC-Q100 qualified, ACTIVE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0G3107-Q1",
+  "orderableCode": "M0G3107QRHBRQ1",
+  "desc": "Automotive 80 MHz Cortex-M0+ MCU, 128 KB flash, 32 KB SRAM, 2x 12-bit 4 Msps ADC, op-amp, CAN FD",
+  "category": "ic_qfn",
+  "pkg": "VQFN 32 (RHB); also VQFN 48, LQFP 48 / 64, VSSOP 20 / 28 / 32",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body node",
+   "motor control",
+   "sensor node"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/MSPM0G3107-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 7 codes listed (M0G3107QPTRQ1, M0G3107QDGS28RQ1 ...). TI page: 'AEC-Q100 Grade 1', ACTIVE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0G3519-Q1",
+  "orderableCode": "M0G3519QPTRQ1",
+  "desc": "Automotive 80 MHz Cortex-M0+ MCU, 512 KB flash, 128 KB SRAM, 2x CAN FD, 2 ADC, DAC",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 48 (PT); also LQFP 100 / 80 / 64, VQFN 48 / 32",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body node",
+   "lighting",
+   "sensor / actuator node",
+   "BMS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/MSPM0G3519-Q1/part-details/M0G3519QPTRQ1",
+  "note": "Code on TI's part-details page ('AEC-Q100 Grade 1'); other codes in the search results: M0G3519QPNRQ1, M0G3519QRGZRQ1, M0G3519QPMRQ1. TME lists only the non-Q grade (MSPM0G3519SPZR ...). Family member MSPM0G3518-Q1 (256 KB).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0L1306-Q1",
+  "orderableCode": "M0L1306QRHBRQ1",
+  "desc": "Automotive 32 MHz Cortex-M0+ MCU, 64 KB flash, 4 KB RAM, 12-bit ADC, op-amp, LIN",
+  "category": "ic_qfn",
+  "pkg": "VQFN 32 (RHB); also VQFN 24, VSSOP 20 / 28 / 32, SOT-23-THN 16",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN node",
+   "sensor",
+   "lighting",
+   "small actuator"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/MSPM0L1306-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 6 codes listed (M0L1306QRGERQ1, M0L1306QDGS20RQ1, M0L1306QDYYRQ1 ...). TI page: AEC-Q100 qualified, ACTIVE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0G3507-Q1",
+  "orderableCode": "MSPM0G3507QPMQ1",
+  "desc": "Automotive mixed-signal MCU with CAN FD, 64-pin",
+  "category": "ic_tqfp",
+  "pkg": "LQFP64",
+  "aecq": true,
+  "launched": "2026-06",
+  "usedIn": [
+   "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDME72",
+  "note": "aecq basis: BOM text 'Automotive'. The 48 V HVAC design (TIDA-020101) carries the VQFN32 code MSPM0G3507QRHBQ1.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "SN74LVC1G",
+  "orderableCode": "SN74LVC1G17QDCKRQ1",
+  "desc": "Automotive single Schmitt-trigger buffer",
+  "category": "ic_soic",
+  "pkg": "SC70-5",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Orderable member for the catalogue estimate SN74LVC1G.",
+  "catalogue": "estimate",
+  "catalogueKey": "SN74LVC1G"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN1043",
+  "orderableCode": "TCAN1043ADYYRQ1",
+  "desc": "Low-power fault-protected CAN FD transceiver with INH and WAKE",
+  "category": "ic_soic",
+  "pkg": "SOT-23-14 thin",
+  "aecq": false,
+  "launched": "2025-05",
+  "usedIn": [
+   "TI TIDM-02014 SiC traction inverter"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMBH6",
+  "note": "Orderable member for the catalogue estimate TCAN1043 (the SOIC sibling TCAN1043ADRQ1 is already distributor-priced). The EMB design (TIDA-020106) carries TCAN1043HGDMTRQ1 (VSON-14). BOM text does not state AEC-Q; -Q1 suffix only.",
+  "catalogue": "estimate",
+  "catalogueKey": "TCAN1043"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN1046V-Q1",
+  "orderableCode": "TCAN1046VDRQ1",
+  "desc": "Automotive high-speed dual CAN FD transceiver",
+  "category": "ic_soic",
+  "pkg": "SOIC-14",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "aecq basis: BOM text 'Automotive'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN1463-Q1",
+  "orderableCode": "TCAN1463DRQ1",
+  "desc": "Automotive low-power signal-improvement (SIC) CAN FD transceiver with INH and WAKE",
+  "category": "ic_soic",
+  "pkg": "SOIC-14 / VSON-14 / SOT-23-THN-14",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN1463-Q1",
+  "note": "Page: AEC-Q100 grade 1. Data sheet Rev. C dated 22 Dec 2022 (launch date not stated). Code TCAN1463DRQ1 as reported from the product page (the part fitted on the TCAN1463EVM).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN2847-Q1",
+  "orderableCode": "TCAN28473RHBRQ1",
+  "desc": "Automotive CAN FD and LIN system basis chip (SBC) with partial networking",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 (RHB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN2847-Q1",
+  "note": "Data sheet Rev. B dated 20 Nov 2025. Digi-Key lists TCAN28473RHBRQ1 (non-stock, order to lead time) — digikey.com keyword search, 22 Nov 2026.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN3404-Q1",
+  "orderableCode": "TCAN3404DDFRQ1",
+  "desc": "3.3 V automotive CAN FD transceiver with standby mode",
+  "category": "ic_soic",
+  "pkg": "TSOT-23-8",
+  "aecq": true,
+  "launched": "2025-01",
+  "usedIn": [
+   "TI TIDEP-01037 low-power in-cabin radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDQ8",
+  "note": "Listed by Digi-Key and Mouser (search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TLIN1024-Q1",
+  "orderableCode": "TLIN1024RGYRQ1",
+  "desc": "Quad LIN transceiver with dominant-state timeout",
+  "category": "ic_qfn",
+  "pkg": "VQFN24",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Listed by Arrow and Mouser (search 22 Nov 2026), AEC-Q100.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMCS1126-Q1",
+  "orderableCode": "TMCS1126A2BQDVGRQ1",
+  "desc": "Isolated Hall current sensor, 80 A rms, 500 kHz, reinforced isolation, ambient-field rejection, ALERT",
+  "category": "ic_soic",
+  "pkg": "SOIC-10 wide (DVG)",
+  "aecq": true,
+  "launched": "2024-04",
+  "usedIn": [
+   "OBC",
+   "DC-DC converter",
+   "traction inverter aux"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TMCS1126-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Sibling TMCS1127-Q1 (250 kHz, first issue 2025-01, e.g. TMCS1127A1AQDVGRQ1) also absent from the catalogue.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS1213-Q1",
+  "orderableCode": "TPS12130QDGXRQ1",
+  "desc": "45 V low-IQ automotive high-side switch controller (smart fuse) with low-power mode",
+  "category": "ic_soic",
+  "pkg": "VSSOP19",
+  "aecq": true,
+  "launched": "2024-08",
+  "usedIn": [
+   "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD68",
+  "note": "aecq basis: BOM text 'Automotive'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS1HC30-Q1",
+  "orderableCode": "TPS1HC30BQPWPRQ1",
+  "desc": "30 mOhm 5 A single-channel smart high-side switch",
+  "category": "ic_soic",
+  "pkg": "HTSSOP14",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Listed by Digi-Key, Arrow, Mouser, LCSC (search 22 Nov 2026); Digi-Key states AEC-Q100.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS389C03-Q1",
+  "orderableCode": "TPS389C0300CRTERQ1",
+  "desc": "3-channel I2C-programmable OV / UV voltage supervisor with Q&A watchdog (ASIL rail monitor)",
+  "category": "ic_qfn",
+  "pkg": "WQFN-16 3x3 mm (RTE)",
+  "aecq": true,
+  "launched": "2022-11",
+  "usedIn": [
+   "ADAS domain controller",
+   "radar / camera ECU",
+   "SoC rail monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TPS389C03-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS653860-Q1",
+  "orderableCode": "TPS6538600QDCARQ1",
+  "desc": "Power management IC for safety-relevant applications (MCU safety PMIC)",
+  "category": "ic_soic",
+  "pkg": "HTSSOP48",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Also on the TIDM-02014 traction inverter product list (TPS653860-Q1). The TI datasheet (hosted by Mouser) states AEC-Q100; no distributor listing seen.",
+  "catalogue": "no"
+ }
+]

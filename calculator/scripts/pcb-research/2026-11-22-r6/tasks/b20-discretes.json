@@ -1,0 +1,530 @@
+[
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDA5WY",
+  "orderableCode": "ESDA5WY",
+  "desc": "Automotive dual-line unidirectional ESD protection, 5 V",
+  "category": "fuse_tvs",
+  "pkg": "SOT323",
+  "aecq": true,
+  "launched": "2024-06",
+  "usedIn": [
+   "sensor / switch inputs",
+   "MCU I/O"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stmicro-esda5wy-esd-protection/",
+  "note": "AEC-Q101. Datasheet initial release 20 Jun 2024; Mouser new-product page Sep 2024. An ESDAxWY family page followed (Mouser, Jan 2025).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN01-2BLY",
+  "orderableCode": "ESDCAN01-2BLY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-3L (BLY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN02-2BWY",
+  "orderableCode": "ESDCAN02-2BWY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT323-3L (BWY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN03-2BWY",
+  "orderableCode": "ESDCAN03-2BWY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT323-3L (BWY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part. The DFN sibling ESDCAN03-2BM3Y is AEC-Q101 on ST's page but marked obsolete on the Japanese page - not listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN04-2BLY",
+  "orderableCode": "ESDCAN04-2BLY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-3L (BLY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part. TME also lists ESDCAN04-2BWY.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN06-2BLY",
+  "orderableCode": "ESDCAN06-2BLY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-3L (BLY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDLIN1524BJ",
+  "orderableCode": "ESDLIN1524BJ",
+  "desc": "Automotive single-line ESD protection for LIN bus",
+  "category": "fuse_tvs",
+  "pkg": "SOD323",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "LIN nodes",
+   "body ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://my.avnet.com/ebv/products/new-products/npi/2025/stmicroelectronics-esdlin1524bj/",
+  "note": "AEC-Q101; Avnet EBV 2025 new-product introduction.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SM6TY automotive TVS 600 W",
+  "orderableCode": "SM6T33CAY",
+  "desc": "automotive 600 W bidirectional TVS (33 V breakdown class from the part code)",
+  "category": "fuse_tvs",
+  "pkg": "SMB (SM6T series)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "supply-line transient protection",
+   "every ECU input"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/automotive-protection-and-filtering/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive protection product list (SMxT...CAY series). Code as listed by TME (https://www.tme.eu/en/katalog/?search=33CAY). First pass found SMA6T68CAY (a different series).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "USBLC6-2SC6Y automotive ESD array",
+  "orderableCode": "USBLC6-2SC6Y",
+  "desc": "automotive very-low-capacitance ESD protection for two high-speed data lines (USB 2.0)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-6L",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "USB port",
+   "infotainment",
+   "telematics",
+   "charging port"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/usblc6-2sc6y.html",
+  "note": "ST product page: active, AEC-Q101 qualified. Code as listed by TME (https://www.tme.eu/en/katalog/?search=SC6Y).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "USBLC6-4SC6Y automotive ESD array",
+  "orderableCode": "USBLC6-4SC6Y",
+  "desc": "automotive ESD protection for four high-speed data lines (USB 2.0), about 3 pF",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-6L",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "USB hub",
+   "infotainment",
+   "camera / display links"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stm-usblc6-4sc6y-suppressor/",
+  "note": "Mouser product page: AEC-Q101 qualified. Code as listed by TME (https://www.tme.eu/en/katalog/?search=SC6Y).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDA37LY",
+  "orderableCode": "ESDA37LY",
+  "desc": "Automotive dual-line 36 V TVS",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-3L",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "24 V / 36 V signal lines",
+   "IVN protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://my.avnet.com/ebv/products/new-products/npi/2025/stmicroelectronics-esda37ly/",
+  "note": "AEC-Q101; Avnet EBV 2025 new-product introduction.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDA6V1-5SC6Y automotive TVS array",
+  "orderableCode": "ESDA6V1-5SC6Y",
+  "desc": "automotive 5-line TVS array for ESD protection (ratings read from the part code)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-6L (SC6 code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "I/O line protection",
+   "switch inputs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SC6Y",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'Y' = ST automotive-grade protection suffix; family list https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html. TME also lists ESDA6V1SC6Y, ESDA5V3SC6Y, ESDA25SC6Y.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN05-2BWY",
+  "orderableCode": "ESDCAN05-2BWY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT323-3L (BWY code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDCAN automotive CAN bus TVS ESDCAN24-2BLY",
+  "orderableCode": "ESDCAN24-2BLY",
+  "desc": "automotive dual-line TVS for CAN / CAN FD bus ESD protection",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-3L",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "every CAN node",
+   "body control module",
+   "gateway",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/protections-and-emi-filters/automotive-esd-protection/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive ESD protection product list / ESDCAN-ESDLIN campaign (https://www.st.com/content/st_com/ja/campaigns/esdcan-esdlin-automotive-esd-protection-devices.html). Code as listed by TME (https://www.tme.eu/en/katalog/?search=ESDCAN). First pass found only ESDCAN06-2BWY; this is a different orderable part. ST listing: automotive dual-line TVS in SOT23-3L for CAN bus protection.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "ESDLIN03-1BWY",
+  "orderableCode": "ESDLIN03-1BWY",
+  "desc": "Automotive Transil TVS for LIN bus",
+  "category": "fuse_tvs",
+  "pkg": "unknown",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN nodes"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stm-esdlin03-1bwy-suppressor/",
+  "note": "Mouser new-product page titled 'Automotive Transil TVS'; AEC-Q101 statement not captured for this code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "HDMIULC6-4SC6Y automotive ESD array",
+  "orderableCode": "HDMIULC6-4SC6Y",
+  "desc": "automotive-grade ultra-low-capacitance ESD protection for HDMI, USB 2.0, Ethernet and video lines",
+  "category": "fuse_tvs",
+  "pkg": "SOT23-6L",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "infotainment",
+   "display",
+   "camera link"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://st.com/en/protections-and-emi-filters/hdmiulc6-4sc6y.html",
+  "note": "No AEC statement was read for this exact code; ST page: active, automotive grade, SOT23-6L. Code as listed by TME (https://www.tme.eu/en/katalog/?search=SC6Y).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SM30TY automotive TVS 3000 W",
+  "orderableCode": "SM30T33CAY",
+  "desc": "automotive 3000 W bidirectional TVS, 28 V stand-off (load-dump class)",
+  "category": "fuse_tvs",
+  "pkg": "SMC",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "load-dump protection",
+   "24 V / 12 V supply input"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/automotive-protection-and-filtering/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive protection product list: automotive TVS 3000 W in SMC (the list also prints SM30T15CAY). Code as listed by TME (https://www.tme.eu/en/katalog/?search=33CAY).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SM4TY automotive TVS 400 W",
+  "orderableCode": "SM4T33CAY",
+  "desc": "automotive 400 W bidirectional TVS, 28 V stand-off",
+  "category": "fuse_tvs",
+  "pkg": "SMA",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "supply-line transient protection",
+   "I/O protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/automotive-protection-and-filtering/products.html",
+  "note": "No AEC statement was read for this exact code; ST automotive protection product list: automotive TVS 400 W in SMA, 28 V stand-off. Code as listed by TME (https://www.tme.eu/en/katalog/?search=33CAY).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Toshiba",
+  "family": "SSM3K341R",
+  "orderableCode": "SSM3K341R,LXHF",
+  "desc": "N-channel 60 V, 6 A small-signal / semi-power MOSFET, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23F",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LED driver",
+   "load switch",
+   "relay driver"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+  "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. SOT-323F version SSM3K341TU,LXHF on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Toshiba",
+  "family": "XCUZ series (XCUZ5V6 … XCUZ36V)",
+  "orderableCode": "XCUZ5V6",
+  "desc": "Surge-protection Zener diodes for automotive equipment, 20 voltage ranks 5.6–36 V",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323",
+  "aecq": true,
+  "launched": "2023-08",
+  "usedIn": [
+   "IVI",
+   "ADAS",
+   "BMS"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/new-products-share/diode/diode-20230830-1d.html",
+  "note": "Code as printed on the maker page (no reel suffix shown). 20 products: 5V6, 6V2, 6V8, 7V5, 8V2, 9V1, 10V, 11V, 12V, 13V, 15V, 16V, 18V, 20V, 22V, 24V, 27V, 30V, 33V, 36V.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Toshiba",
+  "family": "SSM3J351R",
+  "orderableCode": "SSM3J351R,LXHF",
+  "desc": "P-channel -60 V, -3.5 A small-signal MOSFET, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23F",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "high-side load switch",
+   "reverse-polarity protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+  "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. The page prints the package for this row as SOT-23.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Toshiba",
+  "family": "SSM3J356R",
+  "orderableCode": "SSM3J356R,LXHF",
+  "desc": "P-channel -60 V, -2 A small-signal MOSFET, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23F",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "high-side load switch"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+  "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. Same page: SSM3J372R,LXHF (-30 V / -6 A), SSM3J378R,LXHF (-20 V / -6 A), SSM3J377R,LXHF, SSM3J375F,LXHF.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Toshiba",
+  "family": "SSM3K361R",
+  "orderableCode": "SSM3K361R,LXHF",
+  "desc": "N-channel 100 V, 3.5 A small-signal / semi-power MOSFET, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23F",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LED headlamp driver",
+   "48 V load switch"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+  "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. SSM3K361TU,LXHF on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "SM8S10AT – SM8S43AT (PAR)",
+  "desc": "Load-dump PAR TVS (highest surge row of the guide), AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "DO-218AC",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "load-dump protection"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+  "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed). SM5S10AT – SM5S43AT and SM6S10AT – SM6S43AT are the lower-power rows of the same package.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "SMAJ5.0A – SMAJ188A / CA (TransZorb)",
+  "desc": "400 W TVS, uni- / bidirectional, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "DO-214AC (SMA)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU supply / I/O clamp"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+  "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Vishay",
+  "family": "SMBJ5.0A – SMBJ188A / CA (TransZorb)",
+  "desc": "600 W TVS, uni- / bidirectional, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "DO-214AA (SMB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU supply clamp"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+  "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Würth Elektronik",
+  "family": "150060VS",
+  "orderableCode": "150060VS75000",
+  "desc": "LED, Green, SMD",
+  "category": "led",
+  "pkg": "LED_0603",
+  "aecq": false,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-020075 HV BMS 2-channel pyro-fuse driver board",
+   "TI TIDA-020076 HV BMS 18S wired / wireless cell supervisor unit (BMS CMU)"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 7,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "",
+  "catalogue": "no"
+ }
+]

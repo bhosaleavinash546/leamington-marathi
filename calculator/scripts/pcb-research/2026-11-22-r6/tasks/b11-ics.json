@@ -1,0 +1,688 @@
+[
+ {
+  "mfr": "Renesas",
+  "family": "RH850 R7F70158x (2 MB)",
+  "orderableCode": "R7F7015813AFP-C#AA3",
+  "desc": "RH850 32-bit automotive MCU, 2 MB flash, 100-pin LFQFP",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP-100",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "chassis ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. The RH850 group name (F1K / F1KM) is not printed on the page. Other pin counts of the same line on the page: R7F7015833AFP-C#AA3 (144), R7F7015873AFP-C#AA3 (176), R7F7016473AFP-C#AA1 (144), R7F7016493AFP-C#AA1 (176), R7F7016873AFP-C#AA1 (80), R7F7016903AFP-C#AA1 (64). The catalogue holds the siblings R7F7016904AFP / R7F7016443AFP — these are different orderable parts.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RH850 R7F70164x (4 MB)",
+  "orderableCode": "R7F7016453AFP-C#AA1",
+  "desc": "RH850 32-bit automotive MCU, 4 MB flash, 100-pin LFQFP",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP-100",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "chassis ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. The RH850 group name (F1K / F1KM) is not printed on the page. Other pin counts of the same line on the page: R7F7015833AFP-C#AA3 (144), R7F7015873AFP-C#AA3 (176), R7F7016473AFP-C#AA1 (144), R7F7016493AFP-C#AA1 (176), R7F7016873AFP-C#AA1 (80), R7F7016903AFP-C#AA1 (64). The catalogue holds the siblings R7F7016904AFP / R7F7016443AFP — these are different orderable parts.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RAA270000KFT",
+  "orderableCode": "RAA270000KFT#HA2",
+  "desc": "Automotive power management IC (Digi-Key category 'Automotive Power Management'; function not printed)",
+  "category": "ic_tqfp",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "MCU power supply"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RAJ280002",
+  "orderableCode": "RAJ2800024H11HPF#GB0",
+  "desc": "High-side intelligent power device (IPD), multi-chip package",
+  "category": "ic_soic",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RC21211A (AutoClock)",
+  "orderableCode": "RC21211A000GNA#BB0",
+  "desc": "AutoClock automotive clock generator",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS domain controller",
+   "infotainment SoC clock tree"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Sibling RC21212A000GNA#BB0 on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "uPD166033",
+  "orderableCode": "UPD166033T1U-E1-AY",
+  "desc": "High-side intelligent power device (IPD), MP-3ZK",
+  "category": "ic_soic",
+  "pkg": "MP-3ZK",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "lamp / heater load switching"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Siblings UPD166032T1U-E1-AY / UPD166034T1U-E1-AY on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL76534",
+  "orderableCode": "ISL76534ARXZ-T7A",
+  "desc": "Amplifier / buffer IC for TFT-LCD displays (gamma reference buffer)",
+  "category": "ic_qfn",
+  "pkg": "QFN-28",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "centre display",
+   "cluster"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'IC AMP BUFFER 28QFN' under Analog Video/Display; the gamma-buffer function is the researcher's reading, not on the page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL76683",
+  "orderableCode": "ISL76683AROZ-T7A",
+  "desc": "Light-to-digital sensor with I2C interface",
+  "category": "ic_qfn",
+  "pkg": "ODFN-6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display backlight control",
+   "cluster"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Analog-output siblings ISL76671AROZ-T7A / ISL76682AROZ-T7A on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL78100",
+  "orderableCode": "ISL78100ARZ-T7A",
+  "desc": "LED driver regulator, PWM dimming, 1 A",
+  "category": "ic_qfn",
+  "pkg": "QFN-20",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display backlight",
+   "interior lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL78365",
+  "orderableCode": "ISL78365ARZ-T7A",
+  "desc": "Laser diode driver, 3.3 V",
+  "category": "ic_qfn",
+  "pkg": "WQFN-40",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "laser head-up display"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL79985",
+  "orderableCode": "ISL79985IRZ",
+  "desc": "Analog video decoder",
+  "category": "ic_qfn",
+  "pkg": "QFN-48",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "surround view",
+   "rear camera ECU",
+   "head unit"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Siblings ISL79986IRZ / ISL79987IRZ / ISL79988IRZ on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "TW8816",
+  "orderableCode": "TW8816-LB3-CR",
+  "desc": "LCD video controller",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-128",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "rear-view display",
+   "low-cost display ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Richtek",
+  "family": "RTQ2104",
+  "orderableCode": "RTQ2104BGSP-QA",
+  "desc": "High-voltage buck converter, adjustable, 3 A",
+  "category": "ic_soic",
+  "pkg": "SOP-8 exposed pad",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "USB charger"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/richtek/rtq2104-buck-converter",
+  "note": "Digi-Key page: 'AEC-Q100 grade 1 qualified high-voltage buck converter'; one orderable listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "AG040FGS4FRA",
+  "orderableCode": "AG040FGS4FRATCB",
+  "desc": "N-channel 40 V, 120 A automotive low-voltage MOSFET",
+  "category": "ic_qfn",
+  "pkg": "HPLF5060 (5×6 mm)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC/DC",
+   "zonal power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. 40 V / 120 A siblings AG140FGS4FRATCB and AG142FGS4FRATCB on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "AG047FLS4FRA",
+  "orderableCode": "AG047FLS4FRATCB",
+  "desc": "N-channel 60 V, 89 A automotive low-voltage MOSFET",
+  "category": "ic_qfn",
+  "pkg": "HPLF5060 (5×6 mm)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC/DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. 36 A sibling AG048FLS4FRATCB on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "AG540EGS4FRA",
+  "orderableCode": "AG540EGS4FRATCB",
+  "desc": "P-channel -40 V, -120 A automotive low-voltage MOSFET",
+  "category": "ic_qfn",
+  "pkg": "HPLF5060 (5×6 mm)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "reverse battery protection",
+   "high-side switch"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. Lower-current P-channel siblings AG542EGS4FRATCB (-67 A) and AG543EGS4FRATCB (-28 A) on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD16912EFV-C",
+  "orderableCode": "BD16912EFV-CE2",
+  "desc": "40 V / 3 A H-bridge driver",
+  "category": "ic_soic",
+  "pkg": "HTSSOP (see datasheet)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "throttle / valve / actuator drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+  "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD16950EFV-C",
+  "orderableCode": "BD16950EFV-CE2",
+  "desc": "Half-bridge gate driver IC",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-B24",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "valve / pump control"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+  "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet. Also in that table: BM60212FV-CE2 / BM60213FV-CE2 (high / low-side gate drivers), BD63030EKV-CE2 (3-phase brushless pre-driver).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD18340FV-M",
+  "orderableCode": "BD18340FV-ME2",
+  "desc": "LED driver controller with PWM dimming",
+  "category": "ic_soic",
+  "pkg": "SSOP-B16",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "rear combination lamp",
+   "exterior lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD18351EFV-M",
+  "orderableCode": "BD18351EFV-ME2",
+  "desc": "LED driver controller with PWM dimming",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-B24",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "exterior LED lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD83732HFP-M",
+  "orderableCode": "BD83732HFP-MTR",
+  "desc": "Linear LED driver, 500 mA, PWM dimming",
+  "category": "ic_soic",
+  "pkg": "HRP7",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "rear lamp",
+   "interior lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'. Siblings BD8372HFP-MTR (200 mA), BD8374HFP-MTR (500 mA), BD81A24MUV-ME2 and BD2808MUV-ME2 on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD8379EFV-M",
+  "orderableCode": "BD8379EFV-ME2",
+  "desc": "Linear LED driver, 50 mA per channel, serial input",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-B20",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "instrument cluster",
+   "indicator LEDs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD90302NUF-C",
+  "orderableCode": "BD90302NUF-CE2",
+  "desc": "5.5 V input, 2 A synchronous buck converter with integrated P / N-channel MOSFETs",
+  "category": "ic_qfn",
+  "pkg": "VSON (see datasheet)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS camera / radar secondary rail",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+  "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BD94130xxx-M",
+  "orderableCode": "BD94130EFV-ME2",
+  "desc": "24-channel constant-current + 8-line switch-controller LED driver for mini-LED local-dimming backlights, SPI",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-B54 18.5x9.5 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "mini-LED local-dimming display",
+   "instrument cluster",
+   "centre display"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.rohm.com/products/power-management/led-drivers/constant-current-serial-in-parallel-out/bd94130efv-m-product",
+  "note": "ROHM page: \"AEC-Q100 Qualified (Grade 1)\", status Recommended. Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BM81810",
+  "orderableCode": "BM81810MUV-M",
+  "desc": "Automotive panel power-management IC (AEC-Q100 Grade 2) for navigation and cluster displays",
+  "category": "ic_qfn",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "display / cluster"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/new/rohm-semiconductor/rohm-bm81810muvm-automotive-pmic/",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "SP8K3FRA",
+  "orderableCode": "SP8K3FRATB",
+  "desc": "Dual N-channel 30 V, 7 A MOSFET",
+  "category": "ic_soic",
+  "pkg": "SOP8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "load switch"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+  "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read); AEC-Q101 is stated for the family. Same page: 5 A sibling SP8K1FRATB and the N + P pair SP8M10FRATB.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "BM2LC",
+  "orderableCode": "BM2LC120FJ-C",
+  "desc": "Low-side IPD with over-current, thermal shutdown and active clamp",
+  "category": "ic_soic",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body controller",
+   "actuator / solenoid drive"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.com/en/new/rohm-semiconductor/rohm-automotive-devices/",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si4792x",
+  "orderableCode": "SI47920A2GE1AM",
+  "desc": "High-performance automotive AM / FM tuner",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "head unit radio"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. Reel version SI47920A2GE1AMR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si823Hx",
+  "orderableCode": "SI823H5BD-AS3",
+  "desc": "Isolated dual-channel gate driver, 5 kV",
+  "category": "ic_soic",
+  "pkg": "SOIC-14",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "HV DC-DC",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. The page text also names SI823H2CD-AS3 as an isolated gate driver for EV / HEV.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si86S6xx",
+  "orderableCode": "SI86S620BE-AS4",
+  "desc": "Digital isolator 6 kV, 2 channels",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "OBC",
+   "isolated CAN / SPI"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. Also SI86S622BE-AS4 (bidirectional pair) and SI86S620BC-AS (3.75 kV).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si86S6xx",
+  "orderableCode": "SI86S622BE-AS4",
+  "desc": "Digital isolator 6 kV, 2 channels (1 forward / 1 reverse)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "OBC",
+   "isolated CAN"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si86S6xx",
+  "orderableCode": "SI86S642BE-AS2",
+  "desc": "Digital isolator 6 kV, 4 channels (SPI)",
+  "category": "ic_soic",
+  "pkg": "SOIC-16",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "OBC",
+   "isolated SPI"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. Also SI86S641BC-AS1 (3.75 kV) and SI86SS51BE-AS2 (5 channels).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si892x",
+  "orderableCode": "SI8921BD-AS4",
+  "desc": "Automotive isolated analog amplifier for current sensing",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "traction inverter",
+   "BMS current shunt"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si893x",
+  "orderableCode": "SI8931D-AS4",
+  "desc": "Automotive isolated voltage sensor (isolated amplifier)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "HV DC-DC",
+   "DC-link voltage sense"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si5225x",
+  "orderableCode": "SI52254A-D01AM",
+  "desc": "Automotive clock generator, 32-QFN",
+  "category": "ic_qfn",
+  "pkg": "QFN-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "PCIe reference clock for SoC / switch"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "Si5332",
+  "orderableCode": "SI5332B-D-AM1",
+  "desc": "Automotive clock generator, 32-QFN",
+  "category": "ic_qfn",
+  "pkg": "QFN-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS / infotainment clock tree"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Exact code as listed on Digi-Key's Skyworks 'Automotive Semiconductor Products' page; AEC-Q100 not stated per part there. Also SI5332B-D-AM2 (40-QFN), SI5332B-D-AM3 (48-QFN). The catalogue holds the sibling SI5332A-D-AM1R — different orderable part.",
+  "catalogue": "no"
+ }
+]

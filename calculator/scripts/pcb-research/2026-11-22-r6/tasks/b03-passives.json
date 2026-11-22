@@ -1,0 +1,740 @@
+[
+ {
+  "mfr": "Nichicon",
+  "family": "UCZ (chip aluminium, 125 C)",
+  "orderableCode": "UCZ1V101MCL1GS",
+  "desc": "Aluminium electrolytic 100 uF 35 V 20%, SMD can, UCZ series",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "DC-DC converter",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=1V101MCL1GS",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the UCZ siblings UCZ1H101MCL1GS / UCZ1V221MCL1GS (recorded 125 C automotive).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nichicon",
+  "family": "UCH (chip aluminium, low-temperature ESR)",
+  "orderableCode": "UCH1V101MCL1GS",
+  "desc": "Aluminium electrolytic 100 uF 35 V 20%, SMD can, UCH series",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "DC-DC converter",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=1V101MCL1GS",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nichicon",
+  "family": "UCJ (chip aluminium)",
+  "orderableCode": "UCJ1V101MCL1GS",
+  "desc": "Aluminium electrolytic 100 uF 35 V 20%, SMD can, UCJ series",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "DC-DC converter",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=1V101MCL1GS",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nippon Chemi-Con",
+  "family": "HXD (hybrid)",
+  "orderableCode": "HHXD350ARA271MJA0G",
+  "desc": "Hybrid polymer Al SMD 270 uF 35 V 20 mohm, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "10x10 mm can",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=HHXD350ARA271MJA0G",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-2GE",
+  "orderableCode": "ERJ-2GEJ511X",
+  "desc": "RES, 510, 5%, 0.1 W, AEC-Q200 Grade 0, 0402",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "2024-02",
+  "usedIn": [
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)",
+   "TI TIDEP-01037 low-power in-cabin radar",
+   "TI TIDEP-01034 entry-level blind-spot detection radar"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 6,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMCP0",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZU (hybrid, 135 C)",
+  "orderableCode": "EEH-ZU1V331P",
+  "desc": "Hybrid polymer Al SMD 330 uF 35 V, 11 mohm, 4000 h @135 C, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "10x10.2 mm can",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "EPS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=EEHZU1V331P",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+  "orderableCode": "EEHZK1V101XP",
+  "desc": "Conductive polymer hybrid aluminium capacitor 100 uF 35 V, ZK series, SMD can",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=EEHZK1V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the ZK sibling EEHZK1V331P, not read for this exact code. TME lists 16 ZK 35 V codes (also ...1V181P, 1V391UP, 1V560P, 1V680UP and the V-suffix variants).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+  "orderableCode": "EEHZK1V331P",
+  "desc": "Conductive polymer hybrid aluminium capacitor 330 uF 35 V 20%, ESR 20 mohm, 2.8 A, 10 x 10.2 mm SMD can, 125 C 4000 h, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "10x10.2 mm can",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "EPS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/details/eehzk1v331p/smd-hybrid-capacitors/panasonic/",
+  "note": "TME detail page states series ZK and \"Conform to the norm: AEC-Q200\". Hyphenated elsewhere as EEH-ZK1V331P. First pass found the ZU series only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZS (hybrid, high capacitance)",
+  "orderableCode": "EEHZS1V471UP",
+  "desc": "Conductive polymer hybrid aluminium capacitor 470 uF 35 V, ZS series, SMD can",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "EPS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=EEHZS1V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME also lists the V-suffix variants (EEHZS1V471V / 471UV / 681UV / 331V) and EEHZS1V471P.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-2GE 0402",
+  "orderableCode": "ERJ-2GE0R00X",
+  "desc": "Thick-film jumper 0 ohm 0402, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDEP-01036 mmWave radar kick-to-open",
+   "TI TIDEP-01037 low-power in-cabin radar",
+   "TI TIDEP-01033 60 GHz radar small form factor",
+   "TI TIDEP-01034 entry-level blind-spot detection radar",
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDE3",
+  "note": "On seven boards. Listed by Mouser, Newark, RS, LCSC (search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-3GE 0603",
+  "orderableCode": "ERJ-3GEY0R00V",
+  "desc": "Thick-film jumper 0 ohm 0603, AEC-Q200 Grade 0",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "2024-08",
+  "usedIn": [
+   "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-050063 HV solid-state relay active precharge"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD68",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-P0x (anti-surge)",
+  "orderableCode": "ERJP03F1002V",
+  "desc": "Thick film anti-surge resistor 10 k 1%, 0603 (ERJ-P series)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated on Digi-Key for the ERJ-P Series sibling ERJ-PA3F1002V, not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-P0x (anti-surge)",
+  "orderableCode": "ERJP06F1002V",
+  "desc": "Thick film anti-surge resistor 10 k 1%, 0805 (ERJ-P series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated on Digi-Key for the ERJ-P Series sibling ERJ-PA3F1002V, not read for this exact code. Catalogue holds the 1 k sibling ERJ-P06F1001V.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-PA (anti-surge, high power)",
+  "orderableCode": "ERJPA3F1002V",
+  "desc": "Thick film anti-surge / pulse-withstanding resistor 10 k 1% 1/3 W, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME lists it; Digi-Key lists the same part as ERJ-PA3F1002V, \"Automotive AEC-Q200, Pulse Withstanding\", ERJ-P Series (digikey.co.uk/en/products/detail/panasonic-electronic-components/ERJ-PA3F1002V/5035849).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-U (anti-sulfurated)",
+  "orderableCode": "ERJU03F1002V",
+  "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.1 W, 0603, -55..155 C, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/details/erju03f1002v/smd-resistors/panasonic/",
+  "note": "TME detail page: \"Conform to the norm: AEC-Q200\". Hyphenated elsewhere as ERJ-U03F1002V. Catalogue holds the 0402 sibling ERJ-U02F1002X. TME also lists ERJU03F1000V / 1001V / 1003V / 1004V.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ETQP5M_Y (metal composite power choke coil)",
+  "orderableCode": "ETQP5M100YFC",
+  "desc": "Metal composite power choke coil 10 uH, ETQP5M ...YFC type (case size and current not read)",
+  "category": "passive_1206",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ETQP5M",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 33 ETQP5M codes (YFC / YFM / YFK / YGC / YGK / YLC types, 0.33 uH to 100 uH). First pass found ETQ-P5M6R8GAK only (a different type).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ETQP5M_Y (metal composite power choke coil)",
+  "orderableCode": "ETQP5M4R7YFC",
+  "desc": "Metal composite power choke coil 4.7 uH, ETQP5M ...YFC type (case size and current not read)",
+  "category": "passive_1206",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ETQP5M",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 33 ETQP5M codes (YFC / YFM / YFK / YGC / YGK / YLC types, 0.33 uH to 100 uH). First pass found ETQ-P5M6R8GAK only (a different type).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+  "orderableCode": "EEHZK1V221UP",
+  "desc": "Conductive polymer hybrid aluminium capacitor 220 uF 35 V, ZK series, SMD can",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=EEHZK1V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the ZK sibling EEHZK1V331P, not read for this exact code. TME lists 16 ZK 35 V codes (also ...1V181P, 1V391UP, 1V560P, 1V680UP and the V-suffix variants).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZS (hybrid, high capacitance)",
+  "orderableCode": "EEHZS1V331P",
+  "desc": "Conductive polymer hybrid aluminium capacitor 330 uF 35 V, ZS series, SMD can",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "EPS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=EEHZS1V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME also lists the V-suffix variants (EEHZS1V471V / 471UV / 681UV / 331V) and EEHZS1V471P.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "EEH-ZS (hybrid, high capacitance)",
+  "orderableCode": "EEHZS1V681UP",
+  "desc": "Conductive polymer hybrid aluminium capacitor 680 uF 35 V, ZS series, SMD can",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "EPS",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=EEHZS1V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME also lists the V-suffix variants (EEHZS1V471V / 471UV / 681UV / 331V) and EEHZS1V471P.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERA-xA (thin film, high reliability)",
+  "orderableCode": "ERA1AEB103C",
+  "desc": "Thin film resistor 10 k 0.1% 25 ppm, 0201 (ERA-1A series)",
+  "category": "passive_0402",
+  "pkg": "0201",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=AEB103",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the siblings ERA-3AEB103V (0603) and ERA-6AEB103V (0805), both recorded AEC-Q200.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERA-xA (thin film, high reliability)",
+  "orderableCode": "ERA2AEB103X",
+  "desc": "Thin film resistor 10 k 0.1% 25 ppm, 0402 (ERA-2A series)",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=AEB103",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the siblings ERA-3AEB103V (0603) and ERA-6AEB103V (0805), both recorded AEC-Q200.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERA-xA (thin film, high reliability)",
+  "orderableCode": "ERA8AEB103V",
+  "desc": "Thin film resistor 10 k 0.1% 25 ppm, 1206 (ERA-8A series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=AEB103",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the siblings ERA-3AEB103V (0603) and ERA-6AEB103V (0805), both recorded AEC-Q200.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-HP (high power thick film)",
+  "orderableCode": "ERJ-HP6F1001V",
+  "desc": "Thick-film resistor 1 k 1% 0.5 W 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "powertrain ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=ERJ-HP6F1001V",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-P0x (anti-surge)",
+  "orderableCode": "ERJP08F1002V",
+  "desc": "Thick film anti-surge resistor 10 k 1%, 1206 (ERJ-P series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "zonal controller",
+   "gateway",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated on Digi-Key for the ERJ-P Series sibling ERJ-PA3F1002V, not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-S (anti-sulfurated)",
+  "orderableCode": "ERJS06F1002V",
+  "desc": "Thick film anti-sulfurated resistor 10 k 1%, 0805 (ERJ-S series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0603 sibling ERJ-S03F1002V (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-S (anti-sulfurated)",
+  "orderableCode": "ERJS08F1002V",
+  "desc": "Thick film anti-sulfurated resistor 10 k 1%, 1206 (ERJ-S series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0603 sibling ERJ-S03F1002V (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-U (anti-sulfurated)",
+  "orderableCode": "ERJU06F1002V",
+  "desc": "Thick film anti-sulfurated resistor 10 k 1%, 0805 (ERJ-U series)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the ERJ-U sibling ERJU03F1002V, not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-U (anti-sulfurated)",
+  "orderableCode": "ERJU08F1002V",
+  "desc": "Thick film anti-sulfurated resistor 10 k 1%, 1206 (ERJ-U series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the ERJ-U sibling ERJU03F1002V, not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-UP (anti-sulfurated + anti-surge)",
+  "orderableCode": "ERJUP3F1002V",
+  "desc": "Thick film anti-sulfurated, anti-surge resistor 10 k 1%, 0603 (ERJ-UP series)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "powertrain ECU",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0805 sibling ERJ-UP6F1001V (recorded AEC-Q200); TME also lists ERJUP6F1002V.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-UP (anti-sulfurated + anti-surge)",
+  "orderableCode": "ERJUP8F1002V",
+  "desc": "Thick film anti-sulfurated, anti-surge resistor 10 k 1%, 1206 (ERJ-UP series)",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "powertrain ECU",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0805 sibling ERJ-UP6F1001V (recorded AEC-Q200); TME also lists ERJUP6F1002V.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ETQP_M_Y (metal composite, high performance)",
+  "orderableCode": "ETQ-P5M6R8GAK",
+  "desc": "Metal-composite power inductor 6.8 uH 9.1 A 19.8 mohm, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "5x5 mm class",
+  "aecq": true,
+  "launched": "2026-03",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://passive-components.eu/panasonic-extends-automotive-power-inductor-line/",
+  "note": "Digi-Key listing, Active. Same article: ETQ-P6M100GAC, ETQ-P4MR33KLC.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ETQP5M_Y (metal composite power choke coil)",
+  "orderableCode": "ETQP5M220YFC",
+  "desc": "Metal composite power choke coil 22 uH, ETQP5M ...YFC type (case size and current not read)",
+  "category": "passive_1206",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ETQP5M",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 33 ETQP5M codes (YFC / YFM / YFK / YGC / YGK / YLC types, 0.33 uH to 100 uH). First pass found ETQ-P5M6R8GAK only (a different type).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ETQP5M_Y (metal composite power choke coil)",
+  "orderableCode": "ETQP5M4R7YFM",
+  "desc": "Metal composite power choke coil 4.7 uH, ETQP5M ...YFM type (case size and current not read)",
+  "category": "passive_1206",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU",
+   "engine ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ETQP5M",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 33 ETQP5M codes (YFC / YFM / YFK / YGC / YGK / YLC types, 0.33 uH to 100 uH). First pass found ETQ-P5M6R8GAK only (a different type).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Panasonic",
+  "family": "ERJ-H (ERJ-H3E)",
+  "orderableCode": "ERJH3EF1002V",
+  "desc": "Thick film chip resistor 10 k 1%, 0603, ERJ-H3E series",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "powertrain ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F1002V",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. What the ERJ-H series is for (the maker's high-temperature line, as far as known) was not read on a page — check the datasheet before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "ESR (anti-surge)",
+  "orderableCode": "ESR03EZPF1002",
+  "desc": "Anti-surge thick-film resistor 10 k 1% 0.25 W 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "powertrain ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=ESR03EZPF1002",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ }
+]

@@ -1,0 +1,730 @@
+[
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT070HU120G3AG",
+  "orderableCode": "SCT070HU120G3AG",
+  "desc": "automotive-grade SiC power MOSFET, 1200 V, 70 mOhm class, top-side cooled",
+  "category": "ic_soic",
+  "pkg": "HU3PAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/automotive-grade-sic-mosfets-with-breakdown-voltages-up-to-1200v-devices-for-higher-design-flexibility.html",
+  "note": "Listed by TME (https://www.tme.eu/en/katalog/?search=G3AG). ST HU3PAK campaign page: Gen 3 SiC MOSFETs in HU3PAK (650 / 750 / 1200 V series) are AEC-Q101 qualified. Voltage / mOhm class read from the part code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC560B body MCU SPC560B60L3",
+  "orderableCode": "SPC560B60L3C6E0X",
+  "desc": "32-bit Power Architecture automotive MCU for body applications",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 100 (order-code scheme)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "door / seat / HVAC ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://estore.st.com/en/products/automotive-microcontrollers/spc5-32-bit-automotive-mcus-page10.html?cat=21088",
+  "note": "No AEC statement was read for this exact code; ST eStore category 'SPC5 32-bit automotive MCUs' (family evidence). Code as listed by TME (https://www.tme.eu/en/katalog/?search=SPC56). Package read from ST's order-code scheme (L1 = LQFP64, L3 = LQFP100, L7 = LQFP176) unless stated.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC560C body MCU SPC560C50L1",
+  "orderableCode": "SPC560C50L1B4E0X",
+  "desc": "32-bit Power Architecture automotive MCU for body applications",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 64 (order-code scheme)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "door / seat / HVAC ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://estore.st.com/en/products/automotive-microcontrollers/spc5-32-bit-automotive-mcus-page10.html?cat=21088",
+  "note": "No AEC statement was read for this exact code; ST eStore category 'SPC5 32-bit automotive MCUs' (family evidence). Code as listed by TME (https://www.tme.eu/en/katalog/?search=SPC56). Package read from ST's order-code scheme (L1 = LQFP64, L3 = LQFP100, L7 = LQFP176) unless stated.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC560D body MCU SPC560D40L1",
+  "orderableCode": "SPC560D40L1C4E0X",
+  "desc": "32-bit Power Architecture automotive MCU, entry body line",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 64 (order-code scheme)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "door / seat / HVAC ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://estore.st.com/en/products/automotive-microcontrollers/spc5-32-bit-automotive-mcus-page10.html?cat=21088",
+  "note": "No AEC statement was read for this exact code; ST eStore category 'SPC5 32-bit automotive MCUs' (family evidence). Code as listed by TME (https://www.tme.eu/en/katalog/?search=SPC56). Package read from ST's order-code scheme (L1 = LQFP64, L3 = LQFP100, L7 = LQFP176) unless stated. TME also lists SPC560D30L1B4E0X.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SPC56EL safety MCU SPC56EL60L3",
+  "orderableCode": "SPC56EL60L3CBFSR",
+  "desc": "32-bit Power Architecture dual-core automotive MCU for chassis and safety applications",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 100 (order-code scheme)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "door / seat / HVAC ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://estore.st.com/en/products/automotive-microcontrollers/spc5-32-bit-automotive-mcus-page10.html?cat=21088",
+  "note": "No AEC statement was read for this exact code; ST eStore category 'SPC5 32-bit automotive MCUs' (family evidence). Code as listed by TME (https://www.tme.eu/en/katalog/?search=SPC56). Package read from ST's order-code scheme (L1 = LQFP64, L3 = LQFP100, L7 = LQFP176) unless stated. ST eStore lists the sibling packing SPC56EL60L3CBFQR. Catalogue holds SPC560P50L5CEFAR (a different line).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STD105N10F7AG",
+  "orderableCode": "STD105N10F7AG",
+  "desc": "automotive-grade N-channel 100 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_soic",
+  "pkg": "DPAK (STD code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STGAP2SiCSA automotive isolated gate driver",
+  "orderableCode": "STGAP2SICSACTR",
+  "desc": "galvanically isolated single gate driver for SiC MOSFETs, automotive variant of STGAP2SiCS",
+  "category": "ic_soic",
+  "pkg": "SO-8W (not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter",
+   "on-board charger",
+   "HV DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=STGAP",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Catalogue holds the non-automotive STGAP2SICS; first pass found STGAP2SA / STGAP2HSA (AEC-Q100). This is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F8 40 V automotive STK615N4F8AG",
+  "orderableCode": "STK615N4F8AG",
+  "desc": "N-channel 40 V STripFET F8 power MOSFET for automotive motor control (ratings and package not read on a page)",
+  "category": "ic_soic",
+  "pkg": "STK package code (not read)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "battery switch",
+   "48 V / 12 V power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.in/en/new/stmicroelectronics/stmicroelectronics-stripfet-f8-mosfets/",
+  "note": "Mouser STripFET F8 page names it with STL165N4F8AG as an automotive motor-control part; parts ending in AG are AEC-Q101 qualified. Also listed by TME (https://www.tme.eu/en/katalog/?search=F8AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL115N10F7AG",
+  "orderableCode": "STL115N10F7AG",
+  "desc": "automotive-grade N-channel 100 V STripFET F7 power MOSFET (48 V systems) (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL135N8F7AG",
+  "orderableCode": "STL135N8F7AG",
+  "desc": "automotive-grade N-channel 80 V STripFET F7 power MOSFET (48 V systems) (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL190N4F7AG",
+  "orderableCode": "STL190N4F7AG",
+  "desc": "automotive-grade N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL285N4F7AG",
+  "orderableCode": "STL285N4F7AG",
+  "desc": "automotive-grade N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT (STL code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL64DN4F7AG",
+  "orderableCode": "STL64DN4F7AG",
+  "desc": "automotive-grade dual N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT dual (STL...DN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STripFET F7 automotive STL76DN4LF7AG",
+  "orderableCode": "STL76DN4LF7AG",
+  "desc": "automotive-grade dual N-channel 40 V logic-level STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+  "category": "ic_qfn",
+  "pkg": "PowerFLAT dual (STL...DN code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC",
+   "battery switch / reverse protection",
+   "body loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=F7AG",
+  "note": "No AEC statement was read for this exact code; 'AG' is ST's automotive-grade suffix; family page: Mouser 'STMicroelectronics AEC-Q101 Qualified STripFET Power MOSFETs' https://www.mouser.co.uk/stm-automotive-stripfet-mosfets (title seen, page not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STM8AF automotive 8-bit MCU STM8AF5268",
+  "orderableCode": "STM8AF5268TCY",
+  "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 32 Kbyte flash class, 48 pins",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 48 (T code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "actuator / sensor node",
+   "LIN slave",
+   "body switch module",
+   "HVAC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=STM8AF",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. STM8A is ST's automotive 8-bit MCU line; TME lists 91 STM8AF codes. Memory size / pin count read from ST's order-code scheme, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STM8AF automotive 8-bit MCU STM8AF5288",
+  "orderableCode": "STM8AF5288TCY",
+  "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 64 Kbyte flash class, 48 pins",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 48 (T code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "actuator / sensor node",
+   "LIN slave",
+   "body switch module",
+   "HVAC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=STM8AF",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. STM8A is ST's automotive 8-bit MCU line; TME lists 91 STM8AF codes. Memory size / pin count read from ST's order-code scheme, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STM8AF automotive 8-bit MCU STM8AF52A8",
+  "orderableCode": "STM8AF52A8TCY",
+  "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 128 Kbyte flash class, 48 pins",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 48 (T code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "actuator / sensor node",
+   "LIN slave",
+   "body switch module",
+   "HVAC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=STM8AF",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. STM8A is ST's automotive 8-bit MCU line; TME lists 91 STM8AF codes. Memory size / pin count read from ST's order-code scheme, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STPS15H100C-Y automotive dual Schottky",
+  "orderableCode": "STPS15H100CBY-TR",
+  "desc": "automotive 100 V dual common-cathode power Schottky rectifier (ratings read from the part code)",
+  "category": "ic_soic",
+  "pkg": "DPAK (B code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC",
+   "reverse-polarity protection",
+   "freewheeling",
+   "on-board charger"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=BY-TR",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. '-Y' = ST automotive-grade diode suffix; Mouser family page 'STMicroelectronics Automotive Power Schottky Diodes' https://www.mouser.in/en/new/stmicroelectronics/stm-autoschottky/ (title seen, not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STPSC6H065-Y automotive SiC diode",
+  "orderableCode": "STPSC6H065BY-TR",
+  "desc": "automotive 650 V, 6 A silicon-carbide power Schottky diode (ratings read from the part code)",
+  "category": "ic_soic",
+  "pkg": "DPAK (B code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "PFC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=BY-TR",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. '-Y' = ST automotive-grade diode suffix; sibling STPSC10H065BY-TR is described as Automotive on the ST eStore. TME also lists STPSC8H065BY-TR.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "STPST5H100-Y automotive trench Schottky",
+  "orderableCode": "STPST5H100SBY-TR",
+  "desc": "automotive 100 V, 5 A power Schottky trench rectifier",
+  "category": "ic_soic",
+  "pkg": "DPAK",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC",
+   "reverse-polarity protection",
+   "freewheeling",
+   "on-board charger"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.st.com/en/diodes-and-rectifiers/stpst5h100sb-y.html",
+  "note": "ST product page: AEC-Q101 qualified, active. Also listed by TME (https://www.tme.eu/en/katalog/?search=BY-TR).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TL431A automotive (IY) TL431AIYDT",
+  "orderableCode": "TL431AIYDT",
+  "desc": "programmable shunt voltage reference, 1 % (A grade)",
+  "category": "ic_soic",
+  "pkg": "SO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "power supply feedback",
+   "reference"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYDT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TS3011 automotive (IY) TS3011IYLT",
+  "orderableCode": "TS3011IYLT",
+  "desc": "single high-speed rail-to-rail comparator",
+  "category": "ic_soic",
+  "pkg": "SOT23-5 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "protection comparators",
+   "motor control"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYLT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TS393 automotive (IY) TS393IYDT",
+  "orderableCode": "TS393IYDT",
+  "desc": "dual micropower CMOS voltage comparator",
+  "category": "ic_soic",
+  "pkg": "SO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "window / threshold detection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYDT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSB612 automotive (IY) TSB612IYST",
+  "orderableCode": "TSB612IYST",
+  "desc": "dual 36 V low-power op amp, TSB6 series",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSB712A automotive (IY) TSB712AIYST",
+  "orderableCode": "TSB712AIYST",
+  "desc": "dual 36 V precision op amp, TSB7 series",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSB7192 automotive (IY) TSB7192IYST",
+  "orderableCode": "TSB7192IYST",
+  "desc": "dual 36 V op amp, TSB7 series",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSC101A automotive (IY) TSC101AIYLT",
+  "orderableCode": "TSC101AIYLT",
+  "desc": "high-side current-sense amplifier, gain 20 V/V",
+  "category": "ic_soic",
+  "pkg": "SOT23-5 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "current sensing"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYLT",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSC2012 automotive (IY) TSC2012IYST",
+  "orderableCode": "TSC2012IYST",
+  "desc": "bidirectional current-sense amplifier, gain 100 V/V (TSC201x series)",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor phase current sensing",
+   "DC-DC",
+   "battery monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSC2020 automotive (IY) TSC2020IYST",
+  "orderableCode": "TSC2020IYST",
+  "desc": "current-sense amplifier, TSC202x series (ratings not read)",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "current sensing"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSV7722 automotive (IY) TSV7722IYST",
+  "orderableCode": "TSV7722IYST",
+  "desc": "dual 5 V op amp, rail-to-rail output (MiniSO-8 code of the TSV7722)",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSV912 automotive (IY) TSV912IYST",
+  "orderableCode": "TSV912IYST",
+  "desc": "dual 8 MHz rail-to-rail 5 V CMOS op amp",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "TSZ122 automotive (IY) TSZ122IYST",
+  "orderableCode": "TSZ122IYST",
+  "desc": "dual zero-drift micropower 5 V op amp",
+  "category": "ic_soic",
+  "pkg": "MiniSO-8 (ST code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor signal conditioning",
+   "current sensing",
+   "motor control",
+   "power supply monitoring"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=IYST",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. 'IY' = ST automotive-grade order code (Digi-Key states AEC-Q100 for TSB572IYST; ST eStore automotive op amps category https://estore.st.com/en/products/automotive-analog-and-power/automotive-op-amps.html?cat=341837). Function described from the ST part family, not from a page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7003AH",
+  "orderableCode": "VN7003AHTR",
+  "desc": "single-channel high-current high-side driver, VIPower M0-7 (3 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "Octapak (H code - not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "power distribution",
+   "relay replacement"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Package and ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7004CH",
+  "orderableCode": "VN7004CHTR",
+  "desc": "single-channel high-current high-side driver, VIPower M0-7 (4 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "Octapak (H code - not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "power distribution",
+   "relay replacement"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Package and ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7007AH",
+  "orderableCode": "VN7007AHTR",
+  "desc": "single-channel high-current high-side driver, VIPower M0-7 (7 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "Octapak (H code - not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "power distribution",
+   "heater / glow / fan loads"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Package and ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "VIPower M0-7 high-side driver VN7008AJ",
+  "orderableCode": "VN7008AJTR",
+  "desc": "single-channel high-side driver, VIPower M0-7 (8 mOhm class from the part code)",
+  "category": "ic_soic",
+  "pkg": "PowerSSO-16 (AJ code)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zonal controller",
+   "lighting",
+   "power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VN7",
+  "note": "AUTOMOTIVE STATUS NOT READ ON A PAGE: listed because the code is on a franchised distributor's page and the line is one of ST's automotive lines named in the task brief; aecq left false. Ratings read from the part code, not from a page.",
+  "catalogue": "no"
+ }
+]

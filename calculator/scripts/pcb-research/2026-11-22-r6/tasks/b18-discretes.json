@@ -1,0 +1,672 @@
+[
+ {
+  "mfr": "American Bright",
+  "family": "AB-PL series",
+  "orderableCode": "AB-PL1515C0I6-5VX01515",
+  "desc": "Addressable RGB LED with integrated driver IC, 1515 package",
+  "category": "led",
+  "pkg": "1.5x1.5 mm",
+  "aecq": true,
+  "launched": "2025-09",
+  "usedIn": [
+   "interior ambient lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/a/american-bright/ab-pl-series-aec-q102-qualified-led",
+  "note": "AEC-Q102; Digi-Key product highlight.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "American Bright",
+  "family": "AEC-Q102 addressable RGB with IC",
+  "orderableCode": "BB-HBRG32N-TRB-0-AQ",
+  "desc": "Addressable RGB LED with integrated IC, SPI control",
+  "category": "led",
+  "pkg": "PLCC-6",
+  "aecq": true,
+  "launched": "2025-04",
+  "usedIn": [
+   "interior light sources"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/a/american-bright/aecq-102-addressable-rgb-led-with-ic",
+  "note": "AEC-Q102; Digi-Key product highlight.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "2N7002Q",
+  "orderableCode": "2N7002Q-7-F",
+  "desc": "60 V N-channel small-signal MOSFET, automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+  "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BAT54SQ",
+  "orderableCode": "BAT54SQ",
+  "desc": "Dual series Schottky diode 30 V, 200 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. BAT54CQ / BAT54AQ / BAT54WSQ are in the same table.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BC817-40Q",
+  "orderableCode": "BC817-40Q-7-F",
+  "desc": "45 V, 500 mA NPN general-purpose transistor, automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--bipolar-transistors/bc817-40q-7-f-diodes-incorporated-7109776",
+  "note": "Future Electronics listing (search result; Future refuses direct reads); Diodes' own page diodes.com/part/view/BC817-40Q marks it Automotive.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BC847CQ",
+  "orderableCode": "BC847CQ-7-F",
+  "desc": "45 V, 100 mA NPN general-purpose transistor, automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+  "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BSS123",
+  "orderableCode": "BSS123W-7-F",
+  "desc": "N-channel MOSFET 100 V 0.17 A SOT-323",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323",
+  "aecq": false,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDEP-01036 mmWave radar kick-to-open",
+   "TI TIDEP-01033 60 GHz radar small form factor",
+   "TI TIDEP-01034 entry-level blind-spot detection radar"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "Orderable member for the catalogue estimate BSS123. BOM text does not state AEC-Q.",
+  "catalogue": "estimate",
+  "catalogueKey": "BSS123"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BSS138Q",
+  "orderableCode": "BSS138Q-7-F",
+  "desc": "50 V N-channel small-signal MOSFET (level shifting), automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+  "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing. Catalogue's BSS138 entry is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BSS84Q",
+  "orderableCode": "BSS84Q-7-F",
+  "desc": "50 V P-channel small-signal MOSFET, automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+  "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing. Catalogue holds Nexperia's BSS84AKW,115 — a different maker and part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "DESD1CAN2SOQ",
+  "orderableCode": "DESD1CAN2SOQ",
+  "desc": "CAN bus ESD protection, 2 lines bidirectional, 24 V, ±30 kV",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "CAN node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "DESD1CANFD24VSOQ",
+  "orderableCode": "DESD1CANFD24VSOQ",
+  "desc": "CAN FD bus ESD protection, 2 lines bidirectional, 24 V, low capacitance",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "2022",
+  "usedIn": [
+   "CAN FD node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Brochure availability: Q4 2022.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "DESD1LIN2WSQ",
+  "orderableCode": "DESD1LIN2WSQ",
+  "desc": "LIN bus ESD protection, dual bidirectional, 24 V, ±30 kV",
+  "category": "fuse_tvs",
+  "pkg": "SOT323",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "MMBT3904Q",
+  "orderableCode": "MMBT3904Q-7-F",
+  "desc": "40 V, 200 mA NPN small-signal transistor, AEC-Q101, PPAP capable",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://diodes.com/part/view/MMBT3904Q",
+  "note": "Code and AEC-Q101 statement read in the web-search result for Diodes' product page (site refuses direct reads). Catalogue's 3904 is onsemi SMMBT3904LT1G.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "SBR3U40P1Q",
+  "orderableCode": "SBR3U40P1Q",
+  "desc": "Super Barrier Rectifier 40 V, 3 A, VF 0.47 V",
+  "category": "fuse_tvs",
+  "pkg": "PowerDI123",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU (reverse-polarity / freewheel)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "SMAJxxAQ / SMAJxxCAQ (5–200 V)",
+  "desc": "400 W TVS, uni- / bidirectional, automotive Q series",
+  "category": "fuse_tvs",
+  "pkg": "SMA",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU supply / I/O clamp"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Brochure prints the series range 'SMAJ5.0 – SMAJ200AQ / SMAJ200CAQ'; no single mid-range code (e.g. 24 V) is printed, so none is given.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "SMBJxxAQ / SMBJxxCAQ (12–100 V)",
+  "desc": "600 W TVS, uni- / bidirectional, automotive Q series",
+  "category": "fuse_tvs",
+  "pkg": "SMB",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU supply clamp"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Brochure prints the series range 'SMBJ12 – SMBJ100AQ / SMBJ100CAQ'; no single mid-range code is printed, so none is given. Printed beside it: 1500 W SMCJ5.0 – SMCJ85AQ / CAQ (SMC), 3000 W 3.0SMCJ14 – 3.0SMCJ30AQ, and load-dump DM5W10 – DM5W36AQ (DO218).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "BC847BSQ",
+  "orderableCode": "BC847BSQ-7-F",
+  "desc": "Dual NPN 45 V, 100 mA general-purpose transistor, automotive",
+  "category": "fuse_tvs",
+  "pkg": "SOT363",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--bipolar-transistors/bc847bsq-7-f-diodes-incorporated-4073922",
+  "note": "Future Electronics listing (code read from the listing URL in the search result). Package from the BS (dual, SOT363) naming.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KYOCERA AVX",
+  "family": "CAN series (CAN-bus varistor)",
+  "orderableCode": "CAN0001DP",
+  "desc": "Multilayer varistor for CAN bus line protection, CAN series (case size / capacitance not read)",
+  "category": "fuse_tvs",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "CAN transceiver",
+   "body ECU",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=CAN000",
+  "note": "TME lists it under SMD varistors (the only CAN000x code TME holds).  AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch miniASMDC (automotive 1812 PPTC)",
+  "orderableCode": "MINIASMDC050F-2",
+  "desc": "Resettable PPTC, 0.5 A hold / 1 A trip, 24 V, 1812, automotive PolySwitch",
+  "category": "fuse_tvs",
+  "pkg": "1812",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "USB / sensor supply",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME lists it; ratings from the distributor data returned by search (Mouser \"Automotive SMD Resettable Fuses\": qualified per AEC-Q200 — stated for the automotive SMD family, not read for this exact code). Littelfuse page: littelfuse.com/products/polyswitch-resettable-pptcs/surface-mount/miniasmd/miniasmdc050f_2.aspx.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V18MLA0603NHAUTO",
+  "desc": "Multilayer varistor, 18 V DC working voltage, 0603, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "CAN / LIN interface",
+   "load-dump protection"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V18MLA0805NHAUTO",
+  "desc": "Multilayer varistor, 18 V DC working voltage, 0805, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "CAN / LIN interface",
+   "load-dump protection"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "SZSMF6L series",
+  "desc": "600 W automotive TVS in SOD-123FL, operating to 175 C",
+  "category": "fuse_tvs",
+  "pkg": "SOD-123FL",
+  "aecq": true,
+  "launched": "2025-09",
+  "usedIn": [
+   "ECU supply / I/O protection",
+   "zonal controller"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.littelfuse.com/company/news-and-events/in-the-news/newspages-articles/press-releases/2025/littelfuse-adds-600-w-szsmf6l-series-to-automotive-tvs-line-for-high-energy-transient-protection",
+  "note": "AEC-Q101, PPAP capable (search summary of the Littelfuse release).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch ASMDC (automotive PPTC)",
+  "orderableCode": "ASMDC050F-2",
+  "desc": "Resettable PPTC, 0.5 A hold (from the code), ASMDC automotive PolySwitch (case size not read)",
+  "category": "fuse_tvs",
+  "pkg": "SMD",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "motor / actuator supply"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Littelfuse describes the ASMDC series as AEC-Q200 qualified (series level, via search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch miniASMDC (automotive 1812 PPTC)",
+  "orderableCode": "MINIASMDC020F-2",
+  "desc": "Resettable PPTC, 0.2 A hold (from the code), 1812, automotive PolySwitch",
+  "category": "fuse_tvs",
+  "pkg": "1812",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "sensor supply"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME also lists MINIASMDC010F-2.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch nanoASMDC (automotive 1206 PPTC)",
+  "orderableCode": "NANOASMDC012F-2",
+  "desc": "Resettable PPTC, 0.12 A hold / 0.39 A trip, 48 V, 1206, automotive PolySwitch",
+  "category": "fuse_tvs",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor supply",
+   "camera / antenna supply"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME lists it; ratings from the Digi-Key nanoASMDC page returned by search, which says the series is qualified under PS400, \"derived from AEC-Q200\" — so AEC-Q200 is not claimed directly.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V26MLA0805NHAUTO",
+  "desc": "Multilayer varistor, 26 V DC working voltage, 0805, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "CAN / LIN interface",
+   "load-dump protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V33MLA1206NHAUTO",
+  "desc": "Multilayer varistor, 33 V DC working voltage, 1206, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "CAN / LIN interface",
+   "load-dump protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V48MLA1210NHAUTO",
+  "desc": "Multilayer varistor, 48 V DC working voltage, 1210, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "1210",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "48 V ECU",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "MLA Automotive (multilayer varistor)",
+  "orderableCode": "V5.5MLA0603NHAUTO",
+  "desc": "Multilayer varistor, 5.5 V DC working voltage, 0603, MLA Automotive series",
+  "category": "fuse_tvs",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "CAN / LIN interface",
+   "load-dump protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=NHAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. TME lists 13 ...NHAUTO codes (also V14 / V18 / V42 in 1206, V30 in 0603, V14 / V18 0805L, V30 1210L).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch ASMD (automotive PPTC)",
+  "orderableCode": "ASMD100F-2",
+  "desc": "Resettable PPTC, 1.0 A hold (from the code), ASMD automotive PolySwitch (case size not read)",
+  "category": "fuse_tvs",
+  "pkg": "SMD",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "motor / actuator supply"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Littelfuse",
+  "family": "PolySwitch ASMDC (automotive PPTC)",
+  "orderableCode": "ASMDC030F-2",
+  "desc": "Resettable PPTC, 0.3 A hold (from the code), ASMDC automotive PolySwitch (case size not read)",
+  "category": "fuse_tvs",
+  "pkg": "SMD",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "motor / actuator supply"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ASMD",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Littelfuse describes the ASMDC series as AEC-Q200 qualified (series level, via search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "2N7002AK-Q",
+  "orderableCode": "2N7002AK-Q",
+  "desc": "60 V N-channel Trench MOSFET, automotive -Q type (status Production)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/product/2N7002AK-Q",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a 2N7002 family ESTIMATE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BAS21-Q",
+  "orderableCode": "BAS21-Q",
+  "desc": "High-voltage switching diode, automotive -Q type (status Production)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://nexperia.com/products/diodes/automotive-diodes/automotive-switching-diodes",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds the standard BAS21,215 — a different orderable part. Reel suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BAV99-Q",
+  "orderableCode": "BAV99-Q",
+  "desc": "High-speed dual series switching diode, automotive -Q type",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://nexperia.com/package/SOT23",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds the standard BAV99,215 — a different orderable part (Nexperia moved AEC-Q101 status to the -Q types after 30 Jun 2022). Reel suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BC807-Q series",
+  "orderableCode": "BC807-40-Q",
+  "desc": "45 V, 500 mA PNP general-purpose transistor, automotive -Q type (complement of BC817-40-Q)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-q100-q101/automotive-bipolar-transistors/general-purpose-bipolar-transistors/",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Mouser also carries a 'Nexperia BC807Qx PNP General Purpose Transistors' new-product page (not readable). Reel suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BC817-Q series",
+  "orderableCode": "BC817-40-Q",
+  "desc": "45 V, 500 mA NPN general-purpose transistor, automotive -Q type",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/group/bc817-q-series",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds no BC817 entry at all. Type number as printed; reel suffix not seen.",
+  "catalogue": "no"
+ }
+]

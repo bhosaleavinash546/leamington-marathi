@@ -1,0 +1,715 @@
+[
+ {
+  "mfr": "Infineon",
+  "family": "MOTIX BTM90xx full-bridge",
+  "orderableCode": "BTM9010EP",
+  "desc": "Integrated full-bridge brushed-DC motor driver, 10 A current limit, adjustable slew rate",
+  "category": "ic_soic",
+  "pkg": "unknown (EP sibling of the PG-TSDSO-14 20 A parts)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body DC motors",
+   "HVAC flap / small actuators"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://infineon.com/cms/de/product/power/motor-control-ics/brushed-dc-motor-control-ics/integrated-full-bridge-ics/btm9010ep",
+  "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "MOTIX BTM90xx full-bridge",
+  "orderableCode": "BTM9020EP",
+  "desc": "Integrated full-bridge (H-bridge) brushed-DC motor driver, 20 A current limit, 84 mOhm path typ., 7-18 V",
+  "category": "ic_soic",
+  "pkg": "PG-TSDSO-14 (exposed pad)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body DC motors",
+   "door / seat / latch",
+   "zonal controller"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/BTM9020EP",
+  "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "MOTIX BTM90xx full-bridge",
+  "orderableCode": "BTM9021EP",
+  "desc": "Integrated full-bridge brushed-DC motor driver, 20 A, SPI with daisy chain and internal watchdog",
+  "category": "ic_soic",
+  "pkg": "PG-TSDSO-14 (exposed pad)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body DC motors",
+   "door / seat / latch",
+   "zonal controller"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/BTM9021EP",
+  "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "PSOC 4 HVPA-144K",
+  "orderableCode": "CY8C4147LCE-HV403",
+  "desc": "12 V precision-analog Cortex-M0+ MCU for battery monitoring (shunt current / voltage), LIN PHY, ASIL C functions",
+  "category": "ic_qfn",
+  "pkg": "not read (QFN assumed)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "12 V intelligent battery sensor",
+   "BMS pack monitor"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/CY8C4147LCE-HV403",
+  "note": "has.py prefix-matches the UNRELATED CY8C4147AZE-S475; the family name prints NOT IN CATALOGUE. Code read on the TME (franchised distributor) search listing, 22 Nov 2026. Also CY8C4147LCE-HV413 / -HV423 listed. Infineon: 'PSOC HVPA-144K is AEC-Q100 qualified'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "PSOC 4 HVMS-128K",
+  "orderableCode": "CY8C4147LWE-HVS035",
+  "desc": "12 V Cortex-M0+ MCU with integrated LIN PHY and 12 V regulator, CAPSENSE, 128 KB flash, ASIL B",
+  "category": "ic_qfn",
+  "pkg": "not read (QFN assumed)",
+  "aecq": true,
+  "launched": "2024",
+  "usedIn": [
+   "LIN smart sensor / actuator",
+   "HMI touch",
+   "steering-wheel hands-on detection"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/CY8C4147LWE-HVS035",
+  "note": "has.py prefix-matches the UNRELATED CY8C4147AZE-S475 (PSoC 4100S Plus) because the codes share 'CY8C4147'; the family name prints NOT IN CATALOGUE. Infineon part page via search result: 128 KB, LIN PHY, AEC-Q100 / ASIL-B. Mouser carries a new-product page for PSOC 4 HV MS-64K / 128K. Sibling code CY8C4147LQE-HVS126X.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT2B9",
+  "orderableCode": "CYT2B95BACQ0AZSGS",
+  "desc": "Body entry MCU: Cortex-M4F 160 MHz, 2 MB flash, 256 KB RAM, up to 8x CAN FD",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64 / 80 / 100 / 144 / 176",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "door",
+   "HVAC",
+   "lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/43/infineon-traveo-t2g-body-product-overview-presentations-en.pdf",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 25 CYT2B9 codes listed. Not a new launch, but the catalogue holds only the CYT2B7 member.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT4BB",
+  "orderableCode": "CYT4BB8CEBQ1AEEGS",
+  "desc": "Body MCU: 2x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, 8x CAN FD",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-100 / 144 / 176, BGA-272",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "zone controller",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/43/infineon-traveo-t2g-body-product-overview-presentations-en.pdf",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 8 CYT4BB codes listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "OptiMOS 7 80 V automotive",
+  "orderableCode": "IAUCN08S7N013",
+  "desc": "N-MOSFET 80 V 1.3 mOhm max, OptiMOS 7, SSO8 5x6",
+  "category": "ic_qfn",
+  "pkg": "SSO8 (5x6)",
+  "aecq": true,
+  "launched": "2024-09",
+  "usedIn": [
+   "48 V systems",
+   "motor drive",
+   "DC-DC",
+   "zonal power distribution"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/iaucn08s7n013",
+  "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Page: extended qualification beyond AEC-Q101. Mouser lists it active (https://www.mouser.ca/infineon-optimos-7-80v-automotive-mosfets). Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "OptiMOS 7 80 V automotive",
+  "orderableCode": "IAUCN08S7N019",
+  "desc": "N-MOSFET 80 V 1.9 mOhm max, OptiMOS 7, SSO8 5x6",
+  "category": "ic_qfn",
+  "pkg": "SSO8 (5x6)",
+  "aecq": false,
+  "launched": "2024-09",
+  "usedIn": [
+   "48 V systems",
+   "motor drive",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://infineon.com/cms/en/product/power/mosfet/automotive-mosfet/iaucn08s7n019",
+  "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "OptiMOS 7 100 V automotive",
+  "orderableCode": "IAUCN10S7N021",
+  "desc": "N-MOSFET 100 V 2.1 mOhm max, OptiMOS 7, SSO8 5x6",
+  "category": "ic_qfn",
+  "pkg": "SSO8 (5x6)",
+  "aecq": false,
+  "launched": "2024-09",
+  "usedIn": [
+   "48 V systems",
+   "48 V inverter",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://infineon.com/cms/en/product/power/mosfet/automotive-mosfet/iaucn10s7n021",
+  "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "AURIX TC48x",
+  "orderableCode": "TC489QP16NF400MCAAKXUMA1",
+  "desc": "AURIX TC4x 28 nm TriCore MCU, 4 lockstep cores up to 400 MHz (SAK-TC489QP-16NF400MC AA)",
+  "category": "ic_bga",
+  "pkg": "not read (BGA assumed)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zone controller",
+   "chassis / powertrain domain",
+   "ADAS safety host"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/SAK-TC489QP-16NF400MC-AA",
+  "note": "Infineon part page (read through the search result, the page body itself would not load): OPN TC489QP16NF400MCAAKXUMA1, 'active and preferred'. AEC-Q100 wording not read. Digi-Key keyword search showed 2 Embedded items for TC489QP for this family (22 Nov 2026); listing codes were not readable.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TLE9371VSJ",
+  "orderableCode": "TLE9371VSJXTMA1",
+  "desc": "CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s, VIO pin, bus wake-up",
+  "category": "ic_soic",
+  "pkg": "PG-DSO-8",
+  "aecq": true,
+  "launched": "2022",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-tle9371vsj-datasheet-en.pdf",
+  "note": "Data sheet 1.0 dated 28 Feb 2023; Infineon Q3 2026 transceiver deck gives SOP 2022 for TLE9371xSJ (DSO-8). Listed by element14 / Farnell (au.element14.com/infineon/tle9371vsjxtma1/can-transceiver-40-to-150deg-c/dp/4176077) and Digi-Key.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "OPTIREG PMIC TLF4D985",
+  "orderableCode": "TLF4D985QKV01R1",
+  "desc": "Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 to 175 C; LQFP-64 and VQFN-56 options in the family",
+  "category": "ic_tqfp",
+  "pkg": "PG-LQFP-64",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "AURIX TC4x ECU: inverter, BMS, zonal, chassis"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/part/TLF4D985QKV01R1",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Marked NEW on Infineon's page. Other codes seen: TLF4D985QKV02R1 (datasheet), TLF4D985QKV03R1; TLF4D985QKV03 shown as discontinued. QK = LQFP by Infineon's naming (not read per code).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TLE7257SJ / TLE7258SJ (and LE)",
+  "desc": "Basic LIN transceivers, up to 20 kbit/s",
+  "category": "ic_soic",
+  "pkg": "PG-DSO-8 / PG-TSON-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN actuator / sensor node",
+   "body control module"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/156/infineon-transceivers-public-productpresentation.pdf",
+  "note": "Not new, but absent from the catalogue (only TLE7259-3GE is held). AEC-Q100 statement for these rows not read in the deck.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TLE9350BLE / TLE9350BVLE / TLE9350BXLE",
+  "desc": "CAN FD transceiver, 5 Mbit/s, leadless TSON-8 versions of TLE9350Bx; takes over from TLE9250xLE (now not-for-new-design)",
+  "category": "ic_qfn",
+  "pkg": "PG-TSON-8 3x3",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/156/infineon-transceivers-public-productpresentation.pdf",
+  "note": "Deck: 'TLE935xBxLE TSON8' at SOP 2025, 'In production'; predecessor TLE9250x set to NFND.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TLE9350BSJ / TLE9350BVSJ / TLE9350BXSJ",
+  "desc": "CAN FD transceiver, 5 Mbit/s (B = no VIO, BV = VIO, BX = VIO + receive-only), successor of TLE9250 / TLE9350",
+  "category": "ic_soic",
+  "pkg": "PG-DSO-8",
+  "aecq": true,
+  "launched": "2023",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/156/infineon-transceivers-public-productpresentation.pdf",
+  "note": "Deck: '5MB CAN FD UMC TLE935xBxSJ DSO8' at SOP 2023; AEC-Q100 Grade 0 row; 'five TLE935xBx devices replace up to 25 predecessors'. (TLE9351B variants prefix-match the catalogued TLE9351 and are not listed here.)",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "XENSIV TLE4971",
+  "desc": "Coreless Hall current sensor with integrated current rail, 25-120 A, analog, ASIL B",
+  "category": "ic_qfn",
+  "pkg": "TISON-8 / PG-DSO-16",
+  "aecq": true,
+  "launched": "2022-11",
+  "usedIn": [
+   "OBC",
+   "HV auxiliary drives",
+   "DC-DC",
+   "charging"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://infineon.com/cms/en/about-infineon/press/market-news/2022/INFATV202211-019.html",
+  "note": "Press Nov 2022: qualified to AEC-Q100 Grade 1. Infineon product names seen (product page title / May 2026 selection guide): TLE4971-A025T5-E0001, TLE4971-A050T5-E0001 (TISON-8), TLE4971-A050W2-S0001 (DSO-16); the OPN (...XUMA1) was not seen. Catalogue holds TLE4972 / TLE4973 only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT2BL",
+  "orderableCode": "CYT2BL5BAAQ0AZEGS",
+  "desc": "Body entry MCU: Cortex-M4F 160 MHz, 4 MB flash, 512 KB RAM, up to 8x CAN FD",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64 / 80 / 100 / 144 / 176",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/43/infineon-traveo-t2g-body-product-overview-presentations-en.pdf",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 25 CYT2BL codes listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT3BB",
+  "orderableCode": "CYT3BB7CEBQ1AEEGS",
+  "desc": "Body MCU: 1x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, CAN FD",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-100 / 144 / 176, BGA-272",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "door / seat module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/43/infineon-traveo-t2g-body-product-overview-presentations-en.pdf",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 7 CYT3BB codes listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT3DL",
+  "orderableCode": "CYT3DLABABQ1AESGS",
+  "desc": "Cluster MCU with graphics engine, 1x Cortex-M7, video output",
+  "category": "ic_tqfp",
+  "pkg": "TQFP (code AE) and BGA (code BZ)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "instrument cluster",
+   "HVAC panel display"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.infineon.com/products/microcontroller/32-bit-traveo-t2g-arm-cortex/for-cluster/t2g-cyt3dl",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 10 CYT3DL codes listed (BGA: CYT3DLBBABQ1BZSGS).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT4BF",
+  "orderableCode": "CYT4BF8CEDQ0AEEGS",
+  "desc": "Body MCU: 2x Cortex-M7F 350 MHz, 8 MB flash, 1 MB RAM, 10BASE-T1S / Ethernet, 10x CAN FD",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-176 (also BGA-272 / BGA-320)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body domain controller",
+   "gateway",
+   "zone controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/43/infineon-traveo-t2g-body-product-overview-presentations-en.pdf",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 14 CYT4BF codes listed (BGA: CYT4BFBCHDQ0BZSGS, CYT4BFCCHDQ0BZEGS).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT4DN",
+  "orderableCode": "CYT4DNJBACQ1BZSGS",
+  "desc": "Cluster MCU with 2.5D graphics engine, 2x Cortex-M7",
+  "category": "ic_bga",
+  "pkg": "BGA (ordering code BZ; package not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "instrument cluster",
+   "HUD"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.infineon.com/products/microcontroller/32-bit-traveo-t2g-arm-cortex/for-cluster/t2g-cyt4dn",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 7 CYT4DN codes listed. Family page exists on infineon.com; its body would not load, so the description is from the family name only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "OptiMOS 7 80 V automotive",
+  "orderableCode": "IAUCN08S7L110",
+  "desc": "N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6",
+  "category": "ic_qfn",
+  "pkg": "SSO8 (5x6)",
+  "aecq": false,
+  "launched": "2024-09",
+  "usedIn": [
+   "48 V systems",
+   "LED / body loads",
+   "DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://infineon.com/cms/de/product/power/mosfet/automotive-mosfet/iaucn08s7l110",
+  "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Mouser showed it as 'coming soon'. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "S25FL128L",
+  "orderableCode": "S25FL128LAGNFM010",
+  "desc": "SPI NOR flash 128 Mb, Quad I/O / QPI, 133 MHz, -40 to 125 C",
+  "category": "ic_qfn",
+  "pkg": "WSON-8 5x6",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU boot / code flash",
+   "cluster",
+   "camera",
+   "telematics"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/infineon-technologies/S25FL128LAGNFM010/8258740",
+  "note": "Code and description from the Digi-Key product listing (search-result title / extract: Qualification AEC-Q100; page not opened). Automotive temperature-grade orderable (B = -40 to 105 C, M = -40 to 125 C per the listing ranges). seen.py: family key known (CATALOGUE S25FL128LAGMFV010 [distributor]) — this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "S25FL256L",
+  "orderableCode": "S25FL256LAGMFM003",
+  "desc": "SPI NOR flash (256 Mb per the part name), 2.7 V to 3.6 V, -40 to 125 C",
+  "category": "ic_soic",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU boot / code flash",
+   "cluster",
+   "camera",
+   "telematics"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/infineon-technologies/S25FL256LAGMFM003/8258793",
+  "note": "Code and description from the Digi-Key product listing (search-result title / extract: Qualification AEC-Q100; page not opened). Automotive temperature-grade orderable (B = -40 to 105 C, M = -40 to 125 C per the listing ranges). seen.py: family key known (CATALOGUE S25FL256LAGMFA010 [distributor]) — this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "S25FL256S",
+  "orderableCode": "S25FL256SAGNFB000",
+  "desc": "SPI NOR flash 256 Mb, Quad I/O, 133 MHz, -40 to 105 C",
+  "category": "ic_qfn",
+  "pkg": "WSON-8 6x8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU boot / code flash",
+   "cluster",
+   "camera",
+   "telematics"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/infineon-technologies/S25FL256SAGNFB000/7362274",
+  "note": "Code and description from the Digi-Key product listing (search-result title / extract: Qualification AEC-Q100; page not opened). Automotive temperature-grade orderable (B = -40 to 105 C, M = -40 to 125 C per the listing ranges).",
+  "catalogue": "estimate",
+  "catalogueKey": "S25FL256S"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "MOTIX TLE9166EQ multi half-bridge",
+  "orderableCode": "TLE9166EQ",
+  "desc": "Multi half-bridge IC with six high-side switches, electrochromic mirror control, SPI, timeout watchdog, configurable slew rate",
+  "category": "ic_soic",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "door module",
+   "mirror control",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.ph/infineon-tle9166eq-half-bridge-ic",
+  "note": "AEC-Q100 grade 1 per the page. Mouser product page. Half-bridge count and package to be read off the datasheet. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "TRAVEO T2G CYT2CL",
+  "orderableCode": "CYT2CL7BAAQ0AZSGS",
+  "desc": "Cluster entry MCU, Cortex-M4F",
+  "category": "ic_tqfp",
+  "pkg": "LQFP (code AZ; package not read on a page)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "entry cluster",
+   "two-wheeler cluster"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.infineon.com/products/microcontroller/32-bit-traveo-t2g-arm-cortex/for-cluster/t2g-cyt2cl",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. 1 code listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Lattice",
+  "family": "MachXO4 automotive",
+  "orderableCode": "LFMXO4-025HC-5TSG100A",
+  "desc": "MachXO4 low-density FPGA, automotive grade (A suffix), 100-pin TQFP",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-100",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU power sequencing / glue logic",
+   "I/O expansion"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.ca/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?m=Lattice",
+  "note": "Mouser listing seen as a search extract (automotive-grade MachXO4, 100A package suffix); AEC-Q100 wording not in the extract.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Macronix",
+  "family": "MX25V1635FZNQ03",
+  "orderableCode": "MX25V1635FZNQ03",
+  "desc": "NOR Flash 16Mbit 16M x 1/8M x 2/4M x 4 Serial-SPI 3.3V 8-Pin WSON WSON8",
+  "category": "ic_qfn",
+  "pkg": "WSON8",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDEP-01036 mmWave radar kick-to-open",
+   "TI TIDEP-01037 low-power in-cabin radar",
+   "TI TIDEP-01034 entry-level blind-spot detection radar"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 1,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDF3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX90425",
+  "orderableCode": "MLX90425GDC-ABA-600-RE",
+  "desc": "Triaxis stray-field-immune 360 deg rotary position sensor IC",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 (DC)",
+  "aecq": true,
+  "launched": "2022-06",
+  "usedIn": [
+   "steering angle",
+   "valve / actuator position",
+   "pedal"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90425-datasheet-melexis.pdf",
+  "note": "AEC-Q100 Grade 0; datasheet Rev 004 Jan 2025. Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX81332 gen-3 smart LIN driver",
+  "desc": "Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10 W, 32 KB flash",
+  "category": "ic_qfn",
+  "pkg": "SO8 or QFN24",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "HVAC flap actuator",
+   "grille shutter",
+   "valve / small pump"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.melexis.com/en/product/MLX81332/smart-LIN-motor-driver-1A-gen3",
+  "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX81340 gen-3 LIN pre-driver",
+  "desc": "Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory",
+  "category": "ic_qfn",
+  "pkg": "unknown",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "water / oil pump",
+   "blower / fan",
+   "window lift / sunroof"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.melexis.com/en/product/mlx81340/smart-lin-motor-pre-driver-500w-gen3",
+  "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX90382",
+  "orderableCode": "MLX90382LGO-BAA-000-RE",
+  "desc": "16-bit Triaxis high-speed magnetic position sensor / absolute encoder IC (on- and off-axis), automotive-grade variant",
+  "category": "ic_soic",
+  "pkg": "TSSOP-16 (code GO); second package code LW",
+  "aecq": true,
+  "launched": "2025-11",
+  "usedIn": [
+   "steer-by-wire",
+   "brake-by-wire",
+   "suspension",
+   "e-motor position"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90382-datasheet-melexis.pdf",
+  "note": "Datasheet Rev 1.0 17-Nov-2025: \"AEC-Q100 qualified (Grade 0)\"; automotive variant announced 20 Nov 2025. Digi-Key lists the exact code (checked 2026-11-22). Other codes: MLX90382LLW-BAA-000-RE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX90424",
+  "orderableCode": "MLX90424LGO-ACA-230-RE",
+  "desc": "Triaxis position sensor IC with integrated wake-up (dual die)",
+  "category": "ic_soic",
+  "pkg": "TSSOP-16 (GO)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "brake pedal",
+   "clutch / shifter",
+   "park-lock"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90424-datasheet-melexis.pdf",
+  "note": "AEC-Q100 Grade 0; datasheet Rev 3.0 Aug 2024 (addendum to MLX90423). Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Melexis",
+  "family": "MLX90513",
+  "orderableCode": "MLX90513GGO-CAA-100-RE",
+  "desc": "Inductive position sensor interface IC (3 receive coils, SENT / SPC / PWM)",
+  "category": "ic_soic",
+  "pkg": "TSSOP-16 (GO)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "pedal",
+   "steering torque / angle",
+   "actuator position"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90513-datasheet-melexis.pdf",
+  "note": "AEC-Q100 Grade 0; datasheet Rev 002 Sept 2025. Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ }
+]

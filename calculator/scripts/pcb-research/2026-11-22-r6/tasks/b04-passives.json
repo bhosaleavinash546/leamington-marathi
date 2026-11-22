@@ -1,0 +1,719 @@
+[
+ {
+  "mfr": "ROHM",
+  "family": "KTR (high voltage)",
+  "orderableCode": "KTR18EZPF1004",
+  "desc": "High-voltage thick-film resistor 1 Mohm 1% 0.25 W 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "HV sensing"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=KTR18EZPF1004",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "LTR (wide-terminal)",
+  "orderableCode": "LTR18EZPF10R0",
+  "desc": "Wide-terminal thick-film resistor 10 ohm 1% 1.5 W 1206 (long-side), pulse-withstanding, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "0612",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "gate drive"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=LTR18EZPF10R0",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "PMR (metal-plate shunt)",
+  "orderableCode": "PMR18EZPFU10L0",
+  "desc": "Current-sense metal-plate resistor 10 mohm 1% 1 W 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R (...8WPNC)",
+  "orderableCode": "CL10B104KA8WPNC",
+  "desc": "MLCC 100 nF 25 V X7R 10%, 0603, automotive",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=8WPNC",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Other value / voltage of the catalogue part CL10B104KB8WPNC (recorded AEC-Q200). TME lists 13 ...8WPNC codes (470 pF to 100 nF).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R (...8WPNC)",
+  "orderableCode": "CL10B104KO8WPNC",
+  "desc": "MLCC 100 nF 16 V X7R 10%, 0603, automotive",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=8WPNC",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Other value / voltage of the catalogue part CL10B104KB8WPNC (recorded AEC-Q200). TME lists 13 ...8WPNC codes (470 pF to 100 nF).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R",
+  "orderableCode": "CL10B105KA8VPNC",
+  "desc": "MLCC 1 uF 25 V X7R 10% 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CL10B105KA8VPNC",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R (...VPNE)",
+  "orderableCode": "CL21B105KBFVPNE",
+  "desc": "MLCC 1 uF 50 V X7R 10%, 0805, -55..125 C, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/details/cl21b105kbfvpne/mlcc-smd-capacitors/samsung/",
+  "note": "TME detail page: \"Conform to the norm: AEC-Q200\".",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL21B105KOFVPNE",
+  "desc": "MLCC 1 uF 16 V X7R 10%, 0805, automotive",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL21Y106KPQVPNE",
+  "desc": "MLCC 10 uF 10 V X7S 10%, 0805, automotive",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL31B106KAHVPNE",
+  "desc": "MLCC 10 uF 25 V X7R 10%, 1206, automotive",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R (...8WPNC)",
+  "orderableCode": "CL10B102KB8WPNC",
+  "desc": "MLCC 1 nF 50 V X7R 10%, 0603, automotive",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=8WPNC",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Other value / voltage of the catalogue part CL10B104KB8WPNC (recorded AEC-Q200). TME lists 13 ...8WPNC codes (470 pF to 100 nF).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R (...8WPNC)",
+  "orderableCode": "CL10B103KC8WPNC",
+  "desc": "MLCC 10 nF 100 V X7R 10%, 0603, automotive",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=8WPNC",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Other value / voltage of the catalogue part CL10B104KB8WPNC (recorded AEC-Q200). TME lists 13 ...8WPNC codes (470 pF to 100 nF).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL21B224KBFVPNE",
+  "desc": "MLCC 220 nF 50 V X7R 10%, 0805, automotive",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL31B106KOHVPNE",
+  "desc": "MLCC 10 uF 16 V X7R 10%, 1206, automotive",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL31B475KAHVPNE",
+  "desc": "MLCC 4.7 uF 25 V X7R 10%, 1206, automotive",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Samsung Electro-Mechanics",
+  "family": "CL automotive X7R / X7S (...VPNE)",
+  "orderableCode": "CL32B226KOJVPNE",
+  "desc": "MLCC 22 uF 16 V X7R 10%, 1210, automotive",
+  "category": "passive_1206",
+  "pkg": "1210",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=VPNE",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is shown on the TME detail page of the sibling CL21B105KBFVPNE (same ...VPNE automotive code pattern), not read for this exact code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MAAS (automotive MLCC, powertrain / safety)",
+  "orderableCode": "MAASU168SB7104KTNA01",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0603, MAAS automotive series (AEC-Q200)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "powertrain ECU",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Digi-Key describes the MAAS series as AEC-Q200 qualified for automotive use (digikey.co.uk/en/product-highlight/t/taiyo-yuden/maas-series-automotive-capacitors) — series level. First pass found only the high-capacitance MAASA32MAD7227MP1D71; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MCAS (automotive MLCC, body / infotainment)",
+  "orderableCode": "MCASU105SB7104KFNA01",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0402, MCAS automotive (body / infotainment) series",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Future Electronics describes MCAS as automotive-grade MLCCs for body, chassis and infotainment; an AEC-Q200 statement was not read for MCAS.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MCAS (automotive MLCC, body / infotainment)",
+  "orderableCode": "MCASU168SB7104KTNA01",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0603, MCAS automotive (body / infotainment) series",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Future Electronics describes MCAS as automotive-grade MLCCs for body, chassis and infotainment; an AEC-Q200 statement was not read for MCAS.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MAAS (automotive MLCC, powertrain / safety)",
+  "orderableCode": "MAASL105SB7104KFNA01",
+  "desc": "MLCC 100 nF 10 V X7R 10%, 0402, MAAS automotive series (AEC-Q200)",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "powertrain ECU",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Digi-Key describes the MAAS series as AEC-Q200 qualified for automotive use (digikey.co.uk/en/product-highlight/t/taiyo-yuden/maas-series-automotive-capacitors) — series level. First pass found only the high-capacitance MAASA32MAD7227MP1D71; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MAAS (automotive MLCC, powertrain / safety)",
+  "orderableCode": "MAASU21GSB7104KTNA01",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805, MAAS automotive series (AEC-Q200)",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "powertrain ECU",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Digi-Key describes the MAAS series as AEC-Q200 qualified for automotive use (digikey.co.uk/en/product-highlight/t/taiyo-yuden/maas-series-automotive-capacitors) — series level. First pass found only the high-capacitance MAASA32MAD7227MP1D71; this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MCAS (automotive MLCC, body / infotainment)",
+  "orderableCode": "MCASH168SB7104KTNA01",
+  "desc": "MLCC 100 nF 100 V X7R 10%, 0603, MCAS automotive (body / infotainment) series",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Future Electronics describes MCAS as automotive-grade MLCCs for body, chassis and infotainment; an AEC-Q200 statement was not read for MCAS.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MCAS (automotive MLCC, body / infotainment)",
+  "orderableCode": "MCASH21GSB7104KTNA01",
+  "desc": "MLCC 100 nF 100 V X7R 10%, 0805, MCAS automotive (body / infotainment) series",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Future Electronics describes MCAS as automotive-grade MLCCs for body, chassis and infotainment; an AEC-Q200 statement was not read for MCAS.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Taiyo Yuden",
+  "family": "MCAS (automotive MLCC, body / infotainment)",
+  "orderableCode": "MCAST105SB7104KFNA01",
+  "desc": "MLCC 100 nF 25 V X7R 10%, 0402, MCAS automotive (body / infotainment) series",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "infotainment",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SB7104K",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. Future Electronics describes MCAS as automotive-grade MLCCs for body, chassis and infotainment; an AEC-Q200 statement was not read for MCAS.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "ACT45B-101-2P-TL003",
+  "orderableCode": "ACT45B-101-2P-TL003",
+  "desc": "Inductor, Ferrite, 100 uH, 0.15 A, 2 ohm, SMD",
+  "category": "passive_1206",
+  "pkg": "SMD, 4-Leads, Body",
+  "aecq": false,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-020106 electro-mechanical brake (EMB)",
+   "TI TIDM-02014 SiC traction inverter",
+   "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier"
+  ],
+  "boards": 4,
+  "qtyPerBoardMax": 4,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "has.py prefix-matches ACT45B-510-2P-TL003 (a different family member); this exact code is not held.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA2B",
+  "orderableCode": "CGA2B3X7R1H473K050BB",
+  "desc": "CAP, CERM, 0.047 uF, 50 V, +/- 10%, X7R, AEC-Q200 Grade 1, 0402",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDEP-01036 mmWave radar kick-to-open",
+   "TI TIDEP-01037 low-power in-cabin radar",
+   "TI TIDEP-01034 entry-level blind-spot detection radar",
+   "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+  ],
+  "boards": 4,
+  "qtyPerBoardMax": 1,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDF3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "C1005X",
+  "orderableCode": "C1005X5R1H104K050BB",
+  "desc": "CAP, CERM, 0.1 uF, 50 V, +/- 10%, X5R, 0402",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+   "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)",
+   "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 26,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDE3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "C1608X",
+  "orderableCode": "C1608X5R1E106M080AC",
+  "desc": "CAP, CERM, 10 uF, 25 V, +/- 20%, X5R, 0603",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+   "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)",
+   "TI TIDA-020106 electro-mechanical brake (EMB)"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 4,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDE3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA2 X7R 0402",
+  "orderableCode": "CGA2B1X7R1C104K050BC",
+  "desc": "MLCC 0.1 uF 16 V X7R 0402, CGA automotive series",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "2026-06",
+  "usedIn": [
+   "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+   "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/44/infineon-kit-a3g-tc487-lite-aurix-tm-a3g-lite-kit-user-guide-usermanual-en.pdf",
+  "note": "23 pcs on the TC487 kit, 22 on the TC4D7 kit. Code joined from wrapped table cells. Listed by Digi-Key as AEC-Q200 (search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA3 X7R 0603",
+  "orderableCode": "CGA3E2X7R1H473K080AA",
+  "desc": "MLCC 0.047 uF 50 V X7R 0603, AEC-Q200 Grade 1",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "2024-08",
+  "usedIn": [
+   "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+   "TI TIDA-020075 HV BMS 2-channel pyro-fuse driver board",
+   "TI TIDM-02014 SiC traction inverter",
+   "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+   "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD68",
+  "note": "On five boards. Listed by Digi-Key as AEC-Q200 (search 22 Nov 2026).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA3 X7R 0603",
+  "orderableCode": "CGA3E2X7R2A103K080AA",
+  "desc": "MLCC 0.01 uF 100 V X7R 0603, AEC-Q200 Grade 1",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)",
+   "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier",
+   "TI TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+   "TI TIDM-02014 SiC traction inverter"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "On four boards.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA3 X7S 0603",
+  "orderableCode": "CGA3E3X7S2A104K080AB",
+  "desc": "MLCC 0.1 uF 100 V X7S 0603, AEC-Q200 Grade 1 (48 V rail decoupling)",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "2023-02",
+  "usedIn": [
+   "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1",
+   "TI TIDA-050071 off-battery processor power for ADAS and infotainment"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMCO5",
+  "note": "The TC4D7 lite kit carries the 20 % version CGA3E3X7S2A104M080AB.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "CGA (100 V high capacitance)",
+  "orderableCode": "CGA6P1X7R2A106K250AC",
+  "desc": "MLCC 10 uF 100 V X7R 10% 1210, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1210",
+  "aecq": true,
+  "launched": "2025-04",
+  "usedIn": [
+   "48 V systems",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tdk.com/en/news_center/press/20250414_01.html",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "NTCG (automotive)",
+  "orderableCode": "NTCG163JF103FT1S",
+  "desc": "NTC thermistor 10 k 1% B3435, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS",
+   "body ECU",
+   "LED lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=NTCG163JF103FT1S",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "TFM201612BLEA",
+  "orderableCode": "TFM201612BLEAR47MTCA",
+  "desc": "Thin-film metal power inductor 0.47 uH, 2.0x1.6x1.2 mm, 150 C, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0806",
+  "aecq": true,
+  "launched": "2025-07",
+  "usedIn": [
+   "ADAS ECU",
+   "domain / zonal controller",
+   "infotainment",
+   "camera",
+   "radar"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tdk.com/en/news_center/press/20250701_01.html",
+  "note": "Code as named in Digi-Key listings / TDK ECM library per search; TFM201612BLEA1R5MTCA also seen in a Digi-Key product URL.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TDK",
+  "family": "ADL4524VL (PoC)",
+  "orderableCode": "ADL4524VL-180M-TL000",
+  "desc": "Wirewound PoC inductor 18 uH 20%, 4.5x2.4x2.6 mm, 155 C, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1810",
+  "aecq": true,
+  "launched": "2025-07",
+  "usedIn": [
+   "camera",
+   "SerDes PoC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.nl/en/products/detail/tdk-corporation/ADL4524VL-180M-TL000/26606511",
+  "note": "Code seen in a Digi-Key product URL (\"New at DigiKey\").",
+  "catalogue": "no"
+ }
+]

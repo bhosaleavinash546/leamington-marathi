@@ -1,0 +1,681 @@
+[
+ {
+  "mfr": "Melexis",
+  "family": "MLX90830",
+  "orderableCode": "MLX90830LXZ-BAH-001-RE",
+  "desc": "Triphibian MEMS absolute pressure sensor, 2-70 bar gas and liquid, analog output",
+  "category": "ic_soic",
+  "pkg": "SOIC-16 WB cavity-up (XZ)",
+  "aecq": true,
+  "launched": "2024-01",
+  "usedIn": [
+   "EV thermal management",
+   "refrigerant / coolant loop",
+   "heat pump"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90830-datasheet-melexis.pdf",
+  "note": "\"Qualified according to AEC-Q100 and AEC-Q103-002\"; launched Jan 2024. Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "ATA6501 (ATA650x mini CAN FD SBC)",
+  "orderableCode": "ATA6501T-4CWVAO",
+  "desc": "Mini CAN FD system basis chip: CAN FD transceiver + 5 V / 150 mA LDO, 3.3 / 5 V I/O",
+  "category": "ic_qfn",
+  "pkg": "VDFN-8 (wettable flanks)",
+  "aecq": true,
+  "launched": "2024",
+  "usedIn": [
+   "zonal controller satellite node",
+   "sensor / actuator node",
+   "body ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA650x-Mini-CAN-FD-System-Basis-Chip-DS20006909.pdf",
+  "note": "Data sheet DS20006909A (c) 2024 \"Mini CAN FD System Basis Chip ATA6500...ATA6505\": AEC-Q100 qualified, Grade 0 (-40 to +150 C); code printed in the Product Identification System. Sibling ATA6500T-4CWVAO = same package with 1.8 V I/O support.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "ATA6562",
+  "orderableCode": "ATA6562-GAQW1",
+  "desc": "High-speed CAN FD transceiver with standby and silent mode, wake-up pattern, 5 Mbit/s",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "launched": "2017",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "any CAN FD node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA6562.3-Data-Sheet-20005790E.pdf",
+  "note": "Data sheet DS20005790E (2017-2021): AEC-Q100 and AEC-Q006 qualified; printed codes ATA6562-GAQW1 (SOIC-8, Grade 1), ATA6562-GAQW0 (Grade 0), ATA6562-GBQW1 / -GBQW0 (VDFN-8). Sibling ATA6563 (VIO pin) is catalogued - this is the silent-mode part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "MCP16361 / MCP16362 / MCP16363",
+  "orderableCode": "MCP16361T-E/NMXVAO",
+  "desc": "48 V input, 3 A, 2.2 MHz integrated-switch step-down regulator (PFM / PWM; MCP16362 PWM-only; MCP16363 PWM with dithering)",
+  "category": "ic_qfn",
+  "pkg": "VDFN-8",
+  "aecq": true,
+  "launched": "2020",
+  "usedIn": [
+   "12 V / 24 V / 48 V rail buck",
+   "body ECU",
+   "USB supply"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP16361-Data-Sheet-DS20006481.pdf",
+  "note": "Data sheet DS20006481C (2020-2022): passes automotive AEC-Q100 reliability testing; VAO = AEC-Q100 automotive qualification. Other printed codes: MCP16362T-E/NMXVAO, MCP16363T-E/NMXVAO.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "AT24C64D",
+  "desc": "64 Kbit I2C serial EEPROM, 1.7-5.5 V, 1 MHz, -40 to +125 C",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 / TSSOP-8 / UDFN-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "configuration / calibration memory on any ECU",
+   "camera module"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+  "note": "AT24C32D, AT24C128C, AT24C16C, AT24C08C, AT24C04C are in the same table (the catalogue holds AT24C02D and AT24C256C only). Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "ATA663211",
+  "desc": "LIN transceiver (LIN 2.0-2.2A, SAE J2602-2), 5-28 V",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 / DFN-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN slave node",
+   "door / seat / HVAC module",
+   "ambient lighting"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+  "note": "Named as the LIN physical layer inside the dsPIC33CDVL64MC106 (2023 reference design). Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "ATA663254",
+  "desc": "LIN system basis chip: LIN transceiver with 5 V / 85 mA regulator",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 / DFN-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN slave node",
+   "door / seat / HVAC module",
+   "ambient lighting"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+  "note": "ATA663231 is the 3.3 V version (DFN-8); ATA663255 / ATA663232 add a wake pin. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "LAN8660",
+  "desc": "10BASE-T1S endpoint with Remote Control Protocol (control variant: sensors / actuators over I2C / SPI / UART), software-less",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 wettable flank",
+  "aecq": true,
+  "launched": "2025-11",
+  "usedIn": [
+   "zonal controller",
+   "lighting / sensor edge node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/NCS/ProductDocuments/Brochures/LAN8660-1-2-Sell-Sheet-DS00006257.pdf",
+  "note": "Sell sheet DS00006257C: 'AEC-Q100 Grade 1 Qualification (-40 to +125 C) and ISO 26262 ASIL B'. Launch per allaboutcircuits.com article of 24 Nov 2025; microchip.com/en-us/product/lan8660 shows In Production.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "tinyAVR 1-series (ATtiny1616)",
+  "orderableCode": "ATTINY1616-MZ-VAO",
+  "desc": "8-bit tinyAVR, 16 KB flash, 16 MHz, automotive VAO grade",
+  "category": "ic_qfn",
+  "pkg": "QFN20 wettable flank",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "touch button",
+   "LED / LIN node",
+   "housekeeping MCU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.za/en/product-highlight/m/microchip-technology/automotive-grade-mcus",
+  "note": "Code read on Digi-Key's 'Automotive-Grade MCUs' Microchip highlight page, which states the line-up is AEC-Q100 qualified and ISO 26262 ready. Sibling on the same page: ATTINY3217-MZ-VAO (QFN24).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "AVR DD (AVR64DD32)",
+  "orderableCode": "AVR64DD32-E/RXBVAO",
+  "desc": "8-bit AVR DD MCU, 64 KB flash, 8 KB RAM, 24 MHz, multi-voltage I/O, 32 pins, automotive VAO grade",
+  "category": "ic_qfn",
+  "pkg": "32-pin (package code RXB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor node",
+   "LIN slave",
+   "level shifting housekeeping"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.za/en/product-highlight/m/microchip-technology/automotive-grade-mcus",
+  "note": "Code read on Digi-Key's 'Automotive-Grade MCUs' Microchip highlight page, which states the line-up is AEC-Q100 qualified and ISO 26262 ready. TME: no listing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "PIC18-Q43 (PIC18F27Q43)",
+  "orderableCode": "PIC18F27Q43-E/STXVAO",
+  "desc": "8-bit PIC18-Q43 MCU, 128 KB flash, 8 KB RAM, 1 KB EEPROM, automotive VAO grade",
+  "category": "ic_qfn",
+  "pkg": "28-pin (package code STX; type not stated on page)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body node",
+   "motor / actuator control"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.za/en/product-highlight/m/microchip-technology/automotive-grade-mcus",
+  "note": "Code read on Digi-Key's 'Automotive-Grade MCUs' Microchip highlight page, which states the line-up is AEC-Q100 qualified and ISO 26262 ready. Category assumed from the package code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "PIC18-Q83 (PIC18F47Q83)",
+  "orderableCode": "PIC18F47Q83-E/NHXVAO",
+  "desc": "8-bit PIC18-Q83 MCU with CAN, 128 KB flash, 13 KB RAM, automotive VAO grade",
+  "category": "ic_qfn",
+  "pkg": "40-pin class (package code NHX; type not stated on page)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "CAN node",
+   "body switch module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.za/en/product-highlight/m/microchip-technology/automotive-grade-mcus",
+  "note": "Code read on Digi-Key's 'Automotive-Grade MCUs' Microchip highlight page, which states the line-up is AEC-Q100 qualified and ISO 26262 ready. The catalogue holds PIC18F26Q83 and PIC18F57Q84T; this 47Q83 automotive code is not in it. Category assumed from the package code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Microchip",
+  "family": "PIC16F180 (PIC16F18046)",
+  "orderableCode": "PIC16F18046-E/MLVAO",
+  "desc": "8-bit PIC16 MCU, 28 KB flash, 2 KB RAM, 256 B EEPROM, 10-bit ADC, automotive VAO grade",
+  "category": "ic_qfn",
+  "pkg": "package code ML (type not stated on page)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor node",
+   "simple actuator"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.co.za/en/product-highlight/m/microchip-technology/automotive-grade-mcus",
+  "note": "Code read on Digi-Key's 'Automotive-Grade MCUs' Microchip highlight page, which states the line-up is AEC-Q100 qualified and ISO 26262 ready. Siblings on the same page: PIC16F15245-E/REBVAO, PIC18F27Q10-E/STXVAO. Category assumed from the package code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4322C",
+  "desc": "36 V, 2 A ultra-compact synchronous buck, 42 V load dump",
+  "category": "ic_qfn",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "camera",
+   "sensor module",
+   "any 12 V ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+  "note": "Launch = year of the Mouser new-products listing, not a maker date.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4323-AEC1",
+  "desc": "3 A synchronous step-down converter, VIN max 42 V per catalogue, ultra-compact, MPQ4320 series",
+  "category": "ic_qfn",
+  "pkg": "QFN-12 (2x3)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "camera",
+   "radar",
+   "USB hub",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://media.monolithicpower.com/mps_cms_document/a/u/automotive_catalog_q2_2024-digital.pdf",
+  "note": "MPS Automotive Catalog Q2 2024 ('AEC-Q100 Solutions'). The catalogue prints the family name with -AEC1; the full orderable (package code + -AEC1-Z) was not seen. A search extract of Arrow listings shows the orderables MPQ4323GDE-AEC1-Z and MPQ4323GDE-33-AEC1-Z (Arrow page not opened).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4420A-AEC1",
+  "desc": "2 A synchronous step-down converter, VIN max 40 V per catalogue, 410 kHz, MPQ4420 series",
+  "category": "ic_soic",
+  "pkg": "TSOT23-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "sensor module",
+   "infotainment"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://media.monolithicpower.com/mps_cms_document/a/u/automotive_catalog_q2_2024-digital.pdf",
+  "note": "MPS Automotive Catalog Q2 2024 ('AEC-Q100 Solutions'). The catalogue prints the family name with -AEC1; the full orderable (package code + -AEC1-Z) was not seen. Sibling MPQ4420H-AEC1 in the same table.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4214",
+  "orderableCode": "MPQ4214GU-AEC1-Z",
+  "desc": "USB-C PD buck-boost controller, 4-45 V in",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "USB-C charging port"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4214GU-AEC1-Z?qs=CiayqK2gdcJ%2BHi0UM0YOaA%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Shown non-stocked on the listing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4232",
+  "orderableCode": "MPQ4232GVE-0000-AEC1-Z",
+  "desc": "Buck-boost converter (automotive)",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "USB-C port",
+   "start-stop rail"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4232GVE-0000-AEC1-Z?qs=CoAU%2FpHVZXzmOMfApBr6DA%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Ratings not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4480",
+  "orderableCode": "MPQ4480GV-AEC1-Z",
+  "desc": "36 V, 6 A step-down converter for automotive",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "infotainment",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4480GV-AEC1-Z?qs=wnTfsH77Xs4d3ndughaBOQ%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4573",
+  "orderableCode": "MPQ4573GQBE-AEC1-Z",
+  "desc": "60 V, 2.5 A synchronous step-down converter",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "48 V / 24 V ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4573GQBE-AEC1-Z?qs=TCDPyi3sCW23mRrlD5sK6A%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ7920",
+  "orderableCode": "MPQ7920GRM-0003-AEC1-Z",
+  "desc": "Multi-channel PMIC",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "camera",
+   "telematics",
+   "SoC rails"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ7920GRM-0003-AEC1-Z?qs=Rp5uXu7WBW%2BVTorrchY9KQ%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Also listed: MPQ7920GRM-0003-AEC1-P. Rail count not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ2451",
+  "orderableCode": "MPQ2451GG-5-AEC1-Z",
+  "desc": "Automotive step-down converter (fixed 5 V option per the code)",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor module"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ2451GG-5-AEC1-Z?qs=%252BZix9lVCYc%252Bix0EmEpcO3g%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Ratings not read; older part — catalogue gap.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "74HC595-Q100",
+  "orderableCode": "74HC595PW-Q100,118",
+  "desc": "8-bit serial-in shift register with output latches, 2–6 V, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "TSSOP16 (SOT403-1)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "instrument cluster",
+   "LED / relay expansion"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74HC595PW-Q100-118/3749019",
+  "note": "Digi-Key lists it Active with Qualification AEC-Q100 (search result); Nexperia group page nexperia.com/group/74hc595-q100-74hct595-q100. Catalogue has only a 74HC595 family ESTIMATE.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "74LVC1G08-Q100",
+  "orderableCode": "74LVC1G08GW-Q100,125",
+  "desc": "Single 2-input AND gate, 1.65–5.5 V, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "TSSOP5 (SOT353-1)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://lcsc.com/product-detail/Logic-Gates_Nexperia-74LVC1G08GW-Q100-125_C6101355.html",
+  "note": "Full code on LCSC's listing; Nexperia's group page (nexperia.com/group/74lvc1g08-q100) gives the same part as Active with ordering code 935298476125. Farnell, Digi-Key and Future show it truncated as '74LVC1G08GW-Q100,1'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BUK7M6R0-40H",
+  "orderableCode": "BUK7M6R0-40H",
+  "desc": "N-channel 40 V, 6.0 mΩ standard-level MOSFET in LFPAK33 — window lifter / door motors",
+  "category": "ic_qfn",
+  "pkg": "LFPAK33",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "door module",
+   "window lifter"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+  "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. Also on Nexperia's automotive LFPAK33 page (search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BUK7Y3R5-40H",
+  "orderableCode": "BUK7Y3R5-40H",
+  "desc": "N-channel 40 V, 3.5 mΩ standard-level MOSFET — brushed-motor H-bridge / high-side switch",
+  "category": "ic_qfn",
+  "pkg": "LFPAK56",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "door / body domain controller",
+   "motor drive"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+  "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. Other example devices on the same slides, not listed separately here: BUK7Y7R0-40H, BUK7M3R3-40H, BUK7M20-40H, BUK7K25-40E, BUK7K6R8-40E, BUK7Y43-60E, BUK9Y43-60E, BUK9M24-40E, BUK9M10-30E, BUK6D120-40E.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "S32M24x (S32M244)",
+  "orderableCode": "S32M244CCABWKHST",
+  "desc": "12 V motor-control system-in-package: Cortex-M4 MCU + MOSFET gate pre-driver + LIN / CAN FD PHY + regulator",
+  "category": "ic_tqfp",
+  "pkg": "LQFP64 (from EVB name S32M24XEVB-L064)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BLDC pump / fan",
+   "window lift",
+   "seat",
+   "smart actuator"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/S32M2",
+  "note": "NXP page: status Active, ASIL B, families S32M24x and S32M27x; AEC-Q100 not stated on the page. Code read on the TME (franchised distributor) search listing, 22 Nov 2026. Digi-Key keyword search showed 14 Microcontrollers items for S32M244 for this family (22 Nov 2026); listing codes were not readable.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "BMx7318 / BMx7518",
+  "desc": "BMA7318 - 18-channel Li-ion battery cell controller for EV high-voltage BMS and 48 V systems",
+  "category": "ic_tqfp",
+  "pkg": "unknown",
+  "aecq": false,
+  "launched": "2025",
+  "usedIn": [
+   "BMS cell monitoring unit",
+   "48 V battery"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://nxp.com/products/BMA7318-BMI7318-BMA7518",
+  "note": "BMx7318 / 7518 family press release: ASIL C / SIL 2, availability expected November 2025; BMA7318, BMI7318 and BMA7518 are pin-to-pin compatible. Mouser has a 'new product' page (https://www.mouser.fi/new/nxp-semiconductors/nxp-bmx7x18-battery-cell-controllers/). Described by NXP as automotive; AEC text not in the search result - aecq left false until read. No orderable code seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "KW45",
+  "desc": "32-bit Bluetooth 6.0 long-range MCU with CAN FD and LIN options, Cortex-M33",
+  "category": "ic_qfn",
+  "pkg": "HVQFN40 6x6 / HVQFN48 7x7 wettable flank",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "digital key / car access ECU",
+   "body control module"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/KW45",
+  "note": "Page: 'Qualification: AEC-Q100 Grade 2'. Data sheet Rev 10.0 dated 21 Oct 2026. Orderable codes not shown.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "S32K388",
+  "desc": "S32K3 Cortex-M7 MCU, high-memory member (EVB S32K388EVB-Q289)",
+  "category": "ic_bga",
+  "pkg": "MAPBGA 289 (from EVB name)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body domain",
+   "zonal controller",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/S32K3",
+  "note": "Catalogue holds a family-key ESTIMATE only. NXP S32K3 page: 'AEC-Q100 qualified Grade 1', Active. Digi-Key keyword search showed 8 Microcontrollers items for this family (22 Nov 2026); listing codes were not readable.",
+  "catalogue": "estimate",
+  "catalogueKey": "S32K388"
+ },
+ {
+  "mfr": "NXP",
+  "family": "TJA1104",
+  "desc": "MACsec-enabled, ASIL B 100BASE-T1 Ethernet PHY (NXP's first MACsec 100BASE-T1 PHY)",
+  "category": "ic_qfn",
+  "pkg": "HVQFN36 6x6 wettable flank",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "radar / camera ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/TJA1104",
+  "note": "Page: 'Compliant to AEC-Q100 Grade 1'. Fact sheet dated 3 May 2024.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "TJA1410",
+  "desc": "10BASE-T1S PMD transceiver (OPEN Alliance TC14)",
+  "category": "ic_qfn",
+  "pkg": "HVSON8 3x3",
+  "aecq": true,
+  "launched": "2024-02",
+  "usedIn": [
+   "zonal controller",
+   "lighting / sensor edge node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/TJA1410",
+  "note": "Page: 'AECQ-100 Grade 1'. Launch = fact sheet Rev 0 dated 29 Feb 2024. Orderable code not shown.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "TJA1445",
+  "desc": "CAN FD transceiver with partial networking, up to 5 Mbit/s (TJA1445A SO14 / HVSON14, TJA1445B DHVQFN18)",
+  "category": "ic_soic",
+  "pkg": "SO14 / HVSON14 / DHVQFN18",
+  "aecq": true,
+  "launched": "2024-10",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/TJA1445",
+  "note": "Page: AEC-Q100 Grade 1. Launch = data sheet Rev 1.0 dated 16 Oct 2024.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "TJA1466",
+  "desc": "CAN SIC transceiver with partial networking and advanced system monitoring, CAN FD up to 8 Mbit/s",
+  "category": "ic_qfn",
+  "pkg": "DHVQFN18",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.nxp.com/products/TJA1466",
+  "note": "Page: AEC-Q100 Grade 1. Data sheet dated 9 Dec 2024. Digi-Key keyword search shows 3 items under Interface > Drivers, Receivers, Transceivers (22 Nov 2026); exact orderable code not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "GD3100 (MC33GD3100)",
+  "orderableCode": "MC33GD3100EK",
+  "desc": "Single-channel isolated gate driver for IGBT / SiC, 15 A, SPI safety monitoring",
+  "category": "ic_soic",
+  "pkg": "SOIC-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.ca/en/products/detail/nxp-usa-inc/MC33GD3100EK/11505954",
+  "note": "Digi-Key listing; variants MC33GD3100A3EK / B3EK / BEK have NXP part pages. Datasheet Rev. 10.0 Sept 2023 - an established part missing from the catalogue (successor GD3162 is in it). AEC text not in the result.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "NXP",
+  "family": "S32Z2 (S32Z280)",
+  "orderableCode": "S32Z280ABCK0MJ",
+  "desc": "16 nm real-time processor: 8x Cortex-R52 up to 1 GHz, lockstep Cortex-M33, DSP/ML, up to 64 MB flash, TSN GbE switch, 24 CAN FD",
+  "category": "ic_bga",
+  "pkg": "BGA 594 / BGA 400",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "domain controller",
+   "zonal controller",
+   "safety processor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.nxp.com/products/S32Z2",
+  "note": "Orderable code shown on the NXP page; 'AEC-Q100 Grade 1 device'; status Active. Digi-Key keyword search showed 4 Microcontrollers + 4 DSP items for S32Z280 for this family (22 Nov 2026); listing codes were not readable.",
+  "catalogue": "no"
+ }
+]

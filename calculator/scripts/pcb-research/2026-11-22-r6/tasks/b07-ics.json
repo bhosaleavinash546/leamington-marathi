@@ -1,0 +1,700 @@
+[
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS37610",
+  "orderableCode": "ACS37610LLUATR-010B3",
+  "desc": "Coreless differential Hall current sensor IC with common-mode field rejection, overcurrent and overtemperature detection",
+  "category": "ic_soic",
+  "pkg": "TSSOP-8 (LU)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter busbar",
+   "BMS",
+   "48 V inverter"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37610-datasheet.pdf",
+  "note": "\"AEC-Q100 Grade 0, automotive qualified\" (datasheet Rev 2, Oct 2024). Digi-Key lists the exact code (checked 2026-11-22). Successor to the catalogued ACS37612.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "A17802",
+  "orderableCode": "A17802PLEATR",
+  "desc": "Inductive position sensor IC with sin/cos outputs for e-motor rotor position",
+  "category": "ic_soic",
+  "pkg": "TSSOP-14 (LE)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction motor rotor position",
+   "EPS motor",
+   "e-axle"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/a17802-datasheet.pdf",
+  "note": "\"Qualified to AEC-Q100 Grade 0\" (datasheet Rev 5, Sept 2026). Digi-Key exact match seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS37030",
+  "orderableCode": "ACS37030LLZATR-020B3",
+  "desc": "DC-5 MHz isolated Hall + inductive current sensor with zero-current reference (GaN / SiC stages)",
+  "category": "ic_soic",
+  "pkg": "6-pin fused-lead SOIC (LZ) / wide-body (MY)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "DC-DC converter",
+   "GaN / SiC power stage"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37030-32-datasheet.pdf",
+  "note": "\"Grade 0, AEC-Q100 automotive qualified\" (datasheet Rev 7, May 2026). Digi-Key lists the exact code (checked 2026-11-22). Future Electronics featured-product page seen. Sibling ACS37032 (overcurrent fault output), e.g. ACS37032LLZATR-020B3.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS37035",
+  "orderableCode": "ACS37035KLACTR-020B3",
+  "desc": "1 MHz isolated Hall current sensor with low output offset",
+  "category": "ic_soic",
+  "pkg": "SOICW-16",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "DC-DC converter",
+   "xEV charger"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37035-datasheet.pdf",
+  "note": "\"AEC-Q100 Grade 1, automotive qualified\" (datasheet Rev 5, May 2026). Mouser new-product page seen; Digi-Key shows 4 ACS37035 current-sensor items. Order code from the Allegro datasheet selection guide.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS37100",
+  "orderableCode": "ACS37100LMAETR-025B3",
+  "desc": "10 MHz isolated TMR (XtremeSense) current sensor, +/-25 / 50 A",
+  "category": "ic_soic",
+  "pkg": "SOICW-16 (MA, 8 mm creepage)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "OBC",
+   "DC-DC converter",
+   "GaN / SiC protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37100-datasheet.pdf",
+  "note": "\"Grade 0, AEC-Q100 automotive qualified\" (datasheet Rev 4, Aug 2026). Digi-Key product-highlight and Mouser new-product pages seen. Second code: ACS37100LMAETR-050B3.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS37630",
+  "orderableCode": "ACS37630LOLTR-004B5",
+  "desc": "Linear vertical-Hall sensor IC for U-core current sensing, 250 kHz analog output",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 (OL)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter phase current",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37630-datasheet.pdf",
+  "note": "\"AEC-Q100 Grade 0, automotive qualified\" (datasheet Rev 4, June 2026). Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Allegro MicroSystems",
+  "family": "ACS39402",
+  "orderableCode": "ACS39402KLHLT-010U",
+  "desc": "TMR current sensor in 5-pin SOT-23W, no external sense resistor",
+  "category": "ic_soic",
+  "pkg": "SOT-23W 5-pin (LH)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body / zonal loads",
+   "motor drives",
+   "DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs39402-datasheet.pdf",
+  "note": "Datasheet Rev 1 (19 May 2026): \"AEC-Q100 Grade 1, automotive qualified (pending)\" - so aecq false for now. Mouser featured-products page seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LTC4359",
+  "orderableCode": "LTC4359HMS8#WTRPBF",
+  "desc": "Ideal diode controller with reverse-input protection, 4-80 V",
+  "category": "ic_soic",
+  "pkg": "MSOP-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "reverse-battery protection",
+   "ORing of redundant supplies",
+   "zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC4359HMS8-WTRPBF/12385731",
+  "note": "Digi-Key listing title; listed as automotive grade, AEC-Q100, -40 to 125 C. Non-automotive codes (LTC4359HDCB#TRPBF, LTC4359IDCB#TRMPBF) are also listed at Arrow / Newark.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX20075",
+  "orderableCode": "MAX20075ATCA/V+",
+  "desc": "36 V, 600 mA mini synchronous buck converter, 3.5 uA Iq, fixed 5 V",
+  "category": "ic_qfn",
+  "pkg": "TDFN-12",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "always-on 12 V rail",
+   "camera / radar module",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20075ATCA-V/6188700",
+  "note": "Digi-Key listing titles: MAX20075ATCA/V+, MAX20075ATCA/V+T, MAX20075ATCB/V+, MAX20075DATCA/V+T; product-highlight page \"MAX20075 Mini Buck Converter\". Summary: automotive grade family, 3.5-36 V in, -40 to +125 C; AEC-Q100 wording not read. Siblings MAX20076 (1.2 A) and MAX25276 share the EV kit.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX25232 (5 V)",
+  "orderableCode": "MAX25232ATCA/V+",
+  "desc": "36 V, 3 A mini synchronous buck converter, fixed 5 V output",
+  "category": "ic_qfn",
+  "pkg": "TDFN-12 (side-wettable)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "12 V battery rail buck",
+   "USB supply",
+   "ADAS / infotainment ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCA-V/17878685",
+  "note": "Digi-Key listing title; Grade: Automotive, AEC-Q100, -40 to 125 C.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADBMS6821 / ADBMS6822",
+  "desc": "ADBMS6822 - dual isoSPI transceiver, 2 Mbps, 3-30 V wake / monitor input",
+  "category": "ic_qfn",
+  "pkg": "LFCSP-32 (side-solderable)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS master"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.analog.com/en/products/ADBMS6822.html",
+  "note": "AEC-Q100 per the page; in production. Mouser family page: https://www.mouser.co.id/adi-adbms6821-adbms6822-transceivers. Successor role to the catalogued LTC6820. No orderable code seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADBMS6832 / ADBMS6833",
+  "desc": "ADBMS6832 - multicell battery stack monitor, up to 18 series cells, <2 mV lifetime TME, 300 mA passive balancing",
+  "category": "ic_tqfp",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring unit"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://analog.com/en/products/adbms6832m.html",
+  "note": "AEC-Q100 per the page; recommended for new designs. The URL is the 'ADBMS6832M' page. The catalogue has ADBMS6830 (16 ch) only. No orderable code seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LT8640S / LT8643S",
+  "desc": "42 V, 6 A synchronous step-down Silent Switcher 2 (LT8643S: external compensation)",
+  "category": "ic_qfn",
+  "pkg": "LQFN-24 4x4",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "12 V battery rail buck",
+   "infotainment",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/datasheet/2/609/1/lt8640s_lt8643s_lt8640sa_lt8643sa-3570431.pdf",
+  "note": "Datasheet \"LT8640S/LT8643S/LT8640SA/LT8643SA Rev. D\" carried by Mouser; AEC-Q100 qualified (revision history: added 2021), automotive ordering codes carry #WPBF - exact code not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX96793",
+  "desc": "Single CSI-2 to GMSL3 serializer (12 Gbps forward link), backward compatible with GMSL2; companion of MAX96792A",
+  "category": "ic_qfn",
+  "pkg": "not read (pin-compatible with MAX96717 per ADI AN-2615)",
+  "aecq": true,
+  "launched": "2025",
+  "usedIn": [
+   "ADAS camera",
+   "surround-view ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.macnica.co.jp/en/business/semiconductor/manufacturers/analog_devices/news/147838/",
+  "note": "Macnica 'August–October 2025 Analog Devices new product information': 'AEC-Q100 Grade 2 qualified', -40 to +105 C. ADI page: analog.com/en/products/max96793.html.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "AD2433W",
+  "orderableCode": "AD2433WCCPZ",
+  "desc": "A2B (Automotive Audio Bus) transceiver, 32-channel, second-generation AD243x",
+  "category": "ic_qfn",
+  "pkg": "LFCSP-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "A2B audio node",
+   "microphone array / ANC node",
+   "amplifier"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD2433WCCPZ/16379559",
+  "note": "Digi-Key listing titles (AD2433WCCPZ, AD2433WCCPZ-RL), Grade: Automotive. Digi-Key shows this code obsolete: an ADI discontinuance notice gives a last ship date of 11 May 2024 with a silicon revision 1.2 replacement code - find the replacement code before pricing. Catalogue holds the older AD2428W.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "AD8418A",
+  "orderableCode": "AD8418AWBRZ",
+  "desc": "Bidirectional zero-drift current-sense amplifier, high common-mode, gain 20",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor / solenoid current sense",
+   "EPS",
+   "DC-DC converter",
+   "battery current monitor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+  "note": "Digi-Key listing title; listed active, Grade: Automotive (W grade), -40 to 125 C - the words AEC-Q100 were not read. AD8418WBRZ (non-A) is also listed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADA4571",
+  "orderableCode": "ADA4571WHRZ-R7",
+  "desc": "Integrated AMR angle sensor and signal conditioner (sin / cos outputs)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BLDC rotor position",
+   "EPS motor",
+   "actuator position",
+   "wiper motor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADA4571WHRZ-R7/6132432",
+  "note": "Digi-Key listing title. The search summary says one Digi-Key page marks ADA4571WHRZ-R7 obsolete with ADA4571WHRZ-1-R7 as the replacement - price the replacement if that is confirmed. W grade; AEC-Q100 not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADAU1467",
+  "orderableCode": "ADAU1467WBCPZ300",
+  "desc": "SigmaDSP digital audio processor, 294.912 MHz, 80-kword program memory",
+  "category": "ic_qfn",
+  "pkg": "LFCSP-88",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "audio amplifier",
+   "infotainment head unit",
+   "ANC / RNC",
+   "AVAS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADAU1467WBCPZ300/7915234",
+  "note": "Digi-Key listing title; active, Grade: Automotive. Datasheet \"ADAU1463/ADAU1467 Rev. A\" also seen at Arrow. Catalogue holds the smaller ADAU1452 - a different part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADXL312",
+  "orderableCode": "ADXL312WACPZ",
+  "desc": "3-axis digital accelerometer, +/-1.5 to 12 g selectable, SPI / I2C",
+  "category": "ic_qfn",
+  "pkg": "LFCSP-32 5x5",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "car alarm / tilt sensing",
+   "telematics",
+   "black box / event recorder"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADXL312WACPZ/7175506",
+  "note": "Digi-Key listing title; listed active, Grade: Automotive (W grade), -40 to 105 C; 48-week lead time shown. The words AEC-Q100 were not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LT8646S",
+  "orderableCode": "LT8646SIV#WPBF",
+  "desc": "65 V, 8 A synchronous step-down Silent Switcher 2, 200 kHz-2.2 MHz",
+  "category": "ic_qfn",
+  "pkg": "LQFN-32",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "48 V / 24 V rail pre-regulator",
+   "ADAS domain controller",
+   "infotainment"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8646SIV-WPBF/13684358",
+  "note": "Digi-Key and Newark listing titles; listings describe it as AEC-Q100 qualified. LT8646SEV#WPBF is also listed (Mouser). Sibling LT8645S is catalogued (LT8645SEV#PBF) - this is a different part (LT8646S has external compensation).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LT8686S",
+  "orderableCode": "LT8686SJV#WPBF",
+  "desc": "Quad-output 42 V, 2 A-per-channel synchronous step-down Silent Switcher",
+  "category": "ic_qfn",
+  "pkg": "LQFN",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS camera / radar ECU",
+   "infotainment",
+   "multi-rail point of load"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8686SJV-WPBF/27544010",
+  "note": "Digi-Key listing title; listed as AEC-Q100, automotive, -40 to 150 C. High Digi-Key item number suggests a recent listing (launch date not stated on the page).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX17852",
+  "orderableCode": "MAX17852ACB/V+",
+  "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor) with current-sense input, ASIL D",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring unit",
+   "48 V / HV battery pack"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17852ACB-V/10452049",
+  "note": "Digi-Key listing title; active, -40 to 125 C. Digi-Key does not show a grade on the page (/V = Maxim automotive suffix). Sibling of the catalogued MAX17853 - a different part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX17854",
+  "orderableCode": "MAX17854ACB/V+",
+  "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor), ASIL D",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring unit",
+   "HV battery pack"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17854ACB-V/15903588",
+  "note": "Digi-Key listing title only (description not read; function from general knowledge of the MAX1785x family). /V = Maxim automotive suffix.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX25232 (3.3 V)",
+  "orderableCode": "MAX25232ATCE/V+",
+  "desc": "36 V, 3 A mini synchronous buck converter, fixed 3.3 V output",
+  "category": "ic_qfn",
+  "pkg": "TDFN-12 (side-wettable)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "12 V battery rail buck",
+   "ADAS / infotainment ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCE-V/17885170",
+  "note": "Digi-Key listing title; same automotive grade as the 5 V MAX25232ATCA/V+ - a different orderable part (3.3 V output).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX25410",
+  "orderableCode": "MAX25410AGTE/V+",
+  "desc": "Automotive USB Power Delivery port protector (CC / SBU / D+ D- short-to-battery protection, CDP / HS modes)",
+  "category": "ic_qfn",
+  "pkg": "TQFN-16-EP 4x4",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "USB-C charge port",
+   "infotainment head unit",
+   "media hub"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Maxim-Integrated/MAX25410AGTE-V+?qs=GBLSl2AkiruoQpGZlTAsZQ%3D%3D",
+  "note": "Mouser listing title. Datasheet (as summarised by the search): AEC-Q100 and AEC-Q006 qualified, -40 to +105 C; a MAX25410AGTEA/V+ variant is also listed; T suffix = tape and reel.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX25430",
+  "orderableCode": "MAX25430AATLF/V+",
+  "desc": "Automotive 100 W USB-PD buck-boost port controller and protector, 4.5-36 V input",
+  "category": "ic_qfn",
+  "pkg": "TQFN-40 6x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "USB-C PD charge port",
+   "rear-seat charger",
+   "infotainment head unit"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25430AATLF-V/13175523",
+  "note": "Digi-Key and Newark listing titles (Newark: \"USB PD CONTROLLER, -40 TO 125DEG C\"). Datasheet is titled \"Automotive 100W USB-PD Buck-Boost Port Controller and Protector\"; an AEC-Q100 statement was not read, so aecq is left false (/V = Maxim automotive suffix).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX96706",
+  "orderableCode": "MAX96706GTJ/V+",
+  "desc": "GMSL1 14-bit deserializer with coax / STP input (camera link)",
+  "category": "ic_qfn",
+  "pkg": "TQFN-32",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "surround-view ECU",
+   "camera monitor system",
+   "rear camera receiver"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96706GTJ-V/5880886",
+  "note": "Digi-Key listing titles (MAX96706GTJ/V+ and MAX96706GTJ/V+T), shown as automotive, AEC-Q100. GMSL1 generation (pairs with the catalogued MAX96705 serializer).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "MAX96751",
+  "orderableCode": "MAX96751GTN/V+",
+  "desc": "GMSL2 serializer with HDMI 2.0 input, single / dual GMSL2 output",
+  "category": "ic_qfn",
+  "pkg": "TQFN-56",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "infotainment head unit display link",
+   "rear-seat entertainment",
+   "cockpit domain controller"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96751GTN-V/24617867",
+  "note": "Digi-Key listing title. The search summary says Digi-Key marks MAX96751GTN/V+ discontinued and that MAX96751GTN/VY+ is the code in the GMSL cross-reference - price the /VY+ code if it is the live one. AEC statement not read (/V = automotive suffix).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "ADT7311",
+  "orderableCode": "ADT7311WTRZ-RL7",
+  "desc": "16-bit digital SPI temperature sensor, -40 to +150 C",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "powertrain / transmission temperature",
+   "battery pack",
+   "climate control"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADT7311WTRZ-RL7/6163946",
+  "note": "Digi-Key listing title. The search summary reports one Digi-Key listing as Last Time Buy and another as active - check lifecycle before pricing. Automotive W grade; AEC-Q100 not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LT8648S",
+  "orderableCode": "LT8648SJV#WPBF",
+  "desc": "42 V, 15 A synchronous step-down Silent Switcher 2",
+  "category": "ic_qfn",
+  "pkg": "LQFN",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS domain controller core rail pre-regulator",
+   "high-current 12 V point of load"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8648SJV-WPBF/16398667",
+  "note": "Digi-Key listing title; listed as AEC-Q100 automotive, but the search summary says Digi-Key shows this code discontinued / out of stock - check status before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Analog Devices",
+  "family": "LTC6812-1",
+  "orderableCode": "LTC6812HLWE-1#3ZZPBF",
+  "desc": "15-cell battery stack monitor with daisy-chain isoSPI",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64-EP",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring unit",
+   "48 V / HV battery pack"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC6812HLWE-1-3ZZPBF/9806656",
+  "note": "Digi-Key listing title; Grade: Automotive, but shown discontinued at Digi-Key with zero stock - legacy generation between the catalogued LTC6811-1 and LTC6813-1; check lifecycle before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "AP63203Q",
+  "orderableCode": "AP63203Q",
+  "desc": "3.8–32 V input, 2 A synchronous buck, fixed 3.3 V, 1.1 MHz",
+  "category": "ic_soic",
+  "pkg": "TSOT26",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU point-of-load",
+   "infotainment",
+   "body control module"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Fixed 5 V sibling AP63205Q and adjustable AP63200Q / AP63201Q are in the same table.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "74LVC1GxxQ / 74AHC1GxxQ / 74AHCT1GxxQ",
+  "desc": "Single-gate logic (1G00 / 04 / 07 / 08 / 14 / 17 / 32 / 125 / 126 …), -40 to +125 °C",
+  "category": "ic_soic",
+  "pkg": "SOT353 / SOT25",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Brochure prints the family columns (74LVC, 74AHC, 74AHCT) against type rows '1G08Q', '1G14Q', '1G125Q' … — the joined code is not printed, so none is given.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Diodes Inc.",
+  "family": "LM2903Q / LM2903AQ",
+  "desc": "Dual comparator, 2–36 V, open-collector, -40 to +125 °C",
+  "category": "ic_soic",
+  "pkg": "SO-8 / TSSOP-8 (see datasheet)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+  "note": "Brochure prints 'LM2903Q/AQ' (and LM2901Q/AQ, LM2902Q/AQ, LM2904Q/AQ) — a family label, so no orderable code is given.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "PROFET Wire Guard",
+  "orderableCode": "BTG70008A-1ESW",
+  "desc": "Single-channel 12 V automotive eFuse (smart high-side switch) with selectable integrated I2t wire-harness protection",
+  "category": "ic_soic",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "power distribution box"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/i/infineon/btg70008a-1esw-profet-wire-guard-smart-high-side-switch",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Infineon",
+  "family": "PROFET Wire Guard",
+  "orderableCode": "BTG70013A-1ESW",
+  "desc": "PROFET Wire Guard smart power high-side switch (I2t wire protection)",
+  "category": "ic_soic",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "power distribution box"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-btg70013a-1esw-datasheet-en.pdf?fileId=8ac78c8c8caa022e018cf222d43f3b97",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read.",
+  "catalogue": "no"
+ }
+]

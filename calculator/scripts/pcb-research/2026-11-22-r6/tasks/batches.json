@@ -1,0 +1,295 @@
+{
+ "scope": "B",
+ "candidatesToPrice": 1817,
+ "inScopeB": 717,
+ "notInScopeB": 1100,
+ "byGroup": {
+  "ics": 365,
+  "discretes": 99,
+  "timing-interconnect": 47,
+  "passives": 206
+ },
+ "batches": [
+  {
+   "task": "b01-passives",
+   "parts": 36,
+   "makers": [
+    "Bourns",
+    "Coilcraft",
+    "KEMET",
+    "KOA",
+    "KYOCERA AVX"
+   ],
+   "withCode": 36,
+   "distributorListed": 36,
+   "priority1": 9
+  },
+  {
+   "task": "b02-passives",
+   "parts": 36,
+   "makers": [
+    "KYOCERA AVX",
+    "Murata",
+    "Nichicon"
+   ],
+   "withCode": 36,
+   "distributorListed": 25,
+   "priority1": 17
+  },
+  {
+   "task": "b03-passives",
+   "parts": 36,
+   "makers": [
+    "Nichicon",
+    "Nippon Chemi-Con",
+    "Panasonic",
+    "ROHM"
+   ],
+   "withCode": 36,
+   "distributorListed": 34,
+   "priority1": 14
+  },
+  {
+   "task": "b04-passives",
+   "parts": 36,
+   "makers": [
+    "ROHM",
+    "Samsung Electro-Mechanics",
+    "TDK",
+    "Taiyo Yuden"
+   ],
+   "withCode": 36,
+   "distributorListed": 30,
+   "priority1": 21
+  },
+  {
+   "task": "b05-passives",
+   "parts": 36,
+   "makers": [
+    "TDK",
+    "Vishay"
+   ],
+   "withCode": 36,
+   "distributorListed": 20,
+   "priority1": 23
+  },
+  {
+   "task": "b06-passives",
+   "parts": 26,
+   "makers": [
+    "Vishay",
+    "Wurth Elektronik",
+    "YAGEO",
+    "Yageo"
+   ],
+   "withCode": 26,
+   "distributorListed": 25,
+   "priority1": 5
+  },
+  {
+   "task": "b07-ics",
+   "parts": 36,
+   "makers": [
+    "Allegro MicroSystems",
+    "Analog Devices",
+    "Diodes Inc.",
+    "Infineon"
+   ],
+   "withCode": 30,
+   "distributorListed": 30,
+   "priority1": 13
+  },
+  {
+   "task": "b08-ics",
+   "parts": 36,
+   "makers": [
+    "Infineon",
+    "Lattice",
+    "Macronix",
+    "Melexis"
+   ],
+   "withCode": 30,
+   "distributorListed": 23,
+   "priority1": 21
+  },
+  {
+   "task": "b09-ics",
+   "parts": 36,
+   "makers": [
+    "MPS",
+    "Melexis",
+    "Microchip",
+    "NXP",
+    "Nexperia"
+   ],
+   "withCode": 22,
+   "distributorListed": 22,
+   "priority1": 22
+  },
+  {
+   "task": "b10-ics",
+   "parts": 36,
+   "makers": [
+    "OMNIVISION",
+    "Power Integrations",
+    "Renesas",
+    "onsemi"
+   ],
+   "withCode": 35,
+   "distributorListed": 20,
+   "priority1": 26
+  },
+  {
+   "task": "b11-ics",
+   "parts": 36,
+   "makers": [
+    "ROHM",
+    "Renesas",
+    "Richtek",
+    "Skyworks"
+   ],
+   "withCode": 36,
+   "distributorListed": 36,
+   "priority1": 0
+  },
+  {
+   "task": "b12-ics",
+   "parts": 36,
+   "makers": [
+    "STMicroelectronics",
+    "Skyworks",
+    "Sony Semiconductor Solutions"
+   ],
+   "withCode": 34,
+   "distributorListed": 25,
+   "priority1": 34
+  },
+  {
+   "task": "b13-ics",
+   "parts": 36,
+   "makers": [
+    "STMicroelectronics"
+   ],
+   "withCode": 34,
+   "distributorListed": 32,
+   "priority1": 16
+  },
+  {
+   "task": "b14-ics",
+   "parts": 36,
+   "makers": [
+    "STMicroelectronics"
+   ],
+   "withCode": 36,
+   "distributorListed": 36,
+   "priority1": 0
+  },
+  {
+   "task": "b15-ics",
+   "parts": 36,
+   "makers": [
+    "STMicroelectronics",
+    "Texas Instruments"
+   ],
+   "withCode": 36,
+   "distributorListed": 24,
+   "priority1": 28
+  },
+  {
+   "task": "b16-ics",
+   "parts": 36,
+   "makers": [
+    "Texas Instruments"
+   ],
+   "withCode": 19,
+   "distributorListed": 24,
+   "priority1": 18
+  },
+  {
+   "task": "b17-ics",
+   "parts": 5,
+   "makers": [
+    "Texas Instruments",
+    "Vishay",
+    "Winbond"
+   ],
+   "withCode": 5,
+   "distributorListed": 4,
+   "priority1": 1
+  },
+  {
+   "task": "b18-discretes",
+   "parts": 36,
+   "makers": [
+    "American Bright",
+    "Diodes Inc.",
+    "KYOCERA AVX",
+    "Littelfuse",
+    "Nexperia"
+   ],
+   "withCode": 33,
+   "distributorListed": 17,
+   "priority1": 23
+  },
+  {
+   "task": "b19-discretes",
+   "parts": 36,
+   "makers": [
+    "Nexperia",
+    "ROHM",
+    "Semtech",
+    "onsemi"
+   ],
+   "withCode": 27,
+   "distributorListed": 20,
+   "priority1": 18
+  },
+  {
+   "task": "b20-discretes",
+   "parts": 27,
+   "makers": [
+    "STMicroelectronics",
+    "Toshiba",
+    "Vishay",
+    "W\u00fcrth Elektronik"
+   ],
+   "withCode": 24,
+   "distributorListed": 22,
+   "priority1": 16
+  },
+  {
+   "task": "b21-timing-interconnect",
+   "parts": 36,
+   "makers": [
+    "Alps Alpine",
+    "Diodes",
+    "ECS Inc.",
+    "Epson",
+    "Hirose",
+    "Hongfa",
+    "JAE",
+    "Molex",
+    "Murata",
+    "NDK",
+    "Omron"
+   ],
+   "withCode": 33,
+   "distributorListed": 32,
+   "priority1": 4
+  },
+  {
+   "task": "b22-timing-interconnect",
+   "parts": 11,
+   "makers": [
+    "STMicroelectronics",
+    "SiTime",
+    "TE Connectivity",
+    "Texas Instruments",
+    "Wolfspeed"
+   ],
+   "withCode": 9,
+   "distributorListed": 9,
+   "priority1": 2
+  }
+ ]
+}

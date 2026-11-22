@@ -48,3 +48,41 @@ OWN slope.
 
 **Never invent a part, an orderable code or a price. An empty result with the reason is correct; a wrong number is
 worse than none.**
+
+---
+
+## Addendum (22 Nov 2026, after the discovery pass) — LATEST tasks `b01`…, and reading pages
+
+**A fourth kind of task: LATEST** (`tasks/b<nn>-….json`, a JSON list of discovered parts: `mfr`, `family`, `orderableCode`,
+`desc`, `category`, `pkg`, `aecq`, `sourceUrl`, `note`, sometimes `boards` = how many reference-design BOMs carry it).
+The discovery pass recorded that these parts EXIST; it recorded no price and often did not confirm the grade. For each:
+1. **Confirm the exact orderable code on a franchised distributor's listing** (the code named on the page). If the task
+   gives only a family (`orderableCode: null`) or a type number without the packing suffix, find the automotive orderable
+   code distributors stock and put it in `mpn`; keep the task's family in `family`.
+2. **Confirm the grade.** Set `aecq: true` only if a maker or distributor page states AEC-Q100 / Q101 / Q102 / Q200 or
+   "automotive grade" for this code or its named series; say where in `notes`. Not confirmed → `aecq: false` and say so.
+   If the page shows the part is obsolete / NRND / last-time-buy, do not price it: `observations: []`, notes
+   `OBSOLETE: <what the page says, replacement if named>`.
+3. **Price it under the 200k rule** (1,000-unit price + the SAME distributor's largest published break; a second
+   distributor at ~1k where you can). Every figure with distributor, qty, price, currency, URL, date.
+4. A discovery `note` that says the code was seen only in a search summary, joined from wrapped cells, or "automotive
+   status not read" means: re-check it first; if the code does not exist as printed, `observations: []`, notes
+   `WRONG-CODE: <what you found>`.
+5. Not found at any franchised distributor with a break ≥ 100 → `observations: []`, notes `NO-LISTING: <what you tried>`
+   (it goes to the supplier-quote list). Never estimate.
+
+**Reading pages.** Besides web search you may READ a distributor's page for the exact code (the discovery pass found that
+TME — tme.eu / tme.com — serves product and search pages; most others refuse). A price table you read on the page is
+better evidence than a search summary: record every break it shows that matters (1k and the largest).
+- One page at a time. **If a site refuses or returns an error page, stop using that site for the rest of your task —
+  never retry through another host, a cache, a proxy or a script.** No bulk or scripted fetching.
+- At most **20 web searches and about 40 page reads** per task.
+- Record the currency and whether the price is net of VAT as the page shows it (use the ex-VAT price; if the page shows
+  only a VAT-inclusive price, do not record it). Record the site's country version in `notes` if it matters.
+- A TME (or other) SEARCH-results page that lists several codes of a series with prices counts for each code it names.
+
+**Output** for a LATEST task: `scripts/pcb-research/2026-11-22-r6/<task name>.json`, the `../RULES.md` shape (`domain` =
+task name, `researched` = today), one entry per task line you worked (priced or not), plus top-level `notResearched`
+(lines not reached). Copy `desc` / `category` / `pkg` from the task unless a page shows they are wrong (say so). Reply
+with ONE paragraph: lines worked / priced / with two breaks of one distributor / with ≥ 2 distributors / OBSOLETE /
+WRONG-CODE / NO-LISTING / not reached; searches and page reads used; which sites refused; the most serious problem.

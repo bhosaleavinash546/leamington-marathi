@@ -1,0 +1,717 @@
+[
+ {
+  "mfr": "OMNIVISION",
+  "family": "OX03H10",
+  "orderableCode": "OX03H10-E74Y-001A-Z",
+  "desc": "3 MP 1/2.44-inch 3.0 um TheiaCel automotive viewing sensor, 60 fps, pin-compatible with OX03F10",
+  "category": "ic_bga",
+  "pkg": "74-pin a-CSP",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "surround-view camera",
+   "rear camera",
+   "e-mirror"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ovt.com/products/ox03h10",
+  "note": "Announced Oct 2024 (AutoSens Barcelona); ASIL C. AEC-Q100 not stated on the page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "OMNIVISION",
+  "family": "OX08D10",
+  "orderableCode": "OX08D10-E92U-001A-Z",
+  "desc": "8 MP 1/1.73-inch 2.1 um TheiaCel HDR / LED-flicker-free automotive image sensor",
+  "category": "ic_bga",
+  "pkg": "a-CSP",
+  "aecq": false,
+  "launched": "2023-09",
+  "usedIn": [
+   "front camera",
+   "ADAS camera"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ovt.com/products/ox08d10",
+  "note": "SKUs on the maker page: OX08D10-E92U-001A-Z and OX08D10-E92Y-001A-Z. Page does not state AEC-Q100. Validated on Qualcomm Snapdragon Ride and NVIDIA DRIVE Hyperion. Usually bought direct / via OMNIVISION agents.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "Hyperlux AR0341AT",
+  "orderableCode": "AR0341ATSC15XUEA0-DPBR",
+  "desc": "3 MP 1/3.6-inch 2.1 um automotive HDR CMOS image sensor for surround view / sensing",
+  "category": "ic_bga",
+  "pkg": "see datasheet",
+  "aecq": true,
+  "launched": "2023-05",
+  "usedIn": [
+   "surround-view camera",
+   "rear camera",
+   "e-mirror"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/sensors/image-sensors/ar0341at",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). Second OPN on the onsemi page: AR0341ATSC15XUEA0-TPBR. Datasheet AR0341AT-D lists AEC-Q100 Grade 2 (read through search).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "Hyperlux AR0823AT",
+  "orderableCode": "AR0823AT2C18XUEA0-DPBR-E",
+  "desc": "8.3 MP 1/1.8-inch 2.1 um automotive HDR CMOS image sensor (150 dB, LFM), ASIL-D process",
+  "category": "ic_bga",
+  "pkg": "see datasheet",
+  "aecq": true,
+  "launched": "2023-05",
+  "usedIn": [
+   "front camera",
+   "ADAS camera",
+   "mirror replacement"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/sensors/image-sensors/ar0823at",
+  "note": "OPN from the onsemi product page structured data. AEC-Q100 Grade 2 per the onsemi page (read through search). Mouser new-product page and Avnet Silica NPI page seen. Hyperlux family launched 9 May 2023.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV210R / NCV211R / NCV213R / NCV214R",
+  "orderableCode": "NCV210RSQT2G",
+  "desc": "Current-shunt monitor, voltage output, bidirectional, zero-drift, low- or high-side sensing",
+  "category": "ic_soic",
+  "pkg": "SC-70-6",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor / solenoid current sense",
+   "DC-DC",
+   "body ECU load diagnosis"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/ncs210r-d.pdf",
+  "note": "Datasheet (NCS210R family): 'NCV Prefix for Automotive ... AEC-Q100 Qualified and PPAP Capable'. Gain variants NCV211RSQT2G, NCV213RSQT2G, NCV214RSQT2G in the same table.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV7329",
+  "orderableCode": "NCV7329D10R2G",
+  "desc": "Stand-alone LIN transceiver",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN nodes: door, seat, mirror, sunroof",
+   "body ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/ncv7329-d.pdf",
+  "note": "Datasheet: NCV prefix, 'AEC-Q100 Qualified and PPAP Capable'. Second orderable NCV7329MW0R2G (DFN8 wettable flank).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV7343",
+  "orderableCode": "NCV7343D20R2G",
+  "desc": "CAN FD transceiver, high speed, low power, with INH, WAKE and error detection",
+  "category": "ic_soic",
+  "pkg": "SOIC-14",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "gateway",
+   "zonal controller",
+   "any CAN FD node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/ncv7343-d.pdf",
+  "note": "Datasheet: 'AEC-Q100 Grade 0 Qualified and PPAP Capable'. Ordering table: NCV7343D20R2G, NCV7343D21R2G (SOIC-14), NCV7343MW0R2G, NCV7343MW1R2G (DFNW14).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV7410",
+  "orderableCode": "NCV7410MWR2G",
+  "desc": "10BASE-T1S (802.3cg) single-pair Ethernet controller, MAC + PHY",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "lighting / sensor edge node"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/interfaces/ethernet-controllers/ncv7410",
+  "note": "Automotive (NCV) version of the catalogued NCN26010. onsemi page shows NCV7410MWR2G, status Active; no AEC-Q100 sentence in the part of the page read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV7428",
+  "orderableCode": "NCV7428D15R2G",
+  "desc": "System basis chip: LIN transceiver + low-voltage regulator for the MCU (5 V / 3.3 V versions)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "LIN actuator / sensor node",
+   "small body ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/ncv7428-d.pdf",
+  "note": "Datasheet: 'AEC-Q100 Qualified and PPAP Capable'. Ordering table also lists NCV7428D13R2G, NCV7428D1L3R2G, NCV7428D1L5R2G (SOIC-8) and NCV7428MW3R2G, NCV7428MW5R2G, NCV7428MWL3R2G, NCV7428MWL5R2G (DFN wettable flank).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV8715",
+  "orderableCode": "NCV8715SQ33T2G",
+  "desc": "LDO regulator 50 mA, ultra-low Iq (4.7 uA), input up to 24 V, fixed 3.3 V",
+  "category": "ic_soic",
+  "pkg": "SC-70-5 (SC-88A)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "always-on MCU / sensor supply",
+   "body ECU standby rail"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/ncv8715-d.pdf",
+  "note": "Datasheet: NCV prefix, 'AEC-Q100 Qualified and PPAP Capable; Device Temperature Grade 1'. Other voltages in the table: NCV8715SQ12/15/18/21/25/30/50T2G (SC-70) and NCV8715MX12/15/18/25/30/33/50TBG (XDFN6).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NVMFS5C404NL",
+  "orderableCode": "NVMFS5C404NLAFT1G",
+  "desc": "N-channel power MOSFET 40 V, 0.67 mOhm, 370 A, SO-8FL 5x6",
+  "category": "ic_qfn",
+  "pkg": "DFN5 5x6 (SO-8FL)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "reverse-battery / load switch",
+   "12 V power distribution"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/pdf/datasheet/nvmfs5c404nl-d.pdf",
+  "note": "Datasheet: 'AEC-Q101 Qualified and PPAP Capable'. Wettable-flank orderables in the table: NVMFS5C404NLWFT1G, NVMFS5C404NLWFAFT1G; 5000-reel versions ...AFT3G / ...WFAFT3G.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS0D9N04XM",
+  "desc": "N-MOSFET 40 V 0.90 mOhm 273 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws0d9n04xm",
+  "note": "Page: AEC-Q101 qualified and PPAP capable. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS1D1N04XM",
+  "desc": "N-MOSFET 40 V 1.05 mOhm 233 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d1n04xm",
+  "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS1D7N04XM",
+  "desc": "N-MOSFET 40 V 1.65 mOhm 154 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d7n04xm",
+  "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS2D3N04XM",
+  "desc": "N-MOSFET 40 V 2.35 mOhm 121 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws2d3n04xm",
+  "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS3D5N08X",
+  "desc": "N-MOSFET 80 V 3.5 mOhm 119 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "48 V systems",
+   "48 V motor drive",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws3d5n08x",
+  "note": "Page: AEC-Q101 qualified and PPAP capable. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS4D0N04XM",
+  "desc": "N-MOSFET 40 V 3.9 mOhm 80 A, 5x6",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL 5x6",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws4d0n04xm",
+  "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV84003G",
+  "desc": "Single-channel high-side eFuse, ASIL B, IDLE mode, capacitive-load charging mode, adjustable over-current and I2t profiles",
+  "category": "ic_soic",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "power distribution box"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/onsemi/onsemi-nv84003g-high-side-efuse/",
+  "note": "Package not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+  "orderableCode": "NVMFWS1D3N04XM",
+  "desc": "N-MOSFET 40 V (1.3 mOhm by the part naming), listed on Mouser's onsemi single N-channel power MOSFET page",
+  "category": "ic_qfn",
+  "pkg": "unknown (page lists DFN5 / DFNW5 / TCPAK57 / WDFN packages for the family)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "motor drive",
+   "12 V power distribution",
+   "reverse-battery / load switch",
+   "DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.in/new/onsemi/onsemi-single-n-channel-power-mosfets",
+  "note": "Mouser 'new products' page; ratings to be read. onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NVMTS1D1N08X",
+  "orderableCode": "NVMTS1D1N08X",
+  "desc": "80 V automotive N-channel power MOSFET, low RDS(on), soft-recovery body diode",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "2026-09",
+  "usedIn": [
+   "48 V motor drive",
+   "48 V DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.ie/c/n/semiconductors/?m=onsemi",
+  "note": "Seen only as a search-result extract of Mouser's 'onsemi Newest Semiconductors' page (entry dated 17 Sep 2026: '80V automotive MOSFETs'); the page itself was not opened and the reel suffix was not seen. Different part from the first-pass NVMFWS…N08X / NVMJST2D1N08X.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "FAD1100-F085",
+  "orderableCode": "FAD1100-F085",
+  "desc": "Ignition gate-drive IC, automotive (F085)",
+  "category": "ic_soic",
+  "pkg": "not read on the page",
+  "aecq": false,
+  "launched": "2026-03",
+  "usedIn": [
+   "engine ECU ignition stage"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.ie/c/n/semiconductors/?m=onsemi",
+  "note": "Seen only as a search-result extract of Mouser's 'onsemi Newest Semiconductors' page (entry dated 3 Mar 2026); page not opened.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV3064",
+  "orderableCode": "NCV3064DR2G",
+  "desc": "1.5 A switching regulator with enable",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "legacy body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/onsemi/NCV3064DR2G?qs=atIEnC/2K4VXgJaqJ4aZHw%3D%3D",
+  "note": "Older part — catalogue gap. Package from the D suffix (not read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "NCV8450A",
+  "orderableCode": "NCV8450ASTT3G",
+  "desc": "Self-protected high-side driver, 4.5-45 V, 800 mA current limit",
+  "category": "ic_soic",
+  "pkg": "SOT-223",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body controller",
+   "relay / lamp drive"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/onsemi/NCV8450ASTT3G?qs=5C9Q4QJFsuP5tX%2FapmGEeQ%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Older part — catalogue gap.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Power Integrations",
+  "family": "InnoSwitch3-AQ 1700 V SiC",
+  "orderableCode": "INN3949CQ-TL",
+  "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, primary + secondary control and isolated feedback; ~40 W (InSOP-24D)",
+  "category": "ic_soic",
+  "pkg": "InSOP-24D",
+  "aecq": true,
+  "launched": "2022-02",
+  "usedIn": [
+   "traction inverter emergency / auxiliary supply",
+   "BMS",
+   "OBC",
+   "800 V DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://power.com/products/innoswitch/innoswitch3-aq/inn3949cq",
+  "note": "AEC-Q100 qualified; announced Feb 2022 (https://www.businesswire.com/news/home/20220201005298/en/Power-Integrations-Introduces-Industrys-First-Automotive-Qualified-High-Voltage-Switcher-ICs-with-1700-V-SiC-MOSFET). Family is on Digi-Key's product highlight (https://www.digikey.bg/en/product-highlight/p/power-integrations/innoswitch-3-aq-ics) and Avnet's. Note: the Nov 2025 family datasheet table reportedly shows 1200 V against these codes - read the current datasheet for the switch rating. A 120 W InSOP-T28G version is on the 2026 flyer.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Power Integrations",
+  "family": "InnoSwitch3-AQ 1700 V SiC",
+  "orderableCode": "INN3947CQ-TL",
+  "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, lower power than INN3949CQ",
+  "category": "ic_soic",
+  "pkg": "InSOP-24D",
+  "aecq": true,
+  "launched": "2022-02",
+  "usedIn": [
+   "traction inverter emergency / auxiliary supply",
+   "BMS",
+   "800 V DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.power.com/products/innoswitch/innoswitch3-aq/inn3947cq",
+  "note": "AEC-Q100 qualified; announced Feb 2022 (https://www.businesswire.com/news/home/20220201005298/en/Power-Integrations-Introduces-Industrys-First-Automotive-Qualified-High-Voltage-Switcher-ICs-with-1700-V-SiC-MOSFET). Family is on Digi-Key's product highlight (https://www.digikey.bg/en/product-highlight/p/power-integrations/innoswitch-3-aq-ics) and Avnet's. Note: the Nov 2025 family datasheet table reportedly shows 1200 V against these codes - read the current datasheet for the switch rating. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RL78 automotive R5F10A6x",
+  "orderableCode": "R5F10A6ELSP#G5",
+  "desc": "RL78 16-bit automotive MCU, 64 KB flash, 20-pin LSSOP",
+  "category": "ic_soic",
+  "pkg": "LSSOP-20",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "LIN / CAN actuator node",
+   "sensor node",
+   "switch panel"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'RL78(AUTO)/F13' on the 48-pin sibling R5F10BGGCKFB#15; K-grade siblings listed too (R5F10A6EKSP#G5, R5F10BAGKSP#G5, R5F10BBGKNA#G5).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RL78/F13 R5F10BAx",
+  "orderableCode": "R5F10BAGLSP#G5",
+  "desc": "RL78 16-bit automotive MCU, 128 KB flash, 30-pin LSSOP",
+  "category": "ic_soic",
+  "pkg": "LSSOP-30",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "LIN / CAN actuator node",
+   "sensor node",
+   "switch panel"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'RL78(AUTO)/F13' on the 48-pin sibling R5F10BGGCKFB#15; K-grade siblings listed too (R5F10A6EKSP#G5, R5F10BAGKSP#G5, R5F10BBGKNA#G5).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RL78/F13 R5F10BBx",
+  "orderableCode": "R5F10BBGLNA#G5",
+  "desc": "RL78 16-bit automotive MCU, 128 KB flash, 32-pin HVQFN",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "LIN / CAN actuator node",
+   "sensor node",
+   "switch panel"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'RL78(AUTO)/F13' on the 48-pin sibling R5F10BGGCKFB#15; K-grade siblings listed too (R5F10A6EKSP#G5, R5F10BAGKSP#G5, R5F10BBGKNA#G5).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RL78/F13 R5F10BGx",
+  "orderableCode": "R5F10BGGCLFB#15",
+  "desc": "RL78/F13 16-bit automotive MCU, 128 KB flash, 48-pin LFQFP",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP-48",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "LIN / CAN actuator node",
+   "sensor node",
+   "switch panel"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'RL78(AUTO)/F13' on the 48-pin sibling R5F10BGGCKFB#15; K-grade siblings listed too (R5F10A6EKSP#G5, R5F10BAGKSP#G5, R5F10BBGKNA#G5).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RL78/F23",
+  "orderableCode": "R7F123FLG3AFB-C#BA0",
+  "desc": "16-bit 40 MHz automotive MCU, 128 KB flash, 12 KB RAM, CAN FD, ASIL B, Ta up to 150 C",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP 48 / 64 / 80 (also HWQFN 32)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "smart actuator",
+   "sensor node",
+   "low-end body ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.renesas.com/en/products/rl78-f23",
+  "note": "Codes listed on the Renesas product page (QFN: R7F123FBG3ANP-C#BA0). The catalogue holds only the RL78/F24 sibling. AEC-Q100 wording not on the page. TME: no listing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RH850 R7F70168x (1 MB)",
+  "orderableCode": "R7F7016843AFP-C#AA1",
+  "desc": "RH850 32-bit automotive MCU, 1 MB flash, 100-pin LFQFP",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP-100",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "chassis ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. The RH850 group name (F1K / F1KM) is not printed on the page. Other pin counts of the same line on the page: R7F7015833AFP-C#AA3 (144), R7F7015873AFP-C#AA3 (176), R7F7016473AFP-C#AA1 (144), R7F7016493AFP-C#AA1 (176), R7F7016873AFP-C#AA1 (80), R7F7016903AFP-C#AA1 (64). The catalogue holds the siblings R7F7016904AFP / R7F7016443AFP — these are different orderable parts.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "RH850 R7F70169x (1 MB)",
+  "orderableCode": "R7F7016933AFP-C#AA1",
+  "desc": "RH850 32-bit automotive MCU, 1 MB flash, 48-pin LQFP",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-48",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "gateway",
+   "chassis ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. The RH850 group name (F1K / F1KM) is not printed on the page. Other pin counts of the same line on the page: R7F7015833AFP-C#AA3 (144), R7F7015873AFP-C#AA3 (176), R7F7016473AFP-C#AA1 (144), R7F7016493AFP-C#AA1 (176), R7F7016873AFP-C#AA1 (80), R7F7016903AFP-C#AA1 (64). The catalogue holds the siblings R7F7016904AFP / R7F7016443AFP — these are different orderable parts.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "IPS2550",
+  "orderableCode": "IPS2550DE1R",
+  "desc": "Inductive position sensor IC for high-speed motor commutation, sin/cos outputs, Grade 0",
+  "category": "ic_soic",
+  "pkg": "TSSOP-16 exposed pad",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction motor rotor position",
+   "EPS",
+   "brake booster motor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.renesas.com/en/products/ips2550",
+  "note": "Renesas page: \"AEC-Q100 Grade 0 automotive qualified\". Digi-Key lists the exact code (checked 2026-11-22).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL78171",
+  "orderableCode": "ISL78171ARZ-T7A",
+  "desc": "LED driver regulator, PWM dimming, 50 mA",
+  "category": "ic_qfn",
+  "pkg": "QFN-20",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "display backlight"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL78227",
+  "orderableCode": "ISL78227ARZ-T7A",
+  "desc": "Boost regulator controller, 32-lead WFQFN",
+  "category": "ic_qfn",
+  "pkg": "WFQFN-32",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "start-stop pre-boost",
+   "audio amplifier supply",
+   "12 V / 48 V boost"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. Digi-Key prints 'IC REG CTRLR BOOST 32WFQFN'.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Renesas",
+  "family": "ISL78610",
+  "orderableCode": "ISL78610ANZ",
+  "desc": "Multi-chemistry battery monitor, 12 cells, 64-TQFP",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-64",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "BMS cell monitoring",
+   "48 V battery"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/renesas/automotive",
+  "note": "Exact code as listed on Digi-Key's 'Renesas Automotive' page. AEC-Q100 is claimed at page level only ('a broad selection of ... AEC-Q100 automotive products'), not per part, so aecq is left false. ",
+  "catalogue": "no"
+ }
+]

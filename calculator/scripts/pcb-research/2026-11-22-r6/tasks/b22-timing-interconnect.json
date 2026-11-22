@@ -1,0 +1,224 @@
+[
+ {
+  "mfr": "SiTime",
+  "family": "SiT1625",
+  "desc": "Low-power low-jitter MEMS oscillator, 44 standard frequencies 4–125 MHz, 1.6x1.2 to 3.2x2.5 mm",
+  "category": "crystal_osc",
+  "pkg": "1.6x1.2 / 2.0x1.6 / 2.5x2.0 / 3.2x2.5 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS camera",
+   "radar",
+   "MCU / PHY clock"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.sitime.com/applications/automotive",
+  "note": "AEC-Q100 Grade 1 on the page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "STMicroelectronics",
+  "family": "SiC Gen 3 automotive SCT040W120G3AG",
+  "orderableCode": "SCT040W120G3AG",
+  "desc": "automotive-grade SiC power MOSFET 1200 V, 40 mOhm typ., 40 A",
+  "category": "through_hole",
+  "pkg": "HiP247",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "traction inverter",
+   "e-compressor"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stm-automotive-grade-mosfets/",
+  "note": "No AEC statement was read for this exact code; Mouser lists it under 'Automotive-Grade Silicon Carbide Power MOSFETs'. Also listed by TME (https://www.tme.eu/en/katalog/?search=G3AG).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TE Connectivity",
+  "family": "NanoMQS-family PCB header (family as given by the search, not read on the listing)",
+  "orderableCode": "2317527-1",
+  "desc": "PCB header, vertical, surface mount, 12 positions, 1.8 mm pitch",
+  "category": "connector_smt",
+  "pkg": "SMT 12P 1.8mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body ECU",
+   "camera / sensor module"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.farnell.com/datasheets/4023539.pdf",
+  "note": "TE drawing hosted by Farnell, as described by the search summary. Confirm the family and position count on the drawing before pricing.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TE Connectivity",
+  "family": "Automotive PCB header 2177419 (family not read)",
+  "orderableCode": "2177419-3",
+  "desc": "Automotive PCB header, 32 positions, 12 V DC",
+  "category": "connector_smt",
+  "pkg": "32P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://nz.element14.com/te-connectivity/2177419-3/automotive-conn-hdr-32pos-12vdc/dp/4312461",
+  "note": "element14 listing title (via search result); mounting style and family (returned by a NanoMQS search) not read. Arrow also lists 2-2177419-3.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "TE Connectivity",
+  "family": "Automotive PCB header 2314507 (family not read)",
+  "orderableCode": "2314507-1",
+  "desc": "Automotive PCB header, 6 positions, 3 A",
+  "category": "connector_smt",
+  "pkg": "6P",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor / actuator module",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://it.farnell.com/en-IT/te-connectivity/2314507-1/automotive-conn-hdr-6pos-3a/dp/4312549",
+  "note": "Farnell listing title (via search result); mounting style and family not read.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "CDC6C-Q1",
+  "desc": "Automotive BAW (bulk-acoustic-wave) fixed-frequency oscillator, quartz replacement",
+  "category": "crystal_osc",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "2025-04",
+  "usedIn": [
+   "ADAS",
+   "radar / camera",
+   "IVI"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.eejournal.com/industry_news/ti-enables-automakers-to-advance-vehicle-autonomy-and-safety-with-new-chips-in-its-automotive-portfolio/",
+  "note": "Industry's first automotive BAW clocks (TI, 15 Apr 2025). -Q1 = TI automotive grade; catalogue holds LMK6C-Q1 only.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wolfspeed",
+  "family": "E-Series automotive SiC MOSFET",
+  "orderableCode": "E3M0021120K",
+  "desc": "SiC MOSFET 1200 V, 21 mOhm, automotive E-Series",
+  "category": "through_hole",
+  "pkg": "TO-247-4",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "e-compressor",
+   "traction inverter (discrete)"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://wolfspeed.com/products/power/sic-mosfets/e-series-automotive-qualified-sic-mosfets",
+  "note": "Wolfspeed E-Series page: series is AEC-Q101 qualified and PPAP capable; qualification column 'Automotive'. Digi-Key lists it (search extract of its E-Series page). Also J2 / U2 packages.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wolfspeed",
+  "family": "E-Series automotive SiC MOSFET",
+  "orderableCode": "E3M0032120K",
+  "desc": "SiC MOSFET 1200 V, 32 mOhm, automotive E-Series",
+  "category": "through_hole",
+  "pkg": "TO-247-4",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "e-compressor",
+   "traction inverter (discrete)"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://wolfspeed.com/products/power/sic-mosfets/e-series-automotive-qualified-sic-mosfets",
+  "note": "Wolfspeed E-Series page: series is AEC-Q101 qualified and PPAP capable; qualification column 'Automotive'. Digi-Key lists it (search extract). Automotive counterpart of the catalogue C3M0032120K — a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wolfspeed",
+  "family": "E-Series automotive SiC MOSFET",
+  "orderableCode": "E4M0015075K1",
+  "desc": "SiC MOSFET 750 V, 15 mOhm, automotive E-Series",
+  "category": "through_hole",
+  "pkg": "TO-247-4 LP",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "e-compressor",
+   "traction inverter (discrete)"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://wolfspeed.com/products/power/sic-mosfets/e-series-automotive-qualified-sic-mosfets",
+  "note": "Wolfspeed E-Series page: series is AEC-Q101 qualified and PPAP capable; qualification column 'Automotive'. Gen 4. Mouser lists it under E-Series automotive (search extract).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wolfspeed",
+  "family": "E-Series automotive SiC MOSFET",
+  "orderableCode": "E4M0025075K1",
+  "desc": "SiC MOSFET 750 V, 25 mOhm, automotive E-Series",
+  "category": "through_hole",
+  "pkg": "TO-247-4 LP",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "e-compressor",
+   "traction inverter (discrete)"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://wolfspeed.com/products/power/sic-mosfets/e-series-automotive-qualified-sic-mosfets",
+  "note": "Wolfspeed E-Series page: series is AEC-Q101 qualified and PPAP capable; qualification column 'Automotive'. Gen 4. Mouser lists it under E-Series automotive (search extract).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Wolfspeed",
+  "family": "E-Series automotive SiC MOSFET",
+  "orderableCode": "E4M0045075K1",
+  "desc": "SiC MOSFET 750 V, 45 mOhm, automotive E-Series",
+  "category": "through_hole",
+  "pkg": "TO-247-4 LP",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "HV DC-DC",
+   "e-compressor",
+   "traction inverter (discrete)"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://wolfspeed.com/products/power/sic-mosfets/e-series-automotive-qualified-sic-mosfets",
+  "note": "Wolfspeed E-Series page: series is AEC-Q101 qualified and PPAP capable; qualification column 'Automotive'. Gen 4. Mouser lists it under E-Series automotive (search extract).",
+  "catalogue": "no"
+ }
+]

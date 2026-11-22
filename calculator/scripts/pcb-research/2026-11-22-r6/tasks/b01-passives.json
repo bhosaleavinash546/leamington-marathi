@@ -1,0 +1,701 @@
+[
+ {
+  "mfr": "Bourns",
+  "family": "SRP1265A (high-current shielded power inductor)",
+  "orderableCode": "SRP1265A-100M",
+  "desc": "Shielded high-current power inductor 10 uH 20%, SRP1265A series (current not read)",
+  "category": "passive_1206",
+  "pkg": "1265",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SRP1265A",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the smaller sibling SRP7028A-4R7M (recorded AEC-Q200). TME also lists -R22M, -R68M, -8R2M.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SM915xx (BMS transformer)",
+  "orderableCode": "SM91522AL-E",
+  "desc": "Single-channel BMS signal transformer with integrated CMCs, 150-450 uH, 1000 Vdc working, 3.5 mm high, AEC-Q200",
+  "category": "transformer",
+  "pkg": "15.6x9.0x3.5 mm SMD",
+  "aecq": true,
+  "launched": "2026-10",
+  "usedIn": [
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://passive-components.eu/bourns-releases-bms-transformer-with-3-5-mm-height/",
+  "note": "Article names SM91522AL; Digi-Key lists SM91522AL-E (Active).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SRN3010BTA",
+  "orderableCode": "SRN3010BTA-330M",
+  "desc": "Semi-shielded power inductor 33 uH 0.6 A, 3x3x0.9 mm, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "3x3 mm",
+  "aecq": true,
+  "launched": "2026-03",
+  "usedIn": [
+   "body ECU",
+   "camera",
+   "LED lighting"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://passive-components.eu/bourns-expanded-semi-shielded-low-profile-automotive-power-inductor/",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SRP1265A (high-current shielded power inductor)",
+  "orderableCode": "SRP1265A-1R0M",
+  "desc": "Shielded high-current power inductor 1.0 uH 20%, SRP1265A series (current not read)",
+  "category": "passive_1206",
+  "pkg": "1265",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SRP1265A",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the smaller sibling SRP7028A-4R7M (recorded AEC-Q200). TME also lists -R22M, -R68M, -8R2M.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SRP1265A (high-current shielded power inductor)",
+  "orderableCode": "SRP1265A-2R2M",
+  "desc": "Shielded high-current power inductor 2.2 uH 20%, SRP1265A series (current not read)",
+  "category": "passive_1206",
+  "pkg": "1265",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SRP1265A",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the smaller sibling SRP7028A-4R7M (recorded AEC-Q200). TME also lists -R22M, -R68M, -8R2M.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SRP-TA",
+  "orderableCode": "SRP4020TA-4R7M",
+  "desc": "Shielded power inductor 4.7 uH 2.6 A, 4x4x2 mm, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "4x4 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "HCT (isolation power transformer)",
+  "orderableCode": "HCTSM151207FAL-E",
+  "desc": "Isolation power transformer 24 V in / 12 V 100 mA, reinforced, 1500 Vdc working, >15 mm creepage, AEC-Q200 Grade 1",
+  "category": "transformer",
+  "pkg": "15.0x21.3x9.6 mm SMD",
+  "aecq": true,
+  "launched": "2026-03",
+  "usedIn": [
+   "BMS",
+   "HV DC-DC",
+   "traction inverter"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://passive-components.eu/bourns-releases-compact-automotive-isolation-power-transformer/",
+  "note": "Article names HCTSM151207FAL; Digi-Key lists HCTSM151207FAL-E (Active).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Bourns",
+  "family": "SRP1265A (high-current shielded power inductor)",
+  "orderableCode": "SRP1265A-150M",
+  "desc": "Shielded high-current power inductor 15 uH 20%, SRP1265A series (current not read)",
+  "category": "passive_1206",
+  "pkg": "1265",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=SRP1265A",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the smaller sibling SRP7028A-4R7M (recorded AEC-Q200). TME also lists -R22M, -R68M, -8R2M.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XGL5050",
+  "orderableCode": "XGL5050-222MEC",
+  "desc": "Shielded molded power inductor 2.2 uH 20%, 13.8 A, DCR 8.2 mohm max, XGL5050",
+  "category": "passive_1206",
+  "pkg": "5.3x5.5 mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.co.uk/en/products/detail/coilcraft/XGL5050-222MEC/16817026",
+  "note": "Digi-Key product record returned by search. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds XGL4020-222MEB only (a smaller case).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XAL5050",
+  "orderableCode": "XAL5050-103MEC",
+  "desc": "Shielded molded power inductor 10 uH 20%, 4.9 A, DCR 45 mohm max, -40..125 C, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "5.3x5.5 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/products/detail/coilcraft/XAL5050-103MEC/21381093",
+  "note": "Digi-Key listing (via search result), rated AEC-Q200; also on Farnell. Coilcraft points new designs to XGL5050 (lower DCR).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XAL6060",
+  "orderableCode": "XAL6060-103MEC",
+  "desc": "Shielded molded power inductor 10 uH 20%, 7 A, DCR 29.82 mohm max, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "6.4x6.6 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com.au/en/products/detail/coilcraft/XAL6060-103MEC/21381949",
+  "note": "Digi-Key listing (via search result), listed under AEC-Q200. Catalogue holds XAL6060-472MEB (another value / packaging).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XGL5030",
+  "orderableCode": "XGL5030-103MEC",
+  "desc": "Shielded molded power inductor 10 uH 20% (from the code), XGL5030",
+  "category": "passive_1206",
+  "pkg": "5.3x5.5 mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.it/en/products/detail/coilcraft/XGL5030-103MEC/16816273",
+  "note": "Digi-Key product record returned by search. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds XGL4020-222MEB only (a smaller case).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XGL5050",
+  "orderableCode": "XGL5050-102MEC",
+  "desc": "Shielded molded power inductor 1.0 uH 20% (from the code), XGL5050",
+  "category": "passive_1206",
+  "pkg": "5.3x5.5 mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.de/en/products/detail/coilcraft/XGL5050-102MEC/16816646",
+  "note": "Digi-Key product record returned by search. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds XGL4020-222MEB only (a smaller case).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Coilcraft",
+  "family": "XGL5050",
+  "orderableCode": "XGL5050-331MEC",
+  "desc": "Shielded molded power inductor 330 nH 20%, 24.6 A, DCR 2 mohm max, XGL5050",
+  "category": "passive_1206",
+  "pkg": "5.3x5.5 mm",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "DC-DC converter",
+   "zonal controller",
+   "body ECU",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.de/en/products/detail/coilcraft/XGL5050-331MEC/16816248",
+  "note": "Digi-Key product record returned by search. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds XGL4020-222MEB only (a smaller case).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...AUTO C0G",
+  "orderableCode": "C0402C101J5GACAUTO",
+  "desc": "MLCC 100 pF 50 V C0G 5%, 0402, automotive grade",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=101J5GACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...AUTO C0G",
+  "orderableCode": "C0603C101J5GACAUTO",
+  "desc": "MLCC 100 pF 50 V C0G 5%, 0603, automotive grade",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=101J5GACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "FT-CAP C...X...AUTO (flexible termination)",
+  "orderableCode": "C0603X104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0603, flexible termination, automotive grade",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...AUTO X7R",
+  "orderableCode": "C0805C104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805, automotive grade",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "FT-CAP C...X...AUTO (flexible termination)",
+  "orderableCode": "C0805X104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805, flexible termination, automotive grade",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...AUTO C0G",
+  "orderableCode": "C0805C101J5GACAUTO",
+  "desc": "MLCC 100 pF 50 V C0G 5%, 0805, automotive grade",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=101J5GACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...AUTO X7R",
+  "orderableCode": "C1206C104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 1206, automotive grade",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "T599 (polymer tantalum, 150 C)",
+  "orderableCode": "T599B336M010ATE090",
+  "desc": "Polymer tantalum 33 uF 10 V 20%, ESR 90 mohm, B case (3528), 150 C series",
+  "category": "passive_1206",
+  "pkg": "3528 (B)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "engine ECU",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=T599",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated for the T599 series by KEMET / Digi-Key (digikey.com/en/product-highlight/k/kemet/t599-polymer-capacitor), not read for this exact code. TME lists 25 T599 codes (B and D cases 4-10 V, X case 35 V).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "T599 (polymer tantalum, 150 C)",
+  "orderableCode": "T599B476M006ATE090",
+  "desc": "Polymer tantalum 47 uF 6.3 V 20%, ESR 90 mohm, B case (3528), 150 C series",
+  "category": "passive_1206",
+  "pkg": "3528 (B)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "engine ECU",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=T599",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated for the T599 series by KEMET / Digi-Key (digikey.com/en/product-highlight/k/kemet/t599-polymer-capacitor), not read for this exact code. TME lists 25 T599 codes (B and D cases 4-10 V, X case 35 V).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "T599 (polymer tantalum, 150 C)",
+  "orderableCode": "T599D157M006ATE025",
+  "desc": "Polymer tantalum 150 uF 6.3 V 20%, ESR 25 mohm, D case 2917 (7343), -55..150 C, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "7343 (D)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "engine ECU",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/products/detail/kemet/T599D157M006ATE025/11569146",
+  "note": "Digi-Key listing (via search result): \"Ratings AEC-Q200, Features Automotive\"; also listed by TME and RS. KEMET: T599 is fully AEC-Q200 qualified to 150 C.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "T599 (polymer tantalum, 150 C)",
+  "orderableCode": "T599X336M035ATE065",
+  "desc": "Polymer tantalum 33 uF 35 V 20%, ESR 65 mohm, X case (7343-43), 150 C series",
+  "category": "passive_1206",
+  "pkg": "7343 (X)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ADAS ECU",
+   "engine ECU",
+   "DC-DC converter"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=T599",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 is stated for the T599 series by KEMET / Digi-Key (digikey.com/en/product-highlight/k/kemet/t599-polymer-capacitor), not read for this exact code. TME lists 25 T599 codes (B and D cases 4-10 V, X case 35 V).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "FT-CAP C...X...AUTO C0G (flexible termination)",
+  "orderableCode": "C0603X101J5GACAUTO",
+  "desc": "MLCC 100 pF 50 V C0G 5%, 0603, flexible termination, automotive grade",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=101J5GACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...F...AUTO (open mode)",
+  "orderableCode": "C0805F104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805, \"F\" open-mode design, automotive grade",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "C...S...AUTO (floating electrode)",
+  "orderableCode": "C0805S104K5RACAUTO",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0805, \"S\" floating-electrode design, automotive grade",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=104K5RACAUTO",
+  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. The AUTO suffix is the maker's automotive grade; catalogue holds the sibling C0603C104K5RACAUTO (recorded AEC-Q200).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KEMET",
+  "family": "KC-LINK",
+  "orderableCode": "CKC18C153KDGACAUTO",
+  "desc": "KC-LINK C0G 15 nF 1000 V 1812 for resonant / snubber stages",
+  "category": "passive_1206",
+  "pkg": "1812",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "on-board charger",
+   "traction inverter",
+   "HV DC-DC",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CKC18C153KDGACAUTO",
+  "note": "Digi-Key lists it; the page showed no AEC-Q200 rating (the AUTO suffix is KEMET automotive grade - confirm).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "RK73H",
+  "orderableCode": "RK73H1JTTD1002F",
+  "desc": "Thick-film resistor 10 k 1% 0.1 W 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=RK73H1JTTD1002F",
+  "note": "Digi-Key listing, Active.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "RK73B (thick film, 5%)",
+  "orderableCode": "RK73B1JTTD103J",
+  "desc": "Thick film resistor 10 k 5% 0.1 W, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/products/detail/koa-speer-electronics-inc/RK73B1JTTD103J/9846741",
+  "note": "Digi-Key listing title (via search result): \"Automotive AEC-Q200 Thick Film\". First pass found the 1% RK73H family; this is the 5% RK73B series. Digi-Key also lists RK73B1JTTD103G (2%).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "RN73H (metal film, moisture resistant)",
+  "orderableCode": "RN73H1JTTD1002B25",
+  "desc": "Metal film resistor 10 k 0.1% 25 ppm 0.1 W, 0603, moisture resistant, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/products/detail/koa-speer-electronics-inc/RN73H1JTTD1002B25/10687504",
+  "note": "Digi-Key listing title (via search result). First pass listed only the 0201 RN73H 1H family without a code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "RN73R (thin film, moisture resistant)",
+  "orderableCode": "RN73R1JTTD1002B25",
+  "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.1 W, 0603, moisture resistant, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.ie/en/products/detail/koa-speer-electronics-inc/RN73R1JTTD1002B25/9991970",
+  "note": "Digi-Key listing title (via search result). Digi-Key also lists RN73R1JTTD1002D25 (0.5%).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "SG73P (surge / pulse)",
+  "orderableCode": "SG73P2ATTD1002F",
+  "desc": "Pulse-withstanding thick-film resistor 10 k 1% 0.75 W 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "powertrain ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SG73P2ATTD1002F",
+  "note": "Digi-Key listing, Active. Rated power of the SG73 series was raised in Jul 2024 (koaglobal.com/news/product/202407_sg73_up).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KOA",
+  "family": "RN73R (thin film, moisture resistant)",
+  "orderableCode": "RN73R1ETTP1000B25",
+  "desc": "Thin film resistor 100 ohm 0.1% 25 ppm 1/16 W, 0402, moisture resistant, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "sensor front end",
+   "BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1ETTP1000B25/9991836",
+  "note": "Digi-Key listing title (via search result).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "KYOCERA AVX",
+  "family": "KAM (automotive MLCC)",
+  "orderableCode": "KAM15AR71H104KM",
+  "desc": "MLCC 100 nF 50 V X7R 10%, 0603, KAM automotive series",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "all ECUs"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.tme.eu/en/katalog/?search=5C104K4",
+  "note": "TME lists it (new KYOCERA AVX numbering; the same search also returns the legacy AVX codes 06035C104K4T2A / 08055C104K4T2A / 12065C104K4T2A and FLEXITERM ...K4Z2A). Value / size read from the part numbering (15 = 0603 per the KAM datasheet). The KAM datasheet carries the AEC-Q200 designation at series level (mouser.com/catalog/specsheets/KYOCERA_AutoMLCCKAM.pdf, via search result).",
+  "catalogue": "no"
+ }
+]

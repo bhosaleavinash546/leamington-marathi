@@ -1,0 +1,659 @@
+[
+ {
+  "mfr": "Nexperia",
+  "family": "BC847-Q series",
+  "orderableCode": "BC847C-Q",
+  "desc": "45 V, 100 mA NPN general-purpose transistor, automotive -Q type",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-q100-q101/automotive-bipolar-transistors/general-purpose-bipolar-transistors/",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a BC847 family ESTIMATE; this is the exact automotive type.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD1ETH10L-Q",
+  "orderableCode": "PESD1ETH10L-Q",
+  "desc": "ESD protection diode, OPEN Alliance compliant for 10BASE-T1S (one part for all automotive Ethernet)",
+  "category": "fuse_tvs",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "2025-02",
+  "usedIn": [
+   "zonal controller",
+   "10BASE-T1S nodes",
+   "Ethernet PHY"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/about/news-events/press-releases/Nexperia-releases-automotive-industry-s-first-10BASE-T1S-OPEN-Alliance-compliant-ESD-protection-diodes",
+  "note": "Press release 11 Feb 2025 (seen in a search summary; nexperia.com refuses direct fetch).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD1ETH10LS-Q",
+  "orderableCode": "PESD1ETH10LS-Q",
+  "desc": "ESD protection diode for 10BASE-T1S / automotive Ethernet, leadless 1.0x0.6 mm",
+  "category": "fuse_tvs",
+  "pkg": "DFN 1.0x0.6 mm",
+  "aecq": true,
+  "launched": "2025-02",
+  "usedIn": [
+   "zonal controller",
+   "10BASE-T1S nodes",
+   "Ethernet PHY"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.futureelectronics.com/ftm/connectivity/nexperia-pesd1eth10ls-q-esd-protection/",
+  "note": "Future Electronics feature page (AEC-Q101, 1 mm x 0.6 mm package).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD2CANFD36XX-Q",
+  "orderableCode": "PESD2CANFD36UT-QR",
+  "desc": "CAN FD / LIN / FlexRay bus ESD protection, 36 V stand-off, 2 lines",
+  "category": "fuse_tvs",
+  "pkg": "SOT23 (TO-236AB)",
+  "aecq": true,
+  "launched": "2023",
+  "usedIn": [
+   "CAN / CAN FD node",
+   "24 V board net ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+  "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD2CANFDxxVT-Q / LT-Q (54 / 60 / 72 V)",
+  "orderableCode": "PESD2CANFD54VT-Q",
+  "desc": "ESD protection for 48 V board-net CAN / CAN FD / LIN / FlexRay, VRWM 54 V, down to 3.4 pF",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "2025-07",
+  "usedIn": [
+   "48 V ECUs",
+   "EV / HEV in-vehicle networks"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://news.pcim.mesago.com/nexperia-releases-esd-protection-diodes-for-48-v-ev-communications-networks-a-b735f7c5d055c4d784e88fe8d69d92a2/",
+  "note": "Six AEC-Q101 devices: PESD2CANFD54VT-Q / 54LT-Q, 60VT-Q / 60LT-Q, 72VT-Q / 72LT-Q.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PMBT3904-Q",
+  "orderableCode": "PMBT3904-Q",
+  "desc": "40 V, 200 mA NPN switching transistor, automotive -Q type",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/product/PMBT3904-Q",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Nexperia's own 3904 (the catalogue's SMMBT3904LT1G is onsemi). Reel suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PMEG4010ER-Q",
+  "orderableCode": "PMEG4010ER-Q",
+  "desc": "40 V, 1 A low-VF Schottky barrier rectifier, automotive -Q type (status Production)",
+  "category": "fuse_tvs",
+  "pkg": "SOD123W (CFP3)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU (reverse-polarity / freewheel)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://nexperia.com/products/diodes/family/CLIP-BONDED-FLATPOWER-CFP/",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a PMEG4010 family ESTIMATE. Package from Nexperia's ER naming. Reel suffix not seen.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BZX84J-…-Q series",
+  "desc": "Automotive Zener diodes in SOD323F, -Q types (status Production on Nexperia's automotive Zener page)",
+  "category": "fuse_tvs",
+  "pkg": "SOD323F",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-aec-q100-q101/automotive-diodes/automotive-zener-diodes/",
+  "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. No single voltage code was shown, so no orderable code is given. Catalogue holds only the standard SOT23 BZX84-C5V1,215.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "2N7002AKRA-Q",
+  "orderableCode": "2N7002AKRA-QZ",
+  "desc": "Dual N-channel 60 V, 0.32 A small-signal MOSFET, leadless 6-pin DFN",
+  "category": "fuse_tvs",
+  "pkg": "DFN1412-6 (6DFN)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+  "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BAS16GW",
+  "orderableCode": "BAS16GWX",
+  "desc": "Switching diode 100 V, 215 mA, SOD123 gull-wing, automotive family",
+  "category": "fuse_tvs",
+  "pkg": "SOD123",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+  "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Larger reel: BAS16GWJ.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BAT54GW",
+  "orderableCode": "BAT54GWX",
+  "desc": "Schottky diode 30 V, 200 mA, SOD123 gull-wing, automotive family",
+  "category": "fuse_tvs",
+  "pkg": "SOD123",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+  "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Larger reel: BAT54GWJ.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BSS138AKQB-Q",
+  "orderableCode": "BSS138AKQB-QZ",
+  "desc": "N-channel 60 V small-signal MOSFET in leadless DFN1110D-3",
+  "category": "fuse_tvs",
+  "pkg": "DFN1110D-3 (SOT8015)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+  "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read); sibling 2N7002AKQB-QZ is on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "BSS138AKRA-Q",
+  "orderableCode": "BSS138AKRA-QZ",
+  "desc": "Dual N-channel 60 V, 0.32 A small-signal MOSFET, leadless 6-pin DFN",
+  "category": "fuse_tvs",
+  "pkg": "DFN1412-6 (6DFN)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+  "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD2CANFD36XX-Q",
+  "orderableCode": "PESD2CANFD36UU-QX",
+  "desc": "CAN FD bus ESD protection, 36 V stand-off, 2 lines, SOT323",
+  "category": "fuse_tvs",
+  "pkg": "SOT323",
+  "aecq": true,
+  "launched": "2023",
+  "usedIn": [
+   "CAN / CAN FD node",
+   "24 V board net ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+  "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code. -QF is the other reel of the same part; VU-QX and LU-QX are on the page too.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PESD2CANFD36XX-Q",
+  "orderableCode": "PESD2CANFD36VT-QR",
+  "desc": "CAN FD bus ESD protection, 36 V stand-off, 2 lines (V capacitance class)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23 (TO-236AB)",
+  "aecq": true,
+  "launched": "2023",
+  "usedIn": [
+   "CAN / CAN FD node",
+   "24 V board net ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+  "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PMEG4010EGW",
+  "orderableCode": "PMEG4010EGWX",
+  "desc": "Schottky rectifier 40 V, 1 A, SOD123 gull-wing, automotive family",
+  "category": "fuse_tvs",
+  "pkg": "SOD123",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+  "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Low-leakage sibling PMEG4010CEGWX on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "PMEG6010ELR",
+  "orderableCode": "PMEG6010ELRX",
+  "desc": "Schottky rectifier 60 V, 1 A, SOD123W, automotive family",
+  "category": "fuse_tvs",
+  "pkg": "SOD123W",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+  "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. First pass found the 2 A sibling PMEG6020ELRX — this is a different orderable part.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "onsemi",
+  "family": "BC847CLT1G",
+  "orderableCode": "BC847CLT1G",
+  "desc": "Transistor, NPN, 45 V, 0.1 A, SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "launched": "2024-10",
+  "usedIn": [
+   "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+   "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1",
+   "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)"
+  ],
+  "boards": 3,
+  "qtyPerBoardMax": 4,
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDE3",
+  "note": "",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "RB751SM-40FH",
+  "orderableCode": "RB751SM-40FHT2R",
+  "desc": "Schottky barrier diode 40 V, small-signal, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOD-523 (EMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.rohm.com/products/diodes/schottky-barrier-diodes/rb751s-40fh-product",
+  "note": "ROHM product page (read): RB751S-40FHTE61 is Last Time Buy / EOL and RB751SM-40FHT2R is the recommended same-package replacement (8,000 per reel).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "1SS355VM (automotive FH)",
+  "desc": "High-speed switching diode 80 V, 100 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323FL (UMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 1SS355VM + FH + TE-17.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "1SS400SM (automotive FH)",
+  "desc": "High-speed switching diode 80 V, 100 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOD-523 (EMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 1SS400SM + FH + T2R.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "2SA1576U3 (automotive HZG)",
+  "desc": "PNP -50 V, -150 mA general small-signal transistor, hFE 120–390",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323 (UMT3)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 2SA1576U3 + HZG + T106 (+ hFE rank Q or R).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "2SC4081U3 (automotive HZG)",
+  "desc": "NPN 50 V, 150 mA general small-signal transistor, hFE 120–390",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323 (UMT3)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 2SC4081U3 + HZG + T106 (+ hFE rank Q or R).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "EDZV series (3.6 V – 36 V)",
+  "desc": "Zener diode 150 mW, narrow VZ tolerance (B rank), AEC-Q101 from 3.6 V up",
+  "category": "fuse_tvs",
+  "pkg": "SOD-523 (EMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue No. 66BP7370E (10.2023, read in full) marks EDZV 3.6B – 36B AEC-Q101 'YES' (2.0B – 3.3B are not). Series table — no orderable code printed.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "RB520SM-30 / RB520SM-40 (automotive FH)",
+  "desc": "Schottky barrier diode 30 V / 40 V, 200 mA, low-IR type",
+  "category": "fuse_tvs",
+  "pkg": "SOD-523 (EMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: RB520SM-30 (or -40) + FH + T2R.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "RB521SM-30 / RB521SM-40 (automotive FH)",
+  "desc": "Schottky barrier diode 30 V / 40 V, 200 mA, low-VF type",
+  "category": "fuse_tvs",
+  "pkg": "SOD-523 (EMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: RB521SM-30 (or -40) + FH + T2R.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "UDZV series (2.0 V – 47 V)",
+  "desc": "Zener diode 200 mW, narrow VZ tolerance (B rank), AEC-Q101 across the range",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323FL (UMD2)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+  "note": "ROHM catalogue No. 66BP7370E (10.2023, read in full) marks every UDZV voltage 2.0B – 47 AEC-Q101 'YES'. Series table by voltage — the automotive grade and taping codes for Zeners are not printed there, so no orderable code is given.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "RBE01VYM6AFH",
+  "orderableCode": "RBE01VYM6AFHTR",
+  "desc": "Ultra-low-VF, low-IR Schottky barrier diode for image-sensor protection (VF < 300 mV at 7.5 mA, -40 C)",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323HE",
+  "aecq": true,
+  "launched": "2025-10",
+  "usedIn": [
+   "ADAS camera",
+   "surround-view camera"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.eejournal.com/industry_news/rohm-develops-breakthrough-schottky-barrier-diode-combining-low-vf-and-ir-for-advanced-image-sensor-protection/",
+  "note": "AEC-Q101; online at DigiKey, Mouser, Farnell.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "SMLMN2 series",
+  "orderableCode": "SMLMN2BCTT86C",
+  "desc": "Blue chip LED, 2012 size (0805), 36 mcd, automotive",
+  "category": "led",
+  "pkg": "2012 (0805)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "switch backlight",
+   "indicator"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+  "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls these 'AEC-Q100-qualified SMD LEDs' (the page's wording; LEDs are normally qualified to AEC-Q102). SML-811 series (3412 size: SML-811UTT86C red, -DTT86C orange, -WTT86C yellow) on the same page.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "ROHM",
+  "family": "UM6K31NFHA",
+  "orderableCode": "UM6K31NFHATCN",
+  "desc": "Dual N-channel 60 V, 0.25 A small-signal MOSFET",
+  "category": "fuse_tvs",
+  "pkg": "UMT6 (SOT-363)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+  "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read); AEC-Q101 is stated for the family.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "RClamp0512TQ",
+  "orderableCode": "RCLAMP0512TQTCT",
+  "desc": "TVS / ESD diode, 2 lines, 5 V working voltage, 30 kV ESD, low capacitance",
+  "category": "fuse_tvs",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "USB 2.0",
+   "CAN / LIN signal lines",
+   "automotive data ports"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.lcsc.com/product-detail/C512369.html",
+  "note": "Code seen as the LCSC listing title (search result); AEC-Q100 Grade 1 per the search extract of Semtech / Mouser pages. Listing page not opened.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "RClamp0531TQ",
+  "orderableCode": "RCLAMP0531TQTCT",
+  "desc": "TVS / ESD diode, 1 line, 5 V working voltage, low capacitance",
+  "category": "fuse_tvs",
+  "pkg": "SLP1006P2T",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "high-speed data lines",
+   "antenna / RF ports"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/semtech/aec-q100-qualified-tvs-esd-protection-solutions",
+  "note": "Exact code as listed on Digi-Key's Semtech 'AEC-Q100 Qualified TVS/ESD Protection Solutions' page (AEC-Q100 is the page headline). Semtech: AEC-Q100 Grade 1 (search extract). Arrow also lists it.",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "RClamp3552TQ",
+  "orderableCode": "RCLAMP3552TQTNT",
+  "desc": "TVS / ESD diode, 2 data lines, 3.5 V working voltage",
+  "category": "fuse_tvs",
+  "pkg": "SLP1006N3T",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "automotive Ethernet",
+   "SerDes / high-speed pairs"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/semtech/aec-q100-qualified-tvs-esd-protection-solutions",
+  "note": "Exact code as listed on Digi-Key's Semtech 'AEC-Q100 Qualified TVS/ESD Protection Solutions' page (AEC-Q100 is the page headline). Semtech product page: AEC-Q100 Grade 1 (https://www.semtech.com/products/circuit-protection/automotive/rclamp3552tq, search extract).",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "EClamp2357NQ",
+  "orderableCode": "ECLAMP2357NQTLT",
+  "desc": "EMI filter (RC pi, 100 ohm) with ESD protection, multi-line",
+  "category": "fuse_tvs",
+  "pkg": "WFQFN-16",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "display / camera parallel interfaces"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/semtech/aec-q100-qualified-tvs-esd-protection-solutions",
+  "note": "Exact code as listed on Digi-Key's Semtech 'AEC-Q100 Qualified TVS/ESD Protection Solutions' page (AEC-Q100 is the page headline). ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "RClamp2574NQ",
+  "orderableCode": "RCLAMP2574NQTCT",
+  "desc": "TVS array, 2.5 V working voltage, 4 lines",
+  "category": "fuse_tvs",
+  "pkg": "SLP3020N10",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "Ethernet 100 / 1000BASE-T ports"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/semtech/aec-q100-qualified-tvs-esd-protection-solutions",
+  "note": "Exact code as listed on Digi-Key's Semtech 'AEC-Q100 Qualified TVS/ESD Protection Solutions' page (AEC-Q100 is the page headline). ",
+  "catalogue": "no"
+ },
+ {
+  "mfr": "Semtech",
+  "family": "uClamp0511PQ",
+  "orderableCode": "UCLAMP0511PQTCT",
+  "desc": "TVS / ESD diode, 1 line, 5 V working voltage",
+  "category": "fuse_tvs",
+  "pkg": "SLP1006P2",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "general I/O, buttons, sensor lines"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/semtech/aec-q100-qualified-tvs-esd-protection-solutions",
+  "note": "Exact code as listed on Digi-Key's Semtech 'AEC-Q100 Qualified TVS/ESD Protection Solutions' page (AEC-Q100 is the page headline). ",
+  "catalogue": "no"
+ }
+]
