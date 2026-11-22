@@ -1,0 +1,42 @@
+Task i1 (extend) — logic, level shifters, analog switches, op-amps, comparators, ADC / DAC / references, supervisors. Domain file: i1-logic-analog.json
+The catalogue holds 23 logic parts, 24 op-amps / comparators and 6 ADC / DAC / references — every ECU carries these. Automotive
+orderable codes (TI …-Q1 / …QDCKRQ1, Nexperia 74…-Q100, onsemi NCV / NLV / NL17SZ…, ST …Y / A-suffix, Diodes …Q, Rohm BD…-C / BA…-M, Microchip …-E/…VAO, ADI …W / #W). Reel breaks are the point.
+1. Single-gate logic (SC-70 / SOT-23 / X2SON): 74LVC1G04 / 1G08 / 1G14 / 1G17 / 1G32 / 1G125 / 1G126 / 1G74 / 1G79 / 2G14 / 2G17 / 1G3157 — Nexperia 74LVC1Gxx-Q100, TI SN74LVC1Gxx-Q1, onsemi NLV / NLVVHC1Gxx; AUP / AHC variants one each
+2. Multi-gate / bus logic (TSSOP / SOIC / QFN): 74HC04 / 14 / 08 / 32 / 74 / 125 / 244 / 245 / 595 / 165 / 4051 / 4052 / 4053 / 138 / 164 / 573 automotive (74HCxx-Q100, SN74HCSxx-Q1, 74AHCxx-Q100, 74LVCxxA-Q100)
+3. Level shifters / translators: TXB0102 / 0104 / 0108-Q1, TXS0102 / 0104E / 0108E-Q1, SN74LVC1T45 / 2T45 / 8T245-Q1, SN74AXC…-Q1, PCA9306 / TCA9406 (I²C), NXP NTB0104 / NTS0104 / PCA9306-Q100, PCA9517; I²C mux / expanders TCA9548A-Q1 / TCA9539-Q1 / TCA6408A-Q1 / PCA9555 / PCAL6524 automotive
+4. Analog switches / mux: TMUX1308-Q1 / TMUX1108 / TMUX1574 / TMUX6136-Q1, TS5A3157 / TS5A23157-Q1, SN74LVC2G53, ADI ADG1608 / ADG1408 / ADG5408 W-grade, Nexperia 74HC4851-Q100 / NX3L…
+5. Op-amps automotive: TI LM2904B-Q1 / LM2902B-Q1 / LMV321-Q1 / LMV358-Q1 / TLV9001 / 9002 / 9004-Q1 / OPA2991 / OPA2992 / OPA4991-Q1 / OPA2333 / OPA2188 / OPA2376-Q1 / TLV2372 / TLV316-Q1, ST TSV912IYDT / TSB572 / TS922 / LM2904YDT / TSZ122 / TSC2011 / TSC213, onsemi NCV2904 / NCS20072 / NCV33202 / NCV20071, Microchip MCP6002T-E/SN / MCP6V01, Rohm BA2904YF-C / LMR1802G-LB, ADI AD8605W / ADA4084 / LT6015 / LTC2057H
+6. Comparators automotive: TI LM2903B-Q1 / LM2901B-Q1 / TLV7011 / TLV7021 / TLV1701 / TLV3201 / TLV1805-Q1, ST LM2903YDT / TS3021 / TS391, onsemi NCV2903 / NCV331, Rohm BA2903YF-C
+7. Current-sense amplifiers: TI INA180 / INA181 / INA186 / INA190 / INA240 / INA241 / INA296 / INA226 / INA228 / INA238-Q1 (some held — has.py), ADI AD8418A / AD8417 / LT6105 / LTC6102 / MAX40056, ST TSC210 / TSC2010, onsemi NCV21x, Diodes ZXCT1009Q
+8. ADC / DAC / references: TI ADS1115-Q1 / ADS1015-Q1 / ADS7128-Q1 / ADS7142-Q1 / ADS7038-Q1 / ADC128S102-Q1 / DAC53401-Q1 / DAC80501 / DAC7571-Q1, Microchip MCP3202 / MCP3208 / MCP3421 / MCP4725 automotive, ADI AD7091R / AD7490W / AD5693R / LTC2309H / MAX11645;
+   voltage references TI REF3025 / REF3033 / REF3425 / REF5025 / REF35-Q1 / TL431LI-Q1 / TLVH431 / ATL431 / LM4040-Q1 / LM4041, ADI ADR3525W / ADR4525W / LT6654, onsemi NCV431 / TLV431, ST TS431 / TL431AIY, Nexperia TL431 Q100
+9. Supervisors / watchdogs / reset: TI TPS3823 / TPS3828 / TPS3850 / TPS3851 / TPS3890 / TPS3703 / TPS37-Q1 / TPS3430 / TPS3431-Q1 / TLV803E / TLV809E-Q1 / TPS3839-Q1, ADI MAX16161 / ADM8611 / MAX6369 / LTC2965H, Microchip MCP1316 / MCP130 / MIC826, ST STM6822 / STM706 / STWD100, onsemi NCV809 / NCV303 / NCP303
+10. Timers / RTC / small EEPROM-free helpers: TLC555-Q1 / NE555 automotive, NXP PCF85263A / PCA85073A / PCF2131 / PCF2129AT, Microchip MCP7940, RV-3028-C7 / RV-8263 automotive, ST M41T62
+
+---
+Catalogue ESTIMATES in this domain (24), dearest first: key | maker | description | estimate at 1k (GBP)
+A key that is a FAMILY (no packing suffix) needs ONE orderable automotive member priced; a generic key ("MLCC 0402 …") needs a real code for that cell.
+MLX90614 | Melexis | IR thermometer | 6.4706
+AS5048 | ams | Magnetic rotary encoder | 3.7647
+TPS92662 | TI | LED matrix manager 12-ch | 3.5301
+ADS1115 | TI | 16-bit ADC, I2C | 2.5882
+MLX90393 | Melexis | 3D magnetometer | 2.3529
+DRV8912 | TI | 12-ch half-bridge driver | 2
+LM5060 | TI | Hot-swap controller | 1.3444
+ADS7142 | TI | 12-bit ADC | 1.1176
+INA226 | TI | Current/power monitor | 1.056
+OPA2365 | TI | Dual 50 MHz op-amp | 1
+SN65HVD75 | TI | RS-485 transceiver | 0.8824
+THVD1450 | TI | RS-485 transceiver | 0.7647
+TXS0108E | TI | 8-bit level shifter | 0.7236
+PCA9517 | NXP | I2C repeater | 0.6471
+MAX3485 | ADI | RS-485 transceiver | 0.6471
+TLV2372 | TI | Dual RRIO op-amp | 0.5294
+PCA9617 | NXP | I2C level translator | 0.5294
+MAX3232 | ADI | RS-232 transceiver | 0.5294
+TLV3202 | TI | Dual comparator | 0.4706
+INA180 | TI | Current-sense amp | 0.3294
+LM2904 | TI | Dual op-amp | 0.151
+74HC595 | TI | Shift register | 0.1016
+LM358 | TI | Dual op-amp | 0.0824
+SN74LVC1G | TI | Single-gate logic | 0.0647

@@ -1,0 +1,13 @@
+Task p4 (extend) — ferrite beads, inductors, common-mode chokes, AEC-Q200. Domain file: p4-magnetics.json
+The catalogue holds 12 ferrite beads and ~38 inductors. Real orderable code each; desc: impedance@100 MHz / inductance,
+current, DCR, size, series, grade. Reel breaks (2k / 4k / 10k) are the point. Coilcraft and Würth: franchised listing only.
+1. Ferrite beads automotive: Murata BLM15xx…SH1 / SZ1 (0402: 120 Ω, 600 Ω, 1 kΩ), BLM18xx…SH1 / BLM18KG…SH1 (0603: 120 Ω, 220 Ω, 600 Ω, 1 kΩ; KG high current),
+   BLM21PG…SH1 / BLM31KN…SH1 (0805 / 1206 power beads 3–6 A), TDK MPZ1608 / MPZ2012 …-AT / MMZ1005-…-AT, Würth WE-CBA, Taiyo Yuden FBMH automotive
+2. Power inductors (buck converters 1–10 A): TDK SPM4020 / SPM5030 / SPM6530 / SPM10040 …-D, TDK TFM201610ALMA / TFM252012ALMA, TDK CLF6045NIT / CLF7045NIT,
+   Vishay IHLP2020 / IHLP2525 / IHLP4040 …-A1 / …5A (1.0, 2.2, 4.7, 10, 22 µH), Bourns SRP4020TA / SRP5030TA / SRP7028A, Murata DFE252012PD / DFE322520, LQH3NPZ / LQH5BPZ / LQM21PZ / LQM2HPZ,
+   Coilcraft XGL4020 / XGL5050 / XEL4030 / XAL5030 / XAL7070 (AEC-Q200), Würth WE-MAPI / WE-XHMA / WE-LHMI automotive, Sumida CDRH…/ CDEP automotive, Eaton MPIA / HCMA, Panasonic ETQP…-automotive
+3. RF / signal inductors automotive: Murata LQW15AN / LQW18AN …Z / LQG15HZ / LQP03 (10 nH, 22 nH, 100 nH), TDK MLG1005S-…-H / MLK, Coilcraft 0402DC / 0603DC
+4. Common-mode chokes: Murata DLW21SZ / DLW21HN / DLW32SH / DLW43MH (CAN / CAN FD / FlexRay / 100BASE-T1 / 1000BASE-T1), TDK ACT45B / ACT1210 / ACT1210G / ACM2012 / ACM4520 / ACM7060 / ACM9070,
+   Würth WE-CNSW / WE-SL automotive, Bourns SRF2012A / SRF3216A / SRF4532A, Pulse AE2002 — one per bus type and one power-line CMC (10–20 A)
+5. PoC (power-over-coax) inductors for camera / SerDes: Murata LQW32FT / LQH3NPZ / BLM18…SZ PoC sets, TDK ADL3225V / MLJ1608, Coilcraft 1210POC
+6. Transformers: gate-drive / isolated-supply transformers (Würth 750315371 / WE-AGDT, TDK VGT / ALT4532 LAN pulse, Bourns HCT / SM91501, Pulse PH9085 / HX1188), BMS isolation transformers (Pulse HM2102 / Bourns SM91501AL / TDK ALT3232)

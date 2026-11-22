@@ -1,0 +1,75 @@
+Task i2 (extend) — microcontrollers and memory. Domain file: i2-mcu-memory.json
+The catalogue has 34 MCU estimates and 20 memory estimates (list at the end of this file), and gaps in the small MCUs and
+serial memories every body / comfort ECU carries. Full orderable automotive code (temperature + package + packing). Trays
+publish 1 / 100 / 250 / 500 / 1,000+ breaks — record the two largest of one distributor.
+1. Replace the dearest estimates in the list below with ONE orderable member each (put the family key in `family`).
+2. NXP S32K1 / K3: S32K116 / K118 / K142 / K144 / K146 / K148 (FS32K14xH…), S32K311 / K312 / K314 / K322 / K324 / K341 / K342 / K344 / K358 / K388 — the codes distributors stock (has.py: some held); KEA (S9KEAZ64 / 128), S12 MagniV (S912ZVL / ZVM / ZVC / ZVH), MPC5744P / 5746C / 5748G codes
+3. Infineon: TRAVEO T2G CYT2B7 / CYT2B9 / CYT2BL / CYT3BB / CYT4BF, AURIX TC3xx orderable (SAK-TC322 / TC333 / TC334 / TC364 / TC375 / TC377 / TC387 / TC397 …), TC4x if listed, PSoC 4 automotive CY8C41xx / 42xx-S, XMC1xxx AA-grade, TLE984x / TLE985x / TLE986x / TLE987x / TLE989x embedded power
+4. Renesas: RH850/F1KM-S1 / S4, F1KH, F1L, U2A6 / U2A8, RL78/F13 / F14 / F15 / F23 / F24 (R5F10…), RA automotive; ST: SPC560B / SPC560P / SPC58 (E / N / chorus) orderable, Stellar SR5 / SR6 if listed, STM8AF / STM8AL (STM8AF5288 / 52A8 / 6223 / 6246), STM32 automotive-grade (STM32G0B1 / G474 / C0 / F103 / F407 / H7 in -40…125 °C "7" / "3" grades)
+5. Microchip: PIC16F18xxx / PIC18F…Q / dsPIC33CK / dsPIC33CH …-E/…VAO, ATtiny / ATmega automotive (ATtiny1616 / 3217-ZT / ATmega328PB-AUR automotive), SAM C21 / D21 / E5x automotive, PIC32MK; TI: MSPM0G350x-Q1 / MSPM0L130x-Q1 / MSP430FR2xxx-Q1 / TMS320F28003x / F2800157 / F28P65x-Q1 / AM263x / AM2634-Q1 / TMS570LS…
+6. Serial EEPROM automotive (every ECU): ST M24C02 / C04 / C16 / C32 / C64 / 128 / 256 / M24512 …-A125 / -DRMN3TP/K, M95010…M95M02 -A125 / -A145, M93C46 / C66 / C86-A125; Microchip 24LC / 24AA / 25LC / 25AA / 93LC …-E/…VAO / AT24C…-automotive, AT25xxx; onsemi CAV24C / CAV25 / NV24C / NV25; Rohm BR24H / BR25H / BR93H …-C / -2C; ABLIC S-24C / S-25C / S-93C automotive
+7. NOR flash automotive: Winbond W25Q16JV / 32JV / 64JV / 128JV / 256JV …automotive (JVSJQ / …-A grade), Macronix MX25L / MX25U / MX25R / MX66 …automotive (…J / …-AL…), Infineon S25FL064L / 128L / 256L / S25FL127S / S25FS / S25HL / S25HS / S28HS (Semper), Micron MT25QL / MT25QU / MT35X …-AAT / AUT, ISSI IS25LP / IS25WP …-A / -JKLA3, GigaDevice GD25…automotive, Adesto / Renesas AT25
+8. NAND / eMMC / UFS / DRAM automotive with a public price: Micron MT29F…-AAT / AIT, Kioxia TC58…automotive / THGAMV / THGJF, Samsung KLM / KLU automotive (public listing only), ISSI IS21ES / IS22ES eMMC, SkyHigh / Infineon S34ML / S40FC eMMC; DRAM ISSI IS43 / IS46 (TR16256B / QR / LQ / LD), Micron MT41K / MT40A / MT53E …AAT / AUT, Alliance AS4C automotive, Nanya NT5 automotive, Winbond W63 / W66 / W97 automotive
+9. FRAM / MRAM / nvSRAM: Infineon (Cypress) FM24CL64B / FM25CL64B / CY15B…-automotive (Excelon), Fujitsu / RAMXEED MB85RC / MB85RS automotive, Everspin MR25H / MR20H automotive, Rohm MR44 / MR45
+
+---
+Catalogue ESTIMATES in this domain (58), dearest first: key | maker | description | estimate at 1k (GBP)
+A key that is a FAMILY (no packing suffix) needs ONE orderable automotive member priced; a generic key ("MLCC 0402 …") needs a real code for that cell.
+EYEQ6H | Mobileye | EyeQ6 High vision SoC (Surround ADAS), sold with Mobileye software | 94.4125
+S32R45 | NXP | S32R45 automotive MCU/SoC | 82.3529
+TDA4AL | TI | TDA4AL automotive MCU/SoC | 70.5882
+S32G399 | NXP | S32G399 automotive MCU/SoC | 67.7864
+S32G274 | NXP | S32G274 automotive MCU/SoC | 53.73
+S32R41 | NXP | S32R41 automotive MCU/SoC | 52.9412
+TC397 | Infineon | TC397 automotive MCU/SoC | 44.2002
+TC499 | Infineon | TC499 automotive MCU/SoC | 42.9756
+MPC5775 | NXP | MPC5775 automotive MCU/SoC | 41.1765
+EYEQ4 | Mobileye | EyeQ4 vision SoC (front camera ADAS), sold with Mobileye software | 34.7438
+EYEQ6L | Mobileye | EyeQ6 Lite vision SoC (front camera ADAS), sold with Mobileye software | 34.7438
+SPC58NN | ST | SPC58NN automotive MCU/SoC | 29.4118
+TMS570LC43 | TI | TMS570LC43 automotive MCU/SoC | 29.4118
+RH850U2A | Renesas | RH850U2A automotive MCU/SoC | 29.4118
+S32R372 | NXP | S32R372 automotive MCU/SoC | 28.2353
+TC387 | Infineon | TC387 automotive MCU/SoC | 27.9008
+TC377 | Infineon | TC377 automotive MCU/SoC | 25.8123
+MPC5748G | NXP | MPC5748G automotive MCU/SoC | 23.5294
+AWR2544 | TI | AWR2544 automotive MCU/SoC | 23.5294
+TC297 | Infineon | TC297 automotive MCU/SoC | 23.0933
+S32K388 | NXP | S32K388 automotive MCU/SoC | 21.1765
+S32R274 | NXP | S32R274 automotive MCU/SoC | 21.1765
+TC334 | Infineon | TC334 automotive MCU/SoC | 17.6471
+CV2AQ | Ambarella | CV2AQ automotive vision SoC (CV2 family) | 15.106
+SPC58EC | ST | SPC58EC automotive MCU/SoC | 14.1176
+TMS570LS12 | TI | TMS570LS12 automotive MCU/SoC | 14.1176
+TC275 | Infineon | TC275 automotive MCU/SoC | 14.0844
+TC364 | Infineon | TC364 automotive MCU/SoC | 14.0679
+TC277 | Infineon | TC277 automotive MCU/SoC | 12.5569
+TC264 | Infineon | TC264 automotive MCU/SoC | 10.2834
+STM32H7 | ST | STM32H7 automotive MCU/SoC | 9.4118
+MT53E | Micron | LPDDR4 8 Gbit | 8.8235
+S32K322 | NXP | S32K322 automotive MCU/SoC | 8.2353
+SPC584B | ST | SPC584B automotive MCU/SoC | 8.0364
+STM32H743 | ST | STM32H743 automotive MCU/SoC | 7.1244
+STM32F407 | ST | STM32F407 automotive MCU/SoC | 7.0588
+S25HS512T | Infineon | 512 Mbit Semper NOR | 6.1176
+STM32F4 | ST | STM32F4 automotive MCU/SoC | 5.2941
+STM32G474 | ST | STM32G474 automotive MCU/SoC | 4.6501
+IS43TR16256 | ISSI | 4 Gbit DDR3 | 4.4706
+K4B4G1646 | Samsung | 4 Gbit DDR3 | 4.1176
+THGBMNG5 | Kioxia | 4 GB eMMC | 3.8824
+STM32L4 | ST | STM32L4 automotive MCU/SoC | 3.5294
+MT25QL128 | Micron | 128 Mbit SPI NOR | 3.5294
+MT41K256M16 | Micron | 4 Gbit DDR3L | 2.7723
+S25FL256S | Infineon | 256 Mbit SPI NOR | 2.5882
+MX25U51245 | Macronix | 512 Mbit SPI NOR | 2.3529
+IS42S16320 | ISSI | 512 Mbit SDRAM | 2.3529
+S25FL128S | Infineon | 128 Mbit SPI NOR | 2.1176
+W25N01 | Winbond | 1 Gbit SPI NAND | 1.8255
+W25Q128JW | Winbond | 128 Mbit SPI NOR, auto | 1.6471
+IS42S16160 | ISSI | 256 Mbit SDRAM | 1.6471
+MB85RS | Fujitsu | SPI FRAM | 1.2941
+MX25L12835 | Macronix | 128 Mbit SPI NOR | 1.1765
+W25Q64JW | Winbond | 64 Mbit SPI NOR | 1.0588
+24LC256 | Microchip | 256 Kbit I2C EEPROM | 0.2588
+CAT24C | onsemi | I2C EEPROM | 0.1059
+AT24C02 | Microchip | 2 Kbit I2C EEPROM | 0.1026

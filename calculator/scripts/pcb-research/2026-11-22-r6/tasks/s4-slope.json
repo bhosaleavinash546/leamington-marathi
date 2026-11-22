@@ -1,0 +1,895 @@
+[
+ {
+  "mpn": "DS90UB960WRTDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III quad deserializer hub",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64",
+  "aecq": true,
+  "currentQ1kGBP": 16.0141,
+  "currentQ200kGBP": 11.0178,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2000,
+    "price": 20.19,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB960WRTDRQ1?qs=EU6FO9ffTwdY8goEJWiHUg%3D%3D"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 24.66,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB960WRTDTQ1/9490296"
+   }
+  ]
+ },
+ {
+  "mpn": "DS90UB962WRTDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III quad deserializer hub, single CSI-2 output",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64 (RTD)",
+  "aecq": true,
+  "currentQ1kGBP": 12.6495,
+  "currentQ200kGBP": 8.7029,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 18.4692,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB962WRTDTQ1/9608018"
+   }
+  ]
+ },
+ {
+  "mpn": "DS90UB9702TRURRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link IV quad deserializer hub, CSI-2 D-PHY output",
+  "category": "ic_qfn",
+  "pkg": "VQFNP-88 (RUR)",
+  "aecq": true,
+  "currentQ1kGBP": 19.5961,
+  "currentQ200kGBP": 13.4822,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 24.32,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB9702TRURRQ1?qs=dbcCsuKDzFXfWvpbPtkBXQ%3D%3D"
+   }
+  ]
+ },
+ {
+  "mpn": "DS90UB983RTDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64 (RTD)",
+  "aecq": true,
+  "currentQ1kGBP": 12.4651,
+  "currentQ200kGBP": 8.5761,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 18.2,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/ds90"
+   }
+  ]
+ },
+ {
+  "mpn": "ESD2CANFD24DBZRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "CAN FD ESD protection diode, 24 V bidirectional, 2-line, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23-3",
+  "aecq": true,
+  "currentQ1kGBP": 0.1293,
+  "currentQ200kGBP": 0.0889,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.158,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ESD2CANFD24DBZRQ1?qs=rQFj71Wb1eWBqdGG%2FVj1Ug%3D%3D"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.1588,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/ESD2CANFD24DBZRQ1/17394929"
+   }
+  ]
+ },
+ {
+  "mpn": "F28386DPTPQR",
+  "mfr": "Texas Instruments",
+  "desc": "C2000 F28386D-Q1 dual-core C28x 200 MHz + connectivity manager, 1 MB flash",
+  "category": "ic_tqfp",
+  "pkg": "HLQFP-176 (PTP, 24x24)",
+  "aecq": true,
+  "currentQ1kGBP": 13.9529,
+  "currentQ200kGBP": 9.5997,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 200,
+    "price": 18.21,
+    "currency": "EUR",
+    "url": "https://www.mouser.com.tr/ProductDetail/Texas-Instruments/F28386DPTPQR?qs=81r%252BiQLm7BRZo466lFlgYQ%3D%3D"
+   }
+  ]
+ },
+ {
+  "mpn": "IWR6843ARQGALPR",
+  "mfr": "Texas Instruments",
+  "desc": "60-64 GHz radar SoC, industrial (reference)",
+  "category": "ic_bga",
+  "pkg": "FCBGA-180",
+  "aecq": false,
+  "currentQ1kGBP": 19.5156,
+  "currentQ200kGBP": 13.4268,
+  "stored": [
+   {
+    "distributor": "Digi-Key UK",
+    "qty": 1000,
+    "price": 19.62,
+    "currency": "GBP",
+    "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/IWR6843ARQGALPR/15857294"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 25.7,
+    "currency": "USD",
+    "url": "https://octopart.com/iwr6843arqgalpr-texas+instruments-117129608"
+   }
+  ]
+ },
+ {
+  "mpn": "TDA2SXBTQABCRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "TDA2x ADAS SoC (surround view)",
+  "category": "ic_bga",
+  "pkg": "FCBGA (ABC)",
+  "aecq": true,
+  "currentQ1kGBP": 72.2699,
+  "currentQ200kGBP": 49.7219,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 105.51928,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA2SXBTQABCRQ1/15856648"
+   }
+  ]
+ },
+ {
+  "mpn": "TDA4VE88TGAALZRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Jacinto 7 ADAS SoC, 2x Cortex-A72, C7x/MMA, R5F, C66x",
+  "category": "ic_bga",
+  "pkg": "FCBGA-770 (ALZ, 23x23)",
+  "aecq": true,
+  "currentQ1kGBP": 56.7976,
+  "currentQ200kGBP": 39.077,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 82.87,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VE88TGAALZRQ1?qs=amGC7iS6iy94hBzlpK8WJg%3D%3D"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 73.02,
+    "currency": "EUR",
+    "url": "https://www.digikey.at/en/products/detail/texas-instruments/TDA4VE88TGAALZRQ1/17873875"
+   }
+  ]
+ },
+ {
+  "mpn": "TDA4VH88TGAALYRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Jacinto 7 ADAS / domain-controller SoC, 8x Cortex-A72, C7x/MMA",
+  "category": "ic_bga",
+  "pkg": "FCBGA-1414 (ALY)",
+  "aecq": true,
+  "currentQ1kGBP": 151.3742,
+  "currentQ200kGBP": 104.146,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 200,
+    "price": 240.5218,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA4VH88TGAALYRQ1/25811540"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 200,
+    "price": 208.53,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VH88TGAALYRQ1?qs=dbcCsuKDzFWQYiMoGOSM7w%3D%3D"
+   }
+  ]
+ },
+ {
+  "mpn": "TDA4VM88TGCALFRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Jacinto 7 ADAS SoC",
+  "category": "ic_bga",
+  "pkg": "FCBGA-827",
+  "aecq": true,
+  "currentQ1kGBP": 88.5538,
+  "currentQ200kGBP": 60.9253,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 138.23,
+    "currency": "USD",
+    "url": "https://www.mouser.com/datasheet/2/405/1/spruis4b-2507423.pdf"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 120.36,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA4VM88TGCALFRQ1/25559568"
+   }
+  ]
+ },
+ {
+  "mpn": "TMS320F28377DPTPQ",
+  "mfr": "Texas Instruments",
+  "desc": "C2000 dual-core 200MHz real-time MCU",
+  "category": "ic_tqfp",
+  "pkg": "176-HLQFP",
+  "aecq": true,
+  "currentQ1kGBP": 17.2497,
+  "currentQ200kGBP": 11.8679,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 120,
+    "price": 25.71,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMS320F28377DPTPQ/6156199"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 120,
+    "price": 27.34,
+    "currency": "USD",
+    "url": "https://octopart.com/part/texas-instruments/TMS320F28377DPTPQ"
+   }
+  ]
+ },
+ {
+  "mpn": "SI2301CDS-T1-GE3",
+  "mfr": "Vishay",
+  "desc": "P-MOSFET 20 V 3.1 A SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.1218,
+  "currentQ200kGBP": 0.0838,
+  "stored": [
+   {
+    "distributor": "TME",
+    "qty": 3000,
+    "price": 0.089,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.132,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 2000,
+    "price": 0.116,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/7103238?gb=s"
+   }
+  ]
+ },
+ {
+  "mpn": "SM8S36AHE3/2D",
+  "mfr": "Vishay",
+  "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)",
+  "category": "fuse_tvs",
+  "pkg": "DO-218AB",
+  "aecq": true,
+  "currentQ1kGBP": 1.2464,
+  "currentQ200kGBP": 0.8576,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 750,
+    "price": 1.272,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/tvs-diodes/1696093"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW251210R0FKEG",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 10 ohm 1% 1W, 2512, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.092,
+  "currentQ200kGBP": 0.0633,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 25000,
+    "price": 15.28,
+    "currency": "JPY",
+    "url": "https://jp.rs-online.com/web/p/surface-mount-resistors/6792409"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP2525CZER4R7M11",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 4.7uH 6A, 2525, automotive",
+  "category": "passive_1206",
+  "pkg": "2525 (6.47x6.86mm)",
+  "aecq": true,
+  "currentQ1kGBP": 0.3641,
+  "currentQ200kGBP": 0.2505,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.48208,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M11/1220682"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP4040DZER100M5A",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 10uH 20% 4040 (10.2x10.2 mm) AEC-Q200 (-5A)",
+  "category": "passive_1206",
+  "pkg": "4040",
+  "aecq": true,
+  "currentQ1kGBP": 0.4732,
+  "currentQ200kGBP": 0.3256,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.6265,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP4040DZER100MA1",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 10uH 20%, 10.2x10.2 mm (4040), commercial",
+  "category": "passive_1206",
+  "pkg": "4040",
+  "aecq": false,
+  "currentQ1kGBP": 0.2841,
+  "currentQ200kGBP": 0.1955,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 500,
+    "price": 0.395,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/9112920"
+   }
+  ]
+ },
+ {
+  "mpn": "TNPW080512K0BEEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thin film 12k 0.1% 25ppm, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.1662,
+  "currentQ200kGBP": 0.1143,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.22,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C7125390.html"
+   }
+  ]
+ },
+ {
+  "mpn": "TNPW080513K0BEEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thin film 13k 0.1% 25ppm, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0965,
+  "currentQ200kGBP": 0.0664,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.114,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/7003983"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL0603R0500FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Current-sense resistor 50 mohm 1% 0.1W, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.3279,
+  "currentQ200kGBP": 0.2256,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.315,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/6030834"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.46,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/product-highlight/v/vishay-dale/wsl0603-low-value-0-10-w-surface-mount-power-metal-strip-resistor"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL1206R0100FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Metal-strip current-sense 10 mohm 1% 0.25W, 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.2252,
+  "currentQ200kGBP": 0.1549,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.24134,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL1206R0100FEA/712486"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.355,
+    "currency": "USD",
+    "url": "https://il.farnell.com/vishay/wsl1206r0100fea/current-sense-res-0r01-1-250-mw/dp/1107348"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL25122L000FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.4442,
+  "currentQ200kGBP": 0.3056,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2000,
+    "price": 0.56,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18"
+   }
+  ]
+ },
+ {
+  "mpn": "WSLP2512R0050FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Power metal strip current-sense 5mR 1% 3W, 2512",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.3082,
+  "currentQ200kGBP": 0.212,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.53179,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP25125L000FEA/9758421"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.359,
+    "currency": "EUR",
+    "url": "https://nl.farnell.com/en-NL/vishay/wslp25125l000fea/current-sense-res-0r005-1-3-w/dp/2420770"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 2000,
+    "price": 0.36,
+    "currency": "USD",
+    "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=WSLP25125L000FEA&mfgShortname=DAL"
+   }
+  ]
+ },
+ {
+  "mpn": "PAT0603E1002BST1",
+  "mfr": "Vishay Dale Thin Film",
+  "desc": "Thin film 10k 0.1% anti-sulfur, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.3056,
+  "currentQ200kGBP": 0.2103,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 12000,
+    "price": 0.33954,
+    "currency": "USD",
+    "url": "https://digikey.com/product-detail/en/vishay-thin-film/PAT0603E1002BST1/PAT10KACT-ND/2278993"
+   }
+  ]
+ },
+ {
+  "mpn": "LR G6SP.02-8D6E-46-G3R3-140-R18",
+  "mfr": "ams OSRAM",
+  "desc": "LED red TOPLED PLCC-6",
+  "category": "led",
+  "pkg": "PLCC-6",
+  "aecq": false,
+  "currentQ1kGBP": 0.1339,
+  "currentQ200kGBP": 0.0921,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.156,
+    "currency": "EUR",
+    "url": "https://www.mouser.fi/en/c/optoelectronics/leds/?q=1066"
+   }
+  ]
+ },
+ {
+  "mpn": "SPL DS90A_3",
+  "mfr": "ams OSRAM",
+  "desc": "903 nm SMT pulsed laser diode",
+  "category": "led",
+  "pkg": "SMT (laser module)",
+  "aecq": false,
+  "currentQ1kGBP": 6.8233,
+  "currentQ200kGBP": 4.6945,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 10.6281,
+    "currency": "USD",
+    "url": "https://findchips.com/search/SPLDS90A_3"
+   }
+  ]
+ },
+ {
+  "mpn": "SPL S1L90H_3",
+  "mfr": "ams OSRAM",
+  "desc": "907 nm 65 W single-channel pulsed laser, QFN",
+  "category": "led",
+  "pkg": "QFN",
+  "aecq": false,
+  "currentQ1kGBP": 7.3913,
+  "currentQ200kGBP": 5.0852,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 10.13,
+    "currency": "EUR",
+    "url": "https://pt.farnell.com/ams-osram-group/spl-s1l90h-3/laser-diode-907nm-65w-20a-qfn/dp/4154506"
+   }
+  ]
+ },
+ {
+  "mpn": "AR0144ATSM20XUEA0-DRBR",
+  "mfr": "onsemi",
+  "desc": "1 MP 1/4in global-shutter mono CMOS sensor, 1280x800",
+  "category": "ic_bga",
+  "pkg": "iBGA-63",
+  "aecq": true,
+  "currentQ1kGBP": 11.1392,
+  "currentQ200kGBP": 7.6638,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 440,
+    "price": 15.62784,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/on-semiconductor/AR0144ATSM20XUEA0-DRBR/9829016"
+   }
+  ]
+ },
+ {
+  "mpn": "AR0820ATSC18XMEA0-DPBR",
+  "mfr": "onsemi",
+  "desc": "8.3 MP 1/2in automotive HDR image sensor",
+  "category": "ic_bga",
+  "pkg": "IBGA-95",
+  "aecq": true,
+  "currentQ1kGBP": 26.3099,
+  "currentQ200kGBP": 18.1013,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 40.9808,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/AR0820ATSC18XMEA0-DRBR/17629347"
+   }
+  ]
+ },
+ {
+  "mpn": "AR0822NPSC10SMTA0-DR",
+  "mfr": "onsemi",
+  "desc": "8 MP 1/2in eHDR CMOS image sensor, RGB, tray (industrial 'NP' grade)",
+  "category": "ic_bga",
+  "pkg": "BGA-75 (per Digi-Key eval-board description)",
+  "aecq": false,
+  "currentQ1kGBP": 22.1117,
+  "currentQ200kGBP": 15.2129,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1470,
+    "price": 28.49,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--analog--sensors--image/ar0822npsc10smta0-dr-onsemi-8173590"
+   }
+  ]
+ },
+ {
+  "mpn": "ARRAYRDM-0112A20-QFN-TR",
+  "mfr": "onsemi",
+  "desc": "1x12 SiPM array for LiDAR, QFN",
+  "category": "ic_qfn",
+  "pkg": "QFN",
+  "aecq": true,
+  "currentQ1kGBP": 24.4379,
+  "currentQ200kGBP": 16.8133,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 30.97032,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/ARRAYRDM-0112A20-QFN-TR/23329582"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 1000,
+    "price": 33.74,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/arrayrdm-0112a20-qfn-tr/on-semiconductor"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVB140SFT1G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40V 1A, SOD-123FL, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOD-123FL",
+  "aecq": true,
+  "currentQ1kGBP": 0.1275,
+  "currentQ200kGBP": 0.0877,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.1562,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NRVB140SFT1G/3062416"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.1643,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_onsemi_C152277.html"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 3000,
+    "price": 0.1121,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/nrvb140sft1g/on-semiconductor.html"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVBA340T3G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40 V 3 A",
+  "category": "fuse_tvs",
+  "pkg": "SMA (DO-214AC)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1793,
+  "currentQ200kGBP": 0.1234,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.1818,
+    "currency": "USD",
+    "url": "https://octopart.com/nrvba340t3g-onsemi-22133726"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 5000,
+    "price": 0.242,
+    "currency": "USD",
+    "url": "https://www.mouser.de/en/ProductDetail/onsemi/NRVBA340T3G?qs=lYuAOLy5nvbez2jPN1M99Q%3D%3D"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVBS340T3G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40 V 3 A",
+  "category": "fuse_tvs",
+  "pkg": "SMC (DO-214AB)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2072,
+  "currentQ200kGBP": 0.1425,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 0.25324,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/MBRS340T3G/918645"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 0.261,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/onsemi/MBRS340T3G?qs=3JMERSakeboCr3wxBgfY3w%3D%3D"
+   }
+  ]
+ },
+ {
+  "mpn": "NVBG020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "D2PAK-7L",
+  "aecq": true,
+  "currentQ1kGBP": 22.6246,
+  "currentQ200kGBP": 15.5658,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 800,
+    "price": 30.43,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvbg020n120sc1-onsemi-2121603"
+   }
+  ]
+ },
+ {
+  "mpn": "NVBG040N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "D2PAK-7L",
+  "aecq": true,
+  "currentQ1kGBP": 11.7736,
+  "currentQ200kGBP": 8.1003,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 11.4,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025731"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 14.98,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025731"
+   }
+  ]
+ },
+ {
+  "mpn": "NVH4L020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+  "category": "through_hole",
+  "pkg": "TO-247-4L",
+  "aecq": true,
+  "currentQ1kGBP": 22.3975,
+  "currentQ200kGBP": 15.4096,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 26.35,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025735"
+   }
+  ]
+ },
+ {
+  "mpn": "NVH4L022N120M3S",
+  "mfr": "onsemi",
+  "desc": "Automotive SiC MOSFET 1200 V 22 mOhm 68 A, M3S EliteSiC, TO-247-4L, AEC-Q101",
+  "category": "through_hole",
+  "pkg": "TO-247-4L",
+  "aecq": true,
+  "currentQ1kGBP": 11.4725,
+  "currentQ200kGBP": 7.8931,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 450,
+    "price": 16.07,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvh4l022n120m3s-onsemi-9191191"
+   }
+  ]
+ },
+ {
+  "mpn": "NVHL020N120SC1",
+  "mfr": "onsemi",
+  "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+  "category": "through_hole",
+  "pkg": "TO-247-3",
+  "aecq": true,
+  "currentQ1kGBP": 24.7912,
+  "currentQ200kGBP": 17.0564,
+  "stored": [
+   {
+    "distributor": "Avnet",
+    "qty": 450,
+    "price": 34.726,
+    "currency": "USD",
+    "url": "https://octopart.com/nvhl020n120sc1-on+semiconductor-93583284"
+   }
+  ]
+ }
+]

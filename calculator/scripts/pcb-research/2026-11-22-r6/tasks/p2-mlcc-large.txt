@@ -1,0 +1,13 @@
+Task p2 (extend) — MLCC matrix, 0805 / 1206 / 1210 / high voltage / safety, AEC-Q200 first. Domain file: p2-mlcc-large.json
+Rules as p1 (real orderable code per cell; desc states value, voltage, dielectric, tolerance, size, grade; reel breaks).
+Already held (skip): 0805 1µF 50V, 4.7µF 50V, 10µF 10/16/25V, 10nF C0G; 1206 4.7µF 50V, 10µF 25/50V, 22µF 10/16V; 1210 4.7µF 50/100V,
+10µF 50V, 22µF 25V, 47µF 10V; 1210 10nF 1kV C0G. Check has.py anyway.
+Cells in priority order:
+1. 0805 X7R: 100 nF 50 V, 100 nF 100 V, 220 nF 50 V, 470 nF 50 V, 2.2 µF 25 / 50 V, 22 µF 6.3 / 10 V (X5R / X7S); 0805 C0G 1 nF / 100 pF 50 V
+2. 1206 X7R: 100 nF 100 V, 1 µF 100 V, 2.2 µF 100 V, 22 µF 25 V, 47 µF 6.3 V (X5R); 1206 C0G 100 nF 50 V, 1 nF 630 V
+3. High voltage (BMS / OBC / inverter): 1206 X7R 100 nF 630 V, 1 µF 250 V, 10 nF 1 kV; 1812 / 2220 X7R 100 nF 1 kV, 1 µF 630 V; 1210 C0G 22 nF 630 V
+4. 1210 X7R / X7S: 10 µF 100 V, 22 µF 50 V, 47 µF 16 V, 100 µF 6.3 V (X5R)
+5. Soft-termination / open-mode battery-side: Murata GCJ / KCM (metal terminal), TDK CGA…FS / mega-cap, KEMET FT-CAP — 0805 / 1206 / 1210 10 µF 50 V
+6. Safety-certified MLCC (X1/Y2, X2): Murata GA3 / KEMET CAS / Vishay VJ safety — 1 nF, 2.2 nF, 4.7 nF 250 VAC
+7. 3-terminal / feed-through EMI capacitors automotive (Murata NFM18 / NFM21 …SH / TDK YFF-AC) — 100 nF, 1 µF
+8. Commercial twin of cells 1 and 2 (GRM21B / GRM31C, CL21 / CL31)

@@ -1,0 +1,76 @@
+Task d2 (extend) — connectors, crystals / oscillators / resonators, switches, relays, mechanical. Domain file: d2-interconnect-timing.json
+The catalogue holds 18 SMT connectors (11 estimates), 43 crystals / oscillators (14 estimates), 10 relays / switches and 61
+through-hole parts (22 estimates). Coax (FAKRA / HFM / HSD / GMSL) and sealed ECU headers are quote items — research only a
+code a franchised distributor lists with breaks ≥ 100, and list the rest under `notResearched` with "supplier quote".
+1. Replace the dearest estimates in the list at the end of this file with a real orderable code each.
+2. Crystals automotive (AEC-Q200): NDK NX2016SA / NX2520SA / NX3225GA / NX3225SA / NX5032GA / NX8045GB, Epson FA-128 / FA-20H / FA-238A / TSX-3225 / FC-135 / FC-12M / FC-13A / FC-3215AN (32.768 kHz) / MC-306 automotive, Kyocera CX2016SA / CX3225SA / CX3225GA / CX3225CA / ST3215SB, TXC AM / AV / AZ / 7M / 8Y / 9HT11 automotive, Abracon ABM3 / ABM8 / ABM10 / ABM11 AIG / ABS07AIG / ABS06 automotive, ECS ECX-…Q / ECS-…-CDX / CKM automotive, Murata XRCGB / XRCGE / XRCHA (HCR) …automotive, Würth WE-XTAL automotive, IQD / Rakon, Diodes FL / FY / GX, Raltron / Micro Crystal CM7V-T1A / CM8V / CC1V / CC4V / CC5V-T1A automotive — 8 / 12 / 16 / 20 / 24 / 25 / 26 / 27.12 / 40 / 48 MHz and 32.768 kHz, load 8–12 pF
+3. Ceramic resonators (CAN / LIN nodes): Murata CSTNE…G / V / CSTCR…G / CSTCE…G / V / CSTLS / CSTNR automotive (4 / 8 / 12 / 16 / 20 MHz), Kyocera PBRV / PRQV, Abracon AWSCR…-CxxT automotive
+4. Oscillators / MEMS / clocks automotive: SiTime SiT8924B / 8925B / SiT2024B / 2025B / SiT1602 / 1618 / SiT9025 / 9386 / 9396 / 9397 / SiT1576 / 1566 / 5356 / 5357 / 5386 / 5387 / SiT95145 / 95147 / 95148 automotive, Epson SG-8101CGA / SG2520CAA / SG3225CAN / SG5032CAN / SG-9101 / TG2016SMN / TG2520SMN / TG-5035CJ / TG5032 / RA8900CE / RA8804CE / RA4000CE / RX8130CE / RX8900CE / RX8804CE / RX-8571 / RX6110 / RX4901 / RX8901 automotive, NDK NZ2520SHA / NZ2016SHA / NZ3225SHA / NT2016SA / NT2520SE / NT3225SA automotive TCXO, Kyocera KC2016Z / KC2520Z / KC3225Z / KT2016K / KT2520K, Microchip DSC1001 / 1101 / 1121 / 1123 / 6001 / 6011 / 6101 / 6111 / DSA1001 / DSA1101 / DSA1121 / DSA1123 / DSA6001 / DSA6101 / DSA2311 / DSA400 / DSA557 / DSA613 / MX automotive, Abracon ASDMB / ASEMB / ASFLMB / ASTMUPC / AMPM / AMJM automotive, ECS-2520MVQ / 3225MVQ / 2016MVQ, Renesas / IDT 5P49V60 / 5P49V6965 / 9FGV / 5L / 5X / XLH / XUH / 8T49N / RC2xxxx automotive, Skyworks / SiLabs Si5332 / Si5350 / Si5351 / Si5338 / Si534x / Si5391 / Si5395 / Si510 / Si511 / Si530 / Si540 automotive, TI LMK00105 / LMK1C1102 / 1104 / 1106 / 1108 / LMK1D1204 / LMK6C / LMK6H / LMK6D / LMK6P / CDCE6214 / CDCE913 / 925 / 937 / 949 / CDCS503 / LMK05318B / LMK5B / LMK3H0102-Q1, NXP PCF2127 / PCF2129 / PCF85063A / PCF85263A / PCF8523 / PCA2129 / PCA85073A / PCA21125 / PCA8565 / PCF2131 / PCF2123 automotive, ADI DS3231 / DS1307 / DS1339 / MAX31328 / MAX31329 / MAX31343 automotive
+5. Board connectors with public breaks: pin headers / sockets (Samtec TSW / SSW / TSM / SSM / FTSH / CLP / TFM / SFM / ERM8 / ERF8 / QTH / QSH / SEAM / SEAF / LSHM / T2M / S2M / ISP / IPL1 / IPT1 / S2SD / T1M / S1SS, Würth WR-PHD / WR-BHD / WR-MM / WR-WTB / WR-FPC / WR-MPC3 / MPC4 / WR-TBL / REDCUBE, Harwin M20 / M22 / M40 / M50 / M80 / Gecko G125 / Datamate / Archer Kontrol / M55 / Sycamore, Amphenol / FCI Minitek / BergStik / Dubox / Mini-PV / BarKlip / Millipacs / FCI 10129378 / 10129381 / 54101 / 68000 / 77311 / 75869, TE AMPMODU / MTA-100 / Micro-MaTch / AMP CT / AMP EI / Mini-Universal MATE-N-LOK / Micro MATE-N-LOK / Dynamic 1000 / 2000 / 3000 / 5000 / D-1000 / HPI / Economy Power / MQS / MCON / NanoMQS (PCB headers), Molex Micro-Fit 3.0 / Mini-Fit Jr / Nano-Fit / Micro-Lock Plus / Pico-Lock / Pico-Clasp / PicoBlade / Pico-EZmate / Micro-Latch / Milli-Grid / C-Grid / KK 254 / KK 396 / SL / Sherlock / DuraClik / Mini50 / CMC / Stac64 / MX150 / MXP120 / MX123 / CMX / ML-XT / Squba / H-DAC 64 / iGrid / CLIK-Mate / Zero-Hachi / Easy-On FFC / SlimStack / PowerPlane, JST PH / PA / PAD / XH / XA / XAD / EH / ZH / GH / SH / SHD / SHL / SM / SR / SUR / ZE / ZR / VH / VL / NH / NV / YL / EL / ACH / BM..B / JWPF / J2000 / JFA / HCM / HCH / CPT / CN / MSA / MWP / MWT / RWZ / CZH / CZW / HRN / DT automotive, Hirose DF1 / DF3 / DF11 / DF12 / DF13 / DF14 / DF17 / DF19 / DF20 / DF22 / DF33 / DF37 / DF40 / DF50 / DF51 / DF52 / DF57 / DF59 / DF60 / DF61 / DF62 / DF63 / DF65 / DF80 / FH12 / FH19 / FH28 / FH34 / FH35 / FH41 / FH52 / FH58 / FH63 / FH72 / BM10 / BM14 / BM20 / BM23 / BM28 / BM29 / FX8 / FX10 / FX11 / FX12 / FX18 / FX20 / FX23 / FX26 / FX27 / FX30B / GT8E / GT13 / GT16 / GT17 / GT21 / GT25 / GT32 / GT36 / GT50 / ZE05 / ZG05 automotive, IRISO 9827 / 9828 / 9850 / 9854 / 10111 / 10120 / 10127 / 10128 / 10137 / 10143 / 20680 / 20682 / Z-Move automotive, KYOCERA 5655 / 5656 / 5689 / 5806 / 5807 / 5861 / 6200 / 6281 / 6288 / 6801 / 6803 / 6808 / 6810 / 6811 / 6892 / 6893 / 9155 / 9159 / 9175 / 9176 / 9177 / 9276 / 9296 automotive, JAE MX34 / MX23A / MX19 / MX44 / MX47 / MX48 / MX49 / MX50 / MX55J / MX62 / MX65 / MX72 / MX77A / MX79A / MX80 / MX81 / MX84 / FI-X / FI-RE / FI-R / FI-NX / WP…/ AX01 / DX07 / IL-AG5 / IL-AG9, Yazaki / Sumitomo / Aptiv / Kostal / Hirschmann / Rosenberger (quote items — do not search); FFC / FPC 0.5 mm / 1.0 mm automotive (Molex 5025xx / 2004xx / 5051xx / 5035xx, Hirose FH28 / FH52 / FH41 / FH72 automotive, TE 2-1734839 / 1-84952 / 1-84953 / 2328702, KYOCERA 6801 / 6810 / 6892, IRISO 9690 / 9681 / 10051 / 10064), USB-C / USB-A / HDMI / RJ45 / SD / SIM automotive (Molex 216990 / 2171xx / 105450 / 1054500101 automotive, TE 2129691 / 2305018 / 2327361 / 2337992, JAE DX07, Würth WR-COM automotive, Amphenol 12401610E4#2A / 12402012E212A / GSB…, Hirose CX70M / CX80B / CX90B / CX90M, Rosenberger), board-to-board 0.4 / 0.5 / 0.8 mm automotive (Hirose BM / FX, Molex SlimStack 5037xx / 5050xx / 5052xx / 2035xx / 2050xx automotive, Panasonic P4S / P5KS / P4 / P5K / A35US / A4S / A4F / A35UH automotive, TE 0.8 FH / 0.5 FP / 5-5177986 / 5177983 / 5179029 / 5179031 / 5179230 / 5-146xxx, JAE WP / AA / AXG / AX01, Kyocera 5804 / 5846 / 5861 / 5600, IRISO 10120 / 10127 floating)
+6. Switches / relays automotive: tact switches (Alps Alpine SKQG / SKHH / SKTQ / SKRP / SKSC / SKPM / SKRK / SPVQ / SPPB / SKSG / SKTD / SKRT / SKSL / SKRA / SKQY / SKSU / SKQM, C&K KSC / KSR / KMR / KMT / KXT / PTS526 / PTS645 / PTS647 / PTS810 / PTS815 / PTS830 / PTS840 / KSS / KSA / KSL / K5V / K8 / K12, Panasonic EVQ-P / EVP-A / EVQ-Q2 / EVP-BB / EVP-AA / EVQ-9P7 / EVQ-11 / EVQ-PE / EVP-BT / EVQ-P4 / EVQ-7Q, Omron B3U / B3FS / B3SL / B3SN / B3AL / B3J / B3W / B3D, TE FSM / FSMRA / FSMSM / FSMJ / ALCOSWITCH, Würth WS-TASV / WS-TATV / WS-TASU), detect / DIP (Alps SSSS / SPVT / SPVS / SPVR / SPVN / SPVM / SPVL / SPVE, C&K JS / SDA / TDA / BD / RTE / CRD / HDT, Omron D2FS / D2LS / D2MQ / D2AW / D2HW / D2SW / D2FW / A6S / A6H / A6T / A6SN), PCB relays (Panasonic CN-H / CN-M / CN-L / CT / CJ / CP / CQ / CV / CW / CA / CB / CM / TB / TE / TC / TG / TH / TJ / TA / TX-automotive / EV200 / EP / HE-V / AEV / AEP / ACNH / ACNM / ACT / ACJ / ACP / ACQ / ACV, TE PCJ / PCH / PB / PE / V23076 / V23084 / V23086 / V23234 / V23134 / Mini K HV / EVC 80 / EVC 135 / EVC 175 / EVC 250 / EVC 500 / ECK / ECP / K100 / KILOVAC LEV / EV / P1xx / HFE80V / HFE82V / HFE85P, Omron G8N / G8NB / G8ND / G8NW / G8QE / G8QN / G8V / G8HL / G8HE / G8JN / G8JR / G8VA / G8W / G8MS / G8PE / G8EH / G9EA / G9EB / G9EC / G9EJ / G9EK / G9EN / G9TA / G9TB / G9KA / G9KB / G5NB-automotive / G6K-automotive / G6S-automotive / G3VM MOSFET relays automotive, Hongfa HFKA / HFKC / HFKD / HFKF / HFKP / HFKW / HFK9 / HFV4 / HFV6 / HFV7 / HFV9 / HFV11 / HFV12 / HFV15 / HFV16 / HFE18V / HFE19V / HFE80V / HFE82V / HFZ16V / HF161F / HF165FD / HF32FV / HF33F / HF36F / HF3FF / HF49FD (franchised listing only), Song Chuan / Fujitsu (FCL) FBR51 / FBR53 / FBR59 / FTR-P1 / FTR-P3 / FTR-K1 / FTR-K3 / FTR-K5 / FTR-E1 / FTR-J2 / FTR-G3 / FTR-V1 / FTR-B3 / FTR-B4 / FTR-C1 / FTR-H1 / FTR-F1 / FTR-F3 / FTR-LY / FTR-MY automotive, Littelfuse / Hamlin reed, Sensata GIGAVAC GV / HX / GX / MX / P105 / P115 / GXNC (quote items mostly))
+7. Mechanical / EMC / thermal with a public price: shield cans and clips (Würth WE-SHC / 360xxxxx, Laird BMI-S-xxx, Harwin S01 / S02 / S03 / S09 / S7xxx clips / EZ-BoardWare, TE 2118714 / 2118718, Masach, Leader Tech SMS / CBS), spring contacts / grounding clips (Harwin S13xx / S70xx, TE 1447360 / 2199250 / 2336xxx / 2108xxx, KYOCERA 9155 / 9258 / 70-9155, Würth WE-SECF / WA-SMSI / WA-SMSR / WA-SMST / WA-SPAII), press-fit / solder nuts and spacers (Würth WA-SMSI / REDCUBE PRESS-FIT / SMD / THR / TERMINAL, PEM SMTSO / KFE4 / KF2, Keystone 7xxx / 5xxx test points 5000…5019 / 5015 / 5016 / 5017 / 5018 / 5019 / 36-…), heatsinks SMD (Aavid / Boyd 573xxx / 7106 / 7109 / 573100 / 573300, Würth WA-T, Fischer FK 244 / ICK SMD, Ohmite D / DV), thermal pads / gap fillers by sheet (Bergquist / Henkel Gap Pad TGP / Laird Tflex / Tputty / Fujipoly Sarcon / Würth WE-TGF / WE-TINS / 3M 5571 / 5578H / 5590H / 8805 / 8810 / 8815 / 8820 — price per sheet, say the size), battery holders / coin cells (Keystone 1057 / 1058 / 1060 / 1061 / 1065 / 1066 / 1070 / 3000 / 3001 / 3002 / 3003 / 3034 / 500 / 2998 / 3008, Renata SMTU / HU / VBH / CR…MFR automotive, Panasonic BR / CR automotive BR1225A / BR1632A / BR2032 / BR2330A / BR2450A / BR2477A / VL / ML, Murata CR / CT04120 / CT08120, Maxell CR…HR / ML / TC, Varta CR…/ MC621 / V…HR), buzzers / sounders (Murata PKLCS / PKMCS / PKM13 / PKM17 / PKM22 / PKB24 / 7BB, TDK PS1240 / PS1440 / PS1550 / PS1720 / PS1740 / PHUA / SD / CSS / PiezoListen, CUI CMT / CPT / CPE / CSS / CMI / CST / CSQ, PUI Audio AI / AT / AST / SMT / SMI, Kingstate KPEG / KXG / KMTG, Soberton automotive)
+Budget is small against this list: items 1–3 first, then ONE or two codes per line.
+
+---
+Catalogue ESTIMATES in this domain (60), dearest first: key | maker | description | estimate at 1k (GBP)
+A key that is a FAMILY (no packing suffix) needs ONE orderable automotive member priced; a generic key ("MLCC 0402 …") needs a real code for that cell.
+MX123 72 | Molex | MX123 72-way header | 10
+AMPSEAL 35 | TE | AMPSEAL 35-way header | 7.2941
+MX123 48 | Molex | MX123 48-way header | 7.0588
+H-MTD | Rosenberger | H-MTD connector | 6.4706
+HSD | Rosenberger | HSD 4+2 connector | 4.9412
+AMPSEAL 14 | TE | AMPSEAL 14-way header | 3.7647
+M12 | Phoenix | M12 connector | 3.7647
+AMPSEAL16 8 | TE | AMPSEAL 16 8-way header | 2.3529
+FAKRA SMB | TE | FAKRA SMB jack | 2.3529
+RELAY SIGNAL | Omron | Signal relay | 2.2616
+TRANSFORMER SMD | various | SMD power transformer | 2.2353
+TG-5032 | Epson | TCXO | 2
+FAKRA Z | Rosenberger | FAKRA Z jack PCB | 2
+SG-8018 | Epson | Programmable oscillator | 1.7647
+TANT 2917 100uF | various | Tantalum 2917 100 µF | 1.2941
+MX150 2x | Molex | MX150 dual-row header | 1.2941
+RELAY AUTO 12V | TE | Automotive PCB relay 12 V | 1.0121
+ASVMB | Abracon | MEMS oscillator | 1
+MLK 1.2 | Kostal | MLK 1.2 2-way header | 1
+SMA | various | SMA edge jack | 1
+DE9 | various | D-sub 9 PCB | 0.8824
+MICRO-FIT 2x4 | Molex | Micro-Fit 3.0 2×4 header | 0.84706
+SIT1602 | SiTime | MEMS oscillator | 0.8235
+ELEC 100uF 100V | various | Aluminium electrolytic 100 µF 100 V | 0.81176
+ELEC 1000uF 25V | various | Aluminium electrolytic 1000 µF 25 V | 0.70588
+NX3225SA | NDK | Crystal 3.2×2.5 | 0.6471
+MQS | TE | MQS header | 0.6471
+CMC AUTO | various | Automotive common-mode choke | 0.6383
+ELEC 470uF 35V | various | Aluminium electrolytic 470 µF 35 V | 0.61176
+SIT8008 | SiTime | MEMS oscillator | 0.585
+DF17 | Hirose | DF17 board-to-board | 0.52941
+USB-C | various | USB-C receptacle | 0.50588
+MINI-FIT | Molex | Mini-Fit Jr header | 0.48235
+HEATSINK | various | PCB heatsink | 0.4471
+SHIELD CAN | various | RF shield can | 0.3882
+CMC SMD | various | Common-mode choke SMD | 0.3765
+7V-25.000 | TXC | 25 MHz crystal | 0.3588
+ELEC 100uF 50V | various | Aluminium electrolytic 100 µF 50 V 105 °C | 0.35294
+NX5032GA | NDK | Crystal 5×3.2 | 0.3294
+BUZZER | various | SMD buzzer | 0.3294
+CX3225 | Kyocera | Crystal 3.2×2.5 | 0.3216
+ELEC 220uF 35V | various | Aluminium electrolytic 220 µF 35 V | 0.2706
+FA-238 | Epson | Crystal 3.2×2.5 | 0.25882
+FPC 0.5 30P | Hirose | FPC connector 0.5 mm 30-way | 0.2588
+HYBRID POLYMER 33uF | various | Hybrid polymer 33 µF 35 V | 0.2496
+JST GH | JST | GH 1.25 mm header | 0.23529
+ELEC SMD 47uF 50V | various | SMD electrolytic 47 µF 50 V | 0.22353
+ABM8 | Abracon | Crystal 3.2×2.5 | 0.21176
+ABS07 | Abracon | 32.768 kHz crystal | 0.1794
+ECS-400 | ECS | 40 MHz crystal AEC-Q200 | 0.17647
+CHIP ANT 2.4G | Johanson | 2.4 GHz chip antenna | 0.1647
+ECS-250 | ECS | 25 MHz crystal AEC-Q200 | 0.14508
+U.FL | Hirose | U.FL receptacle | 0.1118
+THERMAL PAD | various | Thermal pad | 0.1118
+HDR 2x5 | various | Box header 2×5 | 0.0882
+TACT SWITCH | various | Tactile switch | 0.0882
+HDR 2.54 1x10 | various | Pin header 2.54 mm | 0.0529
+STANDOFF | various | PCB standoff | 0.0529
+SCREW M3 | various | M3 screw | 0.0212
+TEST POINT | Keystone | SMD test point | 0.0118

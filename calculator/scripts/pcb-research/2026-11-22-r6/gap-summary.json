@@ -1,0 +1,28 @@
+{
+ "parts": 1443,
+ "distributorPriced": 1118,
+ "estimates": 325,
+ "twoPlusDistributors": 415,
+ "ownSlope": 364,
+ "genericCurveDistributor": 718,
+ "distributorNoStoredListing": 36,
+ "smtPassives": 171,
+ "largestPublishedBreak": {
+  ">=1k": 402,
+  ">=2.5k": 361,
+  "<1k": 229,
+  ">=10k": 85,
+  ">=100k": 5
+ },
+ "estimatesByDomain": {
+  "i2-mcu-memory": 58,
+  "i4-interface-sensor": 40,
+  "i3-power": 62,
+  "d1-discretes": 49,
+  "i1-logic-analog": 24,
+  "d2-interconnect-timing": 60,
+  "p-passives": 32
+ },
+ "slopeTaskParts": 160,
+ "held": 32
+}

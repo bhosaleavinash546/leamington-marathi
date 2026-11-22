@@ -1,0 +1,13 @@
+Task p5 (extend) — tantalum / polymer / aluminium / hybrid / film capacitors, thermistors, varistors. Domain file: p5-caps-other.json
+The catalogue holds 4 tantalum and 2 aluminium capacitors and almost no thermistors. Real orderable code each; desc: value,
+voltage, ESR / ripple where it is the series' point, case size, series, grade. Two distributors per part where you can.
+1. Hybrid polymer aluminium SMD (the automotive bulk cap): Panasonic EEH-ZA / ZC / ZK / ZS / ZU (47 µF 35 V, 100 µF 35 V, 220 µF 35 V, 100 µF 63 V, 330 µF 25 V),
+   Nichicon GYA / GYB / GYC / UCJ…, Chemi-Con HXC / HXD / HXE / HXJ, Rubycon PZ-CAP / hybrid, Würth WCAP-HSAH, KEMET A780
+2. Aluminium electrolytic SMD automotive: Panasonic EEE-FK / FT / FP / TG / TK, Nichicon UCD / UCM / UCW / UBT / UUX, Chemi-Con MZA / MVE / MZR, Rubycon TZV, Würth WCAP-ASLI / ASLL — 10 µF 50 V, 47 µF 35 V, 100 µF 25 / 35 / 50 V, 220 µF 35 V, 470 µF 25 V
+3. Conductive polymer aluminium (low ESR, SoC rails): Panasonic SP-Cap EEF / OS-CON SVPF / SVPK automotive, Nichicon PCG / PCR / PCZ, KEMET A768, Murata ECAS — 100 µF 6.3 V, 220 µF 2.5 V, 330 µF 2.5 V, 100 µF 16 V
+4. Tantalum MnO2 automotive: KEMET T491 / T494 / T495 …AT / AUTO, KYOCERA AVX TAJ / TPS …AEC / TRJ, Vishay 293D / TR3 / T83 — 10 µF 16 V A / B, 47 µF 10 V B / C, 100 µF 10 V D, 22 µF 25 V, 10 µF 35 V
+5. Polymer tantalum automotive: KEMET T598 / T591, KYOCERA AVX TCQ / TCO, Panasonic POSCAP TQC / TPE automotive, Vishay T51 / T59 — 100 µF 6.3 V, 220 µF 6.3 V, 330 µF 2.5 V, 47 µF 16 V, 33 µF 25 V
+6. Film capacitors: X2 / Y2 EMI (TDK B32922…B32926 / KEMET R46 / F862 automotive, Vishay MKP339 / F340), DC-link (TDK B32774–B32778 automotive, KEMET C4AQ / C4AK, Vishay MKP1848C, Panasonic EZPV / ECW-FG / ECQ-UA automotive), snubber (KEMET R76H / PHE)
+7. NTC thermistors automotive: Murata NCU15 / NCU18 / NCP15 …automotive (10 kΩ, 47 kΩ, 100 kΩ), TDK NTCG103 / NTCG104 / B57xxx V5, Vishay NTCS0402 / 0603 E3 …T, Panasonic ERT-JZ / ERT-J0 automotive, Semitec; leaded BMS / motor NTC one point
+8. PTC / inrush / varistors: Murata PRG / PRF automotive, TDK B59xxx; SMD varistors TDK AVR-M / AVRH / CT0603…AUTO / CN…, Littelfuse V…MLA / AUML / CH, Bourns CV / AV automotive, KYOCERA AVX TransGuard VCAS / CAN-bus varistor
+9. Supercap / backup one point (eCall): Eaton, KYOCERA AVX, Panasonic gold cap automotive

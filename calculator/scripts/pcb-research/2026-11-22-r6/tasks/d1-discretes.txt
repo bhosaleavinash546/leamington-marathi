@@ -1,0 +1,65 @@
+Task d1 (extend) — discretes, protection and LEDs, AEC-Q101 / AEC-Q102. Domain file: d1-discretes.json
+The catalogue holds 7 small-signal transistors, ~50 diodes, 90 TVS / fuse parts (32 estimates) and 13 LEDs; a body ECU carries
+dozens of these. Automotive orderable codes (Nexperia …-Q / …,115 / …Z, onsemi SZ… / NSV… / NVT… / NSVB… / NRVB… / SBAV…, Diodes …Q-7 / …Q-13, Vishay …-M3 / HE3 / -E3 automotive, Rohm …FHA / …HZG / …TL automotive, Infineon …H6327 / …ATMA1, ST …Y, Toshiba …,LF / LXHF, Littelfuse …-A / AU…, Bourns …-Q). Reel breaks (3k / 10k / 30k) are the point.
+1. Replace the dearest estimates in the list at the end of this file with a real orderable code each.
+2. Small-signal BJTs / pre-biased / arrays: BC817-25 / -40 / BC807-25 / -40 / BC846B / BC847B / C / BC848B / BC856B / BC857B / C / BC858 / BC817-16 / BCX56 / BCX53 / BCP56 / BCP53 / BCP68 / BCP69 / MMBT3904 / 3906 / 2222A / 2907A / 4401 / 4403 / 5551 / 5401 / MMBTA06 / A56 / A42 / A92 / PBSS4xxx / PBSS5xxx / PBSS30x / FMMT / ZXTN / ZXTP / PZT2222A / PZT2907A / BC847BS / BC857BS / BC847BPN / BC846S / MBT3904DW1 / MBT3946DW1 / PUMD / PUMH / PDTC114 / 124 / 143 / 144 / PDTA114 / 124 / 143 / 144 / DTC114E / DTC143E / DTA114E / DTA143E / MUN5xxx / NSBC / NSBA / DDTC / DDTA / PEMD / PEMH automotive
+3. Small-signal MOSFETs: 2N7002 / 2N7002K / 2N7002E / 2N7002BK / 2N7002P / 2N7002DW / BSS138 / BSS138K / BSS138BK / BSS138PS / BSS84 / BSS84AK / BSS123 / BSS127 / BSS131 / BSS139 / BSS169 / BSS806N / BSS816NW / BSH103 / BSH105 / NX7002AK / NX7002BK / NX3008NBK / NX3008PBK / PMV…ENEA / PMV…XNEA / PMV…EPA / PMPB…Q / PMN…Q / NVR4501N / NVR5198NL / NVTR4502P / NVR1P02 / NTR / SZNUD3124 / NUD3160 / NCV8403 / DMN2xxxQ / DMN3xxxQ / DMN6xxxQ / DMP2xxxQ / DMP3xxxQ / DMP6xxxQ / DMG / DMC complementary / SQ2xxx / SQ3xxx / SQA / SQS / SI23xx-automotive (SQ23…) / IRLML…TRPBF-automotive (AUIRLML…) / BSS / BSP / BSR Infineon automotive (BSS138N H6327, BSP170P, BSP171P, BSP315P, BSP613P, BSP75N, BSP76, BSP77, BSP78) / RTR / RSR / RQ5 / RUM / RV Rohm automotive / SSM3K / SSM6K / SSM3J / SSM6J …LF / LXHF Toshiba automotive
+4. Power MOSFETs 30–100 V not held (has.py — 66 held): Infineon IAUC / IAUCN / IAUT / IAUA / IAUS / IAUZ / IPD…N / IPB…N / IPG20N / IPZ40N / BSC…-automotive / AUIRF / AUIRL …; Nexperia BUK7Y / BUK9Y / BUK7M / BUK9M / BUK7K / BUK9K / BUK7S / BUK7J / BUK9J / BUK76 / BUK96 / BUK72 / BUK92 / PSMN…-automotive; onsemi NVMFS5C / NVMFS6H / NVMFWS / NVTFS5C / NVTFS6H / NVD5C / NVD6H / NVB / NVMJD / NVMJS / NVMYS / NVTYS / NVMFD (dual) / NVMTS; ST STL…N…F7AG / STL…N…LF7AG / STH…AG / STD…AG / STB…AG; Vishay SQJ / SQJA / SQJQ / SQM / SQD / SQS / SQ4 / SQ7 / SiS…-automotive; Toshiba XPH / XPN / XPJ / XPW / TPH…-automotive / TK…-automotive; Rohm RD3 / RF4 / RJ1 / RQ3 / RS6 automotive; Diodes DMTH / DMT…Q / DMNH / DMPH; AOS AOxx automotive
+5. Diodes: switching BAV99 / BAV70 / BAW56 / BAS16 / BAS21 / BAS316 / BAS516 / BAV199 / BAV170 / BAV21 / BAV23 / 1N4148W / WS / WT / MMBD4148 / MMBD7000 / BAS40 / BAS70 / BAT54 / A / C / S / BAT46 / BAT43 / BAT760 / RB751 / RB521 / RB160 / RB161 / RB168 / SBR / SS12…SS16 / SS24…SS26 / SS34…SS36 / SS54 / B340A / B360 / MBR0520 / 0530 / 0540 / MBRS1100 / 2040 / 340 / 360 / MBRD / NRVB / NRVTS / PMEG2005 / 2010 / 3005 / 3010 / 3020 / 3030 / 3050 / 4002 / 4005 / 4010 / 4020 / 4030 / 4050 / 6010 / 6020 / 6030 / 6045 / 10020 / 10030 / PMEG…ELR / EPA / ELP / V…P…-M3 (TMBS) / VS-…-M3 / SBRT / SDT / STPS…Y / STPS…-Y (STPS1L40, 2L40, 2L60, 3L60, 340, 5L60, 1H100, 2H100, 3H100, 5H100, 8H100, 10H100, 20H100, 30H100) / S1x / S2x / S3x / ES1x / ES2x / ES3x / US1x / RS1x / MURA / MURS / NRVUS / GF1 / S1M / S2M / S3M / 1N400x-SMD rectifiers automotive; Zeners BZX84 / BZX384 / BZX585 / BZT52 / BZV55 / MMSZ52xx / MMSZ46xx / MM3Z / MM5Z / MMBZ52xx / PZU / PDZ / PLVA / TDZ / SZBZX84 / SZMMSZ / SZMM3Z / SMAZ / BZG03 / BZG05 / 1SMA59xx / 1SMB59xx / SMBJ59xx — 3V3, 5V1, 5V6, 6V2, 10, 12, 15, 18, 24, 27, 33 V points
+6. TVS / ESD / load dump: SMAJ / SMBJ / SMCJ / SMDJ / SM6T / SM8S / SM5S / SM15T / SMA6J / SMB8J / SMC30J / 5.0SMDJ / TPSMAJ / TPSMBJ / TPSMCJ / TPSMDJ / TPSMA6L / TPSMB / TP6KE / SLD8S / SLD5S / LDP01 / LDP02 / LDP03 / RBO40 / SZ1SMA / SZ1SMB / SZ1SMC / SZP6SMB / SZSMF / SMF…A-M3 / SMA6F / SMB10J / SMC50J / T15B / TPD…-Q1 / ESD…-Q1 (ESD122, 204, 224, 321, 341, 351, 401, 441, 451, 751, 752, 761, 762, 1LIN24, 2CAN24, 2CAN36, 2CANFD24, 2CANXL24) / PESD1CAN / PESD2CAN / PESD1LIN / PESD2CANFD / PESD1FLEX / PESD2ETH / PESD2ETH1G / PESD1ETH10 / PESD5V0 / PESD3V3 / PESD24V / PESD12V / PESD18V / PESD36V / PESD…-Q / PRTR5V0U2X / IP4220 / IP4234 / IP4292 / NUP1105 / NUP2105 / NUP2125 / NUP3105 / NUP4114 / SZNUP2105L / SZNUP2124 / SZESD7xxx / SZESD9xxx / SZESD1L001 / SZESD7104 / SZESD7205 / ESDA…Y / ESDCAN01 / 02 / 03 / 04 / 05 / 06 / ESDLIN03 / ESDLIN1524 / ESD05V / USBLC6-2SC6Y / USBLC6-4SC6Y / HSP051-4M10Y / ECMF02 / ECMF04-…Y / DSILC6 / SP05xx / SP10xx / SP30xx / SP40xx / AQ…-automotive Littelfuse / AQ24CANFD / AQ24ETH / AQHV / CDSOT23-T24CAN-Q / CDSOD323-TxxC-Q / CDDFN / D3V3 / D5V0 / DESD…Q / D24V0 / DFLT / DM / SD…Q Diodes — one or two per bus / rail
+7. Fuses / resettable: Littelfuse 0437 / 0438 / 0440 / 0441 / 0451 / 0452 / 0453 / 0454 / 0456 / 0458 / 0466 / 0467 / 0468 / 0469 / 0501 / 0603 / 0685 / 0885 / 0888 / 0HEV / 881 / 885 / 501A (AEC-Q200 SMD), Bel 0685A / 0686 / 0ZCx / C1F / C1Q / C1S / C1T / C2Q, Bourns SF-0603 / SF-1206 / SF-2410 / SinglFuse automotive, Schurter UMT / UST / OMT / USFF / USF / UHS / UHP automotive, Eaton CC06 / CC12 / 3216FF / 1025 / 0603FA automotive, AEM, KOA TF / CCF / CCP, Panasonic ERB-RD / RE / RG, Vishay MFU / TFU; PPTC: Littelfuse nanoSMD / microSMD / miniSMD / SMD / 1206L / 1210L / 1812L / 2016L / 2920L / femtoASMD / picoASMD / nanoASMD / microASMD / miniASMD / ASMD / AHEF / AHRF / AHS (AEC-Q200), Bourns MF-MSMF / MF-NSMF / MF-PSMF / MF-FSMF / MF-USMF / MF-SM / MF-SMDF / MF-R / MF-RM / MF-RHT / MF-…-AEC, Bel 0ZC, Eaton PTS, TDK B59; eFuse-class TBU / TCS Bourns one point
+8. LEDs AEC-Q102: ams OSRAM TOPLED / Mini TOPLED / Advanced Power TOPLED / SYNIOS / OSLON Black Flat / OSLON Compact / OSTAR / OSIRE / DURIS / CHIPLED / PointLED / Multi TOPLED / KW / KY / KR / KS / KT / KB / LA / LY / LR / LS / LT / LB / LW / LUW / LCW / LRTB / SFH IR (SFH 4xxx / 4715AS / 4725AS / 4735 / 4770S / 4775S / 4776 / 4780S) automotive, Nichia NCSW / NCSA / NCSR / NJSW / NVSW / NS2W / NSSW / NSSM / NFSW …-AT / E-series automotive, Lumileds LUXEON Altilon / F / FX / Rebel-automotive / SnapLED / SignalSure / LUXEON 3030 HE Plus / 2835 automotive / Neo, Everlight 67-21 / 61-23 / 62-217 / 65-21 / 45-21 / 19-217 / 19-237 / 12-22 / 15-21 / 16-213 / 17-21 / 23-21 / EAHP / A09K / CT-series automotive, Kingbright KPTR / KA / AA / APT / APHHS …-automotive / AEC, Würth WL-SMCW / SMTW / SMRW / SFTW / SBTW automotive, Rohm SML / CSL / SMLD / SMLE / SMLM / SMLP / SMLVN / MSL automotive, Stanley / Dominant / Lite-On LTW / LTST …-automotive, Cree J / XLamp XP-G3 / XD16 / XB-H / XQ-E automotive, Seoul Z5M / Z8Y / WICOP automotive, Vishay VLM / VLD / TLM / VSMY / VSMB / VSLY automotive — one white, one amber, one red, one RGB, one IR per package class
+Budget is small against this list: items 1–3 and 5–6 first (the parts every board carries), ONE or two codes per line.
+
+---
+Catalogue ESTIMATES in this domain (49), dearest first: key | maker | description | estimate at 1k (GBP)
+A key that is a FAMILY (no packing suffix) needs ONE orderable automotive member priced; a generic key ("MLCC 0402 …") needs a real code for that cell.
+IAUC100N | various | N-MOSFET 100 A AEC-Q101 | 2.3529
+AUIRF7739 | various | N-MOSFET 40 V DirectFET AEC-Q101 | 1.1765
+LM74610 | TI | Ideal-diode controller | 1
+IPB100N06 | various | N-MOSFET 60 V D2PAK AEC-Q101 | 1
+IPD053N08 | various | N-MOSFET 80 V DPAK AEC-Q101 | 1
+NVMFS5C | various | N-MOSFET 60 V AEC-Q101 | 0.7647
+LM74700 | TI | Ideal-diode controller | 0.7488
+IPD90N04 | various | N-MOSFET 40 V DPAK AEC-Q101 | 0.6471
+SQJ | various | N-MOSFET PowerPAK AEC-Q101 | 0.6471
+BUK9Y | various | N-MOSFET LFPAK AEC-Q101 | 0.5294
+IRFR3607 | various | N-MOSFET 75 V DPAK AEC-Q101 | 0.5294
+IRF7416 | various | P-MOSFET SOIC-8 AEC-Q101 | 0.4471
+STD60N3 | various | N-MOSFET 30 V DPAK AEC-Q101 | 0.4471
+LED AUTO 1W | OSRAM | Automotive 1 W LED | 0.3882
+1206 fuse | Littelfuse | Chip fuse 1206 | 0.35294
+0603 fuse | Littelfuse | Chip fuse 0603 | 0.30588
+TPD4E05U06 | TI | 4-ch ESD | 0.2769
+PRTR5V0U4X | Nexperia | 4-ch ESD protection | 0.2706
+FUSE HOLDER | Littelfuse | Blade fuse holder PCB | 0.2706
+SM712 | Littelfuse | RS-485 TVS array | 0.2353
+SMCJ33A | Littelfuse | TVS 1500 W 33 V | 0.2
+PRTR5V0U2X | Nexperia | USB ESD protection | 0.2
+PESD2CAN | Nexperia | CAN ESD, dual | 0.1294
+SI2301 | various | P-MOSFET SOT-23 AEC-Q101 | 0.1218
+LED SIDE | various | Side-view LED | 0.11765
+LED RGB | various | RGB LED | 0.1118
+TPD2E001 | TI | 2-ch ESD | 0.1059
+LED 0603 | various | Indicator LED 0603 | 0.10588
+IRLML2502 | various | N-MOSFET SOT-23 AEC-Q101 | 0.0941
+IRLML6344 | various | N-MOSFET 5 A SOT-23 AEC-Q101 | 0.0913
+PMEG6020 | Nexperia | Schottky 2 A SOD-123 | 0.0882
+PESD1LIN | Nexperia | LIN ESD | 0.0824
+MLV 0603 | AVX | Multilayer varistor | 0.0824
+PBSS4350 | various | NPN 3 A SOT-89 AEC-Q101 | 0.0824
+SS54 | various | Schottky 5 A SMC | 0.0765
+MF-MSMF | Bourns | Resettable fuse | 0.0765
+AO3400 | various | N-MOSFET 5.7 A SOT-23 AEC-Q101 | 0.07059
+AO3401 | various | P-MOSFET SOT-23 AEC-Q101 | 0.07059
+PMEG4010 | Nexperia | Schottky 1 A SOD-123 | 0.06958
+DMG2305 | various | P-MOSFET SOT-23 AEC-Q101 | 0.0529
+NTC 10k 0402 | Murata | NTC thermistor | 0.04118
+2N7002 | various | N-MOSFET SOT-23 AEC-Q101 | 0.03822
+BAT54S | Nexperia | Schottky dual SOT-23 | 0.03596
+BSS123 | various | N-MOSFET SOT-23 AEC-Q101 | 0.0259
+BC857 | various | PNP SOT-23 AEC-Q101 | 0.0195
+ESD9B5 | onsemi | ESD diode 0402 | 0.0165
+MMBT3906 | various | PNP SOT-23 AEC-Q101 | 0.01529
+BC847 | various | NPN SOT-23 AEC-Q101 | 0.0142
+BAS16 | Nexperia | Switching diode SOT-23 | 0.0107

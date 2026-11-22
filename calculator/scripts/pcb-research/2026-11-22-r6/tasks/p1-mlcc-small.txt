@@ -1,0 +1,51 @@
+Task p1 (extend) — MLCC matrix, 0201 / 0402 / 0603, AEC-Q200 first. Domain file: p1-mlcc-small.json
+The catalogue holds 61 MLCCs; a real ECU carries 30–60 different MLCC values. One REAL orderable code per cell (Murata GCM /
+GRT / GCJ, TDK CGA, Samsung CL…automotive, Yageo AC, KEMET …AUTO, Taiyo Yuden automotive). desc must state value, voltage,
+dielectric, tolerance, size and "AEC-Q200" or "commercial". Reel breaks (10k / 15k / 50k) are the point (200k rule).
+Already held (skip): 0402 X7R 100nF 16/50V, 10nF 50V, 1nF 50V; 0402 C0G 10pF / 22pF / 100pF / 1nF; 0402 X5R 1µF 10V, 2.2µF 25V;
+0603 X7R 100nF 50V, 1µF 16/25V, 10nF 100V; 0603 X5R 4.7µF 25V; 0201 100nF 6.3V X6S, 10nF 10V X7R. Check has.py anyway.
+Cells in priority order:
+1. 0402 X7R 50 V: 2.2 nF, 4.7 nF, 22 nF, 47 nF; 0402 X7R 16 / 25 V: 220 nF, 470 nF; 0402 X7R / X7S 1 µF 16 V; 0402 X5R 4.7 µF 6.3 V
+2. 0402 C0G 50 V: 4.7 pF, 12 pF, 15 pF, 18 pF, 33 pF, 47 pF, 220 pF, 470 pF
+3. 0603 X7R: 1 nF 50 V, 10 nF 50 V, 22 nF 50 V, 47 nF 50 V, 220 nF 25 / 50 V, 470 nF 25 V, 1 µF 50 V, 2.2 µF 16 / 25 V, 4.7 µF 16 V; 0603 X5R 10 µF 6.3 / 10 V
+4. 0603 C0G 50 V: 10 pF, 22 pF, 100 pF, 1 nF, 10 nF
+5. 0603 X7R 100 V: 1 nF, 100 nF (48 V boards); 0402 X7R 100 V 1 nF / 10 nF
+6. 0201 automotive (GCM033 / CGA1): 100 nF 10 V, 1 nF 50 V, 10 pF C0G, 100 pF C0G
+7. Soft-termination 0402 / 0603 100 nF 50 V (Murata GCJ, TDK CGA…AE / …CN, KEMET Flex)
+8. Commercial twin of cells 1 and 3 (Murata GRM, Samsung CL, Yageo CC) — measures the automotive premium
+
+---
+Catalogue ESTIMATES in this domain (32), dearest first: key | maker | description | estimate at 1k (GBP)
+A key that is a FAMILY (no packing suffix) needs ONE orderable automotive member priced; a generic key ("MLCC 0402 …") needs a real code for that cell.
+XAL1010 | various | Coilcraft XAL1010 power inductor | 1.5294
+SRP1265 | various | Bourns SRP1265 power inductor | 1
+MLCC 2220 | various | MLCC 2220 high-voltage | 0.6471
+TANT 1210 10uF | various | Tantalum 1210 10 µF | 0.3765
+POLYMER 7343 100uF | various | Polymer capacitor 7343 | 0.3294
+MLCC 1210 47uF | various | MLCC 1210 47 µF 16 V | 0.25882
+IND POWER 5x5 | various | Power inductor 5×5 mm | 0.24706
+IND POWER 6x6 | various | Power inductor 6×6 mm | 0.24706
+IND POWER 4x4 | various | Power inductor 4×4 mm | 0.22353
+MLCC 1210 22uF | various | MLCC 1210 22 µF 25 V | 0.2
+SRN6045 | various | Bourns SRN6045 inductor | 0.19172
+SHUNT 2512 | various | Current-sense resistor 2512 | 0.158
+MLCC 0805 1kV | various | MLCC 0805 1 kV | 0.1294
+MLCC 1206 10uF X7R AEC | various | MLCC 1206 10 µF 50 V X7R | 0.11765
+MLCC 0805 10uF X7R AEC | various | MLCC 0805 10 µF 16 V X7R | 0.10824
+SHUNT 1206 1mR | various | Current-sense resistor 1206 | 0.1
+RES 2512 | various | Power resistor 2512 | 0.0824
+RES ARRAY 4x | various | Resistor array 4×0603 | 0.0329
+IND 0805 | various | Chip inductor 0805 | 0.0329
+MLCC 0603 1uF X7R AEC | various | MLCC 0603 1 µF 25 V X7R | 0.02824
+FB 0603 | various | Ferrite bead 0603 | 0.0237
+MLCC 0603 C0G | various | MLCC 0603 C0G | 0.0212
+IND 0603 | various | Chip inductor 0603 | 0.0212
+RES 1206 AEC | various | Thick-film resistor 1206 AEC-Q200 | 0.0129
+FB 0805 | various | Ferrite bead 0805 | 0.0129
+IND 0402 RF | various | RF inductor 0402 | 0.0106
+RES 0805 AEC | various | Thick-film resistor 0805 AEC-Q200 | 0.0082
+RES 0603 AEC | various | Thick-film resistor 0603 AEC-Q200 | 0.0077
+FB 0402 | various | Ferrite bead 0402 | 0.0065
+MLCC 0402 100nF X7R AEC | various | MLCC 0402 100 nF 50 V X7R AEC-Q200 | 0.0063
+MLCC 0402 C0G | various | MLCC 0402 C0G | 0.00588
+RES 0402 AEC | various | Thick-film resistor 0402 AEC-Q200 | 0.0039
