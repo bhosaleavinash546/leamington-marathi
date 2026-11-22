@@ -1,0 +1,1847 @@
+{
+ "domain": "k6-memory-timing-discretes",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "candidates": [
+  {
+   "mfr": "Toshiba",
+   "family": "TLX99xx photovoltaic-output photocoupler",
+   "orderableCode": "TLX9909",
+   "desc": "Photovoltaic-output photocoupler for automotive solid-state relays, drives an external HV MOSFET gate, 2.5 ms typ. turn-off set by external discharge circuit",
+   "category": "ic_soic",
+   "pkg": "4-pin SO6",
+   "aecq": true,
+   "launched": "2026-11",
+   "usedIn": [
+    "BMS",
+    "on-board charger",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2026/11/isolators-solid-state-relays-20261119-1.html",
+   "note": "Volume shipments started 19 Nov 2026."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX99xx photovoltaic-output photocoupler",
+   "orderableCode": "TLX9920",
+   "desc": "Photovoltaic-output photocoupler for automotive SSR, SO6L with 8 mm creepage",
+   "category": "ic_soic",
+   "pkg": "SO6L",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "BMS",
+    "on-board charger",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2026/03/isolators-solid-state-relays-20260318-1.html",
+   "note": "Volume shipments from 18 Mar 2026."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX91xx automotive photorelay",
+   "orderableCode": "TLX9161T",
+   "desc": "Automotive photorelay, 1-Form-A, 1500 V min output withstand, for 800 V battery monitoring",
+   "category": "relay_switch",
+   "pkg": "SO12L-T",
+   "aecq": true,
+   "launched": "2025-08",
+   "usedIn": [
+    "BMS",
+    "battery junction box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2025/08/isolators-solid-state-relays-20250821-1.html",
+   "note": ""
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX91xx automotive photorelay",
+   "orderableCode": "TLX9165T",
+   "desc": "Automotive photorelay, 1-Form-A, 1800 V min output withstand",
+   "category": "relay_switch",
+   "pkg": "10-pin SO16L-T",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "BMS",
+    "battery junction box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2025/07/isolators-solid-state-relays-20250717-1.html",
+   "note": ""
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX91xx automotive photorelay",
+   "orderableCode": "TLX9150M",
+   "desc": "Automotive photorelay, 900 V min output withstand, small package, for 400 V battery systems",
+   "category": "relay_switch",
+   "pkg": "SO12L-T",
+   "aecq": true,
+   "launched": "2024-10",
+   "usedIn": [
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2024/10/automotive-20241024-1.html",
+   "note": ""
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX91xx automotive photorelay",
+   "orderableCode": "TLX9152M",
+   "desc": "Automotive photorelay, 900 V min output withstand, for 400 V battery systems",
+   "category": "relay_switch",
+   "pkg": "SO16L-T",
+   "aecq": true,
+   "launched": "2024-08",
+   "usedIn": [
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2024/08/automotive-20240829-1.html",
+   "note": ""
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SmartMCD",
+   "orderableCode": "TB9M040FTG",
+   "desc": "SmartMCD MCU + motor driver with built-in power MOSFETs for small 3-phase BLDC motors",
+   "category": "ic_qfn",
+   "pkg": "VQFN36 6x6",
+   "aecq": true,
+   "launched": "2026-05",
+   "usedIn": [
+    "HVAC flap / damper actuator",
+    "grille shutter",
+    "electric valve"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2026/05/automotive-20260514-1.html",
+   "note": "Engineering samples from May 2026 (page: compliant with AEC-Q100 Grade 0); no volume date stated."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SmartMCD",
+   "orderableCode": "TB9M030FG",
+   "desc": "SmartMCD MCU + gate driver for sensorless 3-phase BLDC, low-speed operation",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP48 9x9",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "electric water pump",
+    "oil pump",
+    "fan / blower"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2026/04/automotive-20260416-1.html",
+   "note": "Engineering samples Apr 2026; mass production scheduled Jan 2027."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SmartMCD",
+   "orderableCode": "TB9M001FTG",
+   "desc": "SmartMCD MCU with relay drivers and LIN transceiver, controls two brushed DC motors",
+   "category": "ic_qfn",
+   "pkg": "VQFN48 7x7",
+   "aecq": true,
+   "launched": "2025-06",
+   "usedIn": [
+    "sunroof",
+    "wiper",
+    "power window",
+    "power seat"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2025/06/automotive-20250624-1.html",
+   "note": "Samples Jun 2025; mass production scheduled Dec 2025."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SmartMCD",
+   "orderableCode": "TB9M003FG",
+   "desc": "SmartMCD 32-bit MCU + gate driver for sensorless 3-phase BLDC motors",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP48 9x9",
+   "aecq": true,
+   "launched": "2024-03",
+   "usedIn": [
+    "water pump",
+    "oil pump",
+    "fan / blower"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2024/03/automotive-20240328-1.html",
+   "note": "First SmartMCD product, in volume shipment."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB91xx brushed DC gate driver",
+   "orderableCode": "TB9104FTG",
+   "desc": "Gate driver for bridge circuits of high-current automotive brushed DC motors",
+   "category": "ic_qfn",
+   "pkg": "VQFN32 5x5",
+   "aecq": false,
+   "launched": "2026-01",
+   "usedIn": [
+    "power back door",
+    "sliding door",
+    "power window",
+    "power seat"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2026/01/automotive-20260129-1.html",
+   "note": "Page: AEC-Q100 Grade 1 qualified (scheduled) — engineering samples only."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB91xx brushed DC gate driver",
+   "orderableCode": "TB9103FTG",
+   "desc": "Gate driver for automotive brushed DC motors, 1-ch H-bridge or 2-ch half-bridge, charge pump",
+   "category": "ic_qfn",
+   "pkg": "VQFN24 4x4",
+   "aecq": true,
+   "launched": "2025-03",
+   "usedIn": [
+    "door latch / lock motor",
+    "power window",
+    "power seat"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2025/03/automotive-20250313-1.html",
+   "note": "Mass production started Mar 2025."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB908x 3-phase BLDC gate driver",
+   "orderableCode": "TB9084FTG",
+   "desc": "Gate driver IC for automotive 3-phase brushless DC motors, wettable-flank package",
+   "category": "ic_qfn",
+   "pkg": "VQFN36 6x6",
+   "aecq": false,
+   "launched": "2024-10",
+   "usedIn": [
+    "electric pump",
+    "power tailgate",
+    "motor generator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2024/10/automotive-20241031-1.html",
+   "note": "Page: to be AEC-Q100 Grade 0 qualified; engineering samples Oct 2024."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "CXPI interface",
+   "orderableCode": "TB9032FNG",
+   "desc": "CXPI driver/receiver (physical layer) IC, commander or responder",
+   "category": "ic_soic",
+   "pkg": "SOP8",
+   "aecq": false,
+   "launched": "2025-03",
+   "usedIn": [
+    "body control",
+    "zone ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/new-products-share/automotive/automotive-20250318-1d.html",
+   "note": "Page: to be AEC-Q100 Grade 1 qualified."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "CXPI interface",
+   "orderableCode": "TB9033FTG",
+   "desc": "CXPI responder interface IC with built-in protocol logic and GPIO",
+   "category": "ic_qfn",
+   "pkg": "VQFN28 6x6",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "steering switch",
+    "door mirror / lock",
+    "light switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/news-topics/2024/09/automotive-20240903-1.html",
+   "note": "Page: to be AEC-Q100 Grade 1 qualified; mass production listed Dec 2025."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XCUZ series (XCUZ5V6 … XCUZ36V)",
+   "orderableCode": "XCUZ5V6",
+   "desc": "Surge-protection Zener diodes for automotive equipment, 20 voltage ranks 5.6–36 V",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323",
+   "aecq": true,
+   "launched": "2023-08",
+   "usedIn": [
+    "IVI",
+    "ADAS",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/new-products-share/diode/diode-20230830-1d.html",
+   "note": "Code as printed on the maker page (no reel suffix shown). 20 products: 5V6, 6V2, 6V8, 7V5, 8V2, 9V1, 10V, 11V, 12V, 13V, 15V, 16V, 18V, 20V, 22V, 24V, 27V, 30V, 33V, 36V."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPN P-channel power MOSFET",
+   "orderableCode": "XPN19014MC",
+   "desc": "-40 V P-channel MOSFET, 18.7 mOhm max, wettable-flank TSON",
+   "category": "ic_qfn",
+   "pkg": "TSON Advance(WF)",
+   "aecq": true,
+   "launched": "2024-08",
+   "usedIn": [
+    "load switch",
+    "semiconductor relay",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/new-products-share/transistor/mosfet-20240821-1d.html",
+   "note": ""
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPN P-channel power MOSFET",
+   "orderableCode": "XPN27016MC",
+   "desc": "-60 V P-channel MOSFET, 27.3 mOhm max, wettable-flank TSON",
+   "category": "ic_qfn",
+   "pkg": "TSON Advance(WF)",
+   "aecq": true,
+   "launched": "2024-08",
+   "usedIn": [
+    "load switch",
+    "semiconductor relay",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/company/news/new-products-share/transistor/mosfet-20240821-1d.html",
+   "note": ""
+  },
+  {
+   "mfr": "NDK",
+   "family": "NX1612SA (automotive)",
+   "orderableCode": null,
+   "desc": "Automotive crystal unit 1.6x1.2x0.3 mm, 24–96 MHz, ±40 ppm total incl. 15-year ageing, -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "1.6x1.2 mm",
+   "aecq": false,
+   "launched": "2025-09",
+   "usedIn": [
+    "ADAS",
+    "BLE / Wi-Fi",
+    "Ethernet",
+    "UWB"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ndk.com/en/news/article/NX1612SA_20250930.html",
+   "note": "Page says 'Automotive Use'; AEC-Q200 not stated on that page. Mass production expected Apr 2026."
+  },
+  {
+   "mfr": "NDK",
+   "family": "NZ2016SFA",
+   "orderableCode": null,
+   "desc": "SPXO 2.0x1.6 mm with 0.9 / 1.2 / 1.5 V drive, 13–54 MHz, CMOS, -40..125 C, in-vehicle safety use",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "launched": "2025-02",
+   "usedIn": [
+    "ADAS",
+    "SoC reference clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ndk.com/en/news/article/low_voltage_09v_drive_2016mm_crystal_oscillators_compliant_with_aec-q100q200_quality-specification_n.html",
+   "note": "AEC-Q100/Q200 quality specification; mass production expected Apr 2025."
+  },
+  {
+   "mfr": "Epson",
+   "family": "SG2016CBA",
+   "orderableCode": null,
+   "desc": "High-frequency low-jitter automotive SPXO, 75–170 MHz, CMOS, 2.0x1.6 mm, up to -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "ADAS",
+    "camera / SerDes reference clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+   "note": "AEC-Q100 mark on the product list; Oct 2025 news item on epsondevice.com/crystal/en/."
+  },
+  {
+   "mfr": "Epson",
+   "family": "SG2520CBA",
+   "orderableCode": null,
+   "desc": "High-frequency low-jitter automotive SPXO, 75–170 MHz, CMOS, 2.5x2.0 mm",
+   "category": "crystal_osc",
+   "pkg": "2.5x2.0 mm",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "ADAS",
+    "camera / SerDes reference clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+   "note": "AEC-Q100 mark on the product list."
+  },
+  {
+   "mfr": "Epson",
+   "family": "SG2016CAA",
+   "orderableCode": null,
+   "desc": "Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.0x1.6 mm, -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "MCU / SoC clock",
+    "Ethernet PHY clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+   "note": "AEC-Q100/200 mark."
+  },
+  {
+   "mfr": "Epson",
+   "family": "SG2520CAA",
+   "orderableCode": null,
+   "desc": "Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.5x2.0 mm, -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "2.5x2.0 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "MCU / SoC clock",
+    "Ethernet PHY clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/crystal-oscillator/spxo-mhz/",
+   "note": "AEC-Q100/200 mark."
+  },
+  {
+   "mfr": "Epson",
+   "family": "RA8000CE",
+   "orderableCode": null,
+   "desc": "Automotive real-time-clock module with built-in crystal, 3.2x2.5x1.0 mm, -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "gateway",
+    "cluster"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/rtc/",
+   "note": "AEC-Q100 mark on the RTC list."
+  },
+  {
+   "mfr": "Epson",
+   "family": "RX8804CE",
+   "orderableCode": null,
+   "desc": "Real-time-clock module with built-in crystal, 3.2x2.5x1.0 mm, -40..105 C",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "IVI"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/rtc/",
+   "note": "AEC-Q100 mark on the RTC list."
+  },
+  {
+   "mfr": "Epson",
+   "family": "RX4901CE",
+   "orderableCode": null,
+   "desc": "Real-time-clock module with built-in crystal, 3.2x2.5x1.0 mm, -40..105 C",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "IVI"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.epsondevice.com/crystal/en/products/rtc/",
+   "note": "AEC-Q100 mark on the RTC list."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT1625",
+   "orderableCode": null,
+   "desc": "Low-power low-jitter MEMS oscillator, 44 standard frequencies 4–125 MHz, 1.6x1.2 to 3.2x2.5 mm",
+   "category": "crystal_osc",
+   "pkg": "1.6x1.2 / 2.0x1.6 / 2.5x2.0 / 3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS camera",
+    "radar",
+    "MCU / PHY clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "AEC-Q100 Grade 1 on the page."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT9396",
+   "orderableCode": null,
+   "desc": "Ultra-low-jitter differential MEMS oscillator 1–220 MHz, LVPECL / LVDS / HCSL / FlexSwing",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 / 2.5x2.0 / 3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller",
+    "PCIe / SerDes / multi-gig Ethernet clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "AEC-Q100 Grade 1 on the page."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT9397",
+   "orderableCode": null,
+   "desc": "Differential MEMS oscillator 220–920 MHz",
+   "category": "crystal_osc",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS computer",
+    "lidar / radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "Listed on SiTime's automotive page; grade not stated there (a search summary of sitime.com gave AEC-Q100 Grade 1 for SiT9396/7)."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT9025",
+   "orderableCode": null,
+   "desc": "Spread-spectrum MEMS oscillator 1–150 MHz for EMI reduction",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 / 2.5x2.0 / 3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "camera",
+    "infotainment",
+    "display"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "Described as automotive grade on the page."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT5386",
+   "orderableCode": null,
+   "desc": "Automotive Super-TCXO (ultra-stable MEMS TCXO)",
+   "category": "crystal_osc",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "GNSS / V2X",
+    "telematics"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "Listed on SiTime's automotive page; AEC-Q100 grade not stated there."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT8925",
+   "orderableCode": null,
+   "desc": "High-temperature MEMS oscillator 115–137 MHz",
+   "category": "crystal_osc",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.sitime.com/applications/automotive",
+   "note": "Listed on SiTime's automotive page; AEC-Q100 grade not stated there."
+  },
+  {
+   "mfr": "SiTime",
+   "family": "SiT1881",
+   "orderableCode": null,
+   "desc": "32 kHz ultra-low-power MEMS oscillator, ±50 ppm, smallest 32 kHz XO",
+   "category": "crystal_osc",
+   "pkg": "QFN 1.2x1.1 mm",
+   "aecq": true,
+   "launched": "2022-10",
+   "usedIn": [
+    "ADAS",
+    "infotainment",
+    "cluster",
+    "ECU timekeeping"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.eejournal.com/industry_news/sitime-expands-automotive-sam-with-new-family-precision-timing-solutions",
+   "note": "AEC-Q100 Grade 2; volume production expected Q2 2023."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "CDC6C-Q1",
+   "orderableCode": null,
+   "desc": "Automotive BAW (bulk-acoustic-wave) fixed-frequency oscillator, quartz replacement",
+   "category": "crystal_osc",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-04",
+   "usedIn": [
+    "ADAS",
+    "radar / camera",
+    "IVI"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.eejournal.com/industry_news/ti-enables-automakers-to-advance-vehicle-autonomy-and-safety-with-new-chips-in-its-automotive-portfolio/",
+   "note": "Industry's first automotive BAW clocks (TI, 15 Apr 2025). -Q1 = TI automotive grade; catalogue holds LMK6C-Q1 only."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMK3H0102-Q1",
+   "orderableCode": null,
+   "desc": "Reference-less BAW clock generator, 2 differential or 5 single-ended outputs, PCIe Gen 1–7, spread spectrum",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-04",
+   "usedIn": [
+    "ADAS domain controller",
+    "central computer"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eejournal.com/industry_news/ti-enables-automakers-to-advance-vehicle-autonomy-and-safety-with-new-chips-in-its-automotive-portfolio/",
+   "note": "Product page ti.com/product/LMK3H0102-Q1 shows ACTIVE."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMK3C0105-Q1",
+   "orderableCode": null,
+   "desc": "Reference-less BAW clock generator with spread-spectrum clocking (LVCMOS outputs)",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-04",
+   "usedIn": [
+    "ADAS",
+    "IVI"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eejournal.com/industry_news/ti-enables-automakers-to-advance-vehicle-autonomy-and-safety-with-new-chips-in-its-automotive-portfolio/",
+   "note": ""
+  },
+  {
+   "mfr": "Microchip",
+   "family": "DSA15x",
+   "orderableCode": null,
+   "desc": "Automotive MEMS oscillators 2.3–170 MHz, 2.5 / 3.3 V, -40..125 C",
+   "category": "crystal_osc",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "ADAS",
+    "in-vehicle networking",
+    "100M / 1G / 10G Ethernet clock"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.in/new/microchip/microchip-dsa15x-oscillators",
+   "note": "Mouser new-product page published 3 Sep 2025; no orderable code captured."
+  },
+  {
+   "mfr": "ECS Inc.",
+   "family": "ECS-2520MVQ MultiVolt",
+   "orderableCode": "ECS-2520MVQ-1250-BN-TR",
+   "desc": "AEC-Q200 MultiVolt HCMOS crystal oscillator 2.5x2.0 mm, 1.6–3.6 V, 125 MHz example",
+   "category": "crystal_osc",
+   "pkg": "2.5x2.0 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "MCU / PHY clock"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/use-multivolt-automotive-crystal-oscillators-for-stable-timing-under-variable-supply-conditions/",
+   "note": "DigiKey-authored article (Oct 2026) linking DigiKey listings."
+  },
+  {
+   "mfr": "ECS Inc.",
+   "family": "ECS-327ATQMV",
+   "orderableCode": "ECS-327ATQMV-AS-TR",
+   "desc": "AEC-Q200 32.768 kHz MultiVolt HCMOS oscillator 3.2x2.5 mm, 1.62–3.63 V",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "RTC / timekeeping clock"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/use-multivolt-automotive-crystal-oscillators-for-stable-timing-under-variable-supply-conditions/",
+   "note": "DigiKey-authored article (Oct 2026)."
+  },
+  {
+   "mfr": "Micron",
+   "family": "Automotive UFS 4.1 (G9 NAND)",
+   "orderableCode": null,
+   "desc": "Automotive UFS 4.1 on 9th-generation 3D NAND, 4.2 GB/s, SLC / TLC modes",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": false,
+   "launched": "2025-11",
+   "usedIn": [
+    "central computer",
+    "IVI / cockpit",
+    "ADAS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.globenewswire.com/news-release/2025/11/13/3187452/14450/en/Micron-Ships-Automotive-UFS-4-1-Designed-to-Unlock-Intelligent-Mobility-With-Speed-Safety-and-Reliability.html",
+   "note": "Qualification samples shipping Nov 2025. An Avnet Silica 2026 NPI page exists (my.avnet.com/silica/products/new-products/npi/2026/micron-ufs-4-1-memory/) but could not be opened — orderable MTFC code not seen. AEC statement not captured."
+  },
+  {
+   "mfr": "Micron",
+   "family": "4150AT quad-port automotive SSD",
+   "orderableCode": null,
+   "desc": "Quad-port PCIe automotive SSD (up to 4 SoCs, SR-IOV), 220 GB–1.8 TB, TLC, ASIL-B",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": false,
+   "launched": "2024-04",
+   "usedIn": [
+    "central computer",
+    "zonal / domain storage"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://allaboutcircuits.com/news/micron-to-revolutionize-smart-vehicles-with-first-quad-port-ssd",
+   "note": "Sampling Apr 2024. '4150AT' is the model name, not an orderable code."
+  },
+  {
+   "mfr": "Kioxia",
+   "family": "Automotive UFS Ver. 4.1",
+   "orderableCode": null,
+   "desc": "Automotive UFS 4.1 embedded flash 128 GB / 256 GB / 512 GB / 1 TB, case temperature to 115 C",
+   "category": "ic_bga",
+   "pkg": "JEDEC BGA",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "IVI",
+    "ADAS",
+    "central computer"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://americas.kioxia.com/en-us/business/news/2025/memory-20250730-1.html",
+   "note": "AEC-Q100/104 Grade 2. Sampling Jun–Jul 2025; the page names no orderable code for the new devices."
+  },
+  {
+   "mfr": "Samsung",
+   "family": "AutoSSD AM9C1",
+   "orderableCode": null,
+   "desc": "PCIe 4.0 automotive SSD on 8th-generation V-NAND, 128 GB–2 TB (256 GB first)",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2024-09",
+   "usedIn": [
+    "central computer",
+    "on-device AI"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://news.samsung.com/global/samsung-electronics-develops-industrys-first-automotive-ssd-based-on-8th-generation-v-nand",
+   "note": "AEC-Q100 Grade 2 (-40..105 C). 256 GB sampling Sep 2024, mass production end 2024; 2 TB early 2025. Model name only."
+  },
+  {
+   "mfr": "Samsung",
+   "family": "Automotive UFS 4.1",
+   "orderableCode": null,
+   "desc": "Automotive UFS 4.1, up to 4,300 MB/s read, 128 GB–1 TB, -40..105 C",
+   "category": "ic_bga",
+   "pkg": "153 FBGA",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS",
+    "AI cockpit",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://semiconductor.samsung.com/estorage/ufs/",
+   "note": "Seen in a search summary of the page (direct fetch refused); AEC-Q100 statement and orderable code not captured."
+  },
+  {
+   "mfr": "SK hynix",
+   "family": "Automotive LPDDR5X",
+   "orderableCode": null,
+   "desc": "Automotive LPDDR5X DRAM with ISO 26262 ASIL-D certification (TÜV SÜD, Jan 2026)",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS computer",
+    "cockpit SoC"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.koreaherald.com/article/10809964",
+   "note": "Newspaper report; also names Auto UFS 3.1 / eMMC 5.1 and an automotive LPDDR6 shown at MWC. No part number, no AEC statement captured."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "SEMPER X1 LPDDR flash",
+   "orderableCode": null,
+   "desc": "First LPDDR-interface NOR flash for real-time XiP in domain / zone controllers, 3.2 GB/s, ASIL-B",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2023-04",
+   "usedIn": [
+    "zone controller",
+    "domain controller (real-time MCU / SoC code)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/products/memories/nor-flash/semper-x1-lpddr-flash",
+   "note": "Launched 20 Apr 2023, commercial availability stated for 2024. No orderable code seen (seed 'S26HX' not confirmed)."
+  },
+  {
+   "mfr": "Everspin",
+   "family": "PERSYST xSPI MRAM",
+   "orderableCode": null,
+   "desc": "xSPI STT-MRAM 64 Mb / 128 Mb (+ further densities), -40..125 C",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "data logging",
+    "zone controller",
+    "event recorder"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.electronicspecifier.com/press-releases/mram-keeps-data-safe-in-extreme-conditions/",
+   "note": "Built and tested to AEC-Q100 Grade 1; article says in stock at DigiKey. No part number in the article (seed 'EMxxLX' not confirmed as the code)."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD25F128F",
+   "orderableCode": null,
+   "desc": "Automotive SPI NOR 128 Mb, 3 V",
+   "category": "ic_soic",
+   "pkg": "SOP8 208mil / SOP16 / WSON8 6x5 / TFBGA24",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "cluster",
+    "camera",
+    "gateway",
+    "ECU boot flash"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory/nor-flash-auto",
+   "note": "Base part number from GigaDevice's automotive NOR table (status MP); full orderable suffix not shown. Family stated AEC-Q100 Grade 1, ISO 26262 ASIL D."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD25F256F",
+   "orderableCode": null,
+   "desc": "Automotive SPI NOR 256 Mb, 3 V",
+   "category": "ic_soic",
+   "pkg": "SOP16 / WSON8 / TFBGA24",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "cluster",
+    "IVI",
+    "ADAS boot flash"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory/nor-flash-auto",
+   "note": "Base part number from GigaDevice's automotive NOR table (status MP); full orderable suffix not shown. Family stated AEC-Q100 Grade 1, ISO 26262 ASIL D."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD25LX512ME",
+   "orderableCode": null,
+   "desc": "Automotive octal xSPI NOR 512 Mb, 1.8 V",
+   "category": "ic_bga",
+   "pkg": "SOP16 300mil / TFBGA24 5x5",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS SoC boot",
+    "domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory/nor-flash-auto",
+   "note": "Base part number from GigaDevice's automotive NOR table (status MP); full orderable suffix not shown. Family stated AEC-Q100 Grade 1, ISO 26262 ASIL D."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD55LX01GE",
+   "orderableCode": null,
+   "desc": "Automotive octal xSPI NOR 1 Gb, 1.8 V",
+   "category": "ic_bga",
+   "pkg": "SOP16 300mil / TFBGA24 5x5",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS SoC boot",
+    "cockpit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory/nor-flash-auto",
+   "note": "Base part number from GigaDevice's automotive NOR table (status MP); full orderable suffix not shown. Family stated AEC-Q100 Grade 1, ISO 26262 ASIL D."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD55NF01GF",
+   "orderableCode": null,
+   "desc": "Automotive SPI NOR 1 Gb, 1.8 V core with 1.2 V I/O",
+   "category": "ic_bga",
+   "pkg": "SOP16 300mil / TFBGA24 5x5",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "advanced-node SoC boot (1.2 V I/O)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory/nor-flash-auto",
+   "note": "Base part number from GigaDevice's automotive NOR table (status MP); full orderable suffix not shown. Family stated AEC-Q100 Grade 1, ISO 26262 ASIL D."
+  },
+  {
+   "mfr": "GigaDevice",
+   "family": "GD5F automotive SPI NAND",
+   "orderableCode": null,
+   "desc": "Automotive SPI NAND flash family",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "cluster",
+    "telematics",
+    "camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.gigadevice.com/product/flash/automotive-flash-memory",
+   "note": "Page: GD5F SPI NAND has passed AEC-Q100 automotive qualification; no part numbers on that page."
+  },
+  {
+   "mfr": "Winbond",
+   "family": "W25Q64JV (automotive)",
+   "orderableCode": "W25Q64JVSSAQ",
+   "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ECU boot / config flash",
+    "cluster",
+    "camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+   "note": "Part # examples printed in Winbond's automotive brief (Aug 2024): W25Q64JVSSAQ = Grade 2, W25Q64JVSSSQ = Grade 1. Catalogue holds W25Q64JW (1.8 V) as an estimate only."
+  },
+  {
+   "mfr": "Winbond",
+   "family": "W25H512JV / W25H01JV / W25H02JV",
+   "orderableCode": null,
+   "desc": "Built-in-ECC SpiFlash NOR 512 Mb–2 Gb, 3 V (NW = 1.8 V), 133 MHz, ASIL-B compliant, to 125 C",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS",
+    "cockpit",
+    "domain controller boot"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+   "note": "Family names from the selection guide; no orderable suffix shown."
+  },
+  {
+   "mfr": "Winbond",
+   "family": "W35T51NW / W35T01NW / W35T02NW",
+   "orderableCode": null,
+   "desc": "Octal NOR flash 512 Mb / 1 Gb / 2 Gb, 1.8 V, to 125 C",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS SoC boot",
+    "smart cockpit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+   "note": "Family names from the selection guide."
+  },
+  {
+   "mfr": "Winbond",
+   "family": "W35N01JW / W35N02JW / W35N04JW",
+   "orderableCode": null,
+   "desc": "OctalNAND flash 1 / 2 / 4 Gb, 1.8 V, up to 240 MB/s, built-in ECC, to 115 C",
+   "category": "ic_bga",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS",
+    "cockpit code storage"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+   "note": "Family names from the selection guide."
+  },
+  {
+   "mfr": "Winbond",
+   "family": "W25N01JW / W25N02JW",
+   "orderableCode": null,
+   "desc": "QspiNAND 1 / 2 Gb, 1.8 V, built-in ECC, to 115 C",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "cluster",
+    "telematics",
+    "camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: W25N01",
+   "priority": 2,
+   "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+   "note": "Family names from the selection guide (TFBGA24 named for the hardware-reset option)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD1ETH10L-Q",
+   "orderableCode": "PESD1ETH10L-Q",
+   "desc": "ESD protection diode, OPEN Alliance compliant for 10BASE-T1S (one part for all automotive Ethernet)",
+   "category": "fuse_tvs",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-02",
+   "usedIn": [
+    "zonal controller",
+    "10BASE-T1S nodes",
+    "Ethernet PHY"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/about/news-events/press-releases/Nexperia-releases-automotive-industry-s-first-10BASE-T1S-OPEN-Alliance-compliant-ESD-protection-diodes",
+   "note": "Press release 11 Feb 2025 (seen in a search summary; nexperia.com refuses direct fetch)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD1ETH10LS-Q",
+   "orderableCode": "PESD1ETH10LS-Q",
+   "desc": "ESD protection diode for 10BASE-T1S / automotive Ethernet, leadless 1.0x0.6 mm",
+   "category": "fuse_tvs",
+   "pkg": "DFN 1.0x0.6 mm",
+   "aecq": true,
+   "launched": "2025-02",
+   "usedIn": [
+    "zonal controller",
+    "10BASE-T1S nodes",
+    "Ethernet PHY"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.futureelectronics.com/ftm/connectivity/nexperia-pesd1eth10ls-q-esd-protection/",
+   "note": "Future Electronics feature page (AEC-Q101, 1 mm x 0.6 mm package)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2CANFDxxVT-Q / LT-Q (54 / 60 / 72 V)",
+   "orderableCode": "PESD2CANFD54VT-Q",
+   "desc": "ESD protection for 48 V board-net CAN / CAN FD / LIN / FlexRay, VRWM 54 V, down to 3.4 pF",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "48 V ECUs",
+    "EV / HEV in-vehicle networks"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: PESD2CAN",
+   "priority": 1,
+   "sourceUrl": "https://news.pcim.mesago.com/nexperia-releases-esd-protection-diodes-for-48-v-ev-communications-networks-a-b735f7c5d055c4d784e88fe8d69d92a2/",
+   "note": "Six AEC-Q101 devices: PESD2CANFD54VT-Q / 54LT-Q, 60VT-Q / 60LT-Q, 72VT-Q / 72LT-Q."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2CANFD36XX-Q",
+   "orderableCode": null,
+   "desc": "ESD protection for 24 V board-net CAN / CAN FD / LIN / FlexRay / SENT, 4.3 / 6 / 10 pF classes",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 / SOT323",
+   "aecq": true,
+   "launched": "2023-03",
+   "usedIn": [
+    "truck / commercial-vehicle ECUs"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: PESD2CAN",
+   "priority": 3,
+   "sourceUrl": "https://www.eejournal.com/industry_news/nexperia-introduces-in-vehicle-network-esd-protection-portfolio-for-24-v-board-net-systems/",
+   "note": "Six-device AEC-Q101 portfolio; 'XX' is the article's placeholder, individual codes not listed."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2ETH1GXT-Q",
+   "orderableCode": "PESD2ETH1GXT-Q",
+   "desc": "2-line silicon ESD protection for 100BASE-T1 / 1000BASE-T1, OPEN Alliance compliant",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "2022-02",
+   "usedIn": [
+    "Ethernet PHY ports",
+    "camera / radar ECUs"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/about/news-events/press-releases/nexperia-launches-pioneering-silicon-based-open-alliance-compliant-esd-protection-for-automotive-ethernet.html",
+   "note": "Named with PESD1ETH1GLS-Q (in catalogue) and PESD1ETH1GXLS-Q; seen in a search summary of the press release."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "TPSMB-L series",
+   "orderableCode": null,
+   "desc": "600 W automotive TVS with low clamping voltage for 800 V battery-management systems",
+   "category": "fuse_tvs",
+   "pkg": "SMB (DO-214AA)",
+   "aecq": true,
+   "launched": "2025-02",
+   "usedIn": [
+    "BMS",
+    "cell-monitoring boards"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.littelfuse.com/company/news-and-events/in-the-news/newspages-articles/press-releases/2025/littelfuse-introduces-tpsmb-l-series-automotive-tvs-diodes-with-industry-leading-low-clamping-voltage-for-battery-management-systems",
+   "note": "AEC-Q101, PPAP Level 3 (search summary of the Littelfuse release)."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "SZSMF6L series",
+   "orderableCode": null,
+   "desc": "600 W automotive TVS in SOD-123FL, operating to 175 C",
+   "category": "fuse_tvs",
+   "pkg": "SOD-123FL",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "ECU supply / I/O protection",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.littelfuse.com/company/news-and-events/in-the-news/newspages-articles/press-releases/2025/littelfuse-adds-600-w-szsmf6l-series-to-automotive-tvs-line-for-high-energy-transient-protection",
+   "note": "AEC-Q101, PPAP capable (search summary of the Littelfuse release)."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "TPSMB Asymmetrical series",
+   "orderableCode": null,
+   "desc": "Asymmetrical automotive TVS for 12 V battery lines (cuts conduction loss, replaces TVS + diode), Tj -65..175 C",
+   "category": "fuse_tvs",
+   "pkg": "SMB (DO-214AA)",
+   "aecq": true,
+   "launched": "2025-12",
+   "usedIn": [
+    "12 V supply input",
+    "reverse-battery protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.littelfuse.com/company/news-and-events/in-the-news/newspages-articles/press-releases/2025/tpsmb-asymmetrical-tvs-diodes-cut-conduction-loss-and-bom-cost-in-12v-battery-systems",
+   "note": "AEC-Q101 (search summary of the Littelfuse release)."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "TPSMC / TPSMD / TP5.0SMDJ high-voltage series",
+   "orderableCode": null,
+   "desc": "High-voltage automotive TVS, stand-off >= 400 V, up to 5 kW, uni / bidirectional",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "launched": "2026-05",
+   "usedIn": [
+    "battery disconnect unit",
+    "HV HVAC compressor",
+    "PTC heater"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/?p=205489",
+   "note": "AEC-Q101, PPAP capable. Also on littelfuse.com press releases 2026."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "FlatSuppressX TP5.0SMD-FL",
+   "orderableCode": null,
+   "desc": "5 kW flat-clamping TVS for 48 V systems (ISO 21780)",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "48 V zone controller",
+    "BDU",
+    "EPS",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/press-releases/littelfuse-launches-flatsuppressx-tp5-0smd-fl-tp1ksmb-fl/",
+   "note": "Series name; individual voltage codes not listed."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "FlatSuppressX TP1KSMB-FL",
+   "orderableCode": null,
+   "desc": "1 kW flat-clamping TVS for 48 V systems (ISO 21780)",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "48 V zone controller",
+    "I/O and power-bus protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/press-releases/littelfuse-launches-flatsuppressx-tp5-0smd-fl-tp1ksmb-fl/",
+   "note": "Series name; individual voltage codes not listed."
+  },
+  {
+   "mfr": "Littelfuse",
+   "family": "TP7.0SMD-XC series",
+   "orderableCode": "TP7.0SMD24CA-XC",
+   "desc": "7 kW automotive TVS with foldback, 24 V clamping, Tj -65..175 C",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "launched": "2026-10",
+   "usedIn": [
+    "12 V battery line",
+    "zone control unit",
+    "ADAS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/?p=210370",
+   "note": "AEC-Q101, PPAP capable. Lead part named in the article."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "T15BxxA / T15BxxCA PAR TVS",
+   "orderableCode": null,
+   "desc": "1500 W PAR TVS in SMB, uni / bidirectional, operation to 185 C (T15B12A–T15B51A, T15B12CA–T15B100CA)",
+   "category": "fuse_tvs",
+   "pkg": "SMB (DO-214AA)",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "48 V DC/DC",
+    "BMS",
+    "EMB",
+    "on-board charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://finviz.com/news/121104/vishay-intertechnology-unibidirectional-1500-w-par-tvs-solutions-offer-high-temperature-operation-to-185-c-in-smb-do-214aa-package",
+   "note": "Vishay release 30 Jul 2025; 58 % smaller footprint than SMC."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "T3KNxxA / T3KNxxCA PAR / TransZorb TVS",
+   "orderableCode": null,
+   "desc": "3000 W TVS in DFN6546A, Automotive Grade, operation to 185 C",
+   "category": "fuse_tvs",
+   "pkg": "DFN6546A",
+   "aecq": true,
+   "launched": "2026",
+   "usedIn": [
+    "load-dump / supply protection",
+    "48 V"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ir.vishay.com/news-releases/news-release-details/vishay-intertechnology-parr-and-transzorbr-tvs-deliver-power",
+   "note": "Seen in a search summary of the release (direct fetch refused)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VEML4031X00",
+   "orderableCode": "VEML4031X00",
+   "desc": "Ambient light sensor, I2C, 0–172 000 lx, rectangular 4.38 x 1.45 x 0.6 mm",
+   "category": "ic_qfn",
+   "pkg": "4.38x1.45x0.6 mm SMD",
+   "aecq": true,
+   "launched": "2025-05",
+   "usedIn": [
+    "display / cluster dimming",
+    "head-up display",
+    "rain-light sensor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/en/company/press/releases/2025/VEML4031X00",
+   "note": "First AEC-Q100 rectangular ALS (Vishay, 7 May 2025)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VOMDA1271",
+   "orderableCode": "VOMDA1271",
+   "desc": "Optically isolated photovoltaic MOSFET driver with integrated fast turn-off, no VCC needed",
+   "category": "ic_soic",
+   "pkg": "SOP-4",
+   "aecq": true,
+   "launched": "2024-09",
+   "usedIn": [
+    "pre-charge relay",
+    "BMS",
+    "custom solid-state relay",
+    "HV MOSFET gate drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/industries/automotive/rutronik-introduces-vishay-s-vomda1271-high-speed-mosfet-driver-for-automotive-applications/",
+   "note": "AEC-Q102; in stock at Rutronik (tape and reel)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VOMA617A",
+   "orderableCode": "VOMA617A",
+   "desc": "Automotive Grade phototransistor-output optocoupler for 800 V EV battery systems",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2026-05",
+   "usedIn": [
+    "BMS",
+    "on-board charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/en/applications/automotive/tab/press-app",
+   "note": "Named in Vishay's automotive press list (May–Jun 2026), seen in a search summary; AEC statement not captured."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RBE01VYM6AFH",
+   "orderableCode": "RBE01VYM6AFHTR",
+   "desc": "Ultra-low-VF, low-IR Schottky barrier diode for image-sensor protection (VF < 300 mV at 7.5 mA, -40 C)",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323HE",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "ADAS camera",
+    "surround-view camera"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eejournal.com/industry_news/rohm-develops-breakthrough-schottky-barrier-diode-combining-low-vf-and-ir-for-advanced-image-sensor-protection/",
+   "note": "AEC-Q101; online at DigiKey, Mouser, Farnell."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "SCS2xxxNHR SiC SBD",
+   "orderableCode": null,
+   "desc": "650 V / 1200 V SiC Schottky barrier diodes in a TO-263-style package with 5.1 mm creepage (8 automotive models)",
+   "category": "ic_soic",
+   "pkg": "TO-263-2L",
+   "aecq": true,
+   "launched": "2024-11",
+   "usedIn": [
+    "on-board charger",
+    "HV DC/DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.eejournal.com/industry_news/rohms-new-sic-schottky-barrier-diodes-for-high-voltage-xev-systems-featuring-a-unique-package-design-for-improved-insulation-resistance/",
+   "note": "AEC-Q101; DigiKey, Mouser, Farnell named. 'xxx' is the article's placeholder."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DXTN/P 78Q and 80Q series",
+   "orderableCode": null,
+   "desc": "Automotive NPN / PNP bipolar transistors, BVCEO 30–100 V, up to 10 A (80Q), 175 C",
+   "category": "ic_qfn",
+   "pkg": "PowerDI3333-8",
+   "aecq": false,
+   "launched": "2025-12",
+   "usedIn": [
+    "gate drive",
+    "load switch",
+    "LDO pass",
+    "motor / solenoid / relay drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.semimedia.cc/20435.html",
+   "note": "Article body says 'automotive-qualified' (AEC-Q101 only in the tags); individual part numbers not listed."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "ESDA5WY",
+   "orderableCode": "ESDA5WY",
+   "desc": "Automotive dual-line unidirectional ESD protection, 5 V",
+   "category": "fuse_tvs",
+   "pkg": "SOT323",
+   "aecq": true,
+   "launched": "2024-06",
+   "usedIn": [
+    "sensor / switch inputs",
+    "MCU I/O"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stmicro-esda5wy-esd-protection/",
+   "note": "AEC-Q101. Datasheet initial release 20 Jun 2024; Mouser new-product page Sep 2024. An ESDAxWY family page followed (Mouser, Jan 2025)."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "ESDA37LY",
+   "orderableCode": "ESDA37LY",
+   "desc": "Automotive dual-line 36 V TVS",
+   "category": "fuse_tvs",
+   "pkg": "SOT23-3L",
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "24 V / 36 V signal lines",
+    "IVN protection"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://my.avnet.com/ebv/products/new-products/npi/2025/stmicroelectronics-esda37ly/",
+   "note": "AEC-Q101; Avnet EBV 2025 new-product introduction."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "ESDLIN1524BJ",
+   "orderableCode": "ESDLIN1524BJ",
+   "desc": "Automotive single-line ESD protection for LIN bus",
+   "category": "fuse_tvs",
+   "pkg": "SOD323",
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "LIN nodes",
+    "body ECUs"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://my.avnet.com/ebv/products/new-products/npi/2025/stmicroelectronics-esdlin1524bj/",
+   "note": "AEC-Q101; Avnet EBV 2025 new-product introduction."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "ESDCAN06-2BWY",
+   "orderableCode": "ESDCAN06-2BWY",
+   "desc": "CAN bus ESD protection for 24 V truck systems",
+   "category": "fuse_tvs",
+   "pkg": "SOT323-3L",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "CAN / CAN FD nodes (24 V)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://st.com/content/st_com/en/campaigns/esdcan-automotive-esd-protection-for-can-bus.html",
+   "note": "ST automotive campaign page; AEC-Q101 statement for this code not captured."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "ESDLIN03-1BWY",
+   "orderableCode": "ESDLIN03-1BWY",
+   "desc": "Automotive Transil TVS for LIN bus",
+   "category": "fuse_tvs",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN nodes"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.in/new/stmicroelectronics/stm-esdlin03-1bwy-suppressor/",
+   "note": "Mouser new-product page titled 'Automotive Transil TVS'; AEC-Q101 statement not captured for this code."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "OSIRE E3731i",
+   "orderableCode": null,
+   "desc": "Intelligent RGB LED with integrated driver IC, daisy-chained over Open System Protocol (OSP)",
+   "category": "led",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "interior ambient lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ams-osram.com/news/press-releases/ale-2026",
+   "note": "Page: holds AEC-Q102-003 certification; in NIO ES9 and Zeekr models (2026)."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "SYNIOS P1515",
+   "orderableCode": null,
+   "desc": "Compact QFN signal LED for rear combination lamps",
+   "category": "led",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "rear combination lamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ledinside.com/node/35292",
+   "note": "AEC-Q102-qualified per the article; type codes not given."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "SYNIOS P2222",
+   "orderableCode": null,
+   "desc": "QFN mid- / low-power signal LED platform, saturated and converted colours incl. cyan for automated-driving indicator",
+   "category": "led",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "signal lamps",
+    "ADS marker lamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ledinside.com/node/35292",
+   "note": "AEC-Q102-qualified per the article; type codes not given."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "SYNIOS P2720",
+   "orderableCode": null,
+   "desc": "Higher-power signal LED 2.75 x 2.0 x 0.6 mm, shares PCB layout with P2222",
+   "category": "led",
+   "pkg": "2.75x2.0x0.6 mm",
+   "aecq": false,
+   "launched": "2025-07",
+   "usedIn": [
+    "static / dynamic signalling",
+    "ambient",
+    "display backlight"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ledinside.com/node/35292",
+   "note": "AEC-Q102 not stated for P2720 in the article."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "OSIRE E3030",
+   "orderableCode": null,
+   "desc": "RGB LED 3.0 x 3.0 x 0.6 mm for hidden-until-lit interior and HMI lighting",
+   "category": "led",
+   "pkg": "3.0x3.0x0.6 mm",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "interior ambient",
+    "HMI / adaptive signalling"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://ledinside.com/node/view/35540",
+   "note": "AEC-Q102 qualified. Article mentions type 'KRTB DSLP31.33' without tying it to an order code."
+  },
+  {
+   "mfr": "ams OSRAM",
+   "family": "EVIYOS HD 25",
+   "orderableCode": null,
+   "desc": "Pixelated micro-LED headlamp light source, 25,600 individually addressable pixels",
+   "category": "led",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "adaptive headlamp module"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://ams-osram.com/news/press-releases/ale-2026",
+   "note": "In NIO ET9 / ES8; AEC statement not on the page."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "SMLVN6RGBFU",
+   "orderableCode": "SMLVN6RGBFU",
+   "desc": "High-brightness tri-colour (RGB) chip LED for indicators and interior accent lighting",
+   "category": "led",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2023-07",
+   "usedIn": [
+    "cluster / CID indicators",
+    "footwell / handle ambient"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://components101.com/news/aec-q102-qualified-high-brightness-tri-color-chip-led-for-automotive-applications",
+   "note": "AEC-Q102 per the headline."
+  },
+  {
+   "mfr": "American Bright",
+   "family": "AB-PL series",
+   "orderableCode": "AB-PL1515C0I6-5VX01515",
+   "desc": "Addressable RGB LED with integrated driver IC, 1515 package",
+   "category": "led",
+   "pkg": "1.5x1.5 mm",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "interior ambient lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/a/american-bright/ab-pl-series-aec-q102-qualified-led",
+   "note": "AEC-Q102; Digi-Key product highlight."
+  },
+  {
+   "mfr": "American Bright",
+   "family": "AEC-Q102 addressable RGB with IC",
+   "orderableCode": "BB-HBRG32N-TRB-0-AQ",
+   "desc": "Addressable RGB LED with integrated IC, SPI control",
+   "category": "led",
+   "pkg": "PLCC-6",
+   "aecq": true,
+   "launched": "2025-04",
+   "usedIn": [
+    "interior light sources"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/a/american-bright/aecq-102-addressable-rgb-led-with-ic",
+   "note": "AEC-Q102; Digi-Key product highlight."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "Micron MT62F LPDDR5 / MTFC e.MMC / MT25Q / MT35X / MT29F automotive — already in catalogue (distributor, obs); Micron automotive LPDDR5X — no orderable code found",
+  "Micron 2100AT, 1α / 1β DDR4 automotive (MT40A) — not reached",
+  "Samsung automotive UFS 3.1 / LPDDR5X / detachable AutoSSD codes (KLU…, K3K…) — no part number on any page seen",
+  "Kioxia THGJFJ / THGJFM / THGAMV — UFS 4.1 press release names no new code (only THGJFGT2T85BAB5, a UFS 3.1 comparison device not stated automotive on the page)",
+  "SK hynix automotive UFS 3.1 / HBM — only a newspaper mention, no part",
+  "ISSI IS25WX / IS25LX / IS21 / IS22 / IS34 / IS35 / IS37 / IS38 / IS43 / IS46 newer — issi.com returned a bot check; not confirmed",
+  "Winbond W77Q TrustME, W25Q-NW 1.2 V, W66 LPDDR4 automotive — not in the automotive brief read; not confirmed",
+  "Macronix MX25UW / MX66UW OctaFlash, MX35 / MX60 NAND, ArmorFlash MX75 / MX78 — page not found / search did not confirm automotive grade",
+  "Infineon SEMPER S28HL, SEMPER Secure, SEMPER Nano, Excelon F-RAM CY15V, nvSRAM — not confirmed on a page (S25HS / S25HL / S28HS / CY15B already in catalogue)",
+  "Infineon SEMPER X1 code 'S26HX' — family confirmed, code not seen",
+  "GigaDevice GD5F — family confirmed, no part number; Giantec / Puya automotive EEPROM — not reached",
+  "ST M95M04-A125 / M24M02-A125 / Page EEPROM M95P automotive — search did not return them",
+  "Microchip 47Lxx EERAM / SST26VF automotive, onsemi EEPROM, Renesas MRAM / ReRAM — not reached",
+  "Everspin EMxxLX code / MR25H — PERSYST xSPI family confirmed, codes not seen",
+  "RAMXEED MB85RS4MTY / MB85RC…TY — ramxeed.com page not found; not confirmed",
+  "SiTime SiT1623, SiT2025B (page: SiT2025 not recommended for new designs), SiT9386, SiT5387, Chorus SiT9163x, Symphonic SiT30100, Epoch — not on the automotive page read",
+  "Microchip DSA1xxx / DSA6xxx / DSA2311 / VC-801 / MX85 / ZL / PL611 / DSA400 / DSA557 / DSA613 — microchip.com refused; only DSA15x confirmed (Mouser)",
+  "Skyworks Si5334x / Si5225x / Si55xx automotive; Renesas 5P35023 / 9FGV1xxx / RC210xx / RC310xx / RC22xxx / ProXO — search returned nothing",
+  "TI LMK6H-Q1 / LMK1C110x-Q1 / LMK5B / LMK5C — not in results (LMK6C-Q1, CDCE6214-Q1 already in catalogue); 'LMK6L-Q1' appeared only as a product-page title, not listed",
+  "Diodes PI6C / PI6CG / PI6CXG clock buffers and Diodes crystals / XOs — diodes.com refused; not confirmed",
+  "Epson SG3225CAA, SG-8201CJA, SG2016EHN / SG2520VHN (EHN is LV-PECL, not marked automotive), TG2016SMN / TG2520SMN / TG-5510CA, RA8804CE / RA4000CE / RA8900CE (no automotive mark on the RTC list read), FA-118T, FC2012AN — not confirmed",
+  "NDK NX1210AC, NX2520SA, NZ2520SHB, NP2016SA / NP3225SA, NT1612AJA / NT2016SJA automotive — not confirmed (NP2016SC is a data-centre HCSL part, not automotive); NX2016SA / NX3225GA automotive already in catalogue",
+  "Kyocera CX1210 / CX1612 / KC2016Z / KC2520Z / MC2016Z / MC2520Z / KT1612A / KT2016K; Murata XRCGE / XRCMD / HCR / CSTNR; TXC; Abracon AIG / AMPM / AMJM / ClearClock; Micro Crystal; Rakon / IQD; Würth — maker pages not found or not reached",
+  "Nexperia CAN XL ESD (PESD2CANXL), PESD4USB…-Q, PESD18VF1BL-Q, PTVS…-Q, CFP2-HP / CFP3-HP / CFP15B rectifiers, PNE / PNU, PSC SiC diodes, DFN BJTs / MOSFETs, RETs, 74…-Q100 — nexperia.com refuses fetch and the one search did not return them",
+  "Diodes Inc. D…Q TVS, DESD…Q, SBR…Q, DMTH / DMT…Q, AP2…Q — search returned only family statements",
+  "onsemi SZESD / NSV / NVT / NSPM / ESDM / SZ1SMA / NRVTS / NRVHP — not reached (no search left)",
+  "Littelfuse AQ / AQHV / AXGD arrays, SLD8S / SLD6S / SLD5S, SM8S / SM8A, AEC-Q200 fuses 437A–441A / 501A / 88x, 0HEV / EV1K / 10EV–70EV, PolySwitch ASMD families, AUMOV / SM7 / SM10 / SM20, SIDACtor, GDT, TBU — not returned by the one Littelfuse search (SM8S not found there)",
+  "Bourns CDSOD323-T…C-Q, CDDFN, PTVS…, SMAJ-Q … SM8S-Q, MF-…-AEC PPTC, SF fuses, TBU-RS — bourns.com refused; not reached",
+  "Vishay XClampR XGD10402 / XMC7K24CA, eSMP SlimSMA / SMPC / DFN3820A / DFN1006 rectifiers, Gen 5 FRED Pt, SiC diodes, VCAN / VLIN / VESD — only mentioned without part-level confirmation; VEML6031X00 / VEML6046X00 / VCNL36828P / VCNT2025X01 — no dated page with URL captured; VSMA1085250X02 etc. — the 2024 release of eight AEC-Q102 3.4 x 3.4 mm IR emitters names no part number; VORA1010M4 — not found",
+  "ST ESDCAN XL, HSP0xx-…Y, ECMF…-Y, SM4TY … SM50TY, SMA4F…AY … SMC50J…AY, STPSC…-Y SiC, FERD…-Y, thyristors — not returned by the one ST search",
+  "ROHM RB…-FH / YQ / YG / YC Schottky, FRDs, Zeners (EDZ / KDZ / UDZ …), ESD / TVS, digital transistors, small MOSFETs (RTQ / RQ5 / RV4 …), SCS3 / SCS4 SiC, PICOLED / EXCELED — not returned (the RBR / RBQ PMDE expansion found is from Nov 2021)",
+  "Toshiba DF2B / DF2S / DF3A / DF5A / DF6A / DF10G automotive TVS, XCEZ / XCES / CUHZ / CEZ / CUZ Zeners, CRS / CMS / CUS / XCUS Schottky, SSM3K / SSM6K … small MOSFETs, TLX9160T / TLX9175J, TB9044 / TB9045 / TB9058 / TB9080 / TB9081 / TB9083 / TB9102 / TB9120 — no 2023–2026 release found in the news lists read",
+  "ams OSRAM OSIRE E5515 / E3323, OSLON Black Flat X, EVIYOS 2.0 KEW GBBMD1U, ALIYOS (a technology, not a part), DURIS, SFH 4725AS A01 / SFH 4171S / SFH 4180S / SFH 4181S, TARA2000-AUT, SFH 2202 / SFH 2716, TOPLED E1608 / E3014 / D5140 — not confirmed with a page",
+  "Nichia µPLS / E21A, Lumileds LUXEON / Altilon / SignalSure, Seoul WICOP / Z5M4 / SunLike, Samsung PixCell, Everlight, Lite-On, Dominant, Kingbright, Würth, Stanley, Brightek, Refond, Inolux ISELED — the one LED search returned none of them",
+  "Edison Opto SMART RGB (Apr 2025) — AEC-Q102 only 'expected', not listed; Vishay VLMRGB6122 — in a search summary without a clear source URL, not listed"
+ ]
+}

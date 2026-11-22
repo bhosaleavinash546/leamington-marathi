@@ -1,0 +1,1558 @@
+{
+ "domain": "k2-power-management",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "candidates": [
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS65224-Q1",
+   "orderableCode": null,
+   "desc": "Safety PMIC, 4 bucks + 3 LDOs, 3-5.5 V in, for AM62A / AM62P-class processors (ASIL-B)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR 36 (5x6 mm)",
+   "aecq": true,
+   "launched": "2023-12",
+   "usedIn": [
+    "ADAS camera",
+    "cluster / cockpit",
+    "driver monitoring"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TPS65224-Q1",
+   "note": "Mouser new-product page: https://eu.mouser.com/en/new/texas-instruments/ti-tps65224-q1-pmic/ . Launch = first datasheet date seen in a datasheet listing."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS65035x-Q1",
+   "orderableCode": "TPS65035201RZDRQ1",
+   "desc": "Highly integrated PMIC for automotive camera modules",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "2025-10",
+   "usedIn": [
+    "camera module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electropages.com/2025/10/highly-integrated-pmic-automotive-camera-modules",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Code read in the article title."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS4816-Q1",
+   "orderableCode": null,
+   "desc": "Smart high-side switch controller for 12 / 24 / 48 V, 3.5-95 V in, adjustable I2t overcurrent and short-circuit protection, bidirectional current monitor",
+   "category": "ic_qfn",
+   "pkg": "VQFN 23",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "power distribution box",
+    "48 V loads"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps4816-q1-smart-high-side-switch-controllers/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS1HC120-Q1",
+   "orderableCode": null,
+   "desc": "Single-channel smart high-side switch",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://mouser.com/new/texas-instruments/ti-tps1hc120-q1-smart-high-side-switch",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS4HC120-Q1",
+   "orderableCode": null,
+   "desc": "Four-channel automotive smart high-side switch",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps4hc120-q1-switches/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS1HC03-Q1",
+   "orderableCode": null,
+   "desc": "Single-channel smart high-side switch (low on-resistance member of the TPS1HC family)",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal controller",
+    "power distribution"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps1hc03-q1-smart-high-side-switch/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. On-resistance and package not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS1HTC100-Q1",
+   "orderableCode": null,
+   "desc": "Single-channel smart high-side switch for 24 V systems, 60 V DC operating range",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "truck / 24 V body controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps1htc100-q1-smart-high-side-switch/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Sibling TPS1HTC30-Q1 is in the catalogue."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS1HA08-Q1",
+   "orderableCode": null,
+   "desc": "Single-channel smart high-side switch",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://co.mouser.com/en/new/texas-instruments/ti-tps1ha08-q1-switches/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Older generation; catalogue gap, not a new launch."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS2HB35-Q1",
+   "orderableCode": null,
+   "desc": "Dual-channel smart high-side switch (TPS2HB family; 16 mOhm sibling in catalogue)",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps2hb35-q1-switch/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Older generation; catalogue gap."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMQ644xx-Q1",
+   "orderableCode": null,
+   "desc": "36 V synchronous buck, multi-phase, up to 36 A stacked, spread spectrum + integrated HF capacitors (low EMI), 9 uA no-load IQ",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller",
+    "infotainment",
+    "zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmq644xx-q1-buck-dc-dc-converters/",
+   "note": "Family page; member codes not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMR60440-Q1",
+   "orderableCode": null,
+   "desc": "3-36 V, 4 A synchronous buck, 5 uA IQ, EMI-optimised",
+   "category": "ic_qfn",
+   "pkg": "HotRod QFN",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "any 12 V ECU primary rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmr60440-converter/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMR60430-Q1",
+   "orderableCode": null,
+   "desc": "3-36 V, 3 A synchronous buck, 5 uA IQ in auto mode, 30 ns minimum on-time",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "any 12 V ECU primary rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmr60430-q1-synchronous-buck-converters/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMR60420-Q1",
+   "orderableCode": null,
+   "desc": "3-36 V synchronous buck (2 A member of LMR604x0 family)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "any 12 V ECU primary rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmr60420-converter/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Current rating inferred from the family naming, not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMQ62440-Q1",
+   "orderableCode": null,
+   "desc": "3-36 V, 4 A low-EMI step-down converter, pseudo-random spread spectrum, integrated bypass capacitors",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "radar",
+    "camera",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmq62440-q1-step-down-converter/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMR38015-Q1",
+   "orderableCode": null,
+   "desc": "4.2-80 V in synchronous buck, 40 uA IQ, for 48 V / mild-hybrid systems (1.5 A member; 2 A LMR38020 in catalogue)",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V ECU",
+    "mild-hybrid auxiliaries"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://my.mouser.com/en/new/texas-instruments/ti-lmr38015-q1-synchronous-buck-converters/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Current rating from the part naming."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LMR38025-Q1",
+   "orderableCode": null,
+   "desc": "4.2-80 V in synchronous buck, 40 uA IQ, for 48 V / mild-hybrid systems (2.5 A member)",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V ECU",
+    "mild-hybrid auxiliaries"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://lv.mouser.com/en/new/texas-instruments/ti-lmr38025-q1-synchronous-buck-converter",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Current rating from the part naming."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LM5140-Q1",
+   "orderableCode": null,
+   "desc": "Dual low-IQ synchronous buck controller with adjustable slew rate for CISPR EMI",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS pre-regulator"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lm5140-q1-controllers/",
+   "note": "Older generation; catalogue gap."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS929160-Q1",
+   "orderableCode": null,
+   "desc": "16-channel high-side LED driver with FlexWire interface, 4.5-40 V, open / short diagnostics",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "rear lamp",
+    "animated exterior lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/new/texas-instruments/ti-tps929160-q1-16-channel-led-driver/",
+   "note": "Launch = age of the Mouser new-product page (about 1,293 days at 22 Nov 2026), not a maker date. Package not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS7B88-Q1",
+   "orderableCode": null,
+   "desc": "40 V in, 500 mA LDO, fixed 3.3 V / 5 V, 17 uA IQ",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "any always-on 12 V ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://co.mouser.com/en/new/texas-instruments/ti-tps7b88-q1-regulators",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LM74900-Q1",
+   "orderableCode": "LM74900QRGERQ1",
+   "desc": "3-65 V ideal-diode controller (DGATE) for reverse-input protection, with switched output path",
+   "category": "ic_qfn",
+   "pkg": "VQFN (RGE)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "ADAS ECU input protection"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/LM74900QRGERQ1?qs=1Kr7Jg1SGW%2BjHxEKWn%2FhLA%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Sibling LM74930QRGERQ1 is in the catalogue."
+  },
+  {
+   "mfr": "NXP",
+   "family": "PF09",
+   "orderableCode": null,
+   "desc": "Nine-channel PMIC with advanced system safety monitoring, for i.MX 9x-based systems",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit / telematics on i.MX 95",
+    "S32N7 vehicle computer"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/data-sheet/PF09.pdf",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Hardware guidelines AN14910 dated 22 Jan 2026."
+  },
+  {
+   "mfr": "NXP",
+   "family": "PF53",
+   "orderableCode": null,
+   "desc": "Core-supply PMIC used beside PF09 (i.MX 95, S32N5x pairings)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit / telematics on i.MX 95",
+    "S32N5 vehicle computer"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "PF54",
+   "orderableCode": null,
+   "desc": "Core-supply PMIC paired with FS04 + PF09 for S32N7x",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "S32N7 central compute"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS27",
+   "orderableCode": null,
+   "desc": "12 / 24 / 48 V safety system basis chip, ASIL D, for entry and mid-range 28 nm safety MCUs (S32K38x pairing)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "48 V ECU",
+    "traction / BMS controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/products/power-management/pmics-and-sbcs:POWR_MAN_USER_INTERFACE",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Listed as pre-production on NXP's PMIC / SBC page."
+  },
+  {
+   "mfr": "NXP",
+   "family": "VR5510",
+   "orderableCode": null,
+   "desc": "Multi-output PMIC with SMPS and LDO for gateways and domain controllers, ASIL B / D",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "gateway",
+    "domain controller (S32G)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/data-sheet/VR5510.pdf",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Datasheet Rev. 7.0, 2 Oct 2024 (launch date not read)."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS04",
+   "orderableCode": null,
+   "desc": "Safety SBC / PMIC paired with PF53 (S32N5x) and PF54 + PF09 (S32N7x)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "S32N vehicle computer"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS56",
+   "orderableCode": null,
+   "desc": "Safety PMIC paired with PF09 + PF53 for i.MX 95",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit / ADAS on i.MX 95"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS25",
+   "orderableCode": null,
+   "desc": "Safety SBC paired with S32K5x",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller on S32K5"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS24",
+   "orderableCode": null,
+   "desc": "Safety SBC paired with S32K1 / S32K31",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal ECU on S32K1 / S32K3"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "FS23",
+   "orderableCode": null,
+   "desc": "Safety SBC paired with S32K1 / S32K31",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal ECU on S32K1 / S32K3"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: FS23",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/docs/en/brochure/APS_AUTO_BROCHURE.pdf",
+   "note": "Named in NXP's automotive power brochure pairing table; no orderable code or package read. AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "NXP",
+   "family": "MWCT2xx3A",
+   "orderableCode": null,
+   "desc": "15 W wireless-charging transmitter controller ICs for automotive Qi designs, 5-48 V DC input; WCT22C3A is the two-channel variant",
+   "category": "ic_tqfp",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/products/power-management/wireless-power/15-watt-wireless-charging-transmitter-ics-for-automotive-applications:MWCT2xx3A",
+   "note": "Qi2 / MPP support NOT confirmed on the page read. Package not read (category is a guess for an MCU-type controller)."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "Power PROFET + 24/48V",
+   "orderableCode": "BTH50030-1LUA",
+   "desc": "Smart high-side power switch for 24 / 48 V power distribution, TO-leadless package",
+   "category": "ic_soic",
+   "pkg": "TO-leadless",
+   "aecq": false,
+   "launched": "2025-04",
+   "usedIn": [
+    "48 V power distribution",
+    "zonal controller",
+    "relay / fuse replacement"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/products/power/power-profet-24-48v-switch-family-from-infineon/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Stated as in production at launch."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "Power PROFET + 24/48V",
+   "orderableCode": "BTH50015-1LUA",
+   "desc": "Smart high-side power switch for 24 / 48 V power distribution, TO-leadless package",
+   "category": "ic_soic",
+   "pkg": "TO-leadless",
+   "aecq": false,
+   "launched": "2025-04",
+   "usedIn": [
+    "48 V power distribution",
+    "zonal controller",
+    "relay / fuse replacement"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.electronicspecifier.com/products/power/power-profet-24-48v-switch-family-from-infineon/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Stated as in production at launch."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "Power PROFET + 24/48V",
+   "orderableCode": "BTH50060-1LUA",
+   "desc": "Smart high-side power switch for 24 / 48 V power distribution, 6 mOhm, announced as the next family member",
+   "category": "ic_soic",
+   "pkg": "TO-leadless",
+   "aecq": false,
+   "launched": "2025-04",
+   "usedIn": [
+    "48 V power distribution"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.electronicspecifier.com/products/power/power-profet-24-48v-switch-family-from-infineon/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Announced as coming; release not confirmed."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "PROFET Wire Guard",
+   "orderableCode": "BTG70008A-1ESW",
+   "desc": "Single-channel 12 V automotive eFuse (smart high-side switch) with selectable integrated I2t wire-harness protection",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/i/infineon/btg70008a-1esw-profet-wire-guard-smart-high-side-switch",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "PROFET Wire Guard",
+   "orderableCode": "BTG70013A-1ESW",
+   "desc": "PROFET Wire Guard smart power high-side switch (I2t wire protection)",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-btg70013a-1esw-datasheet-en.pdf?fileId=8ac78c8c8caa022e018cf222d43f3b97",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "PROFET + 48V",
+   "orderableCode": null,
+   "desc": "48 V high-side switch family, RDS(on) 35-200 mOhm, single / dual / four-channel",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V body / zonal loads"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/products/power/smart-power-switches/high-side-switches/48v/profet-plus-48v-automotive",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Family page; member codes not read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OPTIREG PMIC TLF4D985",
+   "orderableCode": "TLF4D985QKV01R1",
+   "desc": "Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 to 175 C; LQFP-64 and VQFN-56 options in the family",
+   "category": "ic_tqfp",
+   "pkg": "PG-LQFP-64",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "AURIX TC4x ECU: inverter, BMS, zonal, chassis"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.infineon.com/part/TLF4D985QKV01R1",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Marked NEW on Infineon's page. Other codes seen: TLF4D985QKV02R1 (datasheet), TLF4D985QKV03R1; TLF4D985QKV03 shown as discontinued. QK = LQFP by Infineon's naming (not read per code)."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OPTIREG PMIC TLF4D985",
+   "orderableCode": "TLF4D985QVV01R1",
+   "desc": "Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x, VQFN variant",
+   "category": "ic_qfn",
+   "pkg": "PG-VQFN-56",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "AURIX TC4x ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/product-table/pmic",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Listed as a new variant in Infineon's PMIC product table; package mapping by Infineon's naming (QV = VQFN)."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OPTIGA Trust Charge Automotive",
+   "orderableCode": "SLS37CSAE20TC",
+   "desc": "Secure element for Qi wireless-charging authentication, automotive",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/30/49/infineon-optiga-trust-charge-auto-datasheet-en.pdf",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read (category is a guess). Companion part to a Qi 1.3 / Qi2 transmitter, not a power IC."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "STi2Fuse / VIPower M0-9",
+   "orderableCode": "VNF9Q20F",
+   "desc": "Quad-channel high-side switch with I2t intelligent fuse protection, SPI diagnostics, 64 programmable current limits",
+   "category": "ic_qfn",
+   "pkg": "QFN 6x6 mm",
+   "aecq": false,
+   "launched": "2024-06",
+   "usedIn": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://newsroom.st.com/media-center/press-item.html/n4635.html",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Mass production from June 2024 per the press coverage."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "STi2Fuse",
+   "orderableCode": "VNF1248F",
+   "desc": "E-fuse high-side controller, STi2Fuse family (48 V-capable sibling VNF1048F is in the catalogue)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "power distribution box",
+    "48 V e-fuse"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://autotechinsight.spglobal.com/news/5285076/stmicroelectronics-introduces-vnf1248f-for-enhanced-automotive-e-fuse-safety-and-power-efficiency",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Only a short news item was readable; voltage class and package not read."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "SPSB100",
+   "orderableCode": null,
+   "desc": "Power-management system IC for application processors (Stellar SR6): 3 bucks + 2 LDOs + boost controller for cold crank; variants SPSB100B and SPSB100P",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "2024",
+   "usedIn": [
+    "Stellar-based zonal / domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/automotive-power-management-system-ic-for-integrated-application-processors-spsb100.html",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Variant names read on ST's page; full orderable codes not read."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "SPSA068",
+   "orderableCode": null,
+   "desc": "Value PMIC for automotive MCUs: buck regulator, precise voltage reference, watchdog and fault detection",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "small MCU-based ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://community.st.com/t5/developer-news/value-optimized-power-management-ic-for-automotive-applications/ba-p/836481",
+   "note": "Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD96803Qxx-C",
+   "orderableCode": null,
+   "desc": "Configurable PMIC for automotive SoCs, standalone use with lower-end SoCs",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS camera",
+    "driver monitoring"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eenewseurope.com/en/rohm-configurable-pmics-support-automotive-soc-power-design/",
+   "note": "Family code as printed (xx = option digits) — not a complete orderable code. Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD96811Fxx-C",
+   "orderableCode": null,
+   "desc": "Configurable PMIC for automotive SoCs, standalone use with lower-end SoCs",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS camera",
+    "driver monitoring"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eenewseurope.com/en/rohm-configurable-pmics-support-automotive-soc-power-design/",
+   "note": "Family code as printed (xx = option digits) — not a complete orderable code. Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD96805Qxx-C",
+   "orderableCode": null,
+   "desc": "Configurable PMIC (controller) paired with BD96340MFF-C DrMOS for higher-current SoC rails",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eenewseurope.com/en/rohm-configurable-pmics-support-automotive-soc-power-design/",
+   "note": "Family code as printed (xx = option digits) — not a complete orderable code. Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD96806Qxx-C",
+   "orderableCode": null,
+   "desc": "Configurable PMIC (controller) paired with BD96340MFF-C DrMOS for higher-current SoC rails",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eenewseurope.com/en/rohm-configurable-pmics-support-automotive-soc-power-design/",
+   "note": "Family code as printed (xx = option digits) — not a complete orderable code. Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD96340",
+   "orderableCode": "BD96340MFF-C",
+   "desc": "DrMOS power stage for the BD96805 / BD96806 SoC core rails",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eenewseurope.com/en/rohm-configurable-pmics-support-automotive-soc-power-design/",
+   "note": "Package not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BM81810",
+   "orderableCode": "BM81810MUV-M",
+   "desc": "Automotive panel power-management IC (AEC-Q100 Grade 2) for navigation and cluster displays",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "display / cluster"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/new/rohm-semiconductor/rohm-bm81810muvm-automotive-pmic/",
+   "note": ""
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BV1Hx",
+   "orderableCode": null,
+   "desc": "High-side switch IPD family: CMOS control + power MOSFET in one chip",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/rohm-semiconductor/rohm-automotive-devices/",
+   "note": "Family named on Mouser's ROHM automotive page; member codes not read."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BM2LC",
+   "orderableCode": "BM2LC120FJ-C",
+   "desc": "Low-side IPD with over-current, thermal shutdown and active clamp",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body controller",
+    "actuator / solenoid drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/new/rohm-semiconductor/rohm-automotive-devices/",
+   "note": ""
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD57121",
+   "orderableCode": "BD57121MUF-M",
+   "desc": "Wireless power transmitter control IC (automotive wireless charging with NFC solution)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.rohm.com/news-detail?news-title=new-automotive-wireless-charging-solution-with-nfc-communication&defaultGroupId=false",
+   "note": "Older Qi generation; Qi2 not stated."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4242B",
+   "orderableCode": null,
+   "desc": "Fully integrated USB PD IC: buck-boost converter + 4 power switches + PD controller (MPQ4242B-AEC1)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "2025",
+   "usedIn": [
+    "USB-C charging port / media hub"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+   "note": "Launch = year of the Mouser new-products listing, not a maker date. AEC-Q statement not read on the page (automotive-named device); confirm at pricing. '-AEC1' suffix seen."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4214",
+   "orderableCode": "MPQ4214GU-AEC1-Z",
+   "desc": "USB-C PD buck-boost controller, 4-45 V in",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "USB-C charging port"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4214GU-AEC1-Z?qs=CiayqK2gdcJ%2BHi0UM0YOaA%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Shown non-stocked on the listing."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4322C",
+   "orderableCode": null,
+   "desc": "36 V, 2 A ultra-compact synchronous buck, 42 V load dump",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "camera",
+    "sensor module",
+    "any 12 V ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+   "note": "Launch = year of the Mouser new-products listing, not a maker date."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4480",
+   "orderableCode": "MPQ4480GV-AEC1-Z",
+   "desc": "36 V, 6 A step-down converter for automotive",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4480GV-AEC1-Z?qs=wnTfsH77Xs4d3ndughaBOQ%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4573",
+   "orderableCode": "MPQ4573GQBE-AEC1-Z",
+   "desc": "60 V, 2.5 A synchronous step-down converter",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V / 24 V ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4573GQBE-AEC1-Z?qs=TCDPyi3sCW23mRrlD5sK6A%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4571",
+   "orderableCode": null,
+   "desc": "60 V, 1 A fully integrated high-efficiency step-down converter (MPQ4571-AEC1)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V / 24 V ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/pdfDocs/MPQ4571-AEC1.pdf",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Datasheet dated 2020 — catalogue gap, not a new launch."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ5075A",
+   "orderableCode": null,
+   "desc": "5.5 V, 5 A low-RDS(on) load switch with configurable current limit (MPQ5075A-AEC1)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "camera / display power",
+    "USB port"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+   "note": "Launch = year of the Mouser new-products listing, not a maker date."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ2246",
+   "orderableCode": null,
+   "desc": "Synchronous buck converter (new 2025 listing)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "point-of-load rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+   "note": "Launch = year of the Mouser new-products listing, not a maker date. Ratings not read."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ2242",
+   "orderableCode": null,
+   "desc": "Synchronous buck converter (new 2025 listing)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "2025",
+   "usedIn": [
+    "point-of-load rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/new/monolithicpowersystems/",
+   "note": "Launch = year of the Mouser new-products listing, not a maker date. Ratings not read."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ4232",
+   "orderableCode": "MPQ4232GVE-0000-AEC1-Z",
+   "desc": "Buck-boost converter (automotive)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "USB-C port",
+    "start-stop rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4232GVE-0000-AEC1-Z?qs=CoAU%2FpHVZXzmOMfApBr6DA%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Ratings not read."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ7920",
+   "orderableCode": "MPQ7920GRM-0003-AEC1-Z",
+   "desc": "Multi-channel PMIC",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "camera",
+    "telematics",
+    "SoC rails"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ7920GRM-0003-AEC1-Z?qs=Rp5uXu7WBW%2BVTorrchY9KQ%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Also listed: MPQ7920GRM-0003-AEC1-P. Rail count not read."
+  },
+  {
+   "mfr": "MPS",
+   "family": "MPQ2451",
+   "orderableCode": "MPQ2451GG-5-AEC1-Z",
+   "desc": "Automotive step-down converter (fixed 5 V option per the code)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "sensor module"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ2451GG-5-AEC1-Z?qs=%252BZix9lVCYc%252Bix0EmEpcO3g%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Ratings not read; older part — catalogue gap."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20408",
+   "orderableCode": null,
+   "desc": "3-36 V in, 8 A fully integrated synchronous buck (10 A MAX20410 is in the catalogue)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/analog-devices/maxim-max20408-max20410-buck-converters/",
+   "note": ""
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20077 / MAX25277",
+   "orderableCode": null,
+   "desc": "Mini buck converters, 3.5-36 V in, 40 V load dump",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "camera",
+    "sensor module"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://cz.mouser.com/en/new/analog-devices/maxim-max20077-max25277-converters/",
+   "note": "Two families on one page."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20402 / MAX20403",
+   "orderableCode": null,
+   "desc": "Automotive buck converters in 3x3 mm package, 42 V load dump",
+   "category": "ic_qfn",
+   "pkg": "3x3 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "camera",
+    "radar",
+    "sensor module"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://eu.mouser.com/new/analog-devices/maxim-max20402-max20403-converters/",
+   "note": ""
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20079",
+   "orderableCode": null,
+   "desc": "36 V, 3.5 A automotive buck converter, 65 ns minimum on-time",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://au.mouser.com/en/new/analog-devices/maxim-max20079-buck-converter/",
+   "note": ""
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX25610x",
+   "orderableCode": null,
+   "desc": "Buck and buck-boost LED drivers, 5-36 V in",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "exterior lighting",
+    "head-up display"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/analog-devices/maxim-max25610x-buck-boost-led-drivers/",
+   "note": "Family page; member codes not read."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20405 / MAX20406",
+   "orderableCode": null,
+   "desc": "Automotive 36 V, 4 A / 5 A synchronous buck (siblings of MAX20404, which is in the catalogue)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/datasheet/2/256/MAX20404_MAX20406-2887587.pdf",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Datasheet dated 2/21 — catalogue gap, not a new launch."
+  },
+  {
+   "mfr": "Renesas",
+   "family": "RAA271005",
+   "orderableCode": null,
+   "desc": "11-channel ASIL-D PMIC (5 switching regulators + 6 LDOs), very low IQ, for R-Car V4H / V4M / S4",
+   "category": "ic_bga",
+   "pkg": "BGA 6x11 mm, 0.65 mm pitch",
+   "aecq": false,
+   "launched": "2021-10",
+   "usedIn": [
+    "ADAS domain controller (R-Car V4H / V4M)",
+    "gateway (R-Car S4)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.renesas.com/en/products/raa271005",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. V4H / V4M power-solution application notes dated 15 Dec 2025. Likely sold with the R-Car platform."
+  },
+  {
+   "mfr": "Renesas",
+   "family": "RAA271041",
+   "orderableCode": null,
+   "desc": "Pre-regulator from the 12 V battery for the RAA271005 PMIC (R-Car V4H / S4 power solution)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "2021-10",
+   "usedIn": [
+    "ADAS domain controller (R-Car V4H / V4M)",
+    "gateway (R-Car S4)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.renesas.com/en/document/apn/power-solution-r-car-v4h-series-soc-application-note",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NCV84003G",
+   "orderableCode": null,
+   "desc": "Single-channel high-side eFuse, ASIL B, IDLE mode, capacitive-load charging mode, adjustable over-current and I2t profiles",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/en/new/onsemi/onsemi-nv84003g-high-side-efuse/",
+   "note": "Package not read."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NIV3071",
+   "orderableCode": null,
+   "desc": "4-channel eFuse, 2.5 A per channel (NIS3071 industrial / NIV3071 automotive, PPAP capable)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V / 12 V load protection",
+    "ADAS sensor supply"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/onsemi/onsemi-nix3071-efuses/",
+   "note": "Listing about three years old. Package not read."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NIV6150",
+   "orderableCode": null,
+   "desc": "+5 V electronic eFuse (NIS6150 / NIV6150)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "USB / 5 V rail protection"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://mouser.com/new/onsemi/on-semi-nis6150-niv6150-efuses",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NCV8450A",
+   "orderableCode": "NCV8450ASTT3G",
+   "desc": "Self-protected high-side driver, 4.5-45 V, 800 mA current limit",
+   "category": "ic_soic",
+   "pkg": "SOT-223",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body controller",
+    "relay / lamp drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/onsemi/NCV8450ASTT3G?qs=5C9Q4QJFsuP5tX%2FapmGEeQ%3D%3D",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Older part — catalogue gap."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NCV8163",
+   "orderableCode": null,
+   "desc": "250 mA high-PSRR, ultra-low-noise LDO",
+   "category": "ic_soic",
+   "pkg": null,
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "camera",
+    "radar analogue rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/onsemi/onsemi-ncv8163-regulators/",
+   "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "NCV3064",
+   "orderableCode": "NCV3064DR2G",
+   "desc": "1.5 A switching regulator with enable",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "legacy body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/onsemi/NCV3064DR2G?qs=atIEnC/2K4VXgJaqJ4aZHw%3D%3D",
+   "note": "Older part — catalogue gap. Package from the D suffix (not read)."
+  },
+  {
+   "mfr": "indie Semiconductor",
+   "family": "iND87204",
+   "orderableCode": null,
+   "desc": "In-cabin wireless-charging IC, WPC Qi 2.0 with Magnetic Power Profile (MPP), AEC-Q100 Grade 2",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger (Qi2)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.indie.inc/product/ind87204/",
+   "note": "Package not read. Probably sold direct."
+  },
+  {
+   "mfr": "indie Semiconductor",
+   "family": "iND87200",
+   "orderableCode": null,
+   "desc": "In-cabin wireless-charging IC, Qi 1.3, AEC-Q100 Grade 2 (predecessor of iND87204)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.indie.inc/product/ind87200/",
+   "note": "Package not read."
+  },
+  {
+   "mfr": "ConvenientPower",
+   "family": "CPSQ8203",
+   "orderableCode": null,
+   "desc": "Wireless-charging transmitter power stage, AEC-Q100 Grade 1, Qi 2.0 EPP and MPP (needs a separate controller)",
+   "category": "ic_qfn",
+   "pkg": null,
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "in-cabin wireless charger (Qi2)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.convenientpower.com/front/productdetail/274.html",
+   "note": "Chinese maker; package not read."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "TI TPS6522x / TPS65219-Q1, LP8772x-Q1, TPS653860-Q1 — the PMIC search returned only TPS65224-Q1",
+  "TI LM644xx / LM645xx / LM65645-Q1, LM251772, LM5137F-Q1 — not returned (LMQ644xx-Q1 and LMR604x0-Q1 confirmed instead)",
+  "TI TPS2HCS08-Q1, TPS2HCS05-Q1 — not returned (TPS2HCS10-Q1 already in catalogue)",
+  "TI TPS1213 / TPS1214 / TPS4812 / TPS4813 / TPS48110-Q1 — not returned (TPS4816-Q1 confirmed instead)",
+  "TI LM74910-Q1 — not returned (LM74900-Q1 confirmed)",
+  "TI TPS92544-Q1, TPS929120 / TPS929240-Q1 — not returned (TPS929160-Q1 confirmed)",
+  "TI TPS7B86-Q1 — not returned (TPS7B88-Q1 confirmed)",
+  "TI TPS389006-Q1 / TPS38700-Q1 multichannel supervisors — not returned",
+  "TI LM74721-Q1 — only its EVM listing was seen, not the device",
+  "NXP PCA9450 automotive, FS86, PF5030, 48 V eSwitch — not searched / not returned",
+  "Infineon TLF12505, OPTIREG switcher TLS4125 / TLS4145, LITIX TLD5590 / TLD5591 / TLD7002-16 — not returned (TLD7002 is an estimate in the catalogue)",
+  "Infineon PROFET Load Guard 12 V / 48 V — no page found under that name",
+  "Infineon WLC1515 — seen only in a third-party directory as a Qi 1.3 15 W transmitter; automotive qualification not confirmed",
+  "ST STWBC2 / STWLC99 (Qi2) — not returned; an ST Qi authentication IC was mentioned but its code could not be read reliably",
+  "ST L99LDLH32, ALED7709 / ALED8102 / ALED family, STPMIC25, discrete VIPower M0-9 high-side drivers (VN9xxx) — not returned",
+  "onsemi NCV8870x, NCV681x, NCV7694, NCV78xxx pixel drivers, T10 eFuse — not returned (NCV84003G eFuse confirmed)",
+  "ROHM BD96801, BD18398, BV1HB045, Nano Cap BD9xxN5, BD9P — exact codes not returned (BD968xx-C family and BV1Hx family confirmed)",
+  "MPS MPQ2286, MPQ4371, MPQ5850, MPQ79500 — not returned (MPQ7920 confirmed)",
+  "ADI MAX2540x, MAX25430, MAX20480, ADP5140, LT8210, LT8418, Silent Switcher 3 LT83xx — not returned",
+  "ADI MAX2000xE — confirmed on Mouser but overlaps the catalogue's MAX20004; not listed",
+  "Renesas RAA271084 and R-Car Gen 5 PMICs — not returned (RAA271082 already in catalogue)",
+  "Renesas P9261 automotive Qi transmitter — confirmed but shown OBSOLETE on Renesas's page; not listed",
+  "Richtek RTQ automotive, Diodes AP63xxxQ / AP6612xQ / DPS1035, Allegro A89xxx / ARG8xxxx — no searches left"
+ ]
+}

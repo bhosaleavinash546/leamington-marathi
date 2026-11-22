@@ -1,0 +1,2376 @@
+{
+ "domain": "k7-smt-passives-emc",
+ "researched": "2026-11-22",
+ "searchesUsed": 8,
+ "candidates": [
+  {
+   "mfr": "Murata",
+   "family": "GCM",
+   "orderableCode": "GCM31CC71E226ME36",
+   "desc": "MLCC 22 uF 25 V 1206, automotive, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408",
+   "note": ""
+  },
+  {
+   "mfr": "Murata",
+   "family": "GCM",
+   "orderableCode": "GCM035D70E225ME02",
+   "desc": "MLCC 2.2 uF 2.5 V 0201, automotive, AEC-Q200 (SoC decoupling)",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408",
+   "note": "Also GCM035D70G225MEC2 (4 V) on the same page."
+  },
+  {
+   "mfr": "Murata",
+   "family": "GCM",
+   "orderableCode": "GCM31CD70G107ME36",
+   "desc": "MLCC 100 uF 4 V 1206, automotive, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408",
+   "note": "Also GCM31CD70E107ME36 (2.5 V) on the same page."
+  },
+  {
+   "mfr": "Murata",
+   "family": "GCM",
+   "orderableCode": "GCM32ED70G227MEC4",
+   "desc": "MLCC 220 uF 4 V 1210, automotive, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408",
+   "note": ""
+  },
+  {
+   "mfr": "Murata",
+   "family": "KCA (safety, metal terminal)",
+   "orderableCode": "KCA55LR7MF472KU01",
+   "desc": "Safety-certified Y2/X1 metal-terminal MLCC 4700 pF 500 Vac / 1000 Vdc X7R, AEC-Q200 Ed.D",
+   "category": "passive_1206",
+   "pkg": "6.1x5.1 mm metal terminal",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2025/1030",
+   "note": "Same page: KCA55HR7MF152KU01, KCA55HR7MF222KU01, KCA55LR7MF332KU01, KCA55TR7MF682MU01, KCA55TR7MF103MU01."
+  },
+  {
+   "mfr": "Murata",
+   "family": "KCM (metal terminal)",
+   "orderableCode": "KCM55WC71E107MH13K",
+   "desc": "Metal-terminal stacked MLCC 100 uF 25 V X7S, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "stacked 2220, J-lead",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "inverter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=KCM55WC71E107MH13K",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Murata",
+   "family": "LLC (low ESL, reversed termination)",
+   "orderableCode": "LLC15SD70E105ME01",
+   "desc": "Low-ESL reverse-geometry MLCC 1 uF, 0.5x1.0 mm footprint, 0.18 mm thick, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0204",
+   "aecq": true,
+   "launched": "2023-10",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2023/1026",
+   "note": "Part number appears in the page product link; rated voltage not stated."
+  },
+  {
+   "mfr": "Murata",
+   "family": "EVA (Y2, extended creepage)",
+   "orderableCode": null,
+   "desc": "Y2-class SMD MLCC 0.1-4.7 nF, 305 Vac / 1500 Vdc, 12.7x6.0 mm, AEC-Q200 (800 V powertrains)",
+   "category": "passive_1206",
+   "pkg": "12.7x6.0 mm",
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2023/0525",
+   "note": "No orderable code on the page."
+  },
+  {
+   "mfr": "Murata",
+   "family": "NFM15HC (3-terminal)",
+   "orderableCode": "NFM15HC105D0G3D",
+   "desc": "3-terminal feed-through capacitor 1 uF 4 V 2 A 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=NFM15HC105D0G3D",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DFE2MCPH_JL",
+   "orderableCode": "DFE2MCPH1R0MJLLQ",
+   "desc": "Metal power inductor 1.0 uH 20% 0806 (2.0x1.6 mm), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "launched": "2026-09",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.murata.com/en-global/news/inductor/power/2026/0907",
+   "note": "Line-up expanded Sep 2026 to 0.10-4.7 uH (11 values, pattern DFE2MCPH*MJLLQ). Not found on Digi-Key 2026-11-22."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DFE2MCPH_JL",
+   "orderableCode": "DFE2MCPHR47MJLLQ",
+   "desc": "Metal power inductor 0.47 uH 20% 5.4 A 0806, automotive grade",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "launched": "2024-01",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.murata.com/en-global/news/inductor/power/2024/0130",
+   "note": "First two values (0.33 / 0.47 uH) released Jan 2024; AEC-Q200 stated on the Sep 2026 page for the series."
+  },
+  {
+   "mfr": "Murata",
+   "family": "LQW18FT_0H (PoC)",
+   "orderableCode": null,
+   "desc": "In-vehicle PoC wirewound inductor 0.55-2.2 uH, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2024-12",
+   "usedIn": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/inductor/poc/2025/0121",
+   "note": "Series only on the page; no orderable code shown."
+  },
+  {
+   "mfr": "Murata",
+   "family": "LQP02HQ_Z2",
+   "orderableCode": null,
+   "desc": "High-Q RF chip inductor 0.2-56 nH, 01005 (0.4x0.2 mm), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "01005",
+   "aecq": true,
+   "launched": "2025-03",
+   "usedIn": [
+    "telematics",
+    "V2X",
+    "UWB"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/inductor/chip/2025/0305",
+   "note": "Series only on the page."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DLM11C_HH2",
+   "orderableCode": "DLM11CN900HH2L",
+   "desc": "Chip common-mode choke 90 ohm @100 MHz 80 mA, 0504, for LVDS / SerDes / USB / HDMI, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0504",
+   "aecq": true,
+   "launched": "2024-12",
+   "usedIn": [
+    "camera",
+    "display",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=DLM11CN900HH2L",
+   "note": "Digi-Key listing, Active. Murata page (news/emc/emifil/2024/1217) also lists DLM11CN500HH2 and DLM11CN201HH2."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DLM11C_HH2",
+   "orderableCode": "DLM11CB120HH2",
+   "desc": "Chip common-mode choke 12 ohm @100 MHz 100 mA, 0504, high cut-off, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0504",
+   "aecq": true,
+   "launched": "2025-11",
+   "usedIn": [
+    "camera",
+    "display",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/emc/emifil/2025/1105",
+   "note": ""
+  },
+  {
+   "mfr": "Murata",
+   "family": "BLM15VM",
+   "orderableCode": "BLM15VM150BH1D",
+   "desc": "Chip ferrite bead for 5.9 GHz C-V2X (1000 ohm typ @5.9 GHz; 15 ohm @100 MHz), 0402, 150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "V2X",
+    "telematics"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=BLM15VM150BH1D",
+   "note": "Digi-Key listing, Active. Murata page: news/emc/emifil/2025/0619."
+  },
+  {
+   "mfr": "Murata",
+   "family": "PLT10HH",
+   "orderableCode": "PLT10HH351100PNL",
+   "desc": "Power-line common-mode choke 350 ohm @10 MHz 10 A 100 V, 150 C, SMD",
+   "category": "passive_1206",
+   "pkg": "SMD power-line CMC",
+   "aecq": true,
+   "launched": "2025-06",
+   "usedIn": [
+    "DC-DC converter",
+    "48 V systems",
+    "on-board charger"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=PLT10HH351100PNL",
+   "note": "Digi-Key listing shows AEC-Q200, Active. Murata page (news/emc/emifil/2025/0529) also lists PLT10HH8016R0PN (6 A) and PLT10HH900150PN (15 A, 300 V)."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DLW32PH",
+   "orderableCode": "DLW32PH122XK2L",
+   "desc": "Wirewound common-mode choke for power lines 1.2 kohm @100 MHz 1.2 A 60 V, 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2023-03",
+   "usedIn": [
+    "PoDL",
+    "camera",
+    "zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=DLW32PH122XK2L",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DLW43MH",
+   "orderableCode": "DLW43MH201XK2L",
+   "desc": "CAN FD common-mode choke 200 uH 110 mA, 1812, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1812",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "CAN FD node",
+    "gateway"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=DLW43MH201XK2L",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Murata",
+   "family": "DLW32SH_MF (150 C)",
+   "orderableCode": "DLW32SH510MF2",
+   "desc": "CAN / CAN FD common-mode choke 51 uH, metal-terminal 1210, 150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-09",
+   "usedIn": [
+    "CAN FD node",
+    "powertrain ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/emc/emifil/2026/0910",
+   "note": "Also DLW32SH101MF2 (100 uH)."
+  },
+  {
+   "mfr": "Murata",
+   "family": "BLE32SN",
+   "orderableCode": "BLE32SN120SZ1L",
+   "desc": "Power-line ferrite bead 12 ohm @100 MHz 20 A 0.6 mohm, 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=BLE32SN120SZ1L",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Murata",
+   "family": "NCU03",
+   "orderableCode": "NCU03XH103F6SRL",
+   "desc": "NTC thermistor 10 k 1% B3380, 0201 (0603M), copper electrode, automotive",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "launched": "2024-08",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=NCU03XH103F6SRL",
+   "note": "Digi-Key listing shows AEC-Q200, Active. Murata page: news/thermistor/ntc/2024/0828."
+  },
+  {
+   "mfr": "Murata",
+   "family": "NCU03",
+   "orderableCode": "NCU03WF104F6SRL",
+   "desc": "NTC thermistor 100 k 1% B4250, 0201 (0603M), automotive",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": false,
+   "launched": "2025-11",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/thermistor/ntc/2025/1112",
+   "note": "Page marks it \"Automotive\"; AEC-Q200 not stated on that page."
+  },
+  {
+   "mfr": "Murata",
+   "family": "NCU15 (150 C, B 0.5%)",
+   "orderableCode": "NCU15XH103FBSRC",
+   "desc": "NTC thermistor 10 k 1% B3380 0.5%, 0402, -55..150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "2024-04",
+   "usedIn": [
+    "inverter",
+    "BMS",
+    "powertrain ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.murata.com/en-global/news/thermistor/ntc/2024/0424",
+   "note": "Listed on Digi-Key (Active). Same page: NCU15WB473FBSRC, NCU15WF104FBSRC."
+  },
+  {
+   "mfr": "Murata",
+   "family": "NCU18 (150 C, B 0.5%)",
+   "orderableCode": "NCU18XH103FBSRB",
+   "desc": "NTC thermistor 10 k 1% B3380 0.5%, 0603, -55..150 C, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2024-04",
+   "usedIn": [
+    "inverter",
+    "BMS",
+    "powertrain ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.murata.com/en-global/news/thermistor/ntc/2024/0424",
+   "note": "Same page: NCU18WB473FBSRB, NCU18WF104FBSRB."
+  },
+  {
+   "mfr": "Murata",
+   "family": "FTI (wire-bondable NTC)",
+   "orderableCode": "FTN21XH502F0SRU",
+   "desc": "Resin-moulded wire-bondable NTC thermistor 5 k 1% B3380, 0805, for power modules",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": false,
+   "launched": "2025-06",
+   "usedIn": [
+    "traction inverter",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/thermistor/ntc/2025/0520",
+   "note": "Automotive thermal feedback per the page; AEC-Q200 not stated. Not on Digi-Key 2026-11-22."
+  },
+  {
+   "mfr": "Murata",
+   "family": "PRF03 (PTC overheat sensing)",
+   "orderableCode": "PRF03BB102QS7RL",
+   "desc": "PTC thermistor 1 k @25 C for overheat sensing, 0201 (0603M), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "launched": "2024-10",
+   "usedIn": [
+    "LED lighting",
+    "ADAS ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.murata.com/en-global/news/thermistor/ptc/2024/0918",
+   "note": "Also PRF03BC102QS7RL (other sensing temperature)."
+  },
+  {
+   "mfr": "TDK",
+   "family": "CGA (100 V high capacitance)",
+   "orderableCode": "CGA6P1X7R2A106K250AC",
+   "desc": "MLCC 10 uF 100 V X7R 10% 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2025-04",
+   "usedIn": [
+    "48 V systems",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.tdk.com/en/news_center/press/20250414_01.html",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "TDK",
+   "family": "CNA (soft termination)",
+   "orderableCode": "CNA6P1X7R1H106K250AE",
+   "desc": "MLCC 10 uF 50 V X7R 10% 1210, soft termination, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CNA6P1X7R1H106K250AE",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "TDK",
+   "family": "YFF-AC (3-terminal filter)",
+   "orderableCode": null,
+   "desc": "3-terminal feed-through filter, automotive: 35 V 0.22 uF 0402 (stem YFF15AC1V224M) and 10 V 4.7 uF 0805 (stem YFF21AC1A475M), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402 / 0805",
+   "aecq": true,
+   "launched": "2025-06",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.tdk.com/en/news_center/press/20250603_01.html",
+   "note": "Stems seen in a TDK solution guide via search; full orderable suffix not seen, so no code. Mouser has a YFF-AC 10 V & 35 V page."
+  },
+  {
+   "mfr": "TDK",
+   "family": "TFM201612BLEA",
+   "orderableCode": "TFM201612BLEAR47MTCA",
+   "desc": "Thin-film metal power inductor 0.47 uH, 2.0x1.6x1.2 mm, 150 C, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.tdk.com/en/news_center/press/20250701_01.html",
+   "note": "Code as named in Digi-Key listings / TDK ECM library per search; TFM201612BLEA1R5MTCA also seen in a Digi-Key product URL."
+  },
+  {
+   "mfr": "TDK",
+   "family": "TFM201610ALMA",
+   "orderableCode": "TFM201610ALMA1R0MTAA",
+   "desc": "Thin-film metal power inductor 1 uH 3.1 A 0806, soft termination, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=TFM201610ALMA1R0MTAA",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "TDK",
+   "family": "BCL3520FT",
+   "orderableCode": "BCL3520FT-R47M-D",
+   "desc": "Power inductor 0.47 uH 10 A sat 5 mohm, 3.3x3.5x2.0 mm, 155 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3.3x3.5 mm",
+   "aecq": true,
+   "launched": "2025-12",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/tdk-unveils-small-automotive-power-inductors/",
+   "note": "Listed on Digi-Key (Active)."
+  },
+  {
+   "mfr": "TDK",
+   "family": "SPM-VT-D",
+   "orderableCode": "SPM5030VT-2R2M-D",
+   "desc": "Metal-composite power inductor 2.2 uH 6.6 A, 5.3x5.1 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "5x5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SPM5030VT-2R2M-D",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "TDK",
+   "family": "CLF-NI-D",
+   "orderableCode": "CLF6045NIT-100M-D",
+   "desc": "Shielded wirewound power inductor 10 uH 2.1 A, 6.3x6.0 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6x6 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CLF6045NIT-100M-D",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "TDK",
+   "family": "MLJ1608-G (PoC)",
+   "orderableCode": "MLJ1608WGC1R2MTD25",
+   "desc": "Multilayer ferrite inductor 1.25 uH 350 mA 0603 for PoC filters, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2026-10",
+   "usedIn": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/tdk-expands1608-inductors-for-automotive-poc-filters/",
+   "note": "Digi-Key listing shows AEC-Q200, Active. Existing sibling MLJ1608WGCR56NTD25."
+  },
+  {
+   "mfr": "TDK",
+   "family": "ADL8030VA (PoC)",
+   "orderableCode": null,
+   "desc": "PoC inductor 10-100 uH up to 0.82 A, 7.8x2.7x2.7 mm, 155 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7.8x2.7 mm",
+   "aecq": true,
+   "launched": "2025-06",
+   "usedIn": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/tdk-releases-automotive-power-over-coax-inductor-for-filters/",
+   "note": "Digi-Key and Mouser series pages exist; no full orderable code seen."
+  },
+  {
+   "mfr": "TDK",
+   "family": "ADL4524VL (PoC)",
+   "orderableCode": "ADL4524VL-180M-TL000",
+   "desc": "Wirewound PoC inductor 18 uH 20%, 4.5x2.4x2.6 mm, 155 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1810",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.nl/en/products/detail/tdk-corporation/ADL4524VL-180M-TL000/26606511",
+   "note": "Code seen in a Digi-Key product URL (\"New at DigiKey\")."
+  },
+  {
+   "mfr": "TDK",
+   "family": "E13 EM (gate-drive transformer)",
+   "orderableCode": "B82802F0007A213",
+   "desc": "SMD flyback gate-drive transformer 1:1:0.5, 30 uH, 100-400 kHz, -40..150 C, AEC-Q200 Rev. E",
+   "category": "transformer",
+   "pkg": "E13 SMD",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "traction inverter",
+    "on-board charger",
+    "HV DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/tdk-releases-compact-smd-gate-drive-transformers-for-xev/",
+   "note": "Digi-Key listing, Active. Same article: B82802F0004A213, B82802F0005A113, B82804F0503A200, B82804F0114A200, B82804F0244A210."
+  },
+  {
+   "mfr": "TDK",
+   "family": "NTCSP (175 C, conductive glue)",
+   "orderableCode": "NTCSP163JF103FT1H",
+   "desc": "NTC thermistor 10 k 1% B3435, 0603, -55..175 C, AgPd terminations, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2026-02",
+   "usedIn": [
+    "traction inverter",
+    "power module"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/tdk-releases-high-temp-175c-automotive-ntc-thermistors/",
+   "note": "Digi-Key listing, Active. Also NTCSP164KF104FT1H (100 k)."
+  },
+  {
+   "mfr": "TDK",
+   "family": "NTCG (automotive)",
+   "orderableCode": "NTCG163JF103FT1S",
+   "desc": "NTC thermistor 10 k 1% B3435, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "body ECU",
+    "LED lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=NTCG163JF103FT1S",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7T",
+   "orderableCode": "CL05Z106MS66PN#",
+   "desc": "MLCC 10 uF 2.5 V X7T 0402, AEC-Q200 (ADAS power rails)",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "2026-10",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-adds-0402-10-%c2%b5f-x7t-mlcc-for-adas-power-rails/",
+   "note": "\"#\" is the packing code position as printed."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7T",
+   "orderableCode": "CL10Z226MR96PN#",
+   "desc": "MLCC 22 uF 4 V X7T 20% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2026-10",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-adds-0402-10-%c2%b5f-x7t-mlcc-for-adas-power-rails/",
+   "note": "Also CL10Z226MS96PN# (2.5 V)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7T",
+   "orderableCode": "CL21Z476MRY6PN",
+   "desc": "MLCC 47 uF 4 V X7T 0805, AEC-Q200 (world first)",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "2026-02",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-launches-worlds-first-automotive-47uf-4v-mlcc-in-0805-size/",
+   "note": "Also CL21Z226MQYVPN / CL21Z226MRYVPN (22 uF)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7T",
+   "orderableCode": "CL31Z107MRK6PN#",
+   "desc": "MLCC 100 uF 4 V X7T 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-introduces-automotive-1206-100uf-x7t-mlcc-for-power-rails-in-adas-and-socs/",
+   "note": ""
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7T (high bending)",
+   "orderableCode": "CL32Z227MSV6PJ#",
+   "desc": "MLCC 220 uF 2.5 V X7T 1210, high bending strength, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-introduces-automotive-1206-100uf-x7t-mlcc-for-power-rails-in-adas-and-socs/",
+   "note": "Also CL32Z107MQV6PJ# (100 uF 6.3 V)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "MFC (molded frame capacitor)",
+   "orderableCode": "CL55Z125MH6MPN#",
+   "desc": "Two-stack molded-frame MLCC 1.2 uF 630 V X7T 2220, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2220 MFC",
+   "aecq": true,
+   "launched": "2026-11",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-introduces-630v-x7t-molded-frame-capacitor-for-automotive/",
+   "note": "Related C0G part CL55C543JI6MPN# (54 nF 1000 V, Oct 2025)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL HV C0G (800 V systems)",
+   "orderableCode": "CL32C333JIVNNW#",
+   "desc": "MLCC 33 nF 1000 V C0G 1210 for CLLC resonant stages",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": false,
+   "launched": "2025-12",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-introduces-1000v-c0g-and-x7-mlccs-for-800v-dc-systems/",
+   "note": "AEC-Q200 not stated in the article. Same article: CL43B473KIURPJ#, CL55B104KIURPJ# (1000 V X7R)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL HV C0G / X8G fail-safe",
+   "orderableCode": "CL32C103JXV3PN#",
+   "desc": "MLCC 10 nF 1250 V C0G 1210, fail-safe design, for xEV powertrains",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": false,
+   "launched": "2026-04",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-introduces-ultra-high-voltage-1500-v-mlccs-for-xev-powertrains/",
+   "note": "AEC-Q200 not stated. Same article: CL32G122KVV3PN# (1.2 nF 1500 V X8G), CL32C223JIV3PN#, CL32C333JIV1PN#."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL X7R PJ (soft termination HV)",
+   "orderableCode": "CL43B104KIU6PJ#",
+   "desc": "MLCC 100 nF 1000 V X7R 1812, soft termination, AEC-Q200 bending",
+   "category": "passive_1206",
+   "pkg": "1812",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-releases-1000v-1812-x7r-100nf-mlcc-for-electric-vehicles/",
+   "note": "Same article: CL43B224KHU6PJ# (220 nF 630 V), CL43B222KJRRPJ# (2.2 nF 2000 V)."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL X7T PJ (250 V)",
+   "orderableCode": "CL21Z104KEY6PJ#",
+   "desc": "MLCC 100 nF 250 V X7T 0805, AEC-Q200 (MHEV / HEV inverters)",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "2025-08",
+   "usedIn": [
+    "48 V systems",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-extends-capacitance-of-mlcc-0805-x7t-250v-to-100nf/",
+   "note": ""
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7S (100 V 0402)",
+   "orderableCode": "CL05Y223KC56PN#",
+   "desc": "MLCC 22 nF 100 V X7S 0402 (world first), automotive",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "launched": "2025-11",
+   "usedIn": [
+    "48 V systems",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-presents-worlds-first-100v-22nf-automotive-mlcc-in-0402-size/",
+   "note": "Article says \"approved for key automotive applications\"; AEC-Q200 not stated."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7S (bending-reinforced)",
+   "orderableCode": "CL05Y474KOD6PJ#",
+   "desc": "MLCC 470 nF 16 V X7S 0402, 5 mm bending, automotive",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "launched": "2025-09",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "radar",
+    "LiDAR"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/samsung-electro-mechanics-releases-470nf-16v-mlcc-in-0402-size/",
+   "note": "AEC-Q200 not stated in the article."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL 3-terminal low ESL",
+   "orderableCode": "CL05Z105MR41PT",
+   "desc": "3-terminal low-ESL MLCC 1 uF 4 V X7T 0402 for ADAS SoC decoupling",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "launched": "2025-12",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/samsung-introduced-low-esl-3-terminal-reverse-geometry-mlccs-for-high-performance-adas/",
+   "note": "AEC-Q200 not stated. Same article: CL10Z105MO66PT (16 V 0603), LICC reverse-geometry CLL5Z225MS21PN / CLL5Z105MR41PN."
+  },
+  {
+   "mfr": "Samsung Electro-Mechanics",
+   "family": "CL automotive X7R",
+   "orderableCode": "CL10B105KA8VPNC",
+   "desc": "MLCC 1 uF 25 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CL10B105KA8VPNC",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SM915xx (BMS transformer)",
+   "orderableCode": "SM91522AL-E",
+   "desc": "Single-channel BMS signal transformer with integrated CMCs, 150-450 uH, 1000 Vdc working, 3.5 mm high, AEC-Q200",
+   "category": "transformer",
+   "pkg": "15.6x9.0x3.5 mm SMD",
+   "aecq": true,
+   "launched": "2026-10",
+   "usedIn": [
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/bourns-releases-bms-transformer-with-3-5-mm-height/",
+   "note": "Article names SM91522AL; Digi-Key lists SM91522AL-E (Active)."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SM915xx (BMS transformer)",
+   "orderableCode": "SM91534ALA",
+   "desc": "BMS signal transformer, reinforced isolation, 1500 Vdc working, 6.4 kVdc hi-pot, AEC-Q200",
+   "category": "transformer",
+   "pkg": "31.5x12.5x9.5 mm SMD",
+   "aecq": true,
+   "launched": "2026-08",
+   "usedIn": [
+    "BMS (800 V packs)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-automotive-bms-signal-transformer-combines-reinforced-isolation-and-common-mode-noise-rejection/",
+   "note": ""
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SM915xx (BMS transformer)",
+   "orderableCode": "SM91572AL",
+   "desc": "BMS signal transformer with integrated CMCs, 1000 Vdc working, 3000 Vac hi-pot, AEC-Q200",
+   "category": "transformer",
+   "pkg": "SMD",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-introduces-automotive-bms-signal-transformer-with-integrated-common-mode-chokes/",
+   "note": ""
+  },
+  {
+   "mfr": "Bourns",
+   "family": "HCT (isolation power transformer)",
+   "orderableCode": "HCTSM151207FAL-E",
+   "desc": "Isolation power transformer 24 V in / 12 V 100 mA, reinforced, 1500 Vdc working, >15 mm creepage, AEC-Q200 Grade 1",
+   "category": "transformer",
+   "pkg": "15.0x21.3x9.6 mm SMD",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "BMS",
+    "HV DC-DC",
+    "traction inverter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-releases-compact-automotive-isolation-power-transformer/",
+   "note": "Article names HCTSM151207FAL; Digi-Key lists HCTSM151207FAL-E (Active)."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "HVMA (gate-driver transformer)",
+   "orderableCode": "HVMA03F45A-ST8S",
+   "desc": "Gate-driver transformer 3 W, 45 uH, 850 V working, 8 mm creepage, ER9.5 SMT, AEC-Q200",
+   "category": "transformer",
+   "pkg": "ER9.5 SMT",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "traction inverter",
+    "on-board charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-releases-automotive-gate-driver-transformer-for-isolated-power/",
+   "note": "Earlier sibling HVMA03T100A-ST10S (1000 V working, Oct 2025)."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SRN3010BTA",
+   "orderableCode": "SRN3010BTA-330M",
+   "desc": "Semi-shielded power inductor 33 uH 0.6 A, 3x3x0.9 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3x3 mm",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "body ECU",
+    "camera",
+    "LED lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/bourns-expanded-semi-shielded-low-profile-automotive-power-inductor/",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SRP-TA",
+   "orderableCode": "SRP4020TA-4R7M",
+   "desc": "Shielded power inductor 4.7 uH 2.6 A, 4x4x2 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4x4 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SRP2010PA / SRP2510PA / SRP2512PA",
+   "orderableCode": null,
+   "desc": "Shielded metal-alloy power inductors 0.1-3.3 uH, 2.0x1.6 / 2.5x2.0 mm, Isat to 9 A, -40..145 C, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806 / 1008",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/bourns-introduces-automotive-shielded-power-inductors-for-compact-dc-dc-converters/",
+   "note": "Mouser new-product pages for SRP2010PA and SRP2510PA; no full orderable code seen."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SDE0403AT",
+   "orderableCode": null,
+   "desc": "Drum-ferrite SMD power inductor, Isat to 4.8 A, 3.5 mm high, -55..150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4x4 mm",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "body ECU",
+    "LED lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-releases-automotive-150c-smd-power-inductors-with-high-saturation-current/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "SRF3225TAP (common-mode)",
+   "orderableCode": null,
+   "desc": "Common-mode chip inductor 500-1000 ohm, 2 A, 1210, -55..150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "power-line filter",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-adds-new-common-mode-automotive-chip-inductors/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "CSS4C-1216 (4-terminal shunt)",
+   "orderableCode": null,
+   "desc": "Electron-beam-welded metal-strip 4-terminal shunt 0.2-3.0 mohm, 2-5 W, 1216, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1216",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/bourns-extends-1216-kelvin-current-sense-resistors/",
+   "note": "Range extended Sep 2026. Series only."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "CFG-A (wide-terminal metal foil)",
+   "orderableCode": null,
+   "desc": "Wide-terminal metal-foil current-sense resistor 1-40 mohm, 1-2 W, 0508 / 0612 (CFG0508A, CFG0612A), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0508 / 0612",
+   "aecq": true,
+   "launched": "2026-08",
+   "usedIn": [
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-introduces-automotive-wide-terminal-metal-foil-current-sense-resistors-for-high-reliability-designs/",
+   "note": "Model stems only."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "CRF2512 / CRF2010 (metal strip)",
+   "orderableCode": null,
+   "desc": "Metal-strip current-sense resistor, 2512 3 W down to 0.3 mohm (AEC-Q200) and 2010 1.5 W 1-50 mohm",
+   "category": "passive_1206",
+   "pkg": "2010 / 2512",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "motor drive",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-releases-smd-chip-high-power-metal-strip-current-sense-resistors-in-2010-case/",
+   "note": "AEC-Q200 stated for CRF2512."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "CWM-Q (wide-terminal thick film)",
+   "orderableCode": null,
+   "desc": "Wide-terminal thick-film resistor 1 ohm-1 Mohm, up to 2 W, 0612 / 1225, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "0612 / 1225",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "body ECU",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-unveils-new-robust-wide-terminal-thick-film-resistors/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Bourns",
+   "family": "CR01005A-AS",
+   "orderableCode": null,
+   "desc": "Sulfur-resistant thick-film resistor 1 ohm-1 Mohm, 01005, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "01005",
+   "aecq": true,
+   "launched": "2025-07",
+   "usedIn": [
+    "camera",
+    "radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/bourns-unveils-smallest-automotive-grade-thick-film-resistors/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "SDR01 (anti-surge 0402)",
+   "orderableCode": null,
+   "desc": "High anti-surge thick-film resistor 0.33 W, 0402, 1 ohm-10 Mohm, -55..155 C (stem SDR01MZPJ), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "2026-09",
+   "usedIn": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/rohm-introduces-anti-surge-0402-resistors-rated-at-0-33-w/",
+   "note": "Stem only; value code not shown."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "PMR (metal-plate shunt)",
+   "orderableCode": "PMR18EZPFU10L0",
+   "desc": "Current-sense metal-plate resistor 10 mohm 1% 1 W 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "LTR (wide-terminal)",
+   "orderableCode": "LTR18EZPF10R0",
+   "desc": "Wide-terminal thick-film resistor 10 ohm 1% 1.5 W 1206 (long-side), pulse-withstanding, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "0612",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "gate drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=LTR18EZPF10R0",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "ESR (anti-surge)",
+   "orderableCode": "ESR03EZPF1002",
+   "desc": "Anti-surge thick-film resistor 10 k 1% 0.25 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=ESR03EZPF1002",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "KTR (high voltage)",
+   "orderableCode": "KTR18EZPF1004",
+   "desc": "High-voltage thick-film resistor 1 Mohm 1% 0.25 W 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "HV sensing"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=KTR18EZPF1004",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "NTCS0402E3....XT (glass protected)",
+   "orderableCode": "NTCS0402E3104FXT",
+   "desc": "NTC thermistor 100 k 1% B4311, 0402, glass protected, -55..150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "launched": "2025-12",
+   "usedIn": [
+    "BMS",
+    "inverter",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/vishay-releases-automotive-glass-protected-0402-ntc-thermistor/",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "NTCS0603E3...T",
+   "orderableCode": "NTCS0603E3103FLT",
+   "desc": "NTC thermistor 10 k 1%, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=NTCS0603E3103FLT",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "WSLF1206 (Power Metal Strip)",
+   "orderableCode": "WSLF1206L5000FE6",
+   "desc": "Current-sense resistor 0.5 mohm 1% 5 W 1206, AEC-Q200 per datasheet",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://uk.rs-online.com/web/p/surface-mount-resistors/0866916",
+   "note": "RS listing; also WSLF1206L3000FE6, WSLF12061L000FE6. Vishay release: vishay.com/en/company/press/releases/2025/WSLF1206."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "WSLP0603",
+   "orderableCode": "WSLP0603R0100FEA",
+   "desc": "Power Metal Strip current-sense 10 mohm 1% 0.4 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "LED lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=WSLP0603R0100FEA",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "WSHP2818",
+   "orderableCode": "WSHP2818R0100FEA",
+   "desc": "Power Metal Strip current-sense 10 mohm 1% 10 W 2818, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2818",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=WSHP2818R0100FEA",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "IHLE-5A (integrated e-shield)",
+   "orderableCode": "IHLE4040DDER100M5A",
+   "desc": "Shielded power inductor with e-field shield 10 uH 6.5 A, 4040, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4040",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment",
+    "ADAS ECU",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=IHLE4040DDER100M5A",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "CRCW0201-AT e3",
+   "orderableCode": null,
+   "desc": "Thick-film chip resistor 0201, 10 ohm-1 Mohm + jumper, 0.05 W, 155 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "launched": "2026-02",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/vishay-unveils-ultra-compact-0201-thick-film-chip-resistors/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "RCA-SR e3 (sulfur resistant)",
+   "orderableCode": null,
+   "desc": "Sulfur-resistant thick-film chip resistor 0201-1206 (e.g. RCA0402-SR e3, RCA0603-SR e3), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0201-1206",
+   "aecq": true,
+   "launched": "2026-02",
+   "usedIn": [
+    "powertrain ECU",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/vishay-releases-sulfur-resistant-chip-resistors/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "ILHB (automotive ferrite beads)",
+   "orderableCode": null,
+   "desc": "Multilayer chip ferrite bead 0402-1206, 10-2700 ohm, up to 6 A (ILHB-0402 / -0603 / -0805 / -1008 / -1206), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0402-1206",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/vishay-extends-automotive-ferrite-beads-for-high-current-emc-noise-filtering/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "IFLN-1210BE-A / IFLN-1812CZ-A (signal CMC)",
+   "orderableCode": null,
+   "desc": "Precision-wound ferrite common-mode choke 1210 / 1812, 0.15-0.36 A, -55..150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210 / 1812",
+   "aecq": true,
+   "launched": "2026-08",
+   "usedIn": [
+    "CAN FD node",
+    "automotive Ethernet"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/vishay-introduces-automotive-low-loss-smd-common-mode-chokes/",
+   "note": "Same release: ICM5050-A / ICM6050-A power-line CMCs (5.5-14 A)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "ICMS2321-1A (high-current CMC)",
+   "orderableCode": null,
+   "desc": "Low-profile common-mode choke 70-480 uH, up to 30 A, 150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2321",
+   "aecq": true,
+   "launched": "2026-09",
+   "usedIn": [
+    "on-board charger",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/vishay-extends-high-current-common-mode-chokes-with-30-a-emi-filtering-up-to-150-c/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Panasonic",
+   "family": "EEH-ZU (hybrid, 135 C)",
+   "orderableCode": "EEH-ZU1V331P",
+   "desc": "Hybrid polymer Al SMD 330 uF 35 V, 11 mohm, 4000 h @135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10.2 mm can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS",
+    "engine ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=EEHZU1V331P",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Panasonic",
+   "family": "EEH-ZVU (hybrid, high ripple)",
+   "orderableCode": null,
+   "desc": "Hybrid polymer Al SMD 56-560 uF, ESR from 12 mohm, ripple 3.3-4.6 Arms, 135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "2025-06",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS",
+    "48 V systems"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/panasonic-releases-new-aluminum-hybrid-capacitors-with-high-ripple-current-in-compact-size/",
+   "note": "Mouser has an EEH-ZVU new-product page; no full orderable code seen."
+  },
+  {
+   "mfr": "Panasonic",
+   "family": "ETQP_M_Y (metal composite, high performance)",
+   "orderableCode": "ETQ-P5M6R8GAK",
+   "desc": "Metal-composite power inductor 6.8 uH 9.1 A 19.8 mohm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "5x5 mm class",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/panasonic-extends-automotive-power-inductor-line/",
+   "note": "Digi-Key listing, Active. Same article: ETQ-P6M100GAC, ETQ-P4MR33KLC."
+  },
+  {
+   "mfr": "Panasonic",
+   "family": "ERJ-HP (high power thick film)",
+   "orderableCode": "ERJ-HP6F1001V",
+   "desc": "Thick-film resistor 1 k 1% 0.5 W 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=ERJ-HP6F1001V",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Panasonic",
+   "family": "ERJ-PC (super high precision thick film)",
+   "orderableCode": null,
+   "desc": "Thick-film resistor to 0.1% / 25 ppm, 0603 (ERJPC3) and 0805 (ERJPC6), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603 / 0805",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "BMS",
+    "sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/panasonic-high-precision-chip-resistors-bridge-gap-between-thin-and-thick-technology/",
+   "note": "Type prefixes only."
+  },
+  {
+   "mfr": "KOA",
+   "family": "RK73H",
+   "orderableCode": "RK73H1JTTD1002F",
+   "desc": "Thick-film resistor 10 k 1% 0.1 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "all ECUs"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=RK73H1JTTD1002F",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "KOA",
+   "family": "SG73P (surge / pulse)",
+   "orderableCode": "SG73P2ATTD1002F",
+   "desc": "Pulse-withstanding thick-film resistor 10 k 1% 0.75 W 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SG73P2ATTD1002F",
+   "note": "Digi-Key listing, Active. Rated power of the SG73 series was raised in Jul 2024 (koaglobal.com/news/product/202407_sg73_up)."
+  },
+  {
+   "mfr": "KOA",
+   "family": "WK73S / WK73R (wide terminal)",
+   "orderableCode": null,
+   "desc": "Long-side-electrode thick-film resistor 0510-3264, 0.33-4 W after 2025 power uprating, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "0612-2550",
+   "aecq": true,
+   "launched": "2025-03",
+   "usedIn": [
+    "motor drive",
+    "BMS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.koaglobal.com/news/product/202503_WK73_up",
+   "note": "Type designations only (e.g. WK73S 2B 1.5 W)."
+  },
+  {
+   "mfr": "KOA",
+   "family": "WN73H (wide-terminal thin film)",
+   "orderableCode": null,
+   "desc": "Long-side-electrode metal-film resistor 0.3 W in 0816 (1J), 10 ohm-100 k, TCR 10-50 ppm, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0306 / 0612",
+   "aecq": true,
+   "launched": "2024-10",
+   "usedIn": [
+    "BMS",
+    "sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.koaglobal.com/news/product/202410_wn73h",
+   "note": "Type designations only."
+  },
+  {
+   "mfr": "KOA",
+   "family": "RN73H 1H (0201 thin film)",
+   "orderableCode": null,
+   "desc": "Thin-film resistor 0201 (0603M), 0.075 W, 10 ohm-10 k, TCR 10 / 25 / 50 ppm, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.koaglobal.com/news/product/202607_RN73H1H",
+   "note": "Type designation only."
+  },
+  {
+   "mfr": "YAGEO",
+   "family": "AC1210 (CAN / CAN FD CMC)",
+   "orderableCode": "AC1210-510-C",
+   "desc": "Signal common-mode choke 51 uH 150 mA, 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-08",
+   "usedIn": [
+    "CAN FD node",
+    "gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/yageo-extends-automotive-can-and-can-fd-common-mode-chokes/",
+   "note": "Same article: AC1210-110-C, AC1210-220-C (150 C), AC1210-101-C, AC1210-101-D."
+  },
+  {
+   "mfr": "YAGEO",
+   "family": "VW80808 FT-CAP X8R / X8G (150 C)",
+   "orderableCode": null,
+   "desc": "Flexible-termination MLCC X8R (to 100 V) / X8G (to 630 V), 0603-1210, -55..150 C, AEC-Q200 + VW80808",
+   "category": "passive_0603",
+   "pkg": "0603-1210",
+   "aecq": true,
+   "launched": "2026-08",
+   "usedIn": [
+    "powertrain ECU",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/yageo-adds-x8-flexible-termination-automotive-mlccs-for-150c-designs/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "YAGEO",
+   "family": "AC (automotive MLCC)",
+   "orderableCode": "AC0603KRX7R9BB104",
+   "desc": "MLCC 0.1 uF 50 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "all ECUs"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "YAGEO",
+   "family": "PA (automotive current sense)",
+   "orderableCode": "PA2512FKF7W0R002E",
+   "desc": "Metal current-sense resistor 2 mohm 1% 2 W 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=PA2512FKF7W0R002E",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "KEMET",
+   "family": "KC-LINK",
+   "orderableCode": "CKC18C153KDGACAUTO",
+   "desc": "KC-LINK C0G 15 nF 1000 V 1812 for resonant / snubber stages",
+   "category": "passive_1206",
+   "pkg": "1812",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CKC18C153KDGACAUTO",
+   "note": "Digi-Key lists it; the page showed no AEC-Q200 rating (the AUTO suffix is KEMET automotive grade - confirm)."
+  },
+  {
+   "mfr": "Taiyo Yuden",
+   "family": "MAAS (automotive high-cap MLCC)",
+   "orderableCode": "MAASA32MAD7227MP1D71",
+   "desc": "MLCC 220 uF 1210 (3.2x2.5x2.8 mm), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-05",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.yuden.co.jp/en/news/category/260527_001.html",
+   "note": "Voltage and dielectric not stated on the page. Earlier 100 uF part: MAASP32MAD7107MPCA01."
+  },
+  {
+   "mfr": "Taiyo Yuden",
+   "family": "MCOIL LACN (165 C)",
+   "orderableCode": "LACNF1608KKT1R0MAB",
+   "desc": "Multilayer metal power inductor 1.0 uH, 0603 (1.6x0.8x1.0 mm), -55..165 C, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "2026-01",
+   "usedIn": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "powertrain ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/taiyo-yuden-releases-165c-automotive-multilayer-metal-power-inductor-in-1608-size/",
+   "note": "Not found on Digi-Key 2026-11-22."
+  },
+  {
+   "mfr": "Taiyo Yuden (ELNA)",
+   "family": "HTX (-K) hybrid, 80 V",
+   "orderableCode": "RAHTX181M1RGP5005K",
+   "desc": "Hybrid polymer Al capacitor, 80 V class, 3.9 Arms @135 C, AEC-Q200 (48 V supplies)",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "48 V systems",
+    "EPS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/taiyo-yuden-introduced-hybrid-aluminum-capacitors-for-48v-automotive-power-supplies/",
+   "note": "Capacitance not stated in the article (code suggests 180 uF)."
+  },
+  {
+   "mfr": "Taiyo Yuden (ELNA)",
+   "family": "HTX (-J) hybrid, high ripple",
+   "orderableCode": "RAHTX331M1TFH0002JX",
+   "desc": "Hybrid polymer Al capacitor, 3.4 Arms @135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "2025-09",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/taiyo-yuden-extends-polymer-hybrid-aluminum-capacitors-with-higher-ripple-current-and-lower-profile/",
+   "note": "Capacitance / voltage not stated in the article (code suggests 330 uF)."
+  },
+  {
+   "mfr": "Nichicon",
+   "family": "GYA (hybrid)",
+   "orderableCode": "GYA1V271MCQ1GS",
+   "desc": "Hybrid polymer Al SMD 270 uF 35 V 20 mohm, 4000 h @125 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10 mm can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=GYA1V271MCQ1GS",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Nichicon",
+   "family": "GYC (hybrid, 135 C)",
+   "orderableCode": null,
+   "desc": "Hybrid polymer Al SMD 10-560 uF, 16-80 V, 2000-4000 h @135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "powertrain ECU",
+    "EPS",
+    "pump control"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nichicon.com/en-us/products/aluminum-electrolytic-capacitors/conductive-polymer-hybrid-aluminum-solid-electrolytic-capacitor/gyc/",
+   "note": "Listed under New Products on nichicon.com (Nov 2026); no code on the page."
+  },
+  {
+   "mfr": "Nichicon",
+   "family": "GWC (hybrid, high ripple)",
+   "orderableCode": null,
+   "desc": "Hybrid polymer Al SMD 47-560 uF, 25-63 V, 4000 h @135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "48 V systems"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nichicon.com/en-us/products/aluminum-electrolytic-capacitors/conductive-polymer-hybrid-aluminum-solid-electrolytic-capacitor/gwc/",
+   "note": "Listed under New Products on nichicon.com (Nov 2026); no code on the page."
+  },
+  {
+   "mfr": "Nichicon",
+   "family": "PCA (polymer chip)",
+   "orderableCode": null,
+   "desc": "Conductive polymer Al solid chip capacitor 47-470 uF, 25-63 V, 4000 h @125 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.nichicon.com/en-us/products/aluminum-electrolytic-capacitors/conductive-polymer-aluminum-solid-electrolytic-capacitors/chip-type/pca/",
+   "note": "Listed under New Products on nichicon.com (Nov 2026); no code on the page. has.py \"PCA\" prefix-hits only the unrelated I2C estimates PCA9617 / PCA9517 - not this capacitor series."
+  },
+  {
+   "mfr": "Nippon Chemi-Con",
+   "family": "HXD (hybrid)",
+   "orderableCode": "HHXD350ARA271MJA0G",
+   "desc": "Hybrid polymer Al SMD 270 uF 35 V 20 mohm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10 mm can",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/result?keywords=HHXD350ARA271MJA0G",
+   "note": "Digi-Key listing, Active."
+  },
+  {
+   "mfr": "Sumida",
+   "family": "WMT1513T150/DS",
+   "orderableCode": "WMT1513T150DS-100MC",
+   "desc": "SMD metal power inductor 10 uH 20%, Isat 23.5 A, 7.0 mohm max, 150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "15x13 mm",
+   "aecq": true,
+   "launched": "2026-06",
+   "usedIn": [
+    "HV DC-DC",
+    "48 V systems",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/sumida-introduces-smd-metal-inductors-for-high-current-automotive-dc-dc-converters/",
+   "note": "Same table: -4R7MC ... -330MC."
+  },
+  {
+   "mfr": "Wurth Elektronik",
+   "family": "WE-MXGA",
+   "orderableCode": null,
+   "desc": "Shielded nanocrystalline-powder power inductor, 4020 (0.16-4.7 uH) and 5030 (0.22-15 uH), up to 28 A, 80 Vdc, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4020 / 5030",
+   "aecq": true,
+   "launched": "2026-04",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://passive-components.eu/wurth-elektronik-unveils-high-current-automotive-power-inductor/",
+   "note": "Series only; order codes not in the article."
+  },
+  {
+   "mfr": "Coilcraft",
+   "family": "DFC1210 (common-mode choke)",
+   "orderableCode": "DFC1210-122",
+   "desc": "Common-mode choke 1.2 uH, 275 ohm @100 MHz, 1.7 A, 1210, 250 Vrms isolation, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "launched": "2026-09",
+   "usedIn": [
+    "power-line filter",
+    "camera",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/coilcraft-introduces-automotive-common-mode-chokes-target-cispr-25-class-5-emc-compliance/",
+   "note": "Part numbers as printed (DFC1210-681 / -122 / -182); packing suffix not shown. Coilcraft sells mostly direct."
+  },
+  {
+   "mfr": "Coilcraft",
+   "family": "CMA (toroidal CMC)",
+   "orderableCode": null,
+   "desc": "SMD toroidal common-mode choke 0.47 / 1.0 / 2.2 mH, 2.5-8.2 A (CMA1305 / 1609 / 1910 / 3113), 1500 Vrms, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "13-31 mm SMD",
+   "aecq": true,
+   "launched": "2026-02",
+   "usedIn": [
+    "on-board charger",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/coilcraft-releases-automotive-common-mode-chokes/",
+   "note": "Case-size stems only."
+  },
+  {
+   "mfr": "Coilcraft",
+   "family": "SLZ (high-current ferrite beads)",
+   "orderableCode": null,
+   "desc": "Wirewound high-current SMD ferrite bead, 5 to 50+ A, 30 MHz-3 GHz, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD",
+   "aecq": true,
+   "launched": "2026-07",
+   "usedIn": [
+    "DC-DC converter",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/coilcraft-releases-high-current-ferrite-beads-for-cispr-25-emc-compliance/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "KYOCERA AVX",
+   "family": "TransGuard VT (48 V system, VTA3)",
+   "orderableCode": null,
+   "desc": "Multilayer varistor for 48 V boardnets: 56 Vdc working, 100-110 V clamp, 0805-2220, 150 C, AEC-Q200 + VDA 320",
+   "category": "fuse_tvs",
+   "pkg": "0805-2220",
+   "aecq": true,
+   "launched": "2026-05",
+   "usedIn": [
+    "48 V systems",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.kyocera-avx.com/news/48v-varistors-vt-series/",
+   "note": "Series only."
+  },
+  {
+   "mfr": "Stackpole",
+   "family": "RMWA (wide termination)",
+   "orderableCode": null,
+   "desc": "Automotive wide-termination thick-film resistor 0.75-3 W (e.g. RMWA1225-HP 3 W), anti-sulfur, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "0612-1225",
+   "aecq": true,
+   "launched": "2025-10",
+   "usedIn": [
+    "motor drive",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/stackpole-releases-automotive-wide-termination-resistors/",
+   "note": "Type stem only."
+  },
+  {
+   "mfr": "Isabellenhuette",
+   "family": "PMT (PMx pulse-load)",
+   "orderableCode": null,
+   "desc": "Pulse-load resistor 50 mohm-2.5 ohm, 2817, Noventin foil on copper substrate, AEC-Q200 tested",
+   "category": "passive_1206",
+   "pkg": "2817",
+   "aecq": true,
+   "launched": "2026-03",
+   "usedIn": [
+    "pre-charge / discharge",
+    "BMS",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://passive-components.eu/isabellenhutte-releases-automotive-pulse-load-resistors/",
+   "note": "SOP planned end of March 2026 per the article; series only."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "Murata GCJ21BD72A225KE02 — CONFIRMED on a page (https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0604; MLCC 2.2 uF 100 V X7T 0805, soft termination, automotive (world first at this size)) but has.py prefix-matches a different catalogue part of the same family (GCJ21BR71H105KA01L), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "Murata GCM155D71E105KE36 — CONFIRMED on a page (https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408; MLCC 1 uF 25 V 0402, automotive, AEC-Q200 (highest capacitance for voltage / size)) but has.py prefix-matches a different catalogue part of the same family (GCM155R71H104KE02D), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "Murata GCM21BE71H106KE02 — CONFIRMED on a page (https://www.murata.com/en-global/news/capacitor/ceramiccapacitor/2025/0612; MLCC 10 uF 50 V 0805, automotive (world first)) but has.py prefix-matches a different catalogue part of the same family (GCM21BC71E106KE36L), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "Murata DLW32MH241MX2 — CONFIRMED on a page (https://www.murata.com/en-global/news/emc/emifil/2026/0730; Common-mode choke 240 uH 70 mA 80 V, metal-terminal 1210, for 10BASE-T1S, AEC-Q200) but has.py prefix-matches a different catalogue part of the same family (DLW32MH101XT2L), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "TDK CGA4J1X7R2A225K125AC — CONFIRMED on a page (https://www.tdk.com/en/news_center/press/20240326_01.html; MLCC 2.2 uF 100 V X7R 10% 0805, AEC-Q200) but has.py prefix-matches a different catalogue part of the same family (CGA4J1X7S1E106K125AC), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "TDK CGA5L1X7R2A475K160AC — CONFIRMED on a page (https://www.tdk.com/en/news_center/press/20240326_01.html; MLCC 4.7 uF 100 V X7R 1206, AEC-Q200) but has.py prefix-matches a different catalogue part of the same family (CGA5L1X7R1H106K160AC), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "YAGEO (KEMET) T598B337M2R5ATE009 — CONFIRMED on a page (https://passive-components.eu/yageo-extends-automotive-tantalum-polymer-capacitors-for-ai-and-adas-controllers/; Polymer tantalum 330 uF 2.5 V 9 mohm, B case 3528-20, AEC-Q200) but has.py prefix-matches a different catalogue part of the same family (T598D476M025ATE060), so not listed under rule 4; a person should decide (it is a different value / voltage)",
+  "TDK ACT1210E-131-2P-TL00 / ACT1210E-241-2P-TL00 (10BASE-T1S CMC), ACT1210G-800-2P-TL10 — CONFIRMED on Digi-Key (AEC-Q200, Active; ACT1210E-241 also on TME) but has.py prefix-matches the catalogue's ACT1210-101/-510 family, so not listed under rule 4; important 10BASE-T1S / 1000BASE-T1 parts for a person to decide",
+  "TDK ACT1210D / ACT1210R — same has.py family hit as ACT1210E; not searched further",
+  "TDK ACT45L-201-2P-TL000 — Digi-Key shows it Obsolete; not listed",
+  "TDK ADL3225VF, ACM2012D, Murata DLW21SH391XQ2L, LQW32FT_2H / _8H (PoC 1210, AEC-Q200, MP Jan 2025 / Sep 2024 per murata.com news) — has.py prefix-matches catalogue siblings (ADL3225VM, ACM2012, DLW21SH900, LQW32FT220M0HL); not listed under rule 4",
+  "Murata NFM18HC106D0G3D, GCJ21BD72A225KE02L, GCM155D71E105KE36D, GCM31CC71E226ME36L, GCM31CD70G107ME36L, DFE2MCPH1R0MJLLQ, DLW32MH241MX2L, FTN21XH502F0SRU — no Digi-Key result on 2026-11-22 (the 2026 launches are listed from the maker's page with distribution unknown; NFM18HC106D0G3D not listed at all)",
+  "TDK AVRH10C270KT500NA8 — no Digi-Key result; code not confirmed (AVRH10C221KT1R5YA8 and AVRH10C101KT1R2YE8 were seen as related parts on Digi-Key but their automotive rating was not shown)",
+  "Bourns SRP6060VA-4R7M, Samsung CL21B106KOQVPNE / CL31B106KBHVPNE, Panasonic ETQP5M4R7YFC — no exact Digi-Key result; codes not confirmed",
+  "TDK CN series 22 nF 1000 V C0G 3225 (Sep 2025), TDK B409x hybrid polymer (Dec 2025), ROHM UCR10C / UCR18C shunts (Jan 2026), Wurth WE-SFIA (May 2026), Rubycon PKV hybrid (Jul 2025), Nichicon ADN-suffix hybrids, Chemi-Con HXUA / HXF, Vishay WSLF2512 / PTCES / IHDM (through-hole) — exist per passive-components.eu but the page did not state AEC-Q200 (or the part is not SMT); not listed",
+  "Murata 15 nF 1.25 kV C0G 1210 (Dec 2025) — no part number and no AEC-Q200 statement on the page",
+  "Vishay IHSR-2525CZ-5A / IHSR2525CZ-A1 — AEC-Q200 confirmed by search but launched 2021 and no orderable code seen; not listed",
+  "Panasonic SP-Cap AX (automotive, May 2026), hybrid ZL / ZS / ZSU additions, automotive power inductor LE / LP / MS / M additions, EZPV-D film — named in the industrial.panasonic.com news list but the model pages were in maintenance; no codes, not listed",
+  "KOA RK73Z-RT 0402 (Oct 2026), SK73, NV73S varistor (May 2024), MHVD divider — on koaglobal.com news but AEC-Q200 / codes not read; not listed",
+  "Seed families not reached within the budget (no page read): Coilcraft XGL / XEL / XPL, Wurth WE-MAIA / WE-XHMA / WE-AGDT / WE-BMS, KEMET T599 / A780 / R53 / C4AK / KONNEKT, KYOCERA AVX KAM MLCC / TCQ polymer, Taiyo Yuden MCAS / MSAS MLCC codes, Vishay RCC e3 / MCW AT / TNPU / WSK1216 / IHLP-8A, Panasonic ERJ-U / ERA-V / EZJ varistors, Susumu, Isabellenhuette SMD shunts, Pulse / Eaton / Cyntec / Sunlord inductors, Semitec, SAW filters / chip antennas / RF passives"
+ ]
+}

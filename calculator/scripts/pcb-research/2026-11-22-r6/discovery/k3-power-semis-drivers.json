@@ -1,0 +1,1528 @@
+{
+ "domain": "k3-power-semis-drivers",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "candidates": [
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 80 V automotive",
+   "orderableCode": "IAUCN08S7N013",
+   "desc": "N-MOSFET 80 V 1.3 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": true,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "DC-DC",
+    "zonal power distribution"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.infineon.com/iaucn08s7n013",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Page: extended qualification beyond AEC-Q101. Mouser lists it active (https://www.mouser.ca/infineon-optimos-7-80v-automotive-mosfets). Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 80 V automotive",
+   "orderableCode": "IAUCN08S7N019",
+   "desc": "N-MOSFET 80 V 1.9 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://infineon.com/cms/en/product/power/mosfet/automotive-mosfet/iaucn08s7n019",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 80 V automotive",
+   "orderableCode": "IAUCN08S7L110",
+   "desc": "N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V systems",
+    "LED / body loads",
+    "DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://infineon.com/cms/de/product/power/mosfet/automotive-mosfet/iaucn08s7l110",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Mouser showed it as 'coming soon'. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 100 V automotive",
+   "orderableCode": "IAUCN10S7N021",
+   "desc": "N-MOSFET 100 V 2.1 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V systems",
+    "48 V inverter",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://infineon.com/cms/en/product/power/mosfet/automotive-mosfet/iaucn10s7n021",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 80 V automotive",
+   "orderableCode": "IAUTN08S7N011",
+   "desc": "N-MOSFET 80 V 1.14 mOhm 330 A (chip limited), OptiMOS 7, PG-HSOF-8",
+   "category": "ic_soic",
+   "pkg": "PG-HSOF-8 (TOLL)",
+   "aecq": true,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V starter-generator / inverter",
+    "battery disconnect",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-datasheet-iautn08s7n011-datasheet-en.pdf",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Datasheet: product validated according to AEC-Q101. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 80 V automotive",
+   "orderableCode": "IAUTN08S7N013",
+   "desc": "N-MOSFET 80 V OptiMOS 7 (1.3 mOhm by the part naming) - datasheet title only",
+   "category": "ic_soic",
+   "pkg": "unknown (IAUTN sibling N011 is PG-HSOF-8)",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V systems",
+    "battery disconnect"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-datasheet-iautn08s7n013-datasheet-en.pdf",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Only the datasheet title was returned: ratings and package to be read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 100 V automotive",
+   "orderableCode": "IAUTN10S7N011",
+   "desc": "N-MOSFET 100 V OptiMOS 7 (1.1 mOhm by the part naming) - datasheet title only",
+   "category": "ic_soic",
+   "pkg": "unknown (IAUTN sibling is PG-HSOF-8)",
+   "aecq": false,
+   "launched": "2024-09",
+   "usedIn": [
+    "48 V inverter",
+    "battery disconnect"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-datasheet-iautn10s7n011-datasheet-en.pdf",
+   "note": "80 V / 100 V OptiMOS 7 announced as available in Sept 2024 (https://electronicsforu.com/?p=142893). Only the datasheet title was returned: ratings and package to be read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "OptiMOS 7 40 V automotive",
+   "orderableCode": "IAUCN04S7N005",
+   "desc": "N-MOSFET 40 V 0.55 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "EPS",
+    "braking",
+    "12 V power distribution",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://infineon.com/cms/en/product/power/mosfet/automotive-mosfet/iaucn04s7n005",
+   "note": "The catalogue holds the sibling IAUCN04S7N004ATMA1; this code is not in it. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMDQ75R007M2H",
+   "desc": "Automotive SiC MOSFET 750 V 7 mOhm 220 A, CoolSiC G2, Q-DPAK",
+   "category": "ic_soic",
+   "pkg": "Q-DPAK (top-side cooled)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter",
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/part/AIMDQ75R007M2H",
+   "note": "'M2' in the code = CoolSiC 750 V G2 (M1 = G1), per Infineon. The catalogue holds only the G1 part AIMZA75R016M1H. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMDQ75R016M2H",
+   "desc": "Automotive SiC MOSFET 750 V 16 mOhm 103 A, CoolSiC G2",
+   "category": "ic_soic",
+   "pkg": "Q-DPAK (per AIMDQ naming; stated on the 7 mOhm sibling's page)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC",
+    "traction inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/part/AIMDQ75R016M2H",
+   "note": "'M2' in the code = CoolSiC 750 V G2 (M1 = G1), per Infineon. The catalogue holds only the G1 part AIMZA75R016M1H. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMDQ75R025M2H",
+   "desc": "Automotive SiC MOSFET 750 V 25 mOhm 70 A, CoolSiC G2",
+   "category": "ic_soic",
+   "pkg": "Q-DPAK (per AIMDQ naming)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/part/AIMDQ75R025M2H",
+   "note": "'M2' in the code = CoolSiC 750 V G2 (M1 = G1), per Infineon. The catalogue holds only the G1 part AIMZA75R016M1H. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMDQ75R060M2H",
+   "desc": "Automotive SiC MOSFET 750 V 60 mOhm 30 A max, CoolSiC G2",
+   "category": "ic_soic",
+   "pkg": "Q-DPAK (per AIMDQ naming)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC",
+    "e-compressor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/part/AIMDQ75R060M2H",
+   "note": "'M2' in the code = CoolSiC 750 V G2 (M1 = G1), per Infineon. The catalogue holds only the G1 part AIMZA75R016M1H. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMBG75R060M2H",
+   "desc": "Automotive SiC MOSFET 750 V 60 mOhm, CoolSiC G2 (SMD variant of AIMDQ75R060M2H)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/24/156/infineon-coolsic-mosfet-750v-g2-productpresentation-en.pdf",
+   "note": "Listed with its siblings in an Infineon CoolSiC 750 V G2 presentation (grade 'Automotive + Industrial'); three Infineon PDFs were returned and the search summary did not say which one carries the list - open the URL to confirm before pricing. Package not seen. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "CoolSiC Automotive MOSFET 750 V G2",
+   "orderableCode": "AIMZA75R060M2H",
+   "desc": "Automotive SiC MOSFET 750 V 60 mOhm, CoolSiC G2 (leaded variant of AIMDQ75R060M2H)",
+   "category": "through_hole",
+   "pkg": "unknown (the catalogue's AIMZA G1 part is PG-TO247-4)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/24/156/infineon-coolsic-mosfet-750v-g2-productpresentation-en.pdf",
+   "note": "Listed with its siblings in an Infineon CoolSiC 750 V G2 presentation (grade 'Automotive + Industrial'); three Infineon PDFs were returned and the search summary did not say which one carries the list - open the URL to confirm before pricing. Package not seen. AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "MOTIX BTM90xx full-bridge",
+   "orderableCode": "BTM9020EP",
+   "desc": "Integrated full-bridge (H-bridge) brushed-DC motor driver, 20 A current limit, 84 mOhm path typ., 7-18 V",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-14 (exposed pad)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body DC motors",
+    "door / seat / latch",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.infineon.com/part/BTM9020EP",
+   "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "MOTIX BTM90xx full-bridge",
+   "orderableCode": "BTM9021EP",
+   "desc": "Integrated full-bridge brushed-DC motor driver, 20 A, SPI with daisy chain and internal watchdog",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-14 (exposed pad)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body DC motors",
+    "door / seat / latch",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.infineon.com/part/BTM9021EP",
+   "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "MOTIX BTM90xx full-bridge",
+   "orderableCode": "BTM9010EP",
+   "desc": "Integrated full-bridge brushed-DC motor driver, 10 A current limit, adjustable slew rate",
+   "category": "ic_soic",
+   "pkg": "unknown (EP sibling of the PG-TSDSO-14 20 A parts)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body DC motors",
+    "HVAC flap / small actuators"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://infineon.com/cms/de/product/power/motor-control-ics/brushed-dc-motor-control-ics/integrated-full-bridge-ics/btm9010ep",
+   "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "MOTIX BTM90xx full-bridge",
+   "orderableCode": "BTM9011EP",
+   "desc": "Integrated full-bridge brushed-DC motor driver, 10 A, SPI with daisy chain",
+   "category": "ic_soic",
+   "pkg": "unknown (EP sibling of the PG-TSDSO-14 20 A parts)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body DC motors",
+    "HVAC flap / small actuators"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://infineon.com/cms/en/product/power/motor-control-ics/brushed-dc-motor-control-ics/integrated-full-bridge-ics",
+   "note": "MOTIX BTM90xx: cost-optimised, ISO 26262-ready family of four full-bridge ICs. Mouser hosts the BTM9020EP datasheet (a listing itself was not seen). AEC qualification text not seen in the search result for this code (page calls it automotive) - aecq left false until read."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "MOTIX TLE9166EQ multi half-bridge",
+   "orderableCode": "TLE9166EQ",
+   "desc": "Multi half-bridge IC with six high-side switches, electrochromic mirror control, SPI, timeout watchdog, configurable slew rate",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "door module",
+    "mirror control",
+    "zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.ph/infineon-tle9166eq-half-bridge-ic",
+   "note": "AEC-Q100 grade 1 per the page. Mouser product page. Half-bridge count and package to be read off the datasheet. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10M 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS0D4N04XM",
+   "desc": "N-MOSFET 40 V 0.42 mOhm 509 A, T10M, 5x6 SO-8FL wettable flank",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6 (DFNW5)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws0d4n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS0D7N04XM",
+   "desc": "N-MOSFET 40 V 0.70 mOhm 323 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws0d7n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS0D9N04XM",
+   "desc": "N-MOSFET 40 V 0.90 mOhm 273 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws0d9n04xm",
+   "note": "Page: AEC-Q101 qualified and PPAP capable. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS1D1N04XM",
+   "desc": "N-MOSFET 40 V 1.05 mOhm 233 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d1n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS1D7N04XM",
+   "desc": "N-MOSFET 40 V 1.65 mOhm 154 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d7n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS2D3N04XM",
+   "desc": "N-MOSFET 40 V 2.35 mOhm 121 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws2d3n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS4D0N04XM",
+   "desc": "N-MOSFET 40 V 3.9 mOhm 80 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws4d0n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS1D3N04XM",
+   "desc": "N-MOSFET 40 V (1.3 mOhm by the part naming), listed on Mouser's onsemi single N-channel power MOSFET page",
+   "category": "ic_qfn",
+   "pkg": "unknown (page lists DFN5 / DFNW5 / TCPAK57 / WDFN packages for the family)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.in/new/onsemi/onsemi-single-n-channel-power-mosfets",
+   "note": "Mouser 'new products' page; ratings to be read. onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive, top-cool (NVMJST)",
+   "orderableCode": "NVMJST2D1N08X",
+   "desc": "N-MOSFET 80 V 2.1 mOhm max 334 A, PowerTrench T10, top-side-cooled TCPAK 5x7",
+   "category": "ic_soic",
+   "pkg": "TCPAK57 (5x7, top cool)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V inverter / starter-generator",
+    "48 V DC-DC",
+    "e-compressor 48 V"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmjst2d1n08x",
+   "note": "Page: AEC-Q101 qualified, PPAP capable. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS1D5N08X",
+   "desc": "N-MOSFET 80 V 1.5 mOhm 253 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "48 V motor drive",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d5n08x",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS1D9N08X",
+   "desc": "N-MOSFET 80 V 1.9 mOhm 201 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "48 V motor drive",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws1d9n08x",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS3D5N08X",
+   "desc": "N-MOSFET 80 V 3.5 mOhm 119 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "48 V motor drive",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws3d5n08x",
+   "note": "Page: AEC-Q101 qualified and PPAP capable. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS4D5N08X",
+   "desc": "N-MOSFET 80 V 4.5 mOhm 92 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "48 V motor drive",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws4d5n08x",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "orderableCode": "NVMFWS014N08X",
+   "desc": "N-MOSFET 80 V 13.8 mOhm 35 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "SO-8FL 5x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V body loads",
+    "LED / DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvmfws014n08x",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 40 V PowerTrench automotive 3x3 (NVTFWS)",
+   "orderableCode": "NVTFWS1D9N04XM",
+   "desc": "N-MOSFET 40 V 1.9 mOhm 141 A, 3x3 u8FL",
+   "category": "ic_qfn",
+   "pkg": "u8FL 3x3 (WDFN8)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "load switch",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvtfws1d9n04xm",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "T10 80 V PowerTrench automotive 3x3 (NVTFWS)",
+   "orderableCode": "NVTFWS005N08XL",
+   "desc": "N-MOSFET 80 V 5.3 mOhm 79 A logic level, 3x3 u8FL",
+   "category": "ic_qfn",
+   "pkg": "u8FL 3x3 (WDFN8)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V body loads",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.onsemi.com/products/discrete-power-modules/mosfets/low-medium-voltage-mosfets/nvtfws005n08xl",
+   "note": "onsemi 'NV' automotive prefix; AEC-Q101 text was not in the search result for this code - aecq left false until read. Code as printed on the maker's page (sales name); the reel / packing suffix was not seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "DRV8000-Q1",
+   "orderableCode": null,
+   "desc": "Multifunction door-control driver: H-bridge gate driver, half-bridges and high-side drivers in one IC, 4.5-35 V",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2024-05",
+   "usedIn": [
+    "door module",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/DRV8000-Q1",
+   "note": "AEC-Q100 grade 1 per the product page; datasheet SLVSH22 first issued May 2024, Rev. B Jan 2026. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "DRV8001-Q1",
+   "orderableCode": null,
+   "desc": "Door-control multifunction driver, sibling of DRV8000-Q1 for applications that need no H-bridge gate driver, smaller package",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "door module",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/drv8001-q1",
+   "note": "AEC text not in the search result (TI -Q1 automotive suffix). TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "DRV8003-Q1",
+   "orderableCode": null,
+   "desc": "Door-application multifunction driver with two extra high-side lamp drivers, pin-compatible with DRV8000 / DRV8000E-Q1",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2026-09",
+   "usedIn": [
+    "door module",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/DRV8003-Q1",
+   "note": "Datasheet dated September 2026. AEC text not in the search result (TI -Q1 suffix). TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "DRV81008-Q1",
+   "orderableCode": null,
+   "desc": "Multi-channel SPI load driver (8 channels by the part naming), functional-safety capable",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2024-11",
+   "usedIn": [
+    "body control",
+    "relay / valve / lamp loads",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ti.com/document-viewer/drv81008-q1/datasheet",
+   "note": "AEC-Q100 -40 to +125 C per the datasheet (SLOSE97, Nov 2024, Rev. B Feb 2025). The search result did not restate the function - read the channel count / low-side or high-side off the datasheet. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "DRV8378-Q1",
+   "orderableCode": null,
+   "desc": "Three-phase motor driver with integrated FETs",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BLDC pumps / fans / actuators"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/DRV8378-Q1",
+   "note": "AEC-Q100 -40 to +125 C per the product page. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "BQ79731-Q1",
+   "orderableCode": null,
+   "desc": "Battery pack monitor (BJB): pack voltage, current and insulation-resistance measurement for HV BMS",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2022-12",
+   "usedIn": [
+    "BMS battery junction box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://ti.com/product/BQ79731-Q1",
+   "note": "AEC-Q100 -40 to +125 C. Datasheet SLUSF55 Dec 2022, Rev. A Oct 2024; a BQ79731B-Q1 variant also has a product page (https://www.ti.com/product/BQ79731B-Q1). TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "BQ79758-Q1",
+   "orderableCode": null,
+   "desc": "18S battery cell monitor with current sense",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2024-08",
+   "usedIn": [
+    "BMS cell monitoring unit",
+    "48 V battery"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://ti.com/lit/gpn/bq79758-q1",
+   "note": "AEC-Q100 grade 1. First datasheet (SLUSFV4) Aug 2024; BQ79758B-Q1 variant datasheet 13 Aug 2025 (https://www.ti.com/product/BQ79758B-Q1). The catalogue has BQ79718 (18S, no current sense) but not this. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "UCC5881-Q1",
+   "orderableCode": null,
+   "desc": "Isolated gate driver for traction inverters, sibling of the catalogued UCC5880-Q1",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2024-12",
+   "usedIn": [
+    "traction inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ti.com/document-viewer/UCC5881-Q1/datasheet/GUID-3132CBD7-45E3-497E-9E95-A8C0DB4CC959",
+   "note": "Datasheet SLUSG08, December 2024, production data. Only the front matter was returned: AEC text and drive strength not seen. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "UCC21551-Q1",
+   "orderableCode": "UCC21551CQDWKRQ1",
+   "desc": "Automotive 4 A / 6 A reinforced-isolation dual-channel gate driver",
+   "category": "ic_soic",
+   "pkg": "unknown (DWK code)",
+   "aecq": true,
+   "launched": "2022-12",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC",
+    "traction inverter",
+    "e-compressor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/UCC21551-Q1/part-details/UCC21551CQDWKRQ1",
+   "note": "AEC-Q100 grade 1. Datasheet SLUSET9 Dec 2022, Rev. I Dec 2025. Orderable code as in TI's part-details URL; Mouser hosts the datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPSI3050-Q1",
+   "orderableCode": null,
+   "desc": "Reinforced isolated switch driver with integrated 10 V gate supply (solid-state relay driver)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS contactor / pre-charge",
+    "OBC",
+    "HV heater"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TPSI3050-Q1",
+   "note": "Page: AEC-Q100 qualified, -40 to 125 C. TI generic part number - no orderable (package / reel) code was seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L98GD8",
+   "orderableCode": "L98GD8",
+   "desc": "Eight-channel configurable MOSFET gate driver for 48 V automotive systems",
+   "category": "ic_tqfp",
+   "pkg": "TQFP64 10x10",
+   "aecq": false,
+   "launched": "2025",
+   "usedIn": [
+    "48 V mild-hybrid loads",
+    "48 V power distribution",
+    "motor / heater / valve drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://autotechinsight.spglobal.com/news/5284945/stmicroelectronics-launches-eight-channel-gate-driver-for-48-v-automotive-systems",
+   "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. In production at launch per the coverage; ST's own note: https://community.st.com/t5/developer-news/new-automotive-8-channel-gate-driver-delivering-48v-mild-hybrid/ba-p/845740. Packing suffix not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "VIPower M0-9 VNQ9050LAJ",
+   "orderableCode": "VNQ9050LAJ",
+   "desc": "Four-channel high-side driver for 12 V loads, cold-crank operation down to 2.7 V",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2026-03",
+   "usedIn": [
+    "body control",
+    "zonal controller",
+    "lighting / load switching"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://eepower.com/new-industry-products/st-intros-automotive-drivers-for-load-protection-high-voltage-switching/",
+   "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. Announced Mar 2026. The catalogue has the sibling VNQ9080AJ. Packing suffix not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "STGAP2SA / STGAP2HSA",
+   "orderableCode": "STGAP2SA",
+   "desc": "Automotive-grade galvanically isolated single gate driver, 4 A, 60 ns",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2026-03",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC",
+    "e-compressor",
+    "PTC heater"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://eepower.com/new-industry-products/st-intros-automotive-drivers-for-load-protection-high-voltage-switching/",
+   "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. Announced Mar 2026 with STGAP2HSA. The catalogue has the non-automotive STGAP2SICS only. Packing suffix not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "STGAP2SA / STGAP2HSA",
+   "orderableCode": "STGAP2HSA",
+   "desc": "Automotive-grade galvanically isolated single gate driver, 4 A, 60 ns (HS variant)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2026-03",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC",
+    "e-compressor",
+    "PTC heater"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://eepower.com/new-industry-products/st-intros-automotive-drivers-for-load-protection-high-voltage-switching/",
+   "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. What 'H' changes (creepage / package) was not in the result. Packing suffix not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9908",
+   "orderableCode": null,
+   "desc": "Three-phase gate driver unit for 12 V / 24 V / 48 V systems",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2022",
+   "usedIn": [
+    "48 V inverter",
+    "EPS",
+    "e-compressor / pumps"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://autotechinsight.spglobal.com/news/5265090/stmicroelectronics-introduces-l9908-automotive-three-phase-gate-driver-for-evs-",
+   "note": "Described as automotive; AEC qualification text not in the search result - aecq left false until read. No orderable code seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "STripFET F8 40 V automotive",
+   "orderableCode": "STL325N4LF8AG",
+   "desc": "N-MOSFET 40 V 0.55 mOhm logic level 373 A, STripFET F8, PowerFLAT 5x6 wettable flank",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 (wettable flank)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V battery protection",
+    "48 V battery protection (per ST brochure)",
+    "motor drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/stmicroelectronics/STL325N4LF8AG/16546730",
+   "note": "Digi-Key and Mouser list it (26-week lead time shown). 'Automotive-grade' on the listing; the words AEC-Q101 were not in the result. Digi-Key highlight: https://www.digikey.com/en/product-highlight/s/stmicroelectronics/stl320n4lf8-and-stl325n4lf8ag-automotive-mosfets"
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9965 BMS chipset",
+   "orderableCode": null,
+   "desc": "L9965A - 18s battery monitor / cell AFE, ASIL-D target",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.st.com/resource/en/data_brief/l9965a.pdf",
+   "note": "Data brief: AEC-Q100 qualified. The catalogue holds only the pyro-fuse member L9965P. No orderable code seen (data brief stage)."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9965 BMS chipset",
+   "orderableCode": null,
+   "desc": "L9965C - battery pack monitor of the L9965 chipset",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS battery junction box"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.st.com/content/dam/OLM%20Email%20Marketing/2025/Asia%20Pac/Event/taiwan-techday-2025/PE_04_ST_battery_management_system_BMS_solutions.pdf",
+   "note": "From ST's 2025 BMS solutions deck. AEC text not in the result. No orderable code seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9965 BMS chipset",
+   "orderableCode": null,
+   "desc": "L9965T - companion device of the L9965 chipset (role not restated in the result; 'T' is the transceiver in ST's L9963 naming)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS master"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.st.com/content/dam/OLM%20Email%20Marketing/2025/Asia%20Pac/Event/taiwan-techday-2025/PE_04_ST_battery_management_system_BMS_solutions.pdf",
+   "note": "From ST's 2025 BMS solutions deck. Function to be read off the page. No orderable code seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9961",
+   "orderableCode": null,
+   "desc": "Battery monitor for automotive and industrial packs, compatible with the L9965 family for simultaneous acquisition",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "low-voltage battery pack",
+    "12 V / 48 V Li-ion"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.st.com/content/dam/OLM%20Email%20Marketing/2025/Asia%20Pac/Event/taiwan-techday-2025/PE_04_ST_battery_management_system_BMS_solutions.pdf",
+   "note": "From ST's 2025 BMS solutions deck. Cell count and AEC status to be read. No orderable code seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "L9026",
+   "orderableCode": null,
+   "desc": "Eight-channel driver: 2 fixed high-side + 6 configurable high / low-side outputs for LEDs and relays, ASIL-B systems ready",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control",
+    "powertrain / relay driving",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.st.com/en/automotive-analog-and-power/l9026.html",
+   "note": "Datasheet: AEC-Q100 qualified, ISO 26262 compliant; in volume production. No orderable code seen (package options on the datasheet)."
+  },
+  {
+   "mfr": "NXP",
+   "family": "GD3100 (MC33GD3100)",
+   "orderableCode": "MC33GD3100EK",
+   "desc": "Single-channel isolated gate driver for IGBT / SiC, 15 A, SPI safety monitoring",
+   "category": "ic_soic",
+   "pkg": "SOIC-32",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.ca/en/products/detail/nxp-usa-inc/MC33GD3100EK/11505954",
+   "note": "Digi-Key listing; variants MC33GD3100A3EK / B3EK / BEK have NXP part pages. Datasheet Rev. 10.0 Sept 2023 - an established part missing from the catalogue (successor GD3162 is in it). AEC text not in the result."
+  },
+  {
+   "mfr": "NXP",
+   "family": "BMA7118 / BMA7418",
+   "orderableCode": "MBMA7418SB1AE",
+   "desc": "18-channel Li-ion battery cell controller, ASIL D, per-channel ADC, with DFT block for electrochemical impedance spectroscopy (8-18 cells)",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/products/BMA7418",
+   "note": "Described by NXP as automotive; AEC text not in the search result - aecq left false until read. Marked 'new' on NXP's cell-controller listing. Orderable code as in NXP's part-page URL https://www.nxp.com/part/MBMA7418SB1AE (page content not read)."
+  },
+  {
+   "mfr": "NXP",
+   "family": "BMA7118 / BMA7418",
+   "orderableCode": null,
+   "desc": "BMA7118 - automotive Li-ion battery cell controller with a dedicated ADC per channel (pin- and software-compatible with BMA7418, without the EIS block)",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com.cn/docs/en/fact-sheet/BMA7118-BMA7418-FS.pdf",
+   "note": "Described by NXP as automotive; AEC text not in the search result - aecq left false until read. No orderable code seen."
+  },
+  {
+   "mfr": "NXP",
+   "family": "BMx7318 / BMx7518",
+   "orderableCode": null,
+   "desc": "BMA7318 - 18-channel Li-ion battery cell controller for EV high-voltage BMS and 48 V systems",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2025",
+   "usedIn": [
+    "BMS cell monitoring unit",
+    "48 V battery"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://nxp.com/products/BMA7318-BMI7318-BMA7518",
+   "note": "BMx7318 / 7518 family press release: ASIL C / SIL 2, availability expected November 2025; BMA7318, BMI7318 and BMA7518 are pin-to-pin compatible. Mouser has a 'new product' page (https://www.mouser.fi/new/nxp-semiconductors/nxp-bmx7x18-battery-cell-controllers/). Described by NXP as automotive; AEC text not in the search result - aecq left false until read. No orderable code seen."
+  },
+  {
+   "mfr": "NXP",
+   "family": "BMx7318 / BMx7518",
+   "orderableCode": null,
+   "desc": "BMA7518 - 18-channel Li-ion battery cell controller, pin-compatible sibling of BMA7318",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "2025",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/company/about-nxp/newsroom/NW-BATTERY-CELL-CTRL-IC-FAMILY",
+   "note": "BMx7318 / 7518 family press release: ASIL C / SIL 2, availability expected November 2025; BMA7318, BMI7318 and BMA7518 are pin-to-pin compatible. Mouser has a 'new product' page (https://www.mouser.fi/new/nxp-semiconductors/nxp-bmx7x18-battery-cell-controllers/). Described by NXP as automotive; AEC text not in the search result - aecq left false until read. What separates 7518 from 7318 was not in the result. No orderable code seen."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADBMS6832 / ADBMS6833",
+   "orderableCode": null,
+   "desc": "ADBMS6832 - multicell battery stack monitor, up to 18 series cells, <2 mV lifetime TME, 300 mA passive balancing",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://analog.com/en/products/adbms6832m.html",
+   "note": "AEC-Q100 per the page; recommended for new designs. The URL is the 'ADBMS6832M' page. The catalogue has ADBMS6830 (16 ch) only. No orderable code seen."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADBMS6832 / ADBMS6833",
+   "orderableCode": null,
+   "desc": "ADBMS6833 - 16-cell sibling of the ADBMS6832 stack monitor",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://analog.com/en/products/adbms6832m.html",
+   "note": "Named on the ADBMS6832 page as the 16-cell sibling; its own page was not returned. No orderable code seen."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADBMS2950",
+   "orderableCode": null,
+   "desc": "Battery pack monitor (current / voltage); ADBMS295xWFS variants for ISO 26262 ASIL D",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS battery junction box",
+    "48 V / light-EV pack"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.analog.com/en/products/ADBMS2950.html",
+   "note": "Page cites 72-96 V E2W / E3W packs; full documentation under NDA. AEC text not in the result. An EVAL-ADBMS2950-BASIC kit is sold. No orderable code seen."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADBMS6821 / ADBMS6822",
+   "orderableCode": null,
+   "desc": "ADBMS6822 - dual isoSPI transceiver, 2 Mbps, 3-30 V wake / monitor input",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-32 (side-solderable)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS master"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.analog.com/en/products/ADBMS6822.html",
+   "note": "AEC-Q100 per the page; in production. Mouser family page: https://www.mouser.co.id/adi-adbms6821-adbms6822-transceivers. Successor role to the catalogued LTC6820. No orderable code seen."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADBMS6821 / ADBMS6822",
+   "orderableCode": null,
+   "desc": "ADBMS6821 - single isoSPI transceiver, 2 Mbps",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS master"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.analog.com/en/products/adbms6821",
+   "note": "Recommended for new designs. AEC text seen only for the ADBMS6822. Mouser family page: https://www.mouser.co.id/adi-adbms6821-adbms6822-transceivers. No orderable code seen."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "AHV85110",
+   "orderableCode": "AHV85110KNHLU",
+   "desc": "Self-powered isolated GaN FET gate driver with integrated bias supply (Power-Thru), 2.8 / 1.0 Ohm outputs",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "2023-09",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/en/products/motor-drivers/gate-drivers/ahv85110",
+   "note": "AEC-Q100 grade 2. Orderable code from the Sept 2023 launch coverage (https://www.electropages.com/2023/09/isolated-gan-fet-gate-driver-automotive-and-industrial-applications). Mouser hosts the datasheet (listing not seen)."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "AHV85111",
+   "orderableCode": null,
+   "desc": "Self-powered isolated GaN FET gate driver with regulated bipolar output, 50 ns propagation delay",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "HV DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/en/products/motor-drivers/gate-drivers/ahv85111",
+   "note": "AEC-Q100 grade 2. Mouser hosts the datasheet (listing not seen). No orderable code seen."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "A89224",
+   "orderableCode": null,
+   "desc": "90 V three-phase BLDC motor driver with integrated Arm Cortex-M4 MCU, for 48 V motors",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V pumps / fans / compressors"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/en/products/motor-drivers/brushless-dc-drivers/integrated-control-bldc-drivers/a89224",
+   "note": "AEC-Q100 qualified per the page. No orderable code seen."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81332 gen-3 smart LIN driver",
+   "orderableCode": null,
+   "desc": "Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10 W, 32 KB flash",
+   "category": "ic_qfn",
+   "pkg": "SO8 or QFN24",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC flap actuator",
+    "grille shutter",
+    "valve / small pump"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.melexis.com/en/product/MLX81332/smart-LIN-motor-driver-1A-gen3",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. "
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81334 gen-3 smart LIN driver",
+   "orderableCode": null,
+   "desc": "Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, 64 KB memory (extended-memory MLX81332)",
+   "category": "ic_qfn",
+   "pkg": "QFN32 5x5",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC flap actuator",
+    "valve / small pump"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.melexis.com/MLX81334",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. Mouser family page: https://www.mouser.co.uk/melexis-mlx81334-smart-lin-motor-driver."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81340 gen-3 LIN pre-driver",
+   "orderableCode": null,
+   "desc": "Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "water / oil pump",
+    "blower / fan",
+    "window lift / sunroof"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.melexis.com/en/product/mlx81340/smart-lin-motor-pre-driver-500w-gen3",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. "
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81344 gen-3 LIN pre-driver",
+   "orderableCode": null,
+   "desc": "Smart LIN pre-driver for DC / BLDC motors up to 500 W, 90 KB extended memory",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "water / oil pump",
+    "blower / fan"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.melexis.com/en/products/embedded-motor-driver-ics",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. "
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81346 gen-3 LIN pre-driver",
+   "orderableCode": null,
+   "desc": "Smart LIN pre-driver for 12 / 24 / 48 V DC / BLDC motors, up to 1000 W (12 V) or 2000 W (48 V)",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V pumps / fans",
+    "engine cooling fan",
+    "e-compressor auxiliaries"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.melexis.com/en/product/MLX81346",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. "
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81350 gen-4 smart LIN driver",
+   "orderableCode": null,
+   "desc": "Gen-4 LIN driver for small motors, mechatronic applications up to 5 W",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC flap actuator",
+    "small actuators"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.melexis.com/en/products/embedded-motor-driver-ics",
+   "note": "Melexis page: 'automotive mechatronic applications'; AEC text not in the search result - aecq left false until read. No orderable (option / package) code seen. "
+  },
+  {
+   "mfr": "Power Integrations",
+   "family": "InnoSwitch3-AQ 1700 V SiC",
+   "orderableCode": "INN3949CQ-TL",
+   "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, primary + secondary control and isolated feedback; ~40 W (InSOP-24D)",
+   "category": "ic_soic",
+   "pkg": "InSOP-24D",
+   "aecq": true,
+   "launched": "2022-02",
+   "usedIn": [
+    "traction inverter emergency / auxiliary supply",
+    "BMS",
+    "OBC",
+    "800 V DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://power.com/products/innoswitch/innoswitch3-aq/inn3949cq",
+   "note": "AEC-Q100 qualified; announced Feb 2022 (https://www.businesswire.com/news/home/20220201005298/en/Power-Integrations-Introduces-Industrys-First-Automotive-Qualified-High-Voltage-Switcher-ICs-with-1700-V-SiC-MOSFET). Family is on Digi-Key's product highlight (https://www.digikey.bg/en/product-highlight/p/power-integrations/innoswitch-3-aq-ics) and Avnet's. Note: the Nov 2025 family datasheet table reportedly shows 1200 V against these codes - read the current datasheet for the switch rating. A 120 W InSOP-T28G version is on the 2026 flyer."
+  },
+  {
+   "mfr": "Power Integrations",
+   "family": "InnoSwitch3-AQ 1700 V SiC",
+   "orderableCode": "INN3947CQ-TL",
+   "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, lower power than INN3949CQ",
+   "category": "ic_soic",
+   "pkg": "InSOP-24D",
+   "aecq": true,
+   "launched": "2022-02",
+   "usedIn": [
+    "traction inverter emergency / auxiliary supply",
+    "BMS",
+    "800 V DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.power.com/products/innoswitch/innoswitch3-aq/inn3947cq",
+   "note": "AEC-Q100 qualified; announced Feb 2022 (https://www.businesswire.com/news/home/20220201005298/en/Power-Integrations-Introduces-Industrys-First-Automotive-Qualified-High-Voltage-Switcher-ICs-with-1700-V-SiC-MOSFET). Family is on Digi-Key's product highlight (https://www.digikey.bg/en/product-highlight/p/power-integrations/innoswitch-3-aq-ics) and Avnet's. Note: the Nov 2025 family datasheet table reportedly shows 1200 V against these codes - read the current datasheet for the switch rating. "
+  }
+ ],
+ "seedsNotConfirmed": [
+  "Infineon OptiMOS 7 sTOLL / mTOLG 80-100 V codes - family announcement names the packages, no code returned",
+  "Infineon CoolSiC automotive 1200 V G2 (AIMBG120R / AIMCQ120R) - only the industrial IMBG120R017M2H datasheet was returned",
+  "Infineon CoolMOS CFD7A / S7A, CoolGaN automotive, EDT3 / TRENCHSTOP 5 AUTO discrete IGBTs (AIKQ) - not searched (budget)",
+  "Infineon EiceDRIVER 1ED39xx / 2EDR / 2ED314x, 6ED2742S01Q, TLE9891, TLE9563 / TLE9564, ISOFACE - no result returned",
+  "onsemi NVBLS (TOLL) T10 parts - no result returned; EliteSiC M3e / M3T and NCV5725x / NCV51561 / NCV7718 drivers - not searched",
+  "TI DRV8334-Q1, DRV3233-Q1, DRV8363-Q1, DRV81620-Q1, DRV8262-Q1 - no page returned in two searches",
+  "TI UCC14141-Q1, UCC15240-Q1 / UCC15241-Q1, TPSI3100-Q1, ISOM8110-Q1, AMC0386-Q1 / AMC0xxx, AMC23Cxx-Q1, UCC27301A-Q1 - no page returned",
+  "TI UCC23525 - seen on a Mouser 'newest isolated gate drivers' listing dated 09/12/2025, automotive status not shown",
+  "TI BQ79881-Q1, BQ79652-Q1 - product-page URLs returned (BQ79652-Q1 marked 'a newer version is available') but function / status not in the result",
+  "ST L99MH98, L9800, STGAP3S, SiC Gen 4 SCT...G4AG - no result returned in two searches",
+  "NXP GD3163, GD3180, MC33GD35xx - no result returned; GD3160 only named inside the MC33GD3100 datasheet",
+  "NXP BMI7018 / BMI7318 - confirmed but industrial (ESS / UPS) variants, not listed",
+  "ADI ADBMS2970, ADuM4146, ADuM4221-1, MAX22700 automotive, wBMS (ADRF88xx) - no result returned",
+  "Allegro A89307, A89211, AMT49xxx newer codes - no result returned",
+  "Power Integrations InnoSwitch5-AQ, SCALE-iDriver SID11x2KQ - no result returned",
+  "Nexperia LFPAK88 / CCPAK1212 automotive, new ASFETs, automotive GaN; Vishay SQJQ Gen V; Toshiba XPJR / L-TOGL 80-100 V; Rohm SCT4xxx...HR, RV8 / RJ1, BM6112, EcoGaN; Wolfspeed E4M; Navitas automotive; AOS; Renesas RAA489xxx; MPS MPQ18913 / MPQ6612; Skyworks Si828x - not searched (15-search limit)"
+ ]
+}

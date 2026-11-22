@@ -1,0 +1,2134 @@
+{
+ "domain": "k5-sensors-analog",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "candidates": [
+  {
+   "mfr": "Texas Instruments",
+   "family": "AWRL6844",
+   "orderableCode": "AWRL6844DBGANCRQ1",
+   "desc": "60 GHz 4T4R single-chip in-cabin radar sensor with edge AI (occupancy, child presence, intrusion)",
+   "category": "ic_bga",
+   "pkg": "FCCSP",
+   "aecq": true,
+   "launched": "2025-01",
+   "usedIn": [
+    "in-cabin radar",
+    "child presence detection",
+    "seat-belt reminder"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/AWRL6844",
+   "note": "Datasheet SWRS325 (Dec 2024) states \"AEC Q-100 qualified\"; orderable code from the datasheet package addendum; Mouser new-product page seen. Launch per TI CES 2025 release (6 Jan 2025)."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "AWR2188",
+   "orderableCode": "AWR2188ABGAPERQ1",
+   "desc": "76-81 GHz 8TX/8RX cascadable 4D imaging radar transceiver, launch-on-package",
+   "category": "ic_bga",
+   "pkg": "FCCSP 573-ball (APE)",
+   "aecq": false,
+   "launched": "2026-01",
+   "usedIn": [
+    "imaging radar",
+    "front radar",
+    "satellite radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/AWR2188",
+   "note": "Page says \"AEC-Q100 Targeted\" (not yet qualified); announced CES 2026, preproduction quantities on request. Orderable code from datasheet SLVSKO8 addendum. Likely a quote item."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "AWR2E44P",
+   "orderableCode": "AWR2E44PBGAMXRQ1",
+   "desc": "76-81 GHz 4T4R radar SoC, launch-on-package variant of AWR2944P (C66x DSP + R5F)",
+   "category": "ic_bga",
+   "pkg": "FCCSP (LoP)",
+   "aecq": true,
+   "launched": "2024-11",
+   "usedIn": [
+    "corner radar",
+    "front radar"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/lit/gpn/awr2944p",
+   "note": "Shares datasheet SWRS318 with AWR2944P / AWR2944-ECO / AWR2944LC (\"AEC-Q100 qualified\"). has.py: AWR2E44P not in catalogue (AWR2944 BGA part is). Sibling codes on the datasheet: AWR2E44EBGAMXRQ1, AWR2E44LBGAMXRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "AWRL6432",
+   "orderableCode": "AWRL6432BDBGAMFRQ1",
+   "desc": "57-64 GHz low-power single-chip automotive radar sensor (kick-to-open, in-cabin, intrusion)",
+   "category": "ic_bga",
+   "pkg": "FCCSP 102-ball 6.45x6.45 mm (AMF)",
+   "aecq": true,
+   "launched": "2022-12",
+   "usedIn": [
+    "in-cabin radar",
+    "kick sensor",
+    "intrusion alarm"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/AWRL6432",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "AWRL1432",
+   "orderableCode": "AWRL1432BDBGAMFRQ1",
+   "desc": "76-81 GHz low-power single-chip automotive radar sensor (blind-spot, door obstacle, parking)",
+   "category": "ic_bga",
+   "pkg": "FCCSP 102-ball 6.45x6.45 mm (AMF)",
+   "aecq": true,
+   "launched": "2023-07",
+   "usedIn": [
+    "corner radar",
+    "blind-spot radar",
+    "door obstacle radar"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/AWRL1432",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "NXP",
+   "family": "SAF85xx",
+   "orderableCode": null,
+   "desc": "77 GHz RFCMOS one-chip radar SoC: 4T4R transceiver + Cortex-A53 / M7 radar MPU + BBE32 DSP (SAF85xxL = launcher-in-package)",
+   "category": "ic_bga",
+   "pkg": "BGA / LiP 11.95x14.00 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "corner radar",
+    "front radar"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nxp.com/products/SAF85XXL",
+   "note": "NXP page lists AEC-Q100, status Active, ASIL B target; no buy table and no distributor listing seen - treat as a quote item. \"SAF8544LEL1\" appears only in the page's component-search link (not confirmed as an orderable code)."
+  },
+  {
+   "mfr": "NXP",
+   "family": "SAF86xx",
+   "orderableCode": null,
+   "desc": "76-81 GHz RFCMOS one-chip radar SoC for distributed (streaming) radar: 4T4R + BBE32EP DSP + Cortex-M7 lockstep, Gigabit Ethernet out",
+   "category": "ic_bga",
+   "pkg": "BGA / LiP 11.95x14.00 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "satellite radar",
+    "distributed radar",
+    "zonal radar"
+   ],
+   "distribution": "oem-direct",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nxp.com/saf86xx",
+   "note": "NXP page: AEC-Q100 qualified, ISO 26262 SEooC, status Preproduction; no orderable code published."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "RASIC CTRX8191F",
+   "orderableCode": null,
+   "desc": "76-81 GHz 28 nm radar MMIC transceiver, 4TX/4RX, waveguide launcher in package, cascadable",
+   "category": "ic_bga",
+   "pkg": "PG-TF2BGA-310",
+   "aecq": true,
+   "launched": "2024-12",
+   "usedIn": [
+    "4D imaging radar",
+    "front radar",
+    "corner radar"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/30/49/infineon-ctrx8191f-fs-datasheet-en.pdf",
+   "note": "Datasheet extract Rev 1.00 (2025-03-20): \"Product validation according to AEC-Q100, Grade 1\". Product type on the datasheet: CTRX8191FS (stand-alone variant); OPN not seen. Final samples announced 18 Dec 2024. Mouser new-product page exists, full datasheet under NDA - expect a quote."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "RASIC CTRX8188F",
+   "orderableCode": null,
+   "desc": "76-81 GHz radar transceiver, 8TX/8RX, antenna feed in package (pairs with AURIX TC4x)",
+   "category": "ic_bga",
+   "pkg": "FCBGA 0.5 mm pitch",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "4D imaging radar",
+    "front radar"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/30/49/infineon-ctrx8188f-datasheet-en.pdf",
+   "note": "Datasheet extract Rev 1.00 dated 2026-09-01: \"Product validation according to AEC-Q100 Grade 1, qualified for automotive applications\". Mouser new-product page seen; full datasheet under NDA - expect a quote."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "Hyperlux AR0823AT",
+   "orderableCode": "AR0823AT2C18XUEA0-DPBR-E",
+   "desc": "8.3 MP 1/1.8-inch 2.1 um automotive HDR CMOS image sensor (150 dB, LFM), ASIL-D process",
+   "category": "ic_bga",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "front camera",
+    "ADAS camera",
+    "mirror replacement"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/sensors/image-sensors/ar0823at",
+   "note": "OPN from the onsemi product page structured data. AEC-Q100 Grade 2 per the onsemi page (read through search). Mouser new-product page and Avnet Silica NPI page seen. Hyperlux family launched 9 May 2023."
+  },
+  {
+   "mfr": "onsemi",
+   "family": "Hyperlux AR0341AT",
+   "orderableCode": "AR0341ATSC15XUEA0-DPBR",
+   "desc": "3 MP 1/3.6-inch 2.1 um automotive HDR CMOS image sensor for surround view / sensing",
+   "category": "ic_bga",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "surround-view camera",
+    "rear camera",
+    "e-mirror"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.onsemi.com/products/sensors/image-sensors/ar0341at",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). Second OPN on the onsemi page: AR0341ATSC15XUEA0-TPBR. Datasheet AR0341AT-D lists AEC-Q100 Grade 2 (read through search)."
+  },
+  {
+   "mfr": "Sony Semiconductor Solutions",
+   "family": "IMX728",
+   "orderableCode": null,
+   "desc": "8.39 MP 1/1.72-type 2.1 um automotive CMOS image sensor, MIPI CSI-2",
+   "category": "ic_bga",
+   "pkg": "see Sony specification",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "front camera",
+    "ADAS camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.sony-semicon.com/en/products/is/automotive/automotive.html",
+   "note": "Marked \"New\" on Sony's automotive sensor page. aecq from the page-level statement that the automotive products meet reliability standards \"such as AEC-Q100\" (no per-part line). No orderable suffix or distributor listing seen - likely quote via Sony agents."
+  },
+  {
+   "mfr": "Sony Semiconductor Solutions",
+   "family": "IMX623",
+   "orderableCode": null,
+   "desc": "3.0 MP 1/2.42-type 3.0 um automotive CMOS image sensor, MIPI CSI-2",
+   "category": "ic_bga",
+   "pkg": "see Sony specification",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "surround-view camera",
+    "rear camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.sony-semicon.com/en/products/is/automotive/automotive.html",
+   "note": "Marked \"New\" on Sony's automotive sensor page; page-level AEC-Q100 statement only. No orderable suffix seen."
+  },
+  {
+   "mfr": "Sony Semiconductor Solutions",
+   "family": "IMX735",
+   "orderableCode": null,
+   "desc": "17.42 MP 1/1.17-type 2.1 um automotive CMOS image sensor, MIPI CSI-2",
+   "category": "ic_bga",
+   "pkg": "236-pin plastic BGA 14.54x17.34 mm",
+   "aecq": true,
+   "launched": "2023-09",
+   "usedIn": [
+    "front camera",
+    "automated-driving camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.sony-semicon.com/en/news/2023/2023091201.html",
+   "note": "Press release 12 Sep 2023: to be qualified to AEC-Q100 Grade 2 \"by mass production\"; samples Sept 2023. No orderable suffix seen."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX08D10",
+   "orderableCode": "OX08D10-E92U-001A-Z",
+   "desc": "8 MP 1/1.73-inch 2.1 um TheiaCel HDR / LED-flicker-free automotive image sensor",
+   "category": "ic_bga",
+   "pkg": "a-CSP",
+   "aecq": false,
+   "launched": "2023-09",
+   "usedIn": [
+    "front camera",
+    "ADAS camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ovt.com/products/ox08d10",
+   "note": "SKUs on the maker page: OX08D10-E92U-001A-Z and OX08D10-E92Y-001A-Z. Page does not state AEC-Q100. Validated on Qualcomm Snapdragon Ride and NVIDIA DRIVE Hyperion. Usually bought direct / via OMNIVISION agents."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX12A10",
+   "orderableCode": "OX12A10-F24U-001A-Z",
+   "desc": "12 MP 1/1.43-inch 2.1 um TheiaCel HDR automotive image sensor for front machine vision",
+   "category": "ic_bga",
+   "pkg": "124-pin a-CSP+",
+   "aecq": false,
+   "launched": "2024",
+   "usedIn": [
+    "front camera",
+    "automated-driving camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ovt.com/products/ox12a10",
+   "note": "Announced at AutoSens Europe 2024; mass production stated for Q3 2025. Second SKU: OX12A1G-F24U-001A-Z (RCCG). AEC-Q100 not stated on the page."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX05D10",
+   "orderableCode": "OX05D10-E77Y-001A-Z",
+   "desc": "5 MP 1/2.48-inch TheiaCel HDR automotive image sensor (ASIL C hardware metrics)",
+   "category": "ic_bga",
+   "pkg": "a-CSP",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "surround-view camera",
+    "ADAS camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ovt.com/products/ox05d10",
+   "note": "Page: samples available, mass production scheduled Q3 2025; AEC-Q100 not stated."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX03H10",
+   "orderableCode": "OX03H10-E74Y-001A-Z",
+   "desc": "3 MP 1/2.44-inch 3.0 um TheiaCel automotive viewing sensor, 60 fps, pin-compatible with OX03F10",
+   "category": "ic_bga",
+   "pkg": "74-pin a-CSP",
+   "aecq": false,
+   "launched": "2024-10",
+   "usedIn": [
+    "surround-view camera",
+    "rear camera",
+    "e-mirror"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ovt.com/products/ox03h10",
+   "note": "Announced Oct 2024 (AutoSens Barcelona); ASIL C. AEC-Q100 not stated on the page."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX03J10",
+   "orderableCode": "OX03J10-E76Y-001A-Z",
+   "desc": "3 MP 1/2.44-inch PureCel Plus-S HDR automotive viewing sensor (ASIL C)",
+   "category": "ic_bga",
+   "pkg": "a-CSP",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "surround-view camera",
+    "rear camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ovt.com/products/ox03j10",
+   "note": "AEC-Q100 not stated on the page."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX01N1B",
+   "orderableCode": "OX01N1B-E30U-001A-Z",
+   "desc": "1.5 MP 1/4.5-inch global-shutter Nyxel NIR mono sensor for driver monitoring (ASIL B, cybersecurity)",
+   "category": "ic_bga",
+   "pkg": "30-pin a-CSP",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "driver monitoring camera",
+    "occupant monitoring"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ovt.com/products/ox01n1b",
+   "note": "AEC-Q100 not stated on the page."
+  },
+  {
+   "mfr": "OMNIVISION",
+   "family": "OX08B40",
+   "orderableCode": "OX08B40-B86Y-001F",
+   "desc": "8.3 MP 1/1.73-inch PureCel Plus-S HDR + LFM automotive front-view sensor (ASIL C metrics)",
+   "category": "ic_bga",
+   "pkg": "a-BGA",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "front camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ovt.com/products/ox08b40",
+   "note": "Page says \"planned to be AEC-Q100 Grade 2 certified\". Predecessor generation to OX08D10 but absent from the catalogue."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMI240",
+   "orderableCode": null,
+   "desc": "6-axis automotive IMU (3x gyro +/-300 deg/s, 3x accel +/-16 g), SPI 16-bit, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "LGA 3.3x3.3 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS ECU",
+    "hands-free driving",
+    "positioning / GNSS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/smi240/",
+   "note": "\"Developed according to ISO 26262 ... up to ASIL B\". Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMI270",
+   "orderableCode": null,
+   "desc": "6-axis automotive IMU (+/-300/500 deg/s, +/-4/16 g), SPI, ASIL B, open-cavity package for camera / radar / lidar integration",
+   "category": "ic_qfn",
+   "pkg": "open-cavity LGA 5x5 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "camera module",
+    "radar",
+    "lidar",
+    "ADAS ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/smi270/",
+   "note": "Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMI330",
+   "orderableCode": null,
+   "desc": "Low-power 6-axis automotive IMU (+/-125-500 deg/s, +/-2-8 g), SPI / I2C, -40..125 C",
+   "category": "ic_qfn",
+   "pkg": "LGA 3x2.5 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "navigation",
+    "car alarm",
+    "always-on"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/smi330/",
+   "note": "Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMI340",
+   "orderableCode": null,
+   "desc": "Vibration-robust 6-axis IMU (+/-300 deg/s, 4-35 g), SafeSPI / SafeI2C, for systems up to ASIL D",
+   "category": "ic_qfn",
+   "pkg": "LGA 3.1x4.4 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ESP / brake ECU",
+    "rollover / airbag ECU",
+    "ADAS"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/smi340/",
+   "note": "Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMI980",
+   "orderableCode": null,
+   "desc": "Low-noise 6-channel IMU (+/-300 deg/s, +/-6/8 g), SafeSPI 20-bit, up to ASIL D, for precise localisation",
+   "category": "ic_qfn",
+   "pkg": "open-cavity LGA 8x8 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "automated-driving localisation",
+    "ADAS domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/smi980/",
+   "note": "Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMA130",
+   "orderableCode": null,
+   "desc": "3-axis 14-bit digital accelerometer (+/-2-16 g), SPI / I2C, non-safety automotive",
+   "category": "ic_qfn",
+   "pkg": "LGA12 2x2 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "eCall",
+    "tolling",
+    "navigation"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/adas/sma130/",
+   "note": "Page lists \"AEC-Q100 qualification\". No order code or distributor listing seen. Sibling SMA131 (+/-2/4/8 g)."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMA380",
+   "orderableCode": null,
+   "desc": "3-axis accelerometer (+/-10/20 g) with TDM / I2C audio-style interface for road-noise cancellation",
+   "category": "ic_qfn",
+   "pkg": "LGA 2.3x2.8 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "road-noise cancellation",
+    "audio amplifier / ANC ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/road-noise-cancellation/sma380/",
+   "note": "Bosch page gives no AEC-Q100 sentence and no order code; no distributor listing seen (Bosch automotive MEMS are mostly contract supply). ASIL QM."
+  },
+  {
+   "mfr": "Bosch",
+   "family": "SMP290",
+   "orderableCode": null,
+   "desc": "Single-chip BLE 5.4 TPMS sensor: MCU + pressure (90-920 kPa car / 1,500 kPa truck) + 2-axis accel + temperature",
+   "category": "ic_qfn",
+   "pkg": "DFN 4.5x3.5 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "TPMS wheel module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.bosch-semiconductors.com/products/mems-sensors/safety-systems/smp290/",
+   "note": "Bosch: \"now available for in-tire sensor applications\"; ISO 21434, ASPICE L2. No AEC-Q100 sentence on the page; contract supply."
+  },
+  {
+   "mfr": "TDK InvenSense",
+   "family": "IAM-20685HP",
+   "orderableCode": null,
+   "desc": "6-axis automotive IMU, Grade 1, ASIL-B, second generation for ADAS / automated driving",
+   "category": "ic_qfn",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS ECU",
+    "navigation / dead reckoning"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://invensense.tdk.com/smartautomotive/",
+   "note": "TDK page-level statement: automotive MEMS are \"AEC-Q100 tested with PPAP documentation\" (no per-part line). No orderable code seen."
+  },
+  {
+   "mfr": "TDK InvenSense",
+   "family": "IAM-20689",
+   "orderableCode": null,
+   "desc": "6-axis automotive IMU, Grade 1, up to ASIL-D, for safety systems",
+   "category": "ic_qfn",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ESC / brake ECU",
+    "ADAS domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://invensense.tdk.com/smartautomotive/",
+   "note": "TDK page-level statement: automotive MEMS are \"AEC-Q100 tested with PPAP documentation\" (no per-part line). No orderable code seen."
+  },
+  {
+   "mfr": "TDK InvenSense",
+   "family": "IAM-20381HT",
+   "orderableCode": null,
+   "desc": "3-axis automotive accelerometer, Grade 2 (105 C), non-safety",
+   "category": "ic_qfn",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "car alarm",
+    "navigation"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://invensense.tdk.com/smartautomotive/",
+   "note": "TDK page-level statement: automotive MEMS are \"AEC-Q100 tested with PPAP documentation\" (no per-part line). No orderable code seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "AIS25BA",
+   "orderableCode": null,
+   "desc": "Ultra-low-noise wide-bandwidth 3-axis accelerometer with TDM interface for road-noise cancellation",
+   "category": "ic_qfn",
+   "pkg": "LGA-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "road-noise cancellation",
+    "audio / ANC ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.st.com/content/st_com/en/campaigns/mems-sensors-for-automotive-mems-mc4auto.html",
+   "note": "ST automotive MEMS page lists it; an ST 2023 tech-day deck (st.com) lists it as AEC-Q100 qualified, LGA-14L. st.com could only be read through search; no orderable code seen (expected AIS25BATR - NOT confirmed)."
+  },
+  {
+   "mfr": "Sensirion",
+   "family": "SHT4xA",
+   "orderableCode": "SHT40A-AD1B",
+   "desc": "Automotive digital humidity + temperature sensor, +/-3 %RH, I2C, -40..125 C",
+   "category": "ic_qfn",
+   "pkg": "DFN 1.5x1.5x0.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC / climate ECU",
+    "windscreen anti-fog sensor",
+    "battery pack humidity"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://sensirion.com/products/catalog/SHT40A-AD1B",
+   "note": "Sensirion page: \"The AEC Q100 qualification demonstrates the SHT4xA's superior reliability\"; reels of 2,500 / 10,000."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90382",
+   "orderableCode": "MLX90382LGO-BAA-000-RE",
+   "desc": "16-bit Triaxis high-speed magnetic position sensor / absolute encoder IC (on- and off-axis), automotive-grade variant",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (code GO); second package code LW",
+   "aecq": true,
+   "launched": "2025-11",
+   "usedIn": [
+    "steer-by-wire",
+    "brake-by-wire",
+    "suspension",
+    "e-motor position"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90382-datasheet-melexis.pdf",
+   "note": "Datasheet Rev 1.0 17-Nov-2025: \"AEC-Q100 qualified (Grade 0)\"; automotive variant announced 20 Nov 2025. Digi-Key lists the exact code (checked 2026-11-22). Other codes: MLX90382LLW-BAA-000-RE."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90423",
+   "orderableCode": "MLX90423GDC-ACA-230-RE",
+   "desc": "Triaxis stray-field-immune linear / rotary position sensor IC (SENT / PWM / SPC)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (DC)",
+   "aecq": true,
+   "launched": "2022-06",
+   "usedIn": [
+    "pedal",
+    "transmission",
+    "chassis height",
+    "steering"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90423-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0. MLX9042x family announced June 2022; datasheet Rev 1.0 June 2023. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90424",
+   "orderableCode": "MLX90424LGO-ACA-230-RE",
+   "desc": "Triaxis position sensor IC with integrated wake-up (dual die)",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (GO)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "brake pedal",
+    "clutch / shifter",
+    "park-lock"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90424-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0; datasheet Rev 3.0 Aug 2024 (addendum to MLX90423). Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90425",
+   "orderableCode": "MLX90425GDC-ABA-600-RE",
+   "desc": "Triaxis stray-field-immune 360 deg rotary position sensor IC",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (DC)",
+   "aecq": true,
+   "launched": "2022-06",
+   "usedIn": [
+    "steering angle",
+    "valve / actuator position",
+    "pedal"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90425-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0; datasheet Rev 004 Jan 2025. Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90426",
+   "orderableCode": "MLX90426GVE-ACB-630-RX",
+   "desc": "Triaxis stray-field-immune rotary position sensor IC, PCB-less package option",
+   "category": "ic_soic",
+   "pkg": "see datasheet (code VE)",
+   "aecq": true,
+   "launched": "2022-06",
+   "usedIn": [
+    "actuator position",
+    "pedal",
+    "throttle / valve"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90426-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0; datasheet Rev 004 Dec 2025. Order code from the Melexis datasheet ordering table. Package of the VE code not read - confirm the SMT code before pricing."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90376",
+   "orderableCode": "MLX90376GVD-ABA-300-RE",
+   "desc": "Triaxis stray-field-immune 360 deg position sensor IC for through-shaft / end-of-shaft",
+   "category": "ic_soic",
+   "pkg": "see datasheet (code VD)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "steering angle",
+    "rotary actuator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90376-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0; datasheet Rev 003 Sept 2023. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90513",
+   "orderableCode": "MLX90513GGO-CAA-100-RE",
+   "desc": "Inductive position sensor interface IC (3 receive coils, SENT / SPC / PWM)",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (GO)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "pedal",
+    "steering torque / angle",
+    "actuator position"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90513-datasheet-melexis.pdf",
+   "note": "AEC-Q100 Grade 0; datasheet Rev 002 Sept 2025. Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90510",
+   "orderableCode": "MLX90510GGO-BBA-100-RE",
+   "desc": "High-speed inductive resolver interface IC for e-motor rotor position (sin/cos, up to 660k e-rpm), ASIL C SEooC",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (GO)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter",
+    "e-motor rotor position",
+    "e-axle"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90510-datasheet-melexis.pdf",
+   "note": "Datasheet (Rev 003 July 2022) states ISO 26262 ASIL C SEooC and ESD per AEC-Q100-002 but no \"AEC-Q100 qualified\" line in the pages read. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX91377",
+   "orderableCode": "MLX91377GGO-ADB-080-RE",
+   "desc": "High-performance linear Hall sensor IC (SENT / SPC / analog), dual-die option, for torque and position",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (GO) dual die",
+   "aecq": true,
+   "launched": "2020-02",
+   "usedIn": [
+    "EPS torque sensor",
+    "pedal",
+    "current sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx91377-datasheet-melexis.pdf",
+   "note": "\"AEC Q-100 Grade 0 qualified\"; datasheet Rev 001 27-Feb-2020 - older part, listed because absent from the catalogue. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX91235",
+   "orderableCode": "MLX91235HDC-BAA-300-RE",
+   "desc": "500 kHz coreless (gradiometric) current sensor for external busbar / PCB trace, digital",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (DC)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter",
+    "BMS / battery junction box",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx91235-datasheet-melexis.pdf",
+   "note": "\"AEC-Q100 - Grade 0 Automotive Qualified\"; datasheet Rev 004 Aug 2026. Digi-Key search for MLX91235 returned no listing on 2026-11-22."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37030",
+   "orderableCode": "ACS37030LLZATR-020B3",
+   "desc": "DC-5 MHz isolated Hall + inductive current sensor with zero-current reference (GaN / SiC stages)",
+   "category": "ic_soic",
+   "pkg": "6-pin fused-lead SOIC (LZ) / wide-body (MY)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "DC-DC converter",
+    "GaN / SiC power stage"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37030-32-datasheet.pdf",
+   "note": "\"Grade 0, AEC-Q100 automotive qualified\" (datasheet Rev 7, May 2026). Digi-Key lists the exact code (checked 2026-11-22). Future Electronics featured-product page seen. Sibling ACS37032 (overcurrent fault output), e.g. ACS37032LLZATR-020B3."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37035",
+   "orderableCode": "ACS37035KLACTR-020B3",
+   "desc": "1 MHz isolated Hall current sensor with low output offset",
+   "category": "ic_soic",
+   "pkg": "SOICW-16",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "DC-DC converter",
+    "xEV charger"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37035-datasheet.pdf",
+   "note": "\"AEC-Q100 Grade 1, automotive qualified\" (datasheet Rev 5, May 2026). Mouser new-product page seen; Digi-Key shows 4 ACS37035 current-sensor items. Order code from the Allegro datasheet selection guide."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37100",
+   "orderableCode": "ACS37100LMAETR-025B3",
+   "desc": "10 MHz isolated TMR (XtremeSense) current sensor, +/-25 / 50 A",
+   "category": "ic_soic",
+   "pkg": "SOICW-16 (MA, 8 mm creepage)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "DC-DC converter",
+    "GaN / SiC protection"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37100-datasheet.pdf",
+   "note": "\"Grade 0, AEC-Q100 automotive qualified\" (datasheet Rev 4, Aug 2026). Digi-Key product-highlight and Mouser new-product pages seen. Second code: ACS37100LMAETR-050B3."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37220",
+   "orderableCode": null,
+   "desc": "Integrated Hall current sensor, +/-100 to +/-200 A, 100 V functional isolation (shunt replacement)",
+   "category": "ic_qfn",
+   "pkg": "7-pin QFN 4x4 mm",
+   "aecq": true,
+   "launched": "2024-07",
+   "usedIn": [
+    "48 V systems",
+    "DC-DC converter",
+    "battery disconnect"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allaboutcircuits.com/news/allegros-new-current-sensors-offer-alternative-traditional-shunts/",
+   "note": "All About Circuits 11 Jul 2024: \"qualified to AEC-Q100 Grade 0 automotive standards\". Maker datasheet URL not found; no orderable code seen."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37610",
+   "orderableCode": "ACS37610LLUATR-010B3",
+   "desc": "Coreless differential Hall current sensor IC with common-mode field rejection, overcurrent and overtemperature detection",
+   "category": "ic_soic",
+   "pkg": "TSSOP-8 (LU)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter busbar",
+    "BMS",
+    "48 V inverter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37610-datasheet.pdf",
+   "note": "\"AEC-Q100 Grade 0, automotive qualified\" (datasheet Rev 2, Oct 2024). Digi-Key lists the exact code (checked 2026-11-22). Successor to the catalogued ACS37612."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37630",
+   "orderableCode": "ACS37630LOLTR-004B5",
+   "desc": "Linear vertical-Hall sensor IC for U-core current sensing, 250 kHz analog output",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (OL)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter phase current",
+    "BMS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37630-datasheet.pdf",
+   "note": "\"AEC-Q100 Grade 0, automotive qualified\" (datasheet Rev 4, June 2026). Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37200",
+   "orderableCode": "ACS37200LLXTR-100B3",
+   "desc": "200 A ultra-compact isolated current sensor, reinforced isolation, 100 mm2 SMD package",
+   "category": "ic_soic",
+   "pkg": "compact SMD (LX), ~100 mm2",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter",
+    "OBC",
+    "high-current DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37200-datasheet.pdf",
+   "note": "\"AEC-Q100 Grade 0, automotive qualified\"; datasheet ACS37200LX-DS Rev 1 dated 28 Sep 2026 - a 2026 part. Order code from the Allegro datasheet selection guide."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS37601",
+   "orderableCode": "ACS37601LKTATN-001B5-C",
+   "desc": "ASIL C programmable linear Hall sensor IC, 240 kHz, for core-based current sensing",
+   "category": "through_hole",
+   "pkg": "4-pin SIP (KT)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction inverter (core-based sensor)",
+    "DC fast-charge path"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs37601-datasheet.pdf",
+   "note": "AEC-Q100 Grade 0 (datasheet Rev 5, July 2026). Leaded SIP - through-hole / sensor-module part. Order code from the Allegro datasheet selection guide."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "ACS39402",
+   "orderableCode": "ACS39402KLHLT-010U",
+   "desc": "TMR current sensor in 5-pin SOT-23W, no external sense resistor",
+   "category": "ic_soic",
+   "pkg": "SOT-23W 5-pin (LH)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body / zonal loads",
+    "motor drives",
+    "DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/acs39402-datasheet.pdf",
+   "note": "Datasheet Rev 1 (19 May 2026): \"AEC-Q100 Grade 1, automotive qualified (pending)\" - so aecq false for now. Mouser featured-products page seen."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "CT455",
+   "orderableCode": "CT455-A00B5-TS08",
+   "desc": "XtremeSense TMR contactless current sensor, 1 MHz, programmable gain",
+   "category": "ic_soic",
+   "pkg": "TSSOP-8 / SOIC-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "busbar current sensing",
+    "BMS",
+    "inverter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/ct455-datasheet.pdf",
+   "note": "\"AEC-Q100 Grade 1 automotive qualified (A variants)\" (datasheet Rev 12, June 2026). SOIC code on the datasheet: CT455-A00B5-SN08."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "XENSIV TLE4971",
+   "orderableCode": null,
+   "desc": "Coreless Hall current sensor with integrated current rail, 25-120 A, analog, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "TISON-8 / PG-DSO-16",
+   "aecq": true,
+   "launched": "2022-11",
+   "usedIn": [
+    "OBC",
+    "HV auxiliary drives",
+    "DC-DC",
+    "charging"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://infineon.com/cms/en/about-infineon/press/market-news/2022/INFATV202211-019.html",
+   "note": "Press Nov 2022: qualified to AEC-Q100 Grade 1. Infineon product names seen (product page title / May 2026 selection guide): TLE4971-A025T5-E0001, TLE4971-A050T5-E0001 (TISON-8), TLE4971-A050W2-S0001 (DSO-16); the OPN (...XUMA1) was not seen. Catalogue holds TLE4972 / TLE4973 only."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "XENSIV TLE4978",
+   "orderableCode": null,
+   "desc": "Coreless Hall + coil hybrid current sensor, 9 MHz, 40-60 A, OCD + zero-cross detection, ASIL B",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-16 (300 mil)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "OBC",
+    "GaN / SiC totem-pole PFC",
+    "DC-DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/24/66/infineon-xensiv-current-sensors-productselectionguide-en.pdf",
+   "note": "May 2026 Infineon selection guide: automotive column ticked, -40..150 C (Grade 0), ISO 26262 ASIL-B; no explicit \"AEC-Q100 qualified\" line. Product names: TLE4978-R040W5-O-S0010 / -R050W5- / -R060W5-; OPN not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "XENSIV TLE5571",
+   "orderableCode": null,
+   "desc": "Differential TMR coreless current sensor, 2.5 MHz, 150 ns overcurrent detection, ASIL C (HV e-fuse / solid-state breaker)",
+   "category": "ic_soic",
+   "pkg": "see datasheet when released",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "HV e-fuse",
+    "solid-state circuit breaker",
+    "power distribution unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/24/66/infineon-xensiv-current-sensors-productselectionguide-en.pdf",
+   "note": "Marked \"Coming soon\" in the May 2026 selection guide - not yet orderable. Names shown: TLE5571-AE24O5-I-S0001, TLE5571-AE36O5-I-S0001."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "XENSIV TLE5572",
+   "orderableCode": null,
+   "desc": "Monocell TMR current sensor in SOT23, 1 MHz, replaces shunt + op-amp",
+   "category": "ic_soic",
+   "pkg": "SOT23 2.4x2.9 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drives",
+    "zonal / body loads",
+    "inverter phase current"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.infineon.com/assets/row/public/documents/24/66/infineon-xensiv-current-sensors-productselectionguide-en.pdf",
+   "note": "Marked \"Coming soon\" in the May 2026 selection guide - not yet orderable. Names shown: TLE5572-AE04E1-R-E0001 ... -AE24E1-R-E0001."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TMCS1126-Q1",
+   "orderableCode": "TMCS1126A2BQDVGRQ1",
+   "desc": "Isolated Hall current sensor, 80 A rms, 500 kHz, reinforced isolation, ambient-field rejection, ALERT",
+   "category": "ic_soic",
+   "pkg": "SOIC-10 wide (DVG)",
+   "aecq": true,
+   "launched": "2024-04",
+   "usedIn": [
+    "OBC",
+    "DC-DC converter",
+    "traction inverter aux"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/TMCS1126-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Sibling TMCS1127-Q1 (250 kHz, first issue 2025-01, e.g. TMCS1127A1AQDVGRQ1) also absent from the catalogue."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TMCS1133-Q1",
+   "orderableCode": "TMCS1133A1AQDVGRQ1",
+   "desc": "Isolated Hall current sensor, 1 MHz, reinforced isolation, ambient-field rejection, ALERT",
+   "category": "ic_soic",
+   "pkg": "SOIC-10 wide (DVG)",
+   "aecq": true,
+   "launched": "2024-07",
+   "usedIn": [
+    "OBC",
+    "DC-DC converter",
+    "GaN / SiC stage"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TMCS1133-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "INA790x-Q1",
+   "orderableCode": "INA790AQWDEKRQ1",
+   "desc": "110 V bidirectional current-sense amplifier with integrated shunt (EZShunt), 75 A rms",
+   "category": "ic_qfn",
+   "pkg": "15-pin wettable-flank VQFN (DEK)",
+   "aecq": true,
+   "launched": "2026-01",
+   "usedIn": [
+    "48 V systems",
+    "zonal controller",
+    "motor drive",
+    "battery disconnect"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/ina790b-q1",
+   "note": "Datasheet SBOSAE3 (Jan 2026) \"INA790x-Q1 AEC-Q100\". Codes: INA790AQWDEKRQ1, INA790BQWDEKRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "INA791x-Q1",
+   "orderableCode": "INA791BQWDEKRQ1",
+   "desc": "110 V bidirectional high-bandwidth current-sense amplifier with integrated shunt (EZShunt), 75 A rms",
+   "category": "ic_qfn",
+   "pkg": "15-pin wettable-flank VQFN (DEK)",
+   "aecq": true,
+   "launched": "2026-01",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "DC-DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/INA791B-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Also INA791AQWDEKRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "INA745x-Q1",
+   "orderableCode": "INA745AQWRELRQ1",
+   "desc": "40 V 16-bit I2C digital power monitor with integrated shunt (EZShunt)",
+   "category": "ic_qfn",
+   "pkg": "VQFN (REL)",
+   "aecq": true,
+   "launched": "2025-05",
+   "usedIn": [
+    "zonal controller",
+    "ADAS domain controller rail monitor",
+    "body loads"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/ina745b-q1",
+   "note": "Datasheet SBOSAK9 (May 2025) \"INA745x-Q1 AEC-Q100\". Codes: INA745AQWRELRQ1, INA745BQWRELRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "INA310x-Q1",
+   "orderableCode": "INA310A1QDGKRQ1",
+   "desc": "-4 to 110 V 1.3 MHz current-sense amplifier with comparator and reference",
+   "category": "ic_soic",
+   "pkg": "VSSOP-8 (DGK)",
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "solenoid / valve control"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/INA310A-Q1",
+   "note": "launched = first issue date printed on the TI datasheet. Gains A1-A5 / B1-B5, e.g. INA310A2QDGKRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TMAG5173-Q1",
+   "orderableCode": "TMAG5173A1QDBVRQ1",
+   "desc": "High-precision 3D linear Hall-effect sensor, I2C, Grade 1",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6 (DBV)",
+   "aecq": true,
+   "launched": "2022-09",
+   "usedIn": [
+    "shifter",
+    "steering-column stalk",
+    "knob / HMI",
+    "actuator position"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TMAG5173-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TMAG6181-Q1",
+   "orderableCode": "TMAG6181EDGKRQ1",
+   "desc": "High-precision analog AMR angle sensor with integrated turns counter, Grade 0",
+   "category": "ic_soic",
+   "pkg": "VSSOP-8 (DGK)",
+   "aecq": true,
+   "launched": "2023-03",
+   "usedIn": [
+    "EPS motor position",
+    "BLDC rotor position",
+    "steering angle"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TMAG6181-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TMAG5131-Q1",
+   "orderableCode": "TMAG5131A1CQDBZRQ1",
+   "desc": "Low-power high-precision Hall-effect switch",
+   "category": "ic_soic",
+   "pkg": "SOT-23 (DBZ)",
+   "aecq": true,
+   "launched": "2024-06",
+   "usedIn": [
+    "door / latch",
+    "seat-belt buckle",
+    "BLDC commutation",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/tmag5131-q1",
+   "note": "launched = first issue date printed on the TI datasheet. Several sensitivity options on the datasheet (e.g. TMAG5131C1DQDBZRQ1)."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LDC5072-Q1",
+   "orderableCode": "LDC5072EPWRQ1",
+   "desc": "Inductive position sensor front end with sin/cos outputs, Grade 0 (160 C)",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (PW)",
+   "aecq": true,
+   "launched": "2018-12",
+   "usedIn": [
+    "traction motor rotor position",
+    "EPS",
+    "actuator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/LDC5072-Q1",
+   "note": "Older part (datasheet first issue Dec 2018, Rev C July 2023), listed because absent from the catalogue and widely used as a resolver replacement."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "HDC3020-Q1",
+   "orderableCode": "HDC3020QDEFRQ1",
+   "desc": "Automotive relative-humidity + temperature sensor, 0.5 %RH typ, I2C",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 2.5x2.5 mm (DEF)",
+   "aecq": true,
+   "launched": "2021-06",
+   "usedIn": [
+    "HVAC",
+    "windscreen fog sensor",
+    "battery pack",
+    "camera / lidar heater control"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/HDC3020-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Siblings HDC3021-Q1 / HDC3022-Q1 (covers)."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "HDC3120-Q1",
+   "orderableCode": "HDC3120QDEFRQ1",
+   "desc": "Analog-output automotive humidity + temperature sensor, 1 %RH / 0.2 C",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 (DEF)",
+   "aecq": true,
+   "launched": "2025-02",
+   "usedIn": [
+    "HVAC",
+    "battery pack",
+    "cabin air quality"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ti.com/lit/gpn/hdc3120-q1",
+   "note": "launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "AMC131M03-Q1",
+   "orderableCode": "AMC131M03QDFMRQ1",
+   "desc": "3-channel simultaneous-sampling 24-bit isolated delta-sigma ADC with integrated DC-DC",
+   "category": "ic_soic",
+   "pkg": "SOIC-20 wide (DFM)",
+   "aecq": true,
+   "launched": "2023-05",
+   "usedIn": [
+    "BMS shunt current + HV sense",
+    "OBC",
+    "EV charger metering"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/AMC131M03-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "ADS131B26-Q1",
+   "orderableCode": "ADS131B26QPHPRQ1",
+   "desc": "HV battery-pack monitor: six ADC channels for shunt current, pack voltage and temperature, ASIL-oriented",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48 (PHP)",
+   "aecq": true,
+   "launched": "2022-09",
+   "usedIn": [
+    "BMS battery junction box",
+    "battery disconnect unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/ADS131B26-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Related ADS131B23-Q1 / ADS131B24-Q1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS389C03-Q1",
+   "orderableCode": "TPS389C0300CRTERQ1",
+   "desc": "3-channel I2C-programmable OV / UV voltage supervisor with Q&A watchdog (ASIL rail monitor)",
+   "category": "ic_qfn",
+   "pkg": "WQFN-16 3x3 mm (RTE)",
+   "aecq": true,
+   "launched": "2022-11",
+   "usedIn": [
+    "ADAS domain controller",
+    "radar / camera ECU",
+    "SoC rail monitoring"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/TPS389C03-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS38700-Q1",
+   "orderableCode": "TPS38700C03NRGERQ1",
+   "desc": "I2C power-supply sequencer for up to 12 rails",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 4x4 mm (RGE)",
+   "aecq": true,
+   "launched": "2021-07",
+   "usedIn": [
+    "ADAS domain controller",
+    "infotainment SoC board",
+    "radar ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TPS38700-Q1",
+   "note": "launched = first issue date printed on the TI datasheet. Older (2021) but absent from the catalogue; pairs with TPS389xx-Q1 supervisors."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "OPA2863-Q1",
+   "orderableCode": "OPA2863QDRQ1",
+   "desc": "Dual low-power 110 MHz 12 V rail-to-rail I/O voltage-feedback op amp",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (D)",
+   "aecq": true,
+   "launched": "2023-02",
+   "usedIn": [
+    "OBC / DC-DC current sense",
+    "lidar / ToF receive chain",
+    "resolver excitation"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ti.com/product/OPA2863-Q1",
+   "note": "launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TLV916x-Q1",
+   "orderableCode": "TLV9162QDRQ1",
+   "desc": "Dual 16 V, 11 MHz rail-to-rail I/O general-purpose op amp",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (D) / VSSOP / TSSOP",
+   "aecq": true,
+   "launched": "2023-04",
+   "usedIn": [
+    "body ECU signal conditioning",
+    "motor drive sense",
+    "sensor interface"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/tlv9162-q1",
+   "note": "launched = first issue date printed on the TI datasheet. Family TLV9161-Q1 / TLV9162-Q1 / TLV9164-Q1; also TLV9162QDGKRQ1, TLV9162QPWRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "REF35-Q1",
+   "orderableCode": "REF35250QDBVRQ1",
+   "desc": "650 nA ultra-low-power precision voltage reference family (1.2-5 V)",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6 (DBV)",
+   "aecq": true,
+   "launched": "2023-08",
+   "usedIn": [
+    "BMS cell monitor",
+    "always-on ECU",
+    "sensor reference"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ti.com/product/REF35-Q1",
+   "note": "Datasheet SNAS845 first issue Aug 2023. Voltage options on the datasheet: REF35120 ... REF35500 (e.g. REF35330QDBVRQ1)."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TAS6754-Q1",
+   "orderableCode": "TAS6754QDKQRQ1",
+   "desc": "4-channel 2 MHz digital-input class-D audio amplifier with 1L modulation (one inductor per channel)",
+   "category": "ic_soic",
+   "pkg": "HSSOP-56 pad-up (DKQ)",
+   "aecq": true,
+   "launched": "2024-12",
+   "usedIn": [
+    "audio amplifier",
+    "head unit",
+    "premium audio"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TAS6754-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). Announced CES 2025. Drop-in successor TAS67524-Q1 (TAS67524QDKQRQ1, datasheet first issue Nov 2025) is also absent from the catalogue."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TAS6511-Q1",
+   "orderableCode": "TAS6511QPWPRQ1",
+   "desc": "1-channel 50 W 2 MHz digital-input class-D amplifier, heatsink-free, with current sense",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-28 (PWP) / VQFN-24 (RGE)",
+   "aecq": true,
+   "launched": "2023-12",
+   "usedIn": [
+    "eCall / telematics",
+    "AVAS",
+    "instrument cluster",
+    "head unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TAS6511-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. QFN code: TAS6511QRGERQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TAC5412-Q1",
+   "orderableCode": "TAC5412WQRTVRQ1",
+   "desc": "Stereo audio codec (112 dB ADC, 120 dB DAC), high-voltage mic inputs, mic bias and diagnostics",
+   "category": "ic_qfn",
+   "pkg": "WQFN-32 5x5 mm wettable flank (RTV)",
+   "aecq": true,
+   "launched": "2024-01",
+   "usedIn": [
+    "eCall",
+    "hands-free microphone",
+    "ANC / RNC",
+    "head unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TAC5412-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. DAC-only sibling TAD5212-Q1 (TAD5212QRGERQ1, 2023-12)."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TAA5412-Q1",
+   "orderableCode": "TAA5412WQRTVRQ1",
+   "desc": "Stereo audio ADC, 112 dB, high-voltage inputs, mic bias and diagnostics",
+   "category": "ic_qfn",
+   "pkg": "WQFN-32 5x5 mm wettable flank (RTV)",
+   "aecq": true,
+   "launched": "2024-01",
+   "usedIn": [
+    "microphone array",
+    "ANC / RNC",
+    "eCall"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TAA5412-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "PCM6240-Q1",
+   "orderableCode": "PCM6240QRTVRQ1",
+   "desc": "4-channel audio ADC with programmable mic bias and input diagnostics",
+   "category": "ic_qfn",
+   "pkg": "WQFN-32 5x5 mm (RTV)",
+   "aecq": true,
+   "launched": "2020-03",
+   "usedIn": [
+    "microphone array",
+    "ANC / RNC",
+    "head unit"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/PCM6240-Q1",
+   "note": "Older (2020) but absent from the catalogue; family PCM6260-Q1 / PCM6340-Q1 / PCM6360-Q1."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "FDA903S",
+   "orderableCode": null,
+   "desc": "1-channel 10 W digital-input class-D amplifier with advanced diagnostics, 3.3-18 V",
+   "category": "ic_qfn",
+   "pkg": "QFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "eCall / telematics",
+    "instrument cluster",
+    "AVAS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://st.com/en/automotive-infotainment-and-telematics/fda903s.html",
+   "note": "ST page (read through search) lists AEC-Q100 qualified; data brief DB4682 Rev 3 Jan 2023. Mouser new-product page seen. Orderable suffix not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "FDA803S",
+   "orderableCode": null,
+   "desc": "1-channel 10 W digital-input class-D amplifier with advanced diagnostics (sibling of FDA903S)",
+   "category": "ic_qfn",
+   "pkg": "see ST datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "eCall / telematics",
+    "instrument cluster"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: FDA803",
+   "priority": 3,
+   "sourceUrl": "https://st.com/content/st_com/en/campaigns/fda803s-fda903s-10w-digital-input-class-d-automotive-audio-amplifier.html",
+   "note": "has.py: family key FDA803 is an estimate (FDA803D-EHT is distributor-priced). An orderable FDA803S code was not seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "HFDA801A",
+   "orderableCode": null,
+   "desc": "4 x 80 W digital-input class-D amplifier, 2 MHz PWM, 24-bit 120 dB DAC, start-stop down to 4.5 V",
+   "category": "ic_tqfp",
+   "pkg": "LQFP 10x10 mm",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "premium audio amplifier",
+    "head unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.st.com/en/automotive-infotainment-and-telematics/hfda801a.html",
+   "note": "AEC-Q100 status inconsistent across pages (ST English page: qualified; ST zh / ja pages and Mouser: qualification ongoing / pending) - aecq left false. Mouser new-product page seen."
+  },
+  {
+   "mfr": "STMicroelectronics",
+   "family": "TDA7901",
+   "orderableCode": null,
+   "desc": "Quad-bridge power amplifier with integrated DAC and I2C diagnostics",
+   "category": "ic_soic",
+   "pkg": "see ST data brief",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "head unit",
+    "audio amplifier"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.mouser.com/new/stmicroelectronics/stmicroelectronics-tda7901/",
+   "note": "Mouser new-product page (updated May 2025): \"AEC-Q100 qualification ongoing\". Package and orderable code not seen."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LP8866S-Q1",
+   "orderableCode": "LP8866SQDCPRQ1",
+   "desc": "Display LED-backlight driver, six 150 mA channels, boost controller",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-38 (DCP) / VQFN-32 (RHB)",
+   "aecq": true,
+   "launched": "2020-08",
+   "usedIn": [
+    "instrument cluster",
+    "centre display",
+    "head-up display"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.ti.com/product/LP8866S-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Catalogue holds the 4-channel LP8864S only. QFN code: LP8866SQRHBRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LP8865-Q1",
+   "orderableCode": "LP8865UQDMTRQ1",
+   "desc": "Multi-topology LED driver with inductive fast dimming (LP8865U / V / W / X / Y / Z)",
+   "category": "ic_qfn",
+   "pkg": "see datasheet (DMT)",
+   "aecq": true,
+   "launched": "2023-11",
+   "usedIn": [
+    "head-up display",
+    "local-dimming backlight",
+    "exterior lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/lit/gpn/lp8865u-q1",
+   "note": "Datasheet SLVSH05 first issue Nov 2023, Rev A Aug 2025: \"AEC-Q100 Qualified for automotive applications\". Codes: LP8865UQDMTRQ1 ... LP8865ZQDMTRQ1."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "TPS929160-Q1",
+   "orderableCode": "TPS929160QDCPRQ1",
+   "desc": "16-channel 40 V high-side LED / OLED driver with FlexWire interface",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-38 (DCP)",
+   "aecq": true,
+   "launched": "2023-04",
+   "usedIn": [
+    "rear combination lamp",
+    "animated exterior lighting",
+    "OLED tail lamp"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.ti.com/product/TPS929160-Q1",
+   "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. 24-channel sibling TPS929240-Q1 (TPS929240QDCPRQ1, first issue 2022-07) also absent."
+  },
+  {
+   "mfr": "Texas Instruments",
+   "family": "LP5891-Q1",
+   "orderableCode": "LP5891QRRFRQ1",
+   "desc": "48 current sources x 64 scan lines common-cathode LED matrix driver (mini / micro-LED)",
+   "category": "ic_qfn",
+   "pkg": "VQFN (RRF)",
+   "aecq": true,
+   "launched": "2022-08",
+   "usedIn": [
+    "mini-LED local-dimming display",
+    "pixelated interior / exterior lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.ti.com/lit/gpn/lp5891-q1",
+   "note": "launched = first issue date printed on the TI datasheet. Rev B Oct 2026. Wettable-flank code: LP5891QWRRFRQ1."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD94130xxx-M",
+   "orderableCode": "BD94130EFV-ME2",
+   "desc": "24-channel constant-current + 8-line switch-controller LED driver for mini-LED local-dimming backlights, SPI",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B54 18.5x9.5 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "mini-LED local-dimming display",
+    "instrument cluster",
+    "centre display"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.rohm.com/products/power-management/led-drivers/constant-current-serial-in-parallel-out/bd94130efv-m-product",
+   "note": "ROHM page: \"AEC-Q100 Qualified (Grade 1)\", status Recommended. Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Analog Devices (Maxim)",
+   "family": "MAX25512",
+   "orderableCode": null,
+   "desc": "4-channel 120 mA white-LED backlight driver with integrated boost and I2C, 400 kHz-2.2 MHz, 40 V load dump",
+   "category": "ic_qfn",
+   "pkg": "TQFN 4x4 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "instrument cluster",
+    "centre display",
+    "head-up display"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.analog.com/en/products/MAX25512B.html",
+   "note": "analog.com (read through search): MAX25512B is AEC-Q100 Grade 1, in production. Stand-alone siblings MAX25510 / MAX25511 also absent. Orderable suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "NEX13120PC-Q100",
+   "orderableCode": null,
+   "desc": "12-channel 40 V high-side linear LED driver, ASIL-B capable",
+   "category": "ic_soic",
+   "pkg": "see Nexperia data sheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rear combination lamp",
+    "exterior lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://newelectronics.co.uk/content/product-launches/nexperia-introduces-aec-q100-qualified-12-channel-led-driver",
+   "note": "Found by search (not a seed): AEC-Q100 Grade 1 qualified per Nexperia / New Electronics; Future Electronics feature page seen. Type number as in the Nexperia page URL; packing-suffix code not seen."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX81123",
+   "orderableCode": null,
+   "desc": "LIN RGB LED driver / controller IC for ambient lighting",
+   "category": "ic_qfn",
+   "pkg": "see Melexis datasheet",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ambient lighting module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.melexis.com/es/products/led-driver-ics",
+   "note": "Confirmed on the Melexis LED-driver page through search only (melexis.com blocks fetch); AEC statement and order code not seen."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX80142",
+   "orderableCode": null,
+   "desc": "Ready-to-use dual RGB-LED driver for MeLiBu 2 smart lighting (no coding)",
+   "category": "ic_qfn",
+   "pkg": "see Melexis datasheet",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "dynamic ambient lighting",
+    "light bars"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.melexis.com/es/products/led-driver-ics",
+   "note": "Confirmed on the Melexis LED-driver page through search only; AEC statement and order code not seen."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90830",
+   "orderableCode": "MLX90830LXZ-BAH-001-RE",
+   "desc": "Triphibian MEMS absolute pressure sensor, 2-70 bar gas and liquid, analog output",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 WB cavity-up (XZ)",
+   "aecq": true,
+   "launched": "2024-01",
+   "usedIn": [
+    "EV thermal management",
+    "refrigerant / coolant loop",
+    "heat pump"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90830-datasheet-melexis.pdf",
+   "note": "\"Qualified according to AEC-Q100 and AEC-Q103-002\"; launched Jan 2024. Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90834",
+   "orderableCode": "MLX90834LXG-DAH-003-RE",
+   "desc": "Triphibian MEMS absolute pressure sensor with SENT output",
+   "category": "ic_soic",
+   "pkg": "see datasheet (code XG)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "EV thermal management",
+    "transmission oil",
+    "refrigerant loop"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90834-datasheet-melexis.pdf",
+   "note": "\"Qualified according to AEC-Q100 and AEC-Q103-002\"; datasheet Rev 002 July 2026. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Melexis",
+   "family": "MLX90833",
+   "orderableCode": "MLX90833LXZ-BAE-007-RE",
+   "desc": "Triphibian MEMS absolute pressure sensor with LIN output and auto-addressing",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 WB cavity-up (XZ)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "coolant monitoring",
+    "expansion valve",
+    "e-compressor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://media.melexis.com/-/media/files/documents/datasheets/mlx90833-datasheet-melexis.pdf",
+   "note": "Datasheet says \"Automotive qualified\" without naming AEC-Q100 in the lines read - aecq left false. Order code from the Melexis datasheet ordering table."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "A17802",
+   "orderableCode": "A17802PLEATR",
+   "desc": "Inductive position sensor IC with sin/cos outputs for e-motor rotor position",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14 (LE)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction motor rotor position",
+    "EPS motor",
+    "e-axle"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/a17802-datasheet.pdf",
+   "note": "\"Qualified to AEC-Q100 Grade 0\" (datasheet Rev 5, Sept 2026). Digi-Key exact match seen."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "A31315",
+   "orderableCode": "A31315LOLATR-XY-S-SE-10",
+   "desc": "3D Hall magnetic position sensor IC (SENT / PWM / analog), single or dual die",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (OL) / TSSOP-14 (LU, dual die)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "pedal",
+    "shifter",
+    "chassis height",
+    "valve position"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/a31315-datasheet.pdf",
+   "note": "AEC-Q100 Grade 0 (datasheet Rev 13, March 2026). Order code from the Allegro datasheet selection guide. Many axis / output variants (e.g. A31315LLUBTR-XY-S-SE-10)."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "A33230",
+   "orderableCode": "A33230LLHALT-XY-S-AR-10",
+   "desc": "3D Hall-effect sensor IC with sin/cos outputs in SOT23-W",
+   "category": "ic_soic",
+   "pkg": "SOT23-W 5-pin (LH)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BLDC motor position",
+    "knob / HMI",
+    "actuator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/a33230-datasheet.pdf",
+   "note": "\"AEC-Q100 grade 0 automotive qualified\" (datasheet Rev 3, Feb 2024). Order code from the Allegro datasheet selection guide."
+  },
+  {
+   "mfr": "Allegro MicroSystems",
+   "family": "A33115",
+   "orderableCode": "A33115KLEATR",
+   "desc": "Precision TMR 360 deg angle sensor IC with integrated diagnostics and low-power mode",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14 (LE)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "EPS",
+    "steering angle",
+    "motor position"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.allegromicro.com/-/media/files/datasheets/a33115-datasheet.pdf",
+   "note": "Datasheet Rev 4 (Oct 2025): \"AEC-Q100 grade 1 qualification planned\" - aecq false for now."
+  },
+  {
+   "mfr": "Renesas",
+   "family": "IPS2550",
+   "orderableCode": "IPS2550DE1R",
+   "desc": "Inductive position sensor IC for high-speed motor commutation, sin/cos outputs, Grade 0",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 exposed pad",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "traction motor rotor position",
+    "EPS",
+    "brake booster motor"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.renesas.com/en/products/ips2550",
+   "note": "Renesas page: \"AEC-Q100 Grade 0 automotive qualified\". Digi-Key lists the exact code (checked 2026-11-22)."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "XENSIV TLE493D-x3xx (TLE493D-P3B6 / P3I8)",
+   "orderableCode": null,
+   "desc": "3D magnetic Hall-effect sensor family, third generation (I2C / SPI variants)",
+   "category": "ic_soic",
+   "pkg": "see datasheet",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "shifter",
+    "stalk / knob HMI",
+    "actuator position"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.futureelectronics.com/npi/infineon-tle493d-x3xx-xensiv-3d-magnetic-hall-effect-sensor-family",
+   "note": "Future Electronics NPI page and Infineon product pages (tle493d-p3b6-a0, tle493d-p3i8) exist; their body text could not be read, so AEC-Q100 and the OPN are not confirmed."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "PSoC Automotive Multitouch Gen8XL (IAAT818X)",
+   "orderableCode": null,
+   "desc": "Automotive touchscreen controller for OLED / micro-LED displays up to 24 inch, ASIL-B, Auto-SPICE L3",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-128 / TQFP-100",
+   "aecq": true,
+   "launched": "2024-10",
+   "usedIn": [
+    "centre display",
+    "pillar-to-pillar display",
+    "touchpad / slider"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.eejournal.com/industry_news/new-automotive-psoc-multitouch-controller-supports-oled-and-ultra-large-screens-with-superior-touch-performance/",
+   "note": "Press 14 Oct 2024: \"AEC-Q100 qualified\"; samples then, production expected Q4 2025. Orderable code not seen."
+  },
+  {
+   "mfr": "Infineon",
+   "family": "PSoC Automotive Multitouch Gen6L (CYAT8165X / CYAT7165X)",
+   "orderableCode": null,
+   "desc": "Automotive capacitive touchscreen (CYAT8165X) / trackpad (CYAT7165X) controller, 32-bit Arm Cortex",
+   "category": "ic_tqfp",
+   "pkg": "see datasheet",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "centre display",
+    "instrument cluster touch",
+    "trackpad"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/datasheet/2/196/Infineon_CYAT81650_100AA48_DataSheet_v01_00_EN-3106721.pdf",
+   "note": "Datasheet hosted by Mouser for CYAT81650 100AA48 (exact punctuation of the order code not seen); grades Automotive-A (85 C) and Automotive-S (105 C); AEC-Q100 sentence not seen. Avnet / EBV 2024 NPI page exists for Gen6XL."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "TI AWR2944P - catalogue already holds AWR2944 (distributor); only the LoP sibling AWR2E44P is listed",
+  "TI AWR1843AOP / AWR2243 / AWR6843AOP / IWR6843AOP, Infineon BGT60ATR24C / BGT24ATR22, Melexis MLX75027 - already in the catalogue",
+  "NXP TEF82xx - in the catalogue (TEF8232); NXP SAF9000 / SAF9100 / SAF400x / TDF8532 / TDF8534 - no page seen within the search budget",
+  "ST STRADA431 / STRADA770M, Bosch SX600, Calterah, Arbe - no page returned",
+  "Sony IMX828 / IMX775 - no page returned; IMX490 / IMX424 are on Sony's automotive page (5.4 MP / 7.42 MP, older generation) but not listed as latest",
+  "onsemi AR0544, Hyperlux ID / SP - not searched; AR0147AT / AR0233AT / AR0820AT already in the catalogue",
+  "OMNIVISION OX05B1S (product URL 404), OX03C10 / OX01E20 / OG01A1B / OG02B10 / OX03F10 - older generation or not fetched; OX08D20 named only as \"an Oct 2025 upgrade of OX08D10\" without a part page",
+  "Samsung ISOCELL Auto 1H1 / 3B6 / 4AC; ST VB56G4A / VB1940 / VD1940 / VG5761 / VD5943 / VL53L8; Melexis MLX75026 (datasheet 403); Infineon REAL3 IRS2877A / IRS2975C - not confirmed on a page",
+  "Lidar: EPC2221 / EPC2203 / EPC2212, Sony IMX459, ams OSRAM SPL S4L90A_3 / SPL S1L90A, Lumentum, Hamamatsu - not searched (LMG1025-Q1, LMG1020, EPC2252, ArrayRDM-0112A20 already in the catalogue)",
+  "Bosch SMI860 / SMI970 / SMU300 / SMA131 / SMA270 / SMA286 / SMA386 / SMP581 and the SMA7xx / SMA8xx airbag accelerometers are on Bosch's MEMS page but were not opened individually (airbag / ESP parts, contract supply)",
+  "ST ASM330LHBG1 / ASM330LHHXG1 - has.py matches the catalogued ASM330LHB / ASM330LHHX entries; ASM330AB1 - no page returned; AIS2DW12 / AIS2IH in the catalogue; IIS2DULPX-A not searched",
+  "TDK IIM-20670 (not on the automotive page), IAM-20380HT / IAM-20680HT in the catalogue; TDK-Micronas HAL 39xy / HAL 302x / HAL 3550 / HAR 39xy / CUR 423x / TAS / TAD / ASA2310 - micronas.tdk.com returned 403",
+  "Murata SCH16T-K10 - has.py matches the catalogued SCH16T-K01; SCHA600 / SCA3400 / SCL3400 not searched",
+  "ADI ADXL316 / ADXL317 / ADXL373 / ADXL1001 / ADIS1654x, AD2437 / AD2433 / AD2435 (A2B; only the family-level \"A2B 2.0 released to production, 28 Apr 2026\" notice was found, no part number), ADBMS2950, MAX25014 / MAX20069 / MAX25221, MAX98396 / MAX98397, SSM6515, ADAU1797A / ADAU1860, ADSP-2156x / 2159x / SC59x, LT8722, AD7386 - analog.com blocks fetch and the searches returned no part page",
+  "Infineon TLE4802 / TLI5590 / TLE49SR / TLE5109A16 / TLE4960 / TLE4961 / TLE4929C / KP46x / KP276 / SP49 / SP40+, IM67D120A / IM67D130A / IM68A130A / IM66D130A, MERUS MA51xx - no readable page (Infineon product pages return navigation only); TLE4972 / TLE4973 / TLE5501 / TLE5012B / TLE5014 / TLE4999 in the catalogue",
+  "Allegro ACS37041 - industrial positioning, no AEC statement seen; ACS37002 / ACS37612 in the catalogue; A33110 / ACS37010 / ACS37012 / CT4022 datasheet URLs not found; A31316 / AAS33001 / AAS33051 / A1333 / A1339 / APS11450 / A19360 / CT452 / ACS37800 datasheets exist but carry no AEC line in the pages read or are older / SIP parts - not listed; CT430 is \"Not for New Design\"",
+  "Melexis MLX90514 / MLX90515 / MLX81339 / MLX81340 / MLX81344 / MLX81346 / MLX81332 / MLX81143 / MLX81118 / MLX81116 / MLX81113 / MLX81130 / MLX90411 - datasheet URLs return 403 / 404; MLX90384 (Arcminaxis encoder) and MLX90632 / MLX90640 / MLX90642 / MLX90394 show no AEC-Q100 qualification (ESD class only); MLX90378 / MLX90371 are 2019-2021 parts",
+  "TI without a -Q1 / AEC statement on the datasheet: TMAG3001, TMAG5253, TMP119, TMP1827, TAS2320, OPA593; TI part numbers that returned 404: TMUX7308F-Q1, INA780B-Q1, INA700-Q1, ADS7128-Q1, TAC5212-Q1, TMCS1143-Q1; TLV9304-Q1 exists (TLV9304QPWRQ1, June 2024) but its page shows no AEC-Q100 sentence",
+  "TI older automotive parts confirmed on datasheets but not listed as \"latest\" (all absent from the catalogue): DRV2605L-Q1 (DRV2605LTDGSRQ1), FDC1004-Q1, FDC2214-Q1, LDC1614-Q1, LDC3114-Q1, TLC6C5748-Q1, TMUX1308-Q1, TMP61-Q1, OPA4991-Q1, TPS3704-Q1, TPS3760-Q1, ADS7138-Q1, LP8863-Q1",
+  "ST TSB7xx / TSB18x / TSV77x / TSZ18x / TSC2020 / TSC210x / TSC1641, HFA80A, FDA2100BLV, TDA7803A; onsemi NCS213x / NCV2100x; Microchip MCP6V5x / MCP651x / MCP356x; ROHM BD8758x / LMR1901 / TLR377 / BD81A76 / BD83A14 / BD82A26; Nisshinbo NJU77xx - not searched (budget)",
+  "Microchip maXTouch MXT2912TD / MXT1296M1T - only the family page was found (AEC-Q100, up to 3,000 nodes, screens to 45 inch), no part number confirmed; Synaptics / Himax TDDI, Azoteq - not searched",
+  "ams OSRAM AS1163 / AS1170 / AS8650 / E3731i / AS5172E / AS5116 / AS5715R / AS5147U / AS8579, Inova INLC10AQ / INLC100Q, Elmos E521.3x / E522.x, Macroblock - no page returned",
+  "NXP KMZ80 / KMA310 / KMA320 / KMA321 / FXTH87E / NTM88, Renesas ZSSC416x / RRH62000 / DA7280 / DA7282, Boreas BOS1211, Cirrus CS35L / CS47L, Knowles / TDK MEMS microphones (TDK T5838 is on the InvenSense site with no AEC statement) - not confirmed",
+  "Renesas RAA2P3226 (page says industrial, no AEC-Q100), IPS2200 (industrial), RAA270205 radar transceiver (Renesas page status: Obsolete) - not listed"
+ ]
+}

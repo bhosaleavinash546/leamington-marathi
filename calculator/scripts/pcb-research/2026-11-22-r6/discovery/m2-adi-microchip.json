@@ -1,0 +1,2093 @@
+{
+ "domain": "m2-adi-microchip",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "method": "Second pass by maker. analog.com (503), mouser.com, digikey.com, farnell / newark, arrow, rutronik24, future, microchipdirect, octopart and trustedparts all refused page reads; TME, LCSC and findchips return no product list without scripts. ADI parts therefore come from WebSearch result titles and summaries of franchised-distributor listings (Digi-Key, Mouser, Newark, Arrow) - each note says exactly what was read; aecq is true only where the words AEC-Q100 were read. Microchip parts come from PDFs read in full on ww1.microchip.com (Microchip's document server, which answered): nine data sheets / one user guide with the orderable codes printed, and three selector guides - 'Automotive Product Selector Guide' DS00003019A (Aug 2019), 'Analog and Interface Product Selector Guide' DS20001060AW (June 2020), '32-bit Automotive MCUs' DS60001427D (June 2019) - which confirm the automotive line at family level without orderable codes. 15 searches, 36 page reads (13 refused or empty). No prices recorded.",
+ "candidates": [
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX25410",
+   "orderableCode": "MAX25410AGTE/V+",
+   "desc": "Automotive USB Power Delivery port protector (CC / SBU / D+ D- short-to-battery protection, CDP / HS modes)",
+   "category": "ic_qfn",
+   "pkg": "TQFN-16-EP 4x4",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "USB-C charge port",
+    "infotainment head unit",
+    "media hub"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/ProductDetail/Maxim-Integrated/MAX25410AGTE-V+?qs=GBLSl2AkiruoQpGZlTAsZQ%3D%3D",
+   "note": "Mouser listing title. Datasheet (as summarised by the search): AEC-Q100 and AEC-Q006 qualified, -40 to +105 C; a MAX25410AGTEA/V+ variant is also listed; T suffix = tape and reel."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX25430",
+   "orderableCode": "MAX25430AATLF/V+",
+   "desc": "Automotive 100 W USB-PD buck-boost port controller and protector, 4.5-36 V input",
+   "category": "ic_qfn",
+   "pkg": "TQFN-40 6x6",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "USB-C PD charge port",
+    "rear-seat charger",
+    "infotainment head unit"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25430AATLF-V/13175523",
+   "note": "Digi-Key and Newark listing titles (Newark: \"USB PD CONTROLLER, -40 TO 125DEG C\"). Datasheet is titled \"Automotive 100W USB-PD Buck-Boost Port Controller and Protector\"; an AEC-Q100 statement was not read, so aecq is left false (/V = Maxim automotive suffix)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LT8646S",
+   "orderableCode": "LT8646SIV#WPBF",
+   "desc": "65 V, 8 A synchronous step-down Silent Switcher 2, 200 kHz-2.2 MHz",
+   "category": "ic_qfn",
+   "pkg": "LQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V / 24 V rail pre-regulator",
+    "ADAS domain controller",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8646SIV-WPBF/13684358",
+   "note": "Digi-Key and Newark listing titles; listings describe it as AEC-Q100 qualified. LT8646SEV#WPBF is also listed (Mouser). Sibling LT8645S is catalogued (LT8645SEV#PBF) - this is a different part (LT8646S has external compensation)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LT8686S",
+   "orderableCode": "LT8686SJV#WPBF",
+   "desc": "Quad-output 42 V, 2 A-per-channel synchronous step-down Silent Switcher",
+   "category": "ic_qfn",
+   "pkg": "LQFN",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS camera / radar ECU",
+    "infotainment",
+    "multi-rail point of load"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8686SJV-WPBF/27544010",
+   "note": "Digi-Key listing title; listed as AEC-Q100, automotive, -40 to 150 C. High Digi-Key item number suggests a recent listing (launch date not stated on the page)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LT8648S",
+   "orderableCode": "LT8648SJV#WPBF",
+   "desc": "42 V, 15 A synchronous step-down Silent Switcher 2",
+   "category": "ic_qfn",
+   "pkg": "LQFN",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS domain controller core rail pre-regulator",
+    "high-current 12 V point of load"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8648SJV-WPBF/16398667",
+   "note": "Digi-Key listing title; listed as AEC-Q100 automotive, but the search summary says Digi-Key shows this code discontinued / out of stock - check status before pricing."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LT8350S",
+   "orderableCode": "LT8350SAV#WPBF",
+   "desc": "40 V synchronous buck-boost Silent Switcher converter",
+   "category": "ic_qfn",
+   "pkg": "LQFN",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "cold-crank stable 12 V rail",
+    "USB-C supply",
+    "LED supply"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://canada.newark.com/analog-devices/eval-lt8350s-az/eval-brd-syn-buck-boost-silent/dp/25AM5314",
+   "note": "Code read in the Newark listing title of the evaluation board EVAL-LT8350S-AZ (\"Evaluation Board, LT8350SAV#WPBF, Synchronous Buck-Boost Silent Switcher\"); the IC's own distributor listing was not seen. AEC-Q100 per the search summary of that page."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LT8640S / LT8643S",
+   "orderableCode": null,
+   "desc": "42 V, 6 A synchronous step-down Silent Switcher 2 (LT8643S: external compensation)",
+   "category": "ic_qfn",
+   "pkg": "LQFN-24 4x4",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V battery rail buck",
+    "infotainment",
+    "ADAS ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.mouser.com/datasheet/2/609/1/lt8640s_lt8643s_lt8640sa_lt8643sa-3570431.pdf",
+   "note": "Datasheet \"LT8640S/LT8643S/LT8640SA/LT8643SA Rev. D\" carried by Mouser; AEC-Q100 qualified (revision history: added 2021), automotive ordering codes carry #WPBF - exact code not read."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX96751",
+   "orderableCode": "MAX96751GTN/V+",
+   "desc": "GMSL2 serializer with HDMI 2.0 input, single / dual GMSL2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit display link",
+    "rear-seat entertainment",
+    "cockpit domain controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96751GTN-V/24617867",
+   "note": "Digi-Key listing title. The search summary says Digi-Key marks MAX96751GTN/V+ discontinued and that MAX96751GTN/VY+ is the code in the GMSL cross-reference - price the /VY+ code if it is the live one. AEC statement not read (/V = automotive suffix)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX96706",
+   "orderableCode": "MAX96706GTJ/V+",
+   "desc": "GMSL1 14-bit deserializer with coax / STP input (camera link)",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "surround-view ECU",
+    "camera monitor system",
+    "rear camera receiver"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96706GTJ-V/5880886",
+   "note": "Digi-Key listing titles (MAX96706GTJ/V+ and MAX96706GTJ/V+T), shown as automotive, AEC-Q100. GMSL1 generation (pairs with the catalogued MAX96705 serializer)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX96755F",
+   "orderableCode": "MAX96755FGTN/VY+",
+   "desc": "GMSL2 serializer, MIPI DSI input (3 Gbps \"F\" variant) for displays",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit domain controller display link",
+    "instrument cluster"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://forum.digikey.com/t/what-is-gmsl-and-how-it-is-enhancing-robotic-vision-systems/62865",
+   "note": "Code as quoted in the search summary of the DigiKey TechForum GMSL cross-reference page - not read in a listing title, so re-check the exact code at pricing. AEC statement not read (/V = Maxim automotive suffix)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX96789",
+   "orderableCode": "MAX96789GTN/V+",
+   "desc": "GMSL2 serializer, dual MIPI DSI input, 6 Gbps, for automotive displays",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit domain controller display link",
+    "pillar-to-pillar display"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://forum.digikey.com/t/what-is-gmsl-and-how-it-is-enhancing-robotic-vision-systems/62865",
+   "note": "Code as quoted in the search summary of the DigiKey TechForum GMSL cross-reference page - not read in a listing title, so re-check the exact code at pricing. AEC statement not read (/V = Maxim automotive suffix). A MAX96789GTN/VY+ code is quoted alongside."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX96745",
+   "orderableCode": "MAX96745GTN/V+",
+   "desc": "GMSL2 serializer, eDP / DP input, for automotive displays",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "cockpit domain controller display link"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://forum.digikey.com/t/what-is-gmsl-and-how-it-is-enhancing-robotic-vision-systems/62865",
+   "note": "Code as quoted in the search summary of the DigiKey TechForum GMSL cross-reference page - not read in a listing title, so re-check the exact code at pricing. AEC statement not read (/V = Maxim automotive suffix)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "AD8418A",
+   "orderableCode": "AD8418AWBRZ",
+   "desc": "Bidirectional zero-drift current-sense amplifier, high common-mode, gain 20",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor / solenoid current sense",
+    "EPS",
+    "DC-DC converter",
+    "battery current monitor"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+   "note": "Digi-Key listing title; listed active, Grade: Automotive (W grade), -40 to 125 C - the words AEC-Q100 were not read. AD8418WBRZ (non-A) is also listed."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADXL312",
+   "orderableCode": "ADXL312WACPZ",
+   "desc": "3-axis digital accelerometer, +/-1.5 to 12 g selectable, SPI / I2C",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-32 5x5",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "car alarm / tilt sensing",
+    "telematics",
+    "black box / event recorder"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADXL312WACPZ/7175506",
+   "note": "Digi-Key listing title; listed active, Grade: Automotive (W grade), -40 to 105 C; 48-week lead time shown. The words AEC-Q100 were not read."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADT7311",
+   "orderableCode": "ADT7311WTRZ-RL7",
+   "desc": "16-bit digital SPI temperature sensor, -40 to +150 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "powertrain / transmission temperature",
+    "battery pack",
+    "climate control"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADT7311WTRZ-RL7/6163946",
+   "note": "Digi-Key listing title. The search summary reports one Digi-Key listing as Last Time Buy and another as active - check lifecycle before pricing. Automotive W grade; AEC-Q100 not read."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADA4571",
+   "orderableCode": "ADA4571WHRZ-R7",
+   "desc": "Integrated AMR angle sensor and signal conditioner (sin / cos outputs)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BLDC rotor position",
+    "EPS motor",
+    "actuator position",
+    "wiper motor"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADA4571WHRZ-R7/6132432",
+   "note": "Digi-Key listing title. The search summary says one Digi-Key page marks ADA4571WHRZ-R7 obsolete with ADA4571WHRZ-1-R7 as the replacement - price the replacement if that is confirmed. W grade; AEC-Q100 not read."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX20075",
+   "orderableCode": "MAX20075ATCA/V+",
+   "desc": "36 V, 600 mA mini synchronous buck converter, 3.5 uA Iq, fixed 5 V",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "always-on 12 V rail",
+    "camera / radar module",
+    "body ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20075ATCA-V/6188700",
+   "note": "Digi-Key listing titles: MAX20075ATCA/V+, MAX20075ATCA/V+T, MAX20075ATCB/V+, MAX20075DATCA/V+T; product-highlight page \"MAX20075 Mini Buck Converter\". Summary: automotive grade family, 3.5-36 V in, -40 to +125 C; AEC-Q100 wording not read. Siblings MAX20076 (1.2 A) and MAX25276 share the EV kit."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX25232 (5 V)",
+   "orderableCode": "MAX25232ATCA/V+",
+   "desc": "36 V, 3 A mini synchronous buck converter, fixed 5 V output",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12 (side-wettable)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V battery rail buck",
+    "USB supply",
+    "ADAS / infotainment ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCA-V/17878685",
+   "note": "Digi-Key listing title; Grade: Automotive, AEC-Q100, -40 to 125 C."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX25232 (3.3 V)",
+   "orderableCode": "MAX25232ATCE/V+",
+   "desc": "36 V, 3 A mini synchronous buck converter, fixed 3.3 V output",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12 (side-wettable)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V battery rail buck",
+    "ADAS / infotainment ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCE-V/17885170",
+   "note": "Digi-Key listing title; same automotive grade as the 5 V MAX25232ATCA/V+ - a different orderable part (3.3 V output)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX16903",
+   "orderableCode": null,
+   "desc": "2.1 MHz, 1 A mini synchronous buck converter, 3.5-28 V input (42 V transient), fixed 3.3 / 5 V",
+   "category": "ic_qfn",
+   "pkg": "TDFN-10 / TSSOP-16",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "body ECU",
+    "instrument cluster",
+    "always-on rail"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://media.digikey.com/pdf/Data%20Sheets/Maxim%20PDFs/MAX16903_Rev10_4-18-17.pdf",
+   "note": "Datasheet Rev 10 (4/2017) carried by Digi-Key; it states \"/V denotes an automotive qualified part\". Exact /V+ code not read. Older family - superseded in new designs by MAX20075 / MAX25232."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LTC4359",
+   "orderableCode": "LTC4359HMS8#WTRPBF",
+   "desc": "Ideal diode controller with reverse-input protection, 4-80 V",
+   "category": "ic_soic",
+   "pkg": "MSOP-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse-battery protection",
+    "ORing of redundant supplies",
+    "zonal controller"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC4359HMS8-WTRPBF/12385731",
+   "note": "Digi-Key listing title; listed as automotive grade, AEC-Q100, -40 to 125 C. Non-automotive codes (LTC4359HDCB#TRPBF, LTC4359IDCB#TRMPBF) are also listed at Arrow / Newark."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "AD8410A",
+   "orderableCode": null,
+   "desc": "High-bandwidth bidirectional current-sense amplifier with PWM rejection",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor phase current sense",
+    "solenoid driver",
+    "DC-DC converter"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.mouser.com/en/new/analog-devices/adi-ad8410a-amps/",
+   "note": "Mouser NEW-product page \"AD8410A Current-Sense Amplifiers - ADI\": AEC-Q100 automotive qualified, -40 to +125 C, 8-lead SOIC_N. Orderable code not read (W-grade code expected)."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "AD2433W",
+   "orderableCode": "AD2433WCCPZ",
+   "desc": "A2B (Automotive Audio Bus) transceiver, 32-channel, second-generation AD243x",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-32",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "A2B audio node",
+    "microphone array / ANC node",
+    "amplifier"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD2433WCCPZ/16379559",
+   "note": "Digi-Key listing titles (AD2433WCCPZ, AD2433WCCPZ-RL), Grade: Automotive. Digi-Key shows this code obsolete: an ADI discontinuance notice gives a last ship date of 11 May 2024 with a silicon revision 1.2 replacement code - find the replacement code before pricing. Catalogue holds the older AD2428W."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX17852",
+   "orderableCode": "MAX17852ACB/V+",
+   "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor) with current-sense input, ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit",
+    "48 V / HV battery pack"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17852ACB-V/10452049",
+   "note": "Digi-Key listing title; active, -40 to 125 C. Digi-Key does not show a grade on the page (/V = Maxim automotive suffix). Sibling of the catalogued MAX17853 - a different part."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "MAX17854",
+   "orderableCode": "MAX17854ACB/V+",
+   "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor), ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit",
+    "HV battery pack"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17854ACB-V/15903588",
+   "note": "Digi-Key listing title only (description not read; function from general knowledge of the MAX1785x family). /V = Maxim automotive suffix."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "ADAU1467",
+   "orderableCode": "ADAU1467WBCPZ300",
+   "desc": "SigmaDSP digital audio processor, 294.912 MHz, 80-kword program memory",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-88",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "audio amplifier",
+    "infotainment head unit",
+    "ANC / RNC",
+    "AVAS"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADAU1467WBCPZ300/7915234",
+   "note": "Digi-Key listing title; active, Grade: Automotive. Datasheet \"ADAU1463/ADAU1467 Rev. A\" also seen at Arrow. Catalogue holds the smaller ADAU1452 - a different part."
+  },
+  {
+   "mfr": "Analog Devices",
+   "family": "LTC6812-1",
+   "orderableCode": "LTC6812HLWE-1#3ZZPBF",
+   "desc": "15-cell battery stack monitor with daisy-chain isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64-EP",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS cell monitoring unit",
+    "48 V / HV battery pack"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC6812HLWE-1-3ZZPBF/9806656",
+   "note": "Digi-Key listing title; Grade: Automotive, but shown discontinued at Digi-Key with zero stock - legacy generation between the catalogued LTC6811-1 and LTC6813-1; check lifecycle before pricing."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6501 (ATA650x mini CAN FD SBC)",
+   "orderableCode": "ATA6501T-4CWVAO",
+   "desc": "Mini CAN FD system basis chip: CAN FD transceiver + 5 V / 150 mA LDO, 3.3 / 5 V I/O",
+   "category": "ic_qfn",
+   "pkg": "VDFN-8 (wettable flanks)",
+   "aecq": true,
+   "launched": "2024",
+   "usedIn": [
+    "zonal controller satellite node",
+    "sensor / actuator node",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA650x-Mini-CAN-FD-System-Basis-Chip-DS20006909.pdf",
+   "note": "Data sheet DS20006909A (c) 2024 \"Mini CAN FD System Basis Chip ATA6500...ATA6505\": AEC-Q100 qualified, Grade 0 (-40 to +150 C); code printed in the Product Identification System. Sibling ATA6500T-4CWVAO = same package with 1.8 V I/O support."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6503 (ATA650x mini CAN FD SBC)",
+   "orderableCode": "ATA6503T-4BWVAO",
+   "desc": "Mini CAN FD system basis chip: CAN FD transceiver + 5 V / 150 mA LDO, 3.3 / 5 V I/O, 10-lead variant",
+   "category": "ic_qfn",
+   "pkg": "VDFN-10 (wettable flanks)",
+   "aecq": true,
+   "launched": "2024",
+   "usedIn": [
+    "zonal controller satellite node",
+    "sensor / actuator node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA650x-Mini-CAN-FD-System-Basis-Chip-DS20006909.pdf",
+   "note": "Data sheet DS20006909A (c) 2024 \"Mini CAN FD System Basis Chip ATA6500...ATA6505\": AEC-Q100 qualified, Grade 0 (-40 to +150 C); code printed in the Product Identification System. Sibling ATA6502T-4BWVAO = 1.8 V I/O support."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6505 (ATA650x mini CAN FD SBC)",
+   "orderableCode": "ATA6505T-QBBVAO",
+   "desc": "Mini CAN FD system basis chip: CAN FD transceiver + 5 V / 150 mA LDO, 3.3 / 5 V I/O, 14-lead variant",
+   "category": "ic_qfn",
+   "pkg": "VDFN-14 (wettable flanks)",
+   "aecq": true,
+   "launched": "2024",
+   "usedIn": [
+    "zonal controller satellite node",
+    "sensor / actuator node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA650x-Mini-CAN-FD-System-Basis-Chip-DS20006909.pdf",
+   "note": "Data sheet DS20006909A (c) 2024 \"Mini CAN FD System Basis Chip ATA6500...ATA6505\": AEC-Q100 qualified, Grade 0 (-40 to +150 C); code printed in the Product Identification System. Sibling ATA6504T-QBBVAO = 1.8 V I/O support."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6847",
+   "orderableCode": "ATA6847T-3333H/NHXVAO",
+   "desc": "Three-phase BLDC motor gate driver system basis chip: 3-42 V, 5 V / 3.3 V LDOs, 2 current-sense op amps, BEMF detection, window watchdog, SPI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40 5x5 (wettable flanks)",
+   "aecq": true,
+   "launched": "2024",
+   "usedIn": [
+    "BLDC pump / fan",
+    "HVAC blower",
+    "actuator ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/Three-Phase-Brushless-Motor-Gate-Driver-SBC-Data-Sheet-DS20006940.pdf",
+   "note": "Data sheet DS20006940C (c) 2024-2025: AEC-Q100 Grade 0 (H: -40 to +150 C); code printed as an ordering example. SOI technology; variant without LIN."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6847L",
+   "orderableCode": "ATA6847T-5050LH/ZWXVAO",
+   "desc": "Three-phase BLDC motor gate driver SBC with LIN transceiver and third op amp (VDD1 = VIO = 5 V)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 6x6 (wettable flanks)",
+   "aecq": true,
+   "launched": "2024",
+   "usedIn": [
+    "LIN BLDC pump / fan",
+    "HVAC flap / blower",
+    "thermal-management actuator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/Three-Phase-Brushless-Motor-Gate-Driver-SBC-Data-Sheet-DS20006940.pdf",
+   "note": "Data sheet DS20006940C (c) 2024-2025, AEC-Q100 Grade 0; code printed as an ordering example. Other printed codes: ATA6847T-5033LH/ZWXVAO, ATA6847T-3333LH/ZWXVAO, and ATA6847P (LIN with selectable TXD time-out) ATA6847T-5033PH/ZWXVAO."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6562",
+   "orderableCode": "ATA6562-GAQW1",
+   "desc": "High-speed CAN FD transceiver with standby and silent mode, wake-up pattern, 5 Mbit/s",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "launched": "2017",
+   "usedIn": [
+    "body control module",
+    "gateway",
+    "any CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/ATA6562.3-Data-Sheet-20005790E.pdf",
+   "note": "Data sheet DS20005790E (2017-2021): AEC-Q100 and AEC-Q006 qualified; printed codes ATA6562-GAQW1 (SOIC-8, Grade 1), ATA6562-GAQW0 (Grade 0), ATA6562-GBQW1 / -GBQW0 (VDFN-8). Sibling ATA6563 (VIO pin) is catalogued - this is the silent-mode part."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP1792",
+   "orderableCode": "MCP1792T-5002H/CB",
+   "desc": "100 mA high-voltage automotive LDO, 4.5-55 V input (load dump), fixed 5 V, 3-lead",
+   "category": "ic_soic",
+   "pkg": "SOT-23A-3",
+   "aecq": true,
+   "launched": "2019",
+   "usedIn": [
+    "always-on supply",
+    "sensor module",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/MCP1792-Family-Data-Sheet-DS20006229C.pdf",
+   "note": "Data sheet DS20006229C (2019-2020) \"100 mA High-Voltage Automotive LDO\": AEC-Q100 Grade 0, PPAP capable; H = -40 to +150 C. Other printed codes: MCP1792T-3302H/CB, MCP1792T-5002H/DB and -3302H/DB (SOT-223)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP1793",
+   "orderableCode": "MCP1793T-5002H/OT",
+   "desc": "100 mA high-voltage automotive LDO with shutdown / power-good, 4.5-55 V input, fixed 5 V, 5-lead",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5",
+   "aecq": true,
+   "launched": "2019",
+   "usedIn": [
+    "always-on supply",
+    "sensor module",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/MCP1792-Family-Data-Sheet-DS20006229C.pdf",
+   "note": "Data sheet DS20006229C (2019-2020): AEC-Q100 Grade 0. Other printed codes: MCP1793T-3302H/OT, MCP1793T-4102H/OT, MCP1793T-5002H/DC, -3302H/DC, -4102H/DC (5-lead SOT-223)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP8021",
+   "orderableCode": "MCP8021T-5015H/9PXVAO",
+   "desc": "3-phase BLDC motor gate driver with power module (LDO), sleep mode, 4-40 V, 5 V output option",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28 5x5",
+   "aecq": true,
+   "launched": "2020",
+   "usedIn": [
+    "BLDC fuel / water / oil pump",
+    "HVAC blower",
+    "window lift",
+    "sunroof"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP8021-2-Data-Sheet-DS20006265.pdf",
+   "note": "Data sheet DS20006265D (2020-2024): AEC-Q100 automotive qualified, H = -40 to +150 C. Other printed codes: MCP8021T-3315H/9PXVAO, MCP8021T-3315H/KEXVAO and MCP8021-3315H/KEXVAO (TSSOP-28)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP8022",
+   "orderableCode": "MCP8022T-5015H/NHXVAO",
+   "desc": "3-phase BLDC motor gate driver with power module, sleep mode and op amps, 4-40 V, 5 V output option",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40 5x5",
+   "aecq": true,
+   "launched": "2020",
+   "usedIn": [
+    "BLDC fuel / water / oil pump",
+    "HVAC blower",
+    "trunk opener"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP8021-2-Data-Sheet-DS20006265.pdf",
+   "note": "Data sheet DS20006265D (2020-2024): AEC-Q100 automotive qualified. Other printed codes: MCP8022T-3315H/NHXVAO, MCP8022-5015H/NHXVAO, MCP8022T-3315H/SBXVAO (TSSOP-38)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP16361 / MCP16362 / MCP16363",
+   "orderableCode": "MCP16361T-E/NMXVAO",
+   "desc": "48 V input, 3 A, 2.2 MHz integrated-switch step-down regulator (PFM / PWM; MCP16362 PWM-only; MCP16363 PWM with dithering)",
+   "category": "ic_qfn",
+   "pkg": "VDFN-8",
+   "aecq": true,
+   "launched": "2020",
+   "usedIn": [
+    "12 V / 24 V / 48 V rail buck",
+    "body ECU",
+    "USB supply"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/APID/ProductDocuments/DataSheets/MCP16361-Data-Sheet-DS20006481.pdf",
+   "note": "Data sheet DS20006481C (2020-2022): passes automotive AEC-Q100 reliability testing; VAO = AEC-Q100 automotive qualification. Other printed codes: MCP16362T-E/NMXVAO, MCP16363T-E/NMXVAO."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP6C02",
+   "orderableCode": "MCP6C02T-050E/CHYVAO",
+   "desc": "Zero-drift 65 V high-side current-sense amplifier, gain 50 (20 / 100 options), bidirectional or unidirectional",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6",
+   "aecq": true,
+   "launched": "2018",
+   "usedIn": [
+    "48 V / 12 V rail current monitor",
+    "motor driver",
+    "load switch diagnostics"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/MCP6C02-Data-Sheet-DS20006129B.pdf",
+   "note": "Data sheet DS20006129B (2018-2019): AEC-Q100 Grade 1 (SOT-23, E temp) and Grade 0 (VDFN-8, H temp). Other printed codes: MCP6C02T-020E/CHYVAO, MCP6C02T-100E/CHYVAO, MCP6C02T-020H/Q8BVAO, MCP6C02T-050H/Q8BVAO, MCP6C02T-100H/Q8BVAO."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "LAN7431",
+   "orderableCode": "LAN7431-V/YXXVAO",
+   "desc": "PCIe 3.1 to Gigabit Ethernet controller (MAC with RGMII / MII), low power",
+   "category": "ic_qfn",
+   "pkg": "SQFN-72",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics control unit",
+    "ADAS / infotainment SoC Ethernet port",
+    "gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/LAN7430-LAN7431-Data-Sheet-DS00002631D.pdf",
+   "note": "Data sheet DS00002631D: AEC-Q100 Grade 2 automotive qualified temperature (-40 to +105 C); printed codes LAN7431-V/YXXVAO (tray) and LAN7431T-V/YXXVAO (reel)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "KSZ9031RNX (automotive)",
+   "orderableCode": "KSZ9031RNXVB-VAO",
+   "desc": "Gigabit Ethernet 10/100/1000BASE-T PHY with RGMII, AEC-Q100 Grade 2",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (wettable flanks)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics / gateway diagnostic port (DoIP)",
+    "infotainment head unit",
+    "ADAS ECU service port"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/00002117F.pdf",
+   "note": "Data sheet DS00002117F: AEC-Q100 Grade 3 (KSZ9031RNXUA/UB) and Grade 2 (KSZ9031RNXVA/VB). Printed codes: KSZ9031RNXVB-VAO, KSZ9031RNXVB-TRVAO, KSZ9031RNXUB-VAO, KSZ9031RNXUB-TRVAO (UB / VB replace UA / VA, fixing an RGMII erratum)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "DSA1001 / DSA1003 / DSA1004",
+   "orderableCode": "DSA1003BL3-030.0000VAO",
+   "desc": "MEMS CMOS oscillator for automotive, 1-150 MHz, 1.8-3.3 V, +/-20 ppm, Grade 2 (example: 30 MHz, 5.0 x 3.2 mm)",
+   "category": "crystal_osc",
+   "pkg": "VDFN-4 5.0x3.2 / 3.2x2.5 / 2.5x2.0",
+   "aecq": true,
+   "launched": "2017",
+   "usedIn": [
+    "MCU / Ethernet PHY / SerDes reference clock",
+    "ADAS camera",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/DSA1001-3-4-1.8V-3.3V-Low-Power-Precision-CMOS-Oscillators-for-Automotive-DS20005889B.pdf",
+   "note": "Data sheet DS20005889B (2018-2021) \"Low-Power Precision CMOS Oscillators for Automotive\": AEC-Q100 qualified. The code is the data sheet's ordering EXAMPLE (frequency is user-defined; second example DSA1004DI1-075.0000TVAO) - price the frequency the board uses. Catalogue holds the non-automotive DSC1101."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "SAM HA1 (ATSAMHA1G16A)",
+   "orderableCode": "ATSAMHA1G16A-MBT-B",
+   "desc": "LIN system-in-package: Cortex-M0+ MCU (64 KB flash) + LIN transceiver + 3.3 V regulator",
+   "category": "ic_qfn",
+   "pkg": "QFN-48",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN slave node",
+    "capacitive touch switch panel",
+    "ambient lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/20001060AW.pdf",
+   "note": "Code printed in the LIN products table of the \"Analog and Interface Product Selector Guide\" DS20001060AW (June 2020), also listed (as ATSAMHA1G16A-B) in the 2019 Automotive Product Selector Guide. Other printed codes: ATSAMHA1G15A-MBT-B, ATSAMHA1G14A-MBT-B, ATSAMHA1E16A-MBT-B (QFN-32), ATSAMHA0G16A-MZT-B (-40 to +105 C)."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "dsPIC33CDVL64MC106",
+   "orderableCode": null,
+   "desc": "Motor-control system-in-package: dsPIC33CK64MC105 DSC + MCP8021 three-phase gate driver with LDOs + ATA663211 LIN transceiver",
+   "category": "ic_qfn",
+   "pkg": "QFN",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN BLDC cooling fan",
+    "pump",
+    "HVAC blower"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/aemDocuments/documents/MCU16/ProductDocuments/UserGuides/Automotive_Cooling_Fan_Reference_Design_User_Guide_DS70005523A.pdf",
+   "note": "Seen in the \"dsPIC33CDVL64MC106 Automotive Cooling Fan Reference Design User's Guide\" DS70005523A (2023), which also names the dsPIC33CDV64MC106 (no LIN) and the family data sheet DS70005441. The guide does not state AEC-Q100, so aecq is false; no orderable code printed."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6564",
+   "orderableCode": null,
+   "desc": "High-speed CAN FD transceiver with silent mode and VIO pin, 5 Mbit/s, Grade 0 / 1",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / VDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "gateway",
+    "CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Also in the 2020 Analog and Interface guide: \"AECQ100 Grade 0, 1\". Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6565",
+   "orderableCode": null,
+   "desc": "Dual high-speed CAN FD transceiver with standby mode and wake-up pattern, 5 Mbit/s",
+   "category": "ic_qfn",
+   "pkg": "VDFN-14 / SOIC-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "gateway",
+    "zonal controller",
+    "dual-channel CAN node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Also in the 2020 Analog and Interface guide: \"AECQ100 Grade 0, 1\". Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6566",
+   "orderableCode": null,
+   "desc": "High-speed CAN transceiver with standby mode and VIO pin, 2 Mbit/s, for the Japanese market",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / VDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "gateway",
+    "CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Also in the 2020 Analog and Interface guide: \"AECQ100 Grade 0, 1, suitable for the Japanese market\". Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP2544FD",
+   "orderableCode": null,
+   "desc": "High-speed CAN FD transceiver with standby mode and wake pin, 8 Mbit/s, +/-58 V bus fault",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / DFN-8 / TDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "gateway",
+    "CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Sibling MCP2542 is a catalogue estimate; MCP2544FD (WAKE pin variant) is a different part. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP2557FD / MCP2558FD",
+   "orderableCode": null,
+   "desc": "High-speed CAN FD transceiver with silent mode, 8 Mbit/s (MCP2558FD: VIO pin)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / DFN-8 / TDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "gateway",
+    "CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP2517FD",
+   "orderableCode": null,
+   "desc": "External CAN FD controller with SPI interface, ISO 11898-1:2015, -40 to +150 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 / VDFN-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "CAN FD port expansion on a processor",
+    "telematics",
+    "gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Predecessor of the catalogued MCP2518FD - a different part. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP25625",
+   "orderableCode": null,
+   "desc": "CAN 2.0B controller with integrated high-speed transceiver, SPI",
+   "category": "ic_qfn",
+   "pkg": "QFN-28 6x6 / SSOP-28",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "CAN port expansion",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA663211",
+   "orderableCode": null,
+   "desc": "LIN transceiver (LIN 2.0-2.2A, SAE J2602-2), 5-28 V",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / DFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN slave node",
+    "door / seat / HVAC module",
+    "ambient lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Named as the LIN physical layer inside the dsPIC33CDVL64MC106 (2023 reference design). Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA663254",
+   "orderableCode": null,
+   "desc": "LIN system basis chip: LIN transceiver with 5 V / 85 mA regulator",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / DFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN slave node",
+    "door / seat / HVAC module",
+    "ambient lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA663231 is the 3.3 V version (DFN-8); ATA663255 / ATA663232 add a wake pin. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA663454",
+   "orderableCode": null,
+   "desc": "LIN system basis chip: LIN transceiver with 5 V regulator and window watchdog",
+   "category": "ic_qfn",
+   "pkg": "DFN-16",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN slave node",
+    "door / seat / HVAC module",
+    "ambient lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA663431 is the 3.3 V version. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA663354",
+   "orderableCode": null,
+   "desc": "LIN system basis chip: LIN transceiver with 5 V regulator and two relay drivers",
+   "category": "ic_qfn",
+   "pkg": "DFN-16",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN window lift / seat / sunroof relay module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA663331 is the 3.3 V version. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6670",
+   "orderableCode": null,
+   "desc": "Dual LIN transceiver",
+   "category": "ic_qfn",
+   "pkg": "VDFN-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN master in body control module / gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "KSZ8061",
+   "orderableCode": null,
+   "desc": "10/100BASE-TX Ethernet PHY with MII / RMII and Quiet-WIRE EMI filtering, to 105 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 / VQFN-48",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "diagnostic Ethernet (DoIP)",
+    "infotainment",
+    "gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Catalogue holds the KSZ8081 - a different PHY. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "LAN88730",
+   "orderableCode": null,
+   "desc": "10/100 Ethernet PHY with MII / RMII, automotive, to 105 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "diagnostic Ethernet (DoIP)",
+    "infotainment"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "KSZ8567",
+   "orderableCode": null,
+   "desc": "7-port 10/100 managed Ethernet switch with AVB / TSN, IEEE 1588, RGMII / SGMII",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-128",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "gateway",
+    "infotainment / telematics switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Catalogue holds the gigabit KSZ9567 - a different part. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "KSZ9893",
+   "orderableCode": null,
+   "desc": "3-port Gigabit Ethernet switch with RGMII / MII / RMII uplink",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "camera / sensor aggregation",
+    "gateway"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Catalogue holds the KSZ9563 (with IEEE 1588) - a different part. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "LAN7801",
+   "orderableCode": null,
+   "desc": "USB 3.1 Gen 1 to Gigabit Ethernet bridge (MAC with RGMII), to 105 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "telematics"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB4914",
+   "orderableCode": null,
+   "desc": "Automotive USB 2.0 Hi-Speed 3-port smart hub with FlexConnect, BC1.2 / Apple / China charging emulation",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB4916",
+   "orderableCode": null,
+   "desc": "Automotive USB 2.0 Hi-Speed 5-port smart hub, BC1.2 / Apple / China charging emulation",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB4925 / USB4927",
+   "orderableCode": null,
+   "desc": "Automotive USB 2.0 Hi-Speed 3-port / 5-port smart hub (USB49xx second variant)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 / VQFN-64",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB4715",
+   "orderableCode": null,
+   "desc": "Automotive USB 2.0 Hi-Speed 4-port hub with BC1.2 / Apple charging",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB7002",
+   "orderableCode": null,
+   "desc": "USB 3.1 Gen 1 4-port smart hub with USB Type-C support",
+   "category": "ic_qfn",
+   "pkg": "VQFN-100",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Catalogue holds the USB7206C - a different part. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB82514",
+   "orderableCode": null,
+   "desc": "Automotive USB 2.0 Hi-Speed 4-port hub (USB8251x family: USB82512 2-port, USB82513 3-port)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-36",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment head unit",
+    "USB media hub",
+    "rear-seat charging hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Also in the 2014 guide - a legacy design-in. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "UCS81003",
+   "orderableCode": null,
+   "desc": "Automotive USB port power controller with charger emulation, up to 2.7 A, I2C / SMBus",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "USB charge port",
+    "media hub"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "UCS81001 / UCS81002 are the 2.5 A versions. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "USB83340",
+   "orderableCode": null,
+   "desc": "Automotive Hi-Speed USB 2.0 ULPI transceiver, multi-frequency reference, to 105 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment SoC USB PHY",
+    "telematics"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "DSA1101 / DSA1121",
+   "orderableCode": null,
+   "desc": "Automotive MEMS oscillator, 2.3-170 MHz LVCMOS, -40 to +125 C, +/-20 / 25 / 50 ppm (DSA1101 standby pin, DSA1121 output enable)",
+   "category": "crystal_osc",
+   "pkg": "VDFN-6 5.0x3.2 / 3.2x2.5 / 2.5x2.0",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "MCU / PHY / SerDes reference clock"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "DSA1105 / DSA1125 are the low-drive (5 pF) versions. Catalogue holds the non-automotive DSC1101. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "DSA2311",
+   "orderableCode": null,
+   "desc": "Automotive dual-output MEMS oscillator, 2.3-170 MHz LVCMOS x2, -40 to +125 C",
+   "category": "crystal_osc",
+   "pkg": "VDFN-6 2.5x2.0",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "two-clock boards (MCU + PHY)",
+    "ADAS camera"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA5702",
+   "orderableCode": null,
+   "desc": "Car-access key-fob controller: LF receiver / immobiliser + UHF transmitter with AVR core (PEPS)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-38",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "passive entry / passive start key fob"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA5700 is the sibling in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA5291",
+   "orderableCode": null,
+   "desc": "LF antenna driver for passive entry / passive start (PEPS) with integrated immobiliser base station",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module (PEPS)",
+    "smart-key ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA5279C is the older multi-channel LF antenna driver in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA5831",
+   "orderableCode": null,
+   "desc": "UHF ASK / FSK transceiver with embedded AVR (20 KB flash) for RKE / PEPS / TPMS receivers",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module (RKE / TPMS receiver)",
+    "key fob"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA5830 / ATA5833 and receivers ATA5782 / ATA5780N are siblings in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "maXTouch ATMXT641TD-A",
+   "orderableCode": null,
+   "desc": "Automotive touchscreen controller, 640 nodes, up to 9-inch, I2C / SPI",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "centre display",
+    "climate control panel"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Table column \"Automotive Qualified: Yes\". The guide prints the device name with the -A (automotive) suffix; the full orderable code was not printed. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "maXTouch ATMXT1665T-A",
+   "orderableCode": null,
+   "desc": "Automotive touchscreen controller, 1664 nodes, up to 15-inch, I2C / SPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "centre information display",
+    "cockpit display"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Table column \"Automotive Qualified: Yes\". The guide prints the device name with the -A (automotive) suffix; the full orderable code was not printed. ATMXT1189T-A (1188 nodes, 13-inch) is the smaller sibling. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "maXTouch ATMXT2912TD-A",
+   "orderableCode": null,
+   "desc": "Automotive touchscreen controller, 2911 nodes, up to 20-inch, I2C / SPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "large / pillar-to-pillar cockpit display"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Table column \"Automotive Qualified: Yes\". The guide prints the device name with the -A (automotive) suffix; the full orderable code was not printed. ATMXT2113TD-A (2112 nodes, 15-inch, LQFP-144) is the smaller sibling. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "maXTouch ATMXT449TD-A",
+   "orderableCode": null,
+   "desc": "Automotive touchscreen controller, 448 nodes, up to 8-inch, I2C / SPI",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "small centre display",
+    "rear climate panel"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Table column \"Automotive Qualified: Yes\". The guide prints the device name with the -A (automotive) suffix; the full orderable code was not printed. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6832C",
+   "orderableCode": null,
+   "desc": "Triple half-bridge driver, 7-40 V, 1 A per output, SPI / PWM, to 150 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-18 4x4",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC flap actuators",
+    "mirror adjust",
+    "small DC / BLDC motors"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATA6831C is the 125 C version; ATA6826C the SOIC-14 version. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATA6836C / ATA6838C",
+   "orderableCode": null,
+   "desc": "Hex half-bridge driver, 7-40 V, SPI, short-circuit / over-temperature protection",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 / SOIC-28",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "HVAC flap actuators",
+    "door-module motors"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "LX3301A",
+   "orderableCode": null,
+   "desc": "Inductive position sensor interface IC: 32-bit, analogue / PWM output, redundant, ISO 26262 support, AEC-Q100 Grade 1",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "pedal / throttle position",
+    "steering angle",
+    "actuator position"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/20001060AW.pdf",
+   "note": "From the position-sensor table of the \"Analog and Interface Product Selector Guide\" DS20001060AW (June 2020): \"AEC-Q100 Grade 1, ISO26262 Support\". No orderable code printed."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "LX3302A",
+   "orderableCode": null,
+   "desc": "Inductive position sensor interface IC: analogue / PWM / SENT / PSI5 / sin-cos outputs, AEC-Q100 Grade 0, -40 to +150 C",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor rotor position",
+    "transmission / brake actuator position",
+    "pedal position"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/20001060AW.pdf",
+   "note": "From the position-sensor table of the \"Analog and Interface Product Selector Guide\" DS20001060AW (June 2020): \"AEC-Q100 Grade 0, ISO26262 Support\". No orderable code printed."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP1799",
+   "orderableCode": null,
+   "desc": "80 mA high-voltage automotive LDO, 4.5-45 V input, 3.3 / 5 V, Grade 0",
+   "category": "ic_soic",
+   "pkg": "SOT-23A-3 / SOT-223-3",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "always-on supply",
+    "sensor module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/20001060AW.pdf",
+   "note": "From the linear-regulator table of the \"Analog and Interface Product Selector Guide\" DS20001060AW (June 2020): \"AEC-Q100 Qualified and PPAP Capable ... Automotive Grade 0\". No orderable code printed."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP1790 / MCP1791",
+   "orderableCode": null,
+   "desc": "70 mA, 30 V (70 V load-dump tolerant) LDO, 3.0 / 3.3 / 5.0 V (MCP1791: shutdown and power-good)",
+   "category": "ic_soic",
+   "pkg": "SOT-223 / DDPAK",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "always-on supply",
+    "body ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MAQ5281 / MAQ5282 / MAQ5283",
+   "orderableCode": null,
+   "desc": "Automotive 120 V-input LDO family: 25 mA (MAQ5281), 50 mA (MAQ5282), 150 mA (MAQ5283), 6 uA Iq, 3.3 / 5.0 V / adjustable",
+   "category": "ic_soic",
+   "pkg": "MSOP-8 / SOIC-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V / 24 V always-on supply",
+    "e-bike / truck keep-alive rail"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP16331",
+   "orderableCode": null,
+   "desc": "50 V input, 500 mA non-synchronous buck regulator, 500 kHz",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6 / TDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V / 24 V rail buck for a small ECU",
+    "sensor module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "MCP16301 / MCP16301H (36 V, 600 mA) are the siblings in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP16311 / MCP16312",
+   "orderableCode": null,
+   "desc": "30 V input, 1 A synchronous buck regulator, PFM / PWM (MCP16312 PWM only)",
+   "category": "ic_soic",
+   "pkg": "MSOP-8 / TDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "12 V rail buck for a small ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP19110 / MCP19111",
+   "orderableCode": null,
+   "desc": "Digitally enhanced power analogue synchronous buck controller with integrated 8-bit PIC MCU core, 4.5-32 V",
+   "category": "ic_qfn",
+   "pkg": "QFN-24 4x4 / QFN-28",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "programmable DC-DC",
+    "USB charger",
+    "LED driver"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "MCP19114 / MCP19115 (boost / flyback / SEPIC, 42 V) are in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MAQ4123 / MAQ4124 / MAQ4125",
+   "orderableCode": null,
+   "desc": "Automotive AEC-Q100 dual 3 A low-side MOSFET driver (inverting / non-inverting / complementary)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / MSOP-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC-DC converter",
+    "motor / solenoid pre-driver"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Data sheet title on ww1.microchip.com: \"MAQ4123/MAQ4124/MAQ4125 Automotive AEC-Q100 Qualified Dual ...\". Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "AT9933",
+   "orderableCode": null,
+   "desc": "Automotive hysteretic boost-buck (Cuk) LED driver controller, 9-75 V input, external FET, PWM dimming",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "exterior lighting (DRL / fog / rear lamp)",
+    "LED backlight"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "https://ww1.microchip.com/downloads/en/DeviceDoc/20001060AW.pdf",
+   "note": "From the \"Automotive (AEC-Q100 Certified) LED Drivers\" table of the \"Analog and Interface Product Selector Guide\" DS20001060AW (June 2020). Same table: AT9917 (boost / SEPIC, TSSOP-24), AT9919 (buck, DFN-8), AT9932 (Cuk, TSSOP-24), MAQ3203 (buck, 4.5-42 V, SOIC-8). No orderable code printed."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP9700A / MCP9701A",
+   "orderableCode": null,
+   "desc": "Linear active thermistor (analogue voltage-output temperature sensor), +/-2 C, to +150 C",
+   "category": "ic_soic",
+   "pkg": "SOT-23-3 / SC-70-5",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "board temperature monitor",
+    "battery pack",
+    "LED module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP9808",
+   "orderableCode": null,
+   "desc": "+/-0.5 C digital I2C temperature sensor with alert",
+   "category": "ic_soic",
+   "pkg": "MSOP-8 / DFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ECU board temperature",
+    "battery management"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP6001 / MCP6002 / MCP6004",
+   "orderableCode": null,
+   "desc": "1 MHz rail-to-rail CMOS op amp, 1.8-6.0 V (single / dual / quad)",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5 / SC-70-5 / SOIC-8 / SOIC-14",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "signal conditioning on any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP33131-10",
+   "orderableCode": null,
+   "desc": "16-bit, 1 Msps single-ended SAR ADC, SPI, 1.8 V, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "MSOP-10 / TDFN-10",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "precision current / position measurement",
+    "motor control"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "MCP33131-05 (500 ksps), MCP33121 (14-bit) and MCP33111 (12-bit) are in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "SST26VF064B",
+   "orderableCode": null,
+   "desc": "64 Mbit SQI (quad SPI) NOR flash, 2.3-3.6 V, 104 MHz",
+   "category": "ic_soic",
+   "pkg": "SOIJ-8 / TDFN-8 / SOIC-16 / TBGA-24",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "instrument cluster",
+    "telematics",
+    "code / data storage on an MCU board"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "SST26VF064BA, SST26VF032B / SST26VF032BA and SST26VF016B are in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "AT24C64D",
+   "orderableCode": null,
+   "desc": "64 Kbit I2C serial EEPROM, 1.7-5.5 V, 1 MHz, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / TSSOP-8 / UDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "configuration / calibration memory on any ECU",
+    "camera module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "AT24C32D, AT24C128C, AT24C16C, AT24C08C, AT24C04C are in the same table (the catalogue holds AT24C02D and AT24C256C only). Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "AT25256B",
+   "orderableCode": null,
+   "desc": "256 Kbit SPI serial EEPROM, 1.8-5.5 V, 20 MHz, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / TSSOP-8 / UDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "configuration / calibration memory",
+    "airbag / braking ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "AT25010B ... AT25640B and AT25128B are in the same table; the catalogue holds the Microchip-heritage 25LC256. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "24LC16B",
+   "orderableCode": null,
+   "desc": "16 Kbit I2C serial EEPROM, 2.5-5.5 V, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / TSSOP-8 / SOT-23-5 / MSOP-8 / DFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "configuration memory on any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "24LC01B / 02B / 04B / 08B / 32A / 128 / 512 are in the same table (the catalogue holds 24LC64 and a 24LC256 estimate). Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "MCP7940N",
+   "orderableCode": null,
+   "desc": "I2C real-time clock / calendar with battery switchover and 64-byte SRAM, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 / TSSOP-8 / MSOP-8 / TDFN-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "telematics",
+    "instrument cluster",
+    "data logger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "MCP79410 (with EEPROM and unique ID) is in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATmega328PB-AUTOMOTIVE",
+   "orderableCode": null,
+   "desc": "8-bit AVR MCU, 32 KB flash, 2 UART / 2 SPI / 2 I2C, automotive grade",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-32 / VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "small body / lighting / sensor ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATmega324PB-AUTOMOTIVE (TQFP-44) and ATmega328P-AUTOMOTIVE are in the same table; the catalogue holds only the commercial ATMEGA328P-AU. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATmega32M1-AUTOMOTIVE / ATmega64M1-AUTOMOTIVE",
+   "orderableCode": null,
+   "desc": "8-bit AVR MCU with CAN and LIN, 32 / 64 KB flash, motor-control PWM",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-32 / VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BLDC pump / fan controller",
+    "CAN / LIN actuator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATmega16M1 and the CAN-only ATmega64C1 are in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "ATtiny167-AUTOMOTIVE",
+   "orderableCode": null,
+   "desc": "8-bit AVR MCU with LIN UART, 16 KB flash",
+   "category": "ic_soic",
+   "pkg": "SOIC-20 / TSSOP-20 / VQFN-32",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN slave node",
+    "switch panel",
+    "sensor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "ATtiny87-AUTOMOTIVE (8 KB) is in the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "SAM DA1 (ATSAMDA1J16B)",
+   "orderableCode": null,
+   "desc": "32-bit Cortex-M0+ MCU, 64 KB flash, peripheral touch controller, LIN, AEC-Q100 Grade 2 (-40 to +105 C)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64 (E: 32-pin, G: 48-pin)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "capacitive touch panel",
+    "body / lighting node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Family also in \"32-bit Automotive MCUs\" DS60001427D (June 2019): SAM DA1, AEC-Q100 Grade 2. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "SAM V71 (ATSAMV71Q21)",
+   "orderableCode": null,
+   "desc": "32-bit Cortex-M7 MCU, 300 MHz, 2 MB flash, dual CAN FD, Ethernet AVB, MediaLB, HS USB, AEC-Q100 Grade 2",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144 (N: 100-pin, J: 64-pin)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "audio amplifier",
+    "infotainment / telematics",
+    "smart antenna"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "Family also in \"32-bit Automotive MCUs\" DS60001427D (June 2019): SAM V70 / V71, AEC-Q100 Grade 2. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "dsPIC33EV256GM106",
+   "orderableCode": null,
+   "desc": "16-bit 5 V DSC, 70 MIPS, 256 KB flash, CAN, SENT, motor-control PWM, to +150 C",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64 / QFN-64",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "5 V motor / pump / fan control",
+    "powertrain auxiliary ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "The dsPIC33EV family (32-256 KB, 28-64 pins, GM00x without CAN / GM10x with CAN) fills the same table. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  },
+  {
+   "mfr": "Microchip",
+   "family": "PIC18F47K40",
+   "orderableCode": null,
+   "desc": "8-bit PIC MCU, 128 KB flash, 10-bit ADC with computation, 5 V",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-44 / QFN-44 / UQFN-40",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "small body / lighting / HVAC ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 3,
+   "sourceUrl": "http://ww1.microchip.com/downloads/en/DeviceDoc/00003019A.pdf",
+   "note": "PIC18F2xK40 / 4xK40 / 6xK40 and PIC18F2xK42 are in the same table; the catalogue holds the newer PIC18-Q83 / Q84 only. Listed in Microchip \"Automotive Product Selector Guide\" DS00003019A (Aug 2019), whose parts are the \"recommended for automotive designs\" (AEC-Q100) line; no orderable code printed (automotive codes end VAO or are Atmel-style); lifecycle since 2019 not checked."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "LT8672 (active rectifier controller) - Digi-Key product-highlight page seen, positioned for automotive battery protection, but no #W automotive code and no AEC statement read",
+  "LTC7803 (40 V 3 MHz buck controller) - Digi-Key product-highlight page seen; a JUD#WPBF code is mentioned only in the search summary, not read in a listing title",
+  "AD8283WBCPZ (radar receive AFE) and ADV7180WBCPZ (video decoder) - codes appear in the affected-parts table of ADI PCN 24_0009 Rev. G (mm.digikey.com), no listing or automotive statement read",
+  "ADuM4146 (SiC gate driver isolator) - only ADUM4146CRWZ found at Digi-Key, grade not automotive; no W-grade code seen",
+  "MAX96701 and MAX9271 (GMSL1 serializers) - data sheet / product-highlight titles seen at Digi-Key, automotive qualification not read",
+  "MAX20076 / MAX25276 - named only in the MAX20075 EV-kit title",
+  "LT3045 - only industrial / extended codes (LT3045IDD#TRPBF) seen, no #W automotive code",
+  "ADI seeds named in searches that returned nothing: LT8609S, LT8650S, LT8653S, LT8638S, LT8642S, LT8625S, LT8362, LT3932, LTC3891, LTC7000; MAX25432, MAX20459, MAX16984, MAX16946, MAX16833, MAX20090, MAX16126, MAX9918, MAX13041, MAX15006; MAX96776, MAX9276A; AD2S1205WSTZ, ADUM3223WARZ, ADF5901WCCPZ, AD7280AWBSTZ; AD2437W",
+  "ADI seed groups never searched (search budget): LTC38xx / LTC78xx controllers beyond LTC7803, LT30xx / ADP71xx LDOs, LT39xx / MAX256xx LED drivers, MAX20480 / ADP5xxx PMICs, eFuse MAX1790x, ADuM W-grade isolators and ADuM41xx / MAX227xx gate drivers, ADM30xx / MAX33xxx / LTC28xx interfaces, MAX16xxx / ADM8xxx / LTC29xx supervisors, references / ADCs / DACs in W grade, AD22xxx / TMP0x sensors, ADAR / ADF41xx radar, Trinamic TMCxxxx, SSM / MAX98xxx audio - none confirmed, none listed",
+  "Microchip MCP2515 - data sheet DS20001801J read; it prints no AEC-Q100 statement and no VAO code (the 2019 automotive guide does list MCP2515)",
+  "Microchip MAQ4123 data sheet - ww1.microchip.com redirects it to www.microchip.com (not followed); listed from the guide and the search-result title only",
+  "Microchip seeds not found in any document read: LX34070A, TA100 (TA101 is in the first pass), MCP9982, dsPIC33AK128MC106, MCP1794, AVR16EB32, ATA658x CAN SIC, PIC32CZ CA, MCP16701, PolarFire FPGA automotive codes, maXTouch M1 family (ATMXT...M1), MTCH2120 / AT42QT automotive, UPD301C / UPD360, USB7252C, 47Lxx EERAM, ATECC608 automotive, ATA8510 / ATA8352, PL / ZL / SY clock parts, CL / HV LED drivers (the 2020 guide lists HV98xx only as general-purpose, not automotive)"
+ ],
+ "moreInSources": [
+  "Microchip DS00003019A (2019) lists further automotive families NOT listed above (all NEW to seen.py when sampled): CAN MCP2551 / MCP2561FD / MCP25612FD / MCP2515; LIN ATA6625, ATA6628 / ATA6630, ATA664151, MCP2003A / MCP2004A, MCP2021A / MCP2022A / MCP2025 / MCP2050, SiP ATA6612C / ATA6613C / ATA6614Q / ATA6616C / ATA6617C; Ethernet KSZ8041 / KSZ8051 / KSZ8563 / KSZ8565 / KSZ8851 / KSZ8864 / KSZ8873 / KSZ8895 / LAN89218 / LAN89530 / LAN89730; MOST / INICnet OS81118 / OS81119 / OS81210 / OS81212 / OS81214 / OS82150 / OS8565x; USB USB82640 / USB82642 / USB84602 / USB84604; car access ATA5021, ATA5723C-28C, ATA5745C / 46C, ATA5749C, ATA5756 / 57, ATA5771C-74C, ATA5795C, ATA5823 / 24, ATR4251C-53C, T5750C-54C; touch ATMXT1067TD-A, ATMXT799T-A, ATMXT225T(D)-A, ATMXT224S-A, ATMXT336S-A, MGC3140 (3D gesture); motor ATA6823C / ATA6824C, MCP8063; power MCP1700 / MCP1702 / MCP1725-27 / MCP1754 / MCP1755 / MCP1824-27, MAQ5300, MIC47050, MIC5233, TC1xxx LDOs, MCP1640 / MCP1642 / MCP1643 / MCP1661-65 / MCP16251, MCP1630-33, MCP19035, MCP19115-19 / MCP19124 / MCP19125, MCP14xx / MCP14Exx / TC44xx MOSFET drivers, MCP14700; supervisors MCP1316-22, MCP809, MCP103 / 111 / 121 / 131; temperature MCP9800-05, MCP9843 / MCP98243, MCP9501-10, TC1047A; op amps MCP60xx / MCP62xx / MCP64xx / MCP6Vxx / MCP6Hxx / MCP62x-66x, comparators MCP654x / MCP656x; ADC / DAC MCP300x / MCP320x / MCP330x / MCP342x / MCP355x, MCP47xx / MCP48xx / MCP49xx, MCP47FEB / MCP48FEB, digital pots MCP40xx-46xx / MCP41HVx1, AFE MCP39xx; memory 24AA / 24FC / 24C0xC, 25AA / 25LC, 93AA / 93LC, AT93C46D-86A, 11AA / 11LC UNI/O, SST25PF040C / SST25WF080B / SST38VF / SST39VF parallel flash, 23A / 23K / 23LC serial SRAM, MCP794xx / MCP795xx RTCC; MCUs PIC10F32x, PIC12F15xx, PIC16F145x / 15xx / 153xx / 17xx / 183xx / 188xx / 19197, PIC18FxxK40 / K42 / K50, PIC24F KA / KL / GA0, dsPIC33FJ / EP (GP / MC / GM / GS / MU), dsPIC33CK MP1xx-5xx, dsPIC33CH MP2xx / 5xx, AVR automotive ATtiny24 / 25 / 44 / 45 / 84 / 85 / 87 / 88 / 461 / 861, ATmega48PA / 88 / 88PA / 168 / 164P / 324P / 328P / 644P / 169P / 16M1 / 64C1, AT90CAN32 / 64 / 128, ATtiny416 / 417 / 816 / 817 / 1617, SAM D20 / D21 / C20 / C21 (E / G / J, 15-18), SAM V70, PIC32MZ EF, PIC32MM GPM; and (DS60001427D) SAM E5x / SAM D51 / SAM L10 / L11 with AEC-Q100 Grade 1.",
+  "Microchip DS20001060AW (2020) also shows: ATA6843 / ATA6844 BLDC gate drivers, USB251xB / USB46x4 / USB5734 / USB264x / USB334x and UTC200x marked 'Automotive', MIC4742 'AEC-Q100 Grade 2 variant available', MCP1501 voltage reference (SOT-23-6 AEC-Q100)."
+ ]
+}

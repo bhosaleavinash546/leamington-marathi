@@ -1,0 +1,141 @@
+{
+ "candidates": 1861,
+ "toPrice": 1817,
+ "quoteItems": 44,
+ "dropped": {
+  "duplicate across files": 60,
+  "BOM: doubtful print / off-brief design": 369,
+  "BOM: dev-board hardware / connector": 156,
+  "BOM: not fitted": 61,
+  "BOM: one board, no automotive statement": 401,
+  "BOM: no orderable code": 17
+ },
+ "replacesEstimate": 13,
+ "priority": {
+  "1": 331,
+  "2": 1216,
+  "3": 270
+ },
+ "withOrderableCode": 1343,
+ "distributorListed": 609,
+ "aecqStatedOnPage": 1218,
+ "launched2024plus": 740,
+ "byCategory": {
+  "ic_bga": 96,
+  "ic_qfn": 408,
+  "ic_tqfp": 86,
+  "ic_soic": 344,
+  "through_hole": 16,
+  "fuse_tvs": 159,
+  "crystal_osc": 31,
+  "led": 21,
+  "relay_switch": 20,
+  "passive_0603": 189,
+  "passive_0402": 180,
+  "passive_1206": 172,
+  "passive_0805": 69,
+  "transformer": 8,
+  "power_module": 2,
+  "connector_smt": 16
+ },
+ "tasks": {
+  "nk1-mcu-processors": {
+   "parts": 82,
+   "boards3plus": 0,
+   "priority1": 15,
+   "withCode": 44,
+   "distributorListed": 35
+  },
+  "nk2-power-management": {
+   "parts": 81,
+   "boards3plus": 0,
+   "priority1": 11,
+   "withCode": 24,
+   "distributorListed": 47
+  },
+  "nk3-power-semis-drivers": {
+   "parts": 72,
+   "boards3plus": 0,
+   "priority1": 26,
+   "withCode": 46,
+   "distributorListed": 11
+  },
+  "nk4-networking-connectivity": {
+   "parts": 89,
+   "boards3plus": 0,
+   "priority1": 22,
+   "withCode": 5,
+   "distributorListed": 9
+  },
+  "nk5-sensors-analog": {
+   "parts": 101,
+   "boards3plus": 0,
+   "priority1": 14,
+   "withCode": 70,
+   "distributorListed": 42
+  },
+  "nk6-memory-timing-discretes": {
+   "parts": 86,
+   "boards3plus": 0,
+   "priority1": 13,
+   "withCode": 36,
+   "distributorListed": 14
+  },
+  "nk7-smt-passives-emc": {
+   "parts": 118,
+   "boards3plus": 0,
+   "priority1": 14,
+   "withCode": 84,
+   "distributorListed": 51
+  },
+  "nk8-reference-design-boms": {
+   "parts": 71,
+   "boards3plus": 0,
+   "priority1": 22,
+   "withCode": 64,
+   "distributorListed": 11
+  },
+  "nk8b-bom-parts-full": {
+   "parts": 443,
+   "boards3plus": 35,
+   "priority1": 35,
+   "withCode": 443,
+   "distributorListed": 0
+  },
+  "nm1-st": {
+   "parts": 133,
+   "boards3plus": 0,
+   "priority1": 51,
+   "withCode": 127,
+   "distributorListed": 113
+  },
+  "nm2-adi-microchip": {
+   "parts": 106,
+   "boards3plus": 0,
+   "priority1": 10,
+   "withCode": 40,
+   "distributorListed": 23
+  },
+  "nm3-nexperia-vishay-rohm-diodes-toshiba": {
+   "parts": 135,
+   "boards3plus": 0,
+   "priority1": 43,
+   "withCode": 115,
+   "distributorListed": 33
+  },
+  "nm4-renesas-onsemi-others": {
+   "parts": 132,
+   "boards3plus": 0,
+   "priority1": 14,
+   "withCode": 77,
+   "distributorListed": 56
+  },
+  "nm5-passives-connectors-makers": {
+   "parts": 168,
+   "boards3plus": 0,
+   "priority1": 41,
+   "withCode": 168,
+   "distributorListed": 164
+  }
+ }
+}

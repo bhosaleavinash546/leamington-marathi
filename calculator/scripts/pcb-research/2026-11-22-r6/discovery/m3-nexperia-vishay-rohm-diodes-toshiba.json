@@ -1,0 +1,2542 @@
+{
+ "domain": "m3-nexperia-vishay-rohm-diodes-toshiba",
+ "researched": "2026-11-22",
+ "searchesUsed": 15,
+ "pageReads": 40,
+ "candidates": [
+  {
+   "mfr": "Nexperia",
+   "family": "BC817-Q series",
+   "orderableCode": "BC817-40-Q",
+   "desc": "45 V, 500 mA NPN general-purpose transistor, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/group/bc817-q-series",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds no BC817 entry at all. Type number as printed; reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BC807-Q series",
+   "orderableCode": "BC807-40-Q",
+   "desc": "45 V, 500 mA PNP general-purpose transistor, automotive -Q type (complement of BC817-40-Q)",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-q100-q101/automotive-bipolar-transistors/general-purpose-bipolar-transistors/",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Mouser also carries a 'Nexperia BC807Qx PNP General Purpose Transistors' new-product page (not readable). Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BC847-Q series",
+   "orderableCode": "BC847C-Q",
+   "desc": "45 V, 100 mA NPN general-purpose transistor, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: BC847",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-q100-q101/automotive-bipolar-transistors/general-purpose-bipolar-transistors/",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a BC847 family ESTIMATE; this is the exact automotive type."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PMBT3904-Q",
+   "orderableCode": "PMBT3904-Q",
+   "desc": "40 V, 200 mA NPN switching transistor, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/product/PMBT3904-Q",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Nexperia's own 3904 (the catalogue's SMMBT3904LT1G is onsemi). Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BC817-40QA",
+   "orderableCode": "BC817-40QA",
+   "desc": "45 V, 500 mA NPN general-purpose transistor in leadless DFN1010D-3 with side-wettable flanks",
+   "category": "fuse_tvs",
+   "pkg": "DFN1010D-3 (SOT1215)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "camera module",
+    "radar module",
+    "space-limited ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://nexperia.com/pip/BC817-40QA",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Package from Nexperia's QA naming; AEC-Q101 per Nexperia's 'AEC-Q101 discretes in miniature leadless DFN packages' release in the same result set."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "2N7002AK-Q",
+   "orderableCode": "2N7002AK-Q",
+   "desc": "60 V N-channel Trench MOSFET, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: 2N7002",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/product/2N7002AK-Q",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a 2N7002 family ESTIMATE."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BSS138AKRA-Q",
+   "orderableCode": "BSS138AKRA-QZ",
+   "desc": "Dual N-channel 60 V, 0.32 A small-signal MOSFET, leadless 6-pin DFN",
+   "category": "fuse_tvs",
+   "pkg": "DFN1412-6 (6DFN)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+   "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "2N7002AKRA-Q",
+   "orderableCode": "2N7002AKRA-QZ",
+   "desc": "Dual N-channel 60 V, 0.32 A small-signal MOSFET, leadless 6-pin DFN",
+   "category": "fuse_tvs",
+   "pkg": "DFN1412-6 (6DFN)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+   "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BSS138AKQB-Q",
+   "orderableCode": "BSS138AKQB-QZ",
+   "desc": "N-channel 60 V small-signal MOSFET in leadless DFN1110D-3",
+   "category": "fuse_tvs",
+   "pkg": "DFN1110D-3 (SOT8015)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/aec-q101-small-signal-mosfets",
+   "note": "Orderable code printed on Digi-Key's 'AEC-Q101 Small-Signal MOSFETs' page (page read); sibling 2N7002AKQB-QZ is on the same page."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAV99-Q",
+   "orderableCode": "BAV99-Q",
+   "desc": "High-speed dual series switching diode, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://nexperia.com/package/SOT23",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds the standard BAV99,215 — a different orderable part (Nexperia moved AEC-Q101 status to the -Q types after 30 Jun 2022). Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAS21-Q",
+   "orderableCode": "BAS21-Q",
+   "desc": "High-voltage switching diode, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://nexperia.com/products/diodes/automotive-diodes/automotive-switching-diodes",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue holds the standard BAS21,215 — a different orderable part. Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAS16QA-Q",
+   "orderableCode": "BAS16QA-Q",
+   "desc": "High-speed switching diode in leadless DFN1010D-3, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "DFN1010D-3 (SOT1215)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: BAS16",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/product/BAS16QA-Q",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a BAS16 family ESTIMATE."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAW56QB-Q",
+   "orderableCode": "BAW56QB-Q",
+   "desc": "Dual common-anode high-speed switching diode in leadless DFN1110D-3 (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "DFN1110D-3 (SOT8015)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/diodes/family/AUTOMOTIVE-DFN-PACKAGES",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAT54QB-Q",
+   "orderableCode": "BAT54QB-Q",
+   "desc": "Schottky barrier diode in leadless DFN1110D-3, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "DFN1110D-3 (SOT8015)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/diodes/family/AUTOMOTIVE-DFN-PACKAGES",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Same result names BAT54LS-Q and BAT54QC-Q (other leadless outlines)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PMEG4010ER-Q",
+   "orderableCode": "PMEG4010ER-Q",
+   "desc": "40 V, 1 A low-VF Schottky barrier rectifier, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "SOD123W (CFP3)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU (reverse-polarity / freewheel)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: PMEG4010",
+   "priority": 1,
+   "sourceUrl": "https://nexperia.com/products/diodes/family/CLIP-BONDED-FLATPOWER-CFP/",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a PMEG4010 family ESTIMATE. Package from Nexperia's ER naming. Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAS16GW",
+   "orderableCode": "BAS16GWX",
+   "desc": "Switching diode 100 V, 215 mA, SOD123 gull-wing, automotive family",
+   "category": "fuse_tvs",
+   "pkg": "SOD123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "estimate: BAS16",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+   "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Larger reel: BAS16GWJ."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BAT54GW",
+   "orderableCode": "BAT54GWX",
+   "desc": "Schottky diode 30 V, 200 mA, SOD123 gull-wing, automotive family",
+   "category": "fuse_tvs",
+   "pkg": "SOD123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+   "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Larger reel: BAT54GWJ."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PMEG4010EGW",
+   "orderableCode": "PMEG4010EGWX",
+   "desc": "Schottky rectifier 40 V, 1 A, SOD123 gull-wing, automotive family",
+   "category": "fuse_tvs",
+   "pkg": "SOD123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "estimate: PMEG4010",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+   "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. Low-leakage sibling PMEG4010CEGWX on the same page."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PMEG6010ELR",
+   "orderableCode": "PMEG6010ELRX",
+   "desc": "Schottky rectifier 60 V, 1 A, SOD123W, automotive family",
+   "category": "fuse_tvs",
+   "pkg": "SOD123W",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package",
+   "note": "Orderable code printed on Digi-Key's 'Automotive Diodes in SOD123 Package' page (page read); the page states AEC-Q101 for the family, not per part. First pass found the 2 A sibling PMEG6020ELRX — this is a different orderable part."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BZX84J-…-Q series",
+   "orderableCode": null,
+   "desc": "Automotive Zener diodes in SOD323F, -Q types (status Production on Nexperia's automotive Zener page)",
+   "category": "fuse_tvs",
+   "pkg": "SOD323F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-aec-q100-q101/automotive-diodes/automotive-zener-diodes/",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. No single voltage code was shown, so no orderable code is given. Catalogue holds only the standard SOT23 BZX84-C5V1,215."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BZX884S-…-Q series",
+   "orderableCode": null,
+   "desc": "Automotive Zener diodes 365 mW, 2 %, in leadless DFN1006BD-2 (orderable codes end -QYL)",
+   "category": "fuse_tvs",
+   "pkg": "DFN1006BD-2",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://uk.rs-online.com/web/p/zener-diodes/2401873",
+   "note": "RS lists the series by voltage (8.2 V, 9.1 V, 11 V, 22 V, 47 V, 56 V …) as AEC-Q101 qualified; the listing titles do not print the full code, so none is given."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2CANFD36XX-Q",
+   "orderableCode": "PESD2CANFD36UT-QR",
+   "desc": "CAN FD / LIN / FlexRay bus ESD protection, 36 V stand-off, 2 lines",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "launched": "2023",
+   "usedIn": [
+    "CAN / CAN FD node",
+    "24 V board net ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+   "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2CANFD36XX-Q",
+   "orderableCode": "PESD2CANFD36VT-QR",
+   "desc": "CAN FD bus ESD protection, 36 V stand-off, 2 lines (V capacitance class)",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "launched": "2023",
+   "usedIn": [
+    "CAN / CAN FD node",
+    "24 V board net ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+   "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "PESD2CANFD36XX-Q",
+   "orderableCode": "PESD2CANFD36UU-QX",
+   "desc": "CAN FD bus ESD protection, 36 V stand-off, 2 lines, SOT323",
+   "category": "fuse_tvs",
+   "pkg": "SOT323",
+   "aecq": true,
+   "launched": "2023",
+   "usedIn": [
+    "CAN / CAN FD node",
+    "24 V board net ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.at/en/product-highlight/n/nexperia/esd-protection-for-automotive-in-vehicle-networks",
+   "note": "Exact orderable code printed on Digi-Key's 'ESD Protection for Automotive In-Vehicle Networks' page (page read). First pass found the family PESD2CANFD36XX-Q without codes; this supplies the code. -QF is the other reel of the same part; VU-QX and LU-QX are on the page too."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "74LVC1G08-Q100",
+   "orderableCode": "74LVC1G08GW-Q100,125",
+   "desc": "Single 2-input AND gate, 1.65–5.5 V, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP5 (SOT353-1)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://lcsc.com/product-detail/Logic-Gates_Nexperia-74LVC1G08GW-Q100-125_C6101355.html",
+   "note": "Full code on LCSC's listing; Nexperia's group page (nexperia.com/group/74lvc1g08-q100) gives the same part as Active with ordering code 935298476125. Farnell, Digi-Key and Future show it truncated as '74LVC1G08GW-Q100,1'."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "74LV1T08-Q100",
+   "orderableCode": "74LV1T08GW-Q100H",
+   "desc": "Single 2-input AND gate with voltage-level translation (LV1T), AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP5 (SOT353-1)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/analog-logic-ics/logic/automotive-logic/logic-voltage-translators/74LV1T08GW-Q100.html",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Orderable part number as shown in Nexperia's 'Orderable parts' table."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "74HC595-Q100",
+   "orderableCode": "74HC595PW-Q100,118",
+   "desc": "8-bit serial-in shift register with output latches, 2–6 V, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP16 (SOT403-1)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "instrument cluster",
+    "LED / relay expansion"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "estimate: 74HC595",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74HC595PW-Q100-118/3749019",
+   "note": "Digi-Key lists it Active with Qualification AEC-Q100 (search result); Nexperia group page nexperia.com/group/74hc595-q100-74hct595-q100. Catalogue has only a 74HC595 family ESTIMATE."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7Y3R5-40H",
+   "orderableCode": "BUK7Y3R5-40H",
+   "desc": "N-channel 40 V, 3.5 mΩ standard-level MOSFET — brushed-motor H-bridge / high-side switch",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "door / body domain controller",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. Other example devices on the same slides, not listed separately here: BUK7Y7R0-40H, BUK7M3R3-40H, BUK7M20-40H, BUK7K25-40E, BUK7K6R8-40E, BUK7Y43-60E, BUK9Y43-60E, BUK9M24-40E, BUK9M10-30E, BUK6D120-40E."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7Y2R0-40H",
+   "orderableCode": "BUK7Y2R0-40H",
+   "desc": "N-channel 40 V, 2.0 mΩ standard-level MOSFET — safety FET for domain power supply (10–60 A)",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "zonal controller",
+    "power distribution"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7Y25-60E",
+   "orderableCode": "BUK7Y25-60E",
+   "desc": "N-channel 60 V, 25 mΩ standard-level MOSFET — reverse-battery protection / DC/DC",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "domain controller DC/DC",
+    "reverse battery protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7Y12-100E",
+   "orderableCode": "BUK7Y12-100E",
+   "desc": "N-channel 100 V, 12 mΩ standard-level MOSFET in LFPAK56 (status Production)",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/mosfets/family/lfpak56-mosfets",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK9Y4R8-60E",
+   "orderableCode": "BUK9Y4R8-60E",
+   "desc": "N-channel 60 V, 4.8 mΩ logic-level MOSFET in LFPAK56",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: BUK9Y",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/mosfets/family/lfpak56-mosfets",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Catalogue has only a BUK9Y family ESTIMATE (and the standard-level BUK7Y4R8-60EX)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7M6R0-40H",
+   "orderableCode": "BUK7M6R0-40H",
+   "desc": "N-channel 40 V, 6.0 mΩ standard-level MOSFET in LFPAK33 — window lifter / door motors",
+   "category": "ic_qfn",
+   "pkg": "LFPAK33",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "door module",
+    "window lifter"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. Also on Nexperia's automotive LFPAK33 page (search result)."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7M9R9-60E",
+   "orderableCode": "BUK7M9R9-60E",
+   "desc": "N-channel 60 V, 9.9 mΩ standard-level MOSFET in LFPAK33 (status Production)",
+   "category": "ic_qfn",
+   "pkg": "LFPAK33",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "DC/DC",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/automotive-qualified-products-aec-q100-q101/automotive-mosfets/family/LFPAK33/",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK9M20-40H",
+   "orderableCode": "BUK9M20-40H",
+   "desc": "N-channel 40 V, 20 mΩ logic-level MOSFET in LFPAK33 — logic / I/O supply rails",
+   "category": "ic_qfn",
+   "pkg": "LFPAK33",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "domain controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. Catalogue holds the 60 V BUK9M20-60ELX — a different part."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK7K6R2-40E",
+   "orderableCode": "BUK7K6R2-40E",
+   "desc": "Dual N-channel 40 V, 5.8 mΩ standard-level MOSFET in LFPAK56D (status Production)",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56D",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive half-bridge",
+    "body control module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.nexperia.com/products/mosfets/family/lfpak56d-mosfets",
+   "note": "nexperia.com refuses direct page reads; code and status read in the web-search result for this Nexperia page. Reel suffix not seen."
+  },
+  {
+   "mfr": "Nexperia",
+   "family": "BUK6Y14-40P",
+   "orderableCode": "BUK6Y14-40P",
+   "desc": "P-channel 40 V, 14 mΩ MOSFET in LFPAK56 — reverse-battery protection high-side",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digitimes.com.tw/Seminar/webupload/Service/download/053AD07030/053AD07030_OGZD5A0ZL1DL1A56SP1C.pdf",
+   "note": "Named as an example device in Nexperia's 'Automotive MOSFETs / EV solution' deck (PDF dated 2024-07, read in full); ratings in desc follow Nexperia's type-number convention (BUK7 standard level / BUK9 logic level, mΩ-voltage), not a datasheet read. Type number as printed — reel suffix (X / J) not seen. 60 V sibling BUK6Y33-60P is named on the same slide."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "MMBT3904Q",
+   "orderableCode": "MMBT3904Q-7-F",
+   "desc": "40 V, 200 mA NPN small-signal transistor, AEC-Q101, PPAP capable",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://diodes.com/part/view/MMBT3904Q",
+   "note": "Code and AEC-Q101 statement read in the web-search result for Diodes' product page (site refuses direct reads). Catalogue's 3904 is onsemi SMMBT3904LT1G."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BC817-40Q",
+   "orderableCode": "BC817-40Q-7-F",
+   "desc": "45 V, 500 mA NPN general-purpose transistor, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--bipolar-transistors/bc817-40q-7-f-diodes-incorporated-7109776",
+   "note": "Future Electronics listing (search result; Future refuses direct reads); Diodes' own page diodes.com/part/view/BC817-40Q marks it Automotive."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BC847BSQ",
+   "orderableCode": "BC847BSQ-7-F",
+   "desc": "Dual NPN 45 V, 100 mA general-purpose transistor, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT363",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--bipolar-transistors/bc847bsq-7-f-diodes-incorporated-4073922",
+   "note": "Future Electronics listing (code read from the listing URL in the search result). Package from the BS (dual, SOT363) naming."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BC847CQ",
+   "orderableCode": "BC847CQ-7-F",
+   "desc": "45 V, 100 mA NPN general-purpose transistor, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: BC847",
+   "priority": 1,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "2N7002Q",
+   "orderableCode": "2N7002Q-7-F",
+   "desc": "60 V N-channel small-signal MOSFET, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: 2N7002",
+   "priority": 1,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BSS138Q",
+   "orderableCode": "BSS138Q-7-F",
+   "desc": "50 V N-channel small-signal MOSFET (level shifting), automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing. Catalogue's BSS138 entry is a different orderable part."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BSS84Q",
+   "orderableCode": "BSS84Q-7-F",
+   "desc": "50 V P-channel small-signal MOSFET, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing. Catalogue holds Nexperia's BSS84AKW,115 — a different maker and part."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMG2305UXQ",
+   "orderableCode": "DMG2305UXQ-13",
+   "desc": "20 V P-channel MOSFET (load switch), automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: DMG2305",
+   "priority": 2,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing. The search asked for -7 and the result returned the -13 reel as the listed code."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DDTC114ECAQ",
+   "orderableCode": "DDTC114ECAQ-7-F",
+   "desc": "NPN pre-biased (10 k / 10 k) transistor, automotive",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.diodes.com/assets/PCN-Files/Diodes_PCN_2840_and_Qual_Rpt_Automotive.pdf",
+   "note": "diodes.com refuses direct page reads; code read in the web-search result for Diodes PCN-2840 (automotive) affected-part tables. Verify the suffix on a distributor page before pricing."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMTH4004SPSQ",
+   "orderableCode": "DMTH4004SPSQ",
+   "desc": "N-channel 40 V, 100 A, 2.7 mΩ @10 V, 175 °C MOSFET",
+   "category": "ic_qfn",
+   "pkg": "PowerDI5060",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC",
+    "reverse battery protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMTH6004SPSQ",
+   "orderableCode": "DMTH6004SPSQ",
+   "desc": "N-channel 60 V, 100 A, 3.1 mΩ @10 V, 175 °C MOSFET",
+   "category": "ic_qfn",
+   "pkg": "PowerDI5060",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMTH4008LFDFWQ",
+   "orderableCode": "DMTH4008LFDFWQ",
+   "desc": "N-channel 40 V, 12 A, 11.5 mΩ @10 V, 175 °C MOSFET, 2×2 mm",
+   "category": "ic_qfn",
+   "pkg": "DFN2020-6",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "load switch",
+    "LED driver",
+    "small motor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMPH4015SPSQ",
+   "orderableCode": "DMPH4015SPSQ",
+   "desc": "P-channel -40 V, -50 A, 10 mΩ @10 V, 175 °C MOSFET",
+   "category": "ic_qfn",
+   "pkg": "PowerDI5060",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection",
+    "high-side switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DMN61D8LQ",
+   "orderableCode": "DMN61D8LQ",
+   "desc": "60 V N-channel relay / inductive-load driver with integrated clamp Zener and bias resistors",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "zonal controller",
+    "relay driver"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Dual version DMN61D8LVTQ (SOT26) is in the same table."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "ZXMS6004FFQ",
+   "orderableCode": "ZXMS6004FFQ",
+   "desc": "60 V, 1.3 A self-protected low-side MOSFET (IntelliFET)",
+   "category": "fuse_tvs",
+   "pkg": "SOT23F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "body control module",
+    "zonal controller",
+    "lamp / relay / solenoid driver"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BAT54SQ",
+   "orderableCode": "BAT54SQ",
+   "desc": "Dual series Schottky diode 30 V, 200 mA",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "estimate: BAT54S",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. BAT54CQ / BAT54AQ / BAT54WSQ are in the same table."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "SBR3U40P1Q",
+   "orderableCode": "SBR3U40P1Q",
+   "desc": "Super Barrier Rectifier 40 V, 3 A, VF 0.47 V",
+   "category": "fuse_tvs",
+   "pkg": "PowerDI123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU (reverse-polarity / freewheel)"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "SBR10U45SP5Q",
+   "orderableCode": "SBR10U45SP5Q",
+   "desc": "Super Barrier Rectifier 45 V, 10 A",
+   "category": "fuse_tvs",
+   "pkg": "PowerDI5",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DFLS140Q",
+   "orderableCode": "DFLS140Q",
+   "desc": "Schottky rectifier 40 V, 1 A",
+   "category": "fuse_tvs",
+   "pkg": "PowerDI123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "SMAJxxAQ / SMAJxxCAQ (5–200 V)",
+   "orderableCode": null,
+   "desc": "400 W TVS, uni- / bidirectional, automotive Q series",
+   "category": "fuse_tvs",
+   "pkg": "SMA",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU supply / I/O clamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Brochure prints the series range 'SMAJ5.0 – SMAJ200AQ / SMAJ200CAQ'; no single mid-range code (e.g. 24 V) is printed, so none is given."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "SMBJxxAQ / SMBJxxCAQ (12–100 V)",
+   "orderableCode": null,
+   "desc": "600 W TVS, uni- / bidirectional, automotive Q series",
+   "category": "fuse_tvs",
+   "pkg": "SMB",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU supply clamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Brochure prints the series range 'SMBJ12 – SMBJ100AQ / SMBJ100CAQ'; no single mid-range code is printed, so none is given. Printed beside it: 1500 W SMCJ5.0 – SMCJ85AQ / CAQ (SMC), 3000 W 3.0SMCJ14 – 3.0SMCJ30AQ, and load-dump DM5W10 – DM5W36AQ (DO218)."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DESD1CAN2SOQ",
+   "orderableCode": "DESD1CAN2SOQ",
+   "desc": "CAN bus ESD protection, 2 lines bidirectional, 24 V, ±30 kV",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "CAN node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DESD1CANFD24VSOQ",
+   "orderableCode": "DESD1CANFD24VSOQ",
+   "desc": "CAN FD bus ESD protection, 2 lines bidirectional, 24 V, low capacitance",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "2022",
+   "usedIn": [
+    "CAN FD node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Brochure availability: Q4 2022."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DESD1LIN2WSQ",
+   "orderableCode": "DESD1LIN2WSQ",
+   "desc": "LIN bus ESD protection, dual bidirectional, 24 V, ±30 kV",
+   "category": "fuse_tvs",
+   "pkg": "SOT323",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LIN node"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "DESD2ETH100SOQ",
+   "orderableCode": "DESD2ETH100SOQ",
+   "desc": "100BASE-T1 automotive Ethernet ESD protection, dual line",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "launched": "2022",
+   "usedIn": [
+    "automotive Ethernet port"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Brochure availability: Q4 2022. 1000BASE-T1 siblings DESD1ETH1GLPSQ / DESD2ETH1GSOQ are in the same table."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "D5V0L1B2LP3Q",
+   "orderableCode": "D5V0L1B2LP3Q",
+   "desc": "5 V bidirectional single-line ESD protection, ±30 kV, 0201-size",
+   "category": "fuse_tvs",
+   "pkg": "X3-DFN0603-2",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "I/O and sensor lines"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AP7375Q",
+   "orderableCode": "AP7375Q",
+   "desc": "45 V input, 300 mA LDO, fixed 1.8 / 3.0 / 3.3 / 5.0 V, low IQ",
+   "category": "ic_soic",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "always-on supply",
+    "MCU / CAN transceiver supply"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Package is not printed in this row of the brochure."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AP63203Q",
+   "orderableCode": "AP63203Q",
+   "desc": "3.8–32 V input, 2 A synchronous buck, fixed 3.3 V, 1.1 MHz",
+   "category": "ic_soic",
+   "pkg": "TSOT26",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ECU point-of-load",
+    "infotainment",
+    "body control module"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Fixed 5 V sibling AP63205Q and adjustable AP63200Q / AP63201Q are in the same table."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AP64501Q",
+   "orderableCode": "AP64501Q",
+   "desc": "3.8–40 V input, 5 A synchronous buck, adjustable, 570 kHz",
+   "category": "ic_soic",
+   "pkg": "SO-8EP",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ECU point-of-load",
+    "USB charger"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AL5809Q",
+   "orderableCode": "AL5809Q",
+   "desc": "60 V two-terminal constant-current linear LED driver",
+   "category": "fuse_tvs",
+   "pkg": "PowerDI123",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "interior / exterior LED lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AL8843Q",
+   "orderableCode": "AL8843Q",
+   "desc": "40 V, 3 A hysteretic buck LED driver",
+   "category": "ic_soic",
+   "pkg": "SO-8EP",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LED lighting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "BCR421Q",
+   "orderableCode": "BCR421Q",
+   "desc": "40 V linear LED driver, 10–350 mA",
+   "category": "ic_soic",
+   "pkg": "SOT26 / U-DFN2020-6",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "interior LED lighting",
+    "rear combination lamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AP74700Q",
+   "orderableCode": "AP74700Q",
+   "desc": "Ideal-diode controller, 3.2–65 V, drives external N-MOSFET (reverse-battery protection)",
+   "category": "ic_soic",
+   "pkg": "SOT26",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection",
+    "zonal controller"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "AH3712Q",
+   "orderableCode": "AH3712Q",
+   "desc": "Automotive Hall-effect sensor IC (brochure Hall-sensor table)",
+   "category": "fuse_tvs",
+   "pkg": "SC59 / SOT23",
+   "aecq": true,
+   "launched": "2023",
+   "usedIn": [
+    "position sensing",
+    "BLDC motor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there. Brochure availability: 2Q 2023."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "ZXCT1110Q",
+   "orderableCode": "ZXCT1110Q",
+   "desc": "High-side current monitor, 2.5–36 V, current output",
+   "category": "ic_soic",
+   "pkg": "SOT25",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "current sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "LM2903Q / LM2903AQ",
+   "orderableCode": null,
+   "desc": "Dual comparator, 2–36 V, open-collector, -40 to +125 °C",
+   "category": "ic_soic",
+   "pkg": "SO-8 / TSSOP-8 (see datasheet)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Brochure prints 'LM2903Q/AQ' (and LM2901Q/AQ, LM2902Q/AQ, LM2904Q/AQ) — a family label, so no orderable code is given."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "PI4ULS5V202Q",
+   "orderableCode": "PI4ULS5V202Q",
+   "desc": "2-bit bidirectional auto-direction level translator, 1.2–5.5 V (I2C)",
+   "category": "ic_soic",
+   "pkg": "MSOP-8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "I2C level shifting"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Part number as printed in Diodes Incorporated's AUTOMOTIVE 'Q' portfolio brochure (PDF dated 2022-11, hosted by Digi-Key, read in full); the brochure states all 'Q' parts are AEC-Q qualified and PPAP-supported. Base part number — the reel suffix (-7 / -13 / TA) is not printed there."
+  },
+  {
+   "mfr": "Diodes Inc.",
+   "family": "74LVC1GxxQ / 74AHC1GxxQ / 74AHCT1GxxQ",
+   "orderableCode": null,
+   "desc": "Single-gate logic (1G00 / 04 / 07 / 08 / 14 / 17 / 32 / 125 / 126 …), -40 to +125 °C",
+   "category": "ic_soic",
+   "pkg": "SOT353 / SOT25",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.com/Site/Global/Layouts/DownloadPdf.ashx?pdfUrl=7961E4B27E3B40FE9CE2DA45F59FF010",
+   "note": "Brochure prints the family columns (74LVC, 74AHC, 74AHCT) against type rows '1G08Q', '1G14Q', '1G125Q' … — the joined code is not printed, so none is given."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SQJ422EP",
+   "orderableCode": "SQJ422EP-T1_GE3",
+   "desc": "Automotive N-channel 40 V, 175 °C TrenchFET MOSFET, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK SO-8L",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC",
+    "load switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/en/product/63989/",
+   "note": "vishay.com product page found by web search (title '… PRODUCT INFORMATION'); ratings from the search result, page not opened. Orderable codes SQJ422EP-T1_GE3 and SQJ422EP-T1_BE3 are named in the Vishay advisory quoted in the same result."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SQJ457EP",
+   "orderableCode": "SQJ457EP",
+   "desc": "Automotive P-channel 60 V, 175 °C MOSFET, AEC-Q101, 100 % Rg and UIS tested",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK SO-8L",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection",
+    "high-side switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/en/product/76628/",
+   "note": "vishay.com product page found by web search (title '… PRODUCT INFORMATION'); ratings from the search result, page not opened. Base part number — the -T1_GE3 ordering suffix was not seen for this part."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SQJ140EP",
+   "orderableCode": "SQJ140EP-T1_GE3",
+   "desc": "Automotive N-channel 40 V, 266 A, 1.7 mΩ TrenchFET Gen IV MOSFET, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK SO-8L",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC",
+    "battery switch"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/en/product/77368",
+   "note": "vishay.com product page found by web search (title '… PRODUCT INFORMATION'); ratings from the search result, page not opened. Mouser lists SQJ140EP-T1_GE3 (search result). Variants SQJ140ELP and SQJ140ER have their own product pages."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SQJQ140E",
+   "orderableCode": "SQJQ140E",
+   "desc": "Automotive N-channel 40 V MOSFET, RDS(on) 0.44 mΩ typ / 0.53 mΩ max, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK 8x8L",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "battery disconnect",
+    "high-current motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/48926/ss32639696-sell-sheet-sqjq140e-mosfet.pdf",
+   "note": "Vishay sell sheet and product page (vishay.com/en/product/79764) found by web search. Base part number — ordering suffix not seen."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SQJA64EP",
+   "orderableCode": "SQJA64EP",
+   "desc": "Automotive N-channel 60 V, 175 °C MOSFET, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK SO-8L",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/77803/sqja64ep.pdf",
+   "note": "Vishay datasheet (Rev. B, 14 Feb 2022) found by web search. First pass found the sibling SQJA90EP — this is a different part. Ordering suffix not seen. Same search: datasheets for SQS486CENW (N 40 V) and SQJ500AEP (N + P 40 V)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SMAJ5.0A – SMAJ188A / CA (TransZorb)",
+   "orderableCode": null,
+   "desc": "400 W TVS, uni- / bidirectional, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AC (SMA)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU supply / I/O clamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+   "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SMBJ5.0A – SMBJ188A / CA (TransZorb)",
+   "orderableCode": null,
+   "desc": "600 W TVS, uni- / bidirectional, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU supply clamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+   "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SMCJ5.0A – SMCJ188A / CA (TransZorb)",
+   "orderableCode": null,
+   "desc": "1500 W TVS, uni- / bidirectional, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "supply clamp"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+   "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "SM8S10AT – SM8S43AT (PAR)",
+   "orderableCode": null,
+   "desc": "Load-dump PAR TVS (highest surge row of the guide), AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-218AC",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "load-dump protection"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+   "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed). SM5S10AT – SM5S43AT and SM6S10AT – SM6S43AT are the lower-power rows of the same package."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "TA6F6.8A – TA6F51A (PAR)",
+   "orderableCode": null,
+   "desc": "PAR TVS in low-profile SlimSMA, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-221AC (SlimSMA)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "supply / I/O clamp, low-profile"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49477/sg2192tvsdiodes.pdf",
+   "note": "Series range printed with AEC-Q101 'yes' in Vishay's TVS selector guide SG2192-2009 (PDF read in full). Series, not a single part: no orderable code is given (the automotive ordering suffix was not printed)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VSMB1940X01",
+   "orderableCode": "VSMB1940X01",
+   "desc": "940 nm infrared emitter, 0805",
+   "category": "led",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rain / light sensor",
+    "driver monitoring",
+    "optical switch"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VSMY2850GX01",
+   "orderableCode": "VSMY2850GX01",
+   "desc": "850 nm high-speed infrared emitter, ±10°, 125 mW/sr, gull-wing",
+   "category": "led",
+   "pkg": "1.8 mm gull-wing SMD",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "driver monitoring",
+    "gesture sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VEMD5080X01",
+   "orderableCode": "VEMD5080X01",
+   "desc": "PIN photodiode, 350–1100 nm, 7.5 mm² sensitive area, top view",
+   "category": "ic_qfn",
+   "pkg": "SMD top view",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rain / light sensor",
+    "optical sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "TEMD5510FX01",
+   "orderableCode": "TEMD5510FX01",
+   "desc": "Ambient-light PIN photodiode with human-eye response",
+   "category": "ic_qfn",
+   "pkg": "SMD",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rain / light / tunnel sensor",
+    "display dimming"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "TEMT6200FX01",
+   "orderableCode": "TEMT6200FX01",
+   "desc": "Ambient-light phototransistor, 0805",
+   "category": "ic_qfn",
+   "pkg": "0805",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "display / instrument dimming"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "TCUT1630X01",
+   "orderableCode": "TCUT1630X01",
+   "desc": "Transmissive optical sensor (interrupter) for steering-wheel, knob and gear-shift position sensing",
+   "category": "ic_qfn",
+   "pkg": "SMD",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "steering-angle sensor",
+    "rotary knob encoder"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VCNL4030X01",
+   "orderableCode": "VCNL4030X01",
+   "desc": "Integrated proximity + ambient-light sensor with IR emitter, I2C, -40 to +105 °C",
+   "category": "ic_qfn",
+   "pkg": "4.0 × 2.36 × 0.75 mm SMD",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "infotainment display",
+    "interior sensing"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts. The guide ticks its AEC-Q101 column for this part; VCNL4035X01 (external emitters, gesture) and VCNL4020X01 are in the same table."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VOMA618A",
+   "orderableCode": "VOMA618A-3X001T",
+   "desc": "Phototransistor optocoupler, CTR 100–200 % at IF 1 mA, 3750 Vrms, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOP-4",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "48 V board net isolation",
+    "OBC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VOMA617A",
+   "orderableCode": "VOMA617A-3X001T",
+   "desc": "Phototransistor optocoupler, CTR 100–200 % at IF 5 mA, 3750 Vrms, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOP-4",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "48 V board net isolation",
+    "OBC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts. First pass found the family VOMA617A without a CTR-bin code; this is an exact orderable code."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "TLMS1100",
+   "orderableCode": "TLMS1100",
+   "desc": "Red SMD LED 0603, 633 nm, automotive",
+   "category": "led",
+   "pkg": "0603",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "switch / button backlight",
+    "indicator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts. Same table: TLMG1100 (green), TLMB1100 (blue), TLMY1100 (yellow), TLMO1100 (orange). Packing suffix (-GS08) not printed."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VLMW41 series",
+   "orderableCode": "VLMW41S1T2-5K8L",
+   "desc": "White SMD LED, PLCC-2, automotive",
+   "category": "led",
+   "pkg": "PLCC-2",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "interior lighting",
+    "backlight"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts. One brightness / colour bin of several printed (VLMW41R1T1-5K8L, VLMW41S1T1-5K8L …)."
+  },
+  {
+   "mfr": "Vishay",
+   "family": "VLMRGB6112",
+   "orderableCode": "VLMRGB6112-00",
+   "desc": "RGB tri-colour SMD LED, PLCC-6, automotive",
+   "category": "led",
+   "pkg": "PLCC-6",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "ambient lighting",
+    "RGB indicator"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.vishay.com/docs/49071/sg2166_automotive_grade_optoelectronics.pdf",
+   "note": "Printed in Vishay's 'Automotive Grade Optoelectronics' selector guide SG2166-2411 (PDF dated 2024-11, read in full), which lists Automotive Grade / AEC-qualified parts."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RB751SM-40FH",
+   "orderableCode": "RB751SM-40FHT2R",
+   "desc": "Schottky barrier diode 40 V, small-signal, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.rohm.com/products/diodes/schottky-barrier-diodes/rb751s-40fh-product",
+   "note": "ROHM product page (read): RB751S-40FHTE61 is Last Time Buy / EOL and RB751SM-40FHT2R is the recommended same-package replacement (8,000 per reel)."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "1SS355VM (automotive FH)",
+   "orderableCode": null,
+   "desc": "High-speed switching diode 80 V, 100 mA",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323FL (UMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 1SS355VM + FH + TE-17."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "1SS400SM (automotive FH)",
+   "orderableCode": null,
+   "desc": "High-speed switching diode 80 V, 100 mA",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 1SS400SM + FH + T2R."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RB520SM-30 / RB520SM-40 (automotive FH)",
+   "orderableCode": null,
+   "desc": "Schottky barrier diode 30 V / 40 V, 200 mA, low-IR type",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: RB520SM-30 (or -40) + FH + T2R."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RB521SM-30 / RB521SM-40 (automotive FH)",
+   "orderableCode": null,
+   "desc": "Schottky barrier diode 30 V / 40 V, 200 mA, low-VF type",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: RB521SM-30 (or -40) + FH + T2R."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "UDZV series (2.0 V – 47 V)",
+   "orderableCode": null,
+   "desc": "Zener diode 200 mW, narrow VZ tolerance (B rank), AEC-Q101 across the range",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323FL (UMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue No. 66BP7370E (10.2023, read in full) marks every UDZV voltage 2.0B – 47 AEC-Q101 'YES'. Series table by voltage — the automotive grade and taping codes for Zeners are not printed there, so no orderable code is given."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "EDZV series (3.6 V – 36 V)",
+   "orderableCode": null,
+   "desc": "Zener diode 150 mW, narrow VZ tolerance (B rank), AEC-Q101 from 3.6 V up",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue No. 66BP7370E (10.2023, read in full) marks EDZV 3.6B – 36B AEC-Q101 'YES' (2.0B – 3.3B are not). Series table — no orderable code printed."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "2SC4081U3 (automotive HZG)",
+   "orderableCode": null,
+   "desc": "NPN 50 V, 150 mA general small-signal transistor, hFE 120–390",
+   "category": "fuse_tvs",
+   "pkg": "SOT-323 (UMT3)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 2SC4081U3 + HZG + T106 (+ hFE rank Q or R)."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "2SA1576U3 (automotive HZG)",
+   "orderableCode": null,
+   "desc": "PNP -50 V, -150 mA general small-signal transistor, hFE 120–390",
+   "category": "fuse_tvs",
+   "pkg": "SOT-323 (UMT3)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf",
+   "note": "ROHM catalogue 'Small-Signal Discrete Devices (Long-Selling Products)' No. 66BP7370E (10.2023, PDF read in full) marks it AEC-Q101 'YES'. The catalogue prints the code in three columns — Part No. + automotive grade code + taping code — not as one string, so no orderable code is given; the pieces are: 2SA1576U3 + HZG + T106 (+ hFE rank Q or R)."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "UM6K31NFHA",
+   "orderableCode": "UM6K31NFHATCN",
+   "desc": "Dual N-channel 60 V, 0.25 A small-signal MOSFET",
+   "category": "fuse_tvs",
+   "pkg": "UMT6 (SOT-363)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "any ECU"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+   "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read); AEC-Q101 is stated for the family."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "SP8K3FRA",
+   "orderableCode": "SP8K3FRATB",
+   "desc": "Dual N-channel 30 V, 7 A MOSFET",
+   "category": "ic_soic",
+   "pkg": "SOP8",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "load switch"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+   "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read); AEC-Q101 is stated for the family. Same page: 5 A sibling SP8K1FRATB and the N + P pair SP8M10FRATB."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RV8L002SNHZG",
+   "orderableCode": null,
+   "desc": "Ultra-compact N-channel small-signal MOSFET, AEC-Q101 (released with RV8C010UN and BSS84X)",
+   "category": "fuse_tvs",
+   "pkg": "ultra-compact leadless (see datasheet)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "camera module",
+    "ADAS sensor",
+    "space-limited ECU"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.rohm.com/products/mosfets/automotive/single-nch/rv8l002snhzg-product",
+   "note": "ROHM product page found by web search (not opened). Type name RV8L002SNHZG as in the page address; the taping suffix was not seen, so no orderable code is given."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "RSQ035N03HZG",
+   "orderableCode": "RSQ035N03HZGTR",
+   "desc": "N-channel 30 V MOSFET, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "TSMT6 (see datasheet)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "load switch",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.rohm.com/products/mosfets/automotive/single-nch/rsq035n03hzg-product",
+   "note": "ROHM product page found by web search (not opened); code and AEC-Q101 note from the search result. Voltage and package from ROHM's type naming — confirm in the datasheet."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "AG040FGS4FRA",
+   "orderableCode": "AG040FGS4FRATCB",
+   "desc": "N-channel 40 V, 120 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060 (5×6 mm)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC",
+    "zonal power distribution"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. 40 V / 120 A siblings AG140FGS4FRATCB and AG142FGS4FRATCB on the same page."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "AG047FLS4FRA",
+   "orderableCode": "AG047FLS4FRATCB",
+   "desc": "N-channel 60 V, 89 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060 (5×6 mm)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. 36 A sibling AG048FLS4FRATCB on the same page."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "AG540EGS4FRA",
+   "orderableCode": "AG540EGS4FRATCB",
+   "desc": "P-channel -40 V, -120 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060 (5×6 mm)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "reverse battery protection",
+    "high-side switch"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/r/rohm-semi/automotive-grade-40v-60v-lv-mosfet",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive Grade 40 V / 60 V LV-MOSFET' page (page read, published 2026-01-16; no launch date stated). AEC-Q101 stated. Lower-current P-channel siblings AG542EGS4FRATCB (-67 A) and AG543EGS4FRATCB (-28 A) on the same page."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD16950EFV-C",
+   "orderableCode": "BD16950EFV-CE2",
+   "desc": "Half-bridge gate driver IC",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B24",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "motor drive",
+    "valve / pump control"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+   "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet. Also in that table: BM60212FV-CE2 / BM60213FV-CE2 (high / low-side gate drivers), BD63030EKV-CE2 (3-phase brushless pre-driver)."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD16912EFV-C",
+   "orderableCode": "BD16912EFV-CE2",
+   "desc": "40 V / 3 A H-bridge driver",
+   "category": "ic_soic",
+   "pkg": "HTSSOP (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "throttle / valve / actuator drive"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+   "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD90302NUF-C",
+   "orderableCode": "BD90302NUF-CE2",
+   "desc": "5.5 V input, 2 A synchronous buck converter with integrated P / N-channel MOSFETs",
+   "category": "ic_qfn",
+   "pkg": "VSON (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "ADAS camera / radar secondary rail",
+    "infotainment"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.com/en/product-highlight/r/rohm-semi/aec-q101-automotive-mosfets",
+   "note": "Orderable code printed on Digi-Key's ROHM 'AEC-Q101 Automotive MOSFETs' page (page read) in its related-products table. The page does not state AEC-Q100 for this IC (aecq left false); the -C / -M suffix is ROHM's automotive marking — confirm in the datasheet."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD18340FV-M",
+   "orderableCode": "BD18340FV-ME2",
+   "desc": "LED driver controller with PWM dimming",
+   "category": "ic_soic",
+   "pkg": "SSOP-B16",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rear combination lamp",
+    "exterior lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD18351EFV-M",
+   "orderableCode": "BD18351EFV-ME2",
+   "desc": "LED driver controller with PWM dimming",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B24",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "exterior LED lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD8379EFV-M",
+   "orderableCode": "BD8379EFV-ME2",
+   "desc": "Linear LED driver, 50 mA per channel, serial input",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B20",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "instrument cluster",
+    "indicator LEDs"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "BD83732HFP-M",
+   "orderableCode": "BD83732HFP-MTR",
+   "desc": "Linear LED driver, 500 mA, PWM dimming",
+   "category": "ic_soic",
+   "pkg": "HRP7",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "rear lamp",
+    "interior lighting"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls the drivers 'AEC-Q100 qualified automotive grade ICs'. Siblings BD8372HFP-MTR (200 mA), BD8374HFP-MTR (500 mA), BD81A24MUV-ME2 and BD2808MUV-ME2 on the same page."
+  },
+  {
+   "mfr": "ROHM",
+   "family": "SMLMN2 series",
+   "orderableCode": "SMLMN2BCTT86C",
+   "desc": "Blue chip LED, 2012 size (0805), 36 mcd, automotive",
+   "category": "led",
+   "pkg": "2012 (0805)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "switch backlight",
+    "indicator"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.in/en/product-highlight/r/rohm-semi/automotive-led-products",
+   "note": "Orderable code printed on Digi-Key's ROHM 'Automotive LED Products' page (page read), which calls these 'AEC-Q100-qualified SMD LEDs' (the page's wording; LEDs are normally qualified to AEC-Q102). SML-811 series (3412 size: SML-811UTT86C red, -DTT86C orange, -WTT86C yellow) on the same page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPH4R10ANB",
+   "orderableCode": "XPH4R10ANB,L1XHQ",
+   "desc": "Automotive N-channel power MOSFET, AEC-Q101 qualified, PPAP capable (DC/DC, motor drive)",
+   "category": "ic_qfn",
+   "pkg": "SOP Advance(WF) 5×6 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V DC/DC",
+    "motor drive"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/mosfets/12v-300v-mosfets/detail.XPH4R10ANB.html",
+   "note": "Toshiba product page (read): ',L1XHQ' is the AEC-Q101 orderable variant (',L1Q' is not), MOQ 5,000. Voltage / RDS(on) were not read on the page — take them from the datasheet."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPH2R608QB",
+   "orderableCode": "XPH2R608QB",
+   "desc": "Automotive N-channel 80 V MOSFET, RDS(on) 2.55 mΩ max, U-MOSX-H",
+   "category": "ic_qfn",
+   "pkg": "SOP Advance(WF) 5×6 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/mosfets/automotive-mosfets.html",
+   "note": "Featured on Toshiba's Automotive MOSFETs page (read). Type number as printed — ordering suffix not seen."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPH3R908QB",
+   "orderableCode": "XPH3R908QB",
+   "desc": "Automotive N-channel 80 V MOSFET, RDS(on) 3.9 mΩ max, U-MOSX-H",
+   "category": "ic_qfn",
+   "pkg": "SOP Advance(WF) 5×6 mm",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "48 V systems",
+    "motor drive",
+    "DC/DC"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/mosfets/automotive-mosfets.html",
+   "note": "Featured on Toshiba's Automotive MOSFETs page (read). Type number as printed — ordering suffix not seen."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "XPMR7404PB",
+   "orderableCode": "XPMR7404PB",
+   "desc": "Automotive N-channel 40 V power MOSFET in the larger-current SOP Advance(EWF) package",
+   "category": "ic_qfn",
+   "pkg": "SOP Advance(EWF)",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "high-current motor drive",
+    "power distribution"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/mosfets/automotive-mosfets.html",
+   "note": "Featured article on Toshiba's Automotive MOSFETs and Automotive Devices pages (both read). Type number as printed — ordering suffix not seen."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SSM3K341R",
+   "orderableCode": "SSM3K341R,LXHF",
+   "desc": "N-channel 60 V, 6 A small-signal / semi-power MOSFET, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LED driver",
+    "load switch",
+    "relay driver"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 1,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+   "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. SOT-323F version SSM3K341TU,LXHF on the same page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SSM3K361R",
+   "orderableCode": "SSM3K361R,LXHF",
+   "desc": "N-channel 100 V, 3.5 A small-signal / semi-power MOSFET, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "LED headlamp driver",
+    "48 V load switch"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+   "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. SSM3K361TU,LXHF on the same page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SSM3J351R",
+   "orderableCode": "SSM3J351R,LXHF",
+   "desc": "P-channel -60 V, -3.5 A small-signal MOSFET, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "high-side load switch",
+    "reverse-polarity protection"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+   "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. The page prints the package for this row as SOT-23."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "SSM3J356R",
+   "orderableCode": "SSM3J356R,LXHF",
+   "desc": "P-channel -60 V, -2 A small-signal MOSFET, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23F",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "high-side load switch"
+   ],
+   "distribution": "distributor",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://www.digikey.co.uk/en/product-highlight/t/toshiba-semi-and-storage/automotive-small-signal-mosfet-devices",
+   "note": "Orderable code printed on Digi-Key's Toshiba 'Automotive Small-Signal MOSFET Devices' page (page read); 'Qualified AEC-Q101' in its feature list. Same page: SSM3J372R,LXHF (-30 V / -6 A), SSM3J378R,LXHF (-20 V / -6 A), SSM3J377R,LXHF, SSM3J375F,LXHF."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB9051FTG",
+   "orderableCode": "TB9051FTG",
+   "desc": "Automotive brushed DC motor driver (H-bridge) IC",
+   "category": "ic_qfn",
+   "pkg": "QFN (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "throttle / valve actuator",
+    "body motor"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/automotive-devices.html",
+   "note": "Code printed on Toshiba's Automotive Devices page (read) in its product line-up; the page gives no ratings and no AEC statement per part (aecq left false). Function in desc is the researcher's knowledge of the TB9xxx line — confirm on the product page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB9120FTG",
+   "orderableCode": "TB9120FTG",
+   "desc": "Automotive stepping motor driver IC",
+   "category": "ic_qfn",
+   "pkg": "QFN (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "HUD / HVAC flap / headlamp levelling"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/automotive-devices.html",
+   "note": "Code printed on Toshiba's Automotive Devices page (read) in its product line-up; the page gives no ratings and no AEC statement per part (aecq left false). Function in desc is the researcher's knowledge of the TB9xxx line — confirm on the product page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB9061AFNG",
+   "orderableCode": "TB9061AFNG",
+   "desc": "Automotive 3-phase brushless motor pre-driver (sensorless)",
+   "category": "ic_soic",
+   "pkg": "SSOP (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "BLDC pump / fan"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/automotive-devices.html",
+   "note": "Code printed on Toshiba's Automotive Devices page (read) in its product line-up; the page gives no ratings and no AEC statement per part (aecq left false). Function in desc is the researcher's knowledge of the TB9xxx line — confirm on the product page. TB9062FNG is listed beside it."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TB9044AFNG",
+   "orderableCode": "TB9044AFNG",
+   "desc": "Automotive system power supply IC (multi-output, with monitoring)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP (see datasheet)",
+   "aecq": false,
+   "launched": "unknown",
+   "usedIn": [
+    "EPS / brake ECU supply"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/ap-en/semiconductor/product/automotive-devices.html",
+   "note": "Code printed on Toshiba's Automotive Devices page (read) in its product line-up; the page gives no ratings and no AEC statement per part (aecq left false). Function in desc is the researcher's knowledge of the TB9xxx line — confirm on the product page."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX9304",
+   "orderableCode": "TLX9304",
+   "desc": "Automotive photocoupler, open-collector output, 1 Mbps logic, -40 to +125 °C, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "inverter",
+    "OBC isolation"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/parametric?code=param_413",
+   "note": "Code and ratings read in the web-search result for Toshiba's automotive photocoupler listing; that list (linked from Toshiba's Automotive Devices page) loads by script and could not be read directly — verify on the product page before pricing. The same result names TLX9309 (1 Mbps analogue), TLX9310 (5 Mbps totem-pole, -40 to +105 °C) and TLX9376 (20 Mbps)."
+  },
+  {
+   "mfr": "Toshiba",
+   "family": "TLX9000",
+   "orderableCode": "TLX9000",
+   "desc": "Automotive transistor-output photocoupler with base-emitter resistor, -40 to +125 °C, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "see datasheet",
+   "aecq": true,
+   "launched": "unknown",
+   "usedIn": [
+    "BMS",
+    "signal isolation"
+   ],
+   "distribution": "unknown",
+   "inCatalogue": "no",
+   "priority": 2,
+   "sourceUrl": "https://toshiba.semicon-storage.com/parametric?code=param_413",
+   "note": "Code and ratings read in the web-search result for Toshiba's automotive photocoupler listing; that list (linked from Toshiba's Automotive Devices page) loads by script and could not be read directly — verify on the product page before pricing."
+  }
+ ],
+ "seedsNotConfirmed": [
+  "Nexperia BC857C-Q, BC846B-Q, BC856B-Q, MMBT3904-Q / MMBT3906-Q, PMBT2222A-Q — the search result named BC857C-Q only in passing (no status line); the others were not returned (Nexperia's 3904 is PMBT3904-Q, listed)",
+  "Nexperia 2N7002BK-Q, BSS138BK-Q, BSS84AK-Q, NX7002AK-Q, NX3008NBK-Q, PMV…-Q — the SOT23 page shows only the non-Q 2N7002BK / BSS138BK / BSS84AK; -Q versions not returned (2N7002AK-Q is listed instead)",
+  "Nexperia BAS16-Q, BAV70-Q, BAW56-Q, BAS316-Q, BAT54S-Q, BAT54C-Q, PMEG6010ER-Q, PMEG3020ER-Q, PMEG4030ER-Q — exact SOT23 / SOD123W -Q codes not returned (leadless and SOD123 siblings are listed)",
+  "Nexperia PDTC114ET-Q, PDTC143ZT-Q, PDTA114ET-Q (resistor-equipped transistors), PBSS…-Q low-VCEsat — not returned by any search",
+  "Nexperia BZX84-C5V1-Q, BZX384-C5V1-Q, BZT52H-C5V1-Q, PZU5.1B2-Q — no single voltage code returned (BZX84J-…-Q series is listed as a family)",
+  "Nexperia PESD2CANFD24VT-Q / 27VT-Q, PESD1CAN-UX, PESD1LIN-Q, PESD1IVN24-A / 27-A, PESD2IVN27-T-Q, PESD5V0S1BA-Q, PTVS24VS1UR-Q, PTVS26VP1UP-Q, PESD…USB…-Q — product pages not returned (only the PESDxIVN and PESD2CANFD36 families)",
+  "Nexperia 74LVC1G04 / 1G14 / 1G125GW-Q100, 74AHC1G08GW-Q100, 74HC4051PW-Q100, 74HC14PW-Q100, 74HC165PW-Q100, 74LVC1T45GW-Q100, 74LVC8T245PW-Q100, NXS0102DC-Q100, NXB0104PW-Q100, NCA9555PW-Q100 — not returned by two searches",
+  "Nexperia BUK9Y4R4-40H, BUK7M6R3-40H, BUK7Y7R6-40E — not found; the listed neighbours are BUK9Y4R8-60E, BUK7M6R0-40H / BUK7M6R3-40E and BUK7Y7R0-40H",
+  "Diodes Inc. BAV99Q-7-F, BAS16Q-7-F, BAS21Q-7-F, 1N4148WQ-7-F / 1N4148WSQ-7-F, BC807-40Q, MMBT3906Q, MMBT2222AQ, DDTC114EUAQ-7-F, DMP3099LQ-7, DMN…LQ small-signal — exact codes not returned (1N4148WQ is named in the 1N4148W datasheet title only)",
+  "Diodes Inc. B340AQ-13-F, BZT52C…Q / BZX84C…Q / MMSZ52xxBQ exact voltages, SMAJ24AQ / SMBJ24AQ / SMCJ24AQ, DESD2CAN2SOQ, D5V0L1B2LP4Q — not printed in the brochure and not returned by search (TVS series are listed as families)",
+  "Diodes Inc. AP7381Q, AP2112Q, ZXCT1009Q (brochure prints 'ZXCT1008Q/9Q' only), AL5814Q-13 full codes, 74LVC1G08QSE-7 / QW5-7 full codes — packing-suffix codes not seen",
+  "Vishay SQJQ100E, SQJA72EP, SQJA20EP, SQS401EN, SQD50P06-15L, SQM40016EM, SQ2310ES, SQ2319ADS, SQ2361ES, SQ2308CES, SQJ138EP — not returned by search",
+  "Vishay automotive rectifier / small-signal codes (SS34HE3_A/H, S1GHE3_A/H, V10PM45HM3/H, BAV99-HE3-08, BAS16-HE3-08, BAT54S-HE3-08, BZX84C5V1-HE3-08, BZT52…-HE3, MMSZ…-HE3) — Vishay's 'Diodes for the Automotive Industry' guide (docs/48371) is over the page-size limit and could not be read",
+  "Vishay TVS exact automotive codes (SMAJ24AHE3_A/H, SMBJ24AHE3_A/H, SMCJ24AHE3_A/I, SM8S24AHE3_A/I, SMF24A-HE3-08) and ESD VCAN26A2-03S, VLIN, VESD, GSOT — series confirmed, the ordering suffix was not printed",
+  "Vishay VEML6030X01, VCNL4040M3OE, VEMD6010X01 as high-runners, SiC diodes, Siliconix automotive load switches (SiP…) — not looked up within the budget (VEMD6010X01 is in the opto guide but not listed here)",
+  "ROHM digital transistors DTC114EU3 / DTC143ZU3 (HZG), RUM002N02, RSM002N06 — in the catalogue but with no automotive column for those tables",
+  "ROHM RD3L080SNFRATL, RD3P200SNFRATL, RQ3G100GNTB, RTR025N03HZGTL, RSR025N03HZGTL, BSS84XHZGT116, RESD1CANFHT116, KDZV / CDZV codes — not returned by search (BSS84X appeared as a base name only)",
+  "ROHM BD433M5FP-CE2, BD450M5FP-CE2, BD9P105MUF-CE2, BD41041FJ-CE2, BD41030FJ-CE2, BD18337EFV-ME2, BV1HD090FJ-CE2, BV1LB085FJ-CE2, BR24H64 / BR25H / BR93H EEPROM, BA2904YFVM-CTR, BA2903YFVM-CTR, BD49E28G-CTR — none returned (Digi-Key names BD4xxMx / BD4275 LDOs, BA8290xYxxx-C op-amps and BU7264YFV-CE2 without a readable listing)",
+  "Toshiba SSM3K7002KFU,LXHF, SSM6N7002KFU,LXHF, 1SS427,LXHF, CUHS20S40,H3XHF, CUS10S30, CRS…, CUZ…, DF3D18FU,LXHF / DF3D29FU,LXHF, DF2B / DF2S / DF10G TVS — Toshiba's lists load by script and the site refused further reads (403) after six pages",
+  "Toshiba TLX9310, TLX9376 (temperature / AEC status cut off in the result), 74VHC…FT automotive, TC7S / TC7W …,LXHF, TCK load switches, TCR LDOs, TB9053FTG / TB9054FTG / TB9083FTG, TPD7104AF / TPD7106F / TPD7110F (codes on the Automotive Devices page with no description) — not confirmed with function and qualification"
+ ]
+}
