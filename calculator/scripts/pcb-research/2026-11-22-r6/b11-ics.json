@@ -1,0 +1,386 @@
+{
+ "domain": "b11-ics",
+ "researched": "2026-11-23",
+ "method": "LATEST task. Every observation was read on the distributor product page on 2026-11-23 (evidence page-read); no search-summary figure is recorded. IN PROGRESS.",
+ "parts": [
+  {
+   "mpn": "R7F7015813AFP-C#AA3",
+   "family": "RH850 R7F70158x (2 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 2 MB flash, 100-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7015813AFP-C#AA3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.8476,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7015813AFP-C%23AA3",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 10.14606,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7015813AFP-C%23AA3",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, Tray only, stock 1, lead time 26 weeks): tray 100 = 10.84760, 101 = 10.84228, 500 = 10.14606 (largest break; nothing at 1,000). Page names the part RH850/F1K (RH850G3KH, 120 MHz), 100-LFQFP 14x14. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Page lists a parametric-equivalent substitute R7F7015813AFP-C#BA3 (0 in stock) - a different orderable code, not recorded."
+  },
+  {
+   "mpn": "R7F7016453AFP-C#AA1",
+   "family": "RH850 R7F70164x (4 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 4 MB flash, 100-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7016453AFP-C#AA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 180,
+     "price": 14.01211,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016453AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 540,
+     "price": 12.69633,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016453AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, Tray only, stock 90, lead time 26 weeks): tray 90 = 14.46067 (below 100, not recorded), 180 = 14.01211, 540 = 12.69633 (largest break; nothing at 1,000). Page names the part RH850/F1KM-S4 (RH850G3KH, 240 MHz), 100-LFQFP 14x14. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "RAA270000KFT#HA2",
+   "family": "RAA270000KFT",
+   "mfr": "Renesas",
+   "desc": "Automotive power management IC (general-purpose PMIC), 6 V - 18.5 V supply, -40..125 C",
+   "category": "ic_tqfp",
+   "pkg": "64-TQFP exposed pad (64-QFP 10x10)",
+   "aecq": true,
+   "ecuRoles": [
+    "MCU power supply"
+   ],
+   "observedMpn": "RAA270000KFT#HA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 7.91776,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAA270000KFT%23HA2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 7.14181,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAA270000KFT%23HA2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 4,799, lead time 18 weeks): cut tape 100 = 7.98640, 250 = 7.91776 (largest cut-tape break); tape & reel 2,000 = 7.14181 (the only reel break). Package and function read on the page: \"General Purpose PMIC 64-QFP (10x10)\", 64-TQFP Exposed Pad (task had \"not read\"). GRADE: page field Grade \"Automotive\"; the Qualification field is not shown - aecq true rests on the Grade field only."
+  },
+  {
+   "mpn": "RAJ2800024H11HPF#GB0",
+   "family": "RAJ280002",
+   "mfr": "Renesas",
+   "desc": "High-side intelligent power device (IPD), multi-chip package",
+   "category": "ic_soic",
+   "pkg": "TO-263-7 (D2PAK, 6 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "power distribution"
+   ],
+   "observedMpn": "RAJ2800024H11HPF#GB0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 800,
+     "price": 3.09631,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAJ2800024H11HPF%23GB0",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2400,
+     "price": 2.98775,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAJ2800024H11HPF%23GB0",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 703, lead time 18 weeks): tape & reel 800 = 3.09631, 1,600 = 3.02399, 2,400 = 2.98775 (largest); cut tape 100 = 3.42070, 250 = 3.27268 (largest cut-tape break). Package read on the page: TO-263-7 (task had \"not read\"). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "RC21211A000GNA#BB0",
+   "family": "RC21211A (AutoClock)",
+   "mfr": "Renesas",
+   "desc": "AutoClock automotive clock generator",
+   "category": "ic_qfn",
+   "pkg": "not read on the page",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "infotainment SoC clock tree"
+   ],
+   "observedMpn": "RC21211A000GNA#BB0",
+   "observations": [],
+   "notes": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock (packaging Tray). No replacement named on the page. Page fields: Clock Generator 650 MHz, 1:12, Grade \"Automotive\", Qualification \"AEC-Q100\"; package not shown."
+  },
+  {
+   "mpn": "UPD166033T1U-E1-AY",
+   "family": "uPD166033",
+   "mfr": "Renesas",
+   "desc": "High-side intelligent power device (IPD), MP-3ZK",
+   "category": "ic_soic",
+   "pkg": "TO-252-7 (DPAK, 6 leads + tab; Renesas MP-3ZK)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "lamp / heater load switching"
+   ],
+   "observedMpn": "UPD166033T1U-E1-AY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.56672,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.45145,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.42227,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,475, lead time 18 weeks): cut tape 100 = 1.69380, 250 = 1.60140, 500 = 1.56672 (largest cut-tape break); tape & reel 2,500 = 1.45145, 5,000 = 1.42227 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "ISL76534ARXZ-T7A",
+   "family": "ISL76534",
+   "mfr": "Renesas",
+   "desc": "Amplifier / buffer IC for TFT-LCD displays (gamma reference buffer)",
+   "category": "ic_qfn",
+   "pkg": "28-QFN (4x5), 28-XFQFN exposed pad",
+   "aecq": true,
+   "ecuRoles": [
+    "centre display",
+    "cluster"
+   ],
+   "observedMpn": "ISL76534ARXZ-T7A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.99456,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ISL76534ARXZ-T7A",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.8808,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ISL76534ARXZ-T7A",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 0 in stock, \"250 estimated in stock on 19-Jul-2027\", lead time 34 weeks): tape & reel 250 = 3.99456, 500 = 3.88080 (largest; nothing at 1,000); cut tape 100 = 4.00190 (largest cut-tape break). Normal falling table, so recorded although out of stock. -T7A is a 250-piece reel. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "ISL76683AROZ-T7A",
+   "family": "ISL76683",
+   "mfr": "Renesas",
+   "desc": "Light-to-digital sensor with I2C interface",
+   "category": "ic_qfn",
+   "pkg": "ODFN-6",
+   "aecq": false,
+   "ecuRoles": [
+    "display backlight control",
+    "cluster"
+   ],
+   "observedMpn": "ISL76683AROZ-T7A",
+   "observations": [],
+   "notes": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Last Time Buy\", Last Time Buy Date 1/17/2027, and that Digi-Key cannot accept backorders; stock not shown. Page still prints tape & reel 250 = 2.43576 USD and cut tape 1 = 3.57 - not recorded (last-time-buy). GRADE NOT CONFIRMED: no Grade / Qualification field on the page - aecq left false."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "ISL78100ARZ-T7A",
+   "why": "Renesas LED driver regulator, PWM dimming, 1 A - not reached"
+  },
+  {
+   "code": "ISL78365ARZ-T7A",
+   "why": "Renesas Laser diode driver, 3.3 V - not reached"
+  },
+  {
+   "code": "ISL79985IRZ",
+   "why": "Renesas Analog video decoder - not reached"
+  },
+  {
+   "code": "TW8816-LB3-CR",
+   "why": "Renesas LCD video controller - not reached"
+  },
+  {
+   "code": "RTQ2104BGSP-QA",
+   "why": "Richtek High-voltage buck converter, adjustable, 3 A - not reached"
+  },
+  {
+   "code": "AG040FGS4FRATCB",
+   "why": "ROHM N-channel 40 V, 120 A automotive low-voltage MOSFET - not reached"
+  },
+  {
+   "code": "AG047FLS4FRATCB",
+   "why": "ROHM N-channel 60 V, 89 A automotive low-voltage MOSFET - not reached"
+  },
+  {
+   "code": "AG540EGS4FRATCB",
+   "why": "ROHM P-channel -40 V, -120 A automotive low-voltage MOSFET - not reached"
+  },
+  {
+   "code": "BD16912EFV-CE2",
+   "why": "ROHM 40 V / 3 A H-bridge driver - not reached"
+  },
+  {
+   "code": "BD16950EFV-CE2",
+   "why": "ROHM Half-bridge gate driver IC - not reached"
+  },
+  {
+   "code": "BD18340FV-ME2",
+   "why": "ROHM LED driver controller with PWM dimming - not reached"
+  },
+  {
+   "code": "BD18351EFV-ME2",
+   "why": "ROHM LED driver controller with PWM dimming - not reached"
+  },
+  {
+   "code": "BD83732HFP-MTR",
+   "why": "ROHM Linear LED driver, 500 mA, PWM dimming - not reached"
+  },
+  {
+   "code": "BD8379EFV-ME2",
+   "why": "ROHM Linear LED driver, 50 mA per channel, serial input - not reached"
+  },
+  {
+   "code": "BD90302NUF-CE2",
+   "why": "ROHM 5.5 V input, 2 A synchronous buck converter with integrated P / N-channel MOSFETs - not reached"
+  },
+  {
+   "code": "BD94130EFV-ME2",
+   "why": "ROHM 24-channel constant-current + 8-line switch-controller LED driver for mini-LED local-dimming backlights, SPI - not reached"
+  },
+  {
+   "code": "BM81810MUV-M",
+   "why": "ROHM Automotive panel power-management IC (AEC-Q100 Grade 2) for navigation and cluster displays - not reached"
+  },
+  {
+   "code": "SP8K3FRATB",
+   "why": "ROHM Dual N-channel 30 V, 7 A MOSFET - not reached"
+  },
+  {
+   "code": "BM2LC120FJ-C",
+   "why": "ROHM Low-side IPD with over-current, thermal shutdown and active clamp - not reached"
+  },
+  {
+   "code": "SI47920A2GE1AM",
+   "why": "Skyworks High-performance automotive AM / FM tuner - not reached"
+  },
+  {
+   "code": "SI823H5BD-AS3",
+   "why": "Skyworks Isolated dual-channel gate driver, 5 kV - not reached"
+  },
+  {
+   "code": "SI86S620BE-AS4",
+   "why": "Skyworks Digital isolator 6 kV, 2 channels - not reached"
+  },
+  {
+   "code": "SI86S622BE-AS4",
+   "why": "Skyworks Digital isolator 6 kV, 2 channels (1 forward / 1 reverse) - not reached"
+  },
+  {
+   "code": "SI86S642BE-AS2",
+   "why": "Skyworks Digital isolator 6 kV, 4 channels (SPI) - not reached"
+  },
+  {
+   "code": "SI8921BD-AS4",
+   "why": "Skyworks Automotive isolated analog amplifier for current sensing - not reached"
+  },
+  {
+   "code": "SI8931D-AS4",
+   "why": "Skyworks Automotive isolated voltage sensor (isolated amplifier) - not reached"
+  },
+  {
+   "code": "SI52254A-D01AM",
+   "why": "Skyworks Automotive clock generator, 32-QFN - not reached"
+  },
+  {
+   "code": "SI5332B-D-AM1",
+   "why": "Skyworks Automotive clock generator, 32-QFN - not reached"
+  }
+ ]
+}

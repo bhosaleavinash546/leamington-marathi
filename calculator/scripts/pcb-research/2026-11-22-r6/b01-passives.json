@@ -1,0 +1,1438 @@
+{
+ "domain": "b01-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "SRP1265A-100M",
+   "family": "SRP1265A",
+   "mfr": "Bourns",
+   "desc": "Shielded high-current power inductor 10 uH 20%, 10 A (Isat 15.5 A), DCR 16.5 mohm max, 13.5x12.5x6.4 mm, SRP1265A series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1265",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "SRP1265A-100M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.82193,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-100M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.87162,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-100M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.71744,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-100M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL lands on it): Active, Ratings \"AEC-Q200\" (no Grade / Qualification field), stock 17,371, lead time 20 weeks. Tape & Reel ladder 500 / 1,000 / 1,500 / 2,500 / 3,500 / 5,000; cut tape stops at 250 (0.92436), so the 1k figure is the reel row. desc: current / DCR / size added from the page. No cross-check distributor read. Catalogue holds the family key \"SRP1265\" as an estimate - this orderable member can link it."
+  },
+  {
+   "mpn": "SM91522AL-E",
+   "family": "SM91522AL",
+   "mfr": "Bourns",
+   "desc": "Single-channel BMS signal transformer with integrated CMCs, 150-450 uH, 1000 Vdc working, 3.5 mm high, AEC-Q200",
+   "category": "transformer",
+   "pkg": "15.6x9.0x3.5 mm SMD",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "SM91522AL-E",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 800,
+     "price": 7.66166,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SM91522AL-E",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, stock 800, description \"150 uH Battery Management Pulse Transformer 1:1 Surface Mount\". Tape & Reel shows ONE break only (800 = the reel) - no larger break published, so no own slope; cut tape / Digi-Reel stops at 250 (8.08636; 100 @ 8.43540). aecq set false: the Digi-Key page shows no Grade / Qualification / AEC-Q200 field for this code; AEC-Q200 is claimed only in the trade article the task cites (not a maker or distributor page read in this pass)."
+  },
+  {
+   "mpn": "SRN3010BTA-330M",
+   "family": "SRN3010BTA",
+   "mfr": "Bourns",
+   "desc": "Semi-shielded power inductor 33 uH 0.6 A, 3x3x0.9 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3x3 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "camera",
+    "LED lighting"
+   ],
+   "observedMpn": "SRN3010BTA-330M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.1696,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRN3010BTA-330M",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.14857,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRN3010BTA-330M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 75000,
+     "price": 0.12,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRN3010BTA-330M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Ratings \"AEC-Q200\", stock 3,000, \"33 uH Semi-Shielded Wirewound Inductor 600 mA 1.524 Ohm Max 1212 (3030 Metric)\". Reel ladder 3,000 / 6,000 @ 0.14010 / 9,000 / 15,000 @ 0.12965 / 21,000 / 30,000 @ 0.12228 / 75,000. No cross-check distributor read."
+  },
+  {
+   "mpn": "SRP1265A-1R0M",
+   "family": "SRP1265A",
+   "mfr": "Bourns",
+   "desc": "Shielded high-current power inductor 1.0 uH 20%, 30 A, DCR 2.3 mohm max, SRP1265A series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1265",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "SRP1265A-1R0M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.7754,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-1R0M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.82228,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-1R0M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.67683,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-1R0M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Ratings \"AEC-Q200\", stock 425. Reel ladder 500-5,000; cut tape stops at 250 (0.92436). desc: current / DCR added from the page. No cross-check distributor read."
+  },
+  {
+   "mpn": "SRP1265A-2R2M",
+   "family": "SRP1265A",
+   "mfr": "Bourns",
+   "desc": "Shielded high-current power inductor 2.2 uH 20%, 22 A, DCR 4.2 mohm max, SRP1265A series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1265",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "SRP1265A-2R2M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.7754,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP1265A-2R2M/4876625",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.82228,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP1265A-2R2M/4876625",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.67683,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP1265A-2R2M/4876625",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Ratings \"AEC-Q200\", out of stock (0; 500 expected 11-Jan-2027, backorder allowed) with a normal table - same reel ladder as the in-stock sibling SRP1265A-1R0M, falling with quantity (not stale). Cut tape stops at 250 (0.87204). desc: current / DCR added from the page. No cross-check distributor read."
+  },
+  {
+   "mpn": "SRP4020TA-4R7M",
+   "family": "SRP4020TA",
+   "mfr": "Bourns",
+   "desc": "Shielded power inductor 4.7 uH 2.6 A, 4x4x2 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4x4 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "observedMpn": "SRP4020TA-4R7M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.59498,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.54218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.47875,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Ratings \"AEC-Q200\", stock 10,492, \"4.7 uH Shielded Drum Core, Wirewound Inductor 2.6 A 105 mOhm Max\". Reel ladder 3,000 / 6,000 @ 0.51136 / 9,000 @ 0.49418 / 15,000. No cross-check distributor read."
+  },
+  {
+   "mpn": "HCTSM151207FAL-E",
+   "family": "HCTSM151207FAL",
+   "mfr": "Bourns",
+   "desc": "Isolation power transformer 24 V in / 12 V 100 mA, reinforced, 1500 Vdc working, >15 mm creepage, AEC-Q200 Grade 1",
+   "category": "transformer",
+   "pkg": "15.0x21.3x9.6 mm SMD",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS",
+    "HV DC-DC",
+    "traction inverter"
+   ],
+   "observedMpn": "HCTSM151207FAL-E",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 600,
+     "price": 13.26037,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=HCTSM151207FAL-E",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 200,
+     "price": 13.95705,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=HCTSM151207FAL-E",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, stock 147, description \"HIGH CLEARANCE AND CREEPAGE TRAN\" / \"Pulse Transformer\". Reel ladder 200 / 400 @ 13.51370 / 600 (largest published; nearest break to 1k); cut tape stops at 100 (14.41330). aecq set false: the Digi-Key page shows no Grade / Qualification / AEC-Q200 field for this code; AEC-Q200 Grade 1 is claimed only in the trade article the task cites (not a maker or distributor page read in this pass)."
+  },
+  {
+   "mpn": "SRP1265A-150M",
+   "family": "SRP1265A",
+   "mfr": "Bourns",
+   "desc": "Shielded high-current power inductor 15 uH 20%, 9 A, DCR 28 mohm max, SRP1265A series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1265",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "SRP1265A-150M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.92866,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-150M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.98478,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-150M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.81067,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SRP1265A-150M",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Ratings \"AEC-Q200\", stock 240. Reel ladder 500-5,000; cut tape stops at 250 (1.04436). desc: current / DCR added from the page. No cross-check distributor read."
+  },
+  {
+   "mpn": "XGL5050-222MEC",
+   "family": "XGL5050",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 2.2 uH 20%, 13.8 A, DCR 8.2 mohm max, XGL5050",
+   "category": "passive_1206",
+   "pkg": "5.3x5.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XGL5050-222MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key keyword search returns \"did not return any results\" and the Digi-Key Marketplace product page (digikey.com/en/products/detail/coilcraft/XGL5050-222MEC/16817026) says \"This product is no longer available at DigiKey\" - no price shown. One try at another franchised distributor: uk.farnell.com search refused (HTTP 503). Supplier-quote list. aecq not confirmed on any page read."
+  },
+  {
+   "mpn": "XAL5050-103MEC",
+   "family": "XAL5050",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 10 uH 20%, 4.9 A, DCR 45 mohm max, -40..125 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "5.3x5.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XAL5050-103MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC: \"no longer available at DigiKey\"; this code's Digi-Key page was not re-read). One try at another franchised distributor for this exact code: uk.farnell.com/search?st=XAL5050-103MEC refused (HTTP 503). Supplier-quote list. aecq set false: AEC-Q200 not read on a page in this pass (the task's claim came from a search summary)."
+  },
+  {
+   "mpn": "XAL6060-103MEC",
+   "family": "XAL6060",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 10 uH 20%, 7 A, DCR 29.82 mohm max, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6.4x6.6 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XAL6060-103MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Supplier-quote list. aecq set false: AEC-Q200 not read on a page in this pass (the task's claim came from a search summary)."
+  },
+  {
+   "mpn": "XGL5030-103MEC",
+   "family": "XGL5030",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 10 uH 20% (from the code), XGL5030",
+   "category": "passive_1206",
+   "pkg": "5.3x5.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XGL5030-103MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Supplier-quote list. Value read from the code only (10 uH), not confirmed on a page; aecq not confirmed."
+  },
+  {
+   "mpn": "XGL5050-102MEC",
+   "family": "XGL5050",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 1.0 uH 20% (from the code), XGL5050",
+   "category": "passive_1206",
+   "pkg": "5.3x5.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XGL5050-102MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Supplier-quote list. Value read from the code only (1.0 uH), not confirmed on a page; aecq not confirmed."
+  },
+  {
+   "mpn": "XGL5050-331MEC",
+   "family": "XGL5050",
+   "mfr": "Coilcraft",
+   "desc": "Shielded molded power inductor 330 nH 20%, 24.6 A, DCR 2 mohm max, XGL5050",
+   "category": "passive_1206",
+   "pkg": "5.3x5.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "XGL5050-331MEC",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Supplier-quote list. aecq not confirmed."
+  },
+  {
+   "mpn": "C0402C101J5GACAUTO",
+   "family": "C0402C101J5GAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 pF 50 V C0G 5%, 0402, automotive grade AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0402C101J5GACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02918,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0402C101J5GACAUTO/3314822",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01859,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0402C101J5GACAUTO/3314822",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01647,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0402C101J5GACAUTO/3314822",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto C0G\", Ratings \"AEC-Q200\", Applications \"Automotive\", stock 20,133, lead time 13 weeks. Cut tape table stops at 500 (the break nearest 1k shown); reel table shows 10,000 and 30,000 only. No cross-check distributor read - Digi-Key reel prices on MLCCs run high against other distributors (known 4-14x spread)."
+  },
+  {
+   "mpn": "C0603C101J5GACAUTO",
+   "family": "C0603C101J5GAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 pF 50 V C0G 5%, 0603, automotive grade AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0603C101J5GACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04418,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603C101J5GACAUTO/3314841",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.0326,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603C101J5GACAUTO/3314841",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.02874,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603C101J5GACAUTO/3314841",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto C0G\", Ratings \"AEC-Q200\", Applications \"Automotive\", stock 102,347 (reel purchase limit 100,000 / 30 days). Cut tape table stops at 500; reel table shows 4,000 and 12,000 only. No cross-check distributor read (known MLCC reel spread)."
+  },
+  {
+   "mpn": "C0603X104K5RACAUTO",
+   "family": "C0603X104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0603, flexible (soft) termination, automotive grade AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0603X104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.21318,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X104K5RACAUTO/3314907",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.17341,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X104K5RACAUTO/3314907",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.16011,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X104K5RACAUTO/3314907",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R Flex\", Features \"Soft Termination\", Ratings \"AEC-Q200\", Applications \"Automotive, Boardflex Sensitive\", stock 272,288. Cut tape stops at 500; reel shows 4,000 and 12,000 only. CAUTION for the reviewer: USD 0.16-0.17 on the reel is about 4x the standard-termination 0805 sibling C0805C104K5RACAUTO read on the same site the same day (0.04033 @ 12,000) - recorded as the page shows, a second distributor is needed before it is used."
+  },
+  {
+   "mpn": "C0805C104K5RACAUTO",
+   "family": "C0805C104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, automotive grade AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0805C104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.06014,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C104K5RACAUTO/3314922",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.04528,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C104K5RACAUTO/3314922",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.04033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C104K5RACAUTO/3314922",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R\", Ratings \"AEC-Q200\", Applications \"Automotive, Bypass, Decoupling\", stock 451,855. Cut tape stops at 500 (re-asked: no row above 500); reel shows 4,000 and 12,000 only. No cross-check distributor read (known MLCC reel spread)."
+  },
+  {
+   "mpn": "C0805X104K5RACAUTO",
+   "family": "C0805X104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, flexible (soft) termination, automotive grade AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0805X104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.15808,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805X104K5RACAUTO/3314987",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.12642,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805X104K5RACAUTO/3314987",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.11583,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805X104K5RACAUTO/3314987",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R Flex\", Features \"Soft Termination\", Ratings \"AEC-Q200\", Applications \"Automotive, Boardflex Sensitive\", stock 72,562. Cut tape (shared table with Digi-Reel) stops at 500; reel shows 4,000 and 12,000 only. About 2.9x the standard C0805C104K5RACAUTO on the same site the same day; no cross-check distributor read (known MLCC reel spread)."
+  },
+  {
+   "mpn": "C0805C101J5GACAUTO",
+   "family": "C0805C101J5GAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 pF 50 V C0G 5%, 0805, automotive grade AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0805C101J5GACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0627,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C101J5GACAUTO/3314910",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.05019,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C101J5GACAUTO/3314910",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.04475,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805C101J5GACAUTO/3314910",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto C0G\", Ratings \"AEC-Q200\", Applications \"Automotive\", stock 15,214. Cut tape stops at 500; reel shows 4,000 and 12,000 only. No cross-check distributor read (known MLCC reel spread)."
+  },
+  {
+   "mpn": "C1206C104K5RACAUTO",
+   "family": "C1206C104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 1206, automotive grade AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C1206C104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.05604,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.04185,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.03711,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R\", Ratings \"AEC-Q200\", Applications \"Automotive, Bypass, Decoupling\", stock 5,651. The page shows a Cut Tape table (500 @ 0.05604, recorded) and a SEPARATE Digi-Reel table about 6% lower (500 @ 0.05288, plus a USD 7 reeling fee) - not recorded. Cut tape stops at 500; reel shows 4,000 and 12,000 only. No cross-check distributor read (known MLCC reel spread)."
+  },
+  {
+   "mpn": "T599B336M010ATE090",
+   "family": "T599",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 33 uF 10 V 20%, ESR 90 mohm @ 100 kHz, B case 1411 (3528), -55..150 C, KO-CAP T599, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3528 (B)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "engine ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "T599B336M010ATE090",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.52715,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599B336M010ATE090/13235648",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"KO-CAP T599\", Ratings \"AEC-Q200\", Features \"Automotive\"; \"This product is not kept in stock at DigiKey\", lead time 31 weeks. Tape & Reel shows ONE break only (2,000 = the reel); no cut tape - no larger break published, so no own slope. No cross-check distributor read."
+  },
+  {
+   "mpn": "T599B476M006ATE090",
+   "family": "T599",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 47 uF 6.3 V 20%, ESR 90 mohm @ 100 kHz, B case 1411 (3528), -55..150 C, KO-CAP T599, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3528 (B)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "engine ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "T599B476M006ATE090",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.49759,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599B476M006ATE090/13235675",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"KO-CAP T599\", Ratings \"AEC-Q200\", Features \"Automotive\"; \"This product is not kept in stock at DigiKey\", lead time 31 weeks. Tape & Reel shows ONE break only (2,000 = the reel); no cut tape - no own slope. No cross-check distributor read."
+  },
+  {
+   "mpn": "T599D157M006ATE025",
+   "family": "T599",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 150 uF 6.3 V 20%, ESR 25 mohm, D case 2917 (7343), -55..150 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "engine ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "T599D157M006ATE025",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.98677,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599D157M006ATE025/11569146",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.0341,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599D157M006ATE025/11569146",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.90663,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599D157M006ATE025/11569146",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"KO-CAP T599\", Ratings \"AEC-Q200\", Features \"Automotive\", stock 475, lead time 33 weeks; \"150 uF Molded Tantalum Polymer 6.3 V 2917 (7343 Metric) 25 mOhm @ 100 kHz\", -55..150 C. Reel ladder 500 / 1,000 / 1,500 / 2,500 @ 0.93678 / 3,500 / 5,000; cut tape stops at 100 (1.18700). No cross-check distributor read."
+  },
+  {
+   "mpn": "T599X336M035ATE065",
+   "family": "T599",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 33 uF 35 V 20%, ESR 65 mohm @ 100 kHz, X case 2917 (7343), -55..150 C, KO-CAP T599, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343 (X)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "engine ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "T599X336M035ATE065",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.16236,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599X336M035ATE065/8627051",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.24396,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599X336M035ATE065/8627051",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 2.04963,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T599X336M035ATE065/8627051",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"KO-CAP T599\", Ratings \"AEC-Q200\", Features \"Automotive\"; out of stock (0; 500 expected 20-Dec-2027), lead time 23 weeks, normal table falling with quantity (not stale). Reel ladder 500 / 1,000 / 1,500 / 2,500 @ 2.07613 / 3,500 (largest shown); cut tape stops at 100 (2.50750). No cross-check distributor read."
+  },
+  {
+   "mpn": "C0603X101J5GACAUTO",
+   "family": "C0603X101J5GAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 pF 50 V C0G 5%, 0603, flexible (soft) termination, automotive grade AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0603X101J5GACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.16026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X101J5GACAUTO/7803603",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.12826,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X101J5GACAUTO/7803603",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.11756,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0603X101J5GACAUTO/7803603",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto C0G Flex\", Features \"Low ESL, Soft Termination\", Ratings \"AEC-Q200\", Applications \"Automotive, Boardflex Sensitive\", stock 39,519, lead time 16 weeks. Cut tape stops at 500; reel shows 4,000 and 12,000 only. About 4x the standard C0603C101J5GACAUTO on the same site the same day; no cross-check distributor read."
+  },
+  {
+   "mpn": "C0805F104K5RACAUTO",
+   "family": "C0805F104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, \"F\" open-mode design, automotive grade AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0805F104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.23264,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805F104K5RACAUTO/3314975",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.1977,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805F104K5RACAUTO/3314975",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.18148,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805F104K5RACAUTO/3314975",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R FO\", Features \"Open Mode\", Ratings \"AEC-Q200\", Applications \"Automotive\", stock 291, lead time 9 weeks. Cut tape stops at 500; reel shows 2,500 and 7,500 only. About 4.5x the standard C0805C104K5RACAUTO on the same site the same day (low-stock speciality construction); no cross-check distributor read."
+  },
+  {
+   "mpn": "C0805S104K5RACAUTO",
+   "family": "C0805S104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, \"S\" floating-electrode design, automotive grade AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "C0805S104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.2587,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805S104K5RACAUTO/3314499",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.22086,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805S104K5RACAUTO/3314499",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.20329,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C0805S104K5RACAUTO/3314499",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"SMD Auto X7R FE\", Features \"Floating Electrode\", Ratings \"AEC-Q200\", Applications \"Automotive\", stock 2,091. Cut tape stops at 500; reel shows 2,500 and 7,500 only. About 5x the standard C0805C104K5RACAUTO (0.04033 @ 12,000, same site, same day) - low-stock speciality construction; a second distributor is needed. No cross-check distributor read."
+  },
+  {
+   "mpn": "CKC18C153KDGACAUTO",
+   "family": "CKC18C153KDGAC",
+   "mfr": "KEMET",
+   "desc": "KC-LINK C0G 15 nF 1000 V 10% 1812 for resonant / snubber stages, automotive grade AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1812",
+   "aecq": true,
+   "ecuRoles": [
+    "on-board charger",
+    "traction inverter",
+    "HV DC-DC",
+    "BMS"
+   ],
+   "observedMpn": "CKC18C153KDGACAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.5823,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/CKC18C153KDGACAUTO/11694838",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series \"KC Link Auto C0G\", Ratings \"AEC-Q200\", Applications \"Automotive\" (so the grade IS stated on the page - the discovery note said it was not); \"This product is not kept in stock at DigiKey\", lead time 31 weeks. Tape & Reel shows ONE break only (500 = the reel); no cut tape - no larger break published, so no own slope. No cross-check distributor read."
+  },
+  {
+   "mpn": "RK73H1JTTD1002F",
+   "family": "RK73H1J",
+   "mfr": "KOA",
+   "desc": "Thick-film resistor 10 k 1% 0.1 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "RK73H1JTTD1002F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00721,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RK73H1JTTD1002F",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00515,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RK73H1JTTD1002F",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00362,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RK73H1JTTD1002F",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL lands on it): Active, Series RK73H, Features \"Automotive AEC-Q200\", stock 5,706,129, lead time 7 weeks; +/-100 ppm, -55..155 C. Reel ladder 5,000 / 10,000 @ 0.00456 / 15,000 / 25,000 @ 0.00396 / 35,000 / 50,000. No cross-check distributor read (known resistor reel spread)."
+  },
+  {
+   "mpn": "RK73B1JTTD103J",
+   "family": "RK73B1J",
+   "mfr": "KOA",
+   "desc": "Thick film resistor 10 k 5% 0.1 W, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "RK73B1JTTD103J",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00535,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73B1JTTD103J/9846741",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00373,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73B1JTTD103J/9846741",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00252,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73B1JTTD103J/9846741",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series RK73B, Features \"Automotive AEC-Q200\", stock 3,089,725, lead time 7 weeks; 5%, +/-200 ppm. Reel ladder 5,000 / 10,000 @ 0.00326 / 15,000 / 25,000 @ 0.00279 / 35,000 / 50,000. No cross-check distributor read (known resistor reel spread)."
+  },
+  {
+   "mpn": "RN73H1JTTD1002B25",
+   "family": "RN73H1J",
+   "mfr": "KOA",
+   "desc": "Metal film resistor 10 k 0.1% 25 ppm 0.1 W, 0603, moisture resistant, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS"
+   ],
+   "observedMpn": "RN73H1JTTD1002B25",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.08254,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73H1JTTD1002B25/10687504",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.07386,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73H1JTTD1002B25/10687504",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.06496,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73H1JTTD1002B25/10687504",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series RN73H, Features \"Automotive AEC-Q200, Moisture Resistant\", Composition Metal Film, 0.1%, +/-25 ppm, stock 64,829, lead time 8 weeks. Reel ladder 5,000 / 10,000 @ 0.07078 / 15,000 / 25,000 @ 0.06725 / 35,000 / 50,000. No cross-check distributor read."
+  },
+  {
+   "mpn": "RN73R1JTTD1002B25",
+   "family": "RN73R1J",
+   "mfr": "KOA",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.1 W, 0603, moisture resistant, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS"
+   ],
+   "observedMpn": "RN73R1JTTD1002B25",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.05312,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1JTTD1002B25/9991970",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.04487,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1JTTD1002B25/9991970",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.04187,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1JTTD1002B25/9991970",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series RN73R, Features \"Automotive AEC-Q200, Moisture Resistant\", Composition Thin Film, 0.1%, +/-25 ppm, stock 238,928, lead time 8 weeks. Cut tape stops at 500; reel shows 5,000 and 15,000 only. No cross-check distributor read."
+  },
+  {
+   "mpn": "SG73P2ATTD1002F",
+   "family": "SG73P2A",
+   "mfr": "KOA",
+   "desc": "Pulse-withstanding thick-film resistor 10 k 1% 0.75 W 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "observedMpn": "SG73P2ATTD1002F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02319,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SG73P2ATTD1002F",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01825,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SG73P2ATTD1002F",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01451,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SG73P2ATTD1002F",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL lands on it): Active, Series SG73P, Features \"Automotive AEC-Q200, Pulse Withstanding\", \"10 kOhms 1% 0.75W, 3/4W Chip Resistor 0805\", stock 25,442, lead time 8 weeks. The page shows a Cut Tape table (1,000 @ 0.02319, recorded) and a SEPARATE Digi-Reel table about 6% lower (1,000 @ 0.02188, plus a USD 7 reeling fee) - not recorded. Reel ladder 5,000 / 10,000 @ 0.01681 / 15,000 / 25,000 @ 0.01536 / 35,000 / 50,000. No cross-check distributor read."
+  },
+  {
+   "mpn": "RN73R1ETTP1000B25",
+   "family": "RN73R1E",
+   "mfr": "KOA",
+   "desc": "Thin film resistor 100 ohm 0.1% 25 ppm 1/16 W, 0402, moisture resistant, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS"
+   ],
+   "observedMpn": "RN73R1ETTP1000B25",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.05012,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1ETTP1000B25/9991836",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.04048,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1ETTP1000B25/9991836",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.03797,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RN73R1ETTP1000B25/9991836",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page: Active, Series RN73R, Features \"Automotive AEC-Q200, Moisture Resistant\", Composition Thin Film, 0.1%, +/-25 ppm, 0.063 W, stock 37,466, lead time 8 weeks. Cut tape stops at 500; reel shows 10,000 and 30,000 only. No cross-check distributor read."
+  },
+  {
+   "mpn": "KAM15AR71H104KM",
+   "family": "KAM15AR71H104",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0603, KAM automotive series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "06035C104K4T4A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02722,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM15AR71H104KM",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.0165,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM15AR71H104KM",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 45000,
+     "price": 0.01473,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM15AR71H104KM",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key keyword search for KAM15AR71H104KM lands on ONE product page whose Manufacturer Product Number is the legacy AVX code 06035C104K4T4A and whose Digi-Key part numbers are 478-KAM15AR71H104KMTR-ND / ...CT-ND / ...DKR-ND - Digi-Key treats the new KAM code and the legacy code as the same part (observedMpn = the code the page names; the '4A' legacy suffix is the 15,000-piece reel, matching the reel break). Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 40 (low), lead time 15 weeks. Cut tape stops at 500; reel shows 15,000 and 45,000 only. Reviewer: if the merge keys on the exact code named on the page, file this under 06035C104K4T4A with KAM15AR71H104KM as alias. No cross-check distributor read (known MLCC reel spread)."
+  }
+ ],
+ "notResearched": []
+}

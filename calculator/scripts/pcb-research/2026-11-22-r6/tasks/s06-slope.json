@@ -1,0 +1,1017 @@
+[
+ {
+  "mpn": "CGA6M3X7S2A475K200AB",
+  "mfr": "TDK",
+  "desc": "MLCC 4.7uF 100V X7S ±10% 1210 AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1210",
+  "aecq": true,
+  "currentQ1kGBP": 0.3625,
+  "stored": [
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.535,
+    "currency": "USD",
+    "url": "https://www.newark.com/tdk/cga6m3x7s2a475k200ab/cap-4-7uf-100v-mlcc-1210/dp/40Y2338",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 0.425,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga6m3x7s2a475k200ab-tdk-8014499",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CGA6P3X7S1H106K250AB",
+  "mfr": "TDK",
+  "desc": "MLCC 10uF 50V X7S ±10% 1210 AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1210",
+  "aecq": true,
+  "currentQ1kGBP": 0.5428,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.57,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/p/mlccs-multilayer-ceramic-capacitors/7883082",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CLF7045NIT-100M-D",
+  "mfr": "TDK",
+  "desc": "Shielded wirewound power inductor 10uH 3A, 7x7x4.5mm, automotive",
+  "category": "passive_1206",
+  "pkg": "7.0x7.0x4.5mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.459,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 0.715,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/TDK/CLF7045NIT-100M-D?qs=P8zzrVhehauNw/0N5fPkGg%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "CLF7045NIT-101M-D",
+  "mfr": "TDK",
+  "desc": "Power inductor 100uH, 7x7 mm, automotive",
+  "category": "passive_1206",
+  "pkg": "7.4x7.0 mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.1993,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2639,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C138632.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "MPZ1608S221ATA00",
+  "mfr": "TDK",
+  "desc": "Power ferrite bead 220R@100MHz 2.2A, 0603",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.0052,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.0062,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C114770.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "SPM6530T-1R0M-HZ",
+  "mfr": "TDK",
+  "desc": "Power inductor 1uH, 7.1x6.5 mm, automotive",
+  "category": "passive_1206",
+  "pkg": "7.1x6.5 mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.6905,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 0.96,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk-corporation/SPM6530T-1R0M-HZ/8571626",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "VLS252012HBX-1R0M-1",
+  "mfr": "TDK",
+  "desc": "Power inductor 1uH 3.4A, 2520, automotive",
+  "category": "passive_1206",
+  "pkg": "2520 (1008)",
+  "aecq": true,
+  "currentQ1kGBP": 0.0992,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 14000,
+    "price": 0.10906,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "VLS4012ET-4R7M",
+  "mfr": "TDK",
+  "desc": "Shielded wirewound power inductor 4.7uH 1.9A, 4x4x1.2mm",
+  "category": "passive_1206",
+  "pkg": "4.0x4.0x1.2mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.2477,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 25000,
+    "price": 0.26125,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS4012ET-4R7M-CA/4743481",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "DP83TC813SRHFRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "100BASE-T1 Ethernet PHY, small package",
+  "category": "ic_qfn",
+  "pkg": "VQFN-28",
+  "aecq": true,
+  "currentQ1kGBP": 1.3826,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.861,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/dp83tc",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.8,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/dp83tc",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "DRV8705SQRHBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "H-bridge smart gate driver",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32",
+  "aecq": true,
+  "currentQ1kGBP": 1.2387,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.64,
+    "currency": "USD",
+    "url": "https://octopart.com/part/texas-instruments/DRV8705SQRHBRQ1",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "DRV8873HQPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "40V 10A H-bridge motor driver",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-24",
+  "aecq": true,
+  "currentQ1kGBP": 1.2419,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.6443,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/stepper-motor-driver_texas-instruments-drv8873hpwprq1_C2150479.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "ESD2CANFD24DBZRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "CAN FD ESD protection diode, 24 V bidirectional, 2-line, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23-3",
+  "aecq": true,
+  "currentQ1kGBP": 0.1293,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.158,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ESD2CANFD24DBZRQ1?qs=rQFj71Wb1eWBqdGG%2FVj1Ug%3D%3D",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.1588,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/ESD2CANFD24DBZRQ1/17394929",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "INA226AQDGSRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "36 V I2C current / power monitor, automotive",
+  "category": "ic_soic",
+  "pkg": "VSSOP-10 (DGS)",
+  "aecq": true,
+  "currentQ1kGBP": 1.056,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 1.63128,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA226AQDGSRQ1/5404241",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.0561,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/_Texas-Instruments-INA226AQDGSRQ1_C2653835.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "INA296B4QDDFRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Bidirectional current-sense amplifier, -5 to 110 V CM, gain 200, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOT-23-8",
+  "aecq": true,
+  "currentQ1kGBP": 1.3142,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.66976,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA296B4QDDFRQ1/19236308",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.74,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/amplifier-ics/current-sense-amplifiers?pg=21",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ISO7721QDWVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual-channel reinforced digital isolator",
+  "category": "ic_soic",
+  "pkg": "SOIC-8 wide (DWV)",
+  "aecq": true,
+  "currentQ1kGBP": 1.0574,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.4,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/ISO7721FQDWVRQ1?qs=ZcfC38r4Pov9MWMeMnXMgA%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "ISO7741QDWRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Quad-channel reinforced digital isolator (3 fwd/1 rev)",
+  "category": "ic_soic",
+  "pkg": "SOIC-16 wide (DW)",
+  "aecq": true,
+  "currentQ1kGBP": 1.3672,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.81019,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO7741QDWRQ1/6615453",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LM2904BQDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual 36 V op amp",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.151,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.1999,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM2904BQDRQ1/11502291",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.2,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/LM2904BQDRQ1",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LM5060Q1MM/NOPB",
+  "mfr": "Texas Instruments",
+  "desc": "High-side protection / hot-swap controller 5.5-65 V, automotive",
+  "category": "ic_soic",
+  "pkg": "VSSOP-10 (MSOP)",
+  "aecq": true,
+  "currentQ1kGBP": 1.3444,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.77995,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5060Q1MM-NOPB/2262901",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "LM74700QDBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Ideal diode controller, reverse battery",
+  "category": "ic_soic",
+  "pkg": "SOT-23-6",
+  "aecq": true,
+  "currentQ1kGBP": 0.7488,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.9914,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74700QDBVRQ1/10434692",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LMR33630BQRNXRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "36V 3A synchronous buck, 1.4MHz",
+  "category": "ic_qfn",
+  "pkg": "VQFN-HR-12 (RNX)",
+  "aecq": true,
+  "currentQ1kGBP": 1.0272,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.36,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/lmr33630",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LMT01QDQXRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "2-pin pulse-count digital temperature sensor, +/-0.5 C, AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "WSON-2",
+  "aecq": true,
+  "currentQ1kGBP": 1.1998,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 1.47,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LMT01QDQXRQ1?qs=AQlKX63v8RvVyQzpB%252Ba/ig%3D%3D",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "LMV358AQDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual low-voltage RRO op amp",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.2136,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.28284,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMV358AQDRQ1/13174028",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LP5912Q1.8DRVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "500 mA low-noise LDO, 1.8 V",
+  "category": "ic_qfn",
+  "pkg": "WSON-6 (DRV)",
+  "aecq": true,
+  "currentQ1kGBP": 0.3454,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.4573,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C181463.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "OPA2991IDSGR",
+  "mfr": "Texas Instruments",
+  "desc": "Dual 40 V RRIO op amp, 4.5 MHz, industrial (OPA2991-Q1 exists)",
+  "category": "ic_qfn",
+  "pkg": "WSON-8",
+  "aecq": false,
+  "currentQ1kGBP": 0.8645,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.06,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/OPA2991IDSGR",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.2292,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/OPA2991IDSGR",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SN6505BQDBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Push-pull transformer driver for isolated supplies",
+  "category": "ic_soic",
+  "pkg": "SOT-23-6",
+  "aecq": true,
+  "currentQ1kGBP": 1.0755,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.35,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/SN6505BQDBVRQ1?qs=PqoDHHvF64%252B74AsAsc7l4g%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 1.57284,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN6505BQDBVRQ1/10715528",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "SN74LVC1G08QDCKRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Single 2-input AND gate",
+  "category": "ic_soic",
+  "pkg": "SC-70-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.0892,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.12315,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN74LVC1G08QDCKRQ1/1189661",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.113,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/SN74LVC1G08QDCKRQ1?qs=PVVDbbWpW3IihgabOhRGgQ%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TCAN1042HGVDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "CAN FD transceiver, 70V fault protected, VIO",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.9223,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 5000,
+    "price": 1.09,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TCAN1042HGVDRQ1?qs=yDQnu9hAfI%2FZ9XkAYDov0Q%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TCAN1057AVDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "CAN FD transceiver, VIO, no standby",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.3652,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.4316,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TCAN1462VDRBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "CAN SIC transceiver, 8 Mbit/s, VIO",
+  "category": "ic_qfn",
+  "pkg": "VSON-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.5826,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.7713,
+    "currency": "USD",
+    "url": "https://lcsc.com/product-detail/image/TCAN1462VDRBRQ1_C5215833.html",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 15000,
+    "price": 0.59912,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TCAN1462VDRBRQ1/17878355",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLC6C5724QDAPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "24-channel automotive LED driver with diagnostics, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-38 (DAP)",
+  "aecq": true,
+  "currentQ1kGBP": 1.4879,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.97,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C702093.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLC6C598QPWRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "8-bit shift-register LED/power sink driver",
+  "category": "ic_soic",
+  "pkg": "TSSOP-16 (PW)",
+  "aecq": true,
+  "currentQ1kGBP": 0.505,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.66861,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLC6C598QPWRQ1/3900177",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLIN1029DRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "LIN transceiver, 45 V bus fault",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.65,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.78795,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLIN1029DRQ1/8037905",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.9331,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Interface-LIN-transceiver_Texas-Instruments-Texas-Instruments-TLIN1029DRQ1_C190544.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLIN2029ADRBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "LIN transceiver, fault-protected (A revision), AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "VSON-8 (3x3)",
+  "aecq": true,
+  "currentQ1kGBP": 0.3983,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.4941,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/TLIN2029ADRBRQ1/Texas-Instruments",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.482,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/TLIN2029ADRBRQ1/Texas-Instruments",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLIN2029DRBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "LIN transceiver, fault-protected, AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "VSON-8 (3x3)",
+  "aecq": true,
+  "currentQ1kGBP": 0.4592,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.608,
+    "currency": "USD",
+    "url": "https://support.lcsc.com/product-detail/LIN-Transceivers_Texas-Instruments-TLIN2029DRBRQ1_C2878100.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLIN2029DRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "LIN transceiver, fault-protected, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.524,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.6938,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C190996.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV3201AQDCKRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "40 ns push-pull comparator",
+  "category": "ic_soic",
+  "pkg": "SC-70-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.6387,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.82222,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV3201AQDCKRQ1/7056154",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.869,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV3201AQDCKRQ1/7056154",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV70233QDSERQ1",
+  "mfr": "Texas Instruments",
+  "desc": "300 mA LDO, 3.3 V fixed",
+  "category": "ic_qfn",
+  "pkg": "WSON-6 (1.5x1.5)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2817,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 10000,
+    "price": 0.317,
+    "currency": "USD",
+    "url": "https://octopart.com/search?q=TLV70233",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV7031QDCKRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Nanopower push-pull comparator",
+  "category": "ic_soic",
+  "pkg": "SC-70-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.5455,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.7525,
+    "currency": "USD",
+    "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/TLV7031QDCKRQ1/13577761",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.692,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/TLV7031QDCKRQ1",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV76033DBZR",
+  "mfr": "Texas Instruments",
+  "desc": "30V 100mA LDO, fixed 3.3V (catalog grade - TLV760 has no -Q1 version)",
+  "category": "ic_soic",
+  "pkg": "SOT-23-3 (DBZ)",
+  "aecq": false,
+  "currentQ1kGBP": 0.0715,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.08755,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TLV76033DBZR/7402851",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV76733QWDRBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "16 V, 1 A LDO, 3.3 V",
+  "category": "ic_qfn",
+  "pkg": "WSON-8 (DRB)",
+  "aecq": true,
+  "currentQ1kGBP": 0.6142,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 0.9567,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV76733QWDRBRQ1/15856719",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLV9062QDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual 10 MHz RRIO CMOS op amp",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4139,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.574,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV9062QDRQ1/13174021",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.522,
+    "currency": "USD",
+    "url": "https://www.trustedparts.com/en/part/texas-instruments/TLV9062QDRQ1",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TMP102AQDRLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "I2C temperature sensor, 2 C, automotive",
+  "category": "ic_soic",
+  "pkg": "SOT-563 (DRL)",
+  "aecq": true,
+  "currentQ1kGBP": 0.398,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 4000,
+    "price": 0.78251,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP102AQDRLRQ1/5032040",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 4000,
+    "price": 0.807,
+    "currency": "EUR",
+    "url": "https://eu.mouser.com/en/ProductDetail/Texas-Instruments/TMP102AQDRLRQ1?qs=asCBFxFfL1SM%2FKfsYcTt1w%3D%3D",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.527,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C130042.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TMP235AQDCKRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Analog temperature sensor, 10 mV/C",
+  "category": "ic_soic",
+  "pkg": "SC-70-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.2661,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.35464,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP235AQDCKRQ1/11308820",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.35,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP235AQDCKRQ1/11308820",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS1H100BQPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Single smart high-side switch 100 mOhm, 40 V",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.8577,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.1412,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1H100BQPWPRQ1/5765188",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.13,
+    "currency": "USD",
+    "url": "https://octopart.com/tps1h100bqpwprq1-texas+instruments-55347276",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS1HC100BQPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Single-channel smart high-side switch 100 mOhm, automotive",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-14 (PWP)",
+  "aecq": true,
+  "currentQ1kGBP": 0.4619,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.6116,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C3230071.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.80546,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC100BQPWPRQ1/15857168",
+    "date": "2026-10-13"
+   }
+  ]
+ }
+]

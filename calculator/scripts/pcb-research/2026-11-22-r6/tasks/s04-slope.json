@@ -1,0 +1,1065 @@
+[
+ {
+  "mpn": "XRCGB25M000F3A00R0",
+  "mfr": "Murata",
+  "desc": "Crystal 25 MHz, XRCGB 2.0x1.6 mm",
+  "category": "crystal_osc",
+  "pkg": "2016",
+  "aecq": false,
+  "currentQ1kGBP": 0.2425,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.2971,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/murata-electronics/XRCGB25M000F3A00R0/5403569",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "2N7002BK,215",
+  "mfr": "Nexperia",
+  "desc": "N-channel MOSFET 60 V 350 mA, ESD protected, SOT-23, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0242,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0296,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/2N7002BK%2C215",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "2N7002BKW,115",
+  "mfr": "Nexperia",
+  "desc": "N-channel MOSFET 60 V 310 mA, ESD protected",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323",
+  "aecq": true,
+  "currentQ1kGBP": 0.035,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.04288,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/2N7002BKW115/2405959",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "74HC595D-Q100,118",
+  "mfr": "Nexperia",
+  "desc": "8-bit shift register with output latches",
+  "category": "ic_soic",
+  "pkg": "SOIC-16",
+  "aecq": true,
+  "currentQ1kGBP": 0.1016,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.1239,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74HC595D-Q100118/3749018",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.145,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Nexperia/74HC595D-Q100118?qs=1sbE9T7hb3auqb4IeRpHgw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "74LVC2T45GW-Q100H",
+  "mfr": "Nexperia",
+  "desc": "Dual-bit dual-supply bus transceiver",
+  "category": "ic_soic",
+  "pkg": "VSSOP-8 (observed code)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2054,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.272,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C548696.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BAS21,215",
+  "mfr": "Nexperia",
+  "desc": "High-voltage switching diode 200 V 200 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0235,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.02883,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAS21-215/763202",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BAT46WJ,115",
+  "mfr": "Nexperia",
+  "desc": "Schottky barrier diode 100 V 250 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323F",
+  "aecq": true,
+  "currentQ1kGBP": 0.0419,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.05133,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAT46WJ-115/2405998",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BAV99,215",
+  "mfr": "Nexperia",
+  "desc": "Dual series switching diode 100 V 215 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0267,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.02382,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAV99-215/763228",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Future",
+    "qty": 3000,
+    "price": 0.0416,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/discretes--diodes--switching/bav99-215-nexperia-3372703",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BC857B,215",
+  "mfr": "Nexperia",
+  "desc": "PNP BJT 45 V 100 mA, SOT-23, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0195,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0219,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/BC857B%2C215/Nexperia",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0258,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C59205.html?whichImg=0",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "BSS138BKW,115",
+  "mfr": "Nexperia",
+  "desc": "N-channel MOSFET 60 V 320 mA, ESD protected",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323",
+  "aecq": true,
+  "currentQ1kGBP": 0.0596,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.05511,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BSS138BKW-115/2779824",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 3000,
+    "price": 0.091,
+    "currency": "USD",
+    "url": "https://www.newark.com/nexperia/bss138bkw-115/mosfet-n-ch-60v-0-32a-sot323-reel/dp/86AK7297",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BSS84AKW,115",
+  "mfr": "Nexperia",
+  "desc": "P-channel MOSFET -50 V, ESD protected",
+  "category": "fuse_tvs",
+  "pkg": "SOT-323",
+  "aecq": true,
+  "currentQ1kGBP": 0.0326,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.03968,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BSS84AKW115/2763894",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "TME",
+    "qty": 3000,
+    "price": 0.04,
+    "currency": "USD",
+    "url": "https://www.tme.com/us/en-us/details/bss84akw.115/smd-p-channel-transistors/nexperia/bss84akw-115/",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0671,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/MOSFET_Nexperia_BSS84AKW-115_Nexperia-BSS84AKW-115_C179347.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BUK7J1R4-40HX",
+  "mfr": "Nexperia",
+  "desc": "40 V N-channel MOSFET 1.4 mOhm, LFPAK56E, AEC-Q101 (fuel-pump BLDC bridge)",
+  "category": "ic_qfn",
+  "pkg": "LFPAK56E (SOT1023)",
+  "aecq": true,
+  "currentQ1kGBP": 1.3057,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1500,
+    "price": 1.68,
+    "currency": "USD",
+    "url": "https://punchouttest.digikey.com.mx/en/products/detail/nexperia-usa-inc/BUK7J1R4-40HX/7669958",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "BUK7S1R0-40HJ",
+  "mfr": "Nexperia",
+  "desc": "N-MOSFET 40 V 1.0 mOhm, Trench 9",
+  "category": "ic_soic",
+  "pkg": "LFPAK88",
+  "aecq": true,
+  "currentQ1kGBP": 0.9878,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.3057,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BUK7S1R0-40HJ/10260946",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.31,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Nexperia/BUK7S1R0-40HJ?qs=vLWxofP3U2wuww%2Fkt0E6bQ%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BUK9M20-60ELX",
+  "mfr": "Nexperia",
+  "desc": "Automotive ASFET for airbag safing switch, 60 V 13 mOhm logic level, enhanced SOA",
+  "category": "ic_qfn",
+  "pkg": "LFPAK33",
+  "aecq": true,
+  "currentQ1kGBP": 0.5744,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.524,
+    "currency": "EUR",
+    "url": "https://es.farnell.com/en-ES/nexperia/buk9m20-60elx/mosfet-n-ch-60v-40a-lfpak33/dp/3958216RL",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.734,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2604641",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "NX3008NBK,215",
+  "mfr": "Nexperia",
+  "desc": "N-channel trench MOSFET 30 V 350 mA",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0343,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.04208,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/NX3008NBK-215/2779967",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "PESD2CANFD24V-TR",
+  "mfr": "Nexperia",
+  "desc": "CAN FD ESD protection diode 24V, SOT23 (TO-236AB)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0784,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.09607,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD2CANFD24V-TR/11487035",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "PESD2ETH100-TR",
+  "mfr": "Nexperia",
+  "desc": "2-line ESD protection for 100BASE-T1 automotive Ethernet, SOT23, AEC-Q101 (24 V)",
+  "category": "fuse_tvs",
+  "pkg": "SOT23",
+  "aecq": true,
+  "currentQ1kGBP": 0.1326,
+  "stored": [
+   {
+    "distributor": "element14",
+    "qty": 1000,
+    "price": 5.59,
+    "currency": "TWD",
+    "url": "https://tw.element14.com/en-TW/nexperia/pesd2eth100-tr/esd-protection-dev-aecq101-24v/dp/3387435",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "PESD2IVN24-TR",
+  "mfr": "Nexperia",
+  "desc": "2-line ESD protection 24 V for CAN / LIN / FlexRay, SOT-23, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0878,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 1500,
+    "price": 0.113,
+    "currency": "USD",
+    "url": "https://il.farnell.com/nexperia/pesd2ivn24-tr/diode-aec-q101-esd-24v-sot-23/dp/2835442",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "PESD5V0F1BL",
+  "mfr": "Nexperia",
+  "desc": "Ultra-low-capacitance bidirectional ESD diode 5V, SOD882",
+  "category": "fuse_tvs",
+  "pkg": "SOD882",
+  "aecq": false,
+  "currentQ1kGBP": 0.0623,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.08436,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD5V0F1BL315/2698021",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Avnet",
+    "qty": 10000,
+    "price": 0.05582,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nexperia/pesd5v0f1bl,315/evolve-3612864/",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "PESD5V0S1BL-QYL",
+  "mfr": "Nexperia",
+  "desc": "Bidirectional ESD protection diode, 5 V",
+  "category": "fuse_tvs",
+  "pkg": "DFN1006-2 (SOD882)",
+  "aecq": true,
+  "currentQ1kGBP": 0.0471,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.05305,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD5V0S1BL-315/1157465",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "PMEG3010EH,115",
+  "mfr": "Nexperia",
+  "desc": "Schottky rectifier 30 V 1 A, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOD-123F",
+  "aecq": true,
+  "currentQ1kGBP": 0.0602,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0843,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG3010EH-115/1157694",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0633,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_Nexperia_C426864.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "PMEG6030ELP-QX",
+  "mfr": "Nexperia",
+  "desc": "Schottky rectifier 60 V 3 A",
+  "category": "fuse_tvs",
+  "pkg": "SOD128 (CFP5)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1441,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.17658,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG6030ELP-QX/16629693",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.1766,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/pmeg6030elp",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "PMV50ENEAR",
+  "mfr": "Nexperia",
+  "desc": "N-channel trench MOSFET 30 V 3.9 A, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0947,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.116,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Nexperia/PMV50ENEAR?qs=gH1BdSMZm8XmiYzQdZYiAw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "UCZ1V221MCL1GS",
+  "mfr": "Nichicon",
+  "desc": "Al electrolytic SMD 220uF 35V 20%, UCZ 125C automotive",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": true,
+  "currentQ1kGBP": 0.3273,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 500,
+    "price": 0.455,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/4212997",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 0.582,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/2437284",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "HHXC350ARA271MJA0G",
+  "mfr": "Nippon Chemi-Con",
+  "desc": "Hybrid polymer Al SMD 270uF 35V 20%, HXC series 125C AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": true,
+  "currentQ1kGBP": 0.2582,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.3419,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C525845.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1021T/20/C,118",
+  "mfr": "NXP",
+  "desc": "LIN 2.x/SAE J2602 transceiver",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.5347,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.70785,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1021T-20-C-118/2034448",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.708,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1021T-10-C118?qs=6YAT8rHPFU8WHsH00sCR8Q%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1027T/20/1J",
+  "mfr": "NXP",
+  "desc": "LIN 2.2A transceiver",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4745,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.68835,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1027T-20-1J/5035816",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.568,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1027T-20-1J?qs=8qdoF/2f1vr94fCG5MNBhg%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1028T/5V0/20/1J",
+  "mfr": "NXP",
+  "desc": "LIN transceiver with 5 V 70 mA regulator, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.7597,
+  "stored": [
+   {
+    "distributor": "Farnell (Latvia)",
+    "qty": 1000,
+    "price": 0.885,
+    "currency": "EUR",
+    "url": "https://lv.farnell.com/nxp/tja1028t-5v0-20-1j/lin-transceiver-aec-q100-5v-soic/dp/2574978",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1029T/20/1J",
+  "mfr": "NXP",
+  "desc": "LIN 2.2A / SAE J2602 transceiver, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4177,
+  "stored": [
+   {
+    "distributor": "element14 (Singapore)",
+    "qty": 1000,
+    "price": 0.707,
+    "currency": "SGD",
+    "url": "https://sg.element14.com/nxp/tja1029t-20-1j/lin-transceiver-aec-q100-soic/dp/2574994",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1103AHN/0Z",
+  "mfr": "NXP",
+  "desc": "100BASE-T1 Ethernet PHY, ASIL B, MACsec-ready",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-36",
+  "aecq": true,
+  "currentQ1kGBP": 1.1962,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 4000,
+    "price": 1.46233,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1103AHN-0Z/17128756",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 4000,
+    "price": 1.41,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/NXP-Semiconductors/TJA1103AHN-0Z?qs=Y0Uzf4wQF3n0fLCkE4jjmw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1124BHG/1Z",
+  "mfr": "NXP",
+  "desc": "Quad LIN transceiver, 20 kbaud, AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "DHVQFN-24",
+  "aecq": true,
+  "currentQ1kGBP": 1.419,
+  "stored": [
+   {
+    "distributor": "element14",
+    "qty": 1000,
+    "price": 7.67,
+    "currency": "MYR",
+    "url": "https://my.element14.com/nxp/tja1124bhg-1z/lin-transceiver-20kbaud-dhvqfn/dp/4147384",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1462AT/0Z",
+  "mfr": "NXP",
+  "desc": "CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4271,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 2500,
+    "price": 0.53,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/es/p/semiconductors--signal-interface--general-interface/tja1462at-0z-nxp-8135671",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1465AT/0Z",
+  "mfr": "NXP",
+  "desc": "CAN SIC / CAN FD transceiver, 8 Mbps, 150C, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.8389,
+  "stored": [
+   {
+    "distributor": "element14",
+    "qty": 1000,
+    "price": 1.42,
+    "currency": "SGD",
+    "url": "https://sg.element14.com/nxp/tja1465at-0z/can-fd-txrx-8mbps-150degc-soic/dp/4752410",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1042T/3,118",
+  "mfr": "NXP Semiconductors",
+  "desc": "HS-CAN transceiver, standby, VIO",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 1.0352,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 1.22338,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1042T-3-118/2406249",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1043T,118",
+  "mfr": "NXP Semiconductors",
+  "desc": "HS-CAN transceiver with wake/INH, SO-14",
+  "category": "ic_soic",
+  "pkg": "SO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.5694,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.75384,
+    "currency": "USD",
+    "url": "https://www.digikey.com/product-detail/en/nxp-usa-inc/TJA1043T,118/568-8680-1-ND/2803566",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1044GT/3Z",
+  "mfr": "NXP Semiconductors",
+  "desc": "HS-CAN / CAN FD transceiver, standby, VIO (MPC5748G gateway reference design)",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.416,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.55072,
+    "currency": "USD",
+    "url": "https://www.digikey.com.mx/en/products/detail/nxp-usa-inc/TJA1044GT-3Z/7648357",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1051T/3/1J",
+  "mfr": "NXP Semiconductors",
+  "desc": "HS-CAN / CAN FD transceiver, VIO",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4637,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.93116,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1051T-3-1J/5035822",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2967,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C38695.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1057GT/3J",
+  "mfr": "NXP Semiconductors",
+  "desc": "HS-CAN / CAN FD transceiver, VIO, no standby",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.3141,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 17500,
+    "price": 0.43619,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1057GT-3J/5981093",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Avnet",
+    "qty": 2500,
+    "price": 0.44457,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/tja1057gt-3j/evolve-19210150/",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.3575,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/CAN-ICs_NXP-Semicon-TJA1057GT-3J_C112947.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TJA1463AT/0Z",
+  "mfr": "NXP Semiconductors",
+  "desc": "CAN SIC transceiver with sleep mode",
+  "category": "ic_soic",
+  "pkg": "SO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.6551,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 7500,
+    "price": 0.87866,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1463AT-0Z/13590301",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 2500,
+    "price": 0.785,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/tja1463at0z/nxp-semiconductors",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 2500,
+    "price": 0.74,
+    "currency": "EUR",
+    "url": "https://de.farnell.com/en-DE/nxp/tja1463at-0z/can-fd-transceiver-aec-q100-150deg/dp/3677375",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "CAT24C512WI-GT3",
+  "mfr": "onsemi",
+  "desc": "512Kb I2C EEPROM",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "currentQ1kGBP": 0.3329,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.6296,
+    "currency": "USD",
+    "url": "https://www.digikey.com.mx/en/products/detail/onsemi/CAT24C512WI-GT3/2683757",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2518,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/EEPROM_onsemi-CAT24C512WI-GT3_C79986.html",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 3000,
+    "price": 0.253,
+    "currency": "USD",
+    "url": "https://www.newark.com/onsemi/cat24c512wi-gt3/serial-eeprom-512kbit-1mhz-soic/dp/29AC3017",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NCV7344D10R2G",
+  "mfr": "onsemi",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.2153,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.28506,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NCV7344D10R2G/7931476",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 0.311,
+    "currency": "USD",
+    "url": "https://nz.mouser.com/ProductDetail/onsemi/NCV7344D10R2G?qs=chTDxNqvsymG%2BrxwO2luhw%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.285,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/NCV7344D10R2G",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NCV8402ASTT1G",
+  "mfr": "onsemi",
+  "desc": "Self-protected low-side MOSFET 42 V 2 A",
+  "category": "ic_soic",
+  "pkg": "SOT-223",
+  "aecq": true,
+  "currentQ1kGBP": 0.3297,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.43653,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8402ASTT1G/3536734",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NCV84160DR2G",
+  "mfr": "onsemi",
+  "desc": "Self-protected high-side driver 160 mOhm",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.8842,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 1.0973,
+    "currency": "USD",
+    "url": "https://www.digikey.com/product-detail/en/on-semiconductor/NCV84160DR2G/NCV84160DR2G-ND/8636509",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NCV8730ASNADJT1G",
+  "mfr": "onsemi",
+  "desc": "38V 150mA LDO, adjustable, low Iq",
+  "category": "ic_soic",
+  "pkg": "TSOP-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.3739,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.45279,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8730ASNADJT1G/12181306",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.496,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/onsemi/NCV8730ASNADJT1G?qs=GedFDFLaBXFZJgT1iqVkOg%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.495,
+    "currency": "USD",
+    "url": "https://www.newark.com/on-semiconductor/ncv8730asnadjt1g/ldo-adj-0-15a-40-to-125deg-c-rohs/dp/74AH4812",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NCV887103D1R2G",
+  "mfr": "onsemi",
+  "desc": "Automotive non-synchronous boost/flyback controller 340 kHz (aux isolated supply, onsemi TND6319 PTC driver)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.7864,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 1.09334,
+    "currency": "USD",
+    "url": "https://www.digikey.com.mx/en/products/detail/onsemi/NCV887103D1R2G/2797241",
+    "date": "2026-10-09"
+   }
+  ]
+ }
+]

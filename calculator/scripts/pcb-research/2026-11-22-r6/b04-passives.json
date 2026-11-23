@@ -1,0 +1,1754 @@
+{
+ "domain": "b04-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "KTR18EZPF1004",
+   "family": "KTR (high voltage)",
+   "mfr": "ROHM",
+   "desc": "High-voltage thick-film resistor 1 Mohm 1% 0.25 W 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "HV sensing"
+   ],
+   "observedMpn": "KTR18EZPF1004",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.04412,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KTR18EZPF1004",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.03877,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KTR18EZPF1004",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.0327,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KTR18EZPF1004",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200, High Voltage\", thick film, stock 318,498. 1k = Cut Tape; reel 5,000 (smallest), 10,000 @ 0.03644, 15,000 @ 0.03530, 25,000 @ 0.03407, 35,000 @ 0.03336, 50,000 (largest shown)."
+  },
+  {
+   "mpn": "LTR18EZPF10R0",
+   "family": "LTR (wide-terminal)",
+   "mfr": "ROHM",
+   "desc": "Wide-terminal thick-film resistor 10 ohm 1% 1.5 W 1206 (long-side), pulse-withstanding, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "0612",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "gate drive"
+   ],
+   "observedMpn": "LTR18EZPF10R0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.04477,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LTR18EZPF10R0",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.0349,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LTR18EZPF10R0",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.02934,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LTR18EZPF10R0",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200, Pulse Withstanding\", package \"Wide 1206 (3216 Metric), 0612\", stock 15,370, lead time 8 weeks. 1k = Cut Tape (the page reader also returned a separate Digi-Reel ladder, 1,000 @ 0.04223 + reeling fee - not recorded); reel 5,000 (smallest), 10,000 @ 0.03276, 15,000 @ 0.03172, 25,000 @ 0.03060, 35,000 @ 0.02995, 50,000 (largest shown)."
+  },
+  {
+   "mpn": "PMR18EZPFU10L0",
+   "family": "PMR (metal-plate shunt)",
+   "mfr": "ROHM",
+   "desc": "Current-sense metal-plate resistor 10 mohm 1% 1 W 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "PMR18EZPFU10L0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.2539,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.2119,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.17376,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200, Current Sense\", metal element, stock 43,127. 1k = Cut Tape; reel 5,000 (smallest), 10,000 @ 0.19817, 15,000 @ 0.19112, 25,000 @ 0.18315, 35,000 @ 0.17840, 50,000 (largest shown)."
+  },
+  {
+   "mpn": "CL10B104KA8WPNC",
+   "family": "CL automotive X7R (...8WPNC)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 100 nF 25 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL10B104KA8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02256,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KA8WPNC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01614,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KA8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.014,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KA8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, stock 461,475, lead time 61 weeks. Product attributes show \"AEC-Q200\" (Ratings) and \"Automotive\" (Applications) for this code -> aecq true (the page reader returned the two values without their row labels on this page; the sibling pages CL10B104KO8WPNC / CL10B105KA8VPNC show them as Ratings / Applications). Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CL10B104KO8WPNC",
+   "family": "CL automotive X7R (...8WPNC)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 100 nF 16 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL10B104KO8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02174,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KO8WPNC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01551,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KO8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.01344,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B104KO8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 42,708. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CL10B105KA8VPNC",
+   "family": "CL automotive X7R",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 1 uF 25 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "infotainment"
+   ],
+   "observedMpn": "CL10B105KA8VPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0498,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B105KA8VPNC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03983,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B105KA8VPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0355,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B105KA8VPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 54,019. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CL21B105KBFVPNE",
+   "family": "CL automotive X7R (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 1 uF 50 V X7R 10% 0805, -55..125 C, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL21B105KBFVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.07658,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.06403,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.05705,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", out of stock (2,000 expected 24-May-2027), lead time 61 weeks. Cut Tape table ends at 500; reel 2,000 (also within the 1k band) / 6,000 (largest shown). Cross-check NOT recorded: TME detail page (USD, 0 in stock, \"Hardly available product\", AEC-Q200 stated, reel 2,000) shows from 1,000 @ \"0.05 USD\" and from 2,000 @ \"0.04 USD\" - the table is rounded to 2 decimals (one significant figure), too coarse to be a price."
+  },
+  {
+   "mpn": "CL21B105KOFVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 1 uF 16 V X7R 10% 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL21B105KOFVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.05458,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KOFVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.04488,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KOFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.03947,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B105KOFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 339,594. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown)."
+  },
+  {
+   "mpn": "CL21Y106KPQVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 10 uF 10 V X7S 10% 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL21Y106KPQVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.13284,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21Y106KPQVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.11364,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21Y106KPQVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.10293,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21Y106KPQVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 202,148. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown). Cross-check NOT recorded: TME detail page (USD, 1,111 in stock, AEC-Q200 stated, reel 2,000) shows from 1,000 and from 2,000 @ \"0.07 USD\" - rounded to 2 decimals (one significant figure), too coarse to be a price."
+  },
+  {
+   "mpn": "CL31B106KAHVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 10 uF 25 V X7R 10% 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "CL31B106KAHVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.20818,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.18118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.16613,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.13,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cl31b106kahvpne/mlcc-smd-capacitors/samsung/",
+     "date": "2026-11-22",
+     "packing": "unknown",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 2000,
+     "price": 0.11,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cl31b106kahvpne/mlcc-smd-capacitors/samsung/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; out of stock (\"Estimated in-stock date unavailable due to product's market conditions\"), lead time 61 weeks. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown); larger breaks cheaper (not stale). Cross-check: TME detail page (tme.eu, USD, net = gross on the page, no VAT): \"Conform to the norm: AEC-Q200\", 0 in TME stock (\"Hardly available product\"), reel = 2,000 pcs; visible table (2 dp) from 500 @ 0.14, from 1,000 @ 0.13, from 2,000 @ 0.11 (largest shown; cheaper at the larger break) - 0.61x Digi-Key at 2,000. TME displays 2 decimals only."
+  },
+  {
+   "mpn": "CL10B102KB8WPNC",
+   "family": "CL automotive X7R (...8WPNC)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 1 nF 50 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL10B102KB8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.01768,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B102KB8WPNC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01245,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B102KB8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.01071,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B102KB8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 40,870. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CL10B103KC8WPNC",
+   "family": "CL automotive X7R (...8WPNC)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 10 nF 100 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL10B103KC8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02614,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B103KC8WPNC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.0189,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B103KC8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.01648,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL10B103KC8WPNC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 380 only. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CL21B224KBFVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 220 nF 50 V X7R 10% 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CL21B224KBFVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.05324,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B224KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.04384,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B224KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.0386,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL21B224KBFVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 584,677. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown)."
+  },
+  {
+   "mpn": "CL31B106KOHVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 10 uF 16 V X7R 10% 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "CL31B106KOHVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.12512,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KOHVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.10653,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KOHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.09617,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B106KOHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 392,984, lead time 61 weeks. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown)."
+  },
+  {
+   "mpn": "CL31B475KAHVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 4.7 uF 25 V X7R 10% 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "CL31B475KAHVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.11882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B475KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.10725,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B475KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.09684,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL31B475KAHVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 13,998. Cut Tape table ends at 500; reel 2,000 / 6,000 (largest shown)."
+  },
+  {
+   "mpn": "CL32B226KOJVPNE",
+   "family": "CL automotive X7R / X7S (...VPNE)",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 22 uF 16 V X7R 10% 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "CL32B226KOJVPNE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.43918,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL32B226KOJVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.40541,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL32B226KOJVPNE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.46652,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CL32B226KOJVPNE",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.25,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cl32b226kojvpne/mlcc-smd-capacitors/samsung/",
+     "date": "2026-11-22",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 16,411, lead time 61 weeks. Reel 1,000 (smallest, also the 1k price) / 3,000 (largest shown); Cut Tape table ends at 500. Cross-check: TME detail page (tme.eu, USD, net = gross on the page, no VAT): \"Conform to the norm: AEC-Q200\", 2,512 in stock, reel = 1,000 pcs, MOQ 1; visible table (2 dp) from 100 @ 0.27, 250 / 500 @ 0.26, from 1,000 @ 0.25 (largest break shown) - 0.57x Digi-Key at 1k (known reel spread between distributors). TME displays 2 decimals only."
+  },
+  {
+   "mpn": "MAASU168SB7104KTNA01",
+   "family": "MAAS (automotive MLCC, powertrain / safety)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 50 V X7R 10% 0603, MAAS automotive series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "powertrain ECU",
+    "BMS"
+   ],
+   "observedMpn": "MAASU168SB7104KTNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04784,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03593,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.03195,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 3,813; value / voltage / size confirmed on the page (0.1 uF 50 V X7R 0603). Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "MCASU105SB7104KFNA01",
+   "family": "MCAS (automotive MLCC, body / infotainment)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 50 V X7R 10% 0402, MCAS automotive (body / infotainment) series, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "zonal controller"
+   ],
+   "observedMpn": "MCASU105SB7104KFNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.02949,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.02664,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true (discovery had not read it for MCAS); stock 24,165; value / voltage / size confirmed on the page. Cut Tape table ends at 500; reel 10,000 / 30,000 (largest shown)."
+  },
+  {
+   "mpn": "MCASU168SB7104KTNA01",
+   "family": "MCAS (automotive MLCC, body / infotainment)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 50 V X7R 10% 0603, MCAS automotive (body / infotainment) series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "zonal controller"
+   ],
+   "observedMpn": "MCASU168SB7104KTNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.03476,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.02557,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0225,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASU168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; series MCAS; stock 1,494, lead time 12 weeks; value / voltage / size confirmed on the page. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "MAASL105SB7104KFNA01",
+   "family": "MAAS (automotive MLCC, powertrain / safety)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 10 V X7R 10% 0402, MAAS automotive series, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "powertrain ECU",
+    "BMS"
+   ],
+   "observedMpn": "MAASL105SB7104KFNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.01958,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASL105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01222,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASL105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01075,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASL105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 8,500, lead time 14 weeks; value / voltage (10 V) / size confirmed on the page. Cut Tape table ends at 500; reel 10,000 / 30,000 (largest shown)."
+  },
+  {
+   "mpn": "MAASU21GSB7104KTNA01",
+   "family": "MAAS (automotive MLCC, powertrain / safety)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 50 V X7R 10% 0805, MAAS automotive series, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "powertrain ECU",
+    "BMS"
+   ],
+   "observedMpn": "MAASU21GSB7104KTNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.07362,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.05513,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.04933,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAASU21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 2,980; value / voltage / size confirmed on the page. Cut Tape table ends at 500; reel 3,000 / 9,000 (largest shown)."
+  },
+  {
+   "mpn": "MCASH168SB7104KTNA01",
+   "family": "MCAS (automotive MLCC, body / infotainment)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 100 V X7R 10% 0603, MCAS automotive (body / infotainment) series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "zonal controller"
+   ],
+   "observedMpn": "MCASH168SB7104KTNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04712,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03323,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.02949,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH168SB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 1 (effectively out of stock); value / voltage (100 V) / size confirmed on the page. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "MCASH21GSB7104KTNA01",
+   "family": "MCAS (automotive MLCC, body / infotainment)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 100 V X7R 10% 0805, MCAS automotive (body / infotainment) series, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "zonal controller"
+   ],
+   "observedMpn": "MCASH21GSB7104KTNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.06406,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.05063,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.04519,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCASH21GSB7104KTNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; stock 2,488; value / voltage (100 V) / size confirmed on the page. Cut Tape table ends at 500; reel 3,000 / 9,000 (largest shown)."
+  },
+  {
+   "mpn": "MCAST105SB7104KFNA01",
+   "family": "MCAS (automotive MLCC, body / infotainment)",
+   "mfr": "Taiyo Yuden",
+   "desc": "MLCC 100 nF 25 V X7R 10% 0402, MCAS automotive (body / infotainment) series, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "zonal controller"
+   ],
+   "observedMpn": "MCAST105SB7104KFNA01",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0233,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCAST105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01479,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCAST105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01309,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCAST105SB7104KFNA01",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq true; out of stock (backorder; 10,000 expected 01-Feb-2027); value / voltage (25 V) / size confirmed on the page. Cut Tape table ends at 500; reel 10,000 / 30,000 (largest shown)."
+  },
+  {
+   "mpn": "ACT45B-101-2P-TL003",
+   "family": "ACT45B-101-2P-TL003",
+   "mfr": "TDK",
+   "desc": "Common-mode choke 100 uH @ 100 kHz, 2 line, 5.8 kohm @ 10 MHz, 150 mA, DCR 2 ohm, 50 V, SMD 4.5x3.2 mm, AEC-Q200",
+   "category": "transformer",
+   "pkg": "SMD 4.5x3.2 mm, 4 pads",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-020106 electro-mechanical brake (EMB)",
+    "TI TIDM-02014 SiC traction inverter",
+    "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier"
+   ],
+   "observedMpn": "ACT45B-101-2P-TL003",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.89046,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACT45B-101-2P-TL003",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.77963,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACT45B-101-2P-TL003",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.7275,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACT45B-101-2P-TL003",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Grade \"Automotive\", Qualification \"AEC-Q200\", stock 44,169, lead time 20 weeks. 1k = Cut Tape (largest CT break); reel 2,500 / 5,000 @ 0.73535 / 7,500 (largest shown). The page files it under Filters > Common Mode Chokes (ACT45B series, signal line, 2 lines) - the task called it an inductor (TI BOM wording); category changed passive_1206 -> transformer (rule: common-mode chokes), desc and pkg corrected from the page, aecq false -> true from the page. No cross-check distributor read. TME search for the code returned no product (\"Request for a product not included in the standard offer\"); Mouser refused (HTTP 503)."
+  },
+  {
+   "mpn": "CGA2B3X7R1H473K050BB",
+   "family": "CGA2B",
+   "mfr": "TDK",
+   "desc": "MLCC 47 nF 50 V X7R 10% 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01034 entry-level blind-spot detection radar",
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+   ],
+   "observedMpn": "CGA2B3X7R1H473K050BB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02358,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B3X7R1H473K050BB",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01473,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B3X7R1H473K050BB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01304,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B3X7R1H473K050BB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 581,451, lead time 32 weeks. Cut Tape table ends at 500 (no 1,000 row shown) - recorded as the break nearest 1k; reel 10,000 = smallest, 30,000 = largest shown."
+  },
+  {
+   "mpn": "C1005X5R1H104K050BB",
+   "family": "C1005X",
+   "mfr": "TDK",
+   "desc": "MLCC 100 nF 50 V X5R 10% 0402, general purpose (not AEC-Q200)",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)",
+    "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1"
+   ],
+   "observedMpn": "C1005X5R1H104K050BB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02246,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1005X5R1H104K050BB",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01317,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1005X5R1H104K050BB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01164,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1005X5R1H104K050BB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, out of stock (backorder; 10,000 expected 19-Feb-2027), lead time 32 weeks. Applications \"General Purpose\", Features \"Low ESL\"; no AEC-Q200 on the page -> aecq false (commercial C series, -55..85 C). Cut Tape table ends at 500; reel 10,000 / 30,000 (largest shown). Reel is cheaper at the larger break (not stale)."
+  },
+  {
+   "mpn": "C1608X5R1E106M080AC",
+   "family": "C1608X",
+   "mfr": "TDK",
+   "desc": "MLCC 10 uF 25 V X5R 20% 0603, general purpose (not AEC-Q200)",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)",
+    "TI TIDA-020106 electro-mechanical brake (EMB)"
+   ],
+   "observedMpn": "C1608X5R1E106M080AC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.13196,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1608X5R1E106M080AC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.0979,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1608X5R1E106M080AC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.08972,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=C1608X5R1E106M080AC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, out of stock (backorder; 4,000 expected 19-Mar-2027). Applications \"General Purpose\"; no AEC-Q200 on the page -> aecq false (commercial C series, -55..85 C). Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown). No cross-check: the TME search page rendered no product row and the TME detail URL for the code returned 404."
+  },
+  {
+   "mpn": "CGA2B1X7R1C104K050BC",
+   "family": "CGA2 X7R 0402",
+   "mfr": "TDK",
+   "desc": "MLCC 100 nF 16 V X7R 10% 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+    "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit"
+   ],
+   "observedMpn": "CGA2B1X7R1C104K050BC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02016,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B1X7R1C104K050BC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.0117,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B1X7R1C104K050BC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.0103,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA2B1X7R1C104K050BC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 676,428, lead time 24 weeks. The code (joined from wrapped cells in discovery) exists as printed. Cut Tape table ends at 500; reel 10,000 / 30,000 (largest shown)."
+  },
+  {
+   "mpn": "CGA3E2X7R1H473K080AA",
+   "family": "CGA3 X7R 0603",
+   "mfr": "TDK",
+   "desc": "MLCC 47 nF 50 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+    "TI TIDA-020075 HV BMS 2-channel pyro-fuse driver board",
+    "TI TIDM-02014 SiC traction inverter",
+    "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+    "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit"
+   ],
+   "observedMpn": "CGA3E2X7R1H473K080AA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R1H473K080AA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01467,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R1H473K080AA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0127,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R1H473K080AA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 348,519, lead time 24 weeks. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CGA3E2X7R2A103K080AA",
+   "family": "CGA3 X7R 0603",
+   "mfr": "TDK",
+   "desc": "MLCC 10 nF 100 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier",
+    "TI TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+    "TI TIDM-02014 SiC traction inverter"
+   ],
+   "observedMpn": "CGA3E2X7R2A103K080AA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02074,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R2A103K080AA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01366,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R2A103K080AA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R2A103K080AA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, out of stock (backorder; 4,000 expected 15-Feb-2027), lead time 24 weeks. Ratings \"AEC-Q200\", Applications \"Automotive\". Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CGA3E3X7S2A104K080AB",
+   "family": "CGA3 X7S 0603",
+   "mfr": "TDK",
+   "desc": "MLCC 100 nF 100 V X7S 10% 0603, AEC-Q200 (48 V rail decoupling)",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1",
+    "TI TIDA-050071 off-battery processor power for ADAS and infotainment"
+   ],
+   "observedMpn": "CGA3E3X7S2A104K080AB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E3X7S2A104K080AB",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03028,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E3X7S2A104K080AB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.02685,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA3E3X7S2A104K080AB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", Applications \"Automotive\", stock 4,199, lead time 32 weeks. Cut Tape table ends at 500; reel 4,000 / 12,000 (largest shown)."
+  },
+  {
+   "mpn": "CGA6P1X7R2A106K250AC",
+   "family": "CGA (100 V high capacitance)",
+   "mfr": "TDK",
+   "desc": "MLCC 10 uF 100 V X7R 10% 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V systems",
+    "DC-DC converter"
+   ],
+   "observedMpn": "CGA6P1X7R2A106K250AC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.63262,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA6P1X7R2A106K250AC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.59011,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA6P1X7R2A106K250AC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.71934,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CGA6P1X7R2A106K250AC",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, out of stock (backorder; 1,000 expected 10-Feb-2027), lead time 32 weeks. Description \"AUTOMOTIVE GRADE,MLCC,1210,X7R\", Ratings \"AEC-Q200\", Applications \"Automotive\". Reel 1,000 (smallest, also the 1k price) / 3,000 (largest shown); Cut Tape table ends at 500. Larger breaks are cheaper (not stale). No cross-check: TME detail URL for the code returned 404; Farnell and Arrow refused (HTTP 503)."
+  },
+  {
+   "mpn": "NTCG163JF103FT1S",
+   "family": "NTCG (automotive)",
+   "mfr": "TDK",
+   "desc": "NTC thermistor 10 k 1% B25/85 3435 K 1%, 0603, 100 mW, -40..150 C, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "body ECU",
+    "LED lighting"
+   ],
+   "observedMpn": "NTCG163JF103FT1S",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.13948,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCG163JF103FT1S",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.12536,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCG163JF103FT1S",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.11028,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCG163JF103FT1S",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Grade \"Automotive\", Qualification \"AEC-Q200\", out of stock (backorder; 4,000 expected 28-Jan-2027), lead time 12 weeks. 1k = Cut Tape; reel 4,000 (smallest) ... 8,000 @ 0.12035, 12,000 @ 0.11762, 20,000 @ 0.11437, 28,000 @ 0.11234 ... 40,000 (largest shown)."
+  },
+  {
+   "mpn": "TFM201612BLEAR47MTCA",
+   "family": "TFM201612BLEA",
+   "mfr": "TDK",
+   "desc": "Thin-film metal power inductor 0.47 uH 20%, 4.4 A (Isat 5.6 A), DCR 22 mohm max, 2.0x1.6x1.2 mm (0806), -55..150 C, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "observedMpn": "TFM201612BLEAR47MTCA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.37492,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201612BLEAR47MTCA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.32285,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201612BLEAR47MTCA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 21000,
+     "price": 0.278,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201612BLEAR47MTCA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", series TFM-BLEA, stock 1,218, lead time 20 weeks. The code exists as printed (discovery had it from a search summary). 1k = Cut Tape; reel 3,000 (smallest), 6,000 @ 0.30447, 9,000 @ 0.29422, 15,000 @ 0.28182, 21,000 (largest shown)."
+  },
+  {
+   "mpn": "ADL4524VL-180M-TL000",
+   "family": "ADL4524VL (PoC)",
+   "mfr": "TDK",
+   "desc": "Wirewound shielded PoC inductor 18 uH 20%, 520 mA (Isat 510 mA), DCR 800 mohm max, 4.5x2.4x2.6 mm, -55..155 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD 4.5x2.4 mm, 4 pads (1810)",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "observedMpn": "ADL4524VL-180M-TL000",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.47223,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ADL4524VL-180M-TL000",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.4245,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ADL4524VL-180M-TL000",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 17500,
+     "price": 0.37037,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ADL4524VL-180M-TL000",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: Active, Ratings \"AEC-Q200\", stock 2,152; the code exists as printed. 1k = Cut Tape; reel 2,500 (smallest), 5,000 @ 0.40035, 7,500 @ 0.38688, 12,500 @ 0.37057, 17,500 (largest shown)."
+  }
+ ],
+ "notResearched": []
+}

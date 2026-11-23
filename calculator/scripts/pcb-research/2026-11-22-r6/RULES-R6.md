@@ -86,3 +86,60 @@ task name, `researched` = today), one entry per task line you worked (priced or 
 (lines not reached). Copy `desc` / `category` / `pkg` from the task unless a page shows they are wrong (say so). Reply
 with ONE paragraph: lines worked / priced / with two breaks of one distributor / with ≥ 2 distributors / OBSOLETE /
 WRONG-CODE / NO-LISTING / not reached; searches and page reads used; which sites refused; the most serious problem.
+
+---
+
+## Addendum 2 (22 Nov 2026, after the pilot — b05, b13, s1) — this REPLACES the limits and source order above
+
+The pilot priced 22 / 36 passives, 35 / 36 ICs and gave 9 / 40 existing parts their own slope. What it found:
+- **Digi-Key now serves product pages** (digikey.com, digikey.co.uk) with the full price table for every packing — cut
+  tape and tape-and-reel (reel breaks to 100,000 on chip resistors), the Grade / Qualification field, part status and
+  stock. `../RULES.md`'s "Digi-Key is blocked" no longer holds. One page read prices one part.
+  `https://www.digikey.com/en/products/result?keywords=<exact code>` usually lands on the product page; when it shows
+  a list, take the product link from it (a second read).
+- **Search summaries of distributor pages are STALE**: on 10 of 17 parts the live Digi-Key price was 9–39 % above the
+  summary's figure. Stored catalogue prices had moved too.
+- TME serves product pages but rate-limits (HTTP 429 after 4–7 pages while several agents read it), rounds small prices
+  to 2 decimals and often shows only small breaks. Farnell, Mouser, RS, Rutronik, Future, Arrow, TrustedParts and
+  Findchips refused.
+
+**Rules from now on**
+1. **Only a price you READ ON THE PAGE goes into `observations`.** A figure from a search summary is not a price: put it
+   in `notes` if useful ("summary: …"), never in `observations`. A line you could price only from a summary gets
+   `observations: []` and notes starting `SUMMARY-ONLY:`.
+2. **Source order:** the Digi-Key product page for the exact code first. Then ONE cross-check at another franchised
+   distributor if a page serves (TME: at most one page a minute, at most 8 pages in your task, stop at the first 429;
+   others: one try each, stop at the first refusal). Never retry a refused site through another host.
+3. **Every observation carries two extra fields:** `"packing"`: `"cut tape"` | `"reel"` | `"tray"` | `"tube"` | `"bulk"` |
+   `"unknown"` and `"evidence": "page-read"`. Record from the SAME page: the break nearest 1,000 (say its packing), and
+   for the full packaging (reel / tray / tube) the SMALLEST and the LARGEST break shown — e.g. cut tape 1,000; reel
+   10,000; reel 100,000. Record a break exactly as the row shows it (unit price, not the extended price). A reel price
+   dearer than cut tape is recorded as shown — say so in `notes`.
+4. **Never take a price from a page's hidden data** (JSON-LD `lowPrice`, script variables) or pair it with a break
+   yourself. If the visible table rounds a price to "0.00", that distributor has no usable price for the part.
+5. **Status:** "Obsolete", "Discontinued at Digi-Key", "Last Time Buy", "Not For New Designs" → notes starting
+   `OBSOLETE:` / `NRND:` with what the page says; record no price for obsolete / discontinued, record the price for NRND.
+   "Out of stock" with a normal table is fine — say `out of stock` in notes.
+6. **Limits:** at most **10 web searches** (for finding an orderable code or a product URL — not for prices) and about
+   **60 page reads**, one at a time, never in parallel, never scripted. If Digi-Key starts refusing, stop reading it,
+   write what you have and say so.
+7. Work every line you can: a line whose code is exact costs one read. Lines not reached go in `notResearched`.
+
+---
+
+## Addendum 3 (23 Nov 2026, after wave 1) — a second page source, and the 200k break
+
+- **Master Electronics** (masterelectronics.com, a franchised distributor) serves full product pages, with reel ladders
+  up to 500,000–1,000,000 on chip resistors. It is the preferred CROSS-CHECK after the Digi-Key page (one page per
+  part, same pacing: one at a time; stop at the first refusal). Where its table has them, record the break nearest
+  1,000, **the break at or nearest 200,000**, and the largest break. No result for a code → say so in `notes`, move on.
+- Its pages print prices to 2–4 decimals and carry template banners ("no longer being manufactured", "NOT RoHS") that
+  are not about the part — judge status from the page's own stock / lifecycle fields. **A price row with fewer than
+  two significant figures (e.g. 0.00, 0.003) is not recorded.** A listing dearer than Digi-Key's ONE-piece price, or a
+  larger break dearer than a smaller one, is stale: `notes` only.
+- When two distributors differ by more than 2.5× at the same quantity, record both as shown and start `notes` with
+  `SPREAD: <ratio>× (<distributor> <price> v <distributor> <price> @ <qty>)`.
+- Digi-Key keyword URLs (`…/products/result?keywords=<code>`) that landed on the product page are acceptable as the
+  observation URL; use the product's own detail URL when the page shows it.
+- Common-mode chokes are `transformer`, whatever the task line says (RULES-R4).
+- Limits unchanged: 10 searches, about 60 page reads.

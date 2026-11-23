@@ -1,0 +1,1270 @@
+{
+ "domain": "b06-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "NTCS0402E3104FXT",
+   "family": "NTCS0402E3....XT (glass protected)",
+   "mfr": "Vishay",
+   "desc": "NTC thermistor 100 k 1% B4311, 0402, glass protected, -55..150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "body ECU"
+   ],
+   "observedMpn": "NTCS0402E3104FXT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.28056,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCS0402E3104FXT",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.24183,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCS0402E3104FXT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.22902,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCS0402E3104FXT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 56-NTCS0402E3104FXTTR-ND, Vishay Beyschlag/Draloric/BC Components): Active, series NTCS0402E, NTC 100 k 1%, B25/85 4311 K, 70 mW, -55..150 C, Grade Automotive, Qualification AEC-Q200, stock 17,848, lead time 13 weeks. 1,000 = Cut Tape (cut tape also 5,000 @ 0.25579); Tape & Reel ladder 10,000 / 20,000 / 30,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "RCA060310K0FKEAHP",
+   "family": "RCA-HP e3 (automotive, high power)",
+   "mfr": "Vishay",
+   "desc": "Thick film resistor 10 k 1% 0.333 W, 0603, RCA-HP (anti-sulfur, pulse withstanding), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "RCA060310K0FKEAHP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06086,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCA060310K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.04957,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCA060310K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04275,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCA060310K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-3246-2-ND): Active, series RCA-HP, Features \"Anti-Sulfur, Automotive AEC-Q200, Pulse Withstanding\" on this code's page -> aecq true (task had false), stock 21,163, lead time 15 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "RCA080510K0FKEA",
+   "family": "RCA e3 (automotive thick film)",
+   "mfr": "Vishay",
+   "desc": "Thick film resistor 10 k 1% 0.125 W, 0805 (RCA series, anti-sulfur), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "RCA080510K0FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01542,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA080510K0FKEA/4946795",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01135,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA080510K0FKEA/4946795",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00872,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA080510K0FKEA/4946795",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-2226-2-ND; keyword URL gave a 2-result list, the product link was read): Active, series RCA, Features \"Anti-Sulfur, Automotive AEC-Q200\" on this code's page, stock 35,938, lead time 15 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "RCA120610K0FKEA",
+   "family": "RCA e3 (automotive thick film)",
+   "mfr": "Vishay",
+   "desc": "Thick film resistor 10 k 1% 0.25 W, 1206 (RCA series, anti-sulfur), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "RCA120610K0FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02482,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA120610K0FKEA/4946816",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01898,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA120610K0FKEA/4946816",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01527,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/RCA120610K0FKEA/4946816",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-2247-2-ND; keyword URL gave a 3-result list, the product link was read): Active, series RCA, Features \"Anti-Sulfur, Automotive AEC-Q200\" on this code's page, stock 28,690, lead time 14 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "RCS060310K0FKEA",
+   "family": "RCS e3 (anti-surge, high power)",
+   "mfr": "Vishay",
+   "desc": "Thick film anti-surge high-power resistor 10 k 1% 0.5 W, 0603 (RCS e3), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "RCS060310K0FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02335,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCS060310K0FKEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01777,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCS060310K0FKEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01422,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RCS060310K0FKEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-2795-2-ND): Active, series RCS e3, Features \"Automotive AEC-Q200, Pulse Withstanding\" on this code's page -> aecq true (task had false), stock 119,473, lead time 16 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "TNPW120610K0BEEA",
+   "family": "TNPW e3 (thin film)",
+   "mfr": "Vishay",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.52 W, 1206 (TNPW e3), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS"
+   ],
+   "observedMpn": "TNPW120610K0BEEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.28732,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TNPW120610K0BEEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.24713,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TNPW120610K0BEEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.23296,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TNPW120610K0BEEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK TNP10.0KACTR-ND): Part Status Active, series TNPW e3, Features \"Anti-Sulfur, Automotive AEC-Q200, Moisture Resistant\" on this code's page, stock 17,279, lead time 23 weeks. No 1,000 row: Cut Tape stops at 500 (the break nearest 1,000); Tape & Reel shows two breaks only, 5,000 and 15,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "WSK1206R0100FEA",
+   "family": "WSK1206 (4-terminal Kelvin)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 0.25 W 35 ppm, 1206 concave, 4-terminal Kelvin (WSK1206), metal element",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSK1206R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.49175,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSK1206R0100FEA/5730691",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.42555,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSK1206R0100FEA/5730691",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 20000,
+     "price": 0.37147,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSK1206R0100FEA/5730691",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 4000,
+     "price": 0.46,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wsk1206r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-2698-2-ND; keyword URL gave a 2-result list, the product link was read): Active, series WSK, Features \"Current Sense, Moisture Resistant, Pulse Withstanding\" - NO AEC-Q200 / automotive statement on this code's page -> aecq false (not confirmed). Stock 6,326, lead time 25 weeks. 1,000 = Cut Tape; Tape & Reel ladder 4,000 / 8,000 / 12,000 / 20,000 (largest shown). USD, no VAT. Cross-check: TME product page read 22 Nov 2026 - the code is named, one visible row only: \"Net price for quantities from 4000 pcs - 0.46 USD\" (net = gross on the page, no VAT; TME prints 2 decimals), package 4,000 pcs, MOQ 4,000, 0 in TME stock, no AEC-Q200 / norm statement and no lifecycle remark. TME 4,000 is 8% above Digi-Key's 4,000 reel price."
+  },
+  {
+   "mpn": "WSLF1206L5000FE6",
+   "family": "WSLF1206 (Power Metal Strip)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 0.5 mohm 1% 5 W 1206 metal element (WSLF1206)",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSLF1206L5000FE6",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.21801,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLF1206L5000FE6",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.12977,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLF1206L5000FE6",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 1.10028,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLF1206L5000FE6",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-WSLF1206L5000FE6TR-ND): Active, series WSLF1206, 500 uOhm 1% 5 W, Features \"Anti-Sulfur, Current Sense, Pulse Withstanding\" - NO AEC-Q200 / automotive statement on this code's Digi-Key page -> aecq false. The Vishay press release the task cites (vishay.com/en/company/press/releases/2025/WSLF1206, read 22 Nov 2026) does not state AEC-Q200 or automotive grade either: its applications are industrial drives, robotics, power tools, HVAC, UPS, VRMs, appliances. The task's \"AEC-Q200 per datasheet\" is NOT confirmed (datasheet not read). Stock 7,730, lead time 15 weeks. 1,000 = Cut Tape; Tape & Reel ladder 3,000 / 6,000 / 9,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "WSLP0603R0100FEA",
+   "family": "WSLP0603",
+   "mfr": "Vishay",
+   "desc": "Power Metal Strip current-sense 10 mohm 1% 0.4 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "LED lighting"
+   ],
+   "observedMpn": "WSLP0603R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.50785,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP0603R0100FEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.45518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP0603R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.44061,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP0603R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10023-2-ND): Part Status Active, series WSLP, 10 mohm 1% 0.4 W 75 ppm 0603 metal element, Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\", Ratings AEC-Q200. out of stock (0; 5,000 expected 01-Feb-2027, backorder; maker lead time 53 weeks) with a normal falling table. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "WSLP0805R0100FEA",
+   "family": "WSLP0805 (high power)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 0.5 W 75 ppm, 0805, high power (WSLP), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSLP0805R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.29532,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP0805R0100FEA/9758301",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.2594,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP0805R0100FEA/9758301",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 35000,
+     "price": 0.2426,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP0805R0100FEA/9758301",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 0.35,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wslp0805r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10033-2-ND; keyword URL gave a 2-result list, the product link was read): Active, series WSLP, Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\", Ratings AEC-Q200 on this code's page -> aecq true (task had false), stock 28,751, lead time 21 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 (largest shown). USD, no VAT. Cross-check: TME product page read 22 Nov 2026 - the code is named, one visible row only: 5,000 pcs net 0.35 USD (net = gross on the page, no VAT; TME prints 2 decimals), MOQ / multiple 5,000 (packing type not printed - taken as the reel), 0 in TME stock, no AEC-Q200 / norm statement and no lifecycle remark on the TME page. TME 5,000 is 35% above Digi-Key's 5,000 reel price."
+  },
+  {
+   "mpn": "WSLP2010R0100FEA",
+   "family": "WSLP2010 (high power)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 2 W 75 ppm, 2010, high power (WSLP), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2010",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSLP2010R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.38839,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP2010R0100FEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.3483,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP2010R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 28000,
+     "price": 0.32746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLP2010R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 4000,
+     "price": 0.3,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wslp2010r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 20000,
+     "price": 0.25,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wslp2010r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10107-2-ND): Active, series WSLP, Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\", Ratings AEC-Q200 on this code's page -> aecq true (task had false), stock 20,482, lead time 32 weeks. 1,000 = Cut Tape; Tape & Reel ladder 4,000 / 8,000 / 12,000 / 20,000 / 28,000 (largest shown). USD, no VAT. Cross-check: TME product page read 22 Nov 2026 - the code is named; visible net rows 4,000 @ 0.30, 8,000 @ 0.28, 12,000 @ 0.26, 20,000 @ 0.25 USD (net = gross on the page, no VAT; TME prints 2 decimals, so do not take a slope from the TME pair), MOQ 4,000 (packing type not printed - taken as the reel), 0 in TME stock, no AEC-Q200 / norm statement and no lifecycle remark on the TME page. TME is 14% below Digi-Key at 4,000 and 24% below at 20,000."
+  },
+  {
+   "mpn": "WSHP2818R0100FEA",
+   "family": "WSHP2818",
+   "mfr": "Vishay",
+   "desc": "Power Metal Strip current-sense 10 mohm 1% 10 W 2818, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2818",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "BMS"
+   ],
+   "observedMpn": "WSHP2818R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.94365,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSHP2818R0100FEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 0.83675,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSHP2818R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10500,
+     "price": 0.76576,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSHP2818R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-3276-2-ND): Part Status Active, series WSHP2818, 10 mohm 1% 10 W 75 ppm, 7.1x4.6 mm metal element, Features \"Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\". out of stock (0; 3,500 expected 26-Apr-2027; maker lead time 39 weeks) with a normal falling table. 1,000 = Cut Tape; Tape & Reel ladder 3,500 / 7,000 / 10,500 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "WSL3637R0100FEA",
+   "family": "WSL3637 (4-terminal)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 3 W 50 ppm, 3637 case, 4-terminal (WSL3637), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3637",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSL3637R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.67705,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSL3637R0100FEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.61614,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSL3637R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.59755,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSL3637R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 4000,
+     "price": 0.52,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wsl3637r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK WSLI-.01TR-ND): Active, series WSL, 4 terminations, Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\" on this code's page -> aecq true (task had false). out of stock (0; 600 expected 21-Dec-2026, 3,400 on 01-Feb-2027; maker lead time 59 weeks) with a normal falling table. 1,000 = Cut Tape; Tape & Reel ladder 4,000 / 8,000 / 12,000 (largest shown). USD, no VAT. Cross-check: TME product page read 22 Nov 2026 - the code is named, one visible row only: \"Net price for quantities from 4000 pcs - 0.52 USD\" (net = gross on the page, no VAT; TME prints 2 decimals), MOQ / multiple 4,000 (packing type not printed - taken as the reel), 0 in TME stock, no AEC-Q200 / norm statement and no lifecycle remark on the TME page. TME 4,000 is 16% below Digi-Key's 4,000 reel price."
+  },
+  {
+   "mpn": "WSLT2512R0100FEA",
+   "family": "WSLT2512 (high temperature)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 1 W 75 ppm, 2512, WSLT high-temperature (to 275 C), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSLT2512R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.51846,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLT2512R0100FEA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.48167,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLT2512R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 20000,
+     "price": 0.44592,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLT2512R0100FEA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 2000,
+     "price": 0.55,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/wslt2512r0100fea/smd-resistors/vishay/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK WSLT-.01TR-ND): Active, series WSLT, -65..275 C, Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\" on this code's page -> aecq true (task had false), stock 47,269, lead time 53 weeks. 1,000 = Cut Tape; Tape & Reel ladder 2,000 / 4,000 / 6,000 / 10,000 / 14,000 / 20,000 (largest shown). USD, no VAT. Cross-check: TME product page read 22 Nov 2026 - the code is named, one visible row only: \"Net price for quantities from 2000 pcs - 0.55 USD\" (net = gross on the page, no VAT; TME prints 2 decimals), MOQ / multiple 2,000 (packing type not printed - taken as the reel), 0 in TME stock, no AEC-Q200 / norm statement and no lifecycle remark on the TME page. TME 2,000 is 14% above Digi-Key's 2,000 reel price."
+  },
+  {
+   "mpn": "784383230033",
+   "family": "WE-MAIA (metal alloy power inductor, automotive)",
+   "mfr": "Wurth Elektronik",
+   "desc": "SMT metal-alloy molded power inductor 0.33 uH 30% 3.4 A (Isat 6.2 A) 38 mohm max, WE-MAIA 2510 (2.5x2.0x1.0 mm), -40..125 C, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "1008 (2520 metric)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "camera",
+    "radar"
+   ],
+   "observedMpn": "784383230033",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.504,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=784383230033",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.24735,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=784383230033",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 732-6907-2-ND): Part Status Active, series WE-MAIA, Ratings \"AEC-Q200\", stock 2,672, lead time 29 weeks. Value / size now read from the page (task had them unread): 330 nH, 1008 (2520 metric), supplier package 2510. 1,000 = Cut Tape; Tape & Reel shows ONE break only, 3,000 (smallest = largest) - so the pair is cut tape 1k v one reel. Category kept as the task's passive_0805 (2.5x2.0 mm chip-size inductor; reviewer may prefer passive_1206 under the R4 'SMD power inductor' rule). USD, no VAT."
+  },
+  {
+   "mpn": "784383560033",
+   "family": "WE-MAIA (metal alloy power inductor, automotive)",
+   "mfr": "Wurth Elektronik",
+   "desc": "SMT metal-alloy molded power inductor 0.33 uH 30% 9.6 A (Isat 12.4 A) 7.2 mohm max, WE-MAIA 4.1x4.1x2.1 mm, -40..125 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4.1x4.1 mm SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "camera",
+    "radar"
+   ],
+   "observedMpn": "784383560033",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.46396,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/784383560033/6833645",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 732-11307-2-ND; keyword URL gave a 2-result list, the product link was read): Part Status Active, series WE-MAIA, Ratings \"AEC-Q200\", NOT normally stocked at Digi-Key (\"available for purchase but is not normally stocked\", lead time 42 weeks). Tape & Reel ONLY, ONE break: 3,000 - no 1k row, no larger break, so no slope from this page. Value / size read from the page (task had them unread): 330 nH, 4.1x4.1x2.1 mm -> category changed passive_0805 -> passive_1206 (SMD power inductor, R4 rule). USD, no VAT; page notes a US tariff may apply."
+  },
+  {
+   "mpn": "RC0402FR-074K7L",
+   "family": "RC0402",
+   "mfr": "Yageo",
+   "desc": "4.7 kΩ ±1% 0.063W, 1/16W Chip Resistor 0402 (1005 Metric) Moisture Resistant Thick Film",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "ecuRoles": [
+    "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit",
+    "Infineon KIT_A3G_TC4D7_LITE AURIX A3G lite kit",
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "RC0402FR-074K7L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00577,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RC0402FR-074K7L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00355,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RC0402FR-074K7L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00253,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RC0402FR-074K7L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-4.7KLRTR-ND): Active, series RC_L, 4.7 k 1% 1/16 W 0402, Features \"Moisture Resistant\" only - no AEC-Q200 / automotive statement (general-purpose RC series) -> aecq false; the page offers AC0402FR-074K7L as the automotive similar part. out of stock at Digi-Key (0; 10,000 expected 23-Nov-2026; marketplace stock 320,000 not used) with a normal falling table. 1,000 = Cut Tape (cut tape also 5,000 @ 0.00405); Tape & Reel ladder 10,000 / 20,000 / 30,000 / 50,000 / 70,000 / 100,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AC0603FR-0710KL",
+   "family": "AC (automotive thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film resistor 10 k 1% 0.1 W, 0603 (AC automotive series), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC0603FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00905,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00657,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00472,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-10KLDTR-ND): Active, series AC, Features \"Automotive AEC-Q200, Moisture Resistant\" on this code's page -> aecq true (task had false), stock 763,692, lead time 24 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AC0603KRX7R9BB104",
+   "family": "AC (automotive MLCC)",
+   "mfr": "YAGEO",
+   "desc": "MLCC 0.1 uF 50 V X7R 10% 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC0603KRX7R9BB104",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0489,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03633,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.03213,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-3034-2-ND): Active, series AC, 0.1 uF 10% 50 V X7R 0603, Ratings \"AEC-Q200\", Applications Automotive, stock 48,144, lead time 20 weeks, page shows a maximum-purchase limit. No 1,000 row: Cut Tape stops at 500 (the break nearest 1,000); Tape & Reel shows two breaks only, 4,000 and 12,000 (largest shown). Digi-Key is dear for this commodity MLCC (known 4-14x reel spread between distributors) - a second distributor is needed before trusting the level; none was read. USD, no VAT."
+  },
+  {
+   "mpn": "AC0805FR-0710KL",
+   "family": "AC (automotive thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film resistor 10 k 1% 0.125 W, 0805 (AC automotive series), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC0805FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00963,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00725,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-10KLGTR-ND): Active, series AC, Features \"Automotive AEC-Q200, Moisture Resistant\" on this code's page -> aecq true (task had false), stock 139,429, lead time 24 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AC0805KRX7R9BB104",
+   "family": "AC (automotive MLCC)",
+   "mfr": "YAGEO",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805 (AC automotive series), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC0805KRX7R9BB104",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.06342,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.04792,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.04275,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0805KRX7R9BB104",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-3037-2-ND): Active, series AC, Ratings \"AEC-Q200\", Applications Automotive on this code's page -> aecq true (task had false), stock 626 only, lead time 20 weeks, maximum-purchase limit shown. No 1,000 row: Cut Tape stops at 500 (the break nearest 1,000); Tape & Reel shows two breaks only, 4,000 and 12,000 (largest shown). Digi-Key is dear for this commodity MLCC (known reel spread between distributors) - a second distributor is needed before trusting the level; none was read. USD, no VAT."
+  },
+  {
+   "mpn": "AC0201FR-0710KL",
+   "family": "AC (automotive thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film resistor 10 k 1% 0.05 W 200 ppm, 0201 (AC automotive series), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC0201FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01575,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0201FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01099,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0201FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00879,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC0201FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK YAG3413TR-ND): Active, series AC, Features \"Automotive AEC-Q200, Moisture Resistant\", Ratings AEC-Q200 on this code's page -> aecq true (task had false). out of stock (0; 10,000 expected 21-Dec-2026, backorder; lead time 24 weeks) with a normal falling table. 1,000 = Cut Tape (cut tape also 5,000 @ 0.01206); Tape & Reel ladder 10,000 / 20,000 / 30,000 / 50,000 / 70,000 / 100,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AC1206FR-0710KL",
+   "family": "AC (automotive thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film resistor 10 k 1% 0.25 W, 1206 (AC automotive series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AC1206FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0198,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC1206FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01545,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC1206FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01217,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AC1206FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK YAG3805TR-ND): Active, series AC, Features \"Automotive AEC-Q200, Moisture Resistant\" on this code's page -> aecq true (task had false), stock 58,047, lead time 24 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AF0402FR-0710KL",
+   "family": "AF (anti-sulfur thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film anti-sulfur resistor 10 k 1% 0.063 W, 0402 (AF series), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AF0402FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01463,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0402FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01012,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0402FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00803,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0402FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 13-AF0402FR-0710KLTR-ND): Active, series AF, Features \"Anti-Sulfur, Automotive AEC-Q200\" on this code's page -> aecq true (task had false), stock 152,835, lead time 24 weeks. 1,000 = Cut Tape (cut tape also 5,000 @ 0.01113); Tape & Reel ladder 10,000 / 20,000 / 30,000 / 50,000 / 70,000 / 100,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "AF0603FR-0710KL",
+   "family": "AF (anti-sulfur thick film)",
+   "mfr": "YAGEO",
+   "desc": "Thick film anti-sulfur resistor 10 k 1% 0.1 W, 0603 (AF series), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "AF0603FR-0710KL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01463,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01113,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.0085,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AF0603FR-0710KL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 311-10KLMTR-ND): Active, series AF, Features \"Anti-Sulfur, Automotive AEC-Q200\" on this code's page -> aecq true (task had false). out of stock (0; 5,000 expected 22-Dec-2026; lead time 24 weeks) with a normal falling table. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). The figures equal AF0402FR-0710KL's at the same quantities (1k 0.01463, 5k 0.01113, 10k 0.01012, 50k 0.00850) - both pages were read separately; Digi-Key prices the two AF sizes on one ladder. USD, no VAT."
+  },
+  {
+   "mpn": "PA2512FKF7W0R002E",
+   "family": "PA (automotive current sense)",
+   "mfr": "YAGEO",
+   "desc": "Metal current-sense resistor 2 mohm 1% 2 W 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "BMS"
+   ],
+   "observedMpn": "PA2512FKF7W0R002E",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.31392,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PA2512FKF7W0R002E",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.26923,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PA2512FKF7W0R002E",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.22078,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PA2512FKF7W0R002E",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK YAG2142TR-ND): Active, series PA_E, 2 mohm 1% 2 W 100 ppm 2512 metal element, Features \"Automotive AEC-Q200, Current Sense, Moisture Resistant\". out of stock (0; 4,000 expected 22-Dec-2026; lead time 30 weeks) with a normal falling table. 1,000 = Cut Tape; Tape & Reel ladder 4,000 / 8,000 / 12,000 / 20,000 / 28,000 / 40,000 (largest shown). USD, no VAT."
+  }
+ ],
+ "notResearched": []
+}

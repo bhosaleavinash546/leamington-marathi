@@ -1,0 +1,2121 @@
+{
+ "domain": "b03-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "UCZ1V101MCL1GS",
+   "family": "UCZ (chip aluminium, 125 C)",
+   "mfr": "Nichicon",
+   "desc": "Aluminium electrolytic 100 uF 35 V 20%, ESR 200 mohm, 8 x 10 mm SMD can, 125 C 3000 h, UCZ series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "8 mm dia x 10 mm SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "DC-DC converter",
+    "engine ECU"
+   ],
+   "observedMpn": "UCZ1V101MCL1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.47938,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCZ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.44516,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCZ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.38637,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCZ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named UCZ1V101MCL1GS, Nichicon): Active, Ratings \"AEC-Q200\" read on this code's page (task had aecq false; the page does not use the word Automotive), series UCZ, 100 uF 35 V 20%, ESR 200 mohm, 8.00 mm dia, 10.00 mm max height, 3000 h @ 125 C, -40..125 C, stock 3,119, lead time 29 weeks. Cut tape stops at 100 ($0.58800); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.42788, 2,500 @ 0.40862, 3,500 @ 0.39731). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "UCH1V101MCL1GS",
+   "family": "UCH (chip aluminium, low-temperature ESR)",
+   "mfr": "Nichicon",
+   "desc": "Aluminium electrolytic 100 uF 35 V 20%, ESR 300 mohm @ 100 kHz, 6.3 x 8 mm (max) SMD can, 125 C 2000 h, UCH series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6.3 mm dia x 8.0 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "DC-DC converter",
+    "engine ECU"
+   ],
+   "observedMpn": "UCH1V101MCL1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 900,
+     "price": 0.37082,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCH1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.30157,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCH1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named UCH1V101MCL1GS, Nichicon): Active, Ratings row \"AEC-Q200\", Applications \"Automotive\" read on this code's page (task had aecq false), series UCH, 100 uF 35 V 20%, ESR 300 mohm @ 100 kHz, 6.30 mm dia, 8.00 mm max height, 2000 h @ 125 C, -40..125 C, stock 4,224, lead time 35 weeks. Cut tape stops at 100 ($0.49100); Tape & Reel smallest 900 (also the break nearest 1k) and largest 9,000 (1,800 @ 0.34533, 2,700 @ 0.33247, 4,500 @ 0.31813, 6,300 @ 0.30971). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "UCJ1V101MCL1GS",
+   "family": "UCJ (chip aluminium)",
+   "mfr": "Nichicon",
+   "desc": "Aluminium electrolytic 100 uF 35 V 20%, ESR 1.5 ohm, 10 x 10.5 mm (max) SMD can, 125 C 2000 h, UCJ series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 10.5 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "DC-DC converter",
+    "engine ECU"
+   ],
+   "observedMpn": "UCJ1V101MCL1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.39978,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCJ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.37013,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCJ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.31918,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCJ1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named UCJ1V101MCL1GS, Nichicon): Active, Ratings row \"AEC-Q200\" read on this code's page (task had aecq false; the page's Applications row says \"General Purpose\", not Automotive), series UCJ, 100 uF 35 V 20%, ESR 1.5 ohm, 10.00 mm dia, 10.50 mm max height, 2000 h @ 125 C, -40..125 C, stock 983, lead time 30 weeks. Cut tape stops at 100 ($0.49390); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.35516, 2,500 @ 0.33847, 3,500 @ 0.32866). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "HHXD350ARA271MJA0G",
+   "family": "HXD (hybrid)",
+   "mfr": "Nippon Chemi-Con",
+   "desc": "Hybrid polymer Al SMD 270 uF 35 V 20%, ESR 20 mohm, 2.5 A, 10 x 10.5 mm (max) can, 105 C 5000 h, HXD series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 10.5 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "observedMpn": "HHXD350ARA271MJA0G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.87136,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=HHXD350ARA271MJA0G",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.81683,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=HHXD350ARA271MJA0G",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.72323,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=HHXD350ARA271MJA0G",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.3679,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=HHXD350ARA271MJA0G",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.3512,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=HHXD350ARA271MJA0G",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named HHXD350ARA271MJA0G, Chemi-Con): Active, Ratings \"AEC-Q200\", Applications Automotive, series HXD, 270 uF 35 V 20% ESR 20 mohm, 2.5 A @ 100 kHz, 10.00 mm dia x 10.50 mm max, 5000 h @ 105 C, -55..105 C, stock 292, lead time 40 weeks. Cut tape stops at 100 ($1.10730); Tape & Reel (manufacturer standard package) smallest 500, 1,000, largest 5,000 (1,500 @ 0.78931, 2,500 @ 0.75865, 3,500 @ 0.74064). Note the 105 C rating (a 105 C part, not the 125 C class). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised, \"authorized distributor\" for Chemi-Con; code named HHXD350ARA271MJA0G, USD): standard package 500, MOQ 50, \"ships on reel - full reels, cut tape, or a combination\", in stock 375 (6,000 on order), lead time 40 weeks; breaks 50 0.4307; 250 0.3828; 500 0.3788; 1,000 0.3679; 2,500 0.3529; 5,000+ 0.3512. WIDE SPREAD: Master 1k is 0.45x Digi-Key 1k (0.81683) - a 2.2x gap between two franchised listings read the same day, below the 2.5x dispute line; both recorded, a supplier quote should settle it. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-2GEJ511X",
+   "family": "ERJ-2GE",
+   "mfr": "Panasonic",
+   "desc": "RES, 510, 5%, 0.1 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "ERJ-2GEJ511X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00784,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GEJ511X",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00512,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GEJ511X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00379,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GEJ511X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 10000,
+     "price": 0.006,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-2GEJ511X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000000,
+     "price": 0.0033,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-2GEJ511X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (the keyword URL lands on the product page; code named ERJ-2GEJ511X): Active, Features \"Automotive AEC-Q200\", series ERJ-2G, 510 ohm 5% 0.1 W 0402, -55..155 C, stock 149,532. Cut tape 1,000; Tape & Reel smallest 10,000 and largest 100,000 (also 5,000 cut tape @ 0.00565; reel 20k 0.00461, 30k 0.00436, 50k 0.00409, 70k 0.00394). \"Grade 0\" in desc is the task's wording; the page states AEC-Q200 and 155 C, not a grade number. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-2GEJ511X, \"Automotive T/R\", USD): Tape and Reel, MOQ / multiple 10,000, in stock 109,900; breaks 10,000 0.0060; 30,000 0.0045; 50,000 0.0040; 100,000 0.0037; 250,000 0.0035; 500,000 0.0033; 1,000,000+ 0.0033 (printed to 4 dp; the last two rows are equal). Master 10k is 17% ABOVE Digi-Key 10k; at 100k Master 0.0037 v Digi-Key 0.00379. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "EEH-ZU1V331P",
+   "family": "EEH-ZU (hybrid, 135 C)",
+   "mfr": "Panasonic",
+   "desc": "Hybrid polymer Al SMD 330 uF 35 V, 11 mohm, 4000 h @135 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 12.8 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS",
+    "engine ECU"
+   ],
+   "observedMpn": "EEH-ZU1V331P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 400,
+     "price": 1.2664,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1200,
+     "price": 1.15188,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.05964,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 400,
+     "price": 1.078,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1200,
+     "price": 1.029,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 15200,
+     "price": 0.926,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZU1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZU1V331P): Active, Ratings \"AEC-Q200\", Applications Automotive, series ZU, hybrid 330 uF 35 V 20% ESR 11 mohm, 10 mm dia x 12.8 mm max height, 4000 h @ 135 C, stock 2,303. Cut tape stops at 100 ($1.44990), so every break here is Tape & Reel: smallest 400, 1,200 (nearest 1k; 800 @ 1.19028 also shown), largest 4,000 (2,000 @ 1.10908, 2,800 @ 1.08393). pkg: the page gives 10 mm dia, height 12.8 mm max (task says 10x10.2 mm - not what this page shows). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named EEH-ZU1V331P, USD): reel pack 400, MOQ / multiple 400, out of stock (0; lead time 43 weeks) with a normal falling table; breaks 400 1.078; 800 1.031; 1,200 1.029; 2,800 0.989; 5,200 0.963; 7,600 0.950; 10,000 0.948; 15,200+ 0.926. Master 1,200 is 11% under Digi-Key 1,200; Master publishes a larger break (15,200) than Digi-Key (4,000). Master describes the can as 10 mm dia x 12.5 mm. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "EEH-ZK1V101XP",
+   "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 100 uF 35 V 20%, ESR 35 mohm, 1.7 A, 6.3 x 8 mm (max) SMD can, 125 C 4000 h, ZK series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6.3 mm dia x 8.0 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "EEH-ZK1V101XP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 900,
+     "price": 0.3467,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V101XP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.28246,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V101XP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZK1V101XP; TME writes it EEHZK1V101XP): Active, Ratings \"AEC-Q200\", Applications Automotive, series ZK, 100 uF 35 V 20% ESR 35 mohm, 6.3 mm dia, 8.0 mm max height, stock 12,813. Grade now read for this exact code. Cut tape stops at 100 ($0.47960); Tape & Reel smallest 900 (also the break nearest 1k) and largest 9,000 (1,800 @ 0.32306, 2,700 @ 0.31113, 4,500 @ 0.29783, 6,300 @ 0.29001). desc / pkg completed from the page. Cross-check NOT recorded as a price: the Master Electronics product page read 22 Nov 2026 (code named EEH-ZK1V101XP, reel 900, in stock 5,400, USD) prints 900 $1.34; 1,800 $1.26; 2,700 $1.23; 5,400 $1.22; 8,100 $1.19; 10,800 $1.18; 15,300 $1.17; 25,200+ $1.15 - 3.9x Digi-Key's 900-reel price and above Digi-Key's ONE-piece price ($1.10) on the same day, so it is not a credible volume price (the 330 uF sibling is $0.83 at Master). DISPUTED between two franchised listings; Digi-Key's ladder is consistent with its ZK siblings and is the one recorded. A reviewer may add the Master figure if wanted: https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V101XP"
+  },
+  {
+   "mpn": "EEH-ZK1V331P",
+   "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 330 uF 35 V 20%, ESR 20 mohm, 2.8 A, 10 x 10.2 mm SMD can, 125 C 4000 h, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10.2 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "EEH-ZK1V331P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.65872,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.61526,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.54065,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500,
+     "price": 0.8507,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.8337,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 15000,
+     "price": 0.7536,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZK1V331P; TME writes it EEHZK1V331P): Active, Ratings \"AEC-Q200\", Applications Automotive, series ZK, 330 uF 35 V 20% ESR 20 mohm, 2.8 A @ 100 kHz, 10 mm dia x 10.5 mm max, 4000 h @ 125 C, stock 7,681, lead time 43 weeks. Cut tape stops at 100 ($0.83400); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.59333, 2,500 @ 0.56890, 3,500 @ 0.55453). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named EEH-ZK1V331P, USD): reel pack 500, MOQ / multiple 500, in stock 1,000 (1,500 on order); breaks 500 0.8507; 1,000 0.8337; 2,500 0.8171; 5,000 0.8007; 7,500 0.7847; 10,000 0.7690; 15,000+ 0.7536. Master 1k is 35% ABOVE Digi-Key 1k (0.61526); Master publishes a larger break (15,000) than Digi-Key (5,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text. TME product page also read (tme.eu/en/details/eehzk1v331p/smd-hybrid-capacitors/panasonic/): \"Conform to the norm: AEC-Q200\", reel 500, stock 1,972, but its visible table stops at \"from 50 pcs\" (1.32 / 0.97 / 0.84 / 0.83 USD net = gross) - below the 100-unit floor, so no TME price is recorded."
+  },
+  {
+   "mpn": "EEH-ZS1V471UP",
+   "family": "EEH-ZS (hybrid, high capacitance)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 470 uF 35 V 20%, ESR 14 mohm, 3.5 A, 10 x 12.8 mm (max) SMD can, 125 C 4000 h, ZS (ZSU) series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 12.8 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS",
+    "engine ECU"
+   ],
+   "observedMpn": "EEH-ZS1V471UP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 400,
+     "price": 1.15445,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1200,
+     "price": 1.04923,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.96446,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 400,
+     "price": 1.037,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1200,
+     "price": 0.99,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 15200,
+     "price": 0.891,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V471UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZS1V471UP; TME writes it EEHZS1V471UP): Active, Ratings \"AEC-Q200\", Applications Automotive (task had aecq false - now read on this code's page), series \"ZSU\", 470 uF 35 V 20% ESR 14 mohm, 10 mm dia x 12.8 mm max, 4000 h @ 125 C, stock 123, lead time 43 weeks. Cut tape stops at 100 ($1.48670); Tape & Reel smallest 400, 1,200 (nearest 1k; 800 @ 1.08451 also shown), largest 4,000 (2,000 @ 1.00990, 2,800 @ 0.98678). desc / pkg completed from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named EEH-ZS1V471UP, USD): Tape and Reel, MOQ / multiple 400, out of stock (0; lead time 43 weeks) with a normal falling table; breaks 400 1.037; 800 0.992; 1,200 0.990; 2,800 0.952; 5,200 0.926; 7,600 0.914; 10,000 0.912; 15,200+ 0.891. Master 1,200 is 6% under Digi-Key 1,200; Master publishes a larger break (15,200) than Digi-Key (4,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-2GE0R00X",
+   "family": "ERJ-2GE 0402",
+   "mfr": "Panasonic",
+   "desc": "Thick-film jumper 0 ohm 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01033 60 GHz radar small form factor",
+    "TI TIDEP-01034 entry-level blind-spot detection radar",
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+   ],
+   "observedMpn": "ERJ-2GE0R00X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00625,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GE0R00X",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00467,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GE0R00X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00346,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GE0R00X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 10000,
+     "price": 0.0035,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-2GE0R00X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000000,
+     "price": 0.0028,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-2GE0R00X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-2GE0R00X): Active, Features \"Automotive AEC-Q200\", series ERJ-2G, 0 ohm jumper 0402 1/10 W, -55..155 C, stock 12,573,566. Cut tape 1,000 (5,000 cut tape @ 0.00480); Tape & Reel smallest 10,000 and largest 100,000 (20k 0.00424, 30k 0.00401, 50k 0.00376, 70k 0.00360). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-2GE0R00X, \"Automotive T/R\", USD): Tape and Reel, MOQ / multiple 10,000, in stock 1,050,000; breaks 10,000 0.0035; 30,000 0.0029; 50,000 0.0029; 100,000 0.0029; 250,000 0.0028; 500,000 0.0028; 1,000,000+ 0.0028 (printed to 4 dp; flat from 250,000). Master 10k is 25% under Digi-Key 10k, 100k 16% under. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-3GEY0R00V",
+   "family": "ERJ-3GE 0603",
+   "mfr": "Panasonic",
+   "desc": "Thick-film jumper 0 ohm 0603, AEC-Q200 Grade 0",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-050063 HV solid-state relay active precharge"
+   ],
+   "observedMpn": "ERJ-3GEY0R00V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0091,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-3GEY0R00V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00745,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-3GEY0R00V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00546,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-3GEY0R00V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.0061,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-3GEY0R00V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500000,
+     "price": 0.0041,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-3GEY0R00V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-3GEY0R00V): Active, Features \"Automotive AEC-Q200\", series ERJ-3G, 0 ohm jumper 0603 1/10 W, -55..155 C, stock 4,093,399. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.00674, 15k 0.00637, 25k 0.00595, 35k 0.00570). \"Grade 0\" in desc is the task's wording; the page states AEC-Q200 and 155 C, not a grade number. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-3GEY0R00V, \"Automotive T/R\", USD): reel 5,000, MOQ / multiple 5,000, in stock 983,656; breaks 5,000 0.0061; 25,000 0.0044; 50,000 0.0043; 100,000 0.0041; 150,000 0.0041; 250,000 0.0041; 500,000+ 0.0041 (printed to 4 dp; flat from 100,000). Master 5k is 18% under Digi-Key 5k, 50k 21% under. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-P03F1002V",
+   "family": "ERJ-P0x (anti-surge)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge resistor 10 k 1% 0.2 W, 0603 (ERJ-P03 series), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "ERJ-P03F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06335,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P03F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.05154,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04439,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.0456,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-P03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 50000,
+     "price": 0.0381,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-P03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-P03F1002V; TME writes it ERJP03F1002V): Active, Features \"Automotive AEC-Q200, Pulse Withstanding\" read for this exact code, series ERJ-P03, 10 k 1% 0.2 W 0603, -55..155 C, stock 5,284, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.04879, 15k 0.04746, 25k 0.04601, 35k 0.04518). Power added to desc from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-P03F1002V, \"Automotive T/R\", USD): Tape and Reel, MOQ / multiple 5,000, in stock 10,000; breaks 5,000 0.0456; 10,000 0.0408; 25,000 0.0394; 50,000+ 0.0381 (printed to 4 dp). Master 5k is 12% under Digi-Key 5k, 50k 14% under. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-P06F1002V",
+   "family": "ERJ-P0x (anti-surge)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge resistor 10 k 1% 0.5 W, 0805 (ERJ-P06 series), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "ERJ-P06F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03805,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P06F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.02991,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.02483,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.0312,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-P06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500000,
+     "price": 0.0203,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-P06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-P06F1002V; TME writes it ERJP06F1002V): Active, Features \"Automotive AEC-Q200, Pulse Withstanding\" read for this exact code, series ERJ-P06, 10 k 1% 0.5 W 0805, -55..155 C, stock 383,855, lead time 15 weeks. Cut tape 1,000 (the page also shows a separate Digi-Reel ladder, 1,000 @ 0.03589 + $7 reeling fee - not recorded); Tape & Reel smallest 5,000 and largest 50,000 (10k 0.02796, 15k 0.02701, 25k 0.02598, 35k 0.02539). Power added to desc from the page. Catalogue holds the 1 k sibling ERJ-P06F1001V. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-P06F1002V, \"Automotive T/R\", USD): Tape and Reel, MOQ / multiple 5,000, in stock 50,000; breaks 5,000 0.0312; 10,000 0.0255; 25,000 0.0227; 50,000 0.0212; 100,000 0.0204; 150,000 0.0204; 250,000 0.0203; 500,000+ 0.0203 (printed to 4 dp; flat from 250,000). Master 5k is 4% over Digi-Key 5k, 50k 15% under. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-PA3F1002V",
+   "family": "ERJ-PA (anti-surge, high power)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge / pulse-withstanding resistor 10 k 1% 1/3 W, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "ERJ-PA3F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02588,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-PA3F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01985,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-PA3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01604,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-PA3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.0181,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-PA3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500000,
+     "price": 0.0147,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-PA3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-PA3F1002V; TME writes it ERJPA3F1002V): Active, Features \"Automotive AEC-Q200, Pulse Withstanding\", series ERJ-PA3, 10 k 1% 0.333 W 0603, -55..155 C, stock 423,110, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.01839, 15k 0.01767, 25k 0.01690, 35k 0.01645). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERJ-PA3F1002V, \"Automotive T/R\", USD): reel 5,000 per reel, MOQ / multiple 5,000, in stock 50,000; breaks 5,000 0.0181; 25,000 0.0162; 50,000 0.0160; 100,000 0.0153; 150,000 0.0153; 250,000 0.0147; 500,000+ 0.0147 (printed to 4 dp). Master 5k is 9% under Digi-Key 5k, 50k equal within 0.3%."
+  },
+  {
+   "mpn": "ERJ-U03F1002V",
+   "family": "ERJ-U (anti-sulfurated)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.1 W, 0603, -55..155 C, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "ERJ-U03F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02655,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U03F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.02032,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01636,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.0184,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-U03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500000,
+     "price": 0.0164,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERJ-U03F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-U03F1002V; TME writes it ERJU03F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\", series ERJ-U03, 10 k 1% 0.1 W 0603, -55..155 C, stock 278,399, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.01880, 15k 0.01806, 25k 0.01725, 35k 0.01680). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised, \"Authorized Distributor\"; code named ERJ-U03F1002V, described \"Anti-sulfurated, AEC-Q200 compliant\", USD): reel 5,000, MOQ / multiple 5,000, in stock 180,000; breaks 5,000 0.0184; 25,000 0.0167; 50,000 0.0166; 100,000 0.0166; 150,000 0.0165; 250,000 0.0165; 500,000+ 0.0164 (printed to 4 dp). Master 5k is 9% under Digi-Key 5k, 50k 1.5% over. Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ETQ-P5M100YFC",
+   "family": "ETQP5M_Y (metal composite power choke coil)",
+   "mfr": "Panasonic",
+   "desc": "Metal composite power choke coil 10 uH 20%, 8.5 A (Isat 10.7 A), DCR 26.2 mohm, shielded, 10.7 x 10.0 x 5.4 mm, -40..150 C, PCC-M1054M series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10.7 x 10.0 x 5.4 mm 2-SMD J-lead",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "engine ECU"
+   ],
+   "observedMpn": "ETQ-P5M100YFC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.68026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQP5M100YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.64146,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQP5M100YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.55988,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQP5M100YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.583,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ETQ-P5M100YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 15000,
+     "price": 0.543,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ETQ-P5M100YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ETQ-P5M100YFC; TME writes it ETQP5M100YFC): Active, Ratings \"AEC-Q200\" read on this code's page (task had aecq false), series PCC-M1054M, metal composite, shielded, 10 uH 20%, current rating 8.5 A, Isat 10.7 A, DCR 26.2 mohm, 10.70 x 10.00 mm, height 5.40 mm max, -40..150 C, stock 3,518, lead time 23 weeks. Cut tape stops at 250 ($0.74268); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.61983, 2,500 @ 0.59362, 3,500 @ 0.57699). desc / pkg completed from the page (the task had not read case size or current). The price ladder is identical to the 4.7 uH sibling ETQ-P5M4R7YFC (both pages read). Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ETQ-P5M100YFC, \"Automotive T/R\", USD): Tape and Reel, standard package 1,000, MOQ 50, in stock 2,789, lead time 23 weeks; breaks 50 1.065; 250 0.734; 500 0.671; 1,000 0.583; 3,000 0.563; 5,000 0.545; 8,000 0.544; 15,000+ 0.543. Master 1k is 9% under Digi-Key 1k; Master publishes a larger break (15,000) than Digi-Key (5,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ETQ-P5M4R7YFC",
+   "family": "ETQP5M_Y (metal composite power choke coil)",
+   "mfr": "Panasonic",
+   "desc": "Metal composite power choke coil 4.7 uH 20%, 13.1 A (Isat 20 A), DCR 11.3 mohm max, shielded, 10.7 x 10.0 x 5.4 mm, -40..150 C, PCC-M1054M series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10.7 x 10.0 x 5.4 mm 2-SMD J-lead",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "engine ECU"
+   ],
+   "observedMpn": "ETQ-P5M4R7YFC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.68026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/ETQ-P5M4R7YFC/2347762",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.64146,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/ETQ-P5M4R7YFC/2347762",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.55988,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/ETQ-P5M4R7YFC/2347762",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.583,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ETQ-P5M4R7YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 25000,
+     "price": 0.533,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ETQ-P5M4R7YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ETQ-P5M4R7YFC; TME writes it ETQP5M4R7YFC; the un-hyphenated keyword gave a category list, the hyphenated one the product link): Active, Ratings \"AEC-Q200\" read on this code's page (task had aecq false), series PCC-M1054M, metal composite, shielded, 4.7 uH 20%, current rating 13.1 A, Isat 20 A, DCR 11.3 mohm max, 10.70 x 10.00 mm, height 5.40 mm max, -40..150 C, stock 39,042, lead time 23 weeks. Cut tape stops at 250 ($0.74268); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.61983, 2,500 @ 0.59362, 3,500 @ 0.57699). desc / pkg completed from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ETQ-P5M4R7YFC, \"Automotive T/R\", USD): reel pack 1,000, MOQ 500, in stock 36 (low), lead time 23 weeks; breaks 500 0.6230; 1,000 0.5830; 3,000 0.5630; 5,000 0.5460; 8,000 0.5400; 10,000 0.5390; 15,000 0.5340; 25,000+ 0.5330 (a \"1 @ 0.6853\" row is also printed, below the MOQ). Master 1k is 9% under Digi-Key 1k; Master publishes a larger break (25,000) than Digi-Key (5,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "EEH-ZK1V221UP",
+   "family": "EEH-ZK (hybrid, low ESR / high ripple)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 220 uF 35 V 20%, ESR 27 mohm, 2 A, 8 x 10.5 mm (max) SMD can, 125 C 4000 h, ZK (ZKU) series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "8 mm dia x 10.5 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "EEH-ZK1V221UP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.56954,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.53073,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.46411,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 500,
+     "price": 0.755,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.721,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 25000,
+     "price": 0.619,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZK1V221UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZK1V221UP; TME writes it EEHZK1V221UP): Active, Ratings \"AEC-Q200\", Applications Automotive read for this exact code, series \"ZKU\", 220 uF 35 V 20% ESR 27 mohm, 2 A @ 100 kHz, 8.00 mm dia x 10.50 mm max, 4000 h @ 125 C, stock 2,468, lead time 43 weeks. Cut tape stops at 100 ($0.72510); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.51115, 2,500 @ 0.48933, 3,500 @ 0.47651). desc / pkg completed from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named EEH-ZK1V221UP, \"Emboss T/R\", USD): reel pack 500, MOQ / multiple 500, out of stock (0; lead time 43 weeks) with a normal falling table; breaks 500 0.755; 1,000 0.721; 2,500 0.662; 5,000 0.660; 7,500 0.644; 10,000 0.643; 15,000 0.636; 25,000+ 0.619. Master 1k is 36% ABOVE Digi-Key 1k (0.53073); Master publishes a larger break (25,000) than Digi-Key (5,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "EEH-ZS1V331P",
+   "family": "EEH-ZS (hybrid, high capacitance)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 330 uF 35 V 20%, ESR 14 mohm, 3.5 A, 10 x 12.8 mm (max) SMD can, 125 C 4000 h, ZS series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 12.8 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS",
+    "engine ECU"
+   ],
+   "observedMpn": "EEH-ZS1V331P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 400,
+     "price": 1.12468,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1200,
+     "price": 1.02154,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.93847,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V331P",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZS1V331P; TME writes it EEHZS1V331P): Active, out of stock (0; \"400 expected in stock on 21-Dec-2026\", backorder, lead time 43 weeks) with a normal falling price table. Ratings \"AEC-Q200\", Applications Automotive read on this code's page (task had aecq false), series ZS, 330 uF 35 V 20% ESR 14 mohm, 3.5 A @ 100 kHz, 10.00 mm dia x 12.80 mm max, 4000 h @ 125 C (page operating temperature -55..135 C). Cut tape stops at 100 ($1.36750); Tape & Reel smallest 400, 1,200 (nearest 1k; 800 @ 1.05613 also shown), largest 4,000 (2,000 @ 0.98299, 2,800 @ 0.96035). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "EEH-ZS1V681UP",
+   "family": "EEH-ZS (hybrid, high capacitance)",
+   "mfr": "Panasonic",
+   "desc": "Conductive polymer hybrid aluminium capacitor 680 uF 35 V 20%, ESR 11 mohm, 4 A, 10 x 16.8 mm (max) SMD can, 125 C 4000 h, ZS (ZSU) series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10 mm dia x 16.8 mm (max) SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS",
+    "engine ECU"
+   ],
+   "observedMpn": "EEH-ZS1V681UP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 1.65148,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1250,
+     "price": 1.44016,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.37374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=EEHZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 250,
+     "price": 1.45,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 1.32,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 15000,
+     "price": 1.19,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=EEH-ZS1V681UP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named EEH-ZS1V681UP; TME writes it EEHZS1V681UP): Active, Ratings \"AEC-Q200\", Applications Automotive read on this code's page (task had aecq false), series \"ZSU\", 680 uF 35 V 20% ESR 11 mohm, 4 A @ 100 kHz, 10.00 mm dia x 16.80 mm max, 4000 h @ 125 C, stock 7,737, lead time 43 weeks. Cut tape stops at 100 ($1.90430); Tape & Reel smallest 250, 1,250 (nearest 1k with 750 @ 1.49765; 500 @ 1.54924, 1,750 @ 1.40637 also shown), largest 2,500. desc / pkg completed from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named EEH-ZS1V681UP, USD): reel pack 250, MOQ / multiple 250, out of stock (0; lead time 43 weeks) with a normal falling table; breaks 250 1.45; 500 1.38; 1,000 1.32; 2,500 1.27; 5,000 1.23; 7,500 1.22; 10,000 1.21; 15,000+ 1.19 (printed to 2 dp). Master 2,500 is 8% under Digi-Key 2,500; Master publishes a larger break (15,000) than Digi-Key (2,500). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERA-1AEB103C",
+   "family": "ERA-xA (thin film, high reliability)",
+   "mfr": "Panasonic",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.05 W, 0201 (ERA-1A series), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS",
+    "radar"
+   ],
+   "observedMpn": "ERA-1AEB103C",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.08918,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-1AEB103C",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.07083,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-1AEB103C",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 45000,
+     "price": 0.06685,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-1AEB103C",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERA-1AEB103C; TME writes it ERA1AEB103C): Active, Features \"Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERA-1A, thin film 10 k 0.1% 25 ppm/C 0.05 W 0201, -55..155 C, stock 372,797, lead time 55 weeks. Cut tape's largest break is 500 (the break nearest 1k; no 1,000 row); Tape & Reel shows only two breaks: smallest 15,000 and largest 45,000. Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERA-2AEB103X",
+   "family": "ERA-xA (thin film, high reliability)",
+   "mfr": "Panasonic",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.063 W, 0402 (ERA-2A series), AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS",
+    "radar"
+   ],
+   "observedMpn": "ERA-2AEB103X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.06778,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-2AEB103X",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.0549,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-2AEB103X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.05156,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-2AEB103X",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERA-2AEB103X; TME writes it ERA2AEB103X): Active, out of stock (0; \"10,000 expected in stock on 05-Aug-2027\", lead time 55 weeks) with a normal falling price table. Features \"Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERA-2A, thin film 10 k 0.1% 25 ppm/C 0.063 W 0402, -55..155 C. Cut tape's largest break is 500 (the break nearest 1k; no 1,000 row); Tape & Reel shows only two breaks: smallest 10,000 and largest 30,000. Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERA-8AEB103V",
+   "family": "ERA-xA (thin film, high reliability)",
+   "mfr": "Panasonic",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm 0.25 W, 1206 (ERA-8A series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS",
+    "radar"
+   ],
+   "observedMpn": "ERA-8AEB103V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.1735,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.14825,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.13925,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 2500,
+     "price": 0.1473,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.1444,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 150000,
+     "price": 0.1311,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ERA-8AEB103V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERA-8AEB103V; TME writes it ERA8AEB103V): Active, Features \"Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERA-8A, thin film 10 k 0.1% 25 ppm/C 0.25 W 1206, -55..155 C, stock 159,222, lead time 55 weeks. Cut tape's largest break is 500 (the break nearest 1k; no 1,000 row; the separate Digi-Reel ladder 500 @ 0.16368 + $7 fee is not recorded); Tape & Reel shows only two breaks: smallest 5,000 and largest 15,000. Power added to desc from the page. Cross-check, Master Electronics product page read 22 Nov 2026 (franchised; code named ERA-8AEB103V, \"Automotive T/R\", USD): Tape and Reel, reel pack 5,000, MOQ 2,500 (half a reel - packing as the page describes it), in stock 32,600, lead time 49 weeks; breaks 2,500 0.1473; 5,000 0.1444; 10,000 0.1395; 25,000 0.1341; 50,000 0.1327; 100,000 0.1314; 150,000+ 0.1311. Master 5k is 2.6% under Digi-Key 5k; Master publishes a larger break (150,000) than Digi-Key (15,000). Master's page also carries unselected template banners (\"no longer being manufactured\", \"NOT RoHS\", \"not in stock\") that contradict its own stock / RoHS fields and Digi-Key's Active status - read as template text."
+  },
+  {
+   "mpn": "ERJ-HP6F1001V",
+   "family": "ERJ-HP (high power thick film)",
+   "mfr": "Panasonic",
+   "desc": "Thick-film resistor 1 k 1% 0.5 W 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "observedMpn": "ERJ-HP6F1001V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06277,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-HP6F1001V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.04815,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-HP6F1001V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04145,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-HP6F1001V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-HP6F1001V): Active, Features \"Automotive AEC-Q200\", series ERJ-HP6, 1 k 1% 0.5 W 0805 thick film, -55..175 C, stock 3,682, lead time 15 weeks. Cut tape 1,000 (the separate Digi-Reel ladder 1,000 @ 0.05922 + $7 fee is not recorded); Tape & Reel smallest 5,000 and largest 50,000 (10k 0.04558, 15k 0.04432, 25k 0.04297, 35k 0.04219). One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-P08F1002V",
+   "family": "ERJ-P0x (anti-surge)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge resistor 10 k 1% 0.667 W, 1206 (ERJ-P08 series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "ERJ-P08F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.04694,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P08F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.03759,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.03185,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-P08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-P08F1002V; TME writes it ERJP08F1002V): Active, Features \"Automotive AEC-Q200, Pulse Withstanding\" read for this exact code, series ERJ-P08, 10 k 1% 0.667 W 1206, -55..155 C, stock 22,774, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.03539, 15k 0.03431, 25k 0.03315, 35k 0.03248). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-S06F1002V",
+   "family": "ERJ-S (anti-sulfurated)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.125 W, 0805 (ERJ-S06 series), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "ERJ-S06F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06532,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S06F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.05344,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04629,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-S06F1002V; TME writes it ERJS06F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERJ-S06, 10 k 1% 0.125 W 0805, -55..155 C, stock 8,085, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.05069, 15k 0.04935, 25k 0.04790, 35k 0.04707). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-S08F1002V",
+   "family": "ERJ-S (anti-sulfurated)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.25 W, 1206 (ERJ-S08 series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "ERJ-S08F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.12131,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S08F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.10274,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.09209,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 0.12,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/erjs08f1002v/smd-resistors/panasonic/",
+     "date": "2026-11-22",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-S08F1002V; TME writes it ERJS08F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERJ-S08, 10 k 1% 0.25 W 1206, -55..155 C, stock 9,795, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.09865, 15k 0.09666, 25k 0.09450, 35k 0.09326). About 1.9x the 0805 sibling ERJ-S06F1002V on the same day - as the page shows; a cross-check is worth having. Power added to desc from the page. Cross-check, TME product page read 22 Nov 2026 (franchised; code named ERJS08F1002V, tme.eu/en, USD): ONE visible row, \"Net price for quantities from 5000 pcs - 0.12 USD\" (gross shown equal, i.e. no VAT on the page; TME prints prices to 2 dp, so 0.12 is the printed figure, not a 5-dp price), minimum order and multiple 5,000 (reel quantity not stated on the page -> packing unknown), 0 in TME stock, no lifecycle remark. It agrees with the Digi-Key level (reel 5,000 @ 0.10274) - the 1206 ERJ-S08 really is about twice the 0805."
+  },
+  {
+   "mpn": "ERJ-U06F1002V",
+   "family": "ERJ-U (anti-sulfurated)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.125 W, 0805 (ERJ-U06 series), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "ERJ-U06F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03111,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U06F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.02274,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01857,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U06F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-U06F1002V; TME writes it ERJU06F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\" read for this exact code, series ERJ-U06, 10 k 1% 0.125 W 0805, -55..155 C, stock 15,547, lead time 15 weeks. Cut tape 1,000 (the separate Digi-Reel ladder 1,000 @ 0.02935 + $7 fee is not recorded); Tape & Reel smallest 5,000 and largest 50,000 (10k 0.02113, 15k 0.02035, 25k 0.01951, 35k 0.01902). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-U08F1002V",
+   "family": "ERJ-U (anti-sulfurated)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated resistor 10 k 1% 0.25 W, 1206 (ERJ-U08 series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "ERJ-U08F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.04412,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U08F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.03519,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.02968,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-U08F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-U08F1002V; TME writes it ERJU08F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\" read for this exact code, series ERJ-U08, 10 k 1% 0.25 W 1206, -55..155 C, stock 327 (low), lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.03308, 15k 0.03204, 25k 0.03093, 35k 0.03029). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-UP3F1002V",
+   "family": "ERJ-UP (anti-sulfurated + anti-surge)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated, anti-surge resistor 10 k 1% 0.25 W, 0603 (ERJ-UP3 series), AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain ECU",
+    "body ECU"
+   ],
+   "observedMpn": "ERJ-UP3F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0428,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP3F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.03611,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.03039,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP3F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-UP3F1002V; TME writes it ERJUP3F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200, Pulse Withstanding\" read on this code's page (task had aecq false), series ERJ-UP3, 10 k 1% 0.25 W 0603, -55..155 C, stock 18,178, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.03391, 15k 0.03284, 25k 0.03168, 35k 0.03102). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-UP8F1002V",
+   "family": "ERJ-UP (anti-sulfurated + anti-surge)",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfurated, anti-surge resistor 10 k 1% 0.667 W, 1206 (ERJ-UP8 series), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain ECU",
+    "body ECU"
+   ],
+   "observedMpn": "ERJ-UP8F1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06392,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP8F1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.04909,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP8F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04231,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-UP8F1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-UP8F1002V; TME writes it ERJUP8F1002V): Active, Features \"Anti-Sulfur, Automotive AEC-Q200\" read on this code's page (task had aecq false; the reader did not return \"Pulse Withstanding\" in Features for this code), series ERJ-UP8, 10 k 1% 0.667 W 1206, -55..155 C, stock 82 (low), lead time 15 weeks. Cut tape 1,000 (the separate Digi-Reel ladder 1,000 @ 0.06030 + $7 fee is not recorded); Tape & Reel smallest 5,000 and largest 50,000 (10k 0.04648, 15k 0.04521, 25k 0.04384, 35k 0.04305). Power added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ETQ-P5M6R8GAK",
+   "family": "ETQP_M_Y (metal composite, high performance)",
+   "mfr": "Panasonic",
+   "desc": "Metal-composite power inductor 6.8 uH 20%, 9.1 A (Isat 12.8 A), DCR 19.8 mohm max, shielded, 8.5 x 8.0 x 5.4 mm, -40..170 C, PCC-M0854M series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "8.5 x 8.0 x 5.4 mm SMD (nonstandard)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "ETQ-P5M6R8GAK",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.59158,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M6R8GAK",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.55783,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M6R8GAK",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.48686,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M6R8GAK",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ETQ-P5M6R8GAK): Active, series PCC-M0854M, metal composite, shielded, molded, 6.8 uH 20%, current rating 9.1 A, Isat 12.8 A, DCR 19.8 mohm max, 8.50 x 8.00 mm, height 5.40 mm max, -40..170 C, stock 989, lead time 23 weeks. Grade: \"AEC-Q200\" stands in the page's Ratings row (the page reader was unsure whether it is label or value; on the sibling ETQ-P5M pages the Ratings row reads \"AEC-Q200\"); the task's source is the maker's automotive power-inductor announcement - aecq kept true, a reviewer may want the datasheet. pkg corrected: the page gives 8.5 x 8.0 mm, not the task's \"5x5 mm class\". Cut tape stops at 250 ($0.64588); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.53901, 2,500 @ 0.51622, 3,500 @ 0.50175). One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ETQ-P5M220YFC",
+   "family": "ETQP5M_Y (metal composite power choke coil)",
+   "mfr": "Panasonic",
+   "desc": "Metal composite power choke coil 22 uH 20%, 6.2 A (Isat 8.8 A), DCR 50 mohm max, shielded, 10.7 x 10.0 x 5.4 mm, -40..150 C, PCC-M1054M series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10.7 x 10.0 x 5.4 mm 2-SMD J-lead",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "engine ECU"
+   ],
+   "observedMpn": "ETQ-P5M220YFC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.68026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M220YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.64146,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M220YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.55988,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M220YFC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ETQ-P5M220YFC; TME writes it ETQP5M220YFC): Active, Ratings row \"AEC-Q200\" read on this code's page (task had aecq false), series PCC-M1054M, metal composite, shielded, 22 uH 20%, current rating 6.2 A, Isat 8.8 A, DCR 50 mohm max, 10.70 x 10.00 mm, height 5.40 mm max, -40..150 C, stock 1,636, lead time 23 weeks. Cut tape stops at 250 ($0.78724); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.61983, 2,500 @ 0.59362, 3,500 @ 0.57699) - the same reel ladder as the 4.7 uH and 10 uH YFC siblings (all three pages read). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ETQ-P5M4R7YFM",
+   "family": "ETQP5M_Y (metal composite power choke coil)",
+   "mfr": "Panasonic",
+   "desc": "Metal composite power choke coil 4.7 uH 20%, 8 A (Isat 13.1 A), DCR 23 mohm max, shielded, 7.5 x 7.0 x 5.4 mm, -40..150 C, PCC-M0754M series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7.5 x 7.0 x 5.4 mm 2-SMD J-lead",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "engine ECU"
+   ],
+   "observedMpn": "ETQ-P5M4R7YFM",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.6381,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M4R7YFM",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.6017,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M4R7YFM",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.52516,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ETQ-P5M4R7YFM",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ETQ-P5M4R7YFM; TME writes it ETQP5M4R7YFM): Active, Ratings row \"AEC-Q200\" read on this code's page (task had aecq false), series PCC-M0754M, metal composite, shielded, 4.7 uH 20%, current rating 8 A, Isat 13.1 A, DCR 23 mohm max, 7.50 x 7.00 mm, height 5.40 mm max, -40..150 C, stock 4,000, lead time 23 weeks. Cut tape stops at 250 ($0.69664); Tape & Reel smallest 500, 1,000, largest 5,000 (1,500 @ 0.58140, 2,500 @ 0.55682, 3,500 @ 0.54121). desc / pkg completed from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ERJ-H3EF1002V",
+   "family": "ERJ-H (ERJ-H3E)",
+   "mfr": "Panasonic",
+   "desc": "Thick film chip resistor 10 k 1% 0.125 W, 0603, 175 C high-temperature, ERJ-H3E series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain ECU"
+   ],
+   "observedMpn": "ERJ-H3EF1002V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.04185,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-H3EF1002V",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.03526,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-H3EF1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.02962,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ERJ-H3EF1002V",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ERJ-H3EF1002V; TME writes it ERJH3EF1002V): Active, Features \"Automotive AEC-Q200\" read on this code's page (task had aecq false), series ERJ-H3E, thick film 10 k 1% 0.125 W 0603, operating temperature -55..175 C (the page confirms the high-temperature line the task was unsure of), stock 24,660, lead time 15 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.03309, 15k 0.03204, 25k 0.03089, 35k 0.03024). Power / temperature added to desc from the page. One distributor only (no cross-check read: page-read budget)."
+  },
+  {
+   "mpn": "ESR03EZPF1002",
+   "family": "ESR (anti-surge)",
+   "mfr": "ROHM",
+   "desc": "Anti-surge thick-film resistor 10 k 1% 0.25 W 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "powertrain ECU"
+   ],
+   "observedMpn": "ESR03EZPF1002",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.02854,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ESR03EZPF1002",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.02293,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ESR03EZPF1002",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.01868,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ESR03EZPF1002",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (code named ESR03EZPF1002, Rohm Semiconductor): Active, Features \"Automotive AEC-Q200, Pulse Withstanding\", series ESR, 10 k 1% 0.25 W 0603, -55..155 C, stock 826,940, lead time 8 weeks. Cut tape 1,000; Tape & Reel smallest 5,000 and largest 50,000 (10k 0.02129, 15k 0.02050, 25k 0.01964, 35k 0.01914). Cross-check tried: Master Electronics keyword search for ESR03EZPF1002 returned \"NO SEARCH RESULTS FOUND\" (page read 22 Nov 2026) - one distributor only."
+  }
+ ],
+ "notResearched": []
+}

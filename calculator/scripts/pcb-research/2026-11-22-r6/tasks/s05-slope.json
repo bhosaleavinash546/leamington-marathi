@@ -1,0 +1,1137 @@
+[
+ {
+  "mpn": "NCV890100MWTXG",
+  "mfr": "onsemi",
+  "desc": "2MHz 1.2A automotive buck",
+  "category": "ic_qfn",
+  "pkg": "DFN-10",
+  "aecq": true,
+  "currentQ1kGBP": 1.1556,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.1775,
+    "currency": "USD",
+    "url": "https://www.digikey.com/product-detail/en/on-semiconductor/NCV890100MWTXG/NCV890100MWTXGOSTR-ND/3062204",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.53,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/ncv890100",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 3000,
+    "price": 0.979,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/ncv890100mwtxg/on-semiconductor",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVB140SFT1G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40V 1A, SOD-123FL, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOD-123FL",
+  "aecq": true,
+  "currentQ1kGBP": 0.1275,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.1562,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NRVB140SFT1G/3062416",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.1643,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_onsemi_C152277.html",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 3000,
+    "price": 0.1121,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/nrvb140sft1g/on-semiconductor.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVBA340T3G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40 V 3 A",
+  "category": "fuse_tvs",
+  "pkg": "SMA (DO-214AC)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1793,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.1818,
+    "currency": "USD",
+    "url": "https://octopart.com/nrvba340t3g-onsemi-22133726",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 5000,
+    "price": 0.242,
+    "currency": "USD",
+    "url": "https://www.mouser.de/en/ProductDetail/onsemi/NRVBA340T3G?qs=lYuAOLy5nvbez2jPN1M99Q%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NRVBS340T3G",
+  "mfr": "onsemi",
+  "desc": "Schottky rectifier 40 V 3 A",
+  "category": "fuse_tvs",
+  "pkg": "SMC (DO-214AB)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2072,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 0.25324,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/MBRS340T3G/918645",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 0.261,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/onsemi/MBRS340T3G?qs=3JMERSakeboCr3wxBgfY3w%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "NV24C64DWVLT3G",
+  "mfr": "onsemi",
+  "desc": "I2C EEPROM 64Kb, AEC-Q100 automotive",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.1959,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 0.24,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/fr/p/electromechanical--power-supplies--dc-dc/nv24c64dwvlt3g-onsemi-6131103",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "NVMFS5C410NLAFT1G",
+  "mfr": "onsemi",
+  "desc": "N-channel power MOSFET 40V, SO-8FL, AEC-Q101",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL",
+  "aecq": true,
+  "currentQ1kGBP": 1.4841,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1500,
+    "price": 183.4439,
+    "currency": "INR",
+    "url": "https://www.digikey.in/en/products/detail/onsemi/NVMFS5C410NLAFT1G/7220958",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "NVMFS5C628NLT1G",
+  "mfr": "onsemi",
+  "desc": "N-MOSFET 60 V 2.4 mOhm logic level, automotive",
+  "category": "ic_qfn",
+  "pkg": "SO-8FL (DFN5x6)",
+  "aecq": true,
+  "currentQ1kGBP": 1.0939,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1500,
+    "price": 1.47,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/onsemi/NVMFS5C628NLAFT1G?qs=5aG0NVq1C4zY2XvTwYjD5A%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1500,
+    "price": 1.34475,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/NVMFS5C628NLAFT1G/7220980",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "SMMBT3904LT1G",
+  "mfr": "onsemi",
+  "desc": "NPN BJT 40 V 200 mA, SOT-23, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0155,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.019,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0218,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Avnet",
+    "qty": 3000,
+    "price": 0.0118,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SZNUP2105LT1G",
+  "mfr": "onsemi",
+  "desc": "Dual bidirectional TVS for CAN bus, 24 VWM, 44 VC",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.066,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.08073,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/SZNUP2105LT1G/3063422",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.081,
+    "currency": "USD",
+    "url": "https://www.mouser.com/c/?q=SZNUP2105LT1G",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "EEH-ZA1H101P",
+  "mfr": "Panasonic",
+  "desc": "Hybrid polymer Al SMD 100uF 50V, ZA series, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "SMD can",
+  "aecq": true,
+  "currentQ1kGBP": 0.4239,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 500,
+    "price": 0.424,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C109086.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 0.664,
+    "currency": "EUR",
+    "url": "https://ee.farnell.com/panasonic/eehza1h101p/cap-alu-elec-hybrid-100uf-50v/dp/2666626",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ERA-6AEB103V",
+  "mfr": "Panasonic",
+  "desc": "Thin film resistor 10k 0.1% 25ppm 0805 AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0358,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 5000,
+    "price": 0.0423,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C191101.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-6ENF1002V",
+  "mfr": "Panasonic",
+  "desc": "Thick film 10k 1% 1/8W, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0078,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.01444,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/panasonic-industry/ERJ-6ENF1002V/111474",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 5000,
+    "price": 0.0089,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/ERJ-6ENF1002V",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.0092,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/ERJ-6ENF1002V",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-8BWFR010V",
+  "mfr": "Panasonic",
+  "desc": "Thick film current-sense 10 mohm 1% 1W, 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.1756,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.19927,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-8BWFR010V/1711632",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 5000,
+    "price": 0.163,
+    "currency": "GBP",
+    "url": "https://uk.farnell.com/panasonic-electronic-components/erj8bwfr010v/current-sense-res-0r01-1-1-w-1206/dp/1577518",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-P06F1001V",
+  "mfr": "Panasonic",
+  "desc": "Thick film anti-surge 1k 1% 0.5W, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0119,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 5000,
+    "price": 0.0141,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C441981.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-S03F1002V",
+  "mfr": "Panasonic",
+  "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0603 AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.023,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 5000,
+    "price": 0.0239,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/panasonic/erjs03f1002v/res-10k-1-0-1w-0603-thick-film/dp/3310375",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-U02F1002X",
+  "mfr": "Panasonic",
+  "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0402 AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "currentQ1kGBP": 0.0115,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 10000,
+    "price": 0.009,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/p/surface-mount-resistors/2432028",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 10000,
+    "price": 0.014,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/erj-u02f1002x-panasonic-3044059",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "ERJ-UP6F1001V",
+  "mfr": "Panasonic",
+  "desc": "Thick film anti-surge / anti-sulfur 1k 1%, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0314,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 5000,
+    "price": 0.028,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/surface-mount-resistors/2432231",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SC1510(13)",
+  "mfr": "Raspberry Pi",
+  "desc": "RP2350B dual Cortex-M33/RISC-V MCU, 520 kB SRAM, QFN-80, 13-inch reel",
+  "category": "ic_qfn",
+  "pkg": "QFN-80",
+  "aecq": false,
+  "currentQ1kGBP": 0.9669,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 1.2,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/raspberry-pi/SC1510-13/26241167",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "RB160MM-60TR",
+  "mfr": "Rohm",
+  "desc": "Schottky barrier diode 60 V 1 A",
+  "category": "fuse_tvs",
+  "pkg": "SOD-123FL (PMDU)",
+  "aecq": true,
+  "currentQ1kGBP": 0.068,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.1103,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/RB160MM-60TR/5001880",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0563,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_ROHM-Semicon-RB160MM-60TR_C323858.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "CL05B104KB5VPNC",
+  "mfr": "Samsung Electro-Mechanics",
+  "desc": "MLCC 0.1uF 50V X7R 0402, automotive (AEC-Q200)",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "currentQ1kGBP": 0.0088,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.00988,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/samsung-electro-mechanics/CL05B104KB54PNC/11487801",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 10000,
+    "price": 0.0111,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/8121545",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 10000,
+    "price": 0.0053,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C307331.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CL05B104KO5NNNC",
+  "mfr": "Samsung Electro-Mechanics",
+  "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": false,
+  "currentQ1kGBP": 0.0021,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.0024,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 10000,
+    "price": 0.002,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 10000,
+    "price": 0.0025,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL05B104KO5NNNC_C1525.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SIT2024BA-S2-18E-25.000000",
+  "mfr": "SiTime",
+  "desc": "AEC-Q100 MEMS oscillator, single-ended, SOT23-5",
+  "category": "crystal_osc",
+  "pkg": "SOT23-5",
+  "aecq": true,
+  "currentQ1kGBP": 1.8714,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 2.3225,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/sit2024ba-s2-18e-25.000000/SiTime-Corporation",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "SIT8924AM-73-XXE-25.000000",
+  "mfr": "SiTime",
+  "desc": "AEC-Q100 MEMS oscillator 1-110 MHz",
+  "category": "crystal_osc",
+  "pkg": "4-QFN 2.0x1.6",
+  "aecq": true,
+  "currentQ1kGBP": 3.5777,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 4.73675,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/sitime/SIT8924AM-73-XXE-25-000000/11588327",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "A6983IQTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Automotive iso-buck converter 4.5 A, AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "QFN-16 3x3",
+  "aecq": true,
+  "currentQ1kGBP": 1.3736,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 1.62,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6983IQTR?qs=Y0Uzf4wQF3lyFAWk8vYLxw%3D%3D",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.74578,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6983IQTR/18084488",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "A6986TR",
+  "mfr": "STMicroelectronics",
+  "desc": "38V 2A synchronous buck",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-16",
+  "aecq": true,
+  "currentQ1kGBP": 1.416,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 1.53685,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6986F3V3TR/5962612",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 2.11,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6986ITR?qs=CiayqK2gdcJ30OZkfSCFIw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "L5150BNTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Automotive 40 V 150 mA LDO, 5 V, with reset, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOT-223",
+  "aecq": true,
+  "currentQ1kGBP": 0.438,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 1000,
+    "price": 0.438,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/voltage-regulators/1785072",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "L99H92Q5-TR",
+  "mfr": "STMicroelectronics",
+  "desc": "H-bridge gate driver (4 N-FET)",
+  "category": "ic_qfn",
+  "pkg": "VFQFPN-32",
+  "aecq": true,
+  "currentQ1kGBP": 1.4447,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 1.77,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/STMicroelectronics/L99H92Q5-TR?qs=rQFj71Wb1eUOFSd0uSgV4w%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "LDL1117S33R",
+  "mfr": "STMicroelectronics",
+  "desc": "1.2 A LDO 3.3 V",
+  "category": "ic_soic",
+  "pkg": "SOT-223",
+  "aecq": false,
+  "currentQ1kGBP": 0.3884,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 0.482,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/LDL1117S33R/?qs=AQlKX63v8Rt9Bf6AWSrbFg%3D%3D",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "LDO40LPURY",
+  "mfr": "STMicroelectronics",
+  "desc": "38V 400mA LDO, adjustable, low Iq",
+  "category": "ic_qfn",
+  "pkg": "DFN-6 (3x3) wettable",
+  "aecq": true,
+  "currentQ1kGBP": 0.6183,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 6000,
+    "price": 0.781,
+    "currency": "USD",
+    "url": "https://octopart.com/ldo40lpury-stmicroelectronics-95633557",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 0.695,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/semiconductors--analog--regulators-reference--linear-regulators/ldo40lpury-stmicroelectronics-1107186",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "M24C64-RMN6TP",
+  "mfr": "STMicroelectronics",
+  "desc": "64Kb I2C EEPROM, 1.8-5.5V",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": false,
+  "currentQ1kGBP": 0.1843,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.244,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/M24C64-RMN6P?qs=%2B9pWl1iD4MUYBZZn2bF5hw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "M95256-DRMN3TP/K",
+  "mfr": "STMicroelectronics",
+  "desc": "256Kb SPI EEPROM, automotive 125C",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.9123,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 7500,
+    "price": 1.01566,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/M95256-DRMN3TP-K/4729256",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 5000,
+    "price": 1.11,
+    "currency": "USD",
+    "url": "https://www.newark.com/stmicroelectronics/m95256-drmn3tp-k/eeprom-aec-q100-256kbit-10mhz/dp/51AC9320",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 2500,
+    "price": 1.1322,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/m95256-drmn3tpk/stmicroelectronics",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "M95640-DRMN3TP/K",
+  "mfr": "STMicroelectronics",
+  "desc": "SPI EEPROM 64Kb, automotive -40..125 C",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.2057,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2723,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C314019.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SM6T39AY",
+  "mfr": "STMicroelectronics",
+  "desc": "600 W unidirectional TVS, 33 VWM / 39 V breakdown",
+  "category": "fuse_tvs",
+  "pkg": "DO-214AA (SMB)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1819,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 0.20422,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SM6T39A/1039093",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 2500,
+    "price": 0.2473,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/sm6t39a/stmicroelectronics?region",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "STGAP2SICS",
+  "mfr": "STMicroelectronics",
+  "desc": "Galvanically isolated 4A single gate driver for SiC MOSFETs",
+  "category": "ic_soic",
+  "pkg": "SO-8W",
+  "aecq": false,
+  "currentQ1kGBP": 1.4839,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 960,
+    "price": 2.2272,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Isolated-Gate-Drivers_STMicroelectronics-STGAP2SICS_C5267669.html",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 560,
+    "price": 1.78,
+    "currency": "USD",
+    "url": "https://www.newark.com/stmicroelectronics/stgap2sics/mosfet-driver-40-to-125deg-c-rohs/dp/91AH9101",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "STM32F030F4P6TR",
+  "mfr": "STMicroelectronics",
+  "desc": "Arm Cortex-M0 MCU 48 MHz, 16 KB flash, TSSOP20, tape and reel",
+  "category": "ic_soic",
+  "pkg": "TSSOP-20",
+  "aecq": false,
+  "currentQ1kGBP": 0.3329,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.4408,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C89040.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "STM32F031G6U7TR",
+  "mfr": "STMicroelectronics",
+  "desc": "Cortex-M0 MCU 48 MHz, 32 kB flash",
+  "category": "ic_qfn",
+  "pkg": "UFQFPN-28",
+  "aecq": false,
+  "currentQ1kGBP": 1.1339,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.5012,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/stm32f031g6u7tr",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "STPS2H100AY",
+  "mfr": "STMicroelectronics",
+  "desc": "Schottky rectifier 100 V 2 A",
+  "category": "fuse_tvs",
+  "pkg": "SMA (DO-214AC)",
+  "aecq": true,
+  "currentQ1kGBP": 0.0965,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.10504,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STPS2H100AY/2612172",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 5000,
+    "price": 0.123,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/STMicroelectronics/STPS2H100AY?qs=CBOTe0%2BbgkaH%2BwaJWKQB%2Fw%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "VN7140ASTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Single high-side driver 140 mOhm, VIPower M0-7, SO-8",
+  "category": "ic_soic",
+  "pkg": "SO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.5034,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 0.7841,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VN7140ASTR/5402881",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "VN9D30Q100FTR",
+  "mfr": "STMicroelectronics",
+  "desc": "6-channel high-side driver 33 mOhm, SPI",
+  "category": "ic_qfn",
+  "pkg": "VFQFPN-32",
+  "aecq": true,
+  "currentQ1kGBP": 1.3346,
+  "stored": [
+   {
+    "distributor": "Arrow",
+    "qty": 100,
+    "price": 2.0788,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/vn9d30q100ftr/stmicroelectronics.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "ACM2012-900-2P-T001",
+  "mfr": "TDK",
+  "desc": "Common-mode filter 90R@100MHz 2-line, 0805 (2012), AEC-Q200 (high-speed differential)",
+  "category": "passive_0805",
+  "pkg": "0805 (2012)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1516,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2007,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C307642.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "ACT1210L-201-2P-TL00",
+  "mfr": "TDK",
+  "desc": "CAN / Ethernet common-mode choke 200uH 2-line, 1210, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1210 (3225)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2189,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2898,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C131444.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "ADL2012-1R5M-T01",
+  "mfr": "TDK",
+  "desc": "Automotive decoupling / PoC inductor 1.5uH, 2012",
+  "category": "passive_0805",
+  "pkg": "2012 (0805)",
+  "aecq": true,
+  "currentQ1kGBP": 0.1901,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.25164,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk/ADL2012-1R5M-T01/15858528",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.237,
+    "currency": "USD",
+    "url": "https://mouser.com/ProductDetail/TDK/ADL2012-1R5M-T01?qs=TCDPyi3sCW0aAa9dk2tJJQ%3D%3D",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.306,
+    "currency": "USD",
+    "url": "https://www.newark.com/tdk/adl2012-1r5m-t01/power-inductor-1-5uh-semishielded/dp/62AK3680",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CGA4J1X7R1H475K125AC",
+  "mfr": "TDK",
+  "desc": "MLCC 4.7uF 50V X7R 0805, CGA AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.1503,
+  "stored": [
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.199,
+    "currency": "USD",
+    "url": "https://www.newark.com/tdk/cga4j1x7r1h475k125ac/cap-4-7uf-50v-x7r-0805/dp/71AH2817",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 0.2046,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk/CGA4J1X7R1H475K125AC/9742505",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CGA4J3X7R1H105K125AB",
+  "mfr": "TDK",
+  "desc": "MLCC 1uF 50V X7R 0805 AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0663,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 2000,
+    "price": 0.0611,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga4j3x7r1h105k125ab-tdk-9049676",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 2000,
+    "price": 0.101,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/cga4j3x7r1h105k125ab/tdk.html",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 0.0922,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA4J3X7R1H105K125AB/2672854",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "CGA5L1X7R1C226M160AC",
+  "mfr": "TDK",
+  "desc": "MLCC 22uF 16V 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.2962,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 0.37347,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA5L1X5R1C226M160AC/3950083",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 2000,
+    "price": 0.335,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga5l1x5r1c226m160ac-tdk-4076950",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 2000,
+    "price": 0.357,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/tdk/cga5l1x5r1c226m160ac/cap-aec-q200-22uf-16v-mlcc-1206/dp/3416404",
+    "date": "2026-10-09"
+   }
+  ]
+ }
+]

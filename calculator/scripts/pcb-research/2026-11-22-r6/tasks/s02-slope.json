@@ -1,0 +1,1009 @@
+[
+ {
+  "mpn": "ACS71240LLCBTR-030B3",
+  "mfr": "Allegro MicroSystems",
+  "desc": "Hall current sensor, 30 A bidirectional, 3.3 V, integrated conductor",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 1.0122,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.35016,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS71240LLCBTR-030B3/10146687",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 1.13,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/2188451",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "LR G6SP.02-8D6E-46-G3R3-140-R18",
+  "mfr": "ams OSRAM",
+  "desc": "LED red TOPLED PLCC-6",
+  "category": "led",
+  "pkg": "PLCC-6",
+  "aecq": false,
+  "currentQ1kGBP": 0.1339,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.156,
+    "currency": "EUR",
+    "url": "https://www.mouser.fi/en/c/optoelectronics/leds/?q=1066",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SPL DS90A_3",
+  "mfr": "ams OSRAM",
+  "desc": "903 nm SMT pulsed laser diode",
+  "category": "led",
+  "pkg": "SMT (laser module)",
+  "aecq": false,
+  "currentQ1kGBP": 6.8233,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 10.6281,
+    "currency": "USD",
+    "url": "https://findchips.com/search/SPLDS90A_3",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "SPL S1L90H_3",
+  "mfr": "ams OSRAM",
+  "desc": "907 nm 65 W single-channel pulsed laser, QFN",
+  "category": "led",
+  "pkg": "QFN",
+  "aecq": false,
+  "currentQ1kGBP": 7.3913,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 10.13,
+    "currency": "EUR",
+    "url": "https://pt.farnell.com/ams-osram-group/spl-s1l90h-3/laser-diode-907nm-65w-20a-qfn/dp/4154506",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CDSOT23-T24CAN-Q",
+  "mfr": "Bourns",
+  "desc": "Dual bidirectional TVS 24 V for CAN, SOT-23, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.0789,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 3000,
+    "price": 0.073,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/tvs-diodes/1651337",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "BZT52C5V1Q-7-F",
+  "mfr": "Diodes Incorporated",
+  "desc": "Zener diode 5.1 V 500 mW SOD-123, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOD-123",
+  "aecq": true,
+  "currentQ1kGBP": 0.0379,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0464,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C674396.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "DMN3404LQ-7",
+  "mfr": "Diodes Incorporated",
+  "desc": "N-channel MOSFET 30 V, logic level, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.1547,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.183,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Diodes-Incorporated/DMN3404LQ-7?qs=W%2FMpXkg%252BdQ6%2FYpf84J7szA%3D%3D",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.19607,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN3404LQ-7/16548806",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "EPC2206",
+  "mfr": "EPC",
+  "desc": "eGaN FET 80 V 2.2 mOhm, AEC-Q101",
+  "category": "ic_qfn",
+  "pkg": "wafer-level chip-scale LGA",
+  "aecq": true,
+  "currentQ1kGBP": 1.3343,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 115.99,
+    "currency": "PHP",
+    "url": "https://www.digikey.ph/en/products/detail/epc/EPC2206/9586555",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "GD25Q128ESIGR",
+  "mfr": "GigaDevice",
+  "desc": "SPI NOR flash 128Mbit, quad I/O, 3V, -40..85C, SOP-8",
+  "category": "ic_soic",
+  "pkg": "SOP-8 208mil",
+  "aecq": false,
+  "currentQ1kGBP": 0.7796,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.7634,
+    "currency": "USD",
+    "url": "https://lcsc.com/product-detail/image/GD25Q128ESIGR_C2928891.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.30093,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/gigadevice-semiconductor-hk-limited/GD25Q128ESIGR/14113862",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS3125EJXUMA1",
+  "mfr": "Infineon",
+  "desc": "HITFET+ 12V protected low-side switch",
+  "category": "ic_soic",
+  "pkg": "TDSO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.3899,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.48241,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS3125EJXUMA1/7323978",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "TME",
+    "qty": 1000,
+    "price": 0.55,
+    "currency": "USD",
+    "url": "https://www.tme.com/us/en-us/details/bts3125ej/power-switches-integrated-circuits/infineon-technologies/",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS70021EPPXUMA1",
+  "mfr": "Infineon",
+  "desc": "PROFET+2 12V single high-side switch 2.6 mOhm",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 1.1428,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 1.78,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70021EPPXUMA1/9829548",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS70041EPPXUMA1",
+  "mfr": "Infineon",
+  "desc": "PROFET+2 12V single high-side switch 4.4 mOhm",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.9468,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.25353,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70041EPPXUMA1/7791523",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS70061EPPXUMA1",
+  "mfr": "Infineon",
+  "desc": "PROFET+2 12V single high-side switch 6.6 mOhm",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.7561,
+  "stored": [
+   {
+    "distributor": "Digi-Key Japan",
+    "qty": 1000,
+    "price": 157.621,
+    "currency": "JPY",
+    "url": "https://www.digikey.jp/ja/products/detail/infineon-technologies/BTS70061EPPXUMA1/9829549",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "IAUC60N04S6L039ATMA1",
+  "mfr": "Infineon",
+  "desc": "N-MOSFET 40 V 3.9 mOhm logic level OptiMOS-6",
+  "category": "ic_qfn",
+  "pkg": "PG-TDSON-8 (SS08)",
+  "aecq": true,
+  "currentQ1kGBP": 0.3062,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 0.38,
+    "currency": "USD",
+    "url": "https://octopart.com/iauc60n04s6l039atma1-infineon-105792395",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.395,
+    "currency": "EUR",
+    "url": "https://octopart.com/iauc60n04s6l039atma1-infineon-105792395",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "IPB017N06N3",
+  "mfr": "Infineon",
+  "desc": "60 V 180 A OptiMOS, D2PAK-7",
+  "category": "ic_soic",
+  "pkg": "PG-TO263-7",
+  "aecq": false,
+  "currentQ1kGBP": 1.1681,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.64308,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IPB017N06N3GATMA1/2080881",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.45,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/IPB017N06N3-G?qs=wK%2BoHS4yu54fbcy%2BkFle2A%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "IPD50N04S4-08",
+  "mfr": "Infineon",
+  "desc": "N-MOSFET 40 V 7.8 mOhm OptiMOS-T2",
+  "category": "ic_soic",
+  "pkg": "DPAK (TO-252)",
+  "aecq": true,
+  "currentQ1kGBP": 0.4192,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.555,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/IPD50N04S4-08?qs=HwMeRNENlMZz%252BNaSo1r7PA%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "IRLML6344TRPBF",
+  "mfr": "Infineon",
+  "desc": "N-MOSFET 30 V 5 A SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.0913,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 0.0815,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--mosfets/irlml6344trpbf-infineon-1004163",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.1119,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C53550.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "element14 Singapore",
+    "qty": 3000,
+    "price": 0.149,
+    "currency": "SGD",
+    "url": "https://sg.element14.com/infineon/irlml6344trpbf/mosfet-n-ch-30v-5a-sot23/dp/1857299",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLD11141EPXUMA1",
+  "mfr": "Infineon",
+  "desc": "1-ch linear LED driver",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.395,
+  "stored": [
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.523,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/TLD11141EPXUMA1?manufacturer=Infineon-Technologies-AG",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLD23313EPXUMA1",
+  "mfr": "Infineon",
+  "desc": "3-ch linear LED driver",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.4789,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.63,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/D2331",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.638,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/D2331",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLD5099EPXUMA1",
+  "mfr": "Infineon",
+  "desc": "LITIX Power DC-DC LED controller, multi-topology, 500 kHz, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 1.089,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 1.22,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/ac-dc-converters/2584064",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE49643MXTSA1",
+  "mfr": "Infineon",
+  "desc": "Unipolar Hall switch, high precision, SOT-23-3",
+  "category": "ic_soic",
+  "pkg": "SOT-23-3",
+  "aecq": true,
+  "currentQ1kGBP": 0.3095,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.325,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/motion-sensor-ics/2238582",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE4966GHTSA1",
+  "mfr": "Infineon",
+  "desc": "Dual Hall switch (speed/direction)",
+  "category": "ic_soic",
+  "pkg": "TSOP-6",
+  "aecq": true,
+  "currentQ1kGBP": 0.3178,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.42082,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE4966GHTSA1/11500401",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE5501E0002XUMA1",
+  "mfr": "Infineon",
+  "desc": "TMR angle sensor, analog sin/cos, ASIL-D ready, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "DSO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.9263,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.2264,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/TLE5501E0002XUMA1",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE7259-3GE",
+  "mfr": "Infineon",
+  "desc": "LIN transceiver",
+  "category": "ic_soic",
+  "pkg": "PG-DSO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4758,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.68,
+    "currency": "USD",
+    "url": "https://octopart.com/tle72593gexuma3-infineon-76983729",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.63,
+    "currency": "USD",
+    "url": "https://octopart.com/tle72593gexuma3-infineon-76983729",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.4305,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/LIN-Transceivers_Infineon-Technologies-TLE7259-3GE_C540020.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE9351SJXTMA1",
+  "mfr": "Infineon",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "DSO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.5524,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1250,
+    "price": 0.72,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--comm-products--can/tle9351sjxtma1-infineon-4166335",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE9351VSJXTMA1",
+  "mfr": "Infineon",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, VIO, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "DSO-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.5782,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 25.6,
+    "currency": "TWD",
+    "url": "https://twcn.rs-online.com/web/p/can-interface-ics/2584153",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TLF42772ELXUMA2",
+  "mfr": "Infineon",
+  "desc": "OPTIREG 300 mA LDO with output current monitor, adjustable 5-12 V, 40 V input (antenna / camera supply)",
+  "category": "ic_soic",
+  "pkg": "PG-SSOP-14 EP",
+  "aecq": true,
+  "currentQ1kGBP": 0.9099,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 1.06,
+    "currency": "EUR",
+    "url": "https://it.farnell.com/en-IT/infineon/tlf42772elxuma2/ldo-adj-5-12v-0-3a-40-to-150deg/dp/3514469",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 7500,
+    "price": 1.2567,
+    "currency": "USD",
+    "url": "https://findchips.com/search/tlf4277-2el",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLS715B0EJV50XUMA1",
+  "mfr": "Infineon",
+  "desc": "OPTIREG 40 V 150 mA LDO, 5 V fixed, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "DSO-8 (PG-DSO-8 EP)",
+  "aecq": true,
+  "currentQ1kGBP": 0.4726,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 2500,
+    "price": 0.49,
+    "currency": "GBP",
+    "url": "https://uk.farnell.com/infineon/tls715b0ejv50xuma1/linear-voltage-regulator/dp/2780912",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 2500,
+    "price": 0.396,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/voltage-regulators/2581681?gb=s",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS70082EPAXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "PROFET+2 12 V dual-channel smart high-side switch, 8 mOhm (lamps, heaters)",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.9494,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 1.257,
+    "currency": "USD",
+    "url": "https://il.farnell.com/infineon/bts70082epaxuma1/power-load-switch-auto-28v-tssop14/dp/2803447",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "BTS72002EPAXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "PROFET+2 12 V dual-channel smart high-side switch, 200 mOhm (Infineon door control reference board)",
+  "category": "ic_soic",
+  "pkg": "TSDSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.8332,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.875,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/power-switch-ics/2238501P?gb=s",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLD5190QVXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "LITIX Power synchronous H-bridge buck-boost LED controller, no SPI (front lighting)",
+  "category": "ic_qfn",
+  "pkg": "VQFN-48",
+  "aecq": true,
+  "currentQ1kGBP": 1.3746,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.82,
+    "currency": "USD",
+    "url": "https://lcsc.com/product-detail/image/TLD5190QV_C539655.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLD60982ESXUMA2",
+  "mfr": "Infineon Technologies",
+  "desc": "LITIX Power dual-channel multi-topology DC-DC LED controller (full headlamp without MCU: HB, LB, DRL, turn)",
+  "category": "ic_soic",
+  "pkg": "TSDSO-24",
+  "aecq": true,
+  "currentQ1kGBP": 1.1978,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 1.59,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--analog--drivers--led-drivers-linear-mode/tld60982esxuma2-infineon-3167978",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 3000,
+    "price": 1.016,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/voltage-controllers/2483078?gb=s",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE42754DATMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "LDO 5V 450mA with reset, 45V",
+  "category": "ic_soic",
+  "pkg": "TO-252-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.6548,
+  "stored": [
+   {
+    "distributor": "TME",
+    "qty": 100,
+    "price": 1.02,
+    "currency": "USD",
+    "url": "https://www.tme.com/us/en-us/details/tle42754d/ldo-fixed-voltage-regulators/infineon-technologies/tle42754datma1/",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE42754GATMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "LDO 5V 450mA with reset, 45V",
+  "category": "ic_soic",
+  "pkg": "TO-263-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.5703,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 0.755,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/TLE4275",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE9255WSKXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "CAN FD partial-networking transceiver, SPI",
+  "category": "ic_soic",
+  "pkg": "DSO-14",
+  "aecq": true,
+  "currentQ1kGBP": 1.1829,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.66,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9255WSKXUMA1/7791635",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 1.38,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE9255WSKXUMA1?qs=xhbEVWpZdWcct9KwqIw2EQ%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE94112ESXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "12-half-bridge DC motor driver, SPI (HVAC flap DC motors, seat / multi-motor)",
+  "category": "ic_soic",
+  "pkg": "TSDSO-24",
+  "aecq": true,
+  "currentQ1kGBP": 1.3649,
+  "stored": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 1.59,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/infineon/tle94112esxuma1/motor-drivers-40-to-150deg-c/dp/3773489",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TLE95623QXXUMA1",
+  "mfr": "Infineon Technologies",
+  "desc": "MOTIX DC motor system IC: SBC (LDO, CAN FD) with 4 half-bridge gate drivers for window lift / door modules",
+  "category": "ic_qfn",
+  "pkg": "VQFN-48",
+  "aecq": true,
+  "currentQ1kGBP": 1.4674,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 2500,
+    "price": 18.171,
+    "currency": "SEK",
+    "url": "https://se.rs-online.com/web/p/can-interface-ics/2334410",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "IS25LP064A-JBLA3-TR",
+  "mfr": "ISSI",
+  "desc": "Quad SPI NOR 64Mb, 3 V, automotive A3 -40..125 C",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.9981,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.3215,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C2972290.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "T598D476M025ATE060",
+  "mfr": "KEMET",
+  "desc": "Polymer tantalum 47uF 25V 20% 60 mohm, D case 7343, automotive AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "7343-31 (D)",
+  "aecq": true,
+  "currentQ1kGBP": 0.8801,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 500,
+    "price": 1.13,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/KEMET/T598D476M025ATE060?qs=sSYV1F9c5cHs1w9p%2FKXuLw%3D%3D",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.995,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/polymer-capacitors/1441723",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 1.33,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/kemet/t598d476m025ate060/cap-47-f-25v-20/dp/2725553",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CX3225SB25000D0KPSC1",
+  "mfr": "Kyocera",
+  "desc": "Kyocera AVX automotive crystal 25 MHz 8 pF +/-30 ppm, AEC-Q200",
+  "category": "crystal_osc",
+  "pkg": "3.2x2.5",
+  "aecq": true,
+  "currentQ1kGBP": 0.3216,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.42578,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/kyocera-avx/CX3225SB25000D0KPSC1/9446016",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CX2016DB38400D0FLJCC",
+  "mfr": "Kyocera AVX",
+  "desc": "Crystal 38.4 MHz 2016 SMD, FLJCC automotive suffix",
+  "category": "crystal_osc",
+  "pkg": "2.0x1.6 mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.4203,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 0.515,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/electromechanical--timing-devices--crystals/cx2016db38400d0fljcc-kyocera-avx-2116860",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CX2016DB40000D0FLJCC",
+  "mfr": "Kyocera AVX",
+  "desc": "Crystal 40 MHz 2016 SMD, FLJCC automotive suffix",
+  "category": "crystal_osc",
+  "pkg": "2.0x1.6 mm",
+  "aecq": true,
+  "currentQ1kGBP": 0.6626,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.8773,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C1985269.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "0451005.MRL",
+  "mfr": "Littelfuse",
+  "desc": "Fuse SMD 5A 125V Nano2 very fast",
+  "category": "fuse_tvs",
+  "pkg": "2-SMD square end",
+  "aecq": true,
+  "currentQ1kGBP": 0.4076,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.94776,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/0451005-MRL/700828",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 1000,
+    "price": 0.5396,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/0451005.mrl/littelfuse",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 1000,
+    "price": 0.4,
+    "currency": "USD",
+    "url": "https://www.findchips.com/detail/0451005.MRL/Littelfuse-Inc",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "0466002.NR",
+  "mfr": "Littelfuse",
+  "desc": "Fuse SMD 2A 1206 very fast",
+  "category": "fuse_tvs",
+  "pkg": "1206",
+  "aecq": false,
+  "currentQ1kGBP": 0.4207,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.55698,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/0466002.NR/521355",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "AQ24CANFD-02HTG",
+  "mfr": "Littelfuse",
+  "desc": "CAN FD TVS diode array, 2-line, 24 V, 200 W, SOT-23, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.056,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 6000,
+    "price": 0.0653,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C1975190.html",
+    "date": "2026-10-13"
+   }
+  ]
+ }
+]

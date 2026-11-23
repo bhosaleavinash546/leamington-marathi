@@ -1,0 +1,296 @@
+{
+ "domain": "b08-ics",
+ "researched": "2026-11-23",
+ "method": "LATEST task b08-ics, 23 Nov 2026. Only prices read on a distributor page today are in observations (evidence page-read). IN PROGRESS.",
+ "parts": [
+  {
+   "mpn": "BTM9010EPXUMA1",
+   "family": "MOTIX BTM90xx full-bridge",
+   "mfr": "Infineon",
+   "desc": "Integrated full-bridge brushed-DC motor driver, 10 A current limit, adjustable slew rate",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-14 (14-TSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "body DC motors",
+    "HVAC flap / small actuators"
+   ],
+   "observedMpn": "BTM9010EPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.17964,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9010EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.09359,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9010EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 1.06043,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9010EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL landed on the product; read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, PG-TSDSO-14, in stock 0 - 3,000 expected 16-Mar-2027, lead time 20 weeks; out of stock with a normal falling table): cut tape 100 = 1.29340, 250 = 1.21972, 500 = 1.17964 (largest CT break); tape & reel 3,000 = 1.09359, 6,000 = 1.07149, 9,000 = 1.06043. Orderable code BTM9010EPXUMA1 (task gave the sales name BTM9010EP). Package read on the page (task said unknown). Cross-check: Master Electronics does not list Infineon motor drivers (no result for the sibling BTM9020EPXUMA1)."
+  },
+  {
+   "mpn": "BTM9020EPXUMA1",
+   "family": "MOTIX BTM90xx full-bridge",
+   "mfr": "Infineon",
+   "desc": "Integrated full-bridge (H-bridge) brushed-DC motor driver, 20 A current limit, 84 mOhm path typ., 7-18 V",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-14 (14-TSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "body DC motors",
+    "door / seat / latch",
+    "zonal controller"
+   ],
+   "observedMpn": "BTM9020EPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.65148,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9020EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.51955,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9020EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.49065,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9020EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL landed on the product; read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, PG-TSDSO-14, in stock 2,415, lead time 20 weeks): cut tape 100 = 1.78090, 250 = 1.68456, 500 = 1.65148 (largest CT break); tape & reel 3,000 = 1.51955, 6,000 = 1.49065 (largest). Orderable code BTM9020EPXUMA1 (task gave the sales name BTM9020EP). Master Electronics: no search result for BTM9020EPXUMA1 (read 23 Nov 2026)."
+  },
+  {
+   "mpn": "BTM9021EPXUMA1",
+   "family": "MOTIX BTM90xx full-bridge",
+   "mfr": "Infineon",
+   "desc": "Integrated full-bridge brushed-DC motor driver, 20 A, SPI with daisy chain and internal watchdog",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-14 (14-TSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "body DC motors",
+    "door / seat / latch",
+    "zonal controller"
+   ],
+   "observedMpn": "BTM9021EPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.65148,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9021EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.51955,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9021EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.49065,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTM9021EPXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (keyword URL landed on the product; read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, PG-TSDSO-14, interface SPI, in stock 2,842, lead time 20 weeks): cut tape 100 = 1.78090, 250 = 1.68456, 500 = 1.65148 (largest CT break); tape & reel 3,000 = 1.51955, 6,000 = 1.49065 (largest). The table is identical to BTM9020EPXUMA1's as the page shows it (same price for the PWM and the SPI 20 A part). Orderable code BTM9021EPXUMA1 (task gave the sales name)."
+  },
+  {
+   "mpn": "CY8C4147LCE-HV403",
+   "family": "PSOC 4 HVPA-144K",
+   "mfr": "Infineon",
+   "desc": "12 V precision-analog Cortex-M0+ MCU for battery monitoring (shunt current / voltage), LIN PHY, ASIL C functions",
+   "category": "ic_qfn",
+   "pkg": "32-QFN 6x6 (32-VFQFN exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "12 V intelligent battery sensor",
+    "BMS pack monitor"
+   ],
+   "observedMpn": "CY8C4147LCE-HV403",
+   "observations": [],
+   "notes": "NO-LISTING (no break >= 100): Digi-Key product page https://www.digikey.com/en/products/detail/infineon-technologies/CY8C4147LCE-HV403/21675879 (read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, tray, in stock 76, lead time 33 weeks) shows only 1 = 8.71000, 10 = 6.74600, 50 = 5.95900 - no break of 100 or more, so nothing recorded. Master Electronics: no search result. Package read on the page: 32-QFN 6x6 (task: not read). Supplier quote needed for a volume price."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "CY8C4147LWE-HVS035",
+   "why": "not reached (12 V Cortex-M0+ MCU with integrated LIN PHY and 12 V regulator, CAPSEN)"
+  },
+  {
+   "code": "CYT2B95BACQ0AZSGS",
+   "why": "not reached (Body entry MCU: Cortex-M4F 160 MHz, 2 MB flash, 256 KB RAM, up to 8x C)"
+  },
+  {
+   "code": "CYT4BB8CEBQ1AEEGS",
+   "why": "not reached (Body MCU: 2x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, 8x )"
+  },
+  {
+   "code": "IAUCN08S7N013",
+   "why": "not reached (N-MOSFET 80 V 1.3 mOhm max, OptiMOS 7, SSO8 5x6)"
+  },
+  {
+   "code": "IAUCN08S7N019",
+   "why": "not reached (N-MOSFET 80 V 1.9 mOhm max, OptiMOS 7, SSO8 5x6)"
+  },
+  {
+   "code": "IAUCN10S7N021",
+   "why": "not reached (N-MOSFET 100 V 2.1 mOhm max, OptiMOS 7, SSO8 5x6)"
+  },
+  {
+   "code": "TC489QP16NF400MCAAKXUMA1",
+   "why": "not reached (AURIX TC4x 28 nm TriCore MCU, 4 lockstep cores up to 400 MHz (SAK-TC48)"
+  },
+  {
+   "code": "TLE9371VSJXTMA1",
+   "why": "not reached (CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s, VIO pin, bus wa)"
+  },
+  {
+   "code": "TLF4D985QKV01R1",
+   "why": "not reached (Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 )"
+  },
+  {
+   "code": "TLE7257SJ / TLE7258SJ (and LE)",
+   "why": "not reached (Basic LIN transceivers, up to 20 kbit/s)"
+  },
+  {
+   "code": "TLE9350BLE / TLE9350BVLE / TLE9350BXLE",
+   "why": "not reached (CAN FD transceiver, 5 Mbit/s, leadless TSON-8 versions of TLE9350Bx; t)"
+  },
+  {
+   "code": "TLE9350BSJ / TLE9350BVSJ / TLE9350BXSJ",
+   "why": "not reached (CAN FD transceiver, 5 Mbit/s (B = no VIO, BV = VIO, BX = VIO + receive)"
+  },
+  {
+   "code": "XENSIV TLE4971",
+   "why": "not reached (Coreless Hall current sensor with integrated current rail, 25-120 A, a)"
+  },
+  {
+   "code": "CYT2BL5BAAQ0AZEGS",
+   "why": "not reached (Body entry MCU: Cortex-M4F 160 MHz, 4 MB flash, 512 KB RAM, up to 8x C)"
+  },
+  {
+   "code": "CYT3BB7CEBQ1AEEGS",
+   "why": "not reached (Body MCU: 1x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, CAN)"
+  },
+  {
+   "code": "CYT3DLABABQ1AESGS",
+   "why": "not reached (Cluster MCU with graphics engine, 1x Cortex-M7, video output)"
+  },
+  {
+   "code": "CYT4BF8CEDQ0AEEGS",
+   "why": "not reached (Body MCU: 2x Cortex-M7F 350 MHz, 8 MB flash, 1 MB RAM, 10BASE-T1S / Et)"
+  },
+  {
+   "code": "CYT4DNJBACQ1BZSGS",
+   "why": "not reached (Cluster MCU with 2.5D graphics engine, 2x Cortex-M7)"
+  },
+  {
+   "code": "IAUCN08S7L110",
+   "why": "not reached (N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6)"
+  },
+  {
+   "code": "S25FL128LAGNFM010",
+   "why": "not reached (SPI NOR flash 128 Mb, Quad I/O / QPI, 133 MHz, -40 to 125 C)"
+  },
+  {
+   "code": "S25FL256LAGMFM003",
+   "why": "not reached (SPI NOR flash (256 Mb per the part name), 2.7 V to 3.6 V, -40 to 125 C)"
+  },
+  {
+   "code": "S25FL256SAGNFB000",
+   "why": "not reached (SPI NOR flash 256 Mb, Quad I/O, 133 MHz, -40 to 105 C)"
+  },
+  {
+   "code": "TLE9166EQ",
+   "why": "not reached (Multi half-bridge IC with six high-side switches, electrochromic mirro)"
+  },
+  {
+   "code": "CYT2CL7BAAQ0AZSGS",
+   "why": "not reached (Cluster entry MCU, Cortex-M4F)"
+  },
+  {
+   "code": "LFMXO4-025HC-5TSG100A",
+   "why": "not reached (MachXO4 low-density FPGA, automotive grade (A suffix), 100-pin TQFP)"
+  },
+  {
+   "code": "MX25V1635FZNQ03",
+   "why": "not reached (NOR Flash 16Mbit 16M x 1/8M x 2/4M x 4 Serial-SPI 3.3V 8-Pin WSON WSON)"
+  },
+  {
+   "code": "MLX90425GDC-ABA-600-RE",
+   "why": "not reached (Triaxis stray-field-immune 360 deg rotary position sensor IC)"
+  },
+  {
+   "code": "MLX81332 gen-3 smart LIN driver",
+   "why": "not reached (Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10)"
+  },
+  {
+   "code": "MLX81340 gen-3 LIN pre-driver",
+   "why": "not reached (Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory)"
+  },
+  {
+   "code": "MLX90382LGO-BAA-000-RE",
+   "why": "not reached (16-bit Triaxis high-speed magnetic position sensor / absolute encoder )"
+  },
+  {
+   "code": "MLX90424LGO-ACA-230-RE",
+   "why": "not reached (Triaxis position sensor IC with integrated wake-up (dual die))"
+  },
+  {
+   "code": "MLX90513GGO-CAA-100-RE",
+   "why": "not reached (Inductive position sensor interface IC (3 receive coils, SENT / SPC / )"
+  }
+ ]
+}

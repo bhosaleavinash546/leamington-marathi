@@ -1,0 +1,674 @@
+{
+ "domain": "b10-ics",
+ "researched": "2026-11-23",
+ "method": "LATEST task. Every observation was read on the distributor product page on 2026-11-23 (evidence page-read); no search-summary figure is recorded. In progress.",
+ "parts": [
+  {
+   "mpn": "NCV210RSQT2G",
+   "family": "NCV210R / NCV211R / NCV213R / NCV214R",
+   "mfr": "onsemi",
+   "desc": "Current-shunt monitor, voltage output, bidirectional, zero-drift, low- or high-side sensing",
+   "category": "ic_soic",
+   "pkg": "SC-70-6 (SC-88 / SOT-363)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor / solenoid current sense",
+    "DC-DC",
+    "body ECU load diagnosis"
+   ],
+   "observedMpn": "NCV210RSQT2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.47389,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV210RSQT2G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.45017,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV210RSQT2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.43938,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV210RSQT2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 74,398, lead time 35 wk): cut tape 100 = 0.54780, 500 = 0.49010, 1,000 = 0.47389 (largest CT break); tape & reel 3,000 = 0.45017, 6,000 = 0.43938 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\". Gain variants NCV211R / 213R / 214R not read."
+  },
+  {
+   "mpn": "NCV7329D10R2G",
+   "family": "NCV7329",
+   "mfr": "onsemi",
+   "desc": "Stand-alone LIN transceiver",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN nodes: door, seat, mirror, sunroof",
+    "body ECU"
+   ],
+   "observedMpn": "NCV7329D10R2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.27372,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7329D10R2G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.25982,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7329D10R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.25302,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7329D10R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 12,198): cut tape 500 = 0.28498, 1,000 = 0.27372 (largest CT); tape & reel 3,000 = 0.25982, 6,000 = 0.25302 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\"."
+  },
+  {
+   "mpn": "NCV7343D20R2G",
+   "family": "NCV7343",
+   "mfr": "onsemi",
+   "desc": "CAN FD transceiver, high speed, low power, with INH, WAKE and error detection",
+   "category": "ic_soic",
+   "pkg": "SOIC-14",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "gateway",
+    "zonal controller",
+    "any CAN FD node"
+   ],
+   "observedMpn": "NCV7343D20R2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.44202,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7343D20R2G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.42002,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7343D20R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.40993,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7343D20R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 5,487): cut tape 500 = 0.45734, 1,000 = 0.44202 (largest CT); tape & reel 3,000 = 0.42002, 6,000 = 0.40993 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\"."
+  },
+  {
+   "mpn": "NCV7428D15R2G",
+   "family": "NCV7428",
+   "mfr": "onsemi",
+   "desc": "System basis chip: LIN transceiver + low-voltage regulator for the MCU (5 V / 3.3 V versions)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN actuator / sensor node",
+    "small body ECU"
+   ],
+   "observedMpn": "NCV7428D15R2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.39276,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7428D15R2G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.37401,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7428D15R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.36483,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV7428D15R2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 4,093, factory stock 90,000): cut tape 500 = 0.40794, 1,000 = 0.39276 (largest CT); tape & reel 3,000 = 0.37401, 6,000 = 0.36483 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\". 5 V version (D15); the 3.3 V D13 and DFN codes not read."
+  },
+  {
+   "mpn": "NCV8715SQ33T2G",
+   "family": "NCV8715",
+   "mfr": "onsemi",
+   "desc": "LDO regulator 50 mA, ultra-low Iq (4.7 uA), input up to 24 V, fixed 3.3 V",
+   "category": "ic_soic",
+   "pkg": "SC-70-5 (SC-88A / SOT-353)",
+   "aecq": true,
+   "ecuRoles": [
+    "always-on MCU / sensor supply",
+    "body ECU standby rail"
+   ],
+   "observedMpn": "NCV8715SQ33T2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.62623,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV8715SQ33T2G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.58958,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV8715SQ33T2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.57626,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCV8715SQ33T2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 3,455, factory stock 18,000): cut tape 500 = 0.63888, 1,000 = 0.62623 (largest CT); tape & reel 3,000 = 0.58958, 6,000 = 0.57626 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\"."
+  },
+  {
+   "mpn": "NVMFS5C404NLAFT1G",
+   "family": "NVMFS5C404NL",
+   "mfr": "onsemi",
+   "desc": "N-channel power MOSFET 40 V, 0.67 mOhm, 370 A, SO-8FL 5x6",
+   "category": "ic_qfn",
+   "pkg": "DFN5 5x6 (SO-8FL)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "reverse-battery / load switch",
+    "12 V power distribution"
+   ],
+   "observedMpn": "NVMFS5C404NLAFT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.57948,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFS5C404NLAFT1G",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 1.98813,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFS5C404NLAFT1G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 270; \"MOSFET N-CH 40V 370A 5DFN\"): cut tape 100 = 2.87140, 500 = 2.57948 (largest CT break, nearest to 1,000 on the cut-tape side); tape & reel 1,500 = 1.98813 (the ONLY reel break). The two breaks are different packings (cut tape v reel) - the step between them is partly the packing, not volume. GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\"."
+  },
+  {
+   "mpn": "NVMFWS0D9N04XMT1G",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 40 V 0.90 mOhm 273 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS0D9N04XMT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.21288,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS0D9N04XM",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.97463,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS0D9N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.96237,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS0D9N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS0D9N04XMT1G (the task gave the sales name without the T1G reel suffix). Digi-Key product page (read today, USD, Active, out of stock - 1,500 expected 27-Jan-2027, backorder): cut tape 100 = 1.49700, 500 = 1.21288 (largest CT); tape & reel 1,500 = 0.97463, 3,000 = 0.96237 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\"."
+  },
+  {
+   "mpn": "NVMFWS1D1N04XMT1G",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 40 V 1.05 mOhm 233 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS1D1N04XMT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.03218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D1N04XM",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.82579,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D1N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.79387,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D1N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS1D1N04XMT1G. Digi-Key product page (read today, USD, Active, stock 134; N-channel 40 V 233 A (Tc), Rds(on) max 1.05 mOhm): cut tape 100 = 1.28210, 500 = 1.03218 (largest CT); tape & reel 1,500 = 0.82579, 3,000 = 0.79387 (largest). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\" (task had aecq false)."
+  },
+  {
+   "mpn": "NVMFWS1D7N04XMT1G",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 40 V 1.65 mOhm 154 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS1D7N04XMT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.7983,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D7N04XM",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.63416,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D7N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.58909,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D7N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS1D7N04XMT1G. Digi-Key product page (read today, USD, Active, stock 877; N-channel 40 V 154 A (Tc), Rds(on) max 1.65 mOhm): cut tape 100 = 1.00180, 500 = 0.79830 (largest CT); tape & reel 1,500 = 0.63416, 3,000 = 0.58909 (largest). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\" (task had aecq false)."
+  },
+  {
+   "mpn": "NVMFWS2D3N04XMT1G",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 40 V 2.35 mOhm 121 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS2D3N04XMT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.7635,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS2D3N04XM",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.60575,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS2D3N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.56227,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS2D3N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS2D3N04XMT1G. Digi-Key product page (read today, USD, Active, out of stock - 1,500 estimated 22-Nov-2027, lead time 66 wk; N-channel 40 V 121 A (Tc), Rds(on) max 2.35 mOhm): cut tape 100 = 0.95980, 500 = 0.76350 (largest CT); tape & reel 1,500 = 0.60575, 3,000 = 0.56227 (largest). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\" (task had aecq false)."
+  },
+  {
+   "mpn": "NVMFWS3D5N08XT1G",
+   "family": "T10 80 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 80 V 3.5 mOhm 119 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V systems",
+    "48 V motor drive",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS3D5N08XT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.1401,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS3D5N08X",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.9146,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS3D5N08X",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.894,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS3D5N08X",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS3D5N08XT1G. Digi-Key product page (read today, USD, Active, out of stock - 1,360 expected 04-Dec-2026; N-channel 80 V 119 A (Tc), Rds(on) max 3.5 mOhm): cut tape 100 = 1.41060, 500 = 1.14010 (largest CT); tape & reel 1,500 = 0.91460, 3,000 = 0.89400 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\"."
+  },
+  {
+   "mpn": "NVMFWS4D0N04XMT1G",
+   "family": "T10 40 V PowerTrench automotive (NVMFWS)",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 40 V 3.9 mOhm 80 A, 5x6",
+   "category": "ic_qfn",
+   "pkg": "5-DFNW 4.9x5.9 (SO-8FL wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "12 V power distribution",
+    "reverse-battery / load switch",
+    "DC-DC"
+   ],
+   "observedMpn": "NVMFWS4D0N04XMT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.5847,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS4D0N04XM",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.46044,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS4D0N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.42539,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS4D0N04XM",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code on the Digi-Key page is NVMFWS4D0N04XMT1G. Digi-Key product page (read today, USD, Active, stock 1,252, lead time 69 wk; N-channel 40 V 80 A (Tc), Rds(on) max 3.9 mOhm): cut tape 100 = 0.74280, 500 = 0.58470 (largest CT); tape & reel 1,500 = 0.46044, 3,000 = 0.42539 (largest). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\" (task had aecq false)."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "OX03H10-E74Y-001A-Z",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "OX08D10-E92U-001A-Z",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "AR0341ATSC15XUEA0-DPBR",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "AR0823AT2C18XUEA0-DPBR-E",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NCV7410MWR2G",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NCV84003G",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NVMFWS1D3N04XM",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NVMTS1D1N08X",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "FAD1100-F085",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NCV3064DR2G",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "NCV8450ASTT3G",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "INN3949CQ-TL",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "INN3947CQ-TL",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R5F10A6ELSP#G5",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R5F10BAGLSP#G5",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R5F10BBGLNA#G5",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R5F10BGGCLFB#15",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R7F123FLG3AFB-C#BA0",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R7F7016843AFP-C#AA1",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "R7F7016933AFP-C#AA1",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "IPS2550DE1R",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "ISL78171ARZ-T7A",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "ISL78227ARZ-T7A",
+   "why": "not reached (page-read limit)"
+  },
+  {
+   "code": "ISL78610ANZ",
+   "why": "not reached (page-read limit)"
+  }
+ ]
+}

@@ -1,0 +1,1081 @@
+[
+ {
+  "mpn": "TPS2116DRLR",
+  "mfr": "Texas Instruments",
+  "desc": "1.6-5.5 V, 2.5 A power mux",
+  "category": "ic_soic",
+  "pkg": "SOT-583 (DRL)",
+  "aecq": false,
+  "currentQ1kGBP": 0.3802,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.50337,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2116DRLR/15205127",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS22918TDBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Load switch 5.5 V 2 A, 52 mOhm, configurable rise time",
+  "category": "ic_soic",
+  "pkg": "SOT-23-6",
+  "aecq": true,
+  "currentQ1kGBP": 0.1662,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 6000,
+    "price": 0.333,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS22918TDBVRQ1?qs=LuYMPh7GGMSVycgJSMXc%2Fg%3D%3D",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 30000,
+    "price": 0.31,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/TPS22918TDBVRQ1",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.22,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/TPS22918TDBVRQ1",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS2H160BQPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual smart high-side switch 160 mOhm",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-16",
+  "aecq": true,
+  "currentQ1kGBP": 0.8298,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.09862,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2H160BQPWPRQ1/6191707",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 1.25,
+    "currency": "USD",
+    "url": "https://octopart.com/part/texas-instruments/TPS2H160BQPWPRQ1",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS3430WQDRCRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Window watchdog timer, programmable timeout",
+  "category": "ic_qfn",
+  "pkg": "VSON-10 (DRC)",
+  "aecq": true,
+  "currentQ1kGBP": 0.8365,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.53306,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3430WQDRCRQ1/9597846",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.07,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS3430WQDRCRQ1?qs=w/v1CP2dgqp41ER3c3Dl1A%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.1075,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Timers-Clock-Oscillators_Texas-Instruments-TPS3430WQDRCRQ1_C2651379.html",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS3840DL30DBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Nano-Iq voltage supervisor, open-drain, MR, 3.0 V",
+  "category": "ic_soic",
+  "pkg": "SOT-23-5 (DBV)",
+  "aecq": true,
+  "currentQ1kGBP": 0.4484,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.59364,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3840DL30DBVRQ1/10715386",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS389033QDSERQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Precision low-Iq voltage supervisor, 3.3 V",
+  "category": "ic_qfn",
+  "pkg": "WSON-6 1.5x1.5",
+  "aecq": true,
+  "currentQ1kGBP": 0.9892,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.21198,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS389033QDSERQ1/6874256",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS48111LQDGXRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Automotive smart high-side driver with protection and diagnostics",
+  "category": "ic_soic",
+  "pkg": "VSSOP (DGX)",
+  "aecq": true,
+  "currentQ1kGBP": 1.3907,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 2.91336,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS48111LQDGXRQ1/17748329",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 5000,
+    "price": 2.8,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS48111LQDGXRQ1?qs=amGC7iS6iy%2Faisrr5sZ5WQ%3D%3D",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.8413,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C17558994.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS4H160BQPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "40V 160 mOhm quad high-side switch",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-28",
+  "aecq": true,
+  "currentQ1kGBP": 1.485,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.98329,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS4H160BQPWPRQ1/6100239",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key Canada",
+    "qty": 1000,
+    "price": 2.7648,
+    "currency": "CAD",
+    "url": "https://www.digikey.ca/en/products/detail/texas-instruments/TPS4H160BQPWPRQ1/6100239",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS62810QWRWYRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "6V 1A synchronous buck, 2.25/4MHz",
+  "category": "ic_qfn",
+  "pkg": "VQFN-HR-9 (RWY)",
+  "aecq": true,
+  "currentQ1kGBP": 1.4148,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 1.87424,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62810QWRWYRQ1/10320669",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 2.06285,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62810QWRWYRQ1/10320669",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 500,
+    "price": 2.06,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/PS-628",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS629210QDRLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "3-17 V, 1 A synchronous buck",
+  "category": "ic_soic",
+  "pkg": "SOT-583 (DRL)",
+  "aecq": true,
+  "currentQ1kGBP": 0.555,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.73477,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS629210QDRLRQ1/15853828",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS62A01AQDRLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "1 A synchronous buck, 2.5-5.5 V in",
+  "category": "ic_soic",
+  "pkg": "SOT-563 (DRL)",
+  "aecq": true,
+  "currentQ1kGBP": 0.2477,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.328,
+    "currency": "USD",
+    "url": "https://www.findchips.com/distributors/mouser-electronics?search=TPS-6",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS7B6950QDBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "40V 150mA LDO, 5V fixed, low Iq",
+  "category": "ic_soic",
+  "pkg": "SOT-23-5",
+  "aecq": true,
+  "currentQ1kGBP": 0.4618,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.65178,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7B6950QDBVRQ1/5358038",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 0.571,
+    "currency": "USD",
+    "url": "https://eu.mouser.com/en/ProductDetail/Texas-Instruments/TPS7B6950QDBVRQ1?qs=n7vHx8wJlDGjk5D3YkjksA%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS92633QPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "3-ch linear LED driver",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-20",
+  "aecq": true,
+  "currentQ1kGBP": 0.9294,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.23057,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92633QPWPRQ1/14544354",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TPS92830QPWRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "3-ch linear LED controller",
+  "category": "ic_soic",
+  "pkg": "TSSOP-28",
+  "aecq": true,
+  "currentQ1kGBP": 1.0581,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.40089,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92830QPWRQ1/7931918",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TS3DV642RUARQ1",
+  "mfr": "Texas Instruments",
+  "desc": "High-speed differential 2:1 / 1:2 mux switch",
+  "category": "ic_qfn",
+  "pkg": "WQFN-42 (RUA)",
+  "aecq": true,
+  "currentQ1kGBP": 0.8852,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.0846,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TS3DV642RUARQ1/15857306",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "TXU0104QPWRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4-bit fixed-direction level translator",
+  "category": "ic_soic",
+  "pkg": "TSSOP-14",
+  "aecq": true,
+  "currentQ1kGBP": 0.4147,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 0.69,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TXU0104QPWRQ1/14641448",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 2000,
+    "price": 0.42,
+    "currency": "USD",
+    "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/TXU0104QPWRQ1?qs=QNEnbhJQKvavOsVTxSnghg%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC21222QDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Automotive 4 A/6 A dual-channel basic isolated gate driver (TIDM-02013 OBC)",
+  "category": "ic_soic",
+  "pkg": "SOIC-16 (D)",
+  "aecq": true,
+  "currentQ1kGBP": 1.0629,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.4072,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C1848357.html",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC256404DDBR",
+  "mfr": "Texas Instruments",
+  "desc": "LLC resonant controller with integrated HV gate driver",
+  "category": "ic_soic",
+  "pkg": "SOIC-14 (DDB)",
+  "aecq": false,
+  "currentQ1kGBP": 1.1319,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 1.4,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC256404DDBR?qs=wnTfsH77Xs4MRQbGIRn41Q%3D%3D",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 1.3894,
+    "currency": "EUR",
+    "url": "https://www.digikey.at/en/products/detail/texas-instruments/UCC256404DDBR/11308751",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC25800AQDGNRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Automotive ultra-low-EMI open-loop LLC transformer driver for isolated bias (Wolfspeed CRD-22DD12N-U2)",
+  "category": "ic_soic",
+  "pkg": "HVSSOP-8 (DGN)",
+  "aecq": true,
+  "currentQ1kGBP": 1.14,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 7500,
+    "price": 1.3092,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/CC258",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC27211AQDDARQ1",
+  "mfr": "Texas Instruments",
+  "desc": "120 V half-bridge gate driver, 4 A",
+  "category": "ic_soic",
+  "pkg": "SO-8 PowerPAD (DDA)",
+  "aecq": true,
+  "currentQ1kGBP": 0.8668,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.1452,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC27211AQDDARQ1/5823405",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.15,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC27211AQDDARQ1?qs=n%2BTO0c4TDSYQNOcAHEGCfA%3D%3D",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC27517AQDBVRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4 A/4 A single low-side gate driver",
+  "category": "ic_soic",
+  "pkg": "SOT-23-5 (DBV)",
+  "aecq": true,
+  "currentQ1kGBP": 0.6298,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.83385,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC27517AQDBVRQ1/4368854",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC27712QDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Automotive 620 V 1.8 A/2.8 A high-side/low-side gate driver (TIDA-020031)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.7206,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 0.9015,
+    "currency": "USD",
+    "url": "https://findchips.com/search/ucc27712qdrq1",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 0.887,
+    "currency": "USD",
+    "url": "https://findchips.com/search/ucc27712qdrq1",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "UCC28740QDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Constant-voltage/current flyback controller, opto feedback",
+  "category": "ic_soic",
+  "pkg": "SOIC-7",
+  "aecq": true,
+  "currentQ1kGBP": 0.7165,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.9486,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC28740QDRQ1/11308851",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "TCAN1044AVDRQ1",
+  "mfr": "TI",
+  "desc": "CAN FD transceiver, 5 Mbps, VIO",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.3467,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.459,
+    "currency": "USD",
+    "url": "https://support.lcsc.com/product-detail/CAN-Transceivers_Texas-Instruments-TCAN1044AVDRQ1_C3234993.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SI2301CDS-T1-GE3",
+  "mfr": "Vishay",
+  "desc": "P-MOSFET 20 V 3.1 A SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.1218,
+  "stored": [
+   {
+    "distributor": "TME",
+    "qty": 3000,
+    "price": 0.089,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.132,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 2000,
+    "price": 0.116,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/7103238?gb=s",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SM8S36AHE3/2D",
+  "mfr": "Vishay",
+  "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)",
+  "category": "fuse_tvs",
+  "pkg": "DO-218AB",
+  "aecq": true,
+  "currentQ1kGBP": 1.2464,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 750,
+    "price": 1.272,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/tvs-diodes/1696093",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "SMBJ24A-E3/52",
+  "mfr": "Vishay",
+  "desc": "TVS diode 600 W, 24 V stand-off, unidirectional (commercial)",
+  "category": "fuse_tvs",
+  "pkg": "DO-214AA (SMB)",
+  "aecq": false,
+  "currentQ1kGBP": 0.0824,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2250,
+    "price": 0.11675,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/SMBJ24A-E3-52/1091517",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 2250,
+    "price": 0.0893,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C435936.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW04020000Z0ED",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "currentQ1kGBP": 0.0039,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.00452,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 10000,
+    "price": 0.0033,
+    "currency": "GBP",
+    "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 10000,
+    "price": 0.0027,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/crcw04020000z0ed",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW040210K0FKED",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 10k 1% 1/16W, 0402, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "currentQ1kGBP": 0.0039,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 10000,
+    "price": 0.00452,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 10000,
+    "price": 0.0033,
+    "currency": "GBP",
+    "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 10000,
+    "price": 0.0027,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/crcw04020000z0ed",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW0603100KFKEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 100k 1% 0.1W, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.027,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 1000,
+    "price": 0.027,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/surface-mount-fixed-resistors/6789673",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW08051K00FKEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film resistor 1k 1% 0.125W 0805 AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0078,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.00965,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW08051K00FKEA/1175637",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.0046,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw08051k00fkea-vishay-7592892?loc=1",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 5000,
+    "price": 0.007,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/surface-mount-resistors/1694547",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW120610R0FKEB",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 10 ohm 1% 0.25W, 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.009,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 20000,
+    "price": 0.0096,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C844016.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW120612R0FKEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 12 ohm 1% 0.25W, 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.0058,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.0068,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/1640135",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "CRCW251210R0FKEG",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 10 ohm 1% 1W, 2512, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.092,
+  "stored": [
+   {
+    "distributor": "RS Components",
+    "qty": 25000,
+    "price": 15.28,
+    "currency": "JPY",
+    "url": "https://jp.rs-online.com/web/p/surface-mount-resistors/6792409",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP2525CZER4R7M11",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 4.7uH 6A, 2525, automotive",
+  "category": "passive_1206",
+  "pkg": "2525 (6.47x6.86mm)",
+  "aecq": true,
+  "currentQ1kGBP": 0.3641,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.48208,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M11/1220682",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP4040DZER100M5A",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 10uH 20% 4040 (10.2x10.2 mm) AEC-Q200 (-5A)",
+  "category": "passive_1206",
+  "pkg": "4040",
+  "aecq": true,
+  "currentQ1kGBP": 0.4732,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.6265,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "IHLP4040DZER100MA1",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 10uH 20%, 10.2x10.2 mm (4040), commercial",
+  "category": "passive_1206",
+  "pkg": "4040",
+  "aecq": false,
+  "currentQ1kGBP": 0.2841,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 500,
+    "price": 0.395,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/9112920",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TNPW080512K0BEEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thin film 12k 0.1% 25ppm, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.1662,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.22,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C7125390.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "TNPW080513K0BEEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thin film 13k 0.1% 25ppm, 0805, AEC-Q200",
+  "category": "passive_0805",
+  "pkg": "0805",
+  "aecq": true,
+  "currentQ1kGBP": 0.0965,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.114,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/7003983",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL0603R0500FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Current-sense resistor 50 mohm 1% 0.1W, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.3279,
+  "stored": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 5000,
+    "price": 0.315,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/6030834",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 0.46,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/product-highlight/v/vishay-dale/wsl0603-low-value-0-10-w-surface-mount-power-metal-strip-resistor",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL1206R0100FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Metal-strip current-sense 10 mohm 1% 0.25W, 1206, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "1206",
+  "aecq": true,
+  "currentQ1kGBP": 0.2252,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.24134,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL1206R0100FEA/712486",
+    "date": "2026-10-09"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.355,
+    "currency": "USD",
+    "url": "https://il.farnell.com/vishay/wsl1206r0100fea/current-sense-res-0r01-1-250-mw/dp/1107348",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "WSL25122L000FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.4442,
+  "stored": [
+   {
+    "distributor": "Mouser",
+    "qty": 2000,
+    "price": 0.56,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "WSLP2512R0050FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Power metal strip current-sense 5mR 1% 3W, 2512",
+  "category": "passive_1206",
+  "pkg": "2512",
+  "aecq": true,
+  "currentQ1kGBP": 0.3082,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 0.53179,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP25125L000FEA/9758421",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 0.359,
+    "currency": "EUR",
+    "url": "https://nl.farnell.com/en-NL/vishay/wslp25125l000fea/current-sense-res-0r005-1-3-w/dp/2420770",
+    "date": "2026-10-06"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 2000,
+    "price": 0.36,
+    "currency": "USD",
+    "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=WSLP25125L000FEA&mfgShortname=DAL",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "PAT0603E1002BST1",
+  "mfr": "Vishay Dale Thin Film",
+  "desc": "Thin film 10k 0.1% anti-sulfur, 0603, AEC-Q200",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": true,
+  "currentQ1kGBP": 0.3056,
+  "stored": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 12000,
+    "price": 0.33954,
+    "currency": "USD",
+    "url": "https://digikey.com/product-detail/en/vishay-thin-film/PAT0603E1002BST1/PAT10KACT-ND/2278993",
+    "date": "2026-10-06"
+   }
+  ]
+ },
+ {
+  "mpn": "SQJ844AEP-T1_GE3",
+  "mfr": "Vishay Siliconix",
+  "desc": "Automotive MOSFET, PowerPAK SO-8L",
+  "category": "ic_soic",
+  "pkg": "PowerPAK SO-8L",
+  "aecq": true,
+  "currentQ1kGBP": 0.413,
+  "stored": [
+   {
+    "distributor": "TTI",
+    "qty": 3000,
+    "price": 0.506,
+    "currency": "USD",
+    "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=SQJ844AEP-T1-GE3&mfgShortname=SLN",
+    "date": "2026-10-06"
+   }
+  ]
+ }
+]

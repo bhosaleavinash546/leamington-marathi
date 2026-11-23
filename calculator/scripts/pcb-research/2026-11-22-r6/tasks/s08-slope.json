@@ -1,0 +1,59 @@
+[
+ {
+  "mpn": "0603B105K500CT",
+  "mfr": "Walsin",
+  "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.0187,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.0225,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C388003.html",
+    "date": "2026-10-13"
+   }
+  ]
+ },
+ {
+  "mpn": "AC0201KRX6S5BB104",
+  "mfr": "YAGEO",
+  "desc": "MLCC 0.1uF 6.3V X6S 0201, AEC-Q200 (AC automotive)",
+  "category": "passive_0402",
+  "pkg": "0201",
+  "aecq": true,
+  "currentQ1kGBP": 0.0086,
+  "stored": [
+   {
+    "distributor": "element14",
+    "qty": 15000,
+    "price": 0.299,
+    "currency": "TWD",
+    "url": "https://tw.element14.com/en-TW/yageo/ac0201krx6s5bb104/cap-0-1uf-6-3v-mlcc-0201/dp/3873521",
+    "date": "2026-10-09"
+   }
+  ]
+ },
+ {
+  "mpn": "CC0603KRX7R9BB105",
+  "mfr": "Yageo",
+  "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.0134,
+  "stored": [
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.0161,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C559769.html",
+    "date": "2026-10-13"
+   }
+  ]
+ }
+]

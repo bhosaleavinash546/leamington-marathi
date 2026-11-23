@@ -1,0 +1,629 @@
+{
+ "domain": "b05b-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "B82802F0007A213",
+   "family": "E13 EM (gate-drive transformer)",
+   "mfr": "TDK",
+   "desc": "SMD flyback gate-drive transformer 1:1:0.5, 30 uH, 100-400 kHz, -40..150 C, AEC-Q200 Rev. E",
+   "category": "transformer",
+   "pkg": "E13 SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "on-board charger",
+    "HV DC-DC"
+   ],
+   "observedMpn": "B82802F0007A213",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 180,
+     "price": 4.19206,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82802F0007A213",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 900,
+     "price": 3.89338,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82802F0007A213",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1800,
+     "price": 3.77053,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82802F0007A213",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 495-B82802F0007A213TR-ND): Active, series E13-EM, \"TRANSFORMER FLYBACK SMD\", 2500 V isolation, 100-400 kHz, -40..150 C, Grade Automotive, Qualification AEC-Q200, stock 170, lead time 20 weeks. Reel = 180 pcs; Tape & Reel ladder 180 / 360 / 540 / 900 / 1,260 / 1,800 (900 is the break nearest 1,000; 1,800 the largest shown). Cut tape only to 50. Turns ratio / inductance not stated on the page (desc kept from the task). USD, no VAT."
+  },
+  {
+   "mpn": "BCL3520FT-R47M-D",
+   "family": "BCL3520FT",
+   "mfr": "TDK",
+   "desc": "Power inductor 0.47 uH 20% 11.6 A (Isat 8 A) 6 mohm max, 3.5x3.3x2.0 mm, 155 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3.3x3.5 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "DC-DC converter"
+   ],
+   "observedMpn": "BCL3520FT-R47M-D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 750,
+     "price": 0.79341,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BCL3520FT-R47M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.6625,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BCL3520FT-R47M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-BCL3520FT-R47M-DTR-ND): Active, series BCL, Ratings \"AEC-Q200\", stock 810. Reel = 750 pcs; Tape & Reel ladder 750 / 1,500 / 2,250 / 3,750 / 5,250 / 7,500 (750 is the break nearest 1,000). Cut tape only to 250 (0.89644). desc corrected from the page: current rating 11.6 A, Isat 8 A, DCR 6 mohm max (task said 10 A sat / 5 mohm). USD, no VAT."
+  },
+  {
+   "mpn": "CLF6045NIT-100M-D",
+   "family": "CLF-NI-D",
+   "mfr": "TDK",
+   "desc": "Shielded wirewound power inductor 10 uH 2.1 A, 6.3x6.0 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6x6 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "observedMpn": "CLF6045NIT-100M-D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.45972,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CLF6045NIT-100M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.37841,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CLF6045NIT-100M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-CLF6045NIT-100M-DTR-ND): Active, series CLF-NI-D, 10 uH 20% Isat 2.1 A 42 mohm max, 6.3x6.0x4.8 mm, Ratings \"AEC-Q200\", stock 2,618, lead time 20 weeks. Reel = 1,000 pcs; Tape & Reel ladder 1,000 ... 10,000 (largest shown). Cut tape stops at 500 (0.50188). USD, no VAT."
+  },
+  {
+   "mpn": "CNA6P1X7R1H106K250AE",
+   "family": "CNA (soft termination)",
+   "mfr": "TDK",
+   "desc": "MLCC 10 uF 50 V X7R 10% 1210, soft termination, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "observedMpn": "CNA6P1X7R1H106K250AE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.50005,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CNA6P1X7R1H106K250AE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.46409,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CNA6P1X7R1H106K250AE",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-180367-2-ND): Active, series CNA, \"CAP CER 10UF 50V X7R 1210\", 10%, Features Soft Termination, Ratings \"AEC-Q200\", Applications Automotive / Boardflex Sensitive, stock 22 only (nearly out of stock), lead time 32 weeks. Tape & Reel shows two breaks only: 1,000 and 3,000 (largest shown). Cut tape stops at 500 (0.60490). USD, no VAT."
+  },
+  {
+   "mpn": "MLJ1608WGC1R2MTD25",
+   "family": "MLJ1608-G (PoC)",
+   "mfr": "TDK",
+   "desc": "Multilayer ferrite inductor 1.25 uH 350 mA 0603 for PoC filters, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "SerDes PoC"
+   ],
+   "observedMpn": "MLJ1608WGC1R2MTD25",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.14792,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MLJ1608WGC1R2MTD25",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.12175,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MLJ1608WGC1R2MTD25",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-MLJ1608WGC1R2MTD25TR-ND): Active, series MLJ-G, 1.25 uH 20% 350 mA 1.2 ohm max 0603, Ratings / Qualification AEC-Q200, stock 8,000. Tape & Reel ONLY (no cut tape offered): 4,000 / 8,000 / 12,000 / 20,000 / 28,000 / 40,000 - there is no break near 1,000; 4,000 (one reel) is the smallest. USD, no VAT; page notes a US tariff may apply."
+  },
+  {
+   "mpn": "SPM5030VT-2R2M-D",
+   "family": "SPM-VT-D",
+   "mfr": "TDK",
+   "desc": "Metal-composite power inductor 2.2 uH 6.6 A, 5.3x5.1 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "5x5 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU"
+   ],
+   "observedMpn": "SPM5030VT-2R2M-D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.58434,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPM5030VT-2R2M-D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.56742,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPM5030VT-2R2M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 20000,
+     "price": 0.46925,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPM5030VT-2R2M-D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-SPM5030VT-2R2M-DTR-ND): Active, series SPM-VT-D, 2.2 uH 20% 6.6 A (Isat 9 A) 20 mohm, 5.3x5.1x3.0 mm metal composite, Ratings \"AEC-Q200\", stock 2,302, lead time 20 weeks. 1,000 = Cut Tape; Tape & Reel ladder 2,000 / 4,000 / 6,000 / 10,000 / 20,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "TFM201610ALMA1R0MTAA",
+   "family": "TFM201610ALMA",
+   "mfr": "TDK",
+   "desc": "Thin-film metal power inductor 1 uH 3.1 A 0806, soft termination, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera"
+   ],
+   "observedMpn": "TFM201610ALMA1R0MTAA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.29835,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201610ALMA1R0MTAA",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.26406,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201610ALMA1R0MTAA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.22238,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TFM201610ALMA1R0MTAA",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-174574-2-ND): Active, series TFM-ALMA, 1 uH 20% 3.1 A (Isat 3.3 A) 60 mohm max, 0806 (2016), Features Soft Termination, Ratings \"AEC-Q200\", stock 22,900, lead time 20 weeks. 1,000 = Cut Tape; Tape & Reel ladder 3,000 / 6,000 / 9,000 / 15,000 / 21,000 / 30,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "NTCSP163JF103FT1H",
+   "family": "NTCSP (175 C, conductive glue)",
+   "mfr": "TDK",
+   "desc": "NTC thermistor 10 k 1% B25/85 3435 K, 0603, -55..175 C, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "power module"
+   ],
+   "observedMpn": "NTCSP163JF103FT1H",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.18281,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCSP163JF103FT1H",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.16476,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCSP163JF103FT1H",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.14558,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NTCSP163JF103FT1H",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 445-NTCSP163JF103FT1HTR-ND): Active, series NTCSP, \"THERMISTOR NTC 10K 0603 EPOXY\", 1%, B25/85 3435 K, 150 mW, -55..175 C, Grade Automotive, Qualification AEC-Q200, stock 5,531, lead time 20 weeks. 1,000 = Cut Tape; Tape & Reel ladder 4,000 / 8,000 / 12,000 / 20,000 / 28,000 / 40,000 (largest shown). Termination material not stated on the page (dropped from desc). USD, no VAT."
+  },
+  {
+   "mpn": "WSLF25121L000FEB",
+   "family": "WSLF2512",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 1 mOhm 1 % 5 W 2512, automotive AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "WSLF25121L000FEB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.40354,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLF25121L000FEB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.31923,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=WSLF25121L000FEB",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (keyword URL landed on the product, DK 541-3130-2-ND): Active, 1 mOhm 1% 5 W 2512 metal element, Features \"Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding\" on this code's page, stock 3,261, maker lead time 43 weeks. Tape & Reel ladder 1,000 / 2,000 / 3,000 / 5,000 / 7,000 / 10,000 (10,000 is the largest shown). Cut tape stops at 500 (0.43924). USD, US site, no VAT. Cross-check: TME search for the exact code returned no product (\"request for a product not included in the standard offer\"); Mouser refused (HTTP 503); LCSC search page is script-only (no data) - one distributor only."
+  },
+  {
+   "mpn": "CRCW080510K0FKEAHP",
+   "family": "CRCW-HP e3 (pulse proof, high power)",
+   "mfr": "Vishay",
+   "desc": "Thick film pulse-proof high-power resistor 10 k 1% 0.5 W, 0805 (CRCW-HP e3), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "CRCW080510K0FKEAHP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03784,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW080510K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.02974,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW080510K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.02468,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW080510K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10.0KTTR-ND): Active, series CRCW-HP e3, \"RES SMD 10K OHM 1% 1/2W 0805\", Features \"Automotive AEC-Q200, Pulse Withstanding\" on this code's page -> aecq true (task had false: grade not read in discovery), stock 77,642, lead time 17 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "CRCW120610K0FKEA",
+   "family": "CRCW e3",
+   "mfr": "Vishay",
+   "desc": "Thick film resistor 10 k 1% 0.25 W, 1206 (CRCW e3), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CRCW120610K0FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0168,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW120610K0FKEA/1176758",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01245,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW120610K0FKEA/1176758",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00965,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW120610K0FKEA/1176758",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10.0KFTR-ND; the keyword URL gave a 4-result list, the product link was read): Active, series D/CRCW e3, Features \"Automotive AEC-Q200\" on this code's page -> aecq true (task had false), stock 512,475, lead time 21 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "CRCW120610K0FKEAHP",
+   "family": "CRCW-HP e3 (pulse proof, high power)",
+   "mfr": "Vishay",
+   "desc": "Thick film pulse-proof high-power resistor 10 k 1% 0.75 W, 1206 (CRCW-HP e3), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "zonal controller",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "CRCW120610K0FKEAHP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06242,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW120610K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.05092,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW120610K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.04398,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CRCW120610K0FKEAHP",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-10.0KUTR-ND): Active, series CRCW-HP e3, Features \"Automotive AEC-Q200, Pulse Withstanding\" on this code's page -> aecq true (task had false), stock 28,401, lead time 14 weeks. 1,000 = Cut Tape; Tape & Reel ladder 5,000 / 10,000 / 15,000 / 25,000 / 35,000 / 50,000 (largest shown). USD, no VAT."
+  },
+  {
+   "mpn": "IHLE4040DDER100M5A",
+   "family": "IHLE-5A (integrated e-shield)",
+   "mfr": "Vishay",
+   "desc": "Shielded power inductor with e-field shield 10 uH 20% 6.5 A (Isat 8.5 A) 33 mohm max, 4040, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4040",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "ADAS ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "IHLE4040DDER100M5A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.92026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLE4040DDER100M5A",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.86782,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLE4040DDER100M5A",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.75754,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLE4040DDER100M5A",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-IHLE4040DDER100M5ATR-ND): Active, series IHLE-4040DD-5A, \"FIXED IND 10UH 6.5A 33.06 MOHM\", Ratings \"AEC-Q200\", stock 612, lead time 23 weeks. Reel = 500 pcs; Tape & Reel ladder 500 / 1,000 / 1,500 / 2,500 / 3,500 / 5,000 (largest shown). Cut tape only to 250 (1.00464). No PCN / obsolescence notice on the page; a substitute IHLE4040DDEW100M5A is listed. USD, no VAT."
+  },
+  {
+   "mpn": "IHLP4040EDER4R7M5A",
+   "family": "IHLP-4040ED-5A (automotive IHLP)",
+   "mfr": "Vishay",
+   "desc": "Molded high-current power inductor 4.7 uH 20% 11.5 A (Isat 11.9 A) 11.77 mohm max, IHLP-4040ED-5A, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4040",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "IHLP4040EDER4R7M5A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.8795,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP4040EDER4R7M5A/9698200",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.82936,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP4040EDER4R7M5A/9698200",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.72396,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP4040EDER4R7M5A/9698200",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (DK 541-IHLP4040EDER4R7M5ATR-ND): Part Status Active, series IHLP-4040ED-5A, Ratings \"AEC-Q200\" on this code's page -> aecq true (task had false). out of stock (0; 500 expected 25-Jan-2027, backorder) with a normal falling table. Reel = 500 pcs; Tape & Reel ladder 500 / 1,000 / 1,500 / 2,500 / 3,500 / 5,000 (largest shown). Cut tape only to 250 (0.96016). No PCN / obsolescence notice shown on the page, but it lists a \"MFR Recommended\" substitute IHLP4040EDEK4R7M5A (0 stock, 0.88089) - the pilot's lead of a July 2026 PCN (PCN-DI-008-2026) was not read; reviewer may want to check the packing change ER -> EK. USD, no VAT."
+  }
+ ],
+ "notResearched": []
+}
