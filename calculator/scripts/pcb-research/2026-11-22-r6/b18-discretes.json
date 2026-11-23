@@ -1,0 +1,1808 @@
+{
+ "domain": "b18-discretes",
+ "researched": "2026-11-23",
+ "method": "LATEST task b18-discretes, 23 Nov 2026 - all 36 lines worked, all 36 priced from the Digi-Key product page for the exact orderable code (evidence page-read; visible price tables only - no search-summary figure, no hidden page data). Codes: 22 lines carried the exact code; 10 lines gave a type number without the packing suffix and were resolved on Digi-Key (Diodes BAT54SQ-7-F, DESD1CAN2SOQ-7, DESD1CANFD24VSOQ-7, DESD1LIN2WSQ-7, SBR3U40P1Q-7; Nexperia 2N7002AK-QR, BAS21-QR, BAV99-QR, BC807-40-QR, BC817-40-QR - the -QR reel code); 3 were SERIES lines given a 24 V unidirectional representative (SMAJ24AQ-13-F, SMBJ24AQ-13-F, SZSMF6L24AT3G - reason in notes); 1 line had a WRONG CODE (AB-PL1515C0I6-5VX01515 does not exist; the real part AB-PL1515C0I6-5VX0 is priced). Per part from the Digi-Key page: the cut-tape row nearest 1,000 (Diodes Inc. tables stop at 100, Nexperia -QR at 500 or 1,000, the SZSMF6L at 500, CAN0001DP at 500 with the 1,000 break on the reel table; the others reach 1,000) and the smallest and largest Tape & Reel rows. Cut tape and Digi-Reel are one table on most pages (recorded as cut tape); where they are separate tables (V18MLA0805NHAUTO, ASMDC030F-2) only the Cut Tape table is recorded. Largest published break: 30,000 (two Nexperia transistors), 25,000 (one varistor), 21,000 / 14,000 (the LEDs), otherwise 4,000-15,000 - NOTHING near 200,000 is published for any of these codes. 35 parts have two rows of the SAME full packaging (own reel slope); ASMDC030F-2 has a single reel row. Grade: 34 codes carry Grade 'Automotive' + Qualification AEC-Q101 / AEC-Q102 / AEC-Q200 on the Digi-Key product page (this confirms the 11 Littelfuse / KYOCERA AVX lines the task had as aecq false); AB-PL1515C0I6-5VX0 rests on Digi-Key's series highlight page (no field on the product page); BSS123W-7-F shows no grade field - aecq false. No part is obsolete / NRND; 12 are out of stock at Digi-Key with a normal table (7 Diodes Inc., all 5 Nexperia -QR codes). Cross-checks: Master Electronics lists none of these makers' codes (3 reads: 'no exact match' for 2N7002Q-7-F, 'no search results' for MINIASMDC050F-2 and CAN0001DP - stopped). TME (USD, net = gross, 2 decimals, one page a minute, 8 requests - the task limit): 6 product pages served and recorded (V18MLA0603NHAUTO, V18MLA0805NHAUTO, SBR3U40P1Q-7, DESD1CAN2SOQ-7, SMAJ24AQ-13-F, SMBJ24AQ-13-F - chosen because their prices keep two significant figures at 2 decimals; the 2-7 cent SOT-23 parts would round to one figure and were not read), 1 guessed URL 404 and 1 search page without a product row (MINIASMDC050F-2). Digi-Key is 1.05-1.53x TME at the same reel break on those six; no pair exceeds 2.5x. Mouser, Arrow, Farnell, Avnet, Newark, RS, Rutronik, Future and LCSC were not tried: each refused or served no data in every earlier run today. Pacing: one page at a time, 20 s before every Digi-Key / Master read, about a minute between TME pages. Budget used: 1 web search (the SZSMF6L product URL - no price taken from it), 52 page requests: Digi-Key 41 (all served: 36 product pages, 2 result lists for ASMDC050F-2 / ASMDC030F-2 that needed a second read, 1 'no results' page for the wrong AB-PL code, 1 product-highlight page, 1 re-read of the V18MLA0805NHAUTO pricing section), Master Electronics 3, TME 8. Digi-Key did not refuse. Digi-Key observation URLs are the keyword URL that landed on the product page, or the product detail URL where one was read.",
+ "parts": [
+  {
+   "mpn": "2N7002Q-7-F",
+   "family": "2N7002Q",
+   "mfr": "Diodes Inc.",
+   "desc": "60 V N-channel small-signal MOSFET, automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "2N7002Q-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1364,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002Q-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07424,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.06298,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: manufacturer product number 2N7002Q-7-F, Diodes Incorporated, 'MOSFET N-CH 60V 170MA SOT23', SOT-23-3, Digi-Key 2N7002Q-7-FDITR-ND / …DICT-ND. Part Status Active; in stock 18 (lead time 44 weeks). Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows). Master Electronics: keyword search for 2N7002Q-7-F returned 'No exact match found' (other makers' 2N7002 only) - Master does not list Diodes Inc., not tried for the other Diodes lines."
+  },
+  {
+   "mpn": "BAT54SQ-7-F",
+   "family": "BAT54SQ",
+   "mfr": "Diodes Inc.",
+   "desc": "Dual series Schottky diode 30 V, 200 mA, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BAT54SQ-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1401,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAT54SQ-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07643,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAT54SQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.06489,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAT54SQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the base type BAT54SQ; the orderable code Digi-Key lists is BAT54SQ-7-F (Diodes Incorporated, 'DIODE ARR SCHOTT 30V 200MA SOT23', 1 pair series, SOT-23-3, Digi-Key 31-BAT54SQ-7-FTR-ND / …CT-ND). Part Status Active; out of stock (0, backorder, lead time 44 weeks) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "BC817-40Q-7-F",
+   "family": "BC817-40Q",
+   "mfr": "Diodes Inc.",
+   "desc": "45 V, 500 mA NPN general-purpose transistor, automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC817-40Q-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1347,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40Q-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07324,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.06211,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BC817-40Q-7-F, Diodes Incorporated, 'TRANS NPN 45V 0.5A SOT-23-3', 100 MHz, 310 mW, Digi-Key BC817-40Q-7-FDITR-ND / …DICT-ND. Part Status Active; in stock 94,430. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "BC847CQ-7-F",
+   "family": "BC847CQ",
+   "mfr": "Diodes Inc.",
+   "desc": "45 V, 100 mA NPN general-purpose transistor, automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC847CQ-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.0974,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847CQ-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.05182,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847CQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.04353,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847CQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BC847CQ-7-F, Diodes Incorporated, 'TRANS NPN 45V 0.1A SOT-23-3', 300 MHz, 310 mW, Digi-Key 31-BC847CQ-7-FTR-ND / …CT-ND. Part Status Active; out of stock (0, backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "BSS123W-7-F",
+   "family": "BSS123",
+   "mfr": "Diodes Inc.",
+   "desc": "N-channel MOSFET 100 V 0.17 A SOT-323",
+   "category": "fuse_tvs",
+   "pkg": "SOT-323",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01033 60 GHz radar small form factor",
+    "TI TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "BSS123W-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1578,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS123W-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.08678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS123W-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.07394,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS123W-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BSS123W-7-F, Diodes Incorporated, 'MOSFET N-CH 100V 170MA SOT323', SC-70 / SOT-323, Digi-Key BSS123W-FDITR-ND / BSS123W-FDICT-ND. Part Status Active; out of stock (0, backorder, lead time 44 weeks) with a normal table. GRADE NOT CONFIRMED: the Digi-Key page shows no Grade and no Qualification field for this code - aecq false (commercial part; an orderable member for the catalogue's BSS123 family estimate, which is labelled AEC-Q101 - this code does not support that label). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "BSS138Q-7-F",
+   "family": "BSS138Q",
+   "mfr": "Diodes Inc.",
+   "desc": "50 V N-channel small-signal MOSFET (level shifting), automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BSS138Q-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1253,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS138Q-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.06778,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS138Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.05736,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS138Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BSS138Q-7-F, Diodes Incorporated, 'MOSFET N-CH 50V 200MA SOT23-3', 300 mW, Digi-Key BSS138Q-7-FDITR-ND / …DICT-ND. Part Status Active; out of stock (0, backorder, lead time 44 weeks) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "BSS84Q-7-F",
+   "family": "BSS84Q",
+   "mfr": "Diodes Inc.",
+   "desc": "50 V P-channel small-signal MOSFET, automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BSS84Q-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1295,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS84Q-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07022,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS84Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.05948,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BSS84Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BSS84Q-7-F, Diodes Incorporated, P-channel 50 V 130 mA 300 mW SOT-23-3 (page description 'BSS FAMILY SOT23 T&R 3K'), Digi-Key 31-BSS84Q-7-FTR-ND / …CT-ND. Part Status Active; out of stock (0, backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "DESD1CAN2SOQ-7",
+   "family": "DESD1CAN2SOQ",
+   "mfr": "Diodes Inc.",
+   "desc": "CAN bus ESD protection, 2 lines bidirectional, 24 V, ±30 kV, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN node"
+   ],
+   "observedMpn": "DESD1CAN2SOQ-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.2576,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CAN2SOQ-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.14718,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CAN2SOQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.12727,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CAN2SOQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.16,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/desd1can2soq-7/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.14,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/desd1can2soq-7/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the base type DESD1CAN2SOQ; the orderable code Digi-Key lists is DESD1CAN2SOQ-7 (Diodes Incorporated, 'TVS DIODE 24VWM 70VC SOT23-3', 3 A 8/20 us, Digi-Key DESD1CAN2SOQ-7DITR-ND / …DICT-ND). Part Status Active; in stock 11,748. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows). CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number DESD1CAN2SOQ-7, DIODES INCORPORATED, 'Diode: TVS array; 25.4V; bidirectional; SOT23; Ch: 2; reel,tape', application 'automotive industry, CAN', 8 in TME stock. Rows >= 100: 100 = 0.23; 125 = 0.22; 500 = 0.18; 1,000 = 0.16; 3,000 = 0.14 (largest). TME sells this code from 1 piece (minimum 1, multiple 1; kind of package 'reel, tape'), so rows below the full reel are recorded as cut tape and rows at multiples of the full reel as reel. Digi-Key reel 3,000 = 0.14718 v TME 0.14: within 5 %."
+  },
+  {
+   "mpn": "DESD1CANFD24VSOQ-7",
+   "family": "DESD1CANFD24VSOQ",
+   "mfr": "Diodes Inc.",
+   "desc": "CAN FD bus ESD protection, 2 lines bidirectional, 24 V, low capacitance, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN FD node"
+   ],
+   "observedMpn": "DESD1CANFD24VSOQ-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1675,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CANFD24VSOQ-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.09252,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CANFD24VSOQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.07897,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1CANFD24VSOQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the base type DESD1CANFD24VSOQ; the orderable code Digi-Key lists is DESD1CANFD24VSOQ-7 (Diodes Incorporated, 'TVS DIODE 24VWM 42VC SOT23-3', 2.6 A 8/20 us, Digi-Key 31-DESD1CANFD24VSOQ-7TR-ND / …CT-ND). Part Status Active; out of stock (0; 'estimated in-stock date unavailable due to product's market conditions') with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "DESD1LIN2WSQ-7",
+   "family": "DESD1LIN2WSQ",
+   "mfr": "Diodes Inc.",
+   "desc": "LIN bus ESD protection, dual bidirectional, 24 V, ±30 kV, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN node"
+   ],
+   "observedMpn": "DESD1LIN2WSQ-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.2174,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1LIN2WSQ-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.12255,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1LIN2WSQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.10543,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DESD1LIN2WSQ-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the base type DESD1LIN2WSQ; the orderable code Digi-Key lists is DESD1LIN2WSQ-7 (Diodes Incorporated, 'TVS DIODE 24VWM 50VC SOD323', 3 A 8/20 us, Digi-Key DESD1LIN2WSQ-7DITR-ND / …DICT-ND). PACKAGE CORRECTED: the Digi-Key page prints SC-76 / SOD-323 (a 2-lead package), not the task's SOT323 - so 'dual' in the task's description is doubtful (not confirmed on the page; desc otherwise left as in the task). Part Status Active; out of stock (0, backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "MMBT3904Q-7-F",
+   "family": "MMBT3904Q",
+   "mfr": "Diodes Inc.",
+   "desc": "40 V, 200 mA NPN small-signal transistor, AEC-Q101, PPAP capable",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "MMBT3904Q-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.0844,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MMBT3904Q-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.04451,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MMBT3904Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.03724,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MMBT3904Q-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: MMBT3904Q-7-F, Diodes Incorporated, 'TRANS NPN 40V 0.2A SOT-23-3', 300 MHz, 310 mW, Digi-Key 31-MMBT3904Q-7-FTR-ND / …CT-ND. Part Status Active; in stock 45,375 (lead time 44 weeks). Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "SBR3U40P1Q-7",
+   "family": "SBR3U40P1Q",
+   "mfr": "Diodes Inc.",
+   "desc": "Super Barrier Rectifier 40 V, 3 A, VF 0.47 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "PowerDI123",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU (reverse-polarity / freewheel)"
+   ],
+   "observedMpn": "SBR3U40P1Q-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.4969,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SBR3U40P1Q-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.30003,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SBR3U40P1Q-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.26464,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SBR3U40P1Q-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 500,
+     "price": 0.26,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/sbr3u40p1q-7/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.21,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/sbr3u40p1q-7/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 24000,
+     "price": 0.18,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/sbr3u40p1q-7/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the base type SBR3U40P1Q; the orderable code Digi-Key lists is SBR3U40P1Q-7 (Diodes Incorporated, 'DIODE SBR 40V 3A POWERDI 123', Digi-Key 31-SBR3U40P1Q-7TR-ND / …CT-ND). Part Status Active; in stock 2,755. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows). CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number SBR3U40P1Q-7, DIODES INCORPORATED, 'Diode: Schottky rectifying; PowerDI123; SBR; SMD; 40V; 3A', max forward voltage 0.47 V, application 'automotive industry', 0 in TME stock. Rows >= 100: 100 = 0.28; 500 = 0.26; 3,000 = 0.21; 9,000 = 0.19; 24,000 = 0.18 (no 1,000 row - 500 is the nearest). TME sells this code from 1 piece (minimum 1, multiple 1; kind of package 'reel, tape'), so rows below the full reel are recorded as cut tape and rows at multiples of the full reel as reel. Digi-Key reel 3,000 = 0.30003 v TME 0.21: Digi-Key is 1.43x TME (below the 2.5x SPREAD threshold)."
+  },
+  {
+   "mpn": "SMAJ24AQ-13-F",
+   "family": "SMAJxxAQ",
+   "mfr": "Diodes Inc.",
+   "desc": "400 W TVS 24 V stand-off, 38.9 V clamp, unidirectional, SMA, AEC-Q101 (representative of the SMAJxxAQ / CAQ series)",
+   "category": "fuse_tvs",
+   "pkg": "SMA",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU supply / I/O clamp"
+   ],
+   "observedMpn": "SMAJ24AQ-13-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.2838,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMAJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.15261,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMAJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.13352,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMAJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.1,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smaj24aq-13-f/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 0.1,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smaj24aq-13-f/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "SERIES LINE (SMAJxxAQ / CAQ): representative chosen = SMAJ24AQ-13-F, the 24 V stand-off unidirectional member (the usual choice on a 12 V rail for jump-start / load-dump clamp), in stock at Digi-Key. Code confirmed on the Digi-Key page: SMAJ24AQ-13-F, Diodes Incorporated, 'TVS DIODE 24VWM 38.9VC SMA', 10.3 A Ipp, DO-214AC, Digi-Key SMAJ24AQ-13-FDITR-ND / …DICT-ND. Part Status Active; in stock 9,958. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the product page): cut tape + Digi-Reel in one table (recorded as cut tape) stops at 100 pieces - no row near 1,000; Tape & Reel table shows 5,000 and 15,000 only (one and three full reels) - nothing near 200,000 is published. The price is for this voltage only; other voltages / the bidirectional CAQ codes were not read. CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number SMAJ24AQ-13-F, DIODES INCORPORATED, 'Diode: TVS; 0.4kW; 26.7-29.5V; 10.3A; unidirectional; SMA', application 'automotive industry', 0 in TME stock. Rows >= 100: 100 = 0.16; 250 = 0.13; 500 = 0.11; 1,000 = 0.10; 5,000 = 0.10 (largest; printed '0.10' - the 2-decimal rounding hides any step between 1,000 and 5,000). TME sells this code from 1 piece (minimum 1, multiple 1; kind of package 'reel, tape'), so rows below the full reel are recorded as cut tape and rows at multiples of the full reel as reel. Digi-Key reel 5,000 = 0.15261 v TME 0.10: Digi-Key is 1.53x TME (below the 2.5x SPREAD threshold)."
+  },
+  {
+   "mpn": "SMBJ24AQ-13-F",
+   "family": "SMBJxxAQ",
+   "mfr": "Diodes Inc.",
+   "desc": "600 W TVS 24 V stand-off, 38.9 V clamp, unidirectional, SMB, AEC-Q101 (representative of the SMBJxxAQ / CAQ series)",
+   "category": "fuse_tvs",
+   "pkg": "SMB",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU supply clamp"
+   ],
+   "observedMpn": "SMBJ24AQ-13-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.2954,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.1707,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.14822,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ24AQ-13-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.16,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smbj24aq-13-f/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.14,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smbj24aq-13-f/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 24000,
+     "price": 0.12,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smbj24aq-13-f/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "SERIES LINE (SMBJxxAQ / CAQ): representative chosen = SMBJ24AQ-13-F, the 24 V stand-off unidirectional member (same voltage as the SMAJ line, so the two can be compared), in stock at Digi-Key. Code confirmed on the Digi-Key page: SMBJ24AQ-13-F, Diodes Incorporated, 'TVS DIODE 24VWM 38.9VC SMB', 15.4 A Ipp, DO-214AA, Digi-Key SMBJ24AQ-13-FDITR-ND / …DICT-ND. Part Status Active; in stock 8,006 (factory stock 9,000). Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows). The price is for this voltage only; other voltages / the bidirectional CAQ codes and the SMCJ / 3.0SMCJ / DM5W series named in the task note were not read. CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number SMBJ24AQ-13-F, DIODES INCORPORATED, 'Diode: TVS; 0.6kW; 26.7-30.7V; 15.4A; unidirectional; SMB', application 'automotive industry', 0 in TME stock. Rows >= 100: 100 = 0.22; 500 = 0.18; 1,000 = 0.16; 3,000 = 0.14; 6,000 = 0.13; 9,000 = 0.13; 24,000 = 0.12. TME sells this code from 1 piece (minimum 1, multiple 1; kind of package 'reel, tape'), so rows below the full reel are recorded as cut tape and rows at multiples of the full reel as reel. Digi-Key reel 3,000 = 0.1707 v TME 0.14: Digi-Key is 1.22x TME."
+  },
+  {
+   "mpn": "2N7002AK-QR",
+   "family": "2N7002AK-Q",
+   "mfr": "Nexperia",
+   "desc": "60 V N-channel Trench MOSFET, automotive -Q type (status Production), AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "2N7002AK-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0402,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002AK-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.02878,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002AK-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.02389,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=2N7002AK-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number 2N7002AK-Q; the orderable code Digi-Key lists is 2N7002AK-QR (Nexperia USA Inc., N-channel 60 V 240 mA 320 mW, TO-236AB / SOT-23, Digi-Key 1727-2N7002AK-QRTR-ND / …CT-ND; page description 'MOS DISCRETES'). Part Status Active; out of stock (0; 3,000 expected 29-Nov-2027; backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels; text after the last row: 'Manufacturers Standard Package') - nothing near 200,000 is published. Master Electronics does not list Nexperia (earlier runs) - not tried."
+  },
+  {
+   "mpn": "BAS21-QR",
+   "family": "BAS21-Q",
+   "mfr": "Nexperia",
+   "desc": "High-voltage switching diode 200 V 200 mA, automotive -Q type, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BAS21-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04412,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAS21-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.03168,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAS21-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.02635,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAS21-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number BAS21-Q; the orderable code Digi-Key lists is BAS21-QR (Nexperia USA Inc., 'DIODE STD 200V 200MA TO236AB', SOT-23, Digi-Key 1727-BAS21-QRTR-ND / …CT-ND). Part Status Active; out of stock (0; 3,000 expected 09-Feb-2027; backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels; text after the last row: 'Manufacturers Standard Package') - nothing near 200,000 is published. Master Electronics does not list Nexperia (earlier runs) - not tried."
+  },
+  {
+   "mpn": "BAV99-QR",
+   "family": "BAV99-Q",
+   "mfr": "Nexperia",
+   "desc": "High-speed dual series switching diode 100 V 215 mA, automotive -Q type, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BAV99-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.03786,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAV99-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.02704,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAV99-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.0224,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BAV99-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number BAV99-Q; the orderable code Digi-Key lists is BAV99-QR (Nexperia USA Inc., 'DIODE ARR GP 100V 215MA TO-236AB', 1 pair series, SOT-23, Digi-Key 1727-BAV99-QRTR-ND / …CT-ND). Part Status Active; out of stock (0; 3,000 expected 30-Nov-2026; backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels; text after the last row: 'Manufacturers Standard Package') - nothing near 200,000 is published. Master Electronics does not list Nexperia (earlier runs) - not tried."
+  },
+  {
+   "mpn": "BC807-40-QR",
+   "family": "BC807-Q series",
+   "mfr": "Nexperia",
+   "desc": "45 V, 500 mA PNP general-purpose transistor, automotive -Q type (complement of BC817-40-Q), AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC807-40-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03743,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC807-40-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.03067,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC807-40-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.02123,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC807-40-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number BC807-40-Q; the orderable code Digi-Key lists is BC807-40-QR (Nexperia USA Inc., 'TRANS PNP 45V 0.5A TO-236AB', 80 MHz, 250 mW, SOT-23, Digi-Key 1727-BC807-40-QRTR-ND / …CT-ND). Part Status Active; out of stock (0; 3,000 expected 26-Oct-2027; backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) with a 1,000 row; Tape & Reel table: 3,000 / 6,000 / 9,000 / 15,000 / 21,000 / 30,000 - smallest and largest recorded; 30,000 (ten reels) is the largest published break, nothing near 200,000. Master Electronics does not list Nexperia (earlier runs) - not tried. Other reel rows seen: 6,000 0.02724; 9,000 0.02550; 15,000 0.02353; 21,000 0.02236."
+  },
+  {
+   "mpn": "BC817-40-QR",
+   "family": "BC817-Q series",
+   "mfr": "Nexperia",
+   "desc": "45 V, 500 mA NPN general-purpose transistor, automotive -Q type, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC817-40-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0359,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.02938,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.02029,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC817-40-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number BC817-40-Q; the orderable code Digi-Key lists is BC817-40-QR (Nexperia USA Inc., 'TRANS NPN 45V 0.5A TO-236AB', 100 MHz, 250 mW, SOT-23, Digi-Key 1727-BC817-40-QRTR-ND / …CT-ND). Part Status Active; out of stock (0; 3,000 expected 11-May-2027; backorder) with a normal table. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) with a 1,000 row; Tape & Reel table: 3,000 / 6,000 / 9,000 / 15,000 / 21,000 / 30,000 - smallest and largest recorded; 30,000 (ten reels) is the largest published break, nothing near 200,000. Master Electronics does not list Nexperia (earlier runs) - not tried. Other reel rows seen: 6,000 0.02608; 9,000 0.02440; 15,000 0.02251; 21,000 0.02138."
+  },
+  {
+   "mpn": "MINIASMDC050F-2",
+   "family": "PolySwitch miniASMDC (automotive 1812 PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.5 A hold / 1 A trip, 24 V, 1812, automotive PolySwitch, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "1812",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "USB / sensor supply",
+    "infotainment"
+   ],
+   "observedMpn": "MINIASMDC050F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.30076,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC050F-2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.23761,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC050F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.21138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC050F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: MINIASMDC050F-2, Littelfuse Inc., 'PTC RESET FUSE 24V 500MA 1812', series PolySwitch miniASMD, hold 500 mA, trip 1 A, 24 V, 1812 concave, Digi-Key MINIASMDC050F-2TR-ND / …CT-ND. Part Status Active; in stock 18,522. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the product page): cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,000 / 4,000 (0.21889) / 6,000 - 6,000 (three reels) is the largest published break, nothing near 200,000. Master Electronics keyword search for the exact code: 'NO SEARCH RESULTS FOUND'. TME cross-check not obtained: https://www.tme.eu/en/details/miniasmdc050f-2/ returned 404 (TME's symbol for this part differs from the manufacturer code) and the TME search page for the exact code shows a count of (1) but no visible product row or link - no TME figure recorded."
+  },
+  {
+   "mpn": "V18MLA0603NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 18 V DC working voltage, 25 V varistor voltage, 30 A, 120 pF, 0603, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "CAN / LIN interface",
+    "load-dump protection"
+   ],
+   "observedMpn": "V18MLA0603NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.20584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.16678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.15888,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 2500,
+     "price": 0.15,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/v18mla0603nhauto/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 0.14,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/v18mla0603nhauto/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V18MLA0603NHAUTO, Littelfuse Inc., 'VARISTOR 25V 30A 0603', series MLA AUTO, max 18 V DC / 14 V AC, varistor voltage 22 / 25 / 28 V, 30 A surge, 0.1 J, 120 pF @ 1 MHz, Digi-Key F7380TR-ND / F7380CT-ND. Part Status Active; in stock 2,611 (lead time 39 weeks). GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,500 / 5,000 (0.16195) / 7,500 (0.15954) / 12,500 - 12,500 (five reels) is the largest published break, nothing near 200,000. CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number V18MLA0603NHAUTO, LITTELFUSE, 'Varistor: multilayer; SMD; 0603; 14VAC; 18VDC; 30A; 28V', 'Conform to the norm: AEC-Q200' (second source for the grade), 0 in TME stock, minimum order 2,500, multiple 2,500 (full reels - recorded as reel): from 2,500 = 0.15, from 5,000 = 0.14. Digi-Key reel 2,500 = 0.16678 v TME 0.15: within 11 %."
+  },
+  {
+   "mpn": "V18MLA0805NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 18 V DC working voltage, 25 V varistor voltage, 120 A, 245 pF, 0805, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "CAN / LIN interface",
+    "load-dump protection"
+   ],
+   "observedMpn": "V18MLA0805NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.22823,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.18498,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 25000,
+     "price": 0.1665,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V18MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 2500,
+     "price": 0.17,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/v18mla0805nhauto/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V18MLA0805NHAUTO, Littelfuse Inc., 'VARISTOR 25V 120A 0805', series MLA AUTO, max 18 V DC, 245 pF @ 1 MHz, Digi-Key F7381TR-ND / F7381CT-ND. Part Status Active; in stock 9,535. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). This page prints Cut Tape and Digi-Reel as SEPARATE tables - the Cut Tape table is recorded (to 1,000); the Digi-Reel table (1,000 = 0.21531) is not recorded. Tape & Reel table 2,500 / 5,000 (0.17968) / 7,500 (0.17702) / 12,500 (0.17649) / 25,000 - 25,000 (ten reels) is the largest published break, nothing near 200,000. Digi-Key oddities, as the page shows them (the pricing section was re-read from the same page to check): the Digi-Reel table is about 6 % below the Cut Tape table, and the 25,000 reel row drops 5.7 % from 12,500 where the three steps before it fall 0.3-2.9 % (ext price 4,162.50 printed). CROSS-CHECK TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals, so its figures are coarse): symbol / manufacturer part number V18MLA0805NHAUTO, LITTELFUSE, 'Varistor: multilayer; SMD; 0805; 14VAC; 18VDC; 120A; 28V', 0 in TME stock, minimum order 2,500, multiple 2,500 (full reel - recorded as reel), ONE price row: from 2,500 = 0.17. Digi-Key reel 2,500 = 0.18498 v TME 0.17: within 9 %."
+  },
+  {
+   "mpn": "SZSMF6L24AT3G",
+   "family": "SZSMF6L",
+   "mfr": "Littelfuse",
+   "desc": "600 W TVS 24 V stand-off, 38.9 V clamp, unidirectional, SOD-123FL, operating to 175 C, AEC-Q101 (representative of the SZSMF6L series)",
+   "category": "fuse_tvs",
+   "pkg": "SOD-123FL",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU supply / I/O protection",
+    "zonal controller"
+   ],
+   "observedMpn": "SZSMF6L24AT3G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.22304,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SZSMF6L24AT3G/26793908",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.13345,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SZSMF6L24AT3G/26793908",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.11813,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SZSMF6L24AT3G/26793908",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "SERIES LINE (SZSMF6L): representative chosen = SZSMF6L24AT3G, the 24 V stand-off unidirectional member (same voltage as the SMAJ / SMBJ lines; in stock at Digi-Key). Product URL found by 1 web search (no price taken from it). Code confirmed on the Digi-Key page: SZSMF6L24AT3G, Littelfuse Inc., 'ZEN TVS 600W 24V UNI SOD-123FL T', 38.9 V clamp, 15.4 A Ipp, 600 W, series SZSMF6L, operating -55 to 175 C (TJ), Digi-Key 18-SZSMF6L24AT3GTR-ND / …CT-ND. Part Status Active; in stock 5,742. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) stops at 500 - the break nearest 1,000; Tape & Reel table shows 5,000 and 15,000 only (one and three full reels) - nothing near 200,000. The search result showed a second Digi-Key listing id for the same code (…/26793990, seen on regional sites) - not read. The bidirectional SZSMF6L24CAT3G was not read."
+  },
+  {
+   "mpn": "BC847BSQ-7-F",
+   "family": "BC847BSQ",
+   "mfr": "Diodes Inc.",
+   "desc": "Dual NPN 45 V, 100 mA general-purpose transistor, automotive, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT363",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC847BSQ-7-F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1455,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847BSQ-7-F",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07958,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847BSQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.06764,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847BSQ-7-F",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BC847BSQ-7-F, Diodes Incorporated, 'TRANS 2NPN 45V 100MA SOT-363', dual NPN 100 MHz 200 mW, SC-88 / SOT-363, Digi-Key 31-BC847BSQ-7-FTR-ND / …CT-ND. Part Status Active; in stock 38,000. Grade Automotive, Qualification AEC-Q101 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). The page prints cut tape and Digi-Reel in ONE table (recorded as cut tape) that stops at 100 pieces - no row near 1,000 is published, so the 100 row is the nearest cut-tape break; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No 'show more' control in the price tables (asked of the page on DESD1CANFD24VSOQ-7; the Diodes Inc. pages all show the same five cut-tape and two reel rows)."
+  },
+  {
+   "mpn": "CAN0001DP",
+   "family": "CAN series (CAN-bus varistor)",
+   "mfr": "KYOCERA AVX",
+   "desc": "Multilayer varistor for CAN bus line protection, 18 V DC, 4 A, 22 pF, 0603, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN transceiver",
+    "body ECU",
+    "gateway"
+   ],
+   "observedMpn": "CAN0001DP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.21434,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CAN0001DP",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.20546,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CAN0001DP",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.18579,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=CAN0001DP",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: CAN0001DP, KYOCERA AVX, 'VARISTOR 120V 4A 0603', multilayer varistor (MLCV) 0603, max 18 V DC, 22 pF @ 1 MHz, Digi-Key 478-13088-2-ND (reel) / 478-13088-1-ND (cut tape). Part Status Active; in stock 5,132. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false); case size 0603 and 22 pF read on the page (task had them unread). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) stops at 500; the Tape & Reel table starts at 1,000 (the 1,000 break is a reel row): 1,000 / 2,000 (0.19816) / 3,000 (0.19449) / 5,000 (0.19044) / 7,000 (0.18807) / 10,000 - 10,000 is the largest published break, nothing near 200,000. Master Electronics keyword search for the exact code: 'NO SEARCH RESULTS FOUND'."
+  },
+  {
+   "mpn": "ASMDC050F-2",
+   "family": "PolySwitch ASMDC (automotive PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.5 A hold / 1 A trip, 60 V, 2-SMD, ASMD automotive PolySwitch, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "2-SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "motor / actuator supply"
+   ],
+   "observedMpn": "ASMDC050F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.45733,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/ASMDC050F-2/6623871",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.35537,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/ASMDC050F-2/6623871",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.33525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/ASMDC050F-2/6623871",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: ASMDC050F-2, Littelfuse Inc., 'PTC RESET FUSE 60V 500MA 2SMD', series PolySwitch ASMD, hold 500 mA, trip 1 A, 60 V, package 2-SMD (case size not printed as an EIA code), Digi-Key F9958TR-ND / F9958CT-ND. Part Status Active; in stock 14,676. Grade Automotive, Qualification AEC-Q200 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL showed a result list with this one exact match, so the product detail page was a second read): cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table shows 4,000 and 12,000 only (one and three full reels) - nothing near 200,000. Master Electronics does not list the PolySwitch codes (no result for MINIASMDC050F-2) - not tried."
+  },
+  {
+   "mpn": "MINIASMDC020F-2",
+   "family": "PolySwitch miniASMDC (automotive 1812 PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.2 A hold / 0.4 A trip, 30 V, 1812, automotive PolySwitch miniASMD, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "1812",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "sensor supply"
+   ],
+   "observedMpn": "MINIASMDC020F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.30076,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC020F-2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.23761,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC020F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.21138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MINIASMDC020F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: MINIASMDC020F-2, Littelfuse Inc., 'PTC RESET FUSE 30V 200MA 1812', series PolySwitch miniASMD, hold 200 mA, trip 400 mA, 30 V, 1812 concave, Digi-Key MINIASMDC020F-2TR-ND / …CT-ND. Part Status Active; in stock 2,215. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,000 / 4,000 (0.21889) / 6,000 - 6,000 (three reels) is the largest published break, nothing near 200,000. Every row equals the MINIASMDC050F-2 page's (Digi-Key prices the two miniASMDC codes alike) - read on this code's own page."
+  },
+  {
+   "mpn": "NANOASMDC012F-2",
+   "family": "PolySwitch nanoASMDC (automotive 1206 PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.12 A hold / 0.39 A trip, 48 V, 1206, automotive PolySwitch, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor supply",
+    "camera / antenna supply"
+   ],
+   "observedMpn": "NANOASMDC012F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.29121,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NANOASMDC012F-2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.2193,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NANOASMDC012F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.204,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NANOASMDC012F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: NANOASMDC012F-2, Littelfuse Inc., 'PTC RESET FUSE 48V 120MA 1206', series PolySwitch nanoASMD, hold 120 mA, trip 390 mA, 48 V, 1206 concave, Digi-Key NANOASMDC012F-2TR-ND / …CT-ND. Part Status Active; in stock 14,682. GRADE: the Digi-Key product page prints Grade Automotive, Qualification AEC-Q200 for this code, so aecq is set true (the task note said the series is qualified under PS400 'derived from AEC-Q200' - the distributor's field is the evidence here; weaker than a maker statement). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table shows 3,000 and 6,000 only (one and two full reels) - nothing near 200,000."
+  },
+  {
+   "mpn": "V26MLA0805NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 26 V DC working voltage, 34 V varistor voltage, 100 A, 90 pF, 0805, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "CAN / LIN interface",
+    "load-dump protection"
+   ],
+   "observedMpn": "V26MLA0805NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.21531,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V26MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.17451,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V26MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.1665,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V26MLA0805NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V26MLA0805NHAUTO, Littelfuse Inc., 'VARISTOR 34V 100A 0805', series MLA AUTO, max 26 V DC, 90 pF @ 1 MHz, Digi-Key F7382TR-ND / F7382CT-ND. Part Status Active; in stock 6,900. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,500 / 5,000 (0.16951) / 7,500 (0.16700) / 12,500 - 12,500 (five reels) is the largest published break, nothing near 200,000."
+  },
+  {
+   "mpn": "V33MLA1206NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 33 V DC working voltage, 43.5 V varistor voltage, 180 A, 380 pF, 1206, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "CAN / LIN interface",
+    "load-dump protection"
+   ],
+   "observedMpn": "V33MLA1206NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.64543,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V33MLA1206NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.52738,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V33MLA1206NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.5205,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V33MLA1206NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V33MLA1206NHAUTO, Littelfuse Inc., 'VARISTOR 43.5V 180A 1206', series MLA AUTO, max 33 V DC, 380 pF @ 1 MHz, Digi-Key F11298TR-ND / F11298CT-ND. Part Status Active; in stock 7,874. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table shows 2,500 and 5,000 only (one and two full reels) - nothing near 200,000. About 3x the 0805 / 0603 MLA AUTO codes at the same break - as the page shows it."
+  },
+  {
+   "mpn": "V48MLA1210NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 48 V DC working voltage, 60.5 V varistor voltage, 250 A, 400 pF, 1210, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V ECU",
+    "body ECU"
+   ],
+   "observedMpn": "V48MLA1210NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.78432,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V48MLA1210NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.64686,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V48MLA1210NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.5995,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V48MLA1210NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V48MLA1210NHAUTO, Littelfuse Inc., 'VARISTOR 60.5V 250A 1210', series MLA AUTO, max 48 V DC, 400 pF @ 1 MHz, Digi-Key F11303TR-ND / F11303CT-ND. Part Status Active; in stock 2,925. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,000 / 4,000 (0.63547) / 6,000 - 6,000 (three reels) is the largest published break, nothing near 200,000."
+  },
+  {
+   "mpn": "V5.5MLA0603NHAUTO",
+   "family": "MLA Automotive (multilayer varistor)",
+   "mfr": "Littelfuse",
+   "desc": "Multilayer varistor 5.5 V DC working voltage, 8.2 V varistor voltage, 30 A, 830 pF, 0603, MLA Automotive series, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "CAN / LIN interface",
+    "load-dump protection"
+   ],
+   "observedMpn": "V5.5MLA0603NHAUTO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.20584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V5.5MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.16678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V5.5MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.15888,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=V5.5MLA0603NHAUTO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: V5.5MLA0603NHAUTO, Littelfuse Inc., 'VARISTOR 8.2V 30A 0603', series MLA AUTO, max 5.5 V DC, 830 pF @ 1 MHz, Digi-Key F11304TR-ND / F11304CT-ND. Part Status Active; in stock 4,030. GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,500 / 5,000 (0.16195) / 7,500 (0.15954) / 12,500 - 12,500 (five reels) is the largest published break, nothing near 200,000. Every row equals the V18MLA0603NHAUTO page's (Digi-Key prices the two 0603 codes alike) - read on this code's own page."
+  },
+  {
+   "mpn": "ASMD100F-2",
+   "family": "PolySwitch ASMD (automotive PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.9 A hold / 2.16 A trip (as the Digi-Key page prints; the task read 1.0 A from the code), 30 V, 2-SMD, ASMD automotive PolySwitch, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "2-SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "motor / actuator supply"
+   ],
+   "observedMpn": "ASMD100F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.4373,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ASMD100F-2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.3454,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ASMD100F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.31913,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ASMD100F-2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: ASMD100F-2, Littelfuse Inc., 'PTC RESET FUSE 30V 900MA 2SMD', series PolySwitch ASMD, hold (Ih max) printed 900 mA - not the 1.0 A the code suggests - trip 2.16 A, 30 V, package 2-SMD, Digi-Key ASMD100F-2TR-ND / ASMD100F-2CT-ND. Part Status Active; in stock 137 (low). GRADE CONFIRMED: Digi-Key page prints Grade Automotive, Qualification AEC-Q200 (task had aecq false). Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut Tape table (no Digi-Reel on this page) to 1,000; Tape & Reel table shows 2,000 and 4,000 only (one and two full reels) - nothing near 200,000."
+  },
+  {
+   "mpn": "ASMDC030F-2",
+   "family": "PolySwitch ASMDC (automotive PPTC)",
+   "mfr": "Littelfuse",
+   "desc": "Resettable PPTC, 0.3 A hold / 0.6 A trip, 60 V, 2-SMD, ASMD automotive PolySwitch, AEC-Q200",
+   "category": "fuse_tvs",
+   "pkg": "2-SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "motor / actuator supply"
+   ],
+   "observedMpn": "ASMDC030F-2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.48477,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/ASMDC030F-2/6623870",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.33525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/ASMDC030F-2/6623870",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: ASMDC030F-2, Littelfuse Inc., 'PTC RESET FUSE 60V 300MA 2SMD', series PolySwitch ASMD, hold 300 mA, trip 600 mA, 60 V, package 2-SMD, Digi-Key F9957TR-ND / F9957CT-ND. Part Status Active; in stock 6,852. Grade Automotive, Qualification AEC-Q200 (Digi-Key page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL showed a result list with this one exact match, so the product detail page was a second read). This page prints Cut Tape and Digi-Reel as SEPARATE tables - the Cut Tape table is recorded (to 1,000); the Digi-Reel table (1,000 = 0.45733) is not. The Tape & Reel table has ONE row (4,000, one full reel) - no larger break is published, so the part has no same-packing slope of its own (cut tape 1,000 v reel 4,000 are different packings)."
+  },
+  {
+   "mpn": "AB-PL1515C0I6-5VX0",
+   "family": "AB-PL series",
+   "mfr": "American Bright",
+   "desc": "Addressable RGB LED with integrated driver IC, 1515 package, AEC-Q102 (series)",
+   "category": "led",
+   "pkg": "1.5x1.5 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "interior ambient lighting"
+   ],
+   "observedMpn": "AB-PL1515C0I6-5VX0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.51509,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/american-bright-optoelectronics-corporation/AB-PL1515C0I6-5VX0/26866121",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.47374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/american-bright-optoelectronics-corporation/AB-PL1515C0I6-5VX0/26866121",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 21000,
+     "price": 0.42259,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/american-bright-optoelectronics-corporation/AB-PL1515C0I6-5VX0/26866121",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "WRONG-CODE in the task, corrected and priced: 'AB-PL1515C0I6-5VX01515' does not exist - Digi-Key's keyword page says it 'did not return any results'; the code was the real part number with the package size '1515' joined on. Digi-Key's AB-PL product-highlight page (the task's source, read today on digikey.com) lists ONE part: AB-PL1515C0I6-5VX0, '1515 5V RGB+IC LED, RBG SEQUENCE'. Product page: American Bright Optoelectronics Corporation, series AB-PL, addressable serial RGB, 1.50 x 1.50 mm, Digi-Key 2007-AB-PL1515C0I6-5VX0TR-ND / …CT-ND. Part Status Active; in stock 85 (low). GRADE: the product page shows NO Grade / Qualification field; the Digi-Key highlight page for the AB-PL series states 'AEC-Q102 qualified for automotive-grade reliability' - aecq true rests on that series-level distributor statement (weaker than a product-page field). Digi-Key product page (digikey.com, USD, read 2026-11-23; product detail URL taken from the highlight page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 3,000 / 6,000 (0.45272) / 9,000 (0.44195) / 15,000 (0.42981) / 21,000 - 21,000 (seven reels) is the largest published break, nothing near 200,000. Master Electronics not tried (no result on three other codes of this task)."
+  },
+  {
+   "mpn": "BB-HBRG32N-TRB-0-AQ",
+   "family": "AEC-Q102 addressable RGB with IC",
+   "mfr": "American Bright",
+   "desc": "Addressable RGB LED with integrated IC, SPI control, AEC-Q102",
+   "category": "led",
+   "pkg": "PLCC-6",
+   "aecq": true,
+   "ecuRoles": [
+    "interior light sources"
+   ],
+   "observedMpn": "BB-HBRG32N-TRB-0-AQ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.61339,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BB-HBRG32N-TRB-0-AQ",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.58209,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BB-HBRG32N-TRB-0-AQ",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 14000,
+     "price": 0.51755,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BB-HBRG32N-TRB-0-AQ",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BB-HBRG32N-TRB-0-AQ, American Bright Optoelectronics Corporation, 'LED RGB CLEAR SMD', RGB 625 / 525 / 465 nm, 5 V per colour, 6-PLCC, 3.20 x 2.80 mm, Digi-Key 2007-BB-HBRG32N-TRB-0-AQTR-ND / …CT-ND. Part Status Active; in stock 15,421. Grade Automotive, Qualification AEC-Q102 (Digi-Key page). The product page's description does not mention the integrated IC / SPI control the task line states (5 V per colour fits an IC-driven LED; not confirmed on the page) - desc left as in the task. Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page). Cut tape + Digi-Reel in one table (recorded as cut tape) to 1,000; Tape & Reel table 2,000 / 4,000 (0.55557) / 6,000 (0.54198) / 10,000 (0.52666) / 14,000 - 14,000 (seven reels) is the largest published break, nothing near 200,000."
+  }
+ ],
+ "notResearched": []
+}

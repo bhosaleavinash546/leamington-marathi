@@ -1,5 +1,5 @@
 {
- "note": "Listed parts still WITHOUT a franchised-distributor price after six research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key. Round 4 (13 Oct 2026, scripts/pcb-research/2026-10-13-gap) added its unpriced and not-reached lines; group notReached = budget ran out before the part was searched.",
+ "note": "Listed parts still WITHOUT a franchised-distributor price after six research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key. Round 4 (13 Oct 2026, scripts/pcb-research/2026-10-13-gap) added its unpriced and not-reached lines; group notReached = budget ran out before the part was searched. Round 6 (23 Nov 2026): prices are now READ ON THE DISTRIBUTOR PAGE; entries marked \"round 6\" came from the discovery pass (2026-11-22-r6/discovery/consolidated.json holds 1,861 discovered candidates - 1,100 of them outside scope B and not listed here).",
  "remaining": [
   {
    "mpn": "DRA821U",
@@ -1177,11 +1177,6 @@
    "why": "round 4 (13 Oct 2026, memory-2): Findchips page showed prices without naming the distributor; Digi-Key page only punchouttest."
   },
   {
-   "mpn": "M24C64-DRMN3TP/K",
-   "group": "noUsablePrice",
-   "why": "round 4 (13 Oct 2026, memory-2): Digi-Key out of stock no tiers; Mouser tiers only via ciiva (not allowed) without breaks."
-  },
-  {
    "mpn": "MB85RS256TYPNF-GS-AWE2",
    "group": "noUsablePrice",
    "why": "round 4 (13 Oct 2026, memory-2): Digi-Key pages azcus/punchouttest without a second source or price; Mouser not priced."
@@ -1405,11 +1400,6 @@
    "mpn": "SJA1124BHG/1Z",
    "group": "noUsablePrice",
    "why": "round 4 (13 Oct 2026, networking): Code seen on Farnell JP (dp 4147387) but no price in results."
-  },
-  {
-   "mpn": "TCAN1463DRQ1",
-   "group": "noUsablePrice",
-   "why": "round 4 (13 Oct 2026, networking): Digi-Key lists code (active, 12 wk) but no price break in results."
   },
   {
    "mpn": "TLE9371SJXTMA1",
@@ -2965,6 +2955,1656 @@
    "mpn": "Wurth WCAP-ASLI, KYOCERA AVX TCQ, TDK B32776 automotive, KEMET C4AQ",
    "group": "notReached",
    "why": "round 5: Not reached; shared web-search budget exhausted."
+  },
+  {
+   "mpn": "NXP S32K5",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 16 nm FinFET automotive MCU family with embedded MRAM, Arm Cortex cores up to 800 MHz, for zonal / electrification contr - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP S32N7 (S32N79)",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 5 nm super-integration processor series: up to 8x Cortex-A78AE + 12x Cortex-R52, AI acceleration, for vehicle core digit - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP S32J100",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive Ethernet switch and network controller, 10 Mbps to 10 Gbps ports, TSN, HSE, PCIe, dual-core lockstep / split- - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Renesas RH850/U2B",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 28 nm cross-domain MCU: up to 4x 400 MHz cores + lockstep pairs, ASIL D, EVITA Full, EMU3S motor-control accelerator - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Renesas R-Car V4M",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): R-Car Gen 4 cost-optimised ADAS SoC (the page calls it the 'next cost-competitive product lineup' after V4H) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Renesas R-Car V4H",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): ADAS / automated-driving SoC, up to 34 TOPS, ASIL B / D targets - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Renesas R-Car X5H",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): R-Car Gen 5 multi-domain SoC on 3 nm for ADAS + IVI + gateway - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Renesas R-Car S4",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Car-server / gateway SoC: 8x Cortex-A55 + real-time cores, 3-port TSN Ethernet switch, ASIL B / D - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "STMicroelectronics Stellar P3E (SR6P3EC4 / SR6P3EC6)",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive MCU with Neural-ART AI accelerator, Cortex-R52+ cores, for x-in-1 electrification ECUs - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Texas Instruments TDA54-Q1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Premium automotive SoC with C7 NPU for edge AI in ADAS / software-defined vehicles - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Microchip SAM9X75 (SAM9X75D5M)",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Hybrid MCU system-in-package: Arm926EJ-S + 512 Mbit DDR2, 2x CAN FD, MIPI / LVDS / RGB display - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "SemiDrive E3 series (E3640 / E3650 / E3620B / E3620P)",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive-grade MCUs on Cortex-R5 / R52+ up to 800 MHz, up to four lockstep core pairs, ASIL D product certification - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP FS27",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 12 / 24 / 48 V safety system basis chip, ASIL D, for entry and mid-range 28 nm safety MCUs (S32K38x pairing) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Texas Instruments TCAN6062-Q1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive CAN XL transceiver with standby mode - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Bosch NT156",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): CAN XL transceiver, bit rates up to 20 Mbit/s - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Microchip LAN8660X / LAN8661X / LAN8662X",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 10BASE-T1S RCP endpoints with integrated PMD transceiver (no external PHY) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Microchip LAN8679",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 10BASE-T1S PMD transceiver with OA3p interface - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Microchip LAN8680",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 10BASE-T1S PMD transceiver with system-basis-chip features (power management, wake / sleep, watchdog) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Texas Instruments DP83TD555J-Q1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive 10BASE-T1S SPI MAC-PHY - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Broadcom BCM89890",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Multigigabit automotive Ethernet PHY - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Valens VA7031",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): MIPI A-PHY serializer for sensors, 1 x 8 Gbps / 100 Mbps link, D-PHY CSI-2 input, 15 m - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Valens VA7021",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): MIPI A-PHY serializer for sensors, 1 x 4 Gbps / 100 Mbps link, D-PHY CSI-2 input, 15 m - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Valens VA7044",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): MIPI A-PHY quad deserializer, 4 x 8 Gbps links, 2 x C-PHY / D-PHY CSI-2 outputs - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Valens VA7042A",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): MIPI A-PHY dual deserializer, 2 x 8 Gbps links, 2 x C-PHY / D-PHY CSI-2 outputs - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Valens VA7004",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): MIPI A-PHY quad deserializer, 4 x 4 Gbps links, 1 x C-PHY / D-PHY CSI-2 output - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Qualcomm QCA6797AQ",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive Wi-Fi 7 (802.11be) + Bluetooth chipset, high-band simultaneous 2x2 - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Qualcomm QCA6787AQ",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive Wi-Fi 7 (802.11be) + Bluetooth chipset, dual-band simultaneous 2x2 - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP SAF9000",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): One-chip software-defined radio and audio processing solution for infotainment - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP SAF4000",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Multi-standard software-defined radio processor with integrated audio (all global broadcast standards) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "AWR2188ABGAPERQ1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 76-81 GHz 8TX/8RX cascadable 4D imaging radar transceiver, launch-on-package - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP SAF85xx",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 77 GHz RFCMOS one-chip radar SoC: 4T4R transceiver + Cortex-A53 / M7 radar MPU + BBE32 DSP (SAF85xxL = launcher-in-packa - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "NXP SAF86xx",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 76-81 GHz RFCMOS one-chip radar SoC for distributed (streaming) radar: 4T4R + BBE32EP DSP + Cortex-M7 lockstep, Gigabit  - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Infineon XENSIV TLE5571",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Differential TMR coreless current sensor, 2.5 MHz, 150 ns overcurrent detection, ASIL C (HV e-fuse / solid-state breaker - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Infineon XENSIV TLE5572",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Monocell TMR current sensor in SOT23, 1 MHz, replaces shunt + op-amp - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "TB9M040FTG",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): SmartMCD MCU + motor driver with built-in power MOSFETs for small 3-phase BLDC motors - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "TB9104FTG",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Gate driver for bridge circuits of high-current automotive brushed DC motors - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Micron 4150AT quad-port automotive SSD",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Quad-port PCIe automotive SSD (up to 4 SoCs, SR-IOV), 220 GB–1.8 TB, TLC, ASIL-B - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Kioxia Automotive UFS Ver. 4.1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive UFS 4.1 embedded flash 128 GB / 256 GB / 512 GB / 1 TB, case temperature to 115 C - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "Samsung AutoSSD AM9C1",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): PCIe 4.0 automotive SSD on 8th-generation V-NAND, 128 GB–2 TB (256 GB first) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "SK hynix Automotive LPDDR5X",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Automotive LPDDR5X DRAM with ISO 26262 ASIL-D certification (TÜV SÜD, Jan 2026) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "ams OSRAM EVIYOS HD 25",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Pixelated micro-LED headlamp light source, 25,600 individually addressable pixels - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "STL075N4S8AG",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Smart STripFET F8 power MOSFET, 0.75 mOhm, 350 A (voltage and package not stated on the page) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "STK035N4S8AG",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): Smart STripFET F8 power MOSFET, 0.35 mOhm, 780 A (voltage and package not stated on the page) - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "STMicroelectronics VD56GA (ST SafeSense)",
+   "group": "ndaOrDirect",
+   "why": "round 6 (23 Nov 2026): 1.1 MP automotive image sensor for infrared in-cabin sensing (driver / occupant monitoring), back-side illuminated - pre-production or sold under contract; supplier quote"
+  },
+  {
+   "mpn": "XGL5050-222MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key keyword search returns \"did not return any results\" and the Digi-Key Marketplace product page (digikey.com/en/products/detail/coilcraft/XGL5050-222MEC/16817026) says \"This product is no longer available at DigiKey\" - no price shown. One try at another franchised distributor: uk."
+  },
+  {
+   "mpn": "XAL5050-103MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC: \"no longer available at DigiKey\"; this code's Digi-Key page was not re-read). One try at another franchised distributor for this exact code: uk.farnell.com/search?st=XAL5050-103MEC refused (HTTP 503). Master "
+  },
+  {
+   "mpn": "XAL6060-103MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sel"
+  },
+  {
+   "mpn": "XGL5030-103MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sel"
+  },
+  {
+   "mpn": "XGL5050-102MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sel"
+  },
+  {
+   "mpn": "XGL5050-331MEC",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sel"
+  },
+  {
+   "mpn": "DFE2MCPH1R0MJLLQ",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key keyword search for the exact code read 22 Nov 2026 returns \"did not return any results\" (it offers only a 'did you mean' for the 0.10 uH member DFE2MCPHR10MJLLQ and 1 substitute); TME search for the exact code returns 0 products; one web search found no franchised listing of the"
+  },
+  {
+   "mpn": "ADBMS6822WCCSZ",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for ADBMS6822WCCSZ (505-ADBMS6822WCCSZ-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no price table, no backorders (\"temporary constrained supply\"), no substitute named; no Grade field on the page (W = ADI automotive suffix; AEC-Q100 is from the ADI product "
+  },
+  {
+   "mpn": "ADBMS6832",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable IC code found. Digi-Key keyword search \"ADBMS6832\" (read 23 Nov 2026) lands only on the evaluation board EVAL-ADBMS6832MCS (\"Discontinued at DigiKey\", stock 0, no price); one web search for the ADBMS6832 orderable code returned none. mpn holds the family key, NOT an orderabl"
+  },
+  {
+   "mpn": "LT8640SIV#WPBF",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key pages read 23 Nov 2026 - LT8640SIV#WPBF (505-LT8640SIV#WPBF-ND) and LT8643SIV#WPBF (505-LT8643SIV#WPBF-ND) both show \"Discontinued at DigiKey\", Grade Automotive, Qualification AEC-Q100, 24-LQFN (4x4), tray, stock 0, NO price table, no backorders. LT8640SEV#WPBF returns no results "
+  },
+  {
+   "mpn": "MAX96751GTN/V+",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for MAX96751GTN/V+ (175-MAX96751GTN/V+-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no price table, no backorders; no Grade field. The /VY+ code named by the discovery pass exists at Digi-Key (MAX96751GTN/VY+, \"GMSL2 serializer with HDMI 2.0 interface\") but"
+  },
+  {
+   "mpn": "LT8648SJV#WPBF",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for LT8648SJV#WPBF (505-LT8648SJV#WPBF-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", Grade Automotive, Qualification AEC-Q100, 36-LQFN (7x4), tray, stock 0, no price table, no backorders. Substitutes shown are the NON-automotive LT8648SJV#PBF (19.76000 USD, one piece"
+  },
+  {
+   "mpn": "LTC6812HLWE-1#3ZZPBF",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for LTC6812HLWE-1#3ZZPBF (LTC6812HLWE-1#3ZZPBF-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no backorders, no lead time, no substitute named. Not priced. For reference only, the page still prints ONE tray row: 160 = 30.17800 USD. Grade field \"Automotive\" (s"
+  },
+  {
+   "mpn": "TC489QP16NF400MCAAKXUMA1",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: one web search for the OPN TC489QP16NF400MCAAKXUMA1 / SAK-TC489QP-16NF400MC returned only Infineon's own part pages and a product directory - no franchised distributor listing; Digi-Key results were for other AURIX TC4x codes (TC4D9XP20MF500MCABKXUMA1 - not this part). Digi-Key refused ("
+  },
+  {
+   "mpn": "TLF4D985QKV01R1",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: one web search for TLF4D985QKV01R1 / TLF4D985QVV01R1 returned only Infineon's own part pages (QKV01R1, QKV02R1, QKV03R1, QVV01R1, QVV02R1; QKV03) - no franchised distributor listing and no orderable (…XUMA1) code seen; the Digi-Key results were for the older TLF35585 PMIC (not this part)"
+  },
+  {
+   "mpn": "TLE9350BVLE",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable code found - one web search for TLE9350BVLEXTMA1 (and the SJ codes) returned no listing for any leadless TLE9350B…LE code; 'mpn' here is the maker's sales name from the task, NOT an orderable code. aecq is the task's reading of Infineon's transceiver deck (family row), not c"
+  },
+  {
+   "mpn": "IAUCN08S7L110",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING at TME: TME's search listing for IAUCN08S7 (read 23 Nov 2026) names 5 codes - IAUCN08S7N013ATMA1, IAUCN08S7N019ATMA1, IAUCN08S7L013ATMA1, IAUCN08S7N034ATMA1, IAUCN08S7N024ATMA1 - and NOT an L110 code; 'mpn' is the maker's sales name from the task, the orderable code (…ATMA1 by the family'"
+  },
+  {
+   "mpn": "MLX81332",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable code found - one web search for MLX81332 / MLX81340 order codes at Digi-Key / Mouser returned only other Melexis parts; 'mpn' is the family name from the task, NOT an orderable code. Master Electronics does not list Melexis (no result for MLX90425GDC-ABA-600-RE). Grade not c"
+  },
+  {
+   "mpn": "MLX81340",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable code found - the same web search as MLX81332 returned no listing for MLX81340; 'mpn' is the family name from the task, NOT an orderable code. Grade not confirmed (aecq false). Supplier quote needed."
+  },
+  {
+   "mpn": "OX03H10-E74Y-001A-Z",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key keyword search \"OX03H10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused; TME does not carry OMNIVISION and its page limit was spent). OMNIVISION sensors are sold direct / thro"
+  },
+  {
+   "mpn": "OX08D10-E92U-001A-Z",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key keyword search \"OX08D10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused). OMNIVISION sensors are sold direct / through its agents - supplier quote needed. Code as on the maker"
+  },
+  {
+   "mpn": "AR0823AT2C18XUEA0-DPBR-E",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key has a product page for the exact code (Active per the attributes; \"CMOS Image Sensor 3840H x 2160V 2.1 um 149-IBGA (11x8)\"; Grade: Automotive, Qualification: AEC-Q100) but it shows NO price table and says \"This product is no longer carried by DigiKey\". Supplier quote needed. Pac"
+  },
+  {
+   "mpn": "NCV7410MWR2G",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key keyword search for the exact code returned \"did not return any results\" (read today; the page only offered \"2 Substitute Part result(s)\" and \"did you mean ncv7311mwr2g\"). The code itself is right: a search summary of the onsemi product page gives NCV7410MWR2G as the only orderab"
+  },
+  {
+   "mpn": "SI8921BD-AS4",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: Digi-Key product page for the exact code (digikey.com/en/products/detail/skyworks-solutions-inc/SI8921BD-AS4/16730935; USD, Active, Tube, no stock - \"Available To Order\", lead time 24 weeks) prints ONE price row only: tube 80 = 4.79200 - a break below 100 is not a price under the rules, "
+  },
+  {
+   "mpn": "IMX623",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable code and no franchised listing with a break >= 100 found. Page row: \"IMX623 - 3.00M, 1/2.42, 3.0 um, 10bit 60fps / 12bit 30fps, MIPI CSI-2, RGB\". No Digi-Key page was read for this code (Digi-Key had returned HTTP 403 on the IMX728 try just before). Sony automotive image-sen"
+  },
+  {
+   "mpn": "IMX728",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: no orderable code and no franchised listing with a break >= 100 found. Page row: \"IMX728 - 8.39M, 1/1.72, 2.1 um, 10bit 40fps, MIPI CSI-2, RGB\". The one Digi-Key try (keyword IMX728) returned HTTP 403 - a refusal, not a \"no results\" page; Digi-Key was not read again. Sony automotive imag"
+  },
+  {
+   "mpn": "L9965A-TR",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: orderable code L9965A-TR is listed by Farnell (ie.farnell.com dp/4739119, \"BATTERY MONITOR, 16 CELL, TQFP-EP\", AEC-Q100 per a search summary) and RS (stock no. 0719453, TQFP-64), but no break of 100 or more was seen - the only price in the results is an RS Philippines single-unit price. "
+  },
+  {
+   "mpn": "TPS2HCS05-Q1",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): NO-LISTING: pre-production. TI product page ti.com/product/TPS2HCS05-Q1 (read 2026-11-23) prints status PREVIEW with a NEW badge, \"Automotive, dual-channel 5mOhm smart high-side switch with I2T wire protection, low-Iq mode and SPI\", \"AEC-Q100 qualified for automotive applications\", package \"UNKNOWN "
+  },
+  {
+   "mpn": "AD2433WCCPZ",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for AD2433WCCPZ (505-AD2433WCCPZ-ND, read 23 Nov 2026) shows Part Status \"Obsolete - This product is no longer manufactured\", tray, no price table, no stock, and names NO substitute (only \"View Alternative Package Types\"). The silicon-revision replacement code in the discover"
+  },
+  {
+   "mpn": "ADT7311WTRZ-RL7",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for ADT7311WTRZ-RL7 (ADT7311WTRZ-RL7TR-ND / CT-ND, read 23 Nov 2026) shows Part Status \"Last Time Buy\", Last Time Buy Date 7/29/2027, no substitute named; stock 1,004. Not priced (end of life announced). For reference only, the page still shows: cut tape 500 = 4.00876, tape &"
+  },
+  {
+   "mpn": "RC21211A000GNA#BB0",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock (packaging Tray). No replacement named on the page. Page fields: Clock Generator 650 MHz, 1:12, Grade \"Automotive\", Qualification \"AEC-Q100\"; package not sho"
+  },
+  {
+   "mpn": "ISL76683AROZ-T7A",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for the exact code shows Part Status \"Last Time Buy\", Last Time Buy Date 1/17/2027, and that Digi-Key cannot accept backorders; stock not shown. Page still prints tape & reel 250 = 2.43576 USD and cut tape 1 = 3.57 - not recorded (last-time-buy). GRADE NOT CONFIRMED: no Grade"
+  },
+  {
+   "mpn": "ISL78100ARZ-T7A",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock. No replacement named on the page. Page fields: buck / boost LED driver regulator 1 A, backlight, Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "ISL78365ARZ-T7A",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock. No replacement named on the page. Page fields: 4-channel laser driver, 40-QFN 6x6 (task said WQFN-40), Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "ISL79985IRZ",
+   "group": "noUsablePrice",
+   "why": "round 6 (23 Nov 2026): OBSOLETE: Digi-Key product page (digikey.com/en/products/detail/renesas-electronics-corporation/ISL79985IRZ/6173413) says \"ISL79985IRZ is Obsolete and no longer manufactured\"; the search list shows it \"Not Available\"; no price table. Manufacturer-recommended substitute named on the page: ISL79987IRZ"
+  },
+  {
+   "mpn": "SQJ140EP-T1_GE3",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "VOMDA1271T",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "2N7002Q-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BAT54SQ-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC817-40Q-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC847CQ-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BSS123W-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BSS138Q-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BSS84Q-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "DESD1CAN2SOQ-7",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "DESD1CANFD24VSOQ-7",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "DESD1LIN2WSQ-7",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "MMBT3904Q-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SBR3U40P1Q-7",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SMAJ24AQ-13-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SMBJ24AQ-13-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "2N7002AK-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BAS21-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BAV99-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC807-40-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC817-40-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "MINIASMDC050F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V18MLA0603NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V18MLA0805NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SZSMF6L24AT3G",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC847BSQ-7-F",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "CAN0001DP",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "ASMDC050F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "MINIASMDC020F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "NANOASMDC012F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V26MLA0805NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V33MLA1206NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V48MLA1210NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "V5.5MLA0603NHAUTO",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "ASMD100F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "ASMDC030F-2",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "AB-PL1515C0I6-5VX0",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BB-HBRG32N-TRB-0-AQ",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC847C-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PESD1ETH10L-QYL",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PESD1ETH10LS-QYL",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PESD2CANFD36UT-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PESD2CANFD54VT-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PMBT3904-QR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PMEG4010ER-QX",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BZX84J-B24-QX",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "PMEG6010ELRX",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "BC847CLT1G",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "RB751SM-40FHT2R",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "1SS355VMFHTE-17",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "1SS400SMFHT2R",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SMLMN2BCTT86C",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "UM6K31NFHATCN",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): priced from a page read; its file has had no independent re-read yet"
+  },
+  {
+   "mpn": "SPC58NE84E7QMSAR",
+   "group": "pendingReview",
+   "why": "round 6 (23 Nov 2026): Digi-Key 26.02 USD @500 (factory-order row, not stocked) v TME 9.22 USD @500: 2.8x apart, and TME is below its own price for the smaller SPC58EC80 - a person decides"
+  },
+  {
+   "mpn": "TLE7258SJXUMA1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: family line - representative chosen = TLE7258SJXUMA1, the DSO-8 code Digi-Key (product id 5213944, 'active', about 13,000 in stock on its UK / NL sites per the summary) and RS list. No page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Add"
+  },
+  {
+   "mpn": "TLE9350BVSJXTMA1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: family line - representative chosen = TLE9350BVSJXTMA1 (the VIO version, the commonest in zonal / body ECUs), the code Digi-Key (product id 21852871, 8-SOIC, tape & reel and cut tape, lead time 20 weeks), Mouser (726-TLE9350BVSJXTMA1, factory pack 2,500) and Newark (03AM8"
+  },
+  {
+   "mpn": "TLE4971A120T5UE0001XUMA1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: family line - orderable codes seen in distributor listing URLs / summaries (not on a page read): TLE4971A120T5UE0001XUMA1 (Digi-Key product id 18700476; element14 4203308), TLE4971A120N5E0001XUMA1, TLE4971A025N5E0001XUMA1, TLE4971A025N5UE0001XUMA1 (element14), and TLE4971"
+  },
+  {
+   "mpn": "MX25V1635FZNQ03",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: the exact code is listed by Digi-Key (product id 15284027, 'FLASH - NOR Memory IC 16Mbit SPI - Quad I/O 80 MHz 8-WSON (6x5)', tray) and Avnet (tray MX25V1635FZNQ03 and tape-and-reel MX25V1635FZNQ03/TR) per search-result titles; no page could be read (Digi-Key refused (HTT"
+  },
+  {
+   "mpn": "KW45B41Z83AFTBT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no page read. Orderable codes seen as Digi-Key product pages in search results: KW45B41Z83AFTBT (48-VFQFN / HVQFN48, tray, id 18713091; chosen as representative), KW45B41Z83AFPBT (40-HVQFN 6x6, tray, id 18711432), KW45B41Z83AFTBR (reel), also KW45Z41083AFPBR / AFTBR (no-C"
+  },
+  {
+   "mpn": "S32K388HHT0MJBST",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no page read. Orderable codes from search results: S32K388HHT0MJBST (289 MAPBGA / LFBGA, tray; Digi-Key id 26220629, Mouser, Newark, nxp.com/part/S32K388HHT0MJBST) and S32K388HHT0MJBSR (tape & reel; Digi-Key id 26221029). Summary figures (NOT prices; snapshot dates unknow"
+  },
+  {
+   "mpn": "TJA1410ATK/0J",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no page read. Orderable code TJA1410ATK/0J is a Digi-Key product (digikey.com/en/products/detail/nxp-usa-inc/TJA1410ATK-0J/29280798; HVSON8 per the TK code). Search summary of that page (NOT prices; snapshot date unknown): cut tape 1 = 1.43, 1,000 = 0.74756; tape & reel 6"
+  },
+  {
+   "mpn": "TJA1466BHG/0J",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no page read. Orderable codes from search results: TJA1466AHG/0J, TJA1466BHG/0J, TJA1466CHG/0J (DHVQFN18; nxp.com/part pages for AHG / BHG / CHG). BHG chosen as representative because two US distributors list it (Arrow, Avnet); the A / B / C feature difference was not rea"
+  },
+  {
+   "mpn": "SKYA21003",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: Digi-Key lists SKYA21003 (product pages .../skyworks-solutions-inc/SKYA21003/5965454 and /5965401 - two Digi-Key listings, which is tape & reel / cut tape was not read) but digikey.com had returned HTTP 403 before this line, so NO price was read on a page. Search summary "
+  },
+  {
+   "mpn": "A7986ATR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): all three figures come from search summaries, date unknown; live Digi-Key pages read today for other ST parts were up to 39 % ABOVE their search summaries - re-read before use. Reel code A7986ATR (Digi-Key: cut tape 1,000 = 1.43055, tape & reel 2,5"
+  },
+  {
+   "mpn": "LDLL16ENTR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): Farnell UK \"1000+ GBP 1.720\" ex VAT, cut tape, the top of its price table, from a search summary of the Farnell page; date unknown - re-read before use. Farnell states Qualification AEC-Q100, 16 channels, 5 to 28 V supply, QFN-EP-32 (the task's RS "
+  },
+  {
+   "mpn": "LMV358IYDT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (1,000 = 0.34903 ext 349.03; 2,500 = 0.33456 ext 836.40), date unknown; live Digi-Key pages read today for other ST analog parts were 9-39 % above their summaries - re-read before use. GR"
+  },
+  {
+   "mpn": "M24512-DRMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): Farnell UK \"2500+ GBP 1.070\" ex VAT, the only break shown, from a search summary of the Farnell page; date unknown. GRADE: Farnell title \"EEPROM, AEC-Q100, 512KBIT, I2C, SOIC\"; Arrow tags it automotive AEC-Q100 (summary). NOT recorded: Arrow \"From "
+  },
+  {
+   "mpn": "M24C04-DRMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (\"All prices are in USD\"; 1,000 = 0.35628 ext 356.28; 2,500 = 0.34507 ext 862.67), date unknown. The same search batch gave M95M02-DWMN3TP/K figures that matched the live page exactly, so"
+  },
+  {
+   "mpn": "M24M01-DWMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (cut tape 1,000 = 2.58598 ext 2,585.98; tape & reel 2,500 = 2.50038 ext 6,250.95), date unknown. The same summary gave M95M02-DWMN3TP/K figures that matched the live page exactly. GRADE: "
+  },
+  {
+   "mpn": "M95040-DRMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): tape & reel 2,500 = 0.49571 (ext 1,239.27) from a search summary of the Digi-Key page, date unknown. GRADE: the summary reports Grade Automotive, AEC-Q100 on that page. NOT recorded: 1,000 = 0.51201 on a second Digi-Key listing (.../stmicroelectron"
+  },
+  {
+   "mpn": "M95080-DRMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): LCSC \"1,000+ $0.6829\" (ext $682.90) from a search summary of the LCSC page; the listing is OUT OF STOCK and shows no larger break; date unknown - weak, re-read or cross-check before use. No Digi-Key / Mouser / Farnell price surfaced in two searches"
+  },
+  {
+   "mpn": "M95512-DRMN3TP/K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (1,000 = 1.64318 ext 1,643.18; tape & reel 2,500 = 1.58926 ext 3,973.15), date unknown. The same search batch gave M95M02-DWMN3TP/K figures that matched the live page exactly. GRADE: the "
+  },
+  {
+   "mpn": "BQ79758QPAPRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/BQ79758QPAPRQ1/25324528 - result title \"BQ79758QPAPRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (ge"
+  },
+  {
+   "mpn": "TCAN1473CDMTRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's"
+  },
+  {
+   "mpn": "TCAN1575DMTRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; Mouser 503). Orderable code confi"
+  },
+  {
+   "mpn": "TPS4HC120AQDGQRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): SUMMARY-ONLY: SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS4HC120AQDGQRQ1/25881361 - result title \"TPS4HC120AQDGQRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this r"
+  },
+  {
+   "mpn": "ATTINY1616-MZ-VAO",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: the code is confirmed on TME's product page (symbol ATTINY1616-MZ-VAO, Microchip, VQFN20, 16 kB flash, 2.7-5.5 V, -40 to 125 C, tube, standard package 490, 0 in stock) but TME shows NO price table ('This product is not available for sale in your country', 'Offer available for log"
+  },
+  {
+   "mpn": "MPQ4322C",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: orderable code NOT confirmed (mpn here is the task's family name, not an orderable code; aecq set false until a code and its grade are read). Master: 'No Search Results found for MPQ4322C' (Master carries no MPS). A search found only MPQ4322 (MPQ4322GDE-AEC1-Z / -P, MPQ4322GLE-AE"
+  },
+  {
+   "mpn": "MPQ4323GDE-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: orderable code MPQ4323GDE-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4323GDE-AEC1-Z/16705336 - search result, page not read) and on MPS's 'mpq4323-aec1' automotive AEC-Q grade page (search result). LCSC: its datasheet host "
+  },
+  {
+   "mpn": "MPQ4420AGJ-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: orderable code MPQ4420AGJ-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4420AGJ-AEC1-Z/7361614 - search result: adjustable 2 A buck, TSOT-23-8, 16-week lead time; page not read). Master: 'No Search Results found' for this exac"
+  },
+  {
+   "mpn": "74HC595PW-Q100,118",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: Master 'No Search Results found for 74HC595PW-Q100,118'; TME search for '74HC595PW-Q100' shows no product (TME lists only the non-Q100 74HC595PW,118 / 74HC595PW, the latter 'withdrawn from the offer' per a search summary); Newark search refused (503). The discovery's Digi-Key URL"
+  },
+  {
+   "mpn": "BMA7318",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: orderable code not found - one search (Digi-Key / Mouser terms) returned no BMA7318 / BMI7318 / BMA7518 distributor listing; the discovery saw only a Mouser new-product page. Family announced for November 2025; may still be sampling / contract-only. Grade not confirmed - aecq fal"
+  },
+  {
+   "mpn": "AM263P4ACOKFZCZRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). The task line names a"
+  },
+  {
+   "mpn": "BQ79731-Q1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: NO orderable code could be confirmed, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key"
+  },
+  {
+   "mpn": "CC2745R10E0WRHARQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/CC2745R10E0WRHARQ1/25891591 - result title \"CC2745R10E0WRHARQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (ge"
+  },
+  {
+   "mpn": "DRV8000QWRGZRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confir"
+  },
+  {
+   "mpn": "LMR604303SRAKRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/LMR604303SRAKRQ1/26812419); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one "
+  },
+  {
+   "mpn": "LMR60440-Q1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: NO automotive orderable code was seen on a distributor listing, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read a"
+  },
+  {
+   "mpn": "TCAN2451RHBRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confir"
+  },
+  {
+   "mpn": "TCAN28453RHBRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confir"
+  },
+  {
+   "mpn": "TCAN28553RHBRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confir"
+  },
+  {
+   "mpn": "TCAN28573RHBRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confir"
+  },
+  {
+   "mpn": "TPS1HC120CQDYCRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC120CQDYCRQ1/28721586 - result title \"TPS1HC120CQDYCRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (gene"
+  },
+  {
+   "mpn": "TPS48160QRGERQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; the Mouser product pag"
+  },
+  {
+   "mpn": "LM74900QRGERQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): NOT-READ: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE confirmed on TI"
+  },
+  {
+   "mpn": "RCA060310K0FKEA",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): UNPRICED: TME detail page read 22 Nov 2026: code and \"Conform to the norm: AEC-Q200\" stated, reel 5,000, stock 7,522, no lifecycle remark. ONE figure only. TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is r"
+  },
+  {
+   "mpn": "CY8C4147LWE-HVS035",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): UNPRICED: NOT PRICED - no page served: TME search page for CY8C4147LWE (read 23 Nov 2026) shows no products (not in TME's standard offer); the Digi-Key keyword URL for this code returned HTTP 403 (the refusal that stopped Digi-Key reads); Mouser, Avnet, Newark, Verical refused. Code not re-confirmed"
+  },
+  {
+   "mpn": "AM263P2ASPDFZCZRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): UNPRICED: UNPRICED: TME product page read (https://www.tme.eu/en/details/am263p2aspdfzczrq1/texas-instruments-microcontrollers/texas-instruments/ , USD, 2026-11-23): code and maker confirmed (symbol AM263P2ASPDFZCZRQ1, TEXAS INSTRUMENTS, ARM microcontroller 400 MHz, NFBGA324, -40...150 C), 0 in TME "
+  },
+  {
+   "mpn": "TPS6538600QDCARQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): WRONG-CODE: WRONG-CODE: the task code TPS6538600QDCARQ1 was not found as printed - Digi-Key keyword search \"did not return any results\"; TME search \"TPS653860\": no results; a web search found no listing of it. A search summary of TI's TPS653860-Q1 datasheet (SLVSFQ1A) names the tape-and-reel orderab"
+  },
+  {
+   "mpn": "ESDA5WY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Automotive dual-line unidirectional ESD protection, 5 V"
+  },
+  {
+   "mpn": "ESDCAN01-2BLY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDCAN02-2BWY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDCAN03-2BWY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDCAN04-2BLY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDCAN06-2BLY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDLIN1524BJ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Automotive single-line ESD protection for LIN bus"
+  },
+  {
+   "mpn": "SM6T33CAY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive 600 W bidirectional TVS (33 V breakdown class from the part code)"
+  },
+  {
+   "mpn": "USBLC6-2SC6Y",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive very-low-capacitance ESD protection for two high-speed data lines (USB 2.0)"
+  },
+  {
+   "mpn": "USBLC6-4SC6Y",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive ESD protection for four high-speed data lines (USB 2.0), about 3 pF"
+  },
+  {
+   "mpn": "ESDA37LY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Automotive dual-line 36 V TVS"
+  },
+  {
+   "mpn": "ESDA6V1-5SC6Y",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive 5-line TVS array for ESD protection (ratings read from the part code)"
+  },
+  {
+   "mpn": "ESDCAN05-2BWY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDCAN24-2BLY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive dual-line TVS for CAN / CAN FD bus ESD protection"
+  },
+  {
+   "mpn": "ESDLIN03-1BWY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Automotive Transil TVS for LIN bus"
+  },
+  {
+   "mpn": "HDMIULC6-4SC6Y",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive-grade ultra-low-capacitance ESD protection for HDMI, USB 2.0, Ethernet and video lines"
+  },
+  {
+   "mpn": "SM30T33CAY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive 3000 W bidirectional TVS, 28 V stand-off (load-dump class)"
+  },
+  {
+   "mpn": "SM4T33CAY",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): automotive 400 W bidirectional TVS, 28 V stand-off"
+  },
+  {
+   "mpn": "SSM3K341R,LXHF",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): N-channel 60 V, 6 A small-signal / semi-power MOSFET, AEC-Q101"
+  },
+  {
+   "mpn": "XCUZ5V6",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Surge-protection Zener diodes for automotive equipment, 20 voltage ranks 5.6–36 V"
+  },
+  {
+   "mpn": "SSM3J351R,LXHF",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): P-channel -60 V, -3.5 A small-signal MOSFET, AEC-Q101"
+  },
+  {
+   "mpn": "SSM3J356R,LXHF",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): P-channel -60 V, -2 A small-signal MOSFET, AEC-Q101"
+  },
+  {
+   "mpn": "SSM3K361R,LXHF",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): N-channel 100 V, 3.5 A small-signal / semi-power MOSFET, AEC-Q101"
+  },
+  {
+   "mpn": "Vishay SM8S10AT – SM8S43AT (PAR)",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): Load-dump PAR TVS (highest surge row of the guide), AEC-Q101"
+  },
+  {
+   "mpn": "Vishay SMAJ5.0A – SMAJ188A / CA (TransZorb)",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): 400 W TVS, uni- / bidirectional, AEC-Q101"
+  },
+  {
+   "mpn": "Vishay SMBJ5.0A – SMBJ188A / CA (TransZorb)",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): 600 W TVS, uni- / bidirectional, AEC-Q101"
+  },
+  {
+   "mpn": "150060VS75000",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b20-discretes not run (Digi-Key refused page reads): LED, Green, SMD"
+  },
+  {
+   "mpn": "SKRPABE010",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): SMD tact switch, SKRP series (operating-force variant by code, not read)"
+  },
+  {
+   "mpn": "SKRPACE010",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): SMD tact switch, SKRP series (operating-force variant by code, not read)"
+  },
+  {
+   "mpn": "SKRPADE010",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): SMD tact switch, SKRP series (operating-force variant by code, not read)"
+  },
+  {
+   "mpn": "FW4000044Q",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): 40MHz ±10ppm Crystal 8pF 50 Ohms 4-SMD, No Lead"
+  },
+  {
+   "mpn": "ECS-2520MVQ-1250-BN-TR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): AEC-Q200 MultiVolt HCMOS crystal oscillator 2.5x2.0 mm, 1.6–3.6 V, 125 MHz example"
+  },
+  {
+   "mpn": "ECS-327ATQMV-AS-TR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): AEC-Q200 32.768 kHz MultiVolt HCMOS oscillator 3.2x2.5 mm, 1.62–3.63 V"
+  },
+  {
+   "mpn": "Epson SG2016CAA",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.0x1.6 mm, -40..125 C"
+  },
+  {
+   "mpn": "Epson SG2520CAA",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive SPXO 1.2–54 MHz, CMOS, 1.6–3.63 V, 2.5x2.0 mm, -40..125 C"
+  },
+  {
+   "mpn": "FH28K-40S-0.5SH",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): FPC / FFC connector 0.5 mm pitch, 40 positions, FH28K variant"
+  },
+  {
+   "mpn": "FH28K-20S-0.5SH",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): FPC / FFC connector 0.5 mm pitch, 20 positions, FH28K variant"
+  },
+  {
+   "mpn": "FH28K-30S-0.5SH",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): FPC / FFC connector 0.5 mm pitch, 30 positions, FH28K variant"
+  },
+  {
+   "mpn": "GT8E-8P-2H(55)",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Wire-to-board PCB header, 8 contacts, GT8E"
+  },
+  {
+   "mpn": "HFKA/012-1ZST",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay, 12 V coil, 1Z as coded, HFKA series"
+  },
+  {
+   "mpn": "HFKC/012-HT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay, 12 V coil, contact form H (normally open) as coded, HFKC series"
+  },
+  {
+   "mpn": "HFKC/012-ZSPT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay, 12 V coil, contact form Z (changeover) as coded, HFKC series"
+  },
+  {
+   "mpn": "HFKW/012-1ZW",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay, 12 V coil, contact form 1Z (changeover) as coded, HFKW series"
+  },
+  {
+   "mpn": "HFKA-T/012-2ZT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB twin relay, 12 V coil, 2Z as coded, HFKA-T series"
+  },
+  {
+   "mpn": "HFKC-T/012-2ZT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB twin relay, 12 V coil, 2Z as coded, HFKC-T series"
+  },
+  {
+   "mpn": "MX34032NF2",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): PCB header, right angle, through-hole, 32 positions, 2.2 mm pitch, 2 rows, shrouded"
+  },
+  {
+   "mpn": "MX34036NF2",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): PCB header, right angle, through-hole, 36 positions, 2.20 mm pitch, 2 rows, shrouded, 3 A, tin"
+  },
+  {
+   "mpn": "0346919623",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Stac64 right-angle PCB header, 12 circuits"
+  },
+  {
+   "mpn": "34912-8040",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Mini50 unsealed PCB header, 4 circuits (from the code), ...80x0 option"
+  },
+  {
+   "mpn": "502352-0200",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): DuraClik wire-to-board PCB header, 2.00 mm pitch, 2 circuits (from the code), SMT"
+  },
+  {
+   "mpn": "502352-0400",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): DuraClik wire-to-board PCB header, 2.00 mm pitch, 4 circuits (from the code), SMT"
+  },
+  {
+   "mpn": "0347086400",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Stac64 right-angle PCB header, 58 circuits"
+  },
+  {
+   "mpn": "34912-8020",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Mini50 unsealed PCB header, 2 circuits (from the code), ...80x0 option"
+  },
+  {
+   "mpn": "34912-8080",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Mini50 unsealed PCB header, 8 circuits (from the code), ...80x0 option"
+  },
+  {
+   "mpn": "502352-0600",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): DuraClik wire-to-board PCB header, 2.00 mm pitch, 6 circuits (from the code), SMT"
+  },
+  {
+   "mpn": "505432-3001",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Micro-Lock Plus horizontal surface-mount PCB header, 30 contacts, 1.25 mm pitch, 2 rows, shrouded"
+  },
+  {
+   "mpn": "CSTNE8M00G55A000R0",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Ceramic resonator 8 MHz with built-in load capacitors, CSTNE, variant ...55A"
+  },
+  {
+   "mpn": "CSTNE12M0GH5C000R0",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Ceramic resonator 12 MHz with built-in load capacitors, CSTNE, variant ...H5C"
+  },
+  {
+   "mpn": "CSTNE16M0VH3C000R0",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Ceramic resonator 16 MHz with built-in load capacitors, CSTNE, variant ...H3C"
+  },
+  {
+   "mpn": "NDK NX1612SA (automotive)",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive crystal unit 1.6x1.2x0.3 mm, 24–96 MHz, ±40 ppm total incl. 15-year ageing, -40..125 C"
+  },
+  {
+   "mpn": "G8N-1U-DC12",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay SPDT, 12 V coil, 30 A (Digi-Key)"
+  },
+  {
+   "mpn": "G8ND-2S-DC12",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive twin PCB relay (8 terminals, H-bridge), 12 V coil, 30 A (Digi-Key)"
+  },
+  {
+   "mpn": "G8G-17R DC12",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b21-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB relay, 12 V coil, G8G series"
+  },
+  {
+   "mpn": "SiTime SiT1625",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): Low-power low-jitter MEMS oscillator, 44 standard frequencies 4–125 MHz, 1.6x1.2 to 3.2x2.5 mm"
+  },
+  {
+   "mpn": "SCT040W120G3AG",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): automotive-grade SiC power MOSFET 1200 V, 40 mOhm typ., 40 A"
+  },
+  {
+   "mpn": "2317527-1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): PCB header, vertical, surface mount, 12 positions, 1.8 mm pitch"
+  },
+  {
+   "mpn": "2177419-3",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB header, 32 positions, 12 V DC"
+  },
+  {
+   "mpn": "2314507-1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): Automotive PCB header, 6 positions, 3 A"
+  },
+  {
+   "mpn": "Texas Instruments CDC6C-Q1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): Automotive BAW (bulk-acoustic-wave) fixed-frequency oscillator, quartz replacement"
+  },
+  {
+   "mpn": "E3M0021120K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): SiC MOSFET 1200 V, 21 mOhm, automotive E-Series"
+  },
+  {
+   "mpn": "E3M0032120K",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): SiC MOSFET 1200 V, 32 mOhm, automotive E-Series"
+  },
+  {
+   "mpn": "E4M0015075K1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): SiC MOSFET 750 V, 15 mOhm, automotive E-Series"
+  },
+  {
+   "mpn": "E4M0025075K1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): SiC MOSFET 750 V, 25 mOhm, automotive E-Series"
+  },
+  {
+   "mpn": "E4M0045075K1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): scope B batch b22-timing-interconnect not run (Digi-Key refused page reads): SiC MOSFET 750 V, 45 mOhm, automotive E-Series"
+  },
+  {
+   "mpn": "MLX90830LXZ-BAH-001-RE",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read — Triphibian MEMS absolute pressure sensor, 2-70 bar gas and liquid, analog output"
+  },
+  {
+   "mpn": "AVR64DD32-E/RXBVAO",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; TME lists only the industrial AVR64DD32-I/RXB (search result) — 8-bit AVR DD MCU, 64 KB flash, 8 KB RAM, 24 MHz, multi-voltage I/O, 32 pins, aut"
+  },
+  {
+   "mpn": "PIC18F27Q43-E/STXVAO",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; TME lists only PIC18F27Q43-I/SP (search result) — 8-bit PIC18-Q43 MCU, 128 KB flash, 8 KB RAM, 1 KB EEPROM, automotive VAO grade"
+  },
+  {
+   "mpn": "PIC18F47Q83-E/NHXVAO",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read — 8-bit PIC18-Q83 MCU with CAN, 128 KB flash, 13 KB RAM, automotive VAO grade"
+  },
+  {
+   "mpn": "PIC16F18046-E/MLVAO",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read — 8-bit PIC16 MCU, 28 KB flash, 2 KB RAM, 256 B EEPROM, 10-bit ADC, automotive VAO"
+  },
+  {
+   "mpn": "MPQ4214GU-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — USB-C PD buck-boost controller, 4-45 V in"
+  },
+  {
+   "mpn": "MPQ4232GVE-0000-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — Buck-boost converter (automotive)"
+  },
+  {
+   "mpn": "MPQ4480GV-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — 36 V, 6 A step-down converter for automotive"
+  },
+  {
+   "mpn": "MPQ4573GQBE-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — 60 V, 2.5 A synchronous step-down converter"
+  },
+  {
+   "mpn": "MPQ7920GRM-0003-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — Multi-channel PMIC"
+  },
+  {
+   "mpn": "MPQ2451GG-5-AEC1-Z",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no MPS; grade still to confirm — Automotive step-down converter (fixed 5 V option per the code)"
+  },
+  {
+   "mpn": "74LVC1G08GW-Q100,125",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master returned nothing for the sibling 74HC595PW-Q100,118; TME rounds prices this small to 2 decimals — Single 2-input AND gate, 1.65–5.5 V, AEC-Q"
+  },
+  {
+   "mpn": "MC33GD3100EK",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no NXP; no TME page surfaced in a web search — Single-channel isolated gate driver for IGBT / SiC, 15 A, SPI safety monitoring"
+  },
+  {
+   "mpn": "S32Z280ABCK0MJ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b09-ics: not reached - every page source was refusing by then (Digi-Key 403, Master 403, TME limit of 8 pages used); exact code needs one Digi-Key read; Master carries no NXP — 16 nm real-time processor: 8x Cortex-R52 up to 1 GHz, lockstep Cortex-M33, DSP/M"
+  },
+  {
+   "mpn": "CYT2BL5BAAQ0AZEGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME lists the family; a sibling CYT2BL5CAAQ0AZEGS has a TME product page)"
+  },
+  {
+   "mpn": "CYT3BB7CEBQ1AEEGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass)"
+  },
+  {
+   "mpn": "CYT3DLABABQ1AESGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
+  },
+  {
+   "mpn": "CYT4BF8CEDQ0AEEGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass)"
+  },
+  {
+   "mpn": "CYT4DNJBACQ1BZSGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
+  },
+  {
+   "mpn": "S25FL128LAGNFM010",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 8258740)"
+  },
+  {
+   "mpn": "S25FL256LAGMFM003",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 8258793)"
+  },
+  {
+   "mpn": "S25FL256SAGNFB000",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 7362274); would link the catalogue ESTIMATE S25FL256S"
+  },
+  {
+   "mpn": "TLE9166EQ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line; the orderable (…XUMA1) code for TLE9166EQ was not looked up"
+  },
+  {
+   "mpn": "CYT2CL7BAAQ0AZSGS",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
+  },
+  {
+   "mpn": "LFMXO4-025HC-5TSG100A",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key refused (HTTP 403) before this line; Mouser (the discovery source) refused; code and AEC-Q100 status not re-checked"
+  },
+  {
+   "mpn": "MLX90425GDC-ABA-600-RE",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics: no search result for this code (page read 23 Nov 2026)"
+  },
+  {
+   "mpn": "MLX90382LGO-BAA-000-RE",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
+  },
+  {
+   "mpn": "MLX90424LGO-ACA-230-RE",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
+  },
+  {
+   "mpn": "MLX90513GGO-CAA-100-RE",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b08-ics: not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
+  },
+  {
+   "mpn": "NCV84003G",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: NCV84003G eFuse - not reached: Digi-Key refused (HTTP 403) on this line and every other page source refused. Orderable code is probably NCV84003GPAR2G (named in the URL / title of an Avnet-EBV new-product page, search result only; package not confirmed - the sibling NCV84003FPAR2G is TSSOP-"
+  },
+  {
+   "mpn": "NVMFWS1D3N04XM",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: NVMFWS1D3N04XM - not reached (Digi-Key refused before this line; TME search: no result). Code confirmed by search only: Digi-Key lists NVMFWS1D3N04XMT1G (detail id 25602777; \"N-Channel 40 V 40A (Ta), 195A (Tc) 90W, 5-DFNW (4.9x5.9)\"; summary says Grade Automotive, AEC-Q101, Rds(on) max 1.3 "
+  },
+  {
+   "mpn": "NVMTS1D1N08X",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: NVMTS1D1N08X - not reached (Digi-Key refused before this line). A Mouser new-product page exists (mouser.in/new/onsemi/onsemi-nvmts1d1n08x-mosfets; summary: AEC-Q101 qualified, PPAP capable, PQFN88-3L package); the reel suffix was still not seen and no Digi-Key listing came up in search."
+  },
+  {
+   "mpn": "FAD1100-F085",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: FAD1100-F085 - not reached (priority 3; Digi-Key refused before this line). Code still unconfirmed at a distributor."
+  },
+  {
+   "mpn": "IPS2550DE1R",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: IPS2550DE1R - not reached: Digi-Key (which lists the exact code per the discovery pass) refused before this line; TME search returned no result; Avnet, Newark, Verical refused. One Digi-Key read will price it."
+  },
+  {
+   "mpn": "ISL78171ARZ-T7A",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: ISL78171ARZ-T7A - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
+  },
+  {
+   "mpn": "ISL78227ARZ-T7A",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: ISL78227ARZ-T7A - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
+  },
+  {
+   "mpn": "ISL78610ANZ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b10-ics: ISL78610ANZ - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
+  },
+  {
+   "mpn": "ADS131B26QPHPRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "AMC131M03QDFMRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "AWRL6432BDBGAMFRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "AWRL6432BGAMFQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). This is the spelling printed in the TIDEP-01037 BOM; the discovery "
+  },
+  {
+   "mpn": "AWRL6844DBGANCRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "HDC3020QDEFRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "INA791BQWDEKRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "M0L2228QPTRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TAA5412WQRTVRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TAC5412WQRTVRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TAS6511QPWPRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TAS6754QDKQRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TMAG5173A1QDBVRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TMAG6181EDGKRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TMCS1133A1AQDVGRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "TPS929160QDCPRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b16-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: "
+  },
+  {
+   "mpn": "W25Q64JVSSAQ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b17-ics: worked, not priced (see parts): Master has no result, Digi-Key refused earlier, TME limit used. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=W25Q64JVSSAQ ; Grade 1 alternative W25Q64JVSSSQ"
+  },
+  {
+   "mpn": "AM2732CDRFHQZCERQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b17-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (not read again) and no other page source prices TI parts (Master: no TI; TME: 1-piece prices only on non-stocked TI parts, and its 8-page limit was used). The code is exact - one Digi-Key product-page read prices it: ht"
+  },
+  {
+   "mpn": "TPSI3100QDVXRQ1",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b17-ics: not reached: digikey.com returned HTTP 403 on the 2nd read of this run (not read again) and no other page source prices TI parts (Master: no TI; TME: 1-piece prices only on non-stocked TI parts, and its 8-page limit was used). The code is exact - one Digi-Key product-page read prices it: ht"
+  },
+  {
+   "mpn": "2N7002AKRA-QZ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/2n7002akra-qz/ is 404. Exact code from the task (Digi-Key highlight page). Priority 2."
+  },
+  {
+   "mpn": "BAS16GWX",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (price well below 0.10 - one significant figure there). Exact code from the task; larger reel BAS16GWJ. Prio"
+  },
+  {
+   "mpn": "BAT54GWX",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (price well below 0.10). Exact code from the task; larger reel BAT54GWJ. Priority 2. One Digi-Key read: http"
+  },
+  {
+   "mpn": "BSS138AKQB-QZ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products"
+  },
+  {
+   "mpn": "BSS138AKRA-QZ",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products"
+  },
+  {
+   "mpn": "PESD2CANFD36UU-QX",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task; -QF is the other reel. Priority 2. One Digi-Key read: https://www."
+  },
+  {
+   "mpn": "PESD2CANFD36VT-QR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products"
+  },
+  {
+   "mpn": "PMEG4010EGWX",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit; price likely below 0.10). Exact code from the task. Priority 2. One Digi-Key read: https://ww"
+  },
+  {
+   "mpn": "2SC4081U3HZGT106R",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/2sc4081u3hzgt106r/ is 404 (a search shows TME lists the Q rank 2SC4081U3HZGT106Q - not"
+  },
+  {
+   "mpn": "EDZVFHT2R24B",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; SERIES line (EDZV 3.6 - 36 V): representative = the 24 V member, EDZVFHT2R24B (24 V, 150 mW, SOD-523 / EMD2), as the task"
+  },
+  {
+   "mpn": "RB520SM-30FHT2R",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; Line names RB520SM-30 / -40: the 30 V member RB520SM-30FHT2R is the one found - Digi-Key lists it (https://www.digikey.co"
+  },
+  {
+   "mpn": "RB521SM-30FHT2R",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; Line names RB521SM-30 / -40: the 30 V member RB521SM-30FHT2R is the one found - Digi-Key lists it (…/rohm-semiconductor/R"
+  },
+  {
+   "mpn": "UDZVFHTE-1724B",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; SERIES line (UDZV 2.0 - 47 V): representative = the 24 V member, UDZVFHTE-1724B (24 V, 200 mW, UMD2 / SOD-323FL), as the "
+  },
+  {
+   "mpn": "RBE01VYM6AFHTR",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/rbe01vym6afhtr/ is 404. Exact code from the task (launched Oct 2025; the discovery pas"
+  },
+  {
+   "mpn": "RCLAMP0531TQTCT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task (Digi-Key's Semtech AEC-Q100 highlight page). Priority 2. One Digi-Ke"
+  },
+  {
+   "mpn": "RCLAMP3552TQTNT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/r"
+  },
+  {
+   "mpn": "ECLAMP2357NQTLT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/r"
+  },
+  {
+   "mpn": "RCLAMP2574NQTCT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/r"
+  },
+  {
+   "mpn": "UCLAMP0511PQTCT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/r"
+  },
+  {
+   "mpn": "2SA1576U3HZGT106R",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: worked, not priced (see parts, UNPRICED): TME page read but every row from 100 up is below 0.10 with one significant figure; Digi-Key refused (403) on this line. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=2SA1576U3HZGT106R (gives the ladder and the Grade fi"
+  },
+  {
+   "mpn": "RCLAMP0512TQTCT",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b19-discretes: worked, not priced (see parts, NOT-READ): code and AEC-Q100 Grade 1 confirmed on LCSC's page, which served no price table. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RCLAMP0512TQTCT. Priority 2."
+  },
+  {
+   "mpn": "SKYA21041",
+   "group": "notReached",
+   "why": "round 6 (23 Nov 2026): b12-ics: Not reached with a page read: digikey.com returned HTTP 403 before this line; Mouser (single try, keyword SKYA21041) HTTP 503. Exact code SKYA21041 (Skyworks 5 GHz 802.11ac SPDT switch + LNA front-end module, 6-pin DFN 1.2 x 1.4 mm per a search summary of the Skyworks / Mouser pages). Searc"
   }
  ]
 }

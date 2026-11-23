@@ -1,16 +1,17 @@
 {
  "stats": {
-  "lines": 550,
-  "toMerge": 444,
-  "ownLadder": 330,
+  "lines": 603,
+  "toMerge": 442,
+  "ownLadder": 329,
   "twoDistributors": 53,
   "NO-LISTING": 28,
   "UNPRICED": 11,
   "OBSOLETE": 7,
   "SUMMARY-ONLY": 24,
-  "NOT-READ": 21,
+  "NOT-READ": 20,
   "held": 1,
   "WRONG-CODE": 1,
+  "heldUnverified": 53,
   "NO-LARGER-BREAK": 13
  },
  "lists": {
@@ -652,13 +653,6 @@
     "mfr": "Texas Instruments",
     "desc": "3-65 V ideal-diode controller (DGATE) for reverse-input protection, with switched output path",
     "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE confirmed on TI's part-details page (ti.com/product/LM74900-Q1/part-details/LM74900QRGERQ1, read 2026-11-23): ACTIVE, \"Automo"
-   },
-   {
-    "file": "b17-ics",
-    "mpn": "W25Q64JVSSAQ",
-    "mfr": "Winbond",
-    "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
-    "why": "NOT-READ: no franchised distributor page could be read for this code. Digi-Key had returned HTTP 403 earlier in this run (not read again); Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"; the TME limit of 8 pages was spent before this line; Mouser, Arrow, Farnell 503 and Rutronik 403 on other lines. The code is as printed in Winbond's automotive brief (task note: W2"
    }
   ],
   "HELD-PERSON": [
@@ -675,6 +669,273 @@
     "mfr": "Texas Instruments",
     "desc": "Power management IC for safety-relevant applications (MCU safety PMIC)",
     "why": "WRONG-CODE: the task code TPS6538600QDCARQ1 was not found as printed - Digi-Key keyword search \"did not return any results\"; TME search \"TPS653860\": no results; a web search found no listing of it. A search summary of TI's TPS653860-Q1 datasheet (SLVSFQ1A) names the tape-and-reel orderables TPS65386003QDCARQ1 (grade 1) and TPS65386050EDCARQ1 (grade 0), HTSSOP-48 DCA, 2,500 a reel - not read on a p"
+   }
+  ],
+  "HELD-UNVERIFIED": [
+   {
+    "file": "b17-ics",
+    "mpn": "SQJ140EP-T1_GE3",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b17-ics",
+    "mpn": "VOMDA1271T",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "2N7002Q-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BAT54SQ-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BC817-40Q-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BC847CQ-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BSS123W-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BSS138Q-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BSS84Q-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "DESD1CAN2SOQ-7",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "DESD1CANFD24VSOQ-7",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "DESD1LIN2WSQ-7",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "MMBT3904Q-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "SBR3U40P1Q-7",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "SMAJ24AQ-13-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "SMBJ24AQ-13-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "2N7002AK-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BAS21-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BAV99-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BC807-40-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BC817-40-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "MINIASMDC050F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V18MLA0603NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V18MLA0805NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "SZSMF6L24AT3G",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BC847BSQ-7-F",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "CAN0001DP",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "ASMDC050F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "MINIASMDC020F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "NANOASMDC012F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V26MLA0805NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V33MLA1206NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V48MLA1210NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "V5.5MLA0603NHAUTO",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "ASMD100F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "ASMDC030F-2",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "AB-PL1515C0I6-5VX0",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b18-discretes",
+    "mpn": "BB-HBRG32N-TRB-0-AQ",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "BC847C-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PESD1ETH10L-QYL",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PESD1ETH10LS-QYL",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PESD2CANFD36UT-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PESD2CANFD54VT-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PMBT3904-QR",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PMEG4010ER-QX",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "BZX84J-B24-QX",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "PMEG6010ELRX",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "BC847CLT1G",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "RB751SM-40FHT2R",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "1SS355VMFHTE-17",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "1SS400SMFHT2R",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "SMLMN2BCTT86C",
+    "why": "priced from a page read; its file has had no independent re-read yet"
+   },
+   {
+    "file": "b19-discretes",
+    "mpn": "UM6K31NFHATCN",
+    "why": "priced from a page read; its file has had no independent re-read yet"
    }
   ],
   "NO-LARGER-BREAK": [

@@ -34,8 +34,15 @@ LINKED = {norm(k): (v.get('member') if isinstance(v, dict) else v) for k, v in j
 os.makedirs(os.path.join(H, 'merge'), exist_ok=True)
 for f in glob.glob(os.path.join(H, 'merge', '*.json')): os.remove(f)
 stats = collections.Counter()
+# rule 7: a research file merges only after an independent blind re-read of a sample of it found no difference
+_vr = os.path.join(H, 'verify-report.json')
+VERIFIED = set(json.load(open(_vr)).get('byFile', {})) if os.path.exists(_vr) else set()
 for f in RAW:
     name = os.path.basename(f)[:-5]; j = json.load(open(f)); keep = []
+    if name not in VERIFIED:
+        priced = [p for p in j.get('parts', []) if p.get('observations')]
+        out_lists['HELD-UNVERIFIED'] += [{'file': name, 'mpn': p.get('mpn'), 'why': 'priced from a page read; its file has had no independent re-read yet'} for p in priced]
+        stats['heldUnverified'] += len(priced); stats['lines'] += len(j.get('parts', [])); continue
     for p in j.get('parts', []):
         mpn = p.get('mpn'); notes = str(p.get('notes') or ''); stats['lines'] += 1
         obs = []

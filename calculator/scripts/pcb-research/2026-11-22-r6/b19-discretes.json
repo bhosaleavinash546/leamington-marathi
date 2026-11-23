@@ -1,0 +1,776 @@
+{
+ "domain": "b19-discretes",
+ "researched": "2026-11-23",
+ "method": "LATEST task b19-discretes, 23 Nov 2026 - INCOMPLETE: digikey.com returned HTTP 403 on the 14th request (the keyword URL for 2SA1576U3HZGT106) after 13 served pages paced 20 s apart; per the rules Digi-Key was not read again (no other Digi-Key host tried). Of 36 lines: 17 worked (in `parts`), 19 not reached (in `notResearched`, each with its exact code and a one-read Digi-Key URL). PRICED 15: 12 from the Digi-Key product page for the exact orderable code (visible price tables only; every unit price x quantity checked against the page's extended price) - 7 Nexperia priority-1 lines + the BZX84J series representative, onsemi BC847CLT1G, ROHM RB751SM-40FHT2R / 1SS355VMFHTE-17 / 1SS400SMFHT2R; 3 from TME's product page (USD, net = gross, 2 decimals): UM6K31NFHATCN (1,000 / 3,000 / 15,000), SMLMN2BCTT86C (1,000 / 3,000, same figure) and PMEG6010ELRX (100-piece row only - its 1,000 / 3,000 rows print 0.08, one significant figure, not recorded). NOT PRICED but worked 2: 2SA1576U3HZGT106R (UNPRICED - TME read, every row from 100 up below 0.10 with one significant figure) and RCLAMP0512TQTCT (NOT-READ - LCSC page confirms code and AEC-Q100 Grade 1 but serves no price table). Codes resolved on Digi-Key for lines without a packing suffix: BC847C-QR, PESD1ETH10L-QYL, PESD1ETH10LS-QYL, PESD2CANFD54VT-QR, PMBT3904-QR, PMEG4010ER-QX; series representative BZX84J-B24-QX (24 V, as the task asked); ROHM codes joined from the catalogue's three columns exist as printed (1SS355VMFHTE-17, 1SS400SMFHT2R). Codes found by SEARCH only for the open ROHM lines (not read on a page): 2SC4081U3HZGT106R, EDZVFHT2R24B, UDZVFHTE-1724B, RB520SM-30FHT2R, RB521SM-30FHT2R. Per part from the Digi-Key page: the Cut Tape row nearest 1,000 (Nexperia / ROHM tables stop at 500; BC847C-QR and BC847CLT1G reach 1,000; BZX84J-B24-QX and PMBT3904-QR have no cut-tape table) and the smallest and largest Tape & Reel rows. Cut tape and Digi-Reel are one table on every page read (recorded as cut tape); no separate Digi-Reel table was met. Largest published break: 30,000 (BC847C-QR, PESD1ETH10L-QYL, PESD1ETH10LS-QYL), 24,000 (two ROHM diodes), 15,000 (TME, UM6K31NFHATCN), otherwise 6,000-9,000 - NOTHING near 200,000 is published for any of these codes. 12 parts have two rows of the same full packaging (own reel slope: 11 Digi-Key + UM6K31NFHATCN at TME, coarse); PMBT3904-QR (one reel row, not normally stocked), SMLMN2BCTT86C (flat) and PMEG6010ELRX (one row) have none. Grade: the 11 Nexperia / ROHM codes read on Digi-Key carry Grade 'Automotive' + Qualification AEC-Q101 on the product page; BC847CLT1G shows no grade field (aecq false, as the task had it); UM6K31NFHATCN and SMLMN2BCTT86C are confirmed on ROHM's own product pages (read); RCLAMP0512TQTCT on LCSC's page; PMEG6010ELRX rests on the discovery pass's read of Digi-Key's family highlight page (not re-read - flagged); 2SA1576U3HZGT106R rests on ROHM's catalogue 66BP7370E as read by the discovery pass (not re-read - flagged). No part read is obsolete / NRND; out of stock at Digi-Key with a normal table: PESD1ETH10L-QYL, PESD1ETH10LS-QYL, PESD2CANFD36UT-QR; PMBT3904-QR is not normally stocked. Cross-checks: none - 0 parts have two distributors. Master Electronics skipped as instructed. TME: 8 requests (the task limit), 30-60 s apart (two were under a minute), no 429: 4 product pages served (UM6K31NFHATCN, PMEG6010ELRX, SMLMN2BCTT86C, 2SA1576U3HZGT106R) and 4 x 404 (RBE01VYM6AFHTR, 2N7002AKRA-QZ, 2SC4081U3HZGT106R, PESD1ETH10LS-QYL - TME does not list those codes under that symbol). Single tries, all refused: Mouser 503, Arrow 503, Farnell 503, Avnet 400, RS 403, Rutronik 403, Future 403, Verical 503, nexperia.com 403 (grade page). LCSC served one product page without a price table. Budget used: 8 web searches (5 for ROHM orderable codes, 2 for TME URLs, 1 for the ROHM LED page - no price taken from any summary) and 34 page requests: Digi-Key 14 (13 served: 12 product pages + 1 result list for BC847CLT1G; 1 refused), TME 8, ROHM 2, LCSC 1, 9 refused single tries.",
+ "parts": [
+  {
+   "mpn": "BC847C-QR",
+   "family": "BC847-Q series",
+   "mfr": "Nexperia",
+   "desc": "45 V, 100 mA NPN general-purpose transistor, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BC847C-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03416,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847C-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0279,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847C-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01915,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BC847C-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number BC847C-Q; the orderable code Digi-Key lists is BC847C-QR (Nexperia USA Inc., 'TRANS NPN 45V 0.1A TO-236AB', 100 MHz, 250 mW, Digi-Key 1727-BC847C-QRTR-ND / …CT-ND). Part Status Active; in stock 83,661 (lead time 30 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) with a 1,000 row; Tape & Reel table: 3,000 / 6,000 / 9,000 / 15,000 / 21,000 / 30,000 - smallest and largest recorded; 30,000 (ten reels) is the largest published break - nothing near 200,000 is published. Other reel rows seen: 6,000 0.02473; 9,000 0.02310; 15,000 0.02128; 21,000 0.02020. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PESD1ETH10L-QYL",
+   "family": "PESD1ETH10L-Q",
+   "mfr": "Nexperia",
+   "desc": "ESD protection diode, OPEN Alliance compliant for 10BASE-T1S (one part for all automotive Ethernet)",
+   "category": "fuse_tvs",
+   "pkg": "DFN1006-2 (SOD882)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "10BASE-T1S nodes",
+    "Ethernet PHY"
+   ],
+   "observedMpn": "PESD1ETH10L-QYL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.154,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10L-Q",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.09882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10L-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.0869,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10L-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number PESD1ETH10L-Q (code seen only in a search summary - re-checked): the orderable code Digi-Key lists is PESD1ETH10L-QYL (Nexperia USA Inc., page description 'PESD1ETH10L-Q/SOD882/DFN1006-2', TVS diode, Digi-Key 1727-PESD1ETH10L-QYLTR-ND / …CT-ND). Package read on the page: SOD-882 / DFN1006-2 (task had 'unknown'). Part Status Active; out of stock (0; 9,500 expected 09-Feb-2027; lead time 26 weeks) with a normal table. Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL for PESD1ETH10L-Q landed on this single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 10,000 and 30,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: Master Electronics skipped; TME's 8-page limit went to unpriced lines (its page for this code was not read); Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PESD1ETH10LS-QYL",
+   "family": "PESD1ETH10LS-Q",
+   "mfr": "Nexperia",
+   "desc": "ESD protection diode for 10BASE-T1S / automotive Ethernet, leadless 1.0x0.6 mm",
+   "category": "fuse_tvs",
+   "pkg": "DFN1006BD-2 (SOD882BD), 1.0x0.6 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "10BASE-T1S nodes",
+    "Ethernet PHY"
+   ],
+   "observedMpn": "PESD1ETH10LS-QYL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.16464,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10LS-Q",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.10619,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10LS-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.09356,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD1ETH10LS-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number PESD1ETH10LS-Q; the orderable code Digi-Key lists is PESD1ETH10LS-QYL (Nexperia USA Inc., page description 'PESD1ETH10LS-Q/SOD882BD/DFN100…', TVS diode, DFN1006BD-2, Digi-Key 1727-PESD1ETH10LS-QYLTR-ND / …CT-ND). Part Status Active; out of stock (0; 8,900 expected 23-Feb-2027; lead time 26 weeks; purchase limit 20,000 per 30 days) with a normal table. Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL for PESD1ETH10LS-Q landed on this single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 10,000 and 30,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: Master Electronics skipped; TME's 8-page limit went to unpriced lines (its page for this code was not read); Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PESD2CANFD36UT-QR",
+   "family": "PESD2CANFD36XX-Q",
+   "mfr": "Nexperia",
+   "desc": "CAN FD / LIN / FlexRay bus ESD protection, 36 V stand-off, 2 lines",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN / CAN FD node",
+    "24 V board net ECU"
+   ],
+   "observedMpn": "PESD2CANFD36UT-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.08866,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD36UT-QR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.06537,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD36UT-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.05542,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD36UT-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: PESD2CANFD36UT-QR, Nexperia USA Inc., 'TVS DIODE 36VWM 45VC TO236AB', 2 A (8/20 us), SOT-23, Digi-Key 1727-PESD2CANFD36UT-QRTR-ND / …CT-ND. Part Status Active; out of stock (0; 3,000 expected 05-Jan-2027; lead time 30 weeks) with a normal table. Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. The task's family PESD2CANFD36XX-Q has three lines (UT-QR here; UU-QX and VT-QR were not reached). No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PESD2CANFD54VT-QR",
+   "family": "PESD2CANFDxxVT-Q / LT-Q (54 / 60 / 72 V)",
+   "mfr": "Nexperia",
+   "desc": "ESD protection for 48 V board-net CAN / CAN FD / LIN / FlexRay, VRWM 54 V, down to 3.4 pF",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V ECUs",
+    "EV / HEV in-vehicle networks"
+   ],
+   "observedMpn": "PESD2CANFD54VT-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.134,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD54VT-Q",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.10053,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD54VT-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.08626,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PESD2CANFD54VT-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number PESD2CANFD54VT-Q (a SERIES line: 54 / 60 / 72 V, VT and LT - this is the 54 V VT member the task named, for a 48 V board net; the other five codes were not read). The orderable code Digi-Key lists is PESD2CANFD54VT-QR (Nexperia USA Inc., page description 'PESD2CANFD54VT-Q/SOT23/TO-236A…', 74 V typ clamp, 2.8 A 8/20 us, Digi-Key 1727-PESD2CANFD54VT-QRTR-ND / …CT-ND). Part Status Active; in stock 10,631 (lead time 12 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL for PESD2CANFD54VT-Q landed on this single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: Master Electronics skipped; TME's 8-page limit went to unpriced lines (its page for this code was not read); Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PMBT3904-QR",
+   "family": "PMBT3904-Q",
+   "mfr": "Nexperia",
+   "desc": "40 V, 200 mA NPN switching transistor, automotive -Q type",
+   "category": "fuse_tvs",
+   "pkg": "SOT23 (TO-236AB)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "PMBT3904-QR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.02608,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMBT3904-QR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number PMBT3904-Q (reel suffix not seen by discovery); the orderable code Digi-Key lists is PMBT3904-QR (Nexperia USA Inc., 'TRANS NPN 40V 0.2A TO-236AB', 300 MHz, 250 mW, Digi-Key 1727-PMBT3904-QRTR-ND). Part Status Active; NOT NORMALLY STOCKED at Digi-Key ('available for purchase but is not normally stocked', factory order, lead time 30 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). ONE price row only: Tape & Reel 3,000 (one full reel); no cut-tape table and no larger break is published - so NO own slope for this part. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PMEG4010ER-QX",
+   "family": "PMEG4010ER-Q",
+   "mfr": "Nexperia",
+   "desc": "40 V, 1 A low-VF Schottky barrier rectifier, automotive -Q type (status Production)",
+   "category": "fuse_tvs",
+   "pkg": "SOD123W (CFP3)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU (reverse-polarity / freewheel)"
+   ],
+   "observedMpn": "PMEG4010ER-QX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.14092,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMEG4010ER-Q",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.10569,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMEG4010ER-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.09066,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PMEG4010ER-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the type number PMEG4010ER-Q (reel suffix not seen by discovery); the orderable code Digi-Key lists is PMEG4010ER-QX (Nexperia USA Inc., 'DIODE SCHOTTKY 40V 1A SOD123W', Digi-Key 1727-PMEG4010ER-QXTR-ND / …CT-ND). Part Status Active; in stock 45,987 (lead time 16 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL for PMEG4010ER-Q landed on this single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. The catalogue's PMEG4010ER,115 is the non-Q code. No cross-check: Master Electronics skipped; TME's 8-page limit went to unpriced lines (its page for this code was not read); Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "BZX84J-B24-QX",
+   "family": "BZX84J-…-Q series",
+   "mfr": "Nexperia",
+   "desc": "Automotive Zener diode 24 V, 550 mW, ±2 %, SOD323F, -Q type (representative of the BZX84J-…-Q series)",
+   "category": "fuse_tvs",
+   "pkg": "SOD323F",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "BZX84J-B24-QX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.06356,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BZX84J-B24-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.05385,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BZX84J-B24-Q",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "SERIES LINE (BZX84J-…-Q automotive Zeners): representative chosen = BZX84J-B24-QX, the 24 V, ±2 % (B) member, as the task asked (one 24 V part per series line); the price is for this voltage only - other voltages and the C (5 %) types were not read. Orderable code read on the Digi-Key page: BZX84J-B24-QX, Nexperia USA Inc., page description 'BZX84J-B24-Q/SOD323F/SOD323F', 'Zener Diode 24 V 550 mW ±2.08% Surface Mount SOD-323F', Digi-Key 1727-BZX84J-B24-QXTR-ND (the only Digi-Key number). Part Status Active; in stock 3,000 (lead time 26 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL for BZX84J-B24-Q landed on this single product page). Tape & Reel table only: 3,000 and 9,000 (one and three full reels); NO cut-tape table is published, so there is no row near 1,000 - nothing near 200,000 is published. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "PMEG6010ELRX",
+   "family": "PMEG6010ELR",
+   "mfr": "Nexperia",
+   "desc": "Schottky rectifier 60 V, 1 A, SOD123W, automotive family",
+   "category": "fuse_tvs",
+   "pkg": "SOD123W",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "PMEG6010ELRX",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 0.11,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/pmeg6010elrx/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "PRICED FROM TME'S 100-PIECE ROW ONLY - it OVERSTATES the volume price; one Digi-Key read is still needed (listed in notResearched). Digi-Key product page NOT read: digikey.com returned HTTP 403 on the 14th request of this run (13 had served) and was not read again. TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT; TME prints 2 decimals): symbol / manufacturer part number PMEG6010ELRX, NEXPERIA, 'Diode: Schottky rectifying; CFP3,SOD123W; SMD; 60V; 1.41A; 4.5ns', 8,323 in TME stock, flagged 'Hardly available product'; manufacturer packaging 'Reel = 3 000 pcs', sold from tape (multiple 1). Rows: 1 0.16; 10 0.14; 25 0.12; 100 0.11; 250 0.09; 500 0.09; 1,000 0.08; 3,000 0.08. Only the 100 row keeps two significant figures and is recorded; the 250 - 3,000 rows (0.09 / 0.08, one significant figure) are NOT recorded - so there is no 1,000 price and no slope for this part. GRADE NOT RE-READ in this run: aecq true rests on Digi-Key's 'Automotive Diodes in SOD123 Package' highlight page (https://www.digikey.co.uk/en/product-highlight/n/nexperia/automotive-diodes-in-sod123-package, read by the discovery pass), which names this code and states AEC-Q101 for the family; TME's page shows no grade field; nexperia.com refused (403); the Grade field on the Digi-Key product page is still to be read."
+  },
+  {
+   "mpn": "BC847CLT1G",
+   "family": "BC847CLT1G",
+   "mfr": "onsemi",
+   "desc": "Transistor, NPN, 45 V, 0.1 A, SOT-23",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDA-020060 automotive power-over-data-lines (PoDL) for 100/1000Base-T1",
+    "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)"
+   ],
+   "observedMpn": "BC847CLT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0298,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/BC847CLT1G/918346",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0243,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/BC847CLT1G/918346",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.02151,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/BC847CLT1G/918346",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: BC847CLT1G, onsemi, 'TRANS NPN 45V 0.1A SOT23-3', 100 MHz, 300 mW, SOT-23-3 (TO-236), Digi-Key BC847CLT1GOSTR-ND / …OSCT-ND. Part Status Active; in stock 185,015 (factory stock 267,000; 'Due to temporary constrained supply, DigiKey is unable to accept backorders at this time'). GRADE: the Digi-Key page shows NO Grade / Qualification field for this code - aecq false (the task line is the standard type as printed in three TI reference-design BOMs; onsemi's automotive code would carry an S / NSV prefix - not read, not priced). Digi-Key product detail page (digikey.com, USD, read 2026-11-23; the keyword URL showed a 3-result list, the product link was read second). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) with a 1,000 row; Tape & Reel table shows 3,000 and 6,000 only (one and two full reels) - nothing near 200,000 is published. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "RB751SM-40FHT2R",
+   "family": "RB751SM-40FH",
+   "mfr": "ROHM",
+   "desc": "Schottky barrier diode 40 V, small-signal, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "RB751SM-40FHT2R",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.1026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RB751SM-40FHT2R",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 8000,
+     "price": 0.0619,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RB751SM-40FHT2R",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 24000,
+     "price": 0.05347,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RB751SM-40FHT2R",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code confirmed on the Digi-Key page: RB751SM-40FHT2R, Rohm Semiconductor, 'DIODE SCHOTTKY 30V 30MA EMD2' (Digi-Key prints 30 V - the DC reverse voltage; the task's 40 V is the type's peak rating - not checked on a ROHM page), SC-79 / SOD-523, Digi-Key RB751SM-40FHT2RTR-ND / …CT-ND. Part Status Active; in stock 13,649 (lead time 12 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 8,000 and 24,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "1SS355VMFHTE-17",
+   "family": "1SS355VM (automotive FH)",
+   "mfr": "ROHM",
+   "desc": "High-speed switching diode 80 V, 100 mA",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323FL (UMD2)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "1SS355VMFHTE-17",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.08756,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS355VMFHTE-17",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.06839,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS355VMFHTE-17",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.05797,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS355VMFHTE-17",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the three pieces of the code (1SS355VM + FH + TE-17); the joined code 1SS355VMFHTE-17 EXISTS as printed on the Digi-Key page: Rohm Semiconductor, 'DIODE STANDARD 80V 100MA UMD2', SC-90 / SOD-323F, Digi-Key 1SS355VMFHTE-17TR-ND / …CT-ND. Part Status Active; in stock 79,501 (lead time 12 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 3,000 and 9,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "1SS400SMFHT2R",
+   "family": "1SS400SM (automotive FH)",
+   "mfr": "ROHM",
+   "desc": "High-speed switching diode 80 V, 100 mA",
+   "category": "fuse_tvs",
+   "pkg": "SOD-523 (EMD2)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "1SS400SMFHT2R",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.08748,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS400SMFHT2R",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 8000,
+     "price": 0.0589,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS400SMFHT2R",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 24000,
+     "price": 0.05073,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=1SS400SMFHT2R",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Task gave the three pieces of the code (1SS400SM + FH + T2R); the joined code 1SS400SMFHT2R EXISTS as printed on the Digi-Key page: Rohm Semiconductor, 'DIODE STANDARD 80V 100MA EMD2', SC-79 / SOD-523, trr 4 ns, Digi-Key 1SS400SMFHT2RTR-ND / …CT-ND. Part Status Active; in stock 103,349 (lead time 12 weeks). Grade Automotive, Qualification AEC-Q101 (fields on the Digi-Key product page). Digi-Key product page (digikey.com, USD, read 2026-11-23; the keyword URL landed on the single product page). Cut tape and Digi-Reel are printed in ONE table (recorded as cut tape) that stops at 500 pieces - that row is the break nearest 1,000; Tape & Reel table shows 8,000 and 24,000 only (one and three full reels) - nothing near 200,000 is published. No cross-check: no second page source - Master Electronics skipped (lists none of these makers), TME not read for this part (a price below about 0.10 prints with one significant figure there), and Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  },
+  {
+   "mpn": "2SA1576U3HZGT106R",
+   "family": "2SA1576U3 (automotive HZG)",
+   "mfr": "ROHM",
+   "desc": "PNP -50 V, -150 mA general small-signal transistor, hFE 120–390",
+   "category": "fuse_tvs",
+   "pkg": "SOT-323 (UMT3)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "UNPRICED: orderable code found but no recordable price. Code: the task's pieces 2SA1576U3 + HZG + T106 + hFE rank join to 2SA1576U3HZGT106R (R rank, hFE 180-390) - it exists as a Digi-Key product (search result: digikey …/rohm-semiconductor/2SA1576U3HZGT106R/10495206 and /10495342; the Q rank 2SA1576U3HZGT106Q is /10507320) and as TME's symbol. Digi-Key product page NOT read: digikey.com returned HTTP 403 on the 14th request of this run (13 had served) and was not read again. (the refused request was this line's keyword URL). TME product page READ (https://www.tme.eu/en/details/2sa1576u3hzgt106r/pnp-smd-transistors/rohm-semiconductor/, USD, net = gross, 2026-11-23): 2SA1576U3HZGT106R, ROHM SEMICONDUCTOR, 'Transistor: PNP; bipolar; 50V; 0.15A; 200mW; SC70,SOT323', 2,958 in stock, reel 3,000; rows 1 0.19; 10 0.12; 100 0.08; 500 0.06; 1,000 0.06; 3,000 0.05; 6,000 0.04; 9,000 0.04; 15,000 0.03; 24,000 0.03 - every row from 100 up is below 0.10 with ONE significant figure, so none is recorded (the figures are here for reference only). GRADE NOT RE-READ in this run: aecq true rests on ROHM's catalogue No. 66BP7370E (https://fscdn.rohm.com/en/products/databook/catalog/common/BP_66BP7370_EN.pdf, read in full by the discovery pass), which marks 2SA1576U3 + HZG AEC-Q101 'YES'; TME's page shows no grade field; the Grade field on the Digi-Key product page is still to be read."
+  },
+  {
+   "mpn": "SMLMN2BCTT86C",
+   "family": "SMLMN2 series",
+   "mfr": "ROHM",
+   "desc": "Blue chip LED, 2012 size (0805), 36 mcd, automotive",
+   "category": "led",
+   "pkg": "2012 (0805)",
+   "aecq": true,
+   "ecuRoles": [
+    "switch backlight",
+    "indicator"
+   ],
+   "observedMpn": "SMLMN2BCTT86C",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.17,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smlmn2bctt86c/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.17,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/smlmn2bctt86c/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "PRICED FROM TME ONLY (one distributor, coarse 2-decimal figures; no own slope - the 1,000 and 3,000 rows print the same 0.17). Digi-Key product page NOT read: digikey.com returned HTTP 403 on the 14th request of this run (13 had served) and was not read again. Code confirmed on TME's product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT): symbol / manufacturer part number SMLMN2BCTT86C, ROHM SEMICONDUCTOR, 'LED; blue; SMD; 0805; 36mcd; 5mA; 470nm; Lens: transparent'; 0 in TME stock (out of stock, 'Check availability') with a normal falling table; multiple 1, minimum 1; kind of package not shown (the 1,000 row is recorded as packing 'unknown'; 3,000 is ROHM's full taping quantity per the ROHM page). Rows: 1 0.42; 10 0.35; 100 0.24; 500 0.18; 1,000 0.17; 3,000 0.17 - 3,000 is the largest published break, nothing near 200,000. GRADE: ROHM's product page (https://www.rohm.com/products/led/chip-leds-mono-color-type/automotive/smlmn2bct_c_-product, read 2026-11-23, titled SMLMN2BCTT86C, status Active, taping 3,000): 'Automotive, Reflector Type Blue Chip LED', Common Standard 'AEC-Q102 (Automotive Grade)'; its description text says 'complies with AEC-Q101' - the page prints both (the Digi-Key highlight page's 'AEC-Q100' wording quoted by the discovery pass is a third). Other distributors refused (single tries)."
+  },
+  {
+   "mpn": "UM6K31NFHATCN",
+   "family": "UM6K31NFHA",
+   "mfr": "ROHM",
+   "desc": "Dual N-channel 60 V, 0.25 A small-signal MOSFET",
+   "category": "fuse_tvs",
+   "pkg": "UMT6 (SOT-363)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "UM6K31NFHATCN",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.13,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/um6k31nfhatcn/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.11,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/um6k31nfhatcn/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 15000,
+     "price": 0.1,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/um6k31nfhatcn/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "PRICED FROM TME ONLY (one distributor; coarse 2-decimal figures, so the slope 0.11 -> 0.10 is rough). Digi-Key product page NOT read: digikey.com returned HTTP 403 on the 14th request of this run (13 had served) and was not read again. Code confirmed on TME's product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT): symbol / manufacturer part number UM6K31NFHATCN, ROHM SEMICONDUCTOR, 'Transistor: N-MOSFET x2; unipolar; 60V; 250mA; Idm: 1A; 150mW; UMT6', kind of package 'reel, tape', multiple 1; 0 in TME stock (out of stock, 'Check availability') with a normal falling table. Rows: 1 0.48; 10 0.31; 50 0.21; 100 0.19; 500 0.14; 1,000 0.13; 3,000 0.11; 6,000 0.11; 9,000 0.10; 15,000 0.10 - the 1,000 row (sold from tape), the full reel (3,000) and the largest break (15,000 = five reels) are recorded; nothing near 200,000 is published. GRADE: ROHM's product page (https://www.rohm.com/products/mosfets/small-signal/dual/um6k31nfha-product, read 2026-11-23, titled UM6K31NFHATCN, status Active, taping 3,000): '2.5V Drive Dual N-channel MOSFET (AEC-Q101 Qualified)', Common Standard 'AEC-Q101 (Automotive Grade)'; package UMT6 / SOT-363 / SC-88. Other distributors refused (single tries)."
+  },
+  {
+   "mpn": "RCLAMP0512TQTCT",
+   "family": "RClamp0512TQ",
+   "mfr": "Semtech",
+   "desc": "TVS / ESD diode, 2 lines, 5 V working voltage, 30 kV ESD, low capacitance",
+   "category": "fuse_tvs",
+   "pkg": "3-pin leadless, 1.0 x 0.6 mm (LCSC: SMD-3P,1x0.6mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "USB 2.0",
+    "CAN / LIN signal lines",
+    "automotive data ports"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "NOT-READ: code and grade confirmed, no price read. LCSC product page (https://www.lcsc.com/product-detail/C512369.html, read 2026-11-23): Mfr. Part # RCLAMP0512TQTCT, SEMTECH, LCSC C512369, 'ESD DIODE 5VWM 8.5VC 0402', package 'SMD-3P,1x0.6mm' (the task had the package as not read); the page text says 'Qualified to AEC-Q100, Grade 1 (-40 to +125 C) for automotive applications' - aecq true on that distributor page. The page served NO price table and no stock figure (they are not in the page text), so nothing is recorded. Digi-Key product page NOT read: digikey.com returned HTTP 403 on the 14th request of this run (13 had served) and was not read again. TME does not list Semtech (not tried); Mouser / Arrow / Farnell / Avnet / RS / Rutronik / Future / Verical each refused a single try."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "2N7002AKRA-QZ",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/2n7002akra-qz/ is 404. Exact code from the task (Digi-Key highlight page). Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=2N7002AKRA-QZ"
+  },
+  {
+   "code": "BAS16GWX",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (price well below 0.10 - one significant figure there). Exact code from the task; larger reel BAS16GWJ. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=BAS16GWX"
+  },
+  {
+   "code": "BAT54GWX",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (price well below 0.10). Exact code from the task; larger reel BAT54GWJ. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=BAT54GWX"
+  },
+  {
+   "code": "BSS138AKQB-QZ",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=BSS138AKQB-QZ"
+  },
+  {
+   "code": "BSS138AKRA-QZ",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=BSS138AKRA-QZ"
+  },
+  {
+   "code": "PESD2CANFD36UU-QX",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task; -QF is the other reel. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=PESD2CANFD36UU-QX"
+  },
+  {
+   "code": "PESD2CANFD36VT-QR",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=PESD2CANFD36VT-QR"
+  },
+  {
+   "code": "PMEG4010EGWX",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME not read (8-page limit; price likely below 0.10). Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=PMEG4010EGWX"
+  },
+  {
+   "code": "2SC4081U3HZGT106R",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/2sc4081u3hzgt106r/ is 404 (a search shows TME lists the Q rank 2SC4081U3HZGT106Q - not read; its prices will print one significant figure like the PNP's). Code found by search, not read on a page: Digi-Key lists 2SC4081U3HZGT106R (…/rohm-semiconductor/2SC4081U3HZGT106R/9826165 and /9826109; Q rank /9826164), Farnell lists it as 'TRANSISTOR AEC-Q101 NPN 50V', ROHM's page 2sc4081u3hzg-product. Put the code in mpn when priced. Priority 1. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=2SC4081U3HZGT106R"
+  },
+  {
+   "code": "EDZVFHT2R24B",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; SERIES line (EDZV 3.6 - 36 V): representative = the 24 V member, EDZVFHT2R24B (24 V, 150 mW, SOD-523 / EMD2), as the task asked. Code found by search, not read on a page: Digi-Key lists it (…/rohm-semiconductor/EDZVFHT2R24B/9697308 and /9697559; summary: Grade Automotive, AEC-Q101); ROHM datasheet ESD_ZD-EDZVFHT2R24B. TME not read (price below 0.10). Priority 1. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=EDZVFHT2R24B"
+  },
+  {
+   "code": "RB520SM-30FHT2R",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; Line names RB520SM-30 / -40: the 30 V member RB520SM-30FHT2R is the one found - Digi-Key lists it (https://www.digikey.com/en/products/detail/rohm-semiconductor/RB520SM-30FHT2R/9697282, 'Diode 30 V 200mA Surface Mount EMD2'; search result, page not read); TME lists it too (https://www.tme.eu/en/details/rb520sm-30fht2r/smd-schottky-diodes/rohm-semiconductor/, not read - 8-page limit, price below 0.10). The 40 V code was not looked for. Priority 1. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RB520SM-30FHT2R"
+  },
+  {
+   "code": "RB521SM-30FHT2R",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; Line names RB521SM-30 / -40: the 30 V member RB521SM-30FHT2R is the one found - Digi-Key lists it (…/rohm-semiconductor/RB521SM-30FHT2R/9697284 and /9697535; a summary says out of stock at Digi-Key Canada), RS and Farnell list it ('SCHOTTKY RECTIFIER AEC-Q101'); search results, pages not read. The 40 V code was not looked for. Priority 1. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RB521SM-30FHT2R"
+  },
+  {
+   "code": "UDZVFHTE-1724B",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; SERIES line (UDZV 2.0 - 47 V): representative = the 24 V member, UDZVFHTE-1724B (24 V, 200 mW, UMD2 / SOD-323FL), as the task asked. Code found by search, not read on a page: Digi-Key lists it (…/rohm-semiconductor/UDZVFHTE-1724B/9697404 and /9697655; summary: AEC-Q101, Active). The search summary quoted EUR prices from digikey.at - a summary is not a price, nothing recorded. TME not read (price below 0.10). Priority 1. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=UDZVFHTE-1724B"
+  },
+  {
+   "code": "RBE01VYM6AFHTR",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME: https://www.tme.eu/en/details/rbe01vym6afhtr/ is 404. Exact code from the task (launched Oct 2025; the discovery pass says it is online at Digi-Key, Mouser, Farnell). Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RBE01VYM6AFHTR"
+  },
+  {
+   "code": "RCLAMP0531TQTCT",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task (Digi-Key's Semtech AEC-Q100 highlight page). Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RCLAMP0531TQTCT"
+  },
+  {
+   "code": "RCLAMP3552TQTNT",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 2. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RCLAMP3552TQTNT"
+  },
+  {
+   "code": "ECLAMP2357NQTLT",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=ECLAMP2357NQTLT"
+  },
+  {
+   "code": "RCLAMP2574NQTCT",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RCLAMP2574NQTCT"
+  },
+  {
+   "code": "UCLAMP0511PQTCT",
+   "why": "Not reached with a Digi-Key page read: digikey.com returned HTTP 403 on the 14th request of this run and was not read again; every other distributor tried refused; TME does not list Semtech. Exact code from the task. Priority 3. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=UCLAMP0511PQTCT"
+  },
+  {
+   "code": "2SA1576U3HZGT106R",
+   "why": "worked, not priced (see parts, UNPRICED): TME page read but every row from 100 up is below 0.10 with one significant figure; Digi-Key refused (403) on this line. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=2SA1576U3HZGT106R (gives the ladder and the Grade field). Priority 1."
+  },
+  {
+   "code": "PMEG6010ELRX",
+   "why": "worked, priced only from TME's 100-piece row (see parts): TME's 1,000 / 3,000 rows print 0.08 (one significant figure, not recorded) and the grade was not re-read. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=PMEG6010ELRX (ladder + Grade field). Priority 2."
+  },
+  {
+   "code": "RCLAMP0512TQTCT",
+   "why": "worked, not priced (see parts, NOT-READ): code and AEC-Q100 Grade 1 confirmed on LCSC's page, which served no price table. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=RCLAMP0512TQTCT. Priority 2."
+  },
+  {
+   "code": "UM6K31NFHATCN",
+   "why": "worked, priced from TME only (see parts): One Digi-Key read: https://www.digikey.com/en/products/result?keywords=UM6K31NFHATCN adds Digi-Key's 4-5 decimal ladder (own slope) and a second distributor. Priority 2."
+  },
+  {
+   "code": "SMLMN2BCTT86C",
+   "why": "worked, priced from TME only (see parts; no slope - TME prints 0.17 at 1,000 and 3,000): One Digi-Key read: https://www.digikey.com/en/products/result?keywords=SMLMN2BCTT86C adds the ladder and a second distributor. Priority 2."
+  }
+ ]
+}
