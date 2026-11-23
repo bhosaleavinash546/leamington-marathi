@@ -1,8 +1,86 @@
 {
  "domain": "b10-ics",
  "researched": "2026-11-23",
- "method": "LATEST task. Every observation was read on the distributor product page on 2026-11-23 (evidence page-read); no search-summary figure is recorded. In progress.",
+ "method": "LATEST task. Every observation was read on the distributor product page on 2026-11-23 (evidence page-read); no search-summary figure is in observations. Budget used: 5 web searches (codes and grades only), 43 page requests: Digi-Key 28 served (26 product pages + 2 \"no results\") then HTTP 403 on the 29th - stopped, not retried; Master Electronics 1 served then HTTP 403 on the 2nd - stopped; TME 8 pages served (the task limit; search pages show no visible price, so each priced part cost two reads); one try each refused: Mouser 503, Avnet 400, Newark 503, Verical 503. The 8 lines in notResearched were not reached because every page source had refused or was at its limit. Digi-Key prints renesas / onsemi MCU and imager trays only to 500 (or one full-tray break), so those slopes rest on the 100 -> 500 pair.",
  "parts": [
+  {
+   "mpn": "OX03H10-E74Y-001A-Z",
+   "family": "OX03H10",
+   "mfr": "OMNIVISION",
+   "desc": "3 MP 1/2.44-inch 3.0 um TheiaCel automotive viewing sensor, 60 fps, pin-compatible with OX03F10",
+   "category": "ic_bga",
+   "pkg": "74-pin a-CSP",
+   "aecq": false,
+   "ecuRoles": [
+    "surround-view camera",
+    "rear camera",
+    "e-mirror"
+   ],
+   "observedMpn": "OX03H10-E74Y-001A-Z",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key keyword search \"OX03H10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused; TME does not carry OMNIVISION and its page limit was spent). OMNIVISION sensors are sold direct / through its agents - supplier quote needed. Code as on the maker page (not seen at a distributor). AEC-Q100 not confirmed."
+  },
+  {
+   "mpn": "OX08D10-E92U-001A-Z",
+   "family": "OX08D10",
+   "mfr": "OMNIVISION",
+   "desc": "8 MP 1/1.73-inch 2.1 um TheiaCel HDR / LED-flicker-free automotive image sensor",
+   "category": "ic_bga",
+   "pkg": "a-CSP",
+   "aecq": false,
+   "ecuRoles": [
+    "front camera",
+    "ADAS camera"
+   ],
+   "observedMpn": "OX08D10-E92U-001A-Z",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key keyword search \"OX08D10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused). OMNIVISION sensors are sold direct / through its agents - supplier quote needed. Code as on the maker page (not seen at a distributor). AEC-Q100 not confirmed."
+  },
+  {
+   "mpn": "AR0341ATSC15XUEA0-DPBR",
+   "family": "Hyperlux AR0341AT",
+   "mfr": "onsemi",
+   "desc": "3 MP 1/3.6-inch 2.1 um automotive HDR CMOS image sensor for surround view / sensing",
+   "category": "ic_bga",
+   "pkg": "63-IBGA 7.5x6.5 (63-LFBGA)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround-view camera",
+    "rear camera",
+    "e-mirror"
+   ],
+   "observedMpn": "AR0341ATSC15XUEA0-DPBR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 32.4016,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0341ATSC15XUEA0-DPBR/25602328",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, \"CMOS Image Sensor 1920H x 1536V 2.1 um 63-IBGA (7.5x6.5)\"): ONE break only - tray 2,250 = 32.40160; no smaller or larger break, so no slope. Not stocked: \"Factory Stock: 2,250\" at the supplier, and the page says Digi-Key cannot accept backorders (constrained supply) - a non-stock distributor listing, not a volume camera-programme price (the catalogue prices imagers by its imager rule; keep this as the distributor listing reference). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\". Package corrected from the page (task: \"see datasheet\")."
+  },
+  {
+   "mpn": "AR0823AT2C18XUEA0-DPBR-E",
+   "family": "Hyperlux AR0823AT",
+   "mfr": "onsemi",
+   "desc": "8.3 MP 1/1.8-inch 2.1 um automotive HDR CMOS image sensor (150 dB, LFM), ASIL-D process",
+   "category": "ic_bga",
+   "pkg": "149-IBGA 11x8 (149-LFBGA)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS camera",
+    "mirror replacement"
+   ],
+   "observedMpn": "AR0823AT2C18XUEA0-DPBR-E",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key has a product page for the exact code (Active per the attributes; \"CMOS Image Sensor 3840H x 2160V 2.1 um 149-IBGA (11x8)\"; Grade: Automotive, Qualification: AEC-Q100) but it shows NO price table and says \"This product is no longer carried by DigiKey\". Supplier quote needed. Package corrected from the page."
+  },
   {
    "mpn": "NCV210RSQT2G",
    "family": "NCV210R / NCV211R / NCV213R / NCV214R",
@@ -148,6 +226,22 @@
    "notes": "Digi-Key product page (read today, USD, Active, stock 5,487): cut tape 500 = 0.45734, 1,000 = 0.44202 (largest CT); tape & reel 3,000 = 0.42002, 6,000 = 0.40993 (largest). GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\"."
   },
   {
+   "mpn": "NCV7410MWR2G",
+   "family": "NCV7410",
+   "mfr": "onsemi",
+   "desc": "10BASE-T1S (802.3cg) single-pair Ethernet controller, MAC + PHY",
+   "category": "ic_qfn",
+   "pkg": "QFNW-32 (from a search summary of the onsemi page)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "lighting / sensor edge node"
+   ],
+   "observedMpn": "NCV7410MWR2G",
+   "observations": [],
+   "notes": "NO-LISTING: Digi-Key keyword search for the exact code returned \"did not return any results\" (read today; the page only offered \"2 Substitute Part result(s)\" and \"did you mean ncv7311mwr2g\"). The code itself is right: a search summary of the onsemi product page gives NCV7410MWR2G as the only orderable (QFNW-32, reel 5,000, Active) and Octopart lists it as in production (introduced 2024-10) - no distributor break seen. GRADE: aecq true rests on a search summary of the onsemi datasheet (\"AEC-Q100 qualified and PPAP capable\"), not on a page I read. Supplier quote needed; the catalogued NCN26010 is the non-automotive sibling."
+  },
+  {
    "mpn": "NCV7428D15R2G",
    "family": "NCV7428",
    "mfr": "onsemi",
@@ -275,9 +369,29 @@
      "date": "2026-11-23",
      "packing": "reel",
      "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 2.49,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/nvmfs5c404nlaft1g/smd-n-channel-transistors/onsemi/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 500,
+     "price": 2.35,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/nvmfs5c404nlaft1g/smd-n-channel-transistors/onsemi/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key product page (read today, USD, Active, stock 270; \"MOSFET N-CH 40V 370A 5DFN\"): cut tape 100 = 2.87140, 500 = 2.57948 (largest CT break, nearest to 1,000 on the cut-tape side); tape & reel 1,500 = 1.98813 (the ONLY reel break). The two breaks are different packings (cut tape v reel) - the step between them is partly the packing, not volume. GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\"."
+   "notes": "Digi-Key product page (read today, USD, Active, stock 270; \"MOSFET N-CH 40V 370A 5DFN\"): cut tape 100 = 2.87140, 500 = 2.57948 (largest CT break, nearest to 1,000 on the cut-tape side); tape & reel 1,500 = 1.98813 (the ONLY reel break). The two breaks are different packings (cut tape v reel) - the step between them is partly the packing, not volume. GRADE: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\". Cross-check TME product page (tme.eu, read today, USD net, 0 in TME stock, \"reel, tape\", multiple 1; prices rounded to 2 decimals): 100 = 2.49, 500 = 2.35 (largest break shown) - 9 % below Digi-Key at 500. Master Electronics and Mouser refused."
   },
   {
    "mpn": "NVMFWS0D9N04XMT1G",
@@ -571,104 +685,460 @@
     }
    ],
    "notes": "Orderable code on the Digi-Key page is NVMFWS4D0N04XMT1G. Digi-Key product page (read today, USD, Active, stock 1,252, lead time 69 wk; N-channel 40 V 80 A (Tc), Rds(on) max 3.9 mOhm): cut tape 100 = 0.74280, 500 = 0.58470 (largest CT); tape & reel 1,500 = 0.46044, 3,000 = 0.42539 (largest). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q101\" (task had aecq false)."
+  },
+  {
+   "mpn": "NCV3064DR2G",
+   "family": "NCV3064",
+   "mfr": "onsemi",
+   "desc": "1.5 A switching regulator with enable",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "legacy body ECU"
+   ],
+   "observedMpn": "NCV3064DR2G",
+   "observations": [
+    {
+     "distributor": "Master Electronics",
+     "qty": 2500,
+     "price": 0.915,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=NCV3064DR2G",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 2500,
+     "price": 0.85,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/ncv3064dr2g/voltage-regulators-dc-dc-circuits/onsemi/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 0.82,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/ncv3064dr2g/voltage-regulators-dc-dc-circuits/onsemi/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key not read (HTTP 403 before this line). Master Electronics product page (read today, USD, \"onsemi Authorized Reseller\", in stock 0, factory lead time 22 wk, reel pack 2,500, minimum 625): 625 = 1.917, 1,250 = 1.180, 1,875 = 0.934, 2,500+ = 0.915 (largest; no 200,000 row). ONLY the full-reel 2,500 row is recorded: the sub-reel rows fall 2.1x between 625 and 2,500 - a part-reel surcharge, not a volume curve - do NOT take a slope from them. TME product page (tme.eu, read today, USD net, 0 in TME stock, minimum and multiple 2,500, prices rounded to 2 decimals): 2,500 = 0.85, 5,000 = 0.82 (largest) - the usable same-distributor pair; TME is 7 % below Master at 2,500. Both listings are out of stock. GRADE: neither page states AEC-Q (TME: \"Application: automotive industry\"); aecq true rests on a search result title of RS Sweden for this code (\"onsemi AEC-Q100 ... SOIC\") and the onsemi datasheet NCV-prefix line (search summary) - not on a page I read."
+  },
+  {
+   "mpn": "NCV8450ASTT3G",
+   "family": "NCV8450A",
+   "mfr": "onsemi",
+   "desc": "Self-protected high-side driver, 4.5-45 V, 800 mA current limit",
+   "category": "ic_soic",
+   "pkg": "SOT-223",
+   "aecq": true,
+   "ecuRoles": [
+    "body controller",
+    "relay / lamp drive"
+   ],
+   "observedMpn": "NCV8450ASTT3G",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 0.65,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/ncv8450astt3g/power-switches-integrated-circuits/onsemi/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 250,
+     "price": 0.63,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/ncv8450astt3g/power-switches-integrated-circuits/onsemi/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key not read (HTTP 403 before this line); Master Electronics refused (HTTP 403). TME product page (tme.eu, read today, USD net, 0 in TME stock, \"reel, tape\", minimum and multiple 1; \"IC: power switch; high-side; 1.5A; SOT223\"; prices rounded to 2 decimals): 100 = 0.65, 250 = 0.63 (the largest break shown - no 1,000 or reel row). A weak pair: small breaks, 2-decimal rounding - wants a Digi-Key reel read. GRADE: TME says only \"Application: automotive industry\"; aecq true rests on a search summary of the onsemi product page (\"AEC-Q100/101 Qualified\") and datasheet (\"NCV prefix ... AEC-Q100 Qualified and PPAP Capable\") - not on a page I read (task had aecq false)."
+  },
+  {
+   "mpn": "INN3949CQ-TL",
+   "family": "InnoSwitch3-AQ 1700 V SiC",
+   "mfr": "Power Integrations",
+   "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, primary + secondary control and isolated feedback; 70 W (InSOP-24D)",
+   "category": "ic_soic",
+   "pkg": "InSOP-24D",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter emergency / auxiliary supply",
+    "BMS",
+    "OBC",
+    "800 V DC-DC"
+   ],
+   "observedMpn": "INN3949CQ-TL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 12.4903,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=INN3949CQ-TL",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 10.63006,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=INN3949CQ-TL",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 1,706, lead time 18 wk; \"INNOSWITCH3-AQ 1700V 70W\", Voltage - Breakdown 1700 V, Supplier Device Package InSOP-24D): cut tape 1 = 15.11, 100 = 12.49030 (the largest cut-tape break - no 1,000 row); tape & reel 2,000 = 10.63006 (the ONLY reel break). The two breaks are different packings. desc power corrected to the 70 W the page prints (task said ~40 W). The page answers the discovery doubt: switch rating shown is 1700 V. GRADE: Digi-Key shows NO Grade / Qualification field (series \"InnoSwitch3-AQ\"); aecq true rests on the maker announcement the discovery pass cites (AEC-Q100 qualified) - not re-read by me."
+  },
+  {
+   "mpn": "INN3947CQ-TL",
+   "family": "InnoSwitch3-AQ 1700 V SiC",
+   "mfr": "Power Integrations",
+   "desc": "Flyback switcher IC with integrated 1700 V SiC MOSFET, 50 W (InSOP-24D), lower power than INN3949CQ",
+   "category": "ic_soic",
+   "pkg": "InSOP-24D",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter emergency / auxiliary supply",
+    "BMS",
+    "800 V DC-DC"
+   ],
+   "observedMpn": "INN3947CQ-TL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.65002,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=INN3947CQ-TL",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 6.65003,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=INN3947CQ-TL",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, out of stock - 175 expected 07-Dec-2026, 1,825 on 01-Feb-2027, lead time 18 wk; \"INNOSWITCH3-AQ 1700V 50W\", Voltage - Breakdown 1700 V): cut tape 100 = 7.81380, 1,000 = 6.65002; tape & reel 2,000 = 6.65003 (the ONLY reel break, 0.00001 dearer than cut tape 1,000 as shown) - flat, so no real slope. GRADE: Digi-Key shows NO Grade / Qualification field (series \"InnoSwitch3-AQ\"); aecq true rests on the maker announcement the discovery pass cites (AEC-Q100 qualified) - not re-read by me."
+  },
+  {
+   "mpn": "R5F10A6ELSP#G5",
+   "family": "RL78 automotive R5F10A6x",
+   "mfr": "Renesas",
+   "desc": "RL78 16-bit automotive MCU, 64 KB flash, 20-pin LSSOP",
+   "category": "ic_soic",
+   "pkg": "LSSOP-20",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "LIN / CAN actuator node",
+    "sensor node",
+    "switch panel"
+   ],
+   "observedMpn": "R5F10A6ELSP#G5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 2.604,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10A6ELSP%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.39002,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10A6ELSP%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 3,835, lead time 18 wk; \"RL78/F13 Microcontroller IC 16-Bit 32MHz 64KB FLASH 20-LSSOP\"): tray only - 100 = 2.60400, 500 = 2.39002 (largest break shown; no 1,000 row). GRADE now confirmed per part: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\", Series RL78/F13 (task had aecq false)."
+  },
+  {
+   "mpn": "R5F10BAGLSP#G5",
+   "family": "RL78/F13 R5F10BAx",
+   "mfr": "Renesas",
+   "desc": "RL78 16-bit automotive MCU, 128 KB flash, 30-pin LSSOP",
+   "category": "ic_soic",
+   "pkg": "LSSOP-30",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "LIN / CAN actuator node",
+    "sensor node",
+    "switch panel"
+   ],
+   "observedMpn": "R5F10BAGLSP#G5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 3.1724,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BAGLSP%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.75238,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BAGLSP%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 1,231, lead time 18 wk; \"RL78/F13 Microcontroller IC 16-Bit 32MHz 128KB FLASH 30-LSSOP\"): tray only - 100 = 3.17240, 500 = 2.75238 (largest break shown; no 1,000 row). GRADE now confirmed per part: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\", Series RL78/F13 (task had aecq false)."
+  },
+  {
+   "mpn": "R5F10BBGLNA#G5",
+   "family": "RL78/F13 R5F10BBx",
+   "mfr": "Renesas",
+   "desc": "RL78 16-bit automotive MCU, 128 KB flash, 32-pin HVQFN",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-32 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "LIN / CAN actuator node",
+    "sensor node",
+    "switch panel"
+   ],
+   "observedMpn": "R5F10BBGLNA#G5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 3.0089,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BBGLNA%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.76746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BBGLNA%23G5",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 2,756, lead time 18 wk; \"RL78/F13 Microcontroller IC 16-Bit 32MHz 128KB FLASH 32-HVQFN (5x5)\"): tray only - 100 = 3.00890, 500 = 2.76746 (largest break shown; no 1,000 row). GRADE now confirmed per part: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\", Series RL78/F13 (task had aecq false)."
+  },
+  {
+   "mpn": "R5F10BGGCLFB#15",
+   "family": "RL78/F13 R5F10BGx",
+   "mfr": "Renesas",
+   "desc": "RL78/F13 16-bit automotive MCU, 128 KB flash, 48-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-48 7x7",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "LIN / CAN actuator node",
+    "sensor node",
+    "switch panel"
+   ],
+   "observedMpn": "R5F10BGGCLFB#15",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 2.9666,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BGGCLFB%2315",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.57138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R5F10BGGCLFB%2315",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 3,236, lead time 18 wk; \"RL78/F13 Microcontroller IC 16-Bit 32MHz 128KB FLASH 48-LFQFP (7x7)\"): tray only - 100 = 2.96660, 500 = 2.57138 (largest break shown; no 1,000 row). GRADE now confirmed per part: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\", Series RL78/F13 (task had aecq false)."
+  },
+  {
+   "mpn": "R7F123FLG3AFB-C#BA0",
+   "family": "RL78/F23",
+   "mfr": "Renesas",
+   "desc": "16-bit 40 MHz automotive MCU, 128 KB flash, 12 KB RAM, CAN FD, ASIL B, Ta up to 150 C",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-64 10x10",
+   "aecq": true,
+   "ecuRoles": [
+    "smart actuator",
+    "sensor node",
+    "low-end body ECU"
+   ],
+   "observedMpn": "R7F123FLG3AFB-C#BA0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1280,
+     "price": 2.6334,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F123FLG3AFB-C%23BA0",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, no stock figure shown, lead time 18 wk; \"RL78/F23 Microcontroller IC 16-Bit 40MHz 128KB FLASH 64-LFQFP (10x10)\"): ONE break only - tray 1,280 = 2.63340 (non-stock, full-tray minimum); no second break, so no slope. This code is the 64-pin LFQFP (pkg corrected from the page; the task listed the family packages). GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\", Series RL78/F23 (task had aecq false)."
+  },
+  {
+   "mpn": "R7F7016843AFP-C#AA1",
+   "family": "RH850 R7F70168x (1 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 1 MB flash, 100-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100 14x14",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7016843AFP-C#AA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.1827,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016843AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 9.51698,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016843AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 114, lead time 26 wk; \"RH850G3KH RH850/F1KM-S1 Microcontroller IC 32-Bit 120MHz 1MB FLASH 100-LFQFP (14x14)\"): tray only - 100 = 10.18270, 101 = 10.17762 (an odd row, as shown), 500 = 9.51698 (largest break shown; no 1,000 row). Group name read on the page: RH850/F1KM-S1. GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "R7F7016933AFP-C#AA1",
+   "family": "RH850 R7F70169x (1 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 1 MB flash, 48-pin LQFP",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 7x7",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7016933AFP-C#AA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 9.842,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016933AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 9.19474,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016933AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (read today, USD, Active, stock 323, lead time 26 wk; \"RH850G3KH RH850/F1KM-S1 Microcontroller IC 32-Bit 120MHz 1MB FLASH 48-LQFP (7x7)\"): tray only - 100 = 9.84200, 250 = 9.43816, 500 = 9.19474 (largest break shown; no 1,000 row). Group name read on the page: RH850/F1KM-S1. GRADE now confirmed: page fields \"Grade: Automotive\", \"Qualification: AEC-Q100\" (task had aecq false)."
   }
  ],
  "notResearched": [
   {
-   "code": "OX03H10-E74Y-001A-Z",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "OX08D10-E92U-001A-Z",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "AR0341ATSC15XUEA0-DPBR",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "AR0823AT2C18XUEA0-DPBR-E",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "NCV7410MWR2G",
-   "why": "not reached (page-read limit)"
-  },
-  {
    "code": "NCV84003G",
-   "why": "not reached (page-read limit)"
+   "why": "NCV84003G eFuse - not reached: Digi-Key refused (HTTP 403) on this line and every other page source refused. Orderable code is probably NCV84003GPAR2G (named in the URL / title of an Avnet-EBV new-product page, search result only; package not confirmed - the sibling NCV84003FPAR2G is TSSOP-14 EP). Put the code in mpn when it is priced. Priority 1."
   },
   {
    "code": "NVMFWS1D3N04XM",
-   "why": "not reached (page-read limit)"
+   "why": "NVMFWS1D3N04XM - not reached (Digi-Key refused before this line; TME search: no result). Code confirmed by search only: Digi-Key lists NVMFWS1D3N04XMT1G (detail id 25602777; \"N-Channel 40 V 40A (Ta), 195A (Tc) 90W, 5-DFNW (4.9x5.9)\"; summary says Grade Automotive, AEC-Q101, Rds(on) max 1.3 mOhm) - one Digi-Key read will price it."
   },
   {
    "code": "NVMTS1D1N08X",
-   "why": "not reached (page-read limit)"
+   "why": "NVMTS1D1N08X - not reached (Digi-Key refused before this line). A Mouser new-product page exists (mouser.in/new/onsemi/onsemi-nvmts1d1n08x-mosfets; summary: AEC-Q101 qualified, PPAP capable, PQFN88-3L package); the reel suffix was still not seen and no Digi-Key listing came up in search."
   },
   {
    "code": "FAD1100-F085",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "NCV3064DR2G",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "NCV8450ASTT3G",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "INN3949CQ-TL",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "INN3947CQ-TL",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R5F10A6ELSP#G5",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R5F10BAGLSP#G5",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R5F10BBGLNA#G5",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R5F10BGGCLFB#15",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R7F123FLG3AFB-C#BA0",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R7F7016843AFP-C#AA1",
-   "why": "not reached (page-read limit)"
-  },
-  {
-   "code": "R7F7016933AFP-C#AA1",
-   "why": "not reached (page-read limit)"
+   "why": "FAD1100-F085 - not reached (priority 3; Digi-Key refused before this line). Code still unconfirmed at a distributor."
   },
   {
    "code": "IPS2550DE1R",
-   "why": "not reached (page-read limit)"
+   "why": "IPS2550DE1R - not reached: Digi-Key (which lists the exact code per the discovery pass) refused before this line; TME search returned no result; Avnet, Newark, Verical refused. One Digi-Key read will price it."
   },
   {
    "code": "ISL78171ARZ-T7A",
-   "why": "not reached (page-read limit)"
+   "why": "ISL78171ARZ-T7A - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
   },
   {
    "code": "ISL78227ARZ-T7A",
-   "why": "not reached (page-read limit)"
+   "why": "ISL78227ARZ-T7A - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
   },
   {
    "code": "ISL78610ANZ",
-   "why": "not reached (page-read limit)"
+   "why": "ISL78610ANZ - not reached: Digi-Key refused (HTTP 403) before this line; no other page source served. One Digi-Key read will price it."
   }
  ]
 }

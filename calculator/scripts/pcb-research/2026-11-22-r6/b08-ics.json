@@ -1,7 +1,7 @@
 {
  "domain": "b08-ics",
  "researched": "2026-11-23",
- "method": "LATEST task b08-ics, 23 Nov 2026. Only prices read on a distributor page today are in observations (evidence page-read). IN PROGRESS.",
+ "method": "LATEST task b08-ics, 23 Nov 2026. Only prices read on a distributor page today are in observations (evidence page-read); search-summary figures are in notes only. Budget used: 10 searches, 27 page reads. Digi-Key: 5 pages served (lines 1-4), then HTTP 403 on the 6th (CY8C4147LWE-HVS035 keyword URL) - Digi-Key was NOT read again and no other Digi-Key host was tried. TME (tme.eu): 8 pages served (2 search pages, 6 product pages) - the task's 8-page limit; TME shows ONE to-order break per part (the factory pack) and no grade / package. Master Electronics: 4 pages served, 'no search results' for every code tried (Infineon BTM9020EPXUMA1, CY8C4147LCE-HV403; Melexis MLX90425GDC-ABA-600-RE; Macronix MX25V1635FZNQ03) - not used further. Refused on the single try each (not used again): Mouser 503, Avnet 400, Newark 503, Verical 503, Arrow 503, Rutronik 403, Future 403, Farnell 503, RS 403. LCSC returned an empty page shell (no data). Result: lines 1-3 have Digi-Key cut-tape + reel ladders (own slope); lines 4, 6-10 have one TME factory-pack break each (no slope, no second distributor); every other line needs a Digi-Key product-page read (one read each where the code is exact) in a later run.",
  "parts": [
   {
    "mpn": "BTM9010EPXUMA1",
@@ -159,138 +159,425 @@
     "BMS pack monitor"
    ],
    "observedMpn": "CY8C4147LCE-HV403",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 4900,
+     "price": 5.08,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cy8c4147lce-hv403/infineon-technologies-microcontrollers/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 4,900): one break only, from 4,900 pcs = 5.08 - a factory-pack (to-order) price, no second break so no own slope; packing not shown on the page. Digi-Key product page https://www.digikey.com/en/products/detail/infineon-technologies/CY8C4147LCE-HV403/21675879 (read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, tray, in stock 76, lead time 33 weeks) shows only 1 = 8.71000, 10 = 6.74600, 50 = 5.95900 - no break of 100 or more, so not recorded. Master Electronics: no search result. Package read on the Digi-Key page: 32-QFN 6x6 (task: not read)."
+  },
+  {
+   "mpn": "CY8C4147LWE-HVS035",
+   "family": "PSOC 4 HVMS-128K",
+   "mfr": "Infineon",
+   "desc": "12 V Cortex-M0+ MCU with integrated LIN PHY and 12 V regulator, CAPSENSE, 128 KB flash, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "not read (QFN assumed)",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN smart sensor / actuator",
+    "HMI touch",
+    "steering-wheel hands-on detection"
+   ],
+   "observedMpn": "CY8C4147LWE-HVS035",
    "observations": [],
-   "notes": "NO-LISTING (no break >= 100): Digi-Key product page https://www.digikey.com/en/products/detail/infineon-technologies/CY8C4147LCE-HV403/21675879 (read 23 Nov 2026, USD, Active, Grade Automotive / Qualification AEC-Q100, tray, in stock 76, lead time 33 weeks) shows only 1 = 8.71000, 10 = 6.74600, 50 = 5.95900 - no break of 100 or more, so nothing recorded. Master Electronics: no search result. Package read on the page: 32-QFN 6x6 (task: not read). Supplier quote needed for a volume price."
+   "notes": "NOT PRICED - no page served: TME search page for CY8C4147LWE (read 23 Nov 2026) shows no products (not in TME's standard offer); the Digi-Key keyword URL for this code returned HTTP 403 (the refusal that stopped Digi-Key reads); Mouser, Avnet, Newark, Verical refused. Code not re-confirmed on a distributor page today; aecq and package are the task's (maker page via search result: AEC-Q100 / ASIL-B), not re-read. Needs one Digi-Key product-page read."
+  },
+  {
+   "mpn": "CYT2B95BACQ0AZSGS",
+   "family": "TRAVEO T2G CYT2B9",
+   "mfr": "Infineon",
+   "desc": "Body entry MCU: Cortex-M4F 160 MHz, 2 MB flash, 256 KB RAM, up to 8x CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 / 80 / 100 / 144 / 176",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "door",
+    "HVAC",
+    "lighting"
+   ],
+   "observedMpn": "CYT2B95BACQ0AZSGS",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 900,
+     "price": 9.51,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cyt2b95bacq0azsgs/infineon-technologies-microcontrollers/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 900): one break only, from 900 pcs = 9.51 - a factory-pack (to-order) price; no second break, so no own slope. The page shows no package, packing or grade (description only 'IC: microcontroller'); aecq kept from the task (discovery: maker's TRAVEO T2G body overview) - NOT re-read on a page today. Package of this exact code not read (task lists the family's LQFP options). Digi-Key not read for this line (it refused before this line was reached)."
+  },
+  {
+   "mpn": "CYT4BB8CEBQ1AEEGS",
+   "family": "TRAVEO T2G CYT4BB",
+   "mfr": "Infineon",
+   "desc": "Body MCU: 2x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, 8x CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100 / 144 / 176, BGA-272",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "zone controller",
+    "gateway"
+   ],
+   "observedMpn": "CYT4BB8CEBQ1AEEGS",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 400,
+     "price": 21.51,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/cyt4bb8cebq1aeegs/infineon-technologies-microcontrollers/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 400): one break only, from 400 pcs = 21.51 - a factory-pack (to-order) price; no second break, so no own slope. The page shows no package, packing or grade; aecq kept from the task (discovery: maker's TRAVEO T2G body overview) - NOT re-read on a page today. Package of this exact code not read. Digi-Key not read for this line (it refused before this line was reached)."
+  },
+  {
+   "mpn": "IAUCN08S7N013ATMA1",
+   "family": "OptiMOS 7 80 V automotive",
+   "mfr": "Infineon",
+   "desc": "N-MOSFET 80 V 1.3 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V systems",
+    "motor drive",
+    "DC-DC",
+    "zonal power distribution"
+   ],
+   "observedMpn": "IAUCN08S7N013ATMA1",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 1.91,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/iaucn08s7n013atma1/smd-n-channel-transistors/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code IAUCN08S7N013ATMA1 read on TME's search listing and product page (task gave the sales name). TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 5,000 = the full reel; packing not printed on the page, 'reel' is from the 5,000 multiple): one break only, from 5,000 pcs = 1.91; no 1k break and no second break, so no own slope. The TME page states no grade; aecq true is the task's reading of the maker page ('extended qualification beyond AEC-Q101') - not re-read today. Digi-Key not read for this line (it refused before this line was reached)."
+  },
+  {
+   "mpn": "IAUCN08S7N019ATMA1",
+   "family": "OptiMOS 7 80 V automotive",
+   "mfr": "Infineon",
+   "desc": "N-MOSFET 80 V 1.9 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "ecuRoles": [
+    "48 V systems",
+    "motor drive",
+    "DC-DC"
+   ],
+   "observedMpn": "IAUCN08S7N019ATMA1",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 1.35,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/iaucn08s7n019atma1/smd-n-channel-transistors/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code IAUCN08S7N019ATMA1 read on TME's search listing and product page (task gave the sales name). TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 5,000 = the full reel; packing not printed, 'reel' is from the 5,000 multiple): one break only, from 5,000 pcs = 1.35; no own slope. GRADE NOT CONFIRMED on a page read today: the TME page states no AEC-Q101 (the part is in Infineon's automotive IAUC OptiMOS 7 line; the sibling IAUCN10S7N021ATMA1 is shown AEC-Q101 in a search summary of distributor listings) - aecq left false. Digi-Key not read for this line (it refused before this line was reached)."
+  },
+  {
+   "mpn": "IAUCN10S7N021ATMA1",
+   "family": "OptiMOS 7 100 V automotive",
+   "mfr": "Infineon",
+   "desc": "N-MOSFET 100 V 2.1 mOhm max, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 5x6 (PG-TDSON-8-53 per a search summary of Digi-Key's listing)",
+   "aecq": false,
+   "ecuRoles": [
+    "48 V systems",
+    "48 V inverter",
+    "DC-DC"
+   ],
+   "observedMpn": "IAUCN10S7N021ATMA1",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 5000,
+     "price": 1.84,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/iaucn10s7n021atma1/smd-n-channel-transistors/infineon-technologies/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code IAUCN10S7N021ATMA1 (task gave the sales name) - on TME's product page and in Digi-Key / Farnell / element14 listing titles. TME product page (tme.eu, read 23 Nov 2026, USD, net = gross shown, 0 in TME stock, minimum order and multiple 5,000 = the full reel; packing not printed, 'reel' is from the 5,000 multiple): one break only, from 5,000 pcs = 1.84; no own slope. GRADE: the TME page states none; a search summary says the distributor listings show AEC-Q101 - a summary, not a page read, so aecq left false. summary (NOT prices, stale risk): Digi-Key Canada cut tape 500 = CAD 2.52, reel 5,000 = CAD 2.06; Farnell AT 100+ = EUR 2.21 ex-VAT; element14 China is VAT-inclusive (not usable). Digi-Key not read for this line (it refused before this line was reached)."
+  },
+  {
+   "mpn": "TC489QP16NF400MCAAKXUMA1",
+   "family": "AURIX TC48x",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4x 28 nm TriCore MCU, 4 lockstep cores up to 400 MHz (SAK-TC489QP-16NF400MC AA)",
+   "category": "ic_bga",
+   "pkg": "not read (BGA assumed)",
+   "aecq": false,
+   "ecuRoles": [
+    "zone controller",
+    "chassis / powertrain domain",
+    "ADAS safety host"
+   ],
+   "observedMpn": "TC489QP16NF400MCAAKXUMA1",
+   "observations": [],
+   "notes": "NO-LISTING: one web search for the OPN TC489QP16NF400MCAAKXUMA1 / SAK-TC489QP-16NF400MC returned only Infineon's own part pages and a product directory - no franchised distributor listing; Digi-Key results were for other AURIX TC4x codes (TC4D9XP20MF500MCABKXUMA1 - not this part). Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again, so the '2 Embedded items for TC489QP' the discovery pass saw on Digi-Key were not opened. Grade not confirmed (aecq false). Supplier quote / a Digi-Key read needed."
+  },
+  {
+   "mpn": "TLE9371VSJXTMA1",
+   "family": "TLE9371VSJ",
+   "mfr": "Infineon",
+   "desc": "CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s, VIO pin, bus wake-up",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TLE9371VSJXTMA1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: the exact code is listed by Digi-Key (product id 17399579, PG-DSO-8), Newark, Avnet and Octopart per search-result titles, but no page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; Future, Farnell, RS, Avnet, Newark, Mouser refused). summary figures, NOT prices: Avnet Americas 2,500+ = USD 0.56733 (min 2,500, factory lead time 56 weeks); Newark Mexico 1 pc = 1.60 cut tape; the Digi-Key figures in the summary were rounded. aecq is the task's (data sheet) - not re-read today. Needs one Digi-Key product-page read."
+  },
+  {
+   "mpn": "TLF4D985QKV01R1",
+   "family": "OPTIREG PMIC TLF4D985",
+   "mfr": "Infineon",
+   "desc": "Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 to 175 C; LQFP-64 and VQFN-56 options in the family",
+   "category": "ic_tqfp",
+   "pkg": "PG-LQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "AURIX TC4x ECU: inverter, BMS, zonal, chassis"
+   ],
+   "observedMpn": "TLF4D985QKV01R1",
+   "observations": [],
+   "notes": "NO-LISTING: one web search for TLF4D985QKV01R1 / TLF4D985QVV01R1 returned only Infineon's own part pages (QKV01R1, QKV02R1, QKV03R1, QVV01R1, QVV02R1; QKV03) - no franchised distributor listing and no orderable (…XUMA1) code seen; the Digi-Key results were for the older TLF35585 PMIC (not this part). Grade not confirmed (aecq false). Supplier quote needed."
+  },
+  {
+   "mpn": "TLE7258SJXUMA1",
+   "family": "TLE7257SJ / TLE7258SJ (and LE)",
+   "mfr": "Infineon",
+   "desc": "Basic LIN transceiver, up to 20 kbit/s, 5.5-18 V (TLE7258SJ)",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-8",
+   "aecq": false,
+   "ecuRoles": [
+    "LIN actuator / sensor node",
+    "body control module"
+   ],
+   "observedMpn": "TLE7258SJXUMA1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: family line - representative chosen = TLE7258SJXUMA1, the DSO-8 code Digi-Key (product id 5213944, 'active', about 13,000 in stock on its UK / NL sites per the summary) and RS list. No page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; RS refused), and the summary gave only 1-piece prices - nothing recorded. Grade: RS's listing text says 'AEC qualified' without naming AEC-Q100 (summary) - aecq left false. TLE7257SJ / the LE (TSON-8) codes were not found in the one search. Needs one Digi-Key product-page read."
+  },
+  {
+   "mpn": "TLE9350BVLE",
+   "family": "TLE9350BLE / TLE9350BVLE / TLE9350BXLE",
+   "mfr": "Infineon",
+   "desc": "CAN FD transceiver, 5 Mbit/s, leadless TSON-8 versions of TLE9350Bx; takes over from TLE9250xLE (now not-for-new-design)",
+   "category": "ic_qfn",
+   "pkg": "PG-TSON-8 3x3",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TLE9350BVLE",
+   "observations": [],
+   "notes": "NO-LISTING: no orderable code found - one web search for TLE9350BVLEXTMA1 (and the SJ codes) returned no listing for any leadless TLE9350B…LE code; 'mpn' here is the maker's sales name from the task, NOT an orderable code. aecq is the task's reading of Infineon's transceiver deck (family row), not confirmed for a code. The DSO-8 sibling TLE9350BVSJXTMA1 is listed (see that line)."
+  },
+  {
+   "mpn": "TLE9350BVSJXTMA1",
+   "family": "TLE9350BSJ / TLE9350BVSJ / TLE9350BXSJ",
+   "mfr": "Infineon",
+   "desc": "CAN FD transceiver, 5 Mbit/s, VIO pin (TLE9350BVSJ), successor of TLE9250V / TLE9350V",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TLE9350BVSJXTMA1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: family line - representative chosen = TLE9350BVSJXTMA1 (the VIO version, the commonest in zonal / body ECUs), the code Digi-Key (product id 21852871, 8-SOIC, tape & reel and cut tape, lead time 20 weeks), Mouser (726-TLE9350BVSJXTMA1, factory pack 2,500) and Newark (03AM8333, 'AEC-Q100 qualified') list per the search summary. No page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; Mouser, Newark refused) and the summary carried no price - nothing recorded. TLE9350BSJXTMA1 / TLE9350BXSJXTMA1 were not in the results. Do not confuse with the older TLE9350VSJXTMA1 (no B). Needs one Digi-Key product-page read."
+  },
+  {
+   "mpn": "TLE4971A120T5UE0001XUMA1",
+   "family": "XENSIV TLE4971",
+   "mfr": "Infineon",
+   "desc": "Coreless Hall current sensor with integrated current rail, 25-120 A, analog, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "TISON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "HV auxiliary drives",
+    "DC-DC",
+    "charging"
+   ],
+   "observedMpn": "TLE4971A120T5UE0001XUMA1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: family line - orderable codes seen in distributor listing URLs / summaries (not on a page read): TLE4971A120T5UE0001XUMA1 (Digi-Key product id 18700476; element14 4203308), TLE4971A120N5E0001XUMA1, TLE4971A025N5E0001XUMA1, TLE4971A025N5UE0001XUMA1 (element14), and TLE4971A120T5E0001XUMA1 / TLE4971A050W2S0001XUMA1 (named on Digi-Key's TLE4971 product-highlight page, AEC-Q100 Grade 1 per that page's summary). 'mpn' is the one with a Digi-Key product URL; which variant a design uses (25 / 50 / 75 / 120 A, T5 / N5 TISON-8 or W2 DSO-16, UL 'U' version) is a design choice. The task's product names TLE4971-A025T5-E0001 / -A050T5-E0001 were not seen as distributor codes. Beware the industrial TLI4971… codes that the same search returns. No page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again) and the summary carried no price. Needs one Digi-Key product-page read per variant."
+  },
+  {
+   "mpn": "IAUCN08S7L110",
+   "family": "OptiMOS 7 80 V automotive",
+   "mfr": "Infineon",
+   "desc": "N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6",
+   "category": "ic_qfn",
+   "pkg": "SSO8 (5x6)",
+   "aecq": false,
+   "ecuRoles": [
+    "48 V systems",
+    "LED / body loads",
+    "DC-DC"
+   ],
+   "observedMpn": "IAUCN08S7L110",
+   "observations": [],
+   "notes": "NO-LISTING at TME: TME's search listing for IAUCN08S7 (read 23 Nov 2026) names 5 codes - IAUCN08S7N013ATMA1, IAUCN08S7N019ATMA1, IAUCN08S7L013ATMA1, IAUCN08S7N034ATMA1, IAUCN08S7N024ATMA1 - and NOT an L110 code; 'mpn' is the maker's sales name from the task, the orderable code (…ATMA1 by the family's pattern) was not seen on any page. Discovery: Mouser showed it 'coming soon'. Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again. Grade not confirmed (aecq false)."
+  },
+  {
+   "mpn": "MX25V1635FZNQ03",
+   "family": "MX25V1635FZNQ03",
+   "mfr": "Macronix",
+   "desc": "NOR Flash 16Mbit 16M x 1/8M x 2/4M x 4 Serial-SPI 3.3V 8-Pin WSON WSON8",
+   "category": "ic_qfn",
+   "pkg": "8-WSON 6x5",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "MX25V1635FZNQ03",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: the exact code is listed by Digi-Key (product id 15284027, 'FLASH - NOR Memory IC 16Mbit SPI - Quad I/O 80 MHz 8-WSON (6x5)', tray) and Avnet (tray MX25V1635FZNQ03 and tape-and-reel MX25V1635FZNQ03/TR) per search-result titles; no page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; Avnet returned HTTP 400; Master Electronics: no search result). summary figures, NOT prices: Digi-Key Canada tray 5,130+ = CAD 1.72 (1 pc = CAD 2.26), with 'constrained supply, no backorders'; Avnet tray min 5,700 and reel min 4,000 with a 364-week lead time, 0 stock (figures rounded in the summary). Grade: no automotive statement seen for this code (V-series, 2.3-3.6 V; the TI radar reference designs use it) - aecq false. Needs one Digi-Key product-page read."
+  },
+  {
+   "mpn": "MLX81332",
+   "family": "MLX81332 gen-3 smart LIN driver",
+   "mfr": "Melexis",
+   "desc": "Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10 W, 32 KB flash",
+   "category": "ic_qfn",
+   "pkg": "SO8 or QFN24",
+   "aecq": false,
+   "ecuRoles": [
+    "HVAC flap actuator",
+    "grille shutter",
+    "valve / small pump"
+   ],
+   "observedMpn": "MLX81332",
+   "observations": [],
+   "notes": "NO-LISTING: no orderable code found - one web search for MLX81332 / MLX81340 order codes at Digi-Key / Mouser returned only other Melexis parts; 'mpn' is the family name from the task, NOT an orderable code. Master Electronics does not list Melexis (no result for MLX90425GDC-ABA-600-RE). Grade not confirmed (aecq false). Supplier quote needed (Melexis smart LIN drivers are usually sold on quotation)."
+  },
+  {
+   "mpn": "MLX81340",
+   "family": "MLX81340 gen-3 LIN pre-driver",
+   "mfr": "Melexis",
+   "desc": "Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory",
+   "category": "ic_qfn",
+   "pkg": "unknown",
+   "aecq": false,
+   "ecuRoles": [
+    "water / oil pump",
+    "blower / fan",
+    "window lift / sunroof"
+   ],
+   "observedMpn": "MLX81340",
+   "observations": [],
+   "notes": "NO-LISTING: no orderable code found - the same web search as MLX81332 returned no listing for MLX81340; 'mpn' is the family name from the task, NOT an orderable code. Grade not confirmed (aecq false). Supplier quote needed."
   }
  ],
  "notResearched": [
   {
-   "code": "CY8C4147LWE-HVS035",
-   "why": "not reached (12 V Cortex-M0+ MCU with integrated LIN PHY and 12 V regulator, CAPSEN)"
-  },
-  {
-   "code": "CYT2B95BACQ0AZSGS",
-   "why": "not reached (Body entry MCU: Cortex-M4F 160 MHz, 2 MB flash, 256 KB RAM, up to 8x C)"
-  },
-  {
-   "code": "CYT4BB8CEBQ1AEEGS",
-   "why": "not reached (Body MCU: 2x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, 8x )"
-  },
-  {
-   "code": "IAUCN08S7N013",
-   "why": "not reached (N-MOSFET 80 V 1.3 mOhm max, OptiMOS 7, SSO8 5x6)"
-  },
-  {
-   "code": "IAUCN08S7N019",
-   "why": "not reached (N-MOSFET 80 V 1.9 mOhm max, OptiMOS 7, SSO8 5x6)"
-  },
-  {
-   "code": "IAUCN10S7N021",
-   "why": "not reached (N-MOSFET 100 V 2.1 mOhm max, OptiMOS 7, SSO8 5x6)"
-  },
-  {
-   "code": "TC489QP16NF400MCAAKXUMA1",
-   "why": "not reached (AURIX TC4x 28 nm TriCore MCU, 4 lockstep cores up to 400 MHz (SAK-TC48)"
-  },
-  {
-   "code": "TLE9371VSJXTMA1",
-   "why": "not reached (CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s, VIO pin, bus wa)"
-  },
-  {
-   "code": "TLF4D985QKV01R1",
-   "why": "not reached (Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 )"
-  },
-  {
-   "code": "TLE7257SJ / TLE7258SJ (and LE)",
-   "why": "not reached (Basic LIN transceivers, up to 20 kbit/s)"
-  },
-  {
-   "code": "TLE9350BLE / TLE9350BVLE / TLE9350BXLE",
-   "why": "not reached (CAN FD transceiver, 5 Mbit/s, leadless TSON-8 versions of TLE9350Bx; t)"
-  },
-  {
-   "code": "TLE9350BSJ / TLE9350BVSJ / TLE9350BXSJ",
-   "why": "not reached (CAN FD transceiver, 5 Mbit/s (B = no VIO, BV = VIO, BX = VIO + receive)"
-  },
-  {
-   "code": "XENSIV TLE4971",
-   "why": "not reached (Coreless Hall current sensor with integrated current rail, 25-120 A, a)"
-  },
-  {
    "code": "CYT2BL5BAAQ0AZEGS",
-   "why": "not reached (Body entry MCU: Cortex-M4F 160 MHz, 4 MB flash, 512 KB RAM, up to 8x C)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME lists the family; a sibling CYT2BL5CAAQ0AZEGS has a TME product page)"
   },
   {
    "code": "CYT3BB7CEBQ1AEEGS",
-   "why": "not reached (Body MCU: 1x Cortex-M7F 250 MHz, 4 MB flash, 768 KB RAM, Ethernet, CAN)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass)"
   },
   {
    "code": "CYT3DLABABQ1AESGS",
-   "why": "not reached (Cluster MCU with graphics engine, 1x Cortex-M7, video output)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
   },
   {
    "code": "CYT4BF8CEDQ0AEEGS",
-   "why": "not reached (Body MCU: 2x Cortex-M7F 350 MHz, 8 MB flash, 1 MB RAM, 10BASE-T1S / Et)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass)"
   },
   {
    "code": "CYT4DNJBACQ1BZSGS",
-   "why": "not reached (Cluster MCU with 2.5D graphics engine, 2x Cortex-M7)"
-  },
-  {
-   "code": "IAUCN08S7L110",
-   "why": "not reached (N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
   },
   {
    "code": "S25FL128LAGNFM010",
-   "why": "not reached (SPI NOR flash 128 Mb, Quad I/O / QPI, 133 MHz, -40 to 125 C)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 8258740)"
   },
   {
    "code": "S25FL256LAGMFM003",
-   "why": "not reached (SPI NOR flash (256 Mb per the part name), 2.7 V to 3.6 V, -40 to 125 C)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 8258793)"
   },
   {
    "code": "S25FL256SAGNFB000",
-   "why": "not reached (SPI NOR flash 256 Mb, Quad I/O, 133 MHz, -40 to 105 C)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (Digi-Key product id 7362274); would link the catalogue ESTIMATE S25FL256S"
   },
   {
    "code": "TLE9166EQ",
-   "why": "not reached (Multi half-bridge IC with six high-side switches, electrochromic mirro)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line; the orderable (…XUMA1) code for TLE9166EQ was not looked up"
   },
   {
    "code": "CYT2CL7BAAQ0AZSGS",
-   "why": "not reached (Cluster entry MCU, Cortex-M4F)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line and TME's 8-page limit was spent on priority-1 lines; the code is exact, so one Digi-Key product-page read prices it (TME listed the code in the discovery pass); grade not confirmed"
   },
   {
    "code": "LFMXO4-025HC-5TSG100A",
-   "why": "not reached (MachXO4 low-density FPGA, automotive grade (A suffix), 100-pin TQFP)"
-  },
-  {
-   "code": "MX25V1635FZNQ03",
-   "why": "not reached (NOR Flash 16Mbit 16M x 1/8M x 2/4M x 4 Serial-SPI 3.3V 8-Pin WSON WSON)"
+   "why": "not reached: Digi-Key refused (HTTP 403) before this line; Mouser (the discovery source) refused; code and AEC-Q100 status not re-checked"
   },
   {
    "code": "MLX90425GDC-ABA-600-RE",
-   "why": "not reached (Triaxis stray-field-immune 360 deg rotary position sensor IC)"
-  },
-  {
-   "code": "MLX81332 gen-3 smart LIN driver",
-   "why": "not reached (Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10)"
-  },
-  {
-   "code": "MLX81340 gen-3 LIN pre-driver",
-   "why": "not reached (Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory)"
+   "why": "not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics: no search result for this code (page read 23 Nov 2026)"
   },
   {
    "code": "MLX90382LGO-BAA-000-RE",
-   "why": "not reached (16-bit Triaxis high-speed magnetic position sensor / absolute encoder )"
+   "why": "not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
   },
   {
    "code": "MLX90424LGO-ACA-230-RE",
-   "why": "not reached (Triaxis position sensor IC with integrated wake-up (dual die))"
+   "why": "not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
   },
   {
    "code": "MLX90513GGO-CAA-100-RE",
-   "why": "not reached (Inductive position sensor interface IC (3 receive coils, SENT / SPC / )"
+   "why": "not reached: Digi-Key (which lists the exact code) refused (HTTP 403) before this line; Master Electronics does not list Melexis"
   }
  ]
 }
