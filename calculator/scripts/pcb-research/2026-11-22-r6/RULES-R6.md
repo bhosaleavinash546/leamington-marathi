@@ -163,3 +163,24 @@ Master Electronics after 1–11. From now on at most two agents run at a time, a
    the page (or the maker) says Obsolete / Last Time Buy / NRND, which keep their own prefixes.
 5. A price on a sibling code (other voltage / grade / packing) is recorded only with `observedMpn` = the sibling and a
    note saying what differs; never price an automotive line on an industrial sibling without `aecq: false`.
+
+---
+
+## Addendum 5 (23 Nov 2026) — VERIFY tasks `v<nn>-verify` (an independent, BLIND re-read)
+
+You did not do the research. Your task is a JSON list of `{ file, mpn, catalogueMpn, mfr, url }`. For each line:
+1. `sleep 20`, then read the Digi-Key product page for the exact code (`url`; if it shows a list, open the product whose
+   manufacturer part number equals `mpn`). One page at a time. A 403 / 429 / 503 → stop reading Digi-Key, save, report.
+2. Record what the page shows — you are NOT given the researcher's figures, so record the table fully:
+   `{ "mpn", "pageMpn": <manufacturer part number printed on the page>, "status": <Part Status as printed>,
+      "stock": <as printed>, "grade": <the Grade field as printed, or null>, "qualification": <the Qualification field
+      as printed, or null>, "rows": [ { "packing": "cut tape" | "reel" | "tray" | "tube" | "bulk", "qty": n,
+      "price": unit price, "currency": "USD" | … } … every row of every packing with qty ≥ 100 … ],
+      "notes": "" }`
+   A row is the UNIT price as printed (not the extended price). If the page did not serve or named another part, say so
+   in `notes` and leave `rows` empty.
+3. No searches are needed. At most about 50 page reads. Never take a figure from a search summary or from memory.
+Write ONE file `scripts/pcb-research/2026-11-22-r6/<task name>.json`: `{ "domain": "<task>", "researched": "<today>",
+"verified": [ … ], "notReached": [ mpn … ] }`. Save after every 10 lines. Change no other file. No git. Reply with ONE
+paragraph: lines read / not served / not reached, any page whose part number differed from the task's, and how many
+parts are out of stock or not active.

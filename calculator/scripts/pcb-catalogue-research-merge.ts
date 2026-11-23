@@ -38,6 +38,14 @@
  *  1a. A staging copy of a distributor's site (fat.lcsc.com) holds test data, not prices: dropped.
  *     A Digi-Key 'punchouttest' storefront (a test build of a regional store) is used only when no
  *     other listing passes, and the entry then says so (ADAS round 2, 9 Oct 2026).
+ *  5b / 6a. PACKING (round 6, 23 Nov 2026 — applies only to a part whose observations say how each row is sold). A
+ *     cut-tape row is a sampling price: on 15 of 444 parts read live, the cut-tape → reel step was read as a volume
+ *     discount and put the 200k figure 20–39 % too low (NVMFWS0D9N04XM: cut tape 500 @ $1.213, reel 1,500 @ $0.975,
+ *     reel 3,000 @ $0.962 gave b = 0.13; reel to reel it is 0.02). So, when a part has a full-packaging row (reel /
+ *     tray / tube): the slope comes only from pairs of the SAME full packaging of one distributor (none → the
+ *     franchise curve, and the basis says so); 10k–300k follow each distributor's PUBLISHED full-packaging ladder
+ *     (log-log between its rows, derived beyond its largest row along b), one value a distributor, the median taken;
+ *     the 1k price stays rule 4 (it is what a 1,000-piece buyer pays). No break is ever dearer than a smaller one.
  *  9. Family keys (an estimate named by a family, "TC387", "LM74700") take the price of the
  *     catalogued member named in scripts/pcb-research/family-links.json — a reviewed list, never
  *     a guess. They stay labelled estimates (the BOM line does not say which variant) and say so.
@@ -46,7 +54,9 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FX_TO_GBP_TABLE as FX_TO_GBP } from '../src/engine/insights.js'; // the snapshot the catalogue was priced at
 
-type Obs = { distributor: string; qty: number; price: number; currency: string; url: string; date: string };
+type Obs = { distributor: string; qty: number; price: number; currency: string; url: string; date: string;
+  /** Round 6 (Nov 2026): how the row is sold — 'cut tape' | 'reel' | 'tray' | 'tube' | 'bulk' | 'unknown'. Absent on earlier research. */
+  packing?: string; evidence?: string };
 type Researched = { mpn: string; family?: string; mfr: string; desc: string; category: string; pkg: string; aecq: boolean;
   ecuRoles?: string[]; observedMpn?: string; observations: Obs[]; notes?: string };
 type Gbp = { q1k: number; q10k: number; q100k: number; q200k?: number; q300k?: number };
@@ -145,6 +155,48 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   const p1k = median(ref.map(o => at1k(o, b)));
   if (spread) basis += '; distributors disagree > 2.5× — every distributor kept, the median used';
   const at = (q: number) => r4(p1k * Math.pow(q / 1000, -b));
+  // Rules 5b / 6a — a part whose rows say how they are sold, with at least one full-packaging row.
+  const FULL = /^(reel|tray|tube)$/i;
+  const full = obs.filter(o => FULL.test(String(o.packing ?? '')));
+  if (full.length) {
+    const ownFull: number[] = [];
+    const ladders = new Map<string, typeof obs>();           // distributor|packing → rows, ascending
+    for (const o of full) { const k = `${o.distributor.toLowerCase()}|${String(o.packing).toLowerCase()}`; ladders.set(k, [...(ladders.get(k) ?? []), o]); }
+    for (const l of ladders.values()) {
+      l.sort((x, y) => x.qty - y.qty);
+      for (let i = 0; i < l.length; i++) for (let j = i + 1; j < l.length; j++) {
+        if (l[j].qty / l[i].qty >= 2 && l[i].gbp > l[j].gbp) ownFull.push(Math.log(l[i].gbp / l[j].gbp) / Math.log(l[j].qty / l[i].qty));
+      }
+    }
+    const bF = Math.min(0.18, Math.max(0.02, ownFull.length ? median(ownFull) : DEFAULT_B));
+    const basisF = (ownFull.length
+      ? `slope from the part's own breaks (${ownFull.length} pair${ownFull.length > 1 ? 's' : ''} of the same full packaging)`
+      : 'franchise curve (no two rows of the same full packaging): 10k = 1k × 0.85')
+      + '; 10k–300k follow the published reel / tray / tube ladder, derived beyond its largest row'
+      + (spread ? '; distributors disagree > 2.5× — every distributor kept, the median used' : '');
+    const refF = near1k.length ? near1k : obs;
+    const p1kF = median(refF.map(o => at1k(o, bF)));
+    /** One distributor's price at q: on its published full-packaging ladder where it has one, else from its 1k level. */
+    const valueAt = (dist: string, q: number): number => {
+      const rows = [...ladders].filter(([k]) => k.startsWith(dist + '|')).map(([, l]) => l);
+      if (!rows.length) return median(obs.filter(o => o.distributor.toLowerCase() === dist).map(o => at1k(o, bF))) * Math.pow(q / 1000, -bF);
+      // the cheapest of its packings at q
+      return Math.min(...rows.map(l => {
+        const lo = l[0], hi = l[l.length - 1];
+        if (q <= lo.qty) return lo.gbp * Math.pow(q / lo.qty, -bF);
+        if (q >= hi.qty) return hi.gbp * Math.pow(q / hi.qty, -bF);
+        const i = l.findIndex(o => o.qty > q); const a = l[i - 1], c = l[i];
+        return a.gbp * Math.pow(q / a.qty, Math.log(c.gbp / a.gbp) / Math.log(c.qty / a.qty));
+      }));
+    };
+    const dists = [...new Set(obs.map(o => o.distributor.toLowerCase()))];
+    let last = p1kF;
+    const atF = (q: number) => { last = Math.min(last, median(dists.map(d => valueAt(d, q)))); return r4(last); };
+    return {
+      gbp: { q1k: r4(p1kF), q10k: atF(10_000), q100k: atF(100_000), q200k: atF(200_000), q300k: atF(300_000) },
+      b: Math.round(bF * 10000) / 10000, basis: basisF, obs, distributors: [...new Set(obs.map(o => o.distributor))], dropped,
+    };
+  }
   return {
     gbp: { q1k: r4(p1k), q10k: at(10_000), q100k: at(100_000), q200k: at(200_000), q300k: at(300_000) },
     b: Math.round(b * 10000) / 10000, basis, obs, distributors: [...new Set(obs.map(o => o.distributor))], dropped,
@@ -156,7 +208,10 @@ function sourceText(p: Priced, sibling?: string): string {
   const list = p.obs.map(o => `${o.distributor} ${sym(o.currency)}${o.price} @${o.qty.toLocaleString('en-GB')}`).join('; ');
   const sib = sibling ? `Priced on the sibling orderable code ${sibling} (the listed code was not found at a distributor). ` : '';
   const test = p.obs.length && p.obs.every(o => TEST_STOREFRONT.test(hostOf(o.url))) ? TEST_STOREFRONT_NOTE : '';
-  return `${sib}${list} (search of distributor listings, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.${test}`;
+  const paged = p.obs.some(o => o.evidence === 'page-read');
+  const how = paged ? 'read on the distributor\'s product page' : 'search of distributor listings';
+  if (/published reel/.test(p.basis)) return `${sib}${list} (${how}, ${p.obs[0]?.date ?? ''}). ${p.basis}: beyond it P × (Q/Qmax)^−${p.b}. Above the largest published break these are modelled, not quoted.${test}`;
+  return `${sib}${list} (${how}, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.${test}`;
 }
 
 /** Merge research into the catalogue file (rules 7–8). Returns the report. */

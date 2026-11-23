@@ -1,15 +1,16 @@
 {
  "stats": {
-  "lines": 539,
-  "toMerge": 434,
-  "ownLadder": 326,
-  "twoDistributors": 51,
+  "lines": 550,
+  "toMerge": 444,
+  "ownLadder": 330,
+  "twoDistributors": 53,
   "NO-LISTING": 28,
   "UNPRICED": 11,
   "OBSOLETE": 7,
   "SUMMARY-ONLY": 24,
   "NOT-READ": 21,
   "held": 1,
+  "WRONG-CODE": 1,
   "NO-LARGER-BREAK": 13
  },
  "lists": {
@@ -665,6 +666,15 @@
     "file": "b12-ics",
     "mpn": "SPC58NE84E7QMSAR",
     "why": "Digi-Key 26.02 USD @500 (factory-order row, not stocked) v TME 9.22 USD @500: 2.8x apart, and TME is below its own price for the smaller SPC58EC80 - a person decides"
+   }
+  ],
+  "WRONG-CODE": [
+   {
+    "file": "b15-ics",
+    "mpn": "TPS6538600QDCARQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Power management IC for safety-relevant applications (MCU safety PMIC)",
+    "why": "WRONG-CODE: the task code TPS6538600QDCARQ1 was not found as printed - Digi-Key keyword search \"did not return any results\"; TME search \"TPS653860\": no results; a web search found no listing of it. A search summary of TI's TPS653860-Q1 datasheet (SLVSFQ1A) names the tape-and-reel orderables TPS65386003QDCARQ1 (grade 1) and TPS65386050EDCARQ1 (grade 0), HTSSOP-48 DCA, 2,500 a reel - not read on a p"
    }
   ],
   "NO-LARGER-BREAK": [

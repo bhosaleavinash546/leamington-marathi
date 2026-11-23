@@ -1,7 +1,7 @@
 {
  "domain": "b15-ics",
  "researched": "2026-11-23",
- "method": "",
+ "method": "LATEST task, all 36 lines worked. Every observation was read on the distributor's own product page on 2026-11-23 (evidence page-read); no search-summary figure and no hidden page data is recorded. Per part from the Digi-Key page (digikey.com, USD, ex-tax): the break nearest 1,000 (its packing stated; where the cut-tape table stops at 100 / 250 / 500 that row is the nearest) and the smallest and largest break of the tape-and-reel table. Digi-Key prints cut tape and Digi-Reel in one table - recorded as cut tape; where it printed a separate Digi-Reel table (TPS7B8133QDRVRQ1, DP83TC817SRHARQ1) the notes say so. Digi-Key URLs are the keyword URL that landed on the single product page, or the product detail URL where the keyword URL landed on a list (VN7010AJTR, VND7030AJTR). Pacing: one page at a time, 20 s before every Digi-Key / Master read, about a minute between TME reads. The run was interrupted once by the researcher's own usage limit (not by a site) after 25 lines and resumed. Budget used: 5 web searches (orderable codes and grades only - no price taken from them), 53 page requests: Digi-Key 41, all served (35 product pages, 2 two-result list pages for the first two ST codes, 4 \"did not return any results\": MSPM0G3507QPMQ1, TCAN1046VDRQ1, TPS6538600QDCARQ1, TPS65386003QDCARQ1) - Digi-Key never refused; Master Electronics 2 (exact-code searches for VN7010AJTR and TPS7B8133QDRVRQ1 both \"No Search Results found\" - Master lists neither ST nor TI, not used further); TME 8 (the task limit, all served: 3 search pages - no visible price on search pages - and 5 product pages, of which 2 gave a usable break, 1 only a 1-piece price, 2 no price table); Mouser 1 (HTTP 503 - not used again); st.com 1 (HTTP 503 - not used again). Arrow, Farnell, Avnet, Newark, RS, Rutronik, Future were not tried (each refused every earlier run today). Three Digi-Key pages were re-queried from the fetch tool's 15-minute cache to check the attribute / price tables (no extra site request). GRADE: 30 codes carry Grade \"Automotive\" + Qualification \"AEC-Q100\" on the Digi-Key page read today; M0L1306QRHBRQ1 rests on the discovery pass's reading of TI's page plus Digi-Key's \"AUTOMOTIVE\" description; VN7010AJTR, VND7030AJTR and F2800157QPMRQ1 rest on web-search summaries of the maker's datasheet (weaker, flagged in notes); VNL5050N3TR-E is not confirmed (aecq false); TPS653860 is unpriced (grade from the discovery pass). CODES: 2 task codes replaced by the code distributors list (MSPM0G3507QPMQ1 -> M0G3507QPMRQ1, the same part's real orderable; TCAN1046VDRQ1 -> TCAN1046AVDRQ1, the A revision - another type number, flagged); 1 WRONG-CODE / NO-LISTING (TPS6538600QDCARQ1). WARNINGS FOR THE MERGE: (1) on the 7 ST VIPower codes Digi-Key prints the reel ABOVE the largest cut-tape row, so a slope must be drawn only between rows of the SAME packing; (2) the largest published break is 30,000 on one part (SN74LVC1G17QDCKRQ1), 12,500 on one, 10,000 on one and 1,000-9,000 on the rest - nothing near 200,000 is published for any of these codes; (3) 7 parts show a single Digi-Key row (non-stocked factory-order parts: no own slope), 15 have only cut-tape rows plus ONE reel row (different packings - not a clean slope; on TPS389C0300CRTERQ1 that step is 41 %), and 13 have two or more rows of the reel table (own slope); (4) TME prints 2 decimals.",
  "parts": [
   {
    "mpn": "VN7010AJTR",
@@ -10,7 +10,7 @@
    "desc": "single-channel high-side driver, VIPower M0-7, 10 mOhm typ, 65 A, 4-28 V",
    "category": "ic_soic",
    "pkg": "PowerSSO-16",
-   "aecq": false,
+   "aecq": true,
    "ecuRoles": [
     "body control module",
     "zonal controller",
@@ -50,7 +50,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key product page (USD, Active, stock 6,037, lead time 99 weeks, limit 2,500 per 30 days; Digi-Key part 497-15848-2-ND; the keyword URL landed on a 2-result list first): cut tape 100 = 1.87180, 250 = 1.77128, 500 = 1.74006 (largest cut-tape break); tape & reel 2,500 = 1.79557, 5,000 = 1.76015 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 2,500 -> 5,000. GRADE NOT CONFIRMED: this Digi-Key page has NO Grade / Qualification rows (the sibling M0-7 pages do) - aecq left false. Read on the page: PowerSSO-16, high side, 1 output, Rds(on) typ 10 mOhm, 65 A, 4-28 V. Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\" (Master does not list ST - not used for ST again)."
+   "notes": "Digi-Key product page (USD, Active, stock 6,037, lead time 99 weeks, limit 2,500 per 30 days; Digi-Key part 497-15848-2-ND; the keyword URL landed on a 2-result list first): cut tape 100 = 1.87180, 250 = 1.77128, 500 = 1.74006 (largest cut-tape break); tape & reel 2,500 = 1.79557, 5,000 = 1.76015 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 2,500 -> 5,000. GRADE (WEAKER - search summary, not page-read): this Digi-Key page has NO Grade / Qualification rows (the sibling M0-7 pages do); st.com refused the one read (HTTP 503). A web-search summary of ST's VN7010AJ datasheet (DocID027394) quotes the feature \"Automotive qualified\" and of ST's product page the grade \"Automotive\"; no AEC-Q100 wording was found for this exact part. aecq set true on that summary - re-check if it matters. Read on the page: PowerSSO-16, high side, 1 output, Rds(on) typ 10 mOhm, 65 A, 4-28 V. Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\" (Master does not list ST - not used for ST again)."
   },
   {
    "mpn": "VND7030AJTR",
@@ -59,7 +59,7 @@
    "desc": "double-channel high-side driver, VIPower M0-7, 31 mOhm typ, 40 A, 4-28 V",
    "category": "ic_soic",
    "pkg": "PowerSSO-16",
-   "aecq": false,
+   "aecq": true,
    "ecuRoles": [
     "body control module",
     "zonal controller",
@@ -99,7 +99,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key product page (USD, Active, out of stock - 2,500 expected 19-Apr-2027, lead time 99 weeks; Digi-Key part 497-15856-2-ND; the keyword URL landed on a 2-result list first): cut tape 100 = 1.79460, 250 = 1.69756, 500 = 1.66480 (largest cut-tape break); tape & reel 2,500 = 1.71961, 5,000 = 1.68542 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 2,500 -> 5,000. GRADE NOT CONFIRMED: this Digi-Key page has NO Grade / Qualification rows - aecq left false. Read on the page: PowerSSO-16, high side, 2 outputs, Rds(on) typ 31 mOhm, 40 A, 4-28 V. Out of stock. Master Electronics does not list ST codes."
+   "notes": "Digi-Key product page (USD, Active, out of stock - 2,500 expected 19-Apr-2027, lead time 99 weeks; Digi-Key part 497-15856-2-ND; the keyword URL landed on a 2-result list first): cut tape 100 = 1.79460, 250 = 1.69756, 500 = 1.66480 (largest cut-tape break); tape & reel 2,500 = 1.71961, 5,000 = 1.68542 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 2,500 -> 5,000. GRADE (WEAKER - search summary, not page-read): this Digi-Key page has NO Grade / Qualification rows; st.com refused the one read (HTTP 503). A web-search summary of ST's VND7030AJ datasheet (copy hosted by Mouser) quotes the feature \"Automotive qualified\". aecq set true on that summary - re-check if it matters. Read on the page: PowerSSO-16, high side, 2 outputs, Rds(on) typ 31 mOhm, 40 A, 4-28 V. Out of stock. Master Electronics does not list ST codes."
   },
   {
    "mpn": "VNH7040AYTR",
@@ -236,7 +236,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, stock 1,673, lead time 99 weeks; Digi-Key part 497-18344-2-ND): tape & reel 1,000 = 3.09029, 2,000 = 3.02063, 3,000 = 2.98575 (largest); cut tape 100 = 3.08850, 250 = 2.94112 (largest cut-tape break). All reel rows are DEARER than cut tape 250 - recorded as shown; the slope is the reel pair 1,000 -> 3,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page (task had \"not read\"): PowerSSO-36, brushed-DC motor driver (function \"Driver\", half bridge x4 - a pre-driver for external MOSFETs is NOT what the page says: current output 38 A), 4-28 V. Master Electronics does not list ST codes."
+   "notes": "Digi-Key page (USD, Active, stock 1,673, lead time 99 weeks; Digi-Key part 497-18344-2-ND): tape & reel 1,000 = 3.09029, 2,000 = 3.02063, 3,000 = 2.98575 (largest); cut tape 100 = 3.08850, 250 = 2.94112 (largest cut-tape break). All reel rows are DEARER than cut tape 250 - recorded as shown; the slope is the reel pair 1,000 -> 3,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page (task had \"not read\"): PowerSSO-36, brushed-DC motor driver, function \"Driver\", output configuration \"Half Bridge (4)\", current output 38 A, technology \"CMOS, Power MOSFET\", 4-28 V (rows as Digi-Key prints them). Master Electronics does not list ST codes."
   },
   {
    "mpn": "VNL5050N3TR-E",
@@ -283,7 +283,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, out of stock - 1,000 expected 02-Dec-2026, lead time 99 weeks; Digi-Key part 497-11709-2-ND): tape & reel 1,000 = 0.88231, 2,000 = 0.85745, 3,000 = 0.84500, 5,000 = 0.83120, 7,000 = 0.82314, 10,000 = 0.81538 (largest); cut tape 100 = 0.90470, 250 = 0.85016, 500 = 0.81730 (largest cut-tape break). Reel rows up to 7,000 are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 1,000 -> 10,000. GRADE NOT CONFIRMED: this Digi-Key page has NO Grade / Qualification rows - aecq left false. Read on the page: SOT-223, low side, 1 output, Rds(on) 50 mOhm max, 19 A, load 36 V max, series OMNIFET III / VIPower. Out of stock. Master Electronics does not list ST codes."
+   "notes": "Digi-Key page (USD, Active, out of stock - 1,000 expected 02-Dec-2026, lead time 99 weeks; Digi-Key part 497-11709-2-ND): tape & reel 1,000 = 0.88231, 2,000 = 0.85745, 3,000 = 0.84500, 5,000 = 0.83120, 7,000 = 0.82314, 10,000 = 0.81538 (largest); cut tape 100 = 0.90470, 250 = 0.85016, 500 = 0.81730 (largest cut-tape break). Reel rows up to 7,000 are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 1,000 -> 10,000. GRADE NOT CONFIRMED: this Digi-Key page has NO Grade / Qualification rows, st.com refused the one read (HTTP 503) and two web searches returned nothing on this code - aecq left false. Read on the page: SOT-223, low side, 1 output, Rds(on) 50 mOhm max, 19 A, load 36 V max, series OMNIFET III / VIPower. Out of stock. Master Electronics does not list ST codes."
   },
   {
    "mpn": "VNQ7003SYTR",
@@ -494,7 +494,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", available to order, lead time 26 weeks; Digi-Key part 296-AM263P4AFONFZCZRQ1TR-ND): tape & reel 1,000 = 28.32830 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Package on the page: 324-NFBGA (15x15). The page's attribute rows print \"Cortex-R4F\" and \"256KB flash\" - Digi-Key's generic rows, not the TI description; the task desc is kept. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", available to order, lead time 26 weeks; Digi-Key part 296-AM263P4AFONFZCZRQ1TR-ND): tape & reel 1,000 = 28.32830 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Package on the page: 324-NFBGA (15x15). The page's attribute rows print \"Cortex-R4F\" and \"256KB flash\" - Digi-Key's generic rows, not the TI description; the task desc is kept. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used. TME page (tme.eu/en/details/am263p4afonfzczrq1/texas-instruments-microcontrollers/texas-instruments/, USD, 0 in TME stock): one row only, from 1 pc = 35.44 - below 100, not recorded. No second distributor price."
   },
   {
    "mpn": "AWR2E44PBGAMXRQ1",
@@ -642,7 +642,7 @@
    "desc": "Automotive C2000 32-bit MCU: 120 MHz dual lockstep C28x, 256 KB flash, HRPWM, CAN FD, ASIL B",
    "category": "ic_tqfp",
    "pkg": "LQFP 64 10x10 (PM)",
-   "aecq": false,
+   "aecq": true,
    "ecuRoles": [
     "motor control",
     "HVAC compressor",
@@ -670,9 +670,19 @@
      "date": "2026-11-23",
      "packing": "reel",
      "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 4.49,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/f2800157qpmrq1/texas-instruments-microcontrollers/texas-instruments/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, out of stock - 1,000 expected 27-May-2027, lead time 26 weeks; Digi-Key part 296-F2800157QPMRQ1TR-ND): tape & reel 1,000 = 5.14640 (the only reel break); cut tape 100 = 5.68380, 500 = 5.29074 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE_PLACEHOLDER Read on the page: 64-LQFP (10x10), C2000 32-bit dual-core 120 MHz, 256 KB flash, -40 to 125 C. Out of stock. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+   "notes": "Digi-Key page (USD, Active, out of stock - 1,000 expected 27-May-2027, lead time 26 weeks; Digi-Key part 296-F2800157QPMRQ1TR-ND): tape & reel 1,000 = 5.14640 (the only reel break); cut tape 100 = 5.68380, 500 = 5.29074 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE (WEAKER - search summary, not page-read): this Digi-Key page has NO Grade / Qualification rows; a web-search summary of TI's F280015x datasheet (SPRSP68) says the Q-suffix parts are qualified to AEC-Q100 grade 1 and lists the 64-pin PM package for F2800157-Q1; the discovery pass read the rating \"Automotive\" on TI's page. aecq set true on that basis - re-check if it matters. Read on the page: 64-LQFP (10x10), C2000 32-bit dual-core 120 MHz, 256 KB flash, -40 to 125 C. Out of stock. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used. TME page (tme.eu/en, USD, net = gross as printed, 0 in TME stock, MOQ 1, packing not stated): 1 = 5.84, 10 = 4.95, 25 = 4.74, 100 = 4.49 (largest break - no 1,000 row; 2 decimals). Digi-Key cut tape 5.68380 v TME 4.49 @ 100 = 1.27x."
   },
   {
    "mpn": "F28P559SJ9PZRQ1",
@@ -709,9 +719,19 @@
      "date": "2026-11-23",
      "packing": "reel",
      "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 9.33,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/f28p559sj9pzrq1/texas-instruments-microcontrollers/texas-instruments/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, stock 633, lead time 26 weeks; Digi-Key part 296-F28P559SJ9PZRQ1TR-ND): tape & reel 1,000 = 8.50781 (the only reel break); cut tape 100 = 9.31780, 500 = 8.84646 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 100-LQFP (14x14), C2000 C28x 150 MHz, 1 MB flash, -40 to 125 C. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+   "notes": "Digi-Key page (USD, Active, stock 633, lead time 26 weeks; Digi-Key part 296-F28P559SJ9PZRQ1TR-ND): tape & reel 1,000 = 8.50781 (the only reel break); cut tape 100 = 9.31780, 500 = 8.84646 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 100-LQFP (14x14), C2000 C28x 150 MHz, 1 MB flash, -40 to 125 C. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used. TME page (tme.eu/en, USD, net = gross as printed, 0 in TME stock, MOQ 1, packing not stated): 1 = 11.71, 10 = 10.96, 25 = 10.50, 100 = 9.96, 1,000 = 9.33 (largest; 2 decimals). TME 9.33 v Digi-Key reel 8.50781 @ 1,000 = 1.10x."
   },
   {
    "mpn": "LMQ66430MC3RXBRQ1",
@@ -824,7 +844,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, stock 4,762, lead time 26 weeks; Digi-Key part 296-M0C1104QDGS20RQ1TR-ND): tape & reel 1,000 = 0.67378 (the only reel break shown); cut tape 100 = 0.77490, 500 = 0.69770 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 20-VSSOP, Cortex-M0+ 24 MHz, 16 KB flash, 1 KB RAM, series MSPM0C110x. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+   "notes": "Digi-Key page (USD, Active, stock 4,762, lead time 26 weeks; Digi-Key part 296-M0C1104QDGS20RQ1TR-ND): tape & reel 1,000 = 0.67378 (the only reel break shown); cut tape 100 = 0.77490, 500 = 0.69770 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 20-VSSOP, Cortex-M0+ 24 MHz, 16 KB flash, 1 KB RAM, series MSPM0C110x. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used. TME page for the exact code: \"product for special order\", 0 in stock, no price table."
   },
   {
    "mpn": "M0G3107QRHBRQ1",
@@ -940,7 +960,7 @@
      "evidence": "page-read"
     }
    ],
-   "notes": "Digi-Key page (USD, Active, stock 5,894, lead time 26 weeks; Digi-Key part 296-M0L1306QRHBRQ1TR-ND): tape & reel 3,000 = 1.08416 (the only reel break); cut tape 100 = 1.28430, 500 = 1.16600 (largest cut-tape break). The pair is cut tape 500 / reel 3,000 (different packings - no larger reel break published). GRADE: this Digi-Key page has NO Grade / Qualification rows; its description reads \"AUTOMOTIVE 32-MHZ ARM CORTEX-M0+\" and the discovery pass read \"AEC-Q100 qualified\" on TI's product page for MSPM0L1306-Q1 - aecq kept true on that basis (not re-read today). Read on the page: 32-VQFN (5x5), Cortex-M0+ 32 MHz, 64 KB flash, 4 KB RAM. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+   "notes": "Digi-Key page (USD, Active, stock 5,894, lead time 26 weeks; Digi-Key part 296-M0L1306QRHBRQ1TR-ND): tape & reel 3,000 = 1.08416 (the only reel break); cut tape 100 = 1.28430, 500 = 1.16600 (largest cut-tape break). The pair is cut tape 500 / reel 3,000 (different packings - no larger reel break published). GRADE: this Digi-Key page has NO Grade / Qualification rows; its description reads \"AUTOMOTIVE 32-MHZ ARM CORTEX-M0+\" and the discovery pass read \"AEC-Q100 qualified\" on TI's product page for MSPM0L1306-Q1 - aecq kept true on that basis (not re-read today). Read on the page: 32-VQFN (5x5), Cortex-M0+ 32 MHz, 64 KB flash, 4 KB RAM. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used. TME page for the exact code: \"product for special order\", 0 in stock, no price table."
   },
   {
    "mpn": "M0G3507QPMRQ1",
@@ -1023,52 +1043,390 @@
     }
    ],
    "notes": "Digi-Key page (USD, Active, stock 213,700, lead time 26 weeks; Digi-Key part 296-23709-2-ND): cut tape 100 = 0.18380, 250 = 0.16968, 500 = 0.16118, 1,000 = 0.15416; tape & reel 3,000 = 0.14550, 6,000 = 0.14126, 9,000 = 0.13914, 15,000 = 0.13679, 21,000 = 0.13541, 30,000 = 0.13409 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: SC-70-5, single Schmitt-trigger buffer, 1.65-5.5 V, -40 to 125 C. Orderable member for the catalogue estimate SN74LVC1G. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TCAN1043ADYYRQ1",
+   "family": "TCAN1043",
+   "mfr": "Texas Instruments",
+   "desc": "Low-power fault-protected CAN FD transceiver with INH and WAKE",
+   "category": "ic_soic",
+   "pkg": "SOT-23-14 thin (DYY)",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDM-02014 SiC traction inverter"
+   ],
+   "observedMpn": "TCAN1043ADYYRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.88128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1043ADYYRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.82265,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1043ADYYRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.79638,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1043ADYYRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 373, lead time 26 weeks; Digi-Key part 296-TCAN1043ADYYRQ1TR-ND): cut tape 100 = 0.98100, 250 = 0.92260, 500 = 0.88740, 1,000 = 0.88128; tape & reel 3,000 = 0.82265, 6,000 = 0.80515, 9,000 = 0.79638 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 14-SOT-23-THIN, CAN transceiver, 8 Mbps, 4.5-5.5 V. Orderable member for the catalogue estimate TCAN1043. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TCAN1463DRQ1",
+   "family": "TCAN1463-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive low-power signal-improvement (SIC) CAN FD transceiver with INH and WAKE",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN1463DRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.16511,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1463DRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.15215,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1463DRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.11552,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1463DRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 3,089, lead time 26 weeks; Digi-Key part 296-TCAN1463DRQ1TR-ND): cut tape 100 = 1.35500, 250 = 1.27764, 500 = 1.23502, 1,000 = 1.16511; tape & reel 2,500 = 1.15215, 5,000 = 1.12774, 7,500 = 1.11552 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 14-SOIC (3.90 mm), CAN transceiver, 8 Mbps, 4.5-5.5 V. The exact code TCAN1463DRQ1 is listed. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TCAN28473RHBRQ1",
+   "family": "TCAN2847-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN FD and LIN system basis chip (SBC) with partial networking",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN28473RHBRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 4.32894,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN28473RHBRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", available to order, lead time 39 weeks; Digi-Key part 296-TCAN28473RHBRQ1TR-ND): tape & reel 5,000 = 4.32894 - the only row (no break near 1,000, no larger break - no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 32-VQFN (5x5) wettable flank, system basis chip, CAN / SPI, 5.5-28 V. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TCAN3404DDFRQ1",
+   "family": "TCAN3404-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3.3 V automotive CAN FD transceiver with standby mode",
+   "category": "ic_soic",
+   "pkg": "TSOT-23-8",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "TCAN3404DDFRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.04499,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN3404DDFRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.97151,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN3404DDFRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.94141,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN3404DDFRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 3,000 expected 06-May-2027, lead time 26 weeks; Digi-Key part 296-TCAN3404DDFRQ1TR-ND): cut tape 100 = 1.15290, 250 = 1.08600, 500 = 1.04568, 1,000 = 1.04499; tape & reel 3,000 = 0.97151, 6,000 = 0.95145, 9,000 = 0.94141 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: TSOT-23-8, CAN transceiver, 8 Mbps, 3-3.6 V, series TCAN340x-Q1. Out of stock. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TLIN1024RGYRQ1",
+   "family": "TLIN1024-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Quad LIN transceiver with dominant-state timeout",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 5.5x3.5 (RGY)",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "TLIN1024RGYRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.41337,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLIN1024RGYRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.32968,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLIN1024RGYRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 5,945, lead time 26 weeks; Digi-Key part 296-49465-2-ND; \"once available stock has been depleted, manufacturer standard package and lead time will apply\"): cut tape 100 = 2.70000, 250 = 2.56344, 500 = 2.48112, 1,000 = 2.41337; tape & reel 3,000 = 2.32968 (the only reel break). The pair is cut tape 1,000 / reel 3,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 24-VQFN (5.5x3.5), 4/4 LIN transceiver, 20 kbps, 4-36 V. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TMCS1126A2BQDVGRQ1",
+   "family": "TMCS1126-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated Hall current sensor, 50 mV/A bidirectional (48 A range on Digi-Key; family to 80 A rms), 500 kHz, reinforced isolation, ambient-field rejection, ALERT",
+   "category": "ic_soic",
+   "pkg": "SOIC-10 wide (DVG)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC converter",
+    "traction inverter aux"
+   ],
+   "observedMpn": "TMCS1126A2BQDVGRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 2.93678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TMCS1126A2BQDVGRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"available for purchase but not normally stocked\", lead time 26 weeks; Digi-Key part 296-TMCS1126A2BQDVGRQ1TR-ND): tape & reel 2,000 = 2.93678 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 10-SOIC wide (7.50 mm), Hall current sensor, bidirectional, sensitivity 50 mV/A, current sensing 48 A for this A2 code (the task's \"80 A rms\" is the family rating, not this code's range as Digi-Key prints it). Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TPS12130QDGXRQ1",
+   "family": "TPS1213-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "45 V low-IQ automotive high-side switch controller (smart fuse) with low-power mode",
+   "category": "ic_soic",
+   "pkg": "VSSOP19",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)"
+   ],
+   "observedMpn": "TPS12130QDGXRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 3.11696,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS12130QDGXRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", available to order, lead time 26 weeks; Digi-Key part 296-TPS12130QDGXRQ1TR-ND): tape & reel 5,000 = 3.11696 - the only row (no break near 1,000, no larger break - no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 19-VSSOP, \"AUTOMOTIVE 45V LOW IQ HIGH-SIDE\" (Digi-Key files it under gate drivers; supply 3.5-40 V). Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TPS1HC30BQPWPRQ1",
+   "family": "TPS1HC30-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "30 mOhm 5 A single-channel smart high-side switch",
+   "category": "ic_soic",
+   "pkg": "HTSSOP14",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "TPS1HC30BQPWPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.14292,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS1HC30BQPWPRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.06032,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS1HC30BQPWPRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 1.02799,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS1HC30BQPWPRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 3,000 estimated 03-Aug-2027, lead time 26 weeks; Digi-Key part 296-TPS1HC30BQPWPRQ1TR-ND): tape & reel 3,000 = 1.06032, 6,000 = 1.03878, 9,000 = 1.02799 (largest); cut tape 100 = 1.25510, 250 = 1.18332, 500 = 1.14292 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 14-HTSSOP, high side, 5 A, Rds(on) typ 30 mOhm. Out of stock. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TPS389C0300CRTERQ1",
+   "family": "TPS389C03-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-channel I2C-programmable OV / UV voltage supervisor with Q&A watchdog (ASIL rail monitor)",
+   "category": "ic_qfn",
+   "pkg": "WQFN-16 3x3 mm (RTE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "radar / camera ECU",
+    "SoC rail monitoring"
+   ],
+   "observedMpn": "TPS389C0300CRTERQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.79136,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS389C0300CRTERQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.22164,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS389C0300CRTERQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 282, lead time 26 weeks; Digi-Key part 296-TPS389C0300CRTERQ1TR-ND): tape & reel 3,000 = 2.22164 (the only reel break); cut tape 100 = 3.93800, 250 = 3.79136 (largest cut-tape break). WARNING: the reel row is 41 % below cut tape 250 - an unusually large step between packings, both recorded as shown; the pair is cut tape 250 / reel 3,000 (different packings - no larger reel break published), so a slope drawn from it would be too steep. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 16-WQFN (3x3), 3-channel supervisor. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TCAN1046AVDRQ1",
+   "family": "TCAN1046V-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive high-speed dual CAN FD transceiver with VIO (A revision, TCAN1046AV-Q1)",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "TCAN1046AVDRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.28282,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TCAN1046AVDRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "CODE REPLACED: the task code TCAN1046VDRQ1 is listed by neither Digi-Key (keyword search: \"did not return any results\", 1 substitute offered) nor TME (search \"TCAN1046\" lists only TCAN1046ADMTRQ1, TCAN1046ADRQ1, TCAN1046AVDRQ1) - NO-LISTING for the exact code. The code distributors list is the A revision of the same dual transceiver with VIO in SOIC-14, TCAN1046AVDRQ1 (another TI type number, TCAN1046AV-Q1 - what differs electrically was not read), priced here; the merge should treat it as that part, not as TCAN1046VDRQ1. Digi-Key page for TCAN1046AVDRQ1 (USD, Active, \"available for purchase but not normally stocked\", lead time 26 weeks; Digi-Key part 296-TCAN1046AVDRQ1TR-ND): tape & reel 2,500 = 1.28282 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Read on the page: 14-SOIC (3.90 mm), 2/2 CAN transceiver, 8 Mbps, 4.5-5.5 V. Master Electronics: no result for TI codes (tried on TPS7B8133QDRVRQ1) - not used."
+  },
+  {
+   "mpn": "TPS6538600QDCARQ1",
+   "family": "TPS653860-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Power management IC for safety-relevant applications (MCU safety PMIC)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP48",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "TPS6538600QDCARQ1",
+   "observations": [],
+   "notes": "WRONG-CODE: the task code TPS6538600QDCARQ1 was not found as printed - Digi-Key keyword search \"did not return any results\"; TME search \"TPS653860\": no results; a web search found no listing of it. A search summary of TI's TPS653860-Q1 datasheet (SLVSFQ1A) names the tape-and-reel orderables TPS65386003QDCARQ1 (grade 1) and TPS65386050EDCARQ1 (grade 0), HTSSOP-48 DCA, 2,500 a reel - not read on a page. NO-LISTING for TPS65386003QDCARQ1 too: Digi-Key keyword search \"did not return any results\" (Digi-Key lists only the evaluation board TPS65386001Q1EVM, per the search results). summary: Mouser India is said to list \"TPS653860\" in 2,500 reels and cut tape (INR 549.36 lowest reel tier, INR 998.39 at 1) - a search summary that does not name the orderable code; Mouser refused the one page read (HTTP 503), so nothing is recorded. Goes to the supplier-quote list. Grade (AEC-Q100 on the TI datasheet) is from the discovery pass, not re-read."
   }
  ],
- "notResearched": [
-  {
-   "code": "TCAN1043ADYYRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TCAN1046VDRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TCAN1463DRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TCAN28473RHBRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TCAN3404DDFRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TLIN1024RGYRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TMCS1126A2BQDVGRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TPS12130QDGXRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TPS1HC30BQPWPRQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TPS389C0300CRTERQ1",
-   "why": "not reached"
-  },
-  {
-   "code": "TPS6538600QDCARQ1",
-   "why": "not reached"
-  }
- ]
+ "notResearched": []
 }
