@@ -1,5 +1,145 @@
 [
  {
+  "mfr": "MPS",
+  "family": "MPQ4323-AEC1",
+  "desc": "3 A synchronous step-down converter, VIN max 42 V per catalogue, ultra-compact, MPQ4320 series",
+  "category": "ic_qfn",
+  "pkg": "QFN-12 (2x3)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "camera",
+   "radar",
+   "USB hub",
+   "body ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://media.monolithicpower.com/mps_cms_document/a/u/automotive_catalog_q2_2024-digital.pdf",
+  "note": "MPS Automotive Catalog Q2 2024 ('AEC-Q100 Solutions'). The catalogue prints the family name with -AEC1; the full orderable (package code + -AEC1-Z) was not seen. A search extract of Arrow listings shows the orderables MPQ4323GDE-AEC1-Z and MPQ4323GDE-33-AEC1-Z (Arrow page not opened). | first pass: NOT-READ: orderable code MPQ4323GDE-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4323GDE-AEC1-Z/16705336 - search result, page not read) and on MPS's 'mpq4323-aec1' automotive AEC-Q grade page (search result). LCSC: its datasheet host names the",
+  "catalogue": "no",
+  "orderableCode": "MPQ4323GDE-AEC1-Z",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4420A-AEC1",
+  "desc": "2 A synchronous step-down converter, VIN max 40 V per catalogue, 410 kHz, MPQ4420 series",
+  "category": "ic_soic",
+  "pkg": "TSOT23-8",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body ECU",
+   "sensor module",
+   "infotainment"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://media.monolithicpower.com/mps_cms_document/a/u/automotive_catalog_q2_2024-digital.pdf",
+  "note": "MPS Automotive Catalog Q2 2024 ('AEC-Q100 Solutions'). The catalogue prints the family name with -AEC1; the full orderable (package code + -AEC1-Z) was not seen. Sibling MPQ4420H-AEC1 in the same table. | first pass: NOT-READ: orderable code MPQ4420AGJ-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4420AGJ-AEC1-Z/7361614 - search result: adjustable 2 A buck, TSOT-23-8, 16-week lead time; page not read). Master: 'No Search Results found' for this exact code. Si",
+  "catalogue": "no",
+  "orderableCode": "MPQ4420AGJ-AEC1-Z",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4480",
+  "orderableCode": "MPQ4480GV-AEC1-Z",
+  "desc": "36 V, 6 A step-down converter for automotive",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "infotainment",
+   "ADAS ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4480GV-AEC1-Z?qs=wnTfsH77Xs4d3ndughaBOQ%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing.",
+  "catalogue": "no",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ4573",
+  "orderableCode": "MPQ4573GQBE-AEC1-Z",
+  "desc": "60 V, 2.5 A synchronous step-down converter",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "48 V / 24 V ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4573GQBE-AEC1-Z?qs=TCDPyi3sCW23mRrlD5sK6A%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing.",
+  "catalogue": "no",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "MPS",
+  "family": "MPQ7920",
+  "orderableCode": "MPQ7920GRM-0003-AEC1-Z",
+  "desc": "Multi-channel PMIC",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "camera",
+   "telematics",
+   "SoC rails"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ7920GRM-0003-AEC1-Z?qs=Rp5uXu7WBW%2BVTorrchY9KQ%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Also listed: MPQ7920GRM-0003-AEC1-P. Rail count not read.",
+  "catalogue": "no",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "74HC595-Q100",
+  "orderableCode": "74HC595PW-Q100,118",
+  "desc": "8-bit serial-in shift register with output latches, 2–6 V, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "TSSOP16 (SOT403-1)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "body control module",
+   "instrument cluster",
+   "LED / relay expansion"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74HC595PW-Q100-118/3749019",
+  "note": "Digi-Key lists it Active with Qualification AEC-Q100 (search result); Nexperia group page nexperia.com/group/74hc595-q100-74hct595-q100. Catalogue has only a 74HC595 family ESTIMATE. | first pass: NOT-READ: Master 'No Search Results found for 74HC595PW-Q100,118'; TME search for '74HC595PW-Q100' shows no product (TME lists only the non-Q100 74HC595PW,118 / 74HC595PW, the latter 'withdrawn from the offer' per a search summary); Newark search refused (503). The discovery's Digi-Key URL (.../74HC",
+  "catalogue": "no",
+  "from": "b09-ics"
+ },
+ {
+  "mfr": "Nexperia",
+  "family": "74LVC1G08-Q100",
+  "orderableCode": "74LVC1G08GW-Q100,125",
+  "desc": "Single 2-input AND gate, 1.65–5.5 V, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "TSSOP5 (SOT353-1)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "any ECU"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://lcsc.com/product-detail/Logic-Gates_Nexperia-74LVC1G08GW-Q100-125_C6101355.html",
+  "note": "Full code on LCSC's listing; Nexperia's group page (nexperia.com/group/74lvc1g08-q100) gives the same part as Active with ordering code 935298476125. Farnell, Digi-Key and Future show it truncated as '74LVC1G08GW-Q100,1'.",
+  "catalogue": "no",
+  "from": "b09-ics"
+ },
+ {
   "mfr": "NXP",
   "family": "BMx7318 / BMx7518",
   "desc": "BMA7318 - 18-channel Li-ion battery cell controller for EV high-voltage BMS and 48 V systems",
@@ -537,299 +677,5 @@
   "note": "No AEC statement was read for this exact code; ST automotive serial EEPROM selection guide: the -A125 series (-40 to 125 C) is AEC-Q100 qualified and PPAP level 3. Code as listed by TME (https://www.tme.eu/en/katalog/?search=MN3TP); the '3 ... /K' ordering code is ST's automotive 125 C form. | first pass: SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (1,000 = 1.64318 ext 1,643.18; tape & reel 2,500 = 1.58926 ext 3,973.15), date unknown. The same search batch gave M95M02-DWMN3TP/K figures that matched the live page exactly. GRADE: the summary report",
   "catalogue": "no",
   "from": "b13-ics"
- },
- {
-  "mfr": "TDK",
-  "family": "E13 EM (gate-drive transformer)",
-  "orderableCode": "B82802F0007A213",
-  "desc": "SMD flyback gate-drive transformer 1:1:0.5, 30 uH, 100-400 kHz, -40..150 C, AEC-Q200 Rev. E",
-  "category": "transformer",
-  "pkg": "E13 SMD",
-  "aecq": true,
-  "launched": "2026-07",
-  "usedIn": [
-   "traction inverter",
-   "on-board charger",
-   "HV DC-DC"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://passive-components.eu/tdk-releases-compact-smd-gate-drive-transformers-for-xev/",
-  "note": "Digi-Key listing, Active. Same article: B82802F0004A213, B82802F0005A113, B82804F0503A200, B82804F0114A200, B82804F0244A210.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "BCL3520FT",
-  "orderableCode": "BCL3520FT-R47M-D",
-  "desc": "Power inductor 0.47 uH 10 A sat 5 mohm, 3.3x3.5x2.0 mm, 155 C, AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "3.3x3.5 mm",
-  "aecq": true,
-  "launched": "2025-12",
-  "usedIn": [
-   "ADAS ECU",
-   "domain / zonal controller",
-   "infotainment",
-   "DC-DC converter"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://passive-components.eu/tdk-unveils-small-automotive-power-inductors/",
-  "note": "Listed on Digi-Key (Active).",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "CLF-NI-D",
-  "orderableCode": "CLF6045NIT-100M-D",
-  "desc": "Shielded wirewound power inductor 10 uH 2.1 A, 6.3x6.0 mm, AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "6x6 mm",
-  "aecq": true,
-  "launched": "unknown",
-  "usedIn": [
-   "DC-DC converter",
-   "zonal controller",
-   "body ECU"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CLF6045NIT-100M-D",
-  "note": "Digi-Key listing, Active.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "CNA (soft termination)",
-  "orderableCode": "CNA6P1X7R1H106K250AE",
-  "desc": "MLCC 10 uF 50 V X7R 10% 1210, soft termination, AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "1210",
-  "aecq": true,
-  "launched": "unknown",
-  "usedIn": [
-   "DC-DC converter",
-   "zonal controller",
-   "body ECU"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=CNA6P1X7R1H106K250AE",
-  "note": "Digi-Key listing, Active.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "MLJ1608-G (PoC)",
-  "orderableCode": "MLJ1608WGC1R2MTD25",
-  "desc": "Multilayer ferrite inductor 1.25 uH 350 mA 0603 for PoC filters, AEC-Q200",
-  "category": "passive_0603",
-  "pkg": "0603",
-  "aecq": true,
-  "launched": "2026-10",
-  "usedIn": [
-   "camera",
-   "SerDes PoC"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://passive-components.eu/tdk-expands1608-inductors-for-automotive-poc-filters/",
-  "note": "Digi-Key listing shows AEC-Q200, Active. Existing sibling MLJ1608WGCR56NTD25.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "NTCSP (175 C, conductive glue)",
-  "orderableCode": "NTCSP163JF103FT1H",
-  "desc": "NTC thermistor 10 k 1% B3435, 0603, -55..175 C, AgPd terminations, AEC-Q200",
-  "category": "passive_0603",
-  "pkg": "0603",
-  "aecq": true,
-  "launched": "2026-02",
-  "usedIn": [
-   "traction inverter",
-   "power module"
-  ],
-  "distribution": "distributor",
-  "priority": 3,
-  "sourceUrl": "https://passive-components.eu/tdk-releases-high-temp-175c-automotive-ntc-thermistors/",
-  "note": "Digi-Key listing, Active. Also NTCSP164KF104FT1H (100 k).",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "SPM-VT-D",
-  "orderableCode": "SPM5030VT-2R2M-D",
-  "desc": "Metal-composite power inductor 2.2 uH 6.6 A, 5.3x5.1 mm, AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "5x5 mm",
-  "aecq": true,
-  "launched": "unknown",
-  "usedIn": [
-   "DC-DC converter",
-   "zonal controller",
-   "body ECU"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=SPM5030VT-2R2M-D",
-  "note": "Digi-Key listing, Active.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "TDK",
-  "family": "TFM201610ALMA",
-  "orderableCode": "TFM201610ALMA1R0MTAA",
-  "desc": "Thin-film metal power inductor 1 uH 3.1 A 0806, soft termination, AEC-Q200",
-  "category": "passive_0805",
-  "pkg": "0806",
-  "aecq": true,
-  "launched": "unknown",
-  "usedIn": [
-   "ADAS ECU",
-   "domain / zonal controller",
-   "infotainment",
-   "camera"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=TFM201610ALMA1R0MTAA",
-  "note": "Digi-Key listing, Active.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "CRCW-HP e3 (pulse proof, high power)",
-  "orderableCode": "CRCW080510K0FKEAHP",
-  "desc": "Thick film pulse-proof high-power resistor 10 k 1%, 0805 (CRCW-HP e3)",
-  "category": "passive_0805",
-  "pkg": "0805",
-  "aecq": false,
-  "launched": "unknown",
-  "usedIn": [
-   "body ECU",
-   "zonal controller",
-   "gateway",
-   "BMS"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
-  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0603 sibling CRCW0603100RFKEAHP (recorded AEC-Q200); TME also lists CRCW060310K0FKEAHP and CRCW121010K0FKEAHP.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "CRCW e3",
-  "orderableCode": "CRCW120610K0FKEA",
-  "desc": "Thick film resistor 10 k 1%, 1206 (CRCW e3)",
-  "category": "passive_1206",
-  "pkg": "1206",
-  "aecq": false,
-  "launched": "unknown",
-  "usedIn": [
-   "all ECUs"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
-  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Different size of the catalogue part CRCW060310K0FKEA (recorded AEC-Q200); TME also lists CRCW121010K0FKEA.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "CRCW-HP e3 (pulse proof, high power)",
-  "orderableCode": "CRCW120610K0FKEAHP",
-  "desc": "Thick film pulse-proof high-power resistor 10 k 1%, 1206 (CRCW-HP e3)",
-  "category": "passive_1206",
-  "pkg": "1206",
-  "aecq": false,
-  "launched": "unknown",
-  "usedIn": [
-   "body ECU",
-   "zonal controller",
-   "gateway",
-   "BMS"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.tme.eu/en/katalog/?search=10K0FKEA",
-  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Catalogue holds the 0603 sibling CRCW0603100RFKEAHP (recorded AEC-Q200); TME also lists CRCW060310K0FKEAHP and CRCW121010K0FKEAHP.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "IHLE-5A (integrated e-shield)",
-  "orderableCode": "IHLE4040DDER100M5A",
-  "desc": "Shielded power inductor with e-field shield 10 uH 6.5 A, 4040, AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "4040",
-  "aecq": true,
-  "launched": "unknown",
-  "usedIn": [
-   "infotainment",
-   "ADAS ECU",
-   "DC-DC converter"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.digikey.com/en/products/result?keywords=IHLE4040DDER100M5A",
-  "note": "Digi-Key listing, Active.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "IHLP-4040ED-5A (automotive IHLP)",
-  "orderableCode": "IHLP4040EDER4R7M5A",
-  "desc": "Molded high-current power inductor 4.7 uH 20%, IHLP-4040ED-5A",
-  "category": "passive_1206",
-  "pkg": "4040",
-  "aecq": false,
-  "launched": "unknown",
-  "usedIn": [
-   "DC-DC converter",
-   "zonal controller",
-   "body ECU",
-   "ADAS ECU"
-  ],
-  "distribution": "distributor",
-  "priority": 2,
-  "sourceUrl": "https://www.tme.eu/en/katalog/?search=ER4R7M5A",
-  "note": "TME (franchised distributor) lists this manufacturer part number; the results page shows the code only, so value / size are read from the maker's part numbering. AEC-Q200 was not read on a page for this code in this pass. Digi-Key's Vishay automotive pages call IHLP inductors AEC-Q200 qualified at series level only. Catalogue holds IHLP2525CZER4R7M11 (a different, non-5A code) and the 5A parts IHLP4040DZER100M5A / IHLP6767GZER100M5A.",
-  "catalogue": "no",
-  "from": "b05-passives"
- },
- {
-  "mfr": "Vishay",
-  "family": "WSLF2512",
-  "orderableCode": "WSLF25121L000FEB",
-  "desc": "Current-sense resistor 1 mOhm 1 % 5 W 2512, automotive AEC-Q200",
-  "category": "passive_1206",
-  "pkg": "2512",
-  "aecq": true,
-  "launched": "2024-08",
-  "usedIn": [
-   "TI TIDA-020065 smart fuse high-side switch controller reference design (zonal PDU / eFuse)",
-   "TI TIDA-020079 zone reference design (zonal controller)"
-  ],
-  "distribution": "unknown",
-  "priority": 1,
-  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMD68",
-  "note": "Smart-fuse / eFuse channel shunt.",
-  "catalogue": "no",
-  "from": "b05-passives"
  }
 ]

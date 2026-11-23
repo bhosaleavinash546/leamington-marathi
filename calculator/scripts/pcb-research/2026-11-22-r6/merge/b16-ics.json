@@ -1,0 +1,55 @@
+{
+ "domain": "b16-ics",
+ "researched": "2026-11-23",
+ "parts": [
+  {
+   "mpn": "UCC21551CQDWKRQ1",
+   "family": "UCC21551-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive 4 A / 6 A reinforced-isolation dual-channel gate driver",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 wide body, 7.5 mm (DWK)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "HV DC-DC",
+    "traction inverter",
+    "e-compressor"
+   ],
+   "observedMpn": "UCC21551CQDWKRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.65914,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 2.45145,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.40407,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page; Digi-Key part numbers 296-UCC21551CQDWKRQ1TR-ND / CT-ND / DKR-ND): Part Status Active; stock 0 (backorder; 1,979 expected 07-Apr-2027), manufacturer lead time 26 weeks - out of stock. Cut tape / Digi-Reel table: 1 = 4.45, 10 = 3.37, 25 = 3.10080, 100 = 2.80490, 250 = 2.66392, 500 = 2.65914 (largest cut-tape row - the row nearest 1,000). Tape & reel: 2,000 = 2.45145, 4,000 = 2.40407 (smallest and largest reel rows; nothing larger is published - no break near 200,000). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"; TI part-details page for this code: ACTIVE, SOIC (DWK) 14 pins, 2,000 LARGE T&R, \"AEC-Q100 qualified\", device temperature grade 1. Package read on the Digi-Key page: 14-SOIC (0.295\", 7.50 mm width) - the task had \"unknown (DWK code)\". Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\" (Master does not list TI). No second distributor price."
+  }
+ ]
+}

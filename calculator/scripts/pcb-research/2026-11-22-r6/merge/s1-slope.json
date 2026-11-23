@@ -1,0 +1,461 @@
+{
+ "domain": "s1-slope",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "ABM8AIG-16.000MHZ-8-1Z-T",
+   "family": "ABM8AIG",
+   "mfr": "Abracon",
+   "desc": "Crystal 16 MHz 8pF 3225 AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "3225",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU clock"
+   ],
+   "observedMpn": "ABM8AIG-16.000MHZ-8-1Z-T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.51801,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ABM8AIG-16-000MHZ-8-1Z-T/10313785",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.45026,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ABM8AIG-16-000MHZ-8-1Z-T/10313785",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); Tape & Reel table 1,000 / 2,000 / 3,000 / 5,000 / 7,000 / 10,000 (10,000 is the largest shown); in stock 1,916. Stored 1,000 was $0.44305 - the page now shows $0.51801."
+  },
+  {
+   "mpn": "ASDMB-25.000MHZ-LC-T",
+   "family": "ASDMB",
+   "mfr": "Abracon",
+   "desc": "MEMS oscillator 25 MHz",
+   "category": "crystal_osc",
+   "pkg": "4-QFN 2.5x2.0",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "ASDMB-25.000MHZ-LC-T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.03597,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ASDMB-25-000MHZ-LC-T/2809944",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.8465,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ASDMB-25-000MHZ-LC-T/2809944",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); Tape & Reel table 1,000 / 2,000 / 3,000 / 5,000 (largest shown). Digi-Key stock 0, 1,000 expected 18-Dec-2026; prices fall with quantity so not treated as stale. Stored distributor was LCSC (its page is served but shows no price table to a reader) - this pair is Digi-Key."
+  },
+  {
+   "mpn": "CSS2H-2512R-1L00F",
+   "family": "CSS2H-2512R",
+   "mfr": "Bourns",
+   "desc": "Metal-element current-sense resistor 1 mOhm 1% 2512 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "DC-DC",
+    "motor drive"
+   ],
+   "observedMpn": "CSS2H-2512R-1L00F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.46097,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-1L00F/6023764",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.40938,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-1L00F/6023764",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.33628,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-1L00F/6023764",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); the 1,000 price is CUT TAPE (overstates); the reel slope is the 3,000 -> 30,000 pair. Tape & Reel table 3,000 / 6,000 / 9,000 / 15,000 / 21,000 / 30,000 (largest shown); in stock 37,437. Stored distributor was LCSC (1,000 @ $0.2954, page shows no prices to a reader) - Digi-Key is about 1.5x LCSC at 1k."
+  },
+  {
+   "mpn": "CSS2H-3920R-1L00F",
+   "family": "CSS2H-3920",
+   "mfr": "Bourns",
+   "desc": "Metal-element current-sense resistor 1 mOhm 1% 8 W, 3920, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "3920 (3921)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC_HV",
+    "DCDC48",
+    "BSG_INV",
+    "BMS48"
+   ],
+   "observedMpn": "CSS2H-3920R-1L00F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.61289,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-3920R-1L00F/6023765",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.54675,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-3920R-1L00F/6023765",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 21000,
+     "price": 0.46444,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-3920R-1L00F/6023765",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); the 1,000 price is CUT TAPE (overstates); the reel slope is the 3,000 -> 21,000 pair. Tape & Reel table 3,000 / 6,000 / 9,000 / 15,000 / 21,000 (largest shown); in stock 38,338. Stored distributor Farnell refused the page read (HTTP 503)."
+  },
+  {
+   "mpn": "SMBJ24CA-Q",
+   "family": "SMBJ24CA",
+   "mfr": "Bourns",
+   "desc": "600 W bidirectional TVS, 24 VWM, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "ecuRoles": [
+    "power input",
+    "I/O"
+   ],
+   "observedMpn": "SMBJ24CA-Q",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.13286,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/bourns-inc/SMBJ24CA-Q/8275798",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.11584,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/bourns-inc/SMBJ24CA-Q/8275798",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); Digi-Key UK site, GBP ex-VAT. Tape & Reel table shows 3,000 and 9,000 only (9,000 largest); no ~1k reel break (cut tape 500 @ GBP 0.17284). Digi-Key stock 0 (3,000 expected 01-Feb-2027); prices fall with quantity. A search summary of the same listing gave older figures (3,000 / 6,000 / 15,000 = GBP 0.13176 / 0.12058 / 0.10848) - NOT recorded, the live page differs. The same summary showed Farnell UK 3,000+ GBP 0.122 and RS UK 3,000+ GBP 0.106 (VAT basis not stated, not recorded)."
+  },
+  {
+   "mpn": "SMBJ33CA-Q",
+   "family": "SMBJ33CA-Q",
+   "mfr": "Bourns",
+   "desc": "TVS diode 33V bidirectional 600W, SMB, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SMB",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "SMBJ33CA-Q",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.17782,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/SMBJ33CA-Q/8275800",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.15503,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bourns-inc/SMBJ33CA-Q/8275800",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); Tape & Reel table shows 3,000 and 9,000 only (9,000 largest); no ~1k reel break (cut tape 500 @ $0.24520). In stock 1,983. Stored was INR 11.26 at 3,000 on digikey.in."
+  },
+  {
+   "mpn": "AIMZA75R016M1HXKSA1",
+   "family": "AIMZA75R016M1H",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 750 V 16 mOhm 89 A, PG-TO247-4, AEC-Q101",
+   "category": "through_hole",
+   "pkg": "PG-TO247-4",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC_HV",
+    "TINV",
+    "ECOMP"
+   ],
+   "observedMpn": "AIMZA75R016M1HXKSA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 14.03008,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/AIMZA75R016M1HXKSA1/21675980",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 13.87275,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/AIMZA75R016M1HXKSA1/21675980",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); tube, breaks 1 / 30 / 60 / 120 / 510 (510 is the largest shown, no 1,000 break); in stock 331; lead time 52 weeks. Stored RS 100 @ EUR 22.39 is about 1.7x the Digi-Key 120 price - RS refused the page read (HTTP 403) so it could not be re-checked."
+  },
+  {
+   "mpn": "SAK-TC364DP-64F300W AA",
+   "family": "TC364DP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 dual-core TriCore 300 MHz, 4 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "BMS",
+    "VCU"
+   ],
+   "observedMpn": "TC364DP64F300WAAKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 17.51318,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TC364DP64F300WAAKXUMA1",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "CROSS-CHECK ONLY (no slope): Digi-Key page read today shows ONE reel break, 500 @ $17.51318 (cut tape stops at 100 @ $17.90000); stock 0, 500 estimated 12-Jul-2027. A third distributor beside the stored Mouser 500 @ $21.55 and LCSC 1,000 @ $16.73. NO-LARGER-BREAK: 500."
+  },
+  {
+   "mpn": "TC387QP160F300SAEKXUMA2",
+   "family": "TC387",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 quad-core TriCore 300 MHz, 10 MB",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": "TC387QP160F300SAEKXUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 29.7717,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TC387QP160F300SAEKXUMA2",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "CROSS-CHECK ONLY (no slope): Digi-Key page read today shows ONE reel break, 1,000 @ $29.77170 (cut tape stops at 100 @ $32.01590); in stock 1,556. A third distributor beside the stored Mouser 1,000 @ $36.61 (via Digipart) and Rutronik 1,000 @ EUR 31.97. NO-LARGER-BREAK: 1,000."
+  },
+  {
+   "mpn": "TC4D7XP20MF500MCABKXUMA1",
+   "family": "TC4D7",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4Dx TC4D7 multi-core TriCore 500 MHz, 20 MB flash, ASIL-D",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "domain controller",
+    "zonal",
+    "chassis"
+   ],
+   "observedMpn": "TC4D7XP20MF500MCABKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 69.354,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TC4D7XP20MF500MCABKXUMA1",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "CROSS-CHECK ONLY (no slope): Digi-Key page read today shows ONE reel break, 1,000 @ $69.35400 (cut tape stops at 100 @ $74.85620); stock 0, 1,000 expected 16-Feb-2027. A third distributor between the stored Mouser 1,000 @ $77.85 and Future 1,000 @ $61.16. NO-LARGER-BREAK: 1,000."
+  },
+  {
+   "mpn": "TLE8888QKXUMA1",
+   "family": "TLE8888",
+   "mfr": "Infineon",
+   "desc": "Engine management system IC, 4-cylinder: supplies, CAN + LIN, 29 power outputs (injectors, ignition pre-drivers, relays, stepper)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "TLE8888QKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 13.75054,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE8888QKXUMA1/5960695",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "CROSS-CHECK ONLY (no slope): Digi-Key page read today shows ONE reel break, 1,000 @ $13.75054; cut tape stops at 500 @ $15.15510 (a different packing - NOT a slope pair); in stock 5,393. Stored Future 1,000 @ $15.60 (Future refused the page read, HTTP 403). NO-LARGER-BREAK: 1,000."
+  },
+  {
+   "mpn": "T598D106M050ATS090",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 10uF 50V 20% 90 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "T598D106M050ATS090",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.38138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T598D106M050ATS090/21817565",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "CROSS-CHECK ONLY (no slope): Digi-Key page read today shows ONE break, Tape & Reel 500 @ $3.38138, not kept in stock, lead time 39 weeks. Second distributor beside the stored Farnell 500 @ GBP 2.26 (Farnell refused the page read, HTTP 503). TME returns 404 for this code (it lists T598D106M050ATE090, a different code). NO-LARGER-BREAK: 500."
+  },
+  {
+   "mpn": "T598D336M035ATE065",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 33uF 35V 20% 65 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "T598D336M035ATE065",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.47448,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T598D336M035ATE065/7605112",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.36841,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T598D336M035ATE065/7605112",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Read on the distributor page today (22 Nov 2026); Tape & Reel table 500 / 1,000 / 1,500 / 2,500 / 3,500 / 5,000 (largest shown); in stock 209. Stored distributor Farnell refused the page read (HTTP 503). TME page for the same code stops at 100 @ $1.80 net (27 in stock) - no slope there."
+  },
+  {
+   "mpn": "T598D337M006ATE025",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 330uF 6.3V 20% 25 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "T598D337M006ATE025",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.88332,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T598D337M006ATE025/5360986",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.84454,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/kemet/T598D337M006ATE025/5360986",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1500,
+     "price": 0.62,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/t598d337m006ate025/polymer-tantalum-capacitors/kemet/",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Both pages read today. Digi-Key Tape & Reel table 500 / 1,000 / 1,500 / 2,500 (largest shown), in stock 148 - this is the slope pair. TME (stored distributor) table stops at 1,500 @ $0.62 net (1,000 @ $0.63; stored 1,500 was $0.64), net = gross on the page, 0 in TME stock. Digi-Key is 1.4x TME at 1k."
+  }
+ ]
+}

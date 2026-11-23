@@ -1,0 +1,1552 @@
+{
+ "domain": "b14-ics",
+ "researched": "2026-11-23",
+ "parts": [
+  {
+   "mpn": "SCT070HU120G3AG",
+   "family": "SiC Gen 3 automotive SCT070HU120G3AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade SiC power MOSFET, 1200 V, 70 mOhm class, top-side cooled",
+   "category": "ic_soic",
+   "pkg": "HU3PAK (TO-263-8, 7 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "on-board charger",
+    "HV DC-DC",
+    "traction inverter",
+    "e-compressor"
+   ],
+   "observedMpn": "SCT070HU120G3AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 600,
+     "price": 7.11092,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SCT070HU120G3AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 0, lead time 36 weeks, max 600 per 30 days): tape & reel 600 = 7.11092 (the only reel break - no larger break, no own slope); cut tape 1 = 14.61, 10 = 10.23, 50 = 8.45480 (largest cut-tape break, below 100 - not recorded). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\". Out of stock. TME page (tme.eu/en/details/sct070hu120g3ag/smd-n-channel-transistors/stmicroelectronics/, USD, 0 in TME stock, reel): breaks only from 1 / 5 / 10 pcs (12.21 / 10.77 / 10.38) - all below 100, not recorded; TME specs: SiC N-MOSFET 1.2 kV, 30 A, Rds(on) 87 mOhm (max figure - the task's \"70 mOhm class\" is the code's typical class), HU3PAK. Master Electronics does not list ST codes. No second distributor price."
+  },
+  {
+   "mpn": "SPC560B60L3C6E0X",
+   "family": "SPC560B body MCU SPC560B60L3",
+   "mfr": "STMicroelectronics",
+   "desc": "32-bit Power Architecture automotive MCU for body applications",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 (14x14)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "door / seat / HVAC ECU"
+   ],
+   "observedMpn": "SPC560B60L3C6E0X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 8.705,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPC560B60L3C6E0X",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8.37218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPC560B60L3C6E0X",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 7.23,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/spc560b60l3c6e0x-0/st-microcontrollers/stmicroelectronics/spc560b60l3c6e0x/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,469, lead time 26 weeks): tape & reel 1,000 = 8.37218 (the only reel break); cut tape 100 = 9.34050, 500 = 8.70500 (largest cut-tape break). The pair is cut tape 500 / reel 1,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Package read on the page: 100-LQFP (14x14). Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\". TME page (tme.eu/en, USD; \"7000 in an external stock\", custom-order product, business customers only, MOQ 1,000, multiple 1,000; packing not stated): \"Net price for quantities from 1000 pcs - 7.23 USD\" (the page prints the same figure as gross) - the only break. Digi-Key reel 8.37218 v TME 7.23 @ 1,000 = 1.16x."
+  },
+  {
+   "mpn": "SPC560C50L1B4E0X",
+   "family": "SPC560C body MCU SPC560C50L1",
+   "mfr": "STMicroelectronics",
+   "desc": "32-bit Power Architecture automotive MCU for body applications",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 (10x10)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "door / seat / HVAC ECU"
+   ],
+   "observedMpn": "SPC560C50L1B4E0X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.72522,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPC560C50L1B4E0X",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 5.01,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/spc560c50l1b4e0x-0/st-microcontrollers/stmicroelectronics/spc560c50l1b4e0x/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", lead time 26 weeks): one row only - 1,000 = 5.72522, packaging shown as Tray (manufacturer standard package). No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Package read on the page: 64-LQFP (10x10). TME page (tme.eu/en, USD; \"134000 in an external stock\", custom-order product, business customers only, MOQ 1,000, multiple 1,000; packing not stated): \"Net price for quantities from 1000 pcs - 5.01 USD\" (the page prints the same figure as gross; visible figure recorded, 2 decimals) - the only break. Digi-Key 5.72522 v TME 5.01 @ 1,000 = 1.14x."
+  },
+  {
+   "mpn": "SPC560D40L1C4E0X",
+   "family": "SPC560D body MCU SPC560D40L1",
+   "mfr": "STMicroelectronics",
+   "desc": "32-bit Power Architecture automotive MCU, entry body line",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 (10x10)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "door / seat / HVAC ECU"
+   ],
+   "observedMpn": "SPC560D40L1C4E0X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.82159,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPC560D40L1C4E0X",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 1.99,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/spc560d40l1c4e0x-0/unclassified/stmicroelectronics/spc560d40l1c4e0x/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"available for purchase but not normally stocked\", lead time 26 weeks; Digi-Key part 497-13563-2-ND): tape & reel 1,000 = 3.82159 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Package read on the page: 64-LQFP (10x10). TME page (tme.eu/en, USD; \"205 000 in an external stock\", custom-order product, business customers only, MOQ 1,000, multiple 1,000; packing not stated): \"Net price for quantities from 1000 pcs - 1.99 USD\" (the page prints the same figure as gross) - the only break. WIDE GAP: Digi-Key 3.82159 (not stocked, one row) v TME 1.99 (external stock) @ 1,000 = 1.92x - below the 2.5x SPREAD line, both recorded as shown."
+  },
+  {
+   "mpn": "SPC56EL60L3CBFSR",
+   "family": "SPC56EL safety MCU SPC56EL60L3",
+   "mfr": "STMicroelectronics",
+   "desc": "32-bit Power Architecture dual-core automotive MCU for chassis and safety applications",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 (14x14)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "door / seat / HVAC ECU"
+   ],
+   "observedMpn": "SPC56EL60L3CBFSR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 14.20291,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SPC56EL60L3CBFSR",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 12.94,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/spc56el60l3cbfsr-0/st-microcontrollers/stmicroelectronics/spc56el60l3cbfsr/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, available to order - no stock figure, lead time 26 weeks): one row only - 1,000 = 14.20291, packaging shown as Tray (manufacturer standard package). No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Package read on the page: 100-LQFP (14x14). TME page (tme.eu/en, USD; \"1000 in an external stock\", custom-order product, business customers only, MOQ 1,000, multiple 1,000; LQFP100; packing not stated): \"Net price for quantities from 1000 pcs - 12.94 USD\" (the page prints the same figure as gross) - the only break. Digi-Key 14.20291 v TME 12.94 @ 1,000 = 1.10x. Master Electronics does not list ST codes (two exact-code searches returned no result)."
+  },
+  {
+   "mpn": "STD105N10F7AG",
+   "family": "STripFET F7 automotive STD105N10F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade N-channel 100 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+   "category": "ic_soic",
+   "pkg": "DPAK (TO-252-3)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STD105N10F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.11198,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STD105N10F7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.94472,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STD105N10F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.85658,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STD105N10F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,611, lead time 26 weeks; Digi-Key part 497-15305-2-ND): tape & reel 2,500 = 0.94472, 7,500 = 0.85658 (largest); cut tape 100 = 1.38040, 500 = 1.11198 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false)."
+  },
+  {
+   "mpn": "STGAP2SICSACTR",
+   "family": "STGAP2SiCSA automotive isolated gate driver",
+   "mfr": "STMicroelectronics",
+   "desc": "galvanically isolated single gate driver for SiC MOSFETs, automotive variant of STGAP2SiCS",
+   "category": "ic_soic",
+   "pkg": "SO-8W (8-SOIC, 7.5 mm wide)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "on-board charger",
+    "HV DC-DC"
+   ],
+   "observedMpn": "STGAP2SICSACTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.70619,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STGAP2SICSACTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.61824,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STGAP2SICSACTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,396, lead time 99 weeks): tape & reel 1,000 = 1.70619, 2,000 = 1.66342, 3,000 = 1.64198, 5,000 = 1.61824 (largest); cut tape 100 = 1.72510, 250 = 1.63128, 500 = 1.59716 (cut tape 500 is cheaper than every reel row - as shown). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Package read on the page: 8-SOIC 7.50 mm width. The catalogue holds the non-automotive STGAP2SICS - this is the automotive code."
+  },
+  {
+   "mpn": "STK615N4F8AG",
+   "family": "STripFET F8 40 V automotive STK615N4F8AG",
+   "mfr": "STMicroelectronics",
+   "desc": "N-channel 40 V STripFET F8 power MOSFET for automotive motor control (ratings and package not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerLeaded 8x8 (4-PowerSFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "battery switch",
+    "48 V / 12 V power distribution"
+   ],
+   "observedMpn": "STK615N4F8AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.683,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STK615N4F8AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 1.53407,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STK615N4F8AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.40161,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STK615N4F8AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 418, lead time 20 weeks): tape & reel 2,000 = 1.53407, 6,000 = 1.40161 (largest); cut tape 100 = 2.00030, 500 = 1.68300 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\". Package read on the page: 4-PowerSFN, supplier package PowerLeaded (8x8) - a leadless power package, so category changed from the task's ic_soic to ic_qfn (RULES-R4)."
+  },
+  {
+   "mpn": "STL115N10F7AG",
+   "family": "STripFET F7 automotive STL115N10F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade N-channel 100 V STripFET F7 power MOSFET (48 V systems) (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL115N10F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.25898,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL115N10F7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.1239,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL115N10F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 1.02662,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL115N10F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 37,828, lead time 24 weeks; Digi-Key part 497-17622-2-ND): tape & reel 3,000 = 1.12390, 9,000 = 1.02662 (largest); cut tape 100 = 1.55160, 500 = 1.25898 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6)."
+  },
+  {
+   "mpn": "STL135N8F7AG",
+   "family": "STripFET F7 automotive STL135N8F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade N-channel 80 V STripFET F7 power MOSFET (48 V systems) (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL135N8F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.4307,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL135N8F7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.28269,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL135N8F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,078, lead time 24 weeks; Digi-Key part 497-16318-2-ND): tape & reel 3,000 = 1.28269 (the only reel break); cut tape 100 = 1.75230, 500 = 1.43070 (largest cut-tape break). The pair is cut tape 500 / reel 3,000 (different packings - no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6). Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"."
+  },
+  {
+   "mpn": "STL190N4F7AG",
+   "family": "STripFET F7 automotive STL190N4F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL190N4F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.20454,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL190N4F7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.844,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL190N4F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.76569,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL190N4F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 574, lead time 24 weeks): tape & reel 3,000 = 0.84400, 9,000 = 0.76569 (largest); cut tape 100 = 1.48710, 500 = 1.20454 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6)."
+  },
+  {
+   "mpn": "STL285N4F7AG",
+   "family": "STripFET F7 automotive STL285N4F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL285N4F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.24678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL285N4F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"available for purchase but not normally stocked\", lead time 24 weeks): tape & reel 3,000 = 1.24678 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6)."
+  },
+  {
+   "mpn": "STL64DN4F7AG",
+   "family": "STripFET F7 automotive STL64DN4F7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade dual N-channel 40 V STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 dual (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL64DN4F7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.8518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL64DN4F7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.74739,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL64DN4F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.67601,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL64DN4F7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 3,000 expected 30-Nov-2026, lead time 24 weeks): tape & reel 3,000 = 0.74739, 9,000 = 0.67601 (largest); cut tape 100 = 1.06620, 500 = 0.85180 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6)."
+  },
+  {
+   "mpn": "STL76DN4LF7AG",
+   "family": "STripFET F7 automotive STL76DN4LF7AG",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive-grade dual N-channel 40 V logic-level STripFET F7 power MOSFET (ratings beyond the voltage class not read on a page)",
+   "category": "ic_qfn",
+   "pkg": "PowerFLAT 5x6 dual (8-PowerVDFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC-DC",
+    "battery switch / reverse protection",
+    "body loads"
+   ],
+   "observedMpn": "STL76DN4LF7AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.85936,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL76DN4LF7AG",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.75432,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL76DN4LF7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.68243,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STL76DN4LF7AG",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 5,425, lead time 24 weeks): tape & reel 3,000 = 0.75432, 9,000 = 0.68243 (largest); cut tape 100 = 1.07530, 500 = 0.85936 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Package read on the page: PowerFlat (5x6)."
+  },
+  {
+   "mpn": "STM8AF5268TCY",
+   "family": "STM8AF automotive 8-bit MCU STM8AF5268",
+   "mfr": "STMicroelectronics",
+   "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 32 Kbyte flash class, 48 pins",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "actuator / sensor node",
+    "LIN slave",
+    "body switch module",
+    "HVAC"
+   ],
+   "observedMpn": "STM8AF5268TCY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 3.5565,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STM8AF5268TCY",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.27274,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STM8AF5268TCY",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,402, lead time 16 weeks; Digi-Key part 497-18607-ND): tray only - 100 = 3.55650, 250 = 3.37944, 500 = 3.27274 (largest break; none at 1,000 or above). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 48-LQFP, flash 32 KB, RAM 6 K, EEPROM 1 K."
+  },
+  {
+   "mpn": "STM8AF5288TCY",
+   "family": "STM8AF automotive 8-bit MCU STM8AF5288",
+   "mfr": "STMicroelectronics",
+   "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 64 Kbyte flash class, 48 pins",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 (7x7)",
+   "aecq": true,
+   "ecuRoles": [
+    "actuator / sensor node",
+    "LIN slave",
+    "body switch module",
+    "HVAC"
+   ],
+   "observedMpn": "STM8AF5288TCY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 4.2764,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STM8AF5288TCY",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.94228,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STM8AF5288TCY",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 564, lead time 16 weeks; Digi-Key part 497-18610-ND): tray only - 100 = 4.27640, 250 = 4.06792, 500 = 3.94228 (largest break; none at 1,000 or above). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 48-LQFP (7x7), flash 64 KB."
+  },
+  {
+   "mpn": "STM8AF52A8TCY",
+   "family": "STM8AF automotive 8-bit MCU STM8AF52A8",
+   "mfr": "STMicroelectronics",
+   "desc": "8-bit automotive MCU with CAN, STM8AF52 line, 128 Kbyte flash class, 48 pins",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "actuator / sensor node",
+    "LIN slave",
+    "body switch module",
+    "HVAC"
+   ],
+   "observedMpn": "STM8AF52A8TCY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 4.08926,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STM8AF52A8TCY",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", lead time 16 weeks): tray 1,500 = 4.08926 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: 48-LQFP, flash 128 KB, EEPROM 2 K, RAM 6 K."
+  },
+  {
+   "mpn": "STPS15H100CBY-TR",
+   "family": "STPS15H100C-Y automotive dual Schottky",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive 100 V, 2 x 7.5 A dual common-cathode power Schottky rectifier",
+   "category": "ic_soic",
+   "pkg": "DPAK (TO-252-3)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "reverse-polarity protection",
+    "freewheeling",
+    "on-board charger"
+   ],
+   "observedMpn": "STPS15H100CBY-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.50442,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPS15H100CBY-TR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.43698,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPS15H100CBY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.38842,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPS15H100CBY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,534, lead time 15 weeks; Digi-Key part 497-12283-2-ND): tape & reel 2,500 = 0.43698, 7,500 = 0.38842 (largest); cut tape 100 = 0.64470, 500 = 0.50442 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Ratings read on the page (task had \"not read\"): 100 V, 7.5 A per diode, 1 pair common cathode, Schottky, DPAK - desc completed from the page."
+  },
+  {
+   "mpn": "STPSC6H065BY-TR",
+   "family": "STPSC6H065-Y automotive SiC diode",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive 650 V, 6 A silicon-carbide power Schottky diode",
+   "category": "ic_soic",
+   "pkg": "DPAK (TO-252-3)",
+   "aecq": true,
+   "ecuRoles": [
+    "on-board charger",
+    "PFC"
+   ],
+   "observedMpn": "STPSC6H065BY-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.2178,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPSC6H065BY-TR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.09336,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPSC6H065BY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.99487,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPSC6H065BY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 8,698, lead time 25 weeks; Digi-Key part 497-18140-2-ND): tape & reel 2,500 = 1.09336, 7,500 = 0.99487 (largest); cut tape 100 = 1.50330, 500 = 1.21780 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\" (task had aecq false). Ratings read on the page: silicon carbide, 650 V, 6 A, DPAK."
+  },
+  {
+   "mpn": "STPST5H100SBY-TR",
+   "family": "STPST5H100-Y automotive trench Schottky",
+   "mfr": "STMicroelectronics",
+   "desc": "automotive 100 V, 5 A power Schottky trench rectifier",
+   "category": "ic_soic",
+   "pkg": "DPAK (TO-252-3)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "reverse-polarity protection",
+    "freewheeling",
+    "on-board charger"
+   ],
+   "observedMpn": "STPST5H100SBY-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.49586,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPST5H100SBY-TR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.42926,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPST5H100SBY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.38137,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STPST5H100SBY-TR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 17,166, lead time 19 weeks): tape & reel 2,500 = 0.42926, 7,500 = 0.38137 (largest); cut tape 100 = 0.63420, 500 = 0.49586 (largest cut-tape break). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\". Ratings read on the page: Schottky, 100 V, 5 A, DPAK."
+  },
+  {
+   "mpn": "TL431AIYDT",
+   "family": "TL431A automotive (IY) TL431AIYDT",
+   "mfr": "STMicroelectronics",
+   "desc": "programmable shunt voltage reference, 1 % (A grade)",
+   "category": "ic_soic",
+   "pkg": "SO-8 (8-SOIC 3.9 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "power supply feedback",
+    "reference"
+   ],
+   "observedMpn": "TL431AIYDT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.26054,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TL431AIYDT",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.27658,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TL431AIYDT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 25000,
+     "price": 0.25603,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TL431AIYDT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,323, lead time 30 weeks; Digi-Key part 497-10179-2-ND): cut tape 100 = 0.30620, 250 = 0.28444, 500 = 0.27134, 1,000 = 0.26054; tape & reel 2,500 = 0.27658, 5,000 = 0.26895, 7,500 = 0.26512, 12,500 = 0.26089, 17,500 = 0.25841, 25,000 = 0.25603 (largest). The 2,500 reel is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 2,500 -> 25,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). The catalogue's TL431AQDBZRQ1 is a different (TI) part."
+  },
+  {
+   "mpn": "TS3011IYLT",
+   "family": "TS3011 automotive (IY) TS3011IYLT",
+   "mfr": "STMicroelectronics",
+   "desc": "single high-speed rail-to-rail comparator",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5",
+   "aecq": true,
+   "ecuRoles": [
+    "protection comparators",
+    "motor control"
+   ],
+   "observedMpn": "TS3011IYLT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.46096,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS3011IYLT",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.50489,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS3011IYLT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.47563,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS3011IYLT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 8,211, lead time 30 weeks; Digi-Key part 497-15079-2-ND): cut tape 100 = 1.58490, 250 = 1.49748, 500 = 1.46096 (largest cut-tape break); tape & reel 3,000 = 1.50489, 6,000 = 1.47563 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 3,000 -> 6,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TS393IYDT",
+   "family": "TS393 automotive (IY) TS393IYDT",
+   "mfr": "STMicroelectronics",
+   "desc": "dual micropower CMOS voltage comparator",
+   "category": "ic_soic",
+   "pkg": "SO-8 (8-SOIC 3.9 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "window / threshold detection"
+   ],
+   "observedMpn": "TS393IYDT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.68132,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS393IYDT",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.60387,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS393IYDT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 17500,
+     "price": 0.56933,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TS393IYDT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,930, lead time 30 weeks; Digi-Key part 497-10246-2-ND): cut tape 100 = 0.76900, 250 = 0.72144, 500 = 0.69280, 1,000 = 0.68132; tape & reel 2,500 = 0.60387, 5,000 = 0.58936, 7,500 = 0.58209, 12,500 = 0.57403, 17,500 = 0.56933 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSB612IYST",
+   "family": "TSB612 automotive (IY) TSB612IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual 36 V low-power op amp, TSB6 series",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSB612IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.74404,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB612IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.7712,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB612IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.74757,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB612IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 7,111, lead time 30 weeks): cut tape 100 = 0.83570, 250 = 0.78476, 500 = 0.75400, 1,000 = 0.74404; tape & reel 4,000 = 0.77120, 8,000 = 0.75546, 12,000 = 0.74757 (largest). Every reel row is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 4,000 -> 12,000. GRADE NOT CONFIRMED ON THE DIGI-KEY PAGE: no Grade / Qualification field shown. GRADE (weaker evidence - NOT page-read): aecq true rests on a web-search summary of ST's own product page (st.com/en/amplifiers-and-comparators/tsb612.html: \"TSB612IYST Active\", automotive-grade, MiniSO-8) and of Octopart's listing title (\"Op Amp Dual Low Power Amplifier R-R O/P 36V Automotive 8-Pin MSOP T/R\"); st.com itself returned HTTP 503 when read. Check before relying on it."
+  },
+  {
+   "mpn": "TSB712AIYST",
+   "family": "TSB712A automotive (IY) TSB712AIYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual 36 V precision op amp, TSB7 series",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSB712AIYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.23444,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB712AIYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, \"not kept in stock at DigiKey\", lead time 30 weeks; Digi-Key part 497-19086-2-ND): tape & reel 4,000 = 1.23444 - the only row. No larger break published (no own slope). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSB7192IYST",
+   "family": "TSB7192 automotive (IY) TSB7192IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual 36 V op amp, TSB7 series",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSB7192IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.09426,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB7192IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.12441,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB7192IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 8000,
+     "price": 1.10298,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSB7192IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 164, lead time 30 weeks; Digi-Key part 497-18477-2-ND): cut tape 100 = 1.20440, 250 = 1.13500, 500 = 1.09426 (largest cut-tape break); tape & reel 4,000 = 1.12441, 8,000 = 1.10298 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 4,000 -> 8,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSC101AIYLT",
+   "family": "TSC101A automotive (IY) TSC101AIYLT",
+   "mfr": "STMicroelectronics",
+   "desc": "high-side current-sense amplifier, gain 20 V/V",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5",
+   "aecq": true,
+   "ecuRoles": [
+    "current sensing"
+   ],
+   "observedMpn": "TSC101AIYLT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.98195,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC101AIYLT",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.02076,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC101AIYLT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.98878,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC101AIYLT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - backorder, in-stock date unavailable, lead time 30 weeks; Digi-Key part 497-10273-2-ND): cut tape 100 = 1.08680, 250 = 1.02320, 500 = 0.98482, 1,000 = 0.98195; tape & reel 3,000 = 1.02076, 6,000 = 0.99946, 9,000 = 0.98878 (largest). Every reel row is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 3,000 -> 9,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSC2012IYST",
+   "family": "TSC2012 automotive (IY) TSC2012IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "bidirectional current-sense amplifier, gain 100 V/V (TSC201x series)",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor phase current sensing",
+    "DC-DC",
+    "battery monitoring"
+   ],
+   "observedMpn": "TSC2012IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.0502,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC2012IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.42673,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC2012IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 42, lead time 30 weeks): tape & reel 4,000 = 1.42673 (the only reel break); cut tape 100 = 2.18840, 250 = 2.07384, 500 = 2.05020 (largest cut-tape break). The pair is cut tape 500 / reel 4,000 (different packings - a steep step, no larger reel break published). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSC2020IYST",
+   "family": "TSC2020 automotive (IY) TSC2020IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "current-sense amplifier, single-ended output, 2.7-5.5 V supply, TSC202x series (gain not shown on the page)",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "current sensing"
+   ],
+   "observedMpn": "TSC2020IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.19508,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC2020IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.24403,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC2020IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.20465,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSC2020IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 569, lead time 30 weeks): cut tape 100 = 1.30950, 250 = 1.23504, 500 = 1.19508 (largest cut-tape break); tape & reel 2,500 = 1.24403, 5,000 = 1.21779, 7,500 = 1.20465 (largest). Every reel row is DEARER than cut tape 500 - recorded as shown; the slope is the reel ladder 2,500 -> 7,500. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: current sense, 1 circuit, single-ended, supply 2.7-5.5 V, 8-MiniSO; no gain attribute shown."
+  },
+  {
+   "mpn": "TSV7722IYST",
+   "family": "TSV7722 automotive (IY) TSV7722IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual 5 V op amp, rail-to-rail output (MiniSO-8 code of the TSV7722)",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": false,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSV7722IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.63832,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV7722IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.66402,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV7722IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.64311,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV7722IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 7,328, lead time 30 weeks): cut tape 100 = 0.72300, 250 = 0.67792, 500 = 0.65072, 1,000 = 0.63832; tape & reel 4,000 = 0.66402, 8,000 = 0.65009, 12,000 = 0.64311 (largest). Every reel row is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 4,000 -> 12,000. GRADE NOT CONFIRMED ON THE DIGI-KEY PAGE: no Grade / Qualification field shown. One web search found no page stating AEC-Q100 for this MiniSO-8 code (the SO-8 sibling TSV7722IYDT is named \"Automotive AEC-Q100\" on Arrow's listing, per the search summary; \"IY\" is ST's automotive order-code suffix) - aecq left false; st.com returned HTTP 503. TME page (tme.eu/en/details/tsv7722iyst/smd-operational-amplifiers/stmicroelectronics/, USD, 0 in TME stock, reel): one line only - from 1 pc 0.99 (below 100, not recorded); spec \"Application: automotive industry\", no AEC-Q100 statement; miniSO8, -40...125 C."
+  },
+  {
+   "mpn": "TSV912IYST",
+   "family": "TSV912 automotive (IY) TSV912IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual 8 MHz rail-to-rail 5 V CMOS op amp",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSV912IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.78818,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV912IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.81587,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV912IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.79112,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSV912IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 17,496, lead time 30 weeks; Digi-Key part 497-10385-2-ND): cut tape 100 = 0.88260, 250 = 0.82916, 500 = 0.79698, 1,000 = 0.78818; tape & reel 4,000 = 0.81587, 8,000 = 0.79937, 12,000 = 0.79112 (largest). Every reel row is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 4,000 -> 12,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "TSZ122IYST",
+   "family": "TSZ122 automotive (IY) TSZ122IYST",
+   "mfr": "STMicroelectronics",
+   "desc": "dual zero-drift micropower 5 V op amp",
+   "category": "ic_soic",
+   "pkg": "MiniSO-8 (8-MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor signal conditioning",
+    "current sensing",
+    "motor control",
+    "power supply monitoring"
+   ],
+   "observedMpn": "TSZ122IYST",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.69661,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSZ122IYST",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.72316,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSZ122IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.70073,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TSZ122IYST",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,316, lead time 30 weeks; Digi-Key part 497-14850-2-ND): cut tape 100 = 0.78530, 250 = 0.73688, 500 = 0.70772, 1,000 = 0.69661; tape & reel 4,000 = 0.72316, 8,000 = 0.70822, 12,000 = 0.70073 (largest). Every reel row is DEARER than cut tape 1,000 - recorded as shown; the slope is the reel ladder 4,000 -> 12,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false)."
+  },
+  {
+   "mpn": "VN7003AHTR",
+   "family": "VIPower M0-7 high-side driver VN7003AH",
+   "mfr": "STMicroelectronics",
+   "desc": "single-channel high-current high-side driver, VIPower M0-7, 3.5 mOhm typ, 80 A, 4.5-28 V",
+   "category": "ic_soic",
+   "pkg": "OctaPAK (7 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "power distribution",
+    "relay replacement"
+   ],
+   "observedMpn": "VN7003AHTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 2.82944,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7003AHTR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.88927,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7003AHTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, OUT OF STOCK - in-stock date unavailable, lead time 99 weeks, max 2,500 per packaging; Digi-Key part 497-16716-2-ND): tape & reel 2,500 = 2.88927 (the only reel break); cut tape 100 = 2.97630, 250 = 2.82944 (largest cut-tape break). The reel is 2 % DEARER than cut tape 250 - recorded as shown (Addendum 2 rule 3; the same reel-above-cut-tape pattern is on most ST pages today, in stock or not), so this pair gives NO usable slope; reviewer may treat the out-of-stock listing as weak. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page (task had \"not read\"): OctaPAK 7+1, high side, 1 output, Rds(on) typ 3.5 mOhm, 80 A."
+  },
+  {
+   "mpn": "VN7004CHTR",
+   "family": "VIPower M0-7 high-side driver VN7004CH",
+   "mfr": "STMicroelectronics",
+   "desc": "single-channel high-current high-side driver, VIPower M0-7, 4 mOhm typ, 80 A, 4-28 V",
+   "category": "ic_soic",
+   "pkg": "OctaPAK (7 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "power distribution",
+    "relay replacement"
+   ],
+   "observedMpn": "VN7004CHTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.33784,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7004CHTR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.39685,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7004CHTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, OUT OF STOCK - in-stock date unavailable, lead time 99 weeks, max 2,500 per 30 days; Digi-Key part 497-16865-2-ND): tape & reel 2,500 = 2.39685 (the only reel break); cut tape 100 = 2.48040, 250 = 2.35316, 500 = 2.33784 (largest cut-tape break). The reel is 2.5 % DEARER than cut tape 500 - recorded as shown (Addendum 2 rule 3; the same pattern is on most ST pages today), so this pair gives NO usable slope; reviewer may treat the out-of-stock listing as weak. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page (task had \"not read\"): OctaPAK 7+1, high side, 1 output, Rds(on) typ 4 mOhm, 80 A."
+  },
+  {
+   "mpn": "VN7007AHTR",
+   "family": "VIPower M0-7 high-side driver VN7007AH",
+   "mfr": "STMicroelectronics",
+   "desc": "single-channel high-current high-side driver, VIPower M0-7, 7 mOhm typ, 4-28 V (Digi-Key lists 100 A max output)",
+   "category": "ic_soic",
+   "pkg": "OctaPAK (7 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "power distribution",
+    "heater / glow / fan loads"
+   ],
+   "observedMpn": "VN7007AHTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.01272,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7007AHTR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.07022,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7007AHTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,434, lead time 99 weeks; Digi-Key part 497-16867-2-ND): tape & reel 2,500 = 2.07022 (the only reel break); cut tape 100 = 2.15020, 250 = 2.03736, 500 = 2.01272 (largest cut-tape break). The reel is 2.9 % DEARER than cut tape 500 - recorded as shown, so this pair gives NO usable slope. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page (task had \"not read\"): OctaPAK 7+1, high side, 1 output, Rds(on) typ 7 mOhm."
+  },
+  {
+   "mpn": "VN7008AJTR",
+   "family": "VIPower M0-7 high-side driver VN7008AJ",
+   "mfr": "STMicroelectronics",
+   "desc": "single-channel high-side driver, VIPower M0-7, 8.5 mOhm typ, 70 A",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "zonal controller",
+    "lighting",
+    "power distribution"
+   ],
+   "observedMpn": "VN7008AJTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.51746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7008AJTR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.57074,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7008AJTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.539,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VN7008AJTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 2,500 expected 03-May-2027, lead time 99 weeks; Digi-Key part 497-19580-2-ND): cut tape 100 = 1.64310, 250 = 1.55300, 500 = 1.51746 (largest cut-tape break); tape & reel 2,500 = 1.57074, 5,000 = 1.53900 (largest). Both reel rows are DEARER than cut tape 500 - recorded as shown; the slope is the reel pair 2,500 -> 5,000. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (task had aecq false). Read on the page: PowerSSO-16, high side, 1 output, Rds(on) typ 8.5 mOhm, 70 A."
+  }
+ ]
+}

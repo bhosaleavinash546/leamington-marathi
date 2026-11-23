@@ -1,0 +1,534 @@
+{
+ "domain": "b16-ics",
+ "researched": "2026-11-23",
+ "method": "LATEST task b16-ics, 23 Nov 2026 - 36 TI lines. RESULT: 1 line priced; Digi-Key refused on the 2nd read, so the rest is code-finding only. Only prices read in the visible table of a distributor page today are in observations (evidence page-read); search-summary figures are in notes only (SUMMARY-ONLY). Note prefixes: NOT-READ = line worked (orderable code found and / or confirmed on ti.com) but no franchised distributor page with a price could be read; UNPRICED = a distributor page was read and shows no break >= 100; NO-LISTING = pre-production (TI status PREVIEW), no orderable code. DIGI-KEY: 2 requests - the product page for UCC21551CQDWKRQ1 served; the next request, the generic keyword URL keywords=TCAN1473 (which would have been a list page), returned HTTP 403. Under Addendum 4 rule 2 Digi-Key was not read again and no other Digi-Key host was tried. (Earlier runs today - b07, b12 - also got their 403 on a generic-keyword / list URL while exact-code product pages kept serving; whether that is what happened here was NOT tested.) OTHER SOURCES (both tasks together): Master Electronics 4 reads, \"no search results\" every time (TI UCC21551CQDWKRQ1; Vishay SQJ140EP-T1_GE3, VOMDA1271; Winbond W25Q64JVSSAQ); TME 8 requests = the task limit (1 guessed URL 404, 4 search pages - their visible text shows no product rows, only the product link was taken - and 3 product pages; no 429); one try each, refused: Mouser 503, Arrow 503, Farnell 503, Rutronik 403. Avnet, Newark, Future, RS, Verical were not tried (refused every earlier run today). MAKER PAGES (no price on them - used for code, status and grade only): ti.com 24 requests (16 served: product pages and part-details pages; 8 returned 404 - 6 guessed part-details codes, the BQ79731-Q1 product page, and the part-details URL of LMR604303SRAKRQ1 although Digi-Key lists that code, so a 404 there proves nothing); vishay.com 3 served. TOTAL 45 page requests (+1 cached re-read), 10 web searches (orderable codes only). PACING: sleep 20 before every Digi-Key / Master read; TME reads were spaced about a minute apart except twice, when the wait command was rejected by the shell and the read followed the previous TME request sooner. LINES: 18 priority-1 lines all worked (1 priced, 4 SUMMARY-ONLY, 12 NOT-READ of which 10 now carry an exact orderable code - 7 confirmed on TI part-details pages, 3 seen on Digi-Key listings by search - and 2 (BQ79731-Q1, LMR60440-Q1) still have no confirmed code, 1 NO-LISTING PREVIEW); of the 18 priority-2 lines 2 were worked (AM263P2ASPDFZCZRQ1 UNPRICED at TME, LM74900QRGERQ1 grade confirmed) and 16 were not reached. notResearched lists EVERY open line with the exact code and the URL to read (34 entries: the 18 worked-but-unpriced lines, which are also in parts with what was found, and the 16 not reached); TPS2HCS05-Q1 (NO-LISTING) is only in parts. CODE WARNINGS: the orderable code differs from the generic number on TCAN1473 (TCAN1473CDMTRQ1), TCAN2845 / 2855 / 2857 (a variant digit: TCAN28453RHBRQ1 ...), DRV8000 (DRV8000QWRGZRQ1, not the DRV8000QRGZRQ1 a datasheet summary prints) and TPS4816 (TPS48160QRGERQ1).",
+ "parts": [
+  {
+   "mpn": "UCC21551CQDWKRQ1",
+   "family": "UCC21551-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive 4 A / 6 A reinforced-isolation dual-channel gate driver",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 wide body, 7.5 mm (DWK)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "HV DC-DC",
+    "traction inverter",
+    "e-compressor"
+   ],
+   "observedMpn": "UCC21551CQDWKRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.65914,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 2.45145,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.40407,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC21551CQDWKRQ1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (digikey.com, USD, read 2026-11-23; keyword URL landed on the single product page; Digi-Key part numbers 296-UCC21551CQDWKRQ1TR-ND / CT-ND / DKR-ND): Part Status Active; stock 0 (backorder; 1,979 expected 07-Apr-2027), manufacturer lead time 26 weeks - out of stock. Cut tape / Digi-Reel table: 1 = 4.45, 10 = 3.37, 25 = 3.10080, 100 = 2.80490, 250 = 2.66392, 500 = 2.65914 (largest cut-tape row - the row nearest 1,000). Tape & reel: 2,000 = 2.45145, 4,000 = 2.40407 (smallest and largest reel rows; nothing larger is published - no break near 200,000). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"; TI part-details page for this code: ACTIVE, SOIC (DWK) 14 pins, 2,000 LARGE T&R, \"AEC-Q100 qualified\", device temperature grade 1. Package read on the Digi-Key page: 14-SOIC (0.295\", 7.50 mm width) - the task had \"unknown (DWK code)\". Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\" (Master does not list TI). No second distributor price."
+  },
+  {
+   "mpn": "AM263P4ACOKFZCZRQ1",
+   "family": "AM263Px",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM263Px real-time MCU (zone controller MCU)",
+   "category": "ic_bga",
+   "pkg": "NFBGA-324 (ZCZ) 15x15 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "AM263P4ACOKFZCZRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). The task line names a FAMILY (the TIDA-020079 BOM prints \"AM263PxC\"); representative chosen: AM263P4ACOKFZCZRQ1 - TI part-details page (ti.com/product/AM263P4-Q1/part-details/AM263P4ACOKFZCZRQ1, read 2026-11-23): ACTIVE, \"Automotive 400MHz quad-core Arm Cortex-R5F MCU with real-time control and flash-in-package\", NFBGA (ZCZ) 324 pins, 1,000 LARGE T&R, -40 to 150 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\" (task had aecq false). A sibling AM263P4ASOKFZCZRQ1 also has a TI part-details page (search result, not read). Whether Digi-Key stocks either code was NOT checked (the code was not seen on a distributor listing); the dual-core AM263P2ASPDFZCZRQ1 is its own line in this task. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=AM263P4ACOKFZCZRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "BQ79731-Q1",
+   "family": "BQ79731-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Battery pack monitor (BJB): pack voltage, current and insulation-resistance measurement for HV BMS",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48 (PHP) - read on the BQ79731B-Q1 page",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS battery junction box"
+   ],
+   "observedMpn": "BQ79731-Q1",
+   "observations": [],
+   "notes": "NOT-READ: NO orderable code could be confirmed, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried. What was read on ti.com today: ti.com/product/BQ79731-Q1 returned HTTP 404; ti.com/product/BQ79731B-Q1 is ACTIVE with a NEW badge, \"Automotive high-voltage battery pack monitor with voltage, current and insulation resistance sensing\", HTQFP (PHP) 48 pins, \"AEC-Q100 qualified -40C to +125C\", no orderable code shown; the guessed codes BQ79731PHPRQ1 and BQ79731BPHPRQ1 both returned 404 on TI part-details (a 404 there is not proof - LMR604303SRAKRQ1, which Digi-Key lists, also returned 404). Search summary of the TI datasheet addendum (SLUSF55A): pre-production orderable PBQ79731PHPTQ1, status PRE_PROD, qty 250, with an NRND note whose row could not be told. A search limited to digikey / mouser found only Mouser's new-product page, no product listing. If Digi-Key shows no orderable code with a price this line is NO-LISTING (supplier quote). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=BQ79731 ."
+  },
+  {
+   "mpn": "BQ79758QPAPRQ1",
+   "family": "BQ79758-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "18S battery cell monitor with current sense",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64 (PAP) - from the code, not read",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS cell monitoring unit",
+    "48 V battery"
+   ],
+   "observedMpn": "BQ79758QPAPRQ1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/BQ79758QPAPRQ1/25324528 - result title \"BQ79758QPAPRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary: Digi-Key lists tape & reel and cut tape, Grade automotive / AEC-Q100, \"a 1,000-unit reel price ... about $10.73\" - a rounded summary figure, NOT a price. The summary also cites TI PCN 20250429002.2 (24 Oct 2025: die revision, marking and datasheet change for BQ79758QPAPRQ1, first ship 22 Apr 2026). Package per the code: PAP = HTQFP-64 (not read on a page). One Digi-Key read prices it."
+  },
+  {
+   "mpn": "CC2745R10E0WRHARQ1",
+   "family": "CC2745R10-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive SimpleLink Bluetooth LE wireless MCU, 1 MB flash, HSM, APU, CAN FD (channel-sounding capable family)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40 6x6 wettable flank (RHA)",
+   "aecq": true,
+   "ecuRoles": [
+    "digital key / car access ECU",
+    "body control module",
+    "TPMS receiver",
+    "wireless BMS"
+   ],
+   "observedMpn": "CC2745R10E0WRHARQ1",
+   "observations": [],
+   "notes": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/CC2745R10E0WRHARQ1/25891591 - result title \"CC2745R10E0WRHARQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary (no price in it): Digi-Key lists tape & reel, cut tape and Digi-Reel, about 2,003 in stock, Active, Grade automotive / AEC-Q100; Mouser reel size 4,000. One Digi-Key read prices it."
+  },
+  {
+   "mpn": "DRV8000QWRGZRQ1",
+   "family": "DRV8000-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Multifunction door-control driver: H-bridge gate driver, half-bridges and high-side drivers in one IC, 4.5-35 V",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 7x7 mm (RGZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "door module",
+    "zonal controller"
+   ],
+   "observedMpn": "DRV8000QWRGZRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/DRV8000-Q1/part-details/DRV8000QWRGZRQ1, read 2026-11-23): ACTIVE, VQFN (RGZ) 48 pins, 2,500 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\", temperature grade 1. CODE WARNING: a search summary of the datasheet prints the orderable as \"DRV8000QRGZRQ1\" (pre-production PDRV8000QWRGZRQ1); TI's part-details URL for DRV8000QRGZRQ1 returned 404, the W spelling served. The code was not seen on a distributor listing. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=DRV8000QWRGZRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "LMR604303SRAKRQ1",
+   "family": "LMR60430-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-36 V, 3 A synchronous buck, 5 uA IQ in auto mode, 30 ns minimum on-time",
+   "category": "ic_qfn",
+   "pkg": "WQFN-HR 9 pins 2.5x2 mm (RAK)",
+   "aecq": true,
+   "ecuRoles": [
+    "any 12 V ECU primary rail"
+   ],
+   "observedMpn": "LMR604303SRAKRQ1",
+   "observations": [],
+   "notes": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/LMR604303SRAKRQ1/26812419); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary (no figure quoted): the Digi-Key page \"lists a USD price ladder and an Active status\". Which fixed-voltage / feature variant the \"3S\" letters name was NOT read. GRADE: TI product page ti.com/product/LMR60430-Q1 (read 2026-11-23): ACTIVE, \"Automotive, 36V, 3A synchronous buck converter with low Iq\", \"AEC-Q100 qualified for automotive applications\" (task had aecq false), packages WQFN-HR (RAK) 9 pins 2.5x2 mm and WQFN-HR (RBM) 11 pins 2.5x3.5 mm. TI's part-details URL for this code returned 404 (not proof of anything - Digi-Key lists the code). One Digi-Key read prices it."
+  },
+  {
+   "mpn": "LMR60440-Q1",
+   "family": "LMR60440-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-36 V, 4 A synchronous buck, 5 uA IQ, EMI-optimised",
+   "category": "ic_qfn",
+   "pkg": "WQFN-HR 9 pins 2.5x2 mm (RAK) - \"HotRod QFN\" in the task",
+   "aecq": true,
+   "ecuRoles": [
+    "any 12 V ECU primary rail"
+   ],
+   "observedMpn": "LMR60440-Q1",
+   "observations": [],
+   "notes": "NOT-READ: NO automotive orderable code was seen on a distributor listing, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried. Found: TI product page ti.com/product/LMR60440-Q1 (read 2026-11-23): ACTIVE, \"Automotive, 36V, 4A synchronous buck converter with low IQ\", \"AEC-Q100 qualified for automotive applications\" (task had aecq false), WQFN-HR (RAK) 9 pins / (RBM) 11 pins - no orderable code shown. Search summaries: the Dec 2024 advance-information datasheet (SNAS874) names LMR604405SRAKRQ1, 3,000 a reel (TI part-details URL for it returned 404 today); Mouser lists the NON-automotive LMR604403SRAKR; Digi-Key lists the 3 A sibling LMR604303SRAKRQ1 - by analogy the 4 A code may be LMR604403SRAKRQ1, which is a GUESS and was not seen anywhere. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=LMR60440 (a list is likely - take the -Q1 RAK code from it)."
+  },
+  {
+   "mpn": "TCAN1473CDMTRQ1",
+   "family": "TCAN1473-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive low-power signal-improvement (SIC) CAN FD transceiver with INH and WAKE",
+   "category": "ic_qfn",
+   "pkg": "VSON-14 4.5x3 mm wettable flank (DMT)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN1473CDMTRQ1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN1473-Q1/part-details/TCAN1473CDMTRQ1, read 2026-11-23): ACTIVE, VSON (DMT) 14 pins, 3,000 LARGE T&R, -40 to 150 C, rating Automotive, \"AEC Q100 Qualified for automotive applications\". Digi-Key lists the code (https://www.digikey.co.uk/en/products/detail/texas-instruments/TCAN1473CDMTRQ1/27802364 - search result, tagged \"New Product\"). summary: Digi-Key UK tape & reel 3,000 = GBP 0.86166 (a search-summary figure - not recorded). CATEGORY: the code found is the leadless VSON-14, so category is ic_qfn (the task line had ic_soic for \"SOIC-14 / VSON-14 / SOT-23-THN-14\"); the SOIC-14 (D) and SOT-23-THN (DYY) codes were not found - TI's part-details URL for the guess TCAN1473DRQ1 returned 404, and the orderable carries a \"C\" the generic number does not. One Digi-Key read prices it."
+  },
+  {
+   "mpn": "TCAN1575DMTRQ1",
+   "family": "TCAN1575-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN SIC transceiver with partial networking (selective wake)",
+   "category": "ic_qfn",
+   "pkg": "VSON-14 (DMT)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN1575DMTRQ1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; Mouser 503). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN1575-Q1/part-details/TCAN1575DMTRQ1, read 2026-11-23): ACTIVE, VSON (DMT) 14 pins, 3,000 LARGE T&R, -40 to 150 C, rating Automotive, \"AEC-Q100 (Grade 1): Qualified for automotive applications\". summary: Mouser lists the VSON reel at $1.61 at 3,000; Octopart (aggregator, octopart.com/part/texas-instruments/TCAN1575DMTRQ1) shows $1.548 - search-summary figures, not recorded. CATEGORY: the code found is the leadless VSON-14, so category is ic_qfn (the task line had ic_soic); SOIC-14 / SOT-23-THN codes were not looked up. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN1575DMTRQ1 ."
+  },
+  {
+   "mpn": "TCAN2451RHBRQ1",
+   "family": "TCAN2451-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN FD SIC system basis chip (SBC) with buck regulator and partial networking",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN2451RHBRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2451-Q1/part-details/TCAN2451RHBRQ1, read 2026-11-23): ACTIVE, VQFN (RHB) 32 pins, 5,000 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\", Functional Safety Quality-Managed. The code was not seen on a distributor listing. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN2451RHBRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "TCAN28453RHBRQ1",
+   "family": "TCAN2845-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN FD system basis chip (SBC) with partial networking",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN28453RHBRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2845-Q1/part-details/TCAN28453RHBRQ1, read 2026-11-23): ACTIVE, VQFN (RHB) 32 pins, 3,000 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\", Functional Safety Quality-Managed. CODE WARNING: the orderable carries a variant digit - the plain TCAN2845RHBRQ1 returned 404 on TI; what the \"3\" selects was not read (a \"5\" variant probably exists, not checked). The code was not seen on a distributor listing. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28453RHBRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "TCAN28553RHBRQ1",
+   "family": "TCAN2855-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN FD SIC system basis chip (SBC) with partial networking",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN28553RHBRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2855-Q1/part-details/TCAN28553RHBRQ1, read 2026-11-23): ACTIVE, VQFN (RHB) 32 pins, 5,000 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\", Functional Safety Quality-Managed. CODE WARNING: the orderable carries a variant digit; a search summary of the datasheet names TCAN28553RHBQ1 and TCAN28555RHBQ1 (device markings) - the \"5\" reel code was not checked and what the digit selects was not read. The code was not seen on a distributor listing. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28553RHBRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "TCAN28573RHBRQ1",
+   "family": "TCAN2857-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive CAN FD SIC and LIN system basis chip (SBC) with partial networking",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TCAN28573RHBRQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2857-Q1/part-details/TCAN28573RHBRQ1, read 2026-11-23): ACTIVE, VQFN (RHB) 32 pins, 5,000 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 qualified for automotive applications\", Functional Safety Quality-Managed. CODE WARNING: the orderable carries a variant digit; a search summary of the datasheet names TCAN28573RHBQ1 and TCAN28575RHBQ1 (device markings) - the \"5\" reel code was not checked and what the digit selects was not read. The code was not seen on a distributor listing. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28573RHBRQ1 . No other page source prices TI parts: Master Electronics has no result for TI codes, TME shows only a 1-piece price on non-stocked TI parts, Mouser / Arrow / Farnell returned 503 and Rutronik 403 on the single try."
+  },
+  {
+   "mpn": "TPS1HC120CQDYCRQ1",
+   "family": "TPS1HC120-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-channel smart high-side switch",
+   "category": "ic_soic",
+   "pkg": "SOT-583 8 pins (DYC) - search summary, not read",
+   "aecq": false,
+   "ecuRoles": [
+    "body / zonal controller"
+   ],
+   "observedMpn": "TPS1HC120CQDYCRQ1",
+   "observations": [],
+   "notes": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC120CQDYCRQ1/28721586 - result title \"TPS1HC120CQDYCRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary (no price in it): SOT-583 package, tape & reel, 0 in stock, lead time about 26 weeks; Mouser's new-product page describes TPS1HC120-Q1 as a single-channel automotive high-side switch, 120 mOhm typical, 8-pin SOT. Other version letters (A / B) may exist - not checked. GRADE not read on a page today (aecq left false as in the task; the Digi-Key Grade field settles it). One Digi-Key read prices it."
+  },
+  {
+   "mpn": "TPS2HCS05-Q1",
+   "family": "TPS2HCS05",
+   "mfr": "Texas Instruments",
+   "desc": "5 mOhm automotive dual-channel SPI-controlled smart high-side switch",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-18 (PWC)",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)"
+   ],
+   "observedMpn": "TPS2HCS05-Q1",
+   "observations": [],
+   "notes": "NO-LISTING: pre-production. TI product page ti.com/product/TPS2HCS05-Q1 (read 2026-11-23) prints status PREVIEW with a NEW badge, \"Automotive, dual-channel 5mOhm smart high-side switch with I2T wire protection, low-Iq mode and SPI\", \"AEC-Q100 qualified for automotive applications\", package \"UNKNOWN (PWC)\" 18 pins (HTSSOP per the description) and NO orderable code. A search limited to digikey / mouser returned no TPS2HCS05 listing (the 10 mOhm sibling appears there as TPS2HCS10AQPWPRQ1 and pre-production PTPS2HCS10AQPWPRQ1). The Digi-Key page was NOT read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried), so \"no listing\" rests on the PREVIEW status and the search, not on a Digi-Key \"no results\" page. Supplier quote."
+  },
+  {
+   "mpn": "TPS48160QRGERQ1",
+   "family": "TPS4816-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Smart high-side switch controller for 12 / 24 / 48 V, 3.5-95 V in, adjustable I2t overcurrent and short-circuit protection, bidirectional current monitor",
+   "category": "ic_qfn",
+   "pkg": "VQFN-23 (RGE)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "power distribution box",
+    "48 V loads"
+   ],
+   "observedMpn": "TPS48160QRGERQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; the Mouser product page mouser.com/ProductDetail/Texas-Instruments/TPS48160QRGERQ1 returned 503 on the single try). Orderable code confirmed on TI's part-details page (ti.com/product/TPS4816-Q1/part-details/TPS48160QRGERQ1, read 2026-11-23): ACTIVE, VQFN (RGE) 23 pins, 3,000 LARGE T&R, -40 to 125 C, rating Automotive, \"AEC-Q100 automotive qualified for grade 1 temperature\" (task had aecq false); the page names TPS48160-Q1 as the I2t-enabled version and TPS48161-Q1 as I2t-disabled. summary (no price): Mouser lists the code on reel, full reel 3,000, about 2,659 in stock. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TPS48160QRGERQ1 ."
+  },
+  {
+   "mpn": "TPS4HC120AQDGQRQ1",
+   "family": "TPS4HC120-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Four-channel automotive smart high-side switch",
+   "category": "ic_soic",
+   "pkg": "28 pins (DGQ) - \"28-pin HTSSOP\" in the search summary, not read",
+   "aecq": false,
+   "ecuRoles": [
+    "body / zonal controller"
+   ],
+   "observedMpn": "TPS4HC120AQDGQRQ1",
+   "observations": [],
+   "notes": "SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS4HC120AQDGQRQ1/25881361 - result title \"TPS4HC120AQDGQRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary: tape & reel, Active, \"28-pin HTSSOP\", 2 A, about 1,049 in stock, \"roughly $1.59 per unit for 2,500-unit reels\" - a rounded summary figure, NOT a price. GRADE not read on a page today (aecq left false as in the task; the Digi-Key Grade field settles it). One Digi-Key read prices it."
+  },
+  {
+   "mpn": "AM263P2ASPDFZCZRQ1",
+   "family": "AM263P2-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive Cortex-R5F MCU, up to 400 MHz, real-time control, expandable memory",
+   "category": "ic_bga",
+   "pkg": "NFBGA 324 (ZCZ) 15x15 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC / DC-DC"
+   ],
+   "observedMpn": "AM263P2ASPDFZCZRQ1",
+   "observations": [],
+   "notes": "UNPRICED: TME product page read (https://www.tme.eu/en/details/am263p2aspdfzczrq1/texas-instruments-microcontrollers/texas-instruments/ , USD, 2026-11-23): code and maker confirmed (symbol AM263P2ASPDFZCZRQ1, TEXAS INSTRUMENTS, ARM microcontroller 400 MHz, NFBGA324, -40...150 C), 0 in TME stock, minimum 1, and ONE price row only - \"from 1 pcs\" = 29.63 USD. A break below 100 is not a price: nothing recorded. The Digi-Key page was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE: not stated on the TME page; task / discovery: TI page \"AEC-Q100 qualified\", ACTIVE. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=AM263P2ASPDFZCZRQ1 ."
+  },
+  {
+   "mpn": "LM74900QRGERQ1",
+   "family": "LM74900-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-65 V ideal-diode controller (DGATE) for reverse-input protection, with switched output path",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 (RGE)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "ADAS ECU input protection"
+   ],
+   "observedMpn": "LM74900QRGERQ1",
+   "observations": [],
+   "notes": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE confirmed on TI's part-details page (ti.com/product/LM74900-Q1/part-details/LM74900QRGERQ1, read 2026-11-23): ACTIVE, \"Automotive ideal diode with circuit breaker, under- and overvoltage protection with fault output\", VQFN (RGE) 24 pins, 3,000 LARGE T&R, -40 to 125 C, Automotive, AEC-Q100 qualified, device temperature grade 1 (task had aecq false). Mouser lists the code (task sourceUrl). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=LM74900QRGERQ1 ."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "AM263P4ACOKFZCZRQ1",
+   "family": "AM263Px",
+   "why": "worked, not priced (see parts): representative code confirmed on ti.com (ACTIVE, AEC-Q100, 1,000 T&R); not yet seen at a distributor. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=AM263P4ACOKFZCZRQ1"
+  },
+  {
+   "code": "BQ79731-Q1",
+   "family": "BQ79731-Q1",
+   "why": "worked, no orderable code found (see parts): ti.com/product/BQ79731-Q1 is 404 today, BQ79731B-Q1 is ACTIVE / NEW (HTQFP-48 PHP); datasheet summary names only the pre-production PBQ79731PHPTQ1. One Digi-Key read of https://www.digikey.com/en/products/result?keywords=BQ79731 decides between a price and NO-LISTING"
+  },
+  {
+   "code": "BQ79758QPAPRQ1",
+   "family": "BQ79758-Q1",
+   "why": "SUMMARY-ONLY (see parts): one read of https://www.digikey.com/en/products/detail/texas-instruments/BQ79758QPAPRQ1/25324528"
+  },
+  {
+   "code": "CC2745R10E0WRHARQ1",
+   "family": "CC2745R10-Q1",
+   "why": "worked, not priced (see parts): one read of https://www.digikey.com/en/products/detail/texas-instruments/CC2745R10E0WRHARQ1/25891591"
+  },
+  {
+   "code": "DRV8000QWRGZRQ1",
+   "family": "DRV8000-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100 grade 1, VQFN-48, 2,500 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=DRV8000QWRGZRQ1"
+  },
+  {
+   "code": "LMR604303SRAKRQ1",
+   "family": "LMR60430-Q1",
+   "why": "worked, not priced (see parts): one read of https://www.digikey.com/en/products/detail/texas-instruments/LMR604303SRAKRQ1/26812419 ; series AEC-Q100 confirmed on ti.com"
+  },
+  {
+   "code": "LMR60440-Q1",
+   "family": "LMR60440-Q1",
+   "why": "worked, no -Q1 orderable code seen at a distributor (see parts): candidates LMR604405SRAKRQ1 (2024 advance datasheet) / LMR604403SRAKRQ1 (guess by analogy with the Digi-Key-listed LMR604303SRAKRQ1). Read https://www.digikey.com/en/products/result?keywords=LMR60440"
+  },
+  {
+   "code": "TCAN1473CDMTRQ1",
+   "family": "TCAN1473-Q1",
+   "why": "SUMMARY-ONLY (see parts): code confirmed on ti.com; one read of https://www.digikey.com/en/products/detail/texas-instruments/TCAN1473CDMTRQ1/27802364 (id seen on digikey.co.uk)"
+  },
+  {
+   "code": "TCAN1575DMTRQ1",
+   "family": "TCAN1575-Q1",
+   "why": "SUMMARY-ONLY (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100 grade 1, 3,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN1575DMTRQ1"
+  },
+  {
+   "code": "TCAN2451RHBRQ1",
+   "family": "TCAN2451-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100, VQFN-32, 5,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN2451RHBRQ1"
+  },
+  {
+   "code": "TCAN28453RHBRQ1",
+   "family": "TCAN2845-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100, VQFN-32, 3,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28453RHBRQ1"
+  },
+  {
+   "code": "TCAN28553RHBRQ1",
+   "family": "TCAN2855-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100, VQFN-32, 5,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28553RHBRQ1"
+  },
+  {
+   "code": "TCAN28573RHBRQ1",
+   "family": "TCAN2857-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100, VQFN-32, 5,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TCAN28573RHBRQ1"
+  },
+  {
+   "code": "TPS1HC120CQDYCRQ1",
+   "family": "TPS1HC120-Q1",
+   "why": "worked, not priced (see parts): one read of https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC120CQDYCRQ1/28721586 (also gives the Grade field)"
+  },
+  {
+   "code": "TPS48160QRGERQ1",
+   "family": "TPS4816-Q1",
+   "why": "worked, not priced (see parts): code confirmed on ti.com (ACTIVE, AEC-Q100 grade 1, 3,000 T&R) and listed by Mouser. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=TPS48160QRGERQ1"
+  },
+  {
+   "code": "TPS4HC120AQDGQRQ1",
+   "family": "TPS4HC120-Q1",
+   "why": "SUMMARY-ONLY (see parts): one read of https://www.digikey.com/en/products/detail/texas-instruments/TPS4HC120AQDGQRQ1/25881361 (also gives the Grade field)"
+  },
+  {
+   "code": "AM263P2ASPDFZCZRQ1",
+   "family": "AM263P2-Q1",
+   "why": "UNPRICED (see parts): TME shows only a 1-piece price (29.63 USD). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=AM263P2ASPDFZCZRQ1"
+  },
+  {
+   "code": "LM74900QRGERQ1",
+   "family": "LM74900-Q1",
+   "why": "worked, not priced (see parts): grade confirmed on ti.com (AEC-Q100 grade 1, ACTIVE, 3,000 T&R). One Digi-Key read: https://www.digikey.com/en/products/result?keywords=LM74900QRGERQ1"
+  },
+  {
+   "code": "ADS131B26QPHPRQ1",
+   "family": "ADS131B26-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=ADS131B26QPHPRQ1 — HV battery-pack monitor: six ADC channels for shunt current, pack voltage and temperature, ASIL-oriented"
+  },
+  {
+   "code": "AMC131M03QDFMRQ1",
+   "family": "AMC131M03-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=AMC131M03QDFMRQ1 — 3-channel simultaneous-sampling 24-bit isolated delta-sigma ADC with integrated DC-DC"
+  },
+  {
+   "code": "AWRL6432BDBGAMFRQ1",
+   "family": "AWRL6432",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=AWRL6432BDBGAMFRQ1 — 57-64 GHz low-power single-chip automotive radar sensor (kick-to-open, in-cabin, intrusion)"
+  },
+  {
+   "code": "AWRL6432BGAMFQ1",
+   "family": "AWRL6432",
+   "why": "not reached (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). This is the spelling printed in the TIDEP-01037 BOM; the discovery pass did not see it at a distributor and Digi-Key lists the device as AWRL6432BDBGAMFRQ1 (its own line in this task). Read https://www.digikey.com/en/products/result?keywords=AWRL6432BGAMFQ1 : no exact result = WRONG-CODE, price the device on the AWRL6432BDBGAMFRQ1 line"
+  },
+  {
+   "code": "AWRL6844DBGANCRQ1",
+   "family": "AWRL6844",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=AWRL6844DBGANCRQ1 — 60 GHz 4T4R single-chip in-cabin radar sensor with edge AI (occupancy, child presence, intrusion)"
+  },
+  {
+   "code": "HDC3020QDEFRQ1",
+   "family": "HDC3020-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=HDC3020QDEFRQ1 — Automotive relative-humidity + temperature sensor, 0.5 %RH typ, I2C"
+  },
+  {
+   "code": "INA791BQWDEKRQ1",
+   "family": "INA791x-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=INA791BQWDEKRQ1 — 110 V bidirectional high-bandwidth current-sense amplifier with integrated shunt (EZShunt), 75 A rms"
+  },
+  {
+   "code": "M0L2228QPTRQ1",
+   "family": "MSPM0L2228-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=M0L2228QPTRQ1 — Automotive 32 MHz Cortex-M0+ MCU, 256 KB dual-bank flash, 32 KB SRAM, LCD controller, VBAT backup"
+  },
+  {
+   "code": "TAA5412WQRTVRQ1",
+   "family": "TAA5412-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TAA5412WQRTVRQ1 — Stereo audio ADC, 112 dB, high-voltage inputs, mic bias and diagnostics"
+  },
+  {
+   "code": "TAC5412WQRTVRQ1",
+   "family": "TAC5412-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TAC5412WQRTVRQ1 — Stereo audio codec (112 dB ADC, 120 dB DAC), high-voltage mic inputs, mic bias and diagnostics"
+  },
+  {
+   "code": "TAS6511QPWPRQ1",
+   "family": "TAS6511-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TAS6511QPWPRQ1 — 1-channel 50 W 2 MHz digital-input class-D amplifier, heatsink-free, with current sense"
+  },
+  {
+   "code": "TAS6754QDKQRQ1",
+   "family": "TAS6754-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TAS6754QDKQRQ1 — 4-channel 2 MHz digital-input class-D audio amplifier with 1L modulation (one inductor per channel)"
+  },
+  {
+   "code": "TMAG5173A1QDBVRQ1",
+   "family": "TMAG5173-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TMAG5173A1QDBVRQ1 — High-precision 3D linear Hall-effect sensor, I2C, Grade 1"
+  },
+  {
+   "code": "TMAG6181EDGKRQ1",
+   "family": "TMAG6181-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TMAG6181EDGKRQ1 — High-precision analog AMR angle sensor with integrated turns counter, Grade 0"
+  },
+  {
+   "code": "TMCS1133A1AQDVGRQ1",
+   "family": "TMCS1133-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TMCS1133A1AQDVGRQ1 — Isolated Hall current sensor, 1 MHz, reinforced isolation, ambient-field rejection, ALERT"
+  },
+  {
+   "code": "TPS929160QDCPRQ1",
+   "family": "TPS929160-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; no other page source prices TI parts. The code is exact (discovery: listed by Digi-Key / a franchised distributor) - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TPS929160QDCPRQ1 — 16-channel 40 V high-side LED / OLED driver with FlexWire interface"
+  }
+ ]
+}

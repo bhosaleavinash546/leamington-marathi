@@ -1,0 +1,879 @@
+{
+ "domain": "b05-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "CRCW04021K00FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 1.00 k, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020076 HV BMS 18S wired / wireless cell supervisor unit",
+    "TIDA-020106 electro-mechanical brake",
+    "TIDEP-01030 high-end corner radar diagnostic",
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDEP-01037 low-power in-cabin radar",
+    "TIDEP-01036 mmWave radar kick-to-open"
+   ],
+   "observedMpn": "CRCW04021K00FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00414,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page: Active, Features \"Automotive AEC-Q200\", stock 3,477,957; 1k = Cut Tape, 100k = Tape & Reel (reel 10,000 @ 0.00551, 50,000 @ 0.00445 also shown). TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is rounded to 2 dp (\"0.00 USD\") so no other TME break could be recorded; net = gross on the page (no VAT). Reviewer: drop it if a lowPrice pairing is not accepted. TME stock 932,082, reel 10,000; TME 100k is 2.8x below Digi-Key 100k (known reel spread). Not recorded: Rutronik24 search page lists the code at \"0.0131 $\" (pack 10,000) with no stated break."
+  },
+  {
+   "mpn": "CRCW0402100KJNED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 100 k, 5%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+    "TIDA-020079 zone reference design",
+    "TIDA-050080 HV passive precharge with overcurrent protection",
+    "TIDA-020076 HV BMS 18S wired / wireless cell supervisor unit"
+   ],
+   "observedMpn": "CRCW0402100KJNED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00861,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100KJNED/1177616",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00397,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100KJNED/1177616",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page: Active, Features \"Automotive AEC-Q200\", stock 101,855; 1k = Cut Tape, 100k = Tape & Reel (reel 10,000 @ 0.00533 also shown). The page reader also returned a separate Digi-Reel ladder (1,000 @ 0.00812) for this code; the Cut Tape figure is recorded because it is consistent with this code's reel ladder. TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is rounded to 2 dp (\"0.00 USD\") so no other TME break could be recorded; net = gross on the page (no VAT). Reviewer: drop it if a lowPrice pairing is not accepted. TME stock 6,464, largest TME break shown 30,000."
+  },
+  {
+   "mpn": "CRCW0402100RFKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 100, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020106 electro-mechanical brake",
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design",
+    "TIDA-020060 automotive power-over-data-lines"
+   ],
+   "observedMpn": "CRCW0402100RFKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00551,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00414,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 3,353,684. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW04022K49FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 2.49 k, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design",
+    "TIDA-020060 automotive power-over-data-lines",
+    "TIDEP-01030 high-end corner radar diagnostic"
+   ],
+   "observedMpn": "CRCW04022K49FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00439,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 160,693. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW04024K70JNED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 4.7 k, 5%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020079 zone reference design",
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+    "TIDEP-01030 high-end corner radar diagnostic"
+   ],
+   "observedMpn": "CRCW04024K70JNED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00812,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00503,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 540,742. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW04027K87FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 7.87 k, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDEP-01030 high-end corner radar diagnostic",
+    "TIDEP-01036 mmWave radar kick-to-open",
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "CRCW04027K87FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00439,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 59,871. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW040282K5FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 82.5 k, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDEP-01030 high-end corner radar diagnostic",
+    "TIDEP-01036 mmWave radar kick-to-open",
+    "TIDEP-01037 low-power in-cabin radar",
+    "TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "CRCW040282K5FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00439,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 92,312. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW020133R2FNED",
+   "family": "CRCW0201",
+   "mfr": "Vishay",
+   "desc": "RES, 33.2, 1%, 0.05 W, 0201",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": false,
+   "ecuRoles": [
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDEP-01036 mmWave radar kick-to-open",
+    "TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "CRCW020133R2FNED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01305,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00857,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00672,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series CRCW0201 e3, stock 782; NO AEC-Q200 / automotive statement on the page (no Features row) -> aecq false. 1k = Cut Tape, larger = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW04020000Z0EDHP",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 0, 0%, 0.2 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDA-020060 automotive power-over-data-lines",
+    "TIDEP-01030 high-end corner radar diagnostic"
+   ],
+   "observedMpn": "CRCW04020000Z0EDHP",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01816,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01297,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00995,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series CRCW-HP e3, Features \"Automotive AEC-Q200, Pulse Withstanding\", 0 ohm jumper 1/5 W, stock 691,580. 1k = Cut Tape, larger = Tape & Reel (same page). About 2x the standard CRCW0402 jumper."
+  },
+  {
+   "mpn": "CRCW04022K20JNED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 2.2 k, 5%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDEP-01030 high-end corner radar diagnostic",
+    "TIDA-020060 automotive power-over-data-lines"
+   ],
+   "observedMpn": "CRCW04022K20JNED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00812,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00503,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 22,214. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW0402470RJNED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 470, 5%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design",
+    "TIDA-020060 automotive power-over-data-lines",
+    "TIDA-020088 eight-channel 1 kVA Class-H audio amplifier"
+   ],
+   "observedMpn": "CRCW0402470RJNED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00812,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00503,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00374,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 128,990. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW040249R9FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 49.9, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020088 eight-channel 1 kVA Class-H audio amplifier",
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDEP-01030 high-end corner radar diagnostic"
+   ],
+   "observedMpn": "CRCW040249R9FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00551,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00414,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 2,893,985. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW040261R9FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 61.9, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDEP-01030 high-end corner radar diagnostic",
+    "TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "CRCW040261R9FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00551,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00414,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 39,940. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW04027K50FKED",
+   "family": "CRCW0402",
+   "mfr": "Vishay",
+   "desc": "RES, 7.50 k, 1%, 0.063 W, AEC-Q200 Grade 0, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020106 electro-mechanical brake",
+    "TIDEP-01034 entry-level blind-spot detection radar",
+    "TIDEP-01030 high-end corner radar diagnostic"
+   ],
+   "observedMpn": "CRCW04027K50FKED",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.00882,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00439,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 232,023. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
+  },
+  {
+   "mpn": "CRCW12061M00JNEA",
+   "family": "CRCW1206",
+   "mfr": "Vishay",
+   "desc": "RES, 1.0 M, 5%, 0.25 W, AEC-Q200 Grade 0, 1206",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "TIDA-020071 TDA4 quad automotive PHY RGMII reference design",
+    "TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design",
+    "TIDA-020060 automotive power-over-data-lines"
+   ],
+   "observedMpn": "CRCW12061M00JNEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01496,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.01098,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.0084,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 33,169. 1k = Cut Tape, 5k / 50k = Tape & Reel (reel 5,000; 50,000 is the largest break shown)."
+  },
+  {
+   "mpn": "CRCW080510K0FKEA",
+   "family": "CRCW e3",
+   "mfr": "Vishay",
+   "desc": "Thick film resistor 10 k 1% 0.125 W, 0805 (D/CRCW e3), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "CRCW080510K0FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01329,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00965,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.0073,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series D/CRCW e3, 0.125 W, stock 2,274,876. Grade: the page lists Features \"Automotive AEC-Q200\" for this code -> aecq true (task had false, not read); desc completed from the page. 1k = Cut Tape, 5k / 50k = Tape & Reel (50,000 largest shown)."
+  },
+  {
+   "mpn": "IHLP2525CZER4R7M5A",
+   "family": "IHLP-2525CZ-5A (automotive IHLP)",
+   "mfr": "Vishay",
+   "desc": "Molded high-current power inductor 4.7 uH 20% 5.6 A 38.4 mohm max, IHLP-2525CZ-5A, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2525",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "IHLP2525CZER4R7M5A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.63732,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.58385,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.51674,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series IHLP-2525CZ-5A, 4.7 uH shielded molded 5.6 A 38.4 mohm max, stock 3,913. Grade: Ratings attribute \"AEC-Q200\" on this code's page -> aecq true (task had false, not read); desc completed from the page. 1k = Cut Tape, 2k / 10k = Tape & Reel (reel 2,000; 10,000 largest shown)."
+  },
+  {
+   "mpn": "NTCS0603E3103FLT",
+   "family": "NTCS0603E3...T",
+   "mfr": "Vishay",
+   "desc": "NTC thermistor 10 k 1%, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "body ECU"
+   ],
+   "observedMpn": "NTCS0603E3103FLT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.17369,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.15645,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.13813,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026 (Vishay Beyschlag/Draloric/BC Components): Active, \"THERMISTOR NTC 10KOHM 3435K 0603\", Qualification AEC-Q200, Grade Automotive, stock 72,480. 1k = Cut Tape, 4k / 40k = Tape & Reel (reel 4,000; 40,000 largest shown)."
+  },
+  {
+   "mpn": "TNPW060310K0BEEA",
+   "family": "TNPW e3 (thin film)",
+   "mfr": "Vishay",
+   "desc": "Thin film resistor 10 k 0.1% 25 ppm, 0603 (TNPW e3)",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor front end",
+    "BMS"
+   ],
+   "observedMpn": "TNPW060310K0BEEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.1693,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.14463,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.13583,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series TNPW e3, 0.21 W, Features \"Anti-Sulfur, Automotive AEC-Q200, Moisture Resistant\" on this code's page, stock 178,446. No 1,000 break returned: Cut Tape stops at 500, Tape & Reel 5,000 and 15,000 (largest shown)."
+  },
+  {
+   "mpn": "WSL0805R0100FEA",
+   "family": "WSL0805",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 0.125 W, 0805, metal element (WSL), AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSL0805R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.27909,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.24515,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 35000,
+     "price": 0.22929,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series WSL, 0.125 W metal element, stock 28,860. Grade: Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, ...\" on this code's page -> aecq true (task had false, not read); desc completed. 1k = Cut Tape, 5k / 35k = Tape & Reel (35,000 largest shown)."
+  },
+  {
+   "mpn": "WSLP1206R0100FEA",
+   "family": "WSLP1206 (high power)",
+   "mfr": "Vishay",
+   "desc": "Current-sense resistor 10 mohm 1% 1 W, 1206, high power metal element (WSLP), AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive",
+    "DC-DC converter"
+   ],
+   "observedMpn": "WSLP1206R0100FEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.2492,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.22033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
+     "date": "2026-11-22"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 40000,
+     "price": 0.20243,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
+     "date": "2026-11-22"
+    }
+   ],
+   "notes": "Digi-Key page read 22 Nov 2026: Active, series WSLP, 1 W metal element, stock 193,420. Grade: Features \"Automotive AEC-Q200\" and Ratings AEC-Q200 on this code's page -> aecq true (task had false, not read); desc completed. 1k = Cut Tape, 4k / 40k = Tape & Reel (40,000 largest shown)."
+  }
+ ]
+}

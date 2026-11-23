@@ -1,0 +1,1249 @@
+{
+ "domain": "b11-ics",
+ "researched": "2026-11-23",
+ "parts": [
+  {
+   "mpn": "R7F7015813AFP-C#AA3",
+   "family": "RH850 R7F70158x (2 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 2 MB flash, 100-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7015813AFP-C#AA3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.8476,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7015813AFP-C%23AA3",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 10.14606,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7015813AFP-C%23AA3",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, Tray only, stock 1, lead time 26 weeks): tray 100 = 10.84760, 101 = 10.84228, 500 = 10.14606 (largest break; nothing at 1,000). Page names the part RH850/F1K (RH850G3KH, 120 MHz), 100-LFQFP 14x14. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Page lists a parametric-equivalent substitute R7F7015813AFP-C#BA3 (0 in stock) - a different orderable code, not recorded."
+  },
+  {
+   "mpn": "R7F7016453AFP-C#AA1",
+   "family": "RH850 R7F70164x (4 MB)",
+   "mfr": "Renesas",
+   "desc": "RH850 32-bit automotive MCU, 4 MB flash, 100-pin LFQFP",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "chassis ECU"
+   ],
+   "observedMpn": "R7F7016453AFP-C#AA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 180,
+     "price": 14.01211,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016453AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 540,
+     "price": 12.69633,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=R7F7016453AFP-C%23AA1",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, Tray only, stock 90, lead time 26 weeks): tray 90 = 14.46067 (below 100, not recorded), 180 = 14.01211, 540 = 12.69633 (largest break; nothing at 1,000). Page names the part RH850/F1KM-S4 (RH850G3KH, 240 MHz), 100-LFQFP 14x14. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "RAA270000KFT#HA2",
+   "family": "RAA270000KFT",
+   "mfr": "Renesas",
+   "desc": "Automotive power management IC (general-purpose PMIC), 6 V - 18.5 V supply, -40..125 C",
+   "category": "ic_tqfp",
+   "pkg": "64-TQFP exposed pad (64-QFP 10x10)",
+   "aecq": true,
+   "ecuRoles": [
+    "MCU power supply"
+   ],
+   "observedMpn": "RAA270000KFT#HA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 7.91776,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAA270000KFT%23HA2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 7.14181,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAA270000KFT%23HA2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 4,799, lead time 18 weeks): cut tape 100 = 7.98640, 250 = 7.91776 (largest cut-tape break); tape & reel 2,000 = 7.14181 (the only reel break). Package and function read on the page: \"General Purpose PMIC 64-QFP (10x10)\", 64-TQFP Exposed Pad (task had \"not read\"). GRADE: page field Grade \"Automotive\"; the Qualification field is not shown - aecq true rests on the Grade field only."
+  },
+  {
+   "mpn": "RAJ2800024H11HPF#GB0",
+   "family": "RAJ280002",
+   "mfr": "Renesas",
+   "desc": "High-side intelligent power device (IPD), multi-chip package",
+   "category": "ic_soic",
+   "pkg": "TO-263-7 (D2PAK, 6 leads + tab)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "power distribution"
+   ],
+   "observedMpn": "RAJ2800024H11HPF#GB0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 800,
+     "price": 3.09631,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAJ2800024H11HPF%23GB0",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2400,
+     "price": 2.98775,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RAJ2800024H11HPF%23GB0",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 703, lead time 18 weeks): tape & reel 800 = 3.09631, 1,600 = 3.02399, 2,400 = 2.98775 (largest); cut tape 100 = 3.42070, 250 = 3.27268 (largest cut-tape break). Package read on the page: TO-263-7 (task had \"not read\"). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "UPD166033T1U-E1-AY",
+   "family": "uPD166033",
+   "mfr": "Renesas",
+   "desc": "High-side intelligent power device (IPD), MP-3ZK",
+   "category": "ic_soic",
+   "pkg": "TO-252-7 (DPAK, 6 leads + tab; Renesas MP-3ZK)",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "lamp / heater load switching"
+   ],
+   "observedMpn": "UPD166033T1U-E1-AY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.56672,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.45145,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.42227,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,475, lead time 18 weeks): cut tape 100 = 1.69380, 250 = 1.60140, 500 = 1.56672 (largest cut-tape break); tape & reel 2,500 = 1.45145, 5,000 = 1.42227 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "ISL76534ARXZ-T7A",
+   "family": "ISL76534",
+   "mfr": "Renesas",
+   "desc": "Amplifier / buffer IC for TFT-LCD displays (gamma reference buffer)",
+   "category": "ic_qfn",
+   "pkg": "28-QFN (4x5), 28-XFQFN exposed pad",
+   "aecq": true,
+   "ecuRoles": [
+    "centre display",
+    "cluster"
+   ],
+   "observedMpn": "ISL76534ARXZ-T7A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.99456,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ISL76534ARXZ-T7A",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.8808,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ISL76534ARXZ-T7A",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, out of stock - 0 in stock, \"250 estimated in stock on 19-Jul-2027\", lead time 34 weeks): tape & reel 250 = 3.99456, 500 = 3.88080 (largest; nothing at 1,000); cut tape 100 = 4.00190 (largest cut-tape break). Normal falling table, so recorded although out of stock. -T7A is a 250-piece reel. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "TW8816-LB3-CR",
+   "family": "TW8816",
+   "mfr": "Renesas",
+   "desc": "LCD video controller",
+   "category": "ic_tqfp",
+   "pkg": "128-LQFP (14x20)",
+   "aecq": false,
+   "ecuRoles": [
+    "rear-view display",
+    "low-cost display ECU"
+   ],
+   "observedMpn": "TW8816-LB3-CR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 144,
+     "price": 7.54965,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TW8816-LB3-CR",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, Tray only, stock 216, lead time 26 weeks): tray 72 = 7.85750 (below 100, not recorded), 144 = 7.54965 (largest break shown; nothing at 1,000) - ONE usable break, no own slope. GRADE NOT CONFIRMED: the page shows no Grade / Qualification field and gives Applications \"Consumer Video\" (Techwell series) - aecq left false."
+  },
+  {
+   "mpn": "RTQ2104BGSP-QA",
+   "family": "RTQ2104",
+   "mfr": "Richtek",
+   "desc": "High-voltage buck converter, adjustable, 3 A",
+   "category": "ic_soic",
+   "pkg": "8-SOP-EP (8-SOIC exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "infotainment",
+    "USB charger"
+   ],
+   "observedMpn": "RTQ2104BGSP-QA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.45962,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RTQ2104BGSP-QA",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.26708,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RTQ2104BGSP-QA",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.22798,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=RTQ2104BGSP-QA",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,870, lead time 13 weeks): cut tape 100 = 1.58800, 250 = 1.49968, 500 = 1.45962; tape & reel 2,500 = 1.26708, 5,000 = 1.24103, 7,500 = 1.22798 (largest). The page also prints 1,000 = 1.37700 in the cut tape / Digi-Reel table - the reading placed it under Digi-Reel only (a $7 reeling fee applies), so it is not recorded. Page: 3 V - 36 V in, 3 A, 2.1 MHz. Cross-check: Master Electronics has no search result for the code. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "AG040FGS4FRATCB",
+   "family": "AG040FGS4FRA",
+   "mfr": "ROHM",
+   "desc": "N-channel 40 V, 120 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060T5LSAH (5x6 mm; SC-100 / SOT-669)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC/DC",
+    "zonal power distribution"
+   ],
+   "observedMpn": "AG040FGS4FRATCB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.42444,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG040FGS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.18883,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG040FGS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,723, lead time 16 weeks): cut tape 100 = 1.74600, 500 = 1.42444 (largest cut-tape break); tape & reel 3,000 = 1.18883 (the only reel break). Page: N-channel 40 V 120 A, 1.4 mOhm. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\"."
+  },
+  {
+   "mpn": "AG047FLS4FRATCB",
+   "family": "AG047FLS4FRA",
+   "mfr": "ROHM",
+   "desc": "N-channel 60 V, 89 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060T5LSAH (5x6 mm; SC-100 / SOT-669)",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC/DC"
+   ],
+   "observedMpn": "AG047FLS4FRATCB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.91152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG047FLS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.70232,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG047FLS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.6375,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG047FLS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,678, lead time 16 weeks): cut tape 100 = 1.14050, 500 = 0.91152 (largest cut-tape break); tape & reel 3,000 = 0.70232, 9,000 = 0.63750 (largest). Page: N-channel 60 V 89 A. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\"."
+  },
+  {
+   "mpn": "AG540EGS4FRATCB",
+   "family": "AG540EGS4FRA",
+   "mfr": "ROHM",
+   "desc": "P-channel -40 V, -120 A automotive low-voltage MOSFET",
+   "category": "ic_qfn",
+   "pkg": "HPLF5060T5LSAH (5x6 mm; SC-100 / SOT-669)",
+   "aecq": true,
+   "ecuRoles": [
+    "reverse battery protection",
+    "high-side switch"
+   ],
+   "observedMpn": "AG540EGS4FRATCB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.3575,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG540EGS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.13122,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG540EGS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 1.1,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AG540EGS4FRATCB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,921, lead time 16 weeks): cut tape 100 = 1.66800, 500 = 1.35750 (largest cut-tape break); tape & reel 3,000 = 1.13122, 9,000 = 1.10000 (largest). Page: P-channel 40 V 120 A. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\"."
+  },
+  {
+   "mpn": "BD16912EFV-CE2",
+   "family": "BD16912EFV-C",
+   "mfr": "ROHM",
+   "desc": "40 V / 3 A H-bridge driver",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B20 (20-VSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "throttle / valve / actuator drive"
+   ],
+   "observedMpn": "BD16912EFV-CE2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.59856,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD16912EFV-CE2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 3.27532,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD16912EFV-CE2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,755, lead time 13 weeks): cut tape 100 = 3.74610, 250 = 3.59856 (largest cut-tape break); tape & reel 2,500 = 3.27532 (the only reel break). Package read on the page: 20-HTSSOP-B. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (the discovery had left it unconfirmed)."
+  },
+  {
+   "mpn": "BD16950EFV-CE2",
+   "family": "BD16950EFV-C",
+   "mfr": "ROHM",
+   "desc": "Half-bridge gate driver IC",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B24",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "valve / pump control"
+   ],
+   "observedMpn": "BD16950EFV-CE2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.91832,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD16950EFV-CE2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.58261,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD16950EFV-CE2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 4,756, lead time 14 weeks): cut tape 100 = 4.06430, 250 = 3.91832 (largest cut-tape break); tape & reel 2,000 = 3.58261 (the only reel break). Page: half-bridge gate driver, 2 drivers, 24-HTSSOP-B. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (the discovery had left it unconfirmed)."
+  },
+  {
+   "mpn": "BD18340FV-ME2",
+   "family": "BD18340FV-M",
+   "mfr": "ROHM",
+   "desc": "LED driver controller with PWM dimming",
+   "category": "ic_soic",
+   "pkg": "SSOP-B16",
+   "aecq": true,
+   "ecuRoles": [
+    "rear combination lamp",
+    "exterior lighting"
+   ],
+   "observedMpn": "BD18340FV-ME2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.89264,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD18340FV-ME2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.7482,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD18340FV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.71389,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD18340FV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,500, lead time 15 weeks): cut tape 100 = 2.03340, 250 = 1.92464, 500 = 1.89264 (largest cut-tape break); tape & reel 2,500 = 1.74820, 5,000 = 1.71389 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "BD18351EFV-ME2",
+   "family": "BD18351EFV-M",
+   "mfr": "ROHM",
+   "desc": "LED driver controller with PWM dimming",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B24",
+   "aecq": true,
+   "ecuRoles": [
+    "exterior LED lighting"
+   ],
+   "observedMpn": "BD18351EFV-ME2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.7183,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD18351EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 2.90598,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD18351EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 500,
+     "price": 2.01,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/bd18351efvme-roh-0/led-drivers/rohm-semiconductor/bd18351efv-me2/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,624, lead time 15 weeks): cut tape 100 = 3.03430, 500 = 2.79298, 1,000 = 2.71830; tape & reel 2,000 = 2.90598 (the only reel break). The reel price is DEARER than cut tape at 1,000 - recorded as shown, so this pair gives no falling slope. Page: boost LED driver controller, 24-HTSSOP-B. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". CROSS-CHECK TME product page (tme.eu, USD, net price column; \"1298 in an external stock\", custom-order product, business customers only, minimum 25): from 100 = 2.31, 300 = 2.02, 500 = 2.01 (largest; nothing at 1,000; packing not shown) - Digi-Key cut tape 500 (2.79298) is 1.39x TME."
+  },
+  {
+   "mpn": "BD83732HFP-MTR",
+   "family": "BD83732HFP-M",
+   "mfr": "ROHM",
+   "desc": "Linear LED driver, 500 mA, PWM dimming",
+   "category": "ic_soic",
+   "pkg": "HRP7",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp",
+    "interior lighting"
+   ],
+   "observedMpn": "BD83732HFP-MTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.68606,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD83732HFP-MTR",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 1.57072,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD83732HFP-MTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.52129,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD83732HFP-MTR",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,980, lead time 12 weeks): cut tape 100 = 1.81640, 250 = 1.71840, 500 = 1.68606 (largest cut-tape break); tape & reel 2,000 = 1.57072, 4,000 = 1.53778, 6,000 = 1.52129 (largest). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "BD8379EFV-ME2",
+   "family": "BD8379EFV-M",
+   "mfr": "ROHM",
+   "desc": "Linear LED driver, 12 outputs, 50 mA per channel, serial input",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B20",
+   "aecq": true,
+   "ecuRoles": [
+    "instrument cluster",
+    "indicator LEDs"
+   ],
+   "observedMpn": "BD8379EFV-ME2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.02822,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD8379EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.90902,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD8379EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.87915,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD8379EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.61,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/bd8379efvme2-roh-0/led-drivers/rohm-semiconductor/bd8379efv-me2/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,785, lead time 13 weeks): cut tape 100 = 1.13880, 500 = 1.03170, 1,000 = 1.02822; tape & reel 2,500 = 0.90902, 5,000 = 0.88912, 7,500 = 0.87915 (largest). Page: 12 outputs, 20-HTSSOP-B. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". CROSS-CHECK TME product page (tme.eu, USD, net price column; \"2450 in an external stock\", custom-order product, business customers only, minimum 91): from 100 = 0.76, 300 = 0.70, 500 = 0.69, 1,000 = 0.61 (largest; TME prints 2 decimals; packing not shown) - Digi-Key cut tape 1,000 is 1.69x TME. Master Electronics: no search result for the code."
+  },
+  {
+   "mpn": "BD90302NUF-CE2",
+   "family": "BD90302NUF-C",
+   "mfr": "ROHM",
+   "desc": "5.5 V input, 2 A synchronous buck converter with integrated P / N-channel MOSFETs",
+   "category": "ic_qfn",
+   "pkg": "VSON10FV3030 (10-VFDFN exposed pad, wettable flank)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS camera / radar secondary rail",
+    "infotainment"
+   ],
+   "observedMpn": "BD90302NUF-CE2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.23748,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD90302NUF-CE2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.2936,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD90302NUF-CE2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 1,893, lead time 14 weeks): cut tape 100 = 1.40310, 500 = 1.27662, 1,000 = 1.23748; tape & reel 3,000 = 1.29360 (the only reel break). The reel price is DEARER than cut tape at 1,000 - recorded as shown, so this pair gives no falling slope. Package read on the page: VSON10FV3030. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\" (the discovery had left it unconfirmed). Cross-check: TME search lists no product for the code."
+  },
+  {
+   "mpn": "BD94130EFV-ME2",
+   "family": "BD94130xxx-M",
+   "mfr": "ROHM",
+   "desc": "24-channel constant-current + 8-line switch-controller LED driver for mini-LED local-dimming backlights, SPI",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-B54 (54-VSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "mini-LED local-dimming display",
+    "instrument cluster",
+    "centre display"
+   ],
+   "observedMpn": "BD94130EFV-ME2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 6.17222,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD94130EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 6.57272,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BD94130EFV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,093, lead time 17 weeks): cut tape 100 = 6.63520, 250 = 6.34632, 500 = 6.17222 (largest cut-tape break); tape & reel 1,500 = 6.57272 (the only reel break). The reel price is DEARER than cut tape at 500 - recorded as shown, so this pair gives no falling slope. Page: 24 outputs, 80 mA, PWM / SPI dimming. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\". Cross-check NOT recorded: TME product page (USD, net; \"95 in an external stock\", custom order) shows breaks only to 60 pieces (from 60 = 5.94) - below 100, not a price."
+  },
+  {
+   "mpn": "BM81810MUV-ME2",
+   "family": "BM81810",
+   "mfr": "ROHM",
+   "desc": "Automotive panel power-management IC (AEC-Q100 Grade 2) for navigation and cluster displays",
+   "category": "ic_qfn",
+   "pkg": "VQFN032V5050 (32-VFQFN exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "display / cluster"
+   ],
+   "observedMpn": "BM81810MUV-ME2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 3.34152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BM81810MUV-ME2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 3.04585,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BM81810MUV-ME2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code is BM81810MUV-ME2 (the task gave the type number BM81810MUV-M without the E2 taping suffix). Digi-Key page (USD, Active, stock 17,263, lead time 16 weeks): cut tape 100 = 3.48960, 250 = 3.34152 (largest cut-tape break); tape & reel 2,500 = 3.04585 (the only reel break). Page: TFT-LCD panel PMIC, -40..105 C. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SP8K3FRATB",
+   "family": "SP8K3FRA",
+   "mfr": "ROHM",
+   "desc": "Dual N-channel 30 V, 7 A MOSFET",
+   "category": "ic_soic",
+   "pkg": "SOP8",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "load switch"
+   ],
+   "observedMpn": "SP8K3FRATB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.85012,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SP8K3FRATB",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.77462,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SP8K3FRATB",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "NRND: Digi-Key page shows Part Status \"Not For New Designs\" (\"Not recommended for new design, minimums may apply\"); no replacement named. Price recorded as the rules ask for NRND. Digi-Key page (USD, stock 1,048): cut tape 100 = 1.06420, 500 = 0.85012 (largest cut-tape break); tape & reel 2,500 = 0.77462 (the only reel break). Page: dual N-channel 30 V 7 A, 24 mOhm, 8-SOP. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q101\"."
+  },
+  {
+   "mpn": "BM2LC120FJ-CE2",
+   "family": "BM2LC",
+   "mfr": "ROHM",
+   "desc": "Low-side IPD (N-channel low-side power switch, 6 A) with over-current, thermal shutdown and active clamp",
+   "category": "ic_soic",
+   "pkg": "SOP-J8 (8-SOIC)",
+   "aecq": true,
+   "ecuRoles": [
+    "body controller",
+    "actuator / solenoid drive"
+   ],
+   "observedMpn": "BM2LC120FJ-CE2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.24848,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/BM2LC120FJ-CE2/12359496",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.16278,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/BM2LC120FJ-CE2/12359496",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.12626,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/BM2LC120FJ-CE2/12359496",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code is BM2LC120FJ-CE2 (the task gave the type number BM2LC120FJ-C without the E2 taping suffix). Digi-Key product page (USD, Active, out of stock - 0 in stock, \"2,500 expected in stock on 19-Feb-2027\", lead time 17 weeks): cut tape 100 = 1.36500, 250 = 1.28788, 500 = 1.24848 (largest cut-tape break); tape & reel 2,500 = 1.16278, 5,000 = 1.13844, 7,500 = 1.12626 (largest). Normal falling table, so recorded although out of stock. Digi-Key also shows a SECOND listing of the same code (detail id 27793664, \"Power Switch/Driver LC:2242A815H\", 1.40 USD at 1 piece) - a date-code / marketplace-style listing, not read and not recorded. Page: 8-SOP-J. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI47920A2GE1AM",
+   "family": "Si4792x",
+   "mfr": "Skyworks",
+   "desc": "High-performance automotive AM / FM / SW / LW tuner (RF receiver)",
+   "category": "ic_qfn",
+   "pkg": "84-QFN (12x12), 84-VFQFN exposed pad",
+   "aecq": true,
+   "ecuRoles": [
+    "head unit radio"
+   ],
+   "observedMpn": "SI47920A2GE1AM",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 152,
+     "price": 22.0898,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI47920A2GE1AM/10280616",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 304,
+     "price": 21.31105,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI47920A2GE1AM/10280616",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tray only, stock 3, lead time 21 weeks): tray 152 = 22.08980, 304 = 21.31105 (largest break; nothing at 1,000). Package read on the page: 84-QFN 12x12 (task had \"not read\"). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI823H5BD-AS3",
+   "family": "Si823Hx",
+   "mfr": "Skyworks",
+   "desc": "Isolated dual-channel gate driver, 6 A, 5 kVrms",
+   "category": "ic_soic",
+   "pkg": "SOIC-14 wide body (7.5 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "HV DC-DC",
+    "e-compressor"
+   ],
+   "observedMpn": "SI823H5BD-AS3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 138,
+     "price": 4.90978,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI823H5BD-AS3/16884080",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1012,
+     "price": 4.51211,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI823H5BD-AS3/16884080",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tube only, stock 33, lead time 14 weeks): tube 138 = 4.90978, 276 = 4.74562, 506 = 4.62607, 1,012 = 4.51211 (largest). This is the tube code; the tape-and-reel code (suffix R) is a separate Digi-Key product and was not read. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI86S620BE-AS4",
+   "family": "Si86S6xx",
+   "mfr": "Skyworks",
+   "desc": "Digital isolator 6 kVrms, 2 channels, 150 Mbps",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide body (8-SSO, 7.5 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "isolated CAN / SPI"
+   ],
+   "observedMpn": "SI86S620BE-AS4",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 3.07688,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S620BE-AS4/18739816",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1040,
+     "price": 2.83077,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S620BE-AS4/18739816",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2560,
+     "price": 2.75128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S620BE-AS4/18739816",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tube only, stock 699, lead time 26 weeks): tube 160 = 3.07688, 320 = 2.97038, 560 = 2.89832, 1,040 = 2.83077, 2,560 = 2.75128 (largest). The page lists the reel code SI86S620BE-AS4R as a substitute (0 in stock, 3.03380 - break not shown; a different orderable code, not recorded). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI86S622BE-AS4",
+   "family": "Si86S6xx",
+   "mfr": "Skyworks",
+   "desc": "Digital isolator 6 kVrms, 2 channels (1 forward / 1 reverse), 150 Mbps",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide body (8-SSO, 7.5 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "isolated CAN"
+   ],
+   "observedMpn": "SI86S622BE-AS4",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 3.07688,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S622BE-AS4/18739557",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1040,
+     "price": 2.83077,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S622BE-AS4/18739557",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2560,
+     "price": 2.75128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S622BE-AS4/18739557",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tube only, stock 59, lead time 24 weeks): tube 160 = 3.07688, 320 = 2.97038, 560 = 2.89832, 1,040 = 2.83077, 2,560 = 2.75128 (largest) - the same table as SI86S620BE-AS4, read on this part's own page. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI86S642BE-AS2",
+   "family": "Si86S6xx",
+   "mfr": "Skyworks",
+   "desc": "Digital isolator 6 kVrms, 4 channels (SPI), 150 Mbps",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide body (7.5 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "isolated SPI"
+   ],
+   "observedMpn": "SI86S642BE-AS2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 138,
+     "price": 4.21399,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S642BE-AS2/18740375",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1012,
+     "price": 3.86717,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S642BE-AS2/18740375",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2530,
+     "price": 3.76226,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI86S642BE-AS2/18740375",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tube only, stock 34, lead time 14 weeks): tube 138 = 4.21399, 276 = 4.07083, 506 = 3.96654, 1,012 = 3.86717, 2,530 = 3.76226 (largest). The page lists the reel code SI86S642BE-AS2R as a substitute (4.17340, break not shown; a different orderable code, not recorded). GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI8931D-AS4",
+   "family": "Si893x",
+   "mfr": "Skyworks",
+   "desc": "Automotive isolated voltage sensor (isolated amplifier)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide body (7.5 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "HV DC-DC",
+    "DC-link voltage sense"
+   ],
+   "observedMpn": "SI8931D-AS4",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 5.35775,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI8931D-AS4/16730956",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1040,
+     "price": 4.96403,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI8931D-AS4/16730956",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tube only, stock 4, lead time 24 weeks): tube 160 = 5.35775, 320 = 5.18741, 560 = 5.07211, 1,040 = 4.96403 (largest). Page: isolation amplifier, isolated voltage sensing. GRADE: page fields Grade \"Automotive\", Qualification \"AEC-Q100\"."
+  },
+  {
+   "mpn": "SI52254A-D01AM",
+   "family": "Si5225x",
+   "mfr": "Skyworks",
+   "desc": "Automotive clock generator, 32-QFN",
+   "category": "ic_qfn",
+   "pkg": "32-QFN (5x5)",
+   "aecq": true,
+   "ecuRoles": [
+    "PCIe reference clock for SoC / switch"
+   ],
+   "observedMpn": "SI52254A-D01AM",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 3.7332,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI52254A-D01AM/10483667",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 980,
+     "price": 3.35924,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI52254A-D01AM/10483667",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2940,
+     "price": 3.24877,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI52254A-D01AM/10483667",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tray only, stock 333, lead time 20 weeks): tray 100 = 3.73320, 490 = 3.44867, 980 = 3.35924, 1,470 = 3.31444, 2,940 = 3.24877 (largest). Page: clock generator 100 MHz, 32-QFN 5x5. GRADE (weaker evidence - NOT page-read): the Digi-Key product page shows no Grade / Qualification field; aecq true rests on web-search summaries of Skyworks' own product page (skyworksinc.com/Products/Timing/Automotive-PCIe-Clock-Generators/Si52254A-01AM: \"Automotive Grade 4-Output PCIe Gen1/2/3/4/5 Clock Generator\", -40..105 C) and of a Mouser listing naming Si52254A-D01AM as AEC-Q100. Check before relying on it."
+  },
+  {
+   "mpn": "SI5332B-D-AM1",
+   "family": "Si5332",
+   "mfr": "Skyworks",
+   "desc": "Automotive clock generator, 32-QFN",
+   "category": "ic_qfn",
+   "pkg": "32-QFN (5x5)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS / infotainment clock tree"
+   ],
+   "observedMpn": "SI5332B-D-AM1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 13.4537,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI5332B-D-AM1/10483655",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 490,
+     "price": 12.62906,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI5332B-D-AM1/10483655",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page (USD, Active, Tray only, stock 52, lead time 20 weeks): tray 100 = 13.45370, 490 = 12.62906 (largest break; nothing at 1,000). Page: clock generator / frequency synthesizer 333.33 MHz, 32-QFN 5x5. GRADE (weaker evidence - NOT page-read): the Digi-Key product page shows no Grade / Qualification field, but its datasheet link is Skyworks' \"si5332-automotive-grade\" data sheet; a web-search summary of that data sheet (skyworksinc.com .../si5332-automotive-grade-datasheet.pdf) says the Si5332-AM series is AEC-Q100 (and AEC-Q006) qualified, automotive grade 2, -40..105 C. The exact code was not seen in the data sheet's ordering guide. Check before relying on it."
+  }
+ ]
+}

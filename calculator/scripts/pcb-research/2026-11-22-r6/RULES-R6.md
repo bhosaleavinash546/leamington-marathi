@@ -143,3 +143,23 @@ The pilot priced 22 / 36 passives, 35 / 36 ICs and gave 9 / 40 existing parts th
   observation URL; use the product's own detail URL when the page shows it.
 - Common-mode chokes are `transformer`, whatever the task line says (RULES-R4).
 - Limits unchanged: 10 searches, about 60 page reads.
+
+---
+
+## Addendum 4 (23 Nov 2026, after wave 2) — pacing, part-reel ladders, "discontinued at Digi-Key"
+
+Wave 2 ran six agents against Digi-Key at once; it began refusing (HTTP 403) after 5–28 pages for three of them, and
+Master Electronics after 1–11. From now on at most two agents run at a time, and each PACES its reads:
+1. **Before every Digi-Key or Master Electronics page read, wait 20 seconds** (run `sleep 20` in the shell). TME: one
+   page a minute as before. Never read two pages at once.
+2. A 403 / 429 / 503 from a site still means: stop using that site for the rest of the task, write what you have,
+   list the open lines in `notResearched` with the exact code so a later run needs one read each.
+3. **Part-reel ladders are not volume breaks.** Master Electronics (and sometimes others) price a non-stocked part as
+   ¼ / ½ / ¾ / full reel (e.g. 625 / 1,250 / 1,875 / 2,500) with a surcharge on the part-reel rows. Record only the
+   FULL-reel row (and multiples of the full reel); put the others in `notes`. A genuine ladder falls gently over
+   multiples of the reel quantity.
+4. **"Discontinued at DigiKey" / "no longer available at DigiKey" / "no longer carried"** says Digi-Key stopped
+   stocking the part — not that the maker withdrew it. Notes start `NO-LISTING: not carried by Digi-Key (…)` unless
+   the page (or the maker) says Obsolete / Last Time Buy / NRND, which keep their own prefixes.
+5. A price on a sibling code (other voltage / grade / packing) is recorded only with `observedMpn` = the sibling and a
+   note saying what differs; never price an automotive line on an industrial sibling without `aecq: false`.

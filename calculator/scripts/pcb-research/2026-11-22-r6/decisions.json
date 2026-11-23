@@ -1,0 +1,980 @@
+{
+ "stats": {
+  "lines": 539,
+  "toMerge": 434,
+  "ownLadder": 326,
+  "twoDistributors": 51,
+  "NO-LISTING": 28,
+  "UNPRICED": 11,
+  "OBSOLETE": 7,
+  "SUMMARY-ONLY": 24,
+  "NOT-READ": 21,
+  "held": 1,
+  "NO-LARGER-BREAK": 13
+ },
+ "lists": {
+  "NO-LISTING": [
+   {
+    "file": "b01-passives",
+    "mpn": "XGL5050-222MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 2.2 uH 20%, 13.8 A, DCR 8.2 mohm max, XGL5050",
+    "why": "NO-LISTING: Digi-Key keyword search returns \"did not return any results\" and the Digi-Key Marketplace product page (digikey.com/en/products/detail/coilcraft/XGL5050-222MEC/16817026) says \"This product is no longer available at DigiKey\" - no price shown. One try at another franchised distributor: uk.farnell.com search refused (HTTP 503). Master Electronics (23 Nov): \"No Search Results found\" for th"
+   },
+   {
+    "file": "b01-passives",
+    "mpn": "XAL5050-103MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 10 uH 20%, 4.9 A, DCR 45 mohm max, -40..125 C, AEC-Q200",
+    "why": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC: \"no longer available at DigiKey\"; this code's Digi-Key page was not re-read). One try at another franchised distributor for this exact code: uk.farnell.com/search?st=XAL5050-103MEC refused (HTTP 503). Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote li"
+   },
+   {
+    "file": "b01-passives",
+    "mpn": "XAL6060-103MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 10 uH 20%, 7 A, DCR 29.82 mohm max, AEC-Q200",
+    "why": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sells direct). aecq set false: AEC-Q200 not read on a page in this pass (the task's claim came from a s"
+   },
+   {
+    "file": "b01-passives",
+    "mpn": "XGL5030-103MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 10 uH 20% (from the code), XGL5030",
+    "why": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sells direct). Value read from the code only (10 uH), not confirmed on a page; aecq not confirmed."
+   },
+   {
+    "file": "b01-passives",
+    "mpn": "XGL5050-102MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 1.0 uH 20% (from the code), XGL5050",
+    "why": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sells direct). Value read from the code only (1.0 uH), not confirmed on a page; aecq not confirmed."
+   },
+   {
+    "file": "b01-passives",
+    "mpn": "XGL5050-331MEC",
+    "mfr": "Coilcraft",
+    "desc": "Shielded molded power inductor 330 nH 20%, 24.6 A, DCR 2 mohm max, XGL5050",
+    "why": "NO-LISTING: Digi-Key no longer carries Coilcraft (confirmed on the page for XGL5050-222MEC; this code's page not re-read); Farnell refused (HTTP 503) on the one Coilcraft try. Master Electronics returned no results for the Coilcraft sibling XGL5050-222MEC (23 Nov). Supplier-quote list (Coilcraft sells direct). aecq not confirmed."
+   },
+   {
+    "file": "b02-passives",
+    "mpn": "DFE2MCPH1R0MJLLQ",
+    "mfr": "Murata",
+    "desc": "Metal power inductor 1.0 uH 20% 0806 (2.0x1.6 mm), AEC-Q200",
+    "why": "NO-LISTING: Digi-Key keyword search for the exact code read 22 Nov 2026 returns \"did not return any results\" (it offers only a 'did you mean' for the 0.10 uH member DFE2MCPHR10MJLLQ and 1 substitute); TME search for the exact code returns 0 products; one web search found no franchised listing of the 1R0 value (only the R33 / R47 members at element14 / RS). The 1.0 uH value was added to the line-up"
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "ADBMS6822WCCSZ",
+    "mfr": "Analog Devices",
+    "desc": "ADBMS6822 - dual isoSPI transceiver, 2 Mbps, 3-30 V wake / monitor input",
+    "why": "OBSOLETE: Digi-Key page for ADBMS6822WCCSZ (505-ADBMS6822WCCSZ-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no price table, no backorders (\"temporary constrained supply\"), no substitute named; no Grade field on the page (W = ADI automotive suffix; AEC-Q100 is from the ADI product page per the discovery note, not re-read). The reel code ADBMS6822WCCSZ-RL returns no results at Dig"
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "ADBMS6832",
+    "mfr": "Analog Devices",
+    "desc": "ADBMS6832 - multicell battery stack monitor, up to 18 series cells, <2 mV lifetime TME, 300 mA passive balancing",
+    "why": "NO-LISTING: no orderable IC code found. Digi-Key keyword search \"ADBMS6832\" (read 23 Nov 2026) lands only on the evaluation board EVAL-ADBMS6832MCS (\"Discontinued at DigiKey\", stock 0, no price); one web search for the ADBMS6832 orderable code returned none. mpn holds the family key, NOT an orderable code. AEC-Q100 as the discovery note (ADI page), not re-read. Supplier quote needed."
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "LT8640SIV#WPBF",
+    "mfr": "Analog Devices",
+    "desc": "42 V, 6 A synchronous step-down Silent Switcher 2 (LT8643S: external compensation)",
+    "why": "OBSOLETE: Digi-Key pages read 23 Nov 2026 - LT8640SIV#WPBF (505-LT8640SIV#WPBF-ND) and LT8643SIV#WPBF (505-LT8643SIV#WPBF-ND) both show \"Discontinued at DigiKey\", Grade Automotive, Qualification AEC-Q100, 24-LQFN (4x4), tray, stock 0, NO price table, no backorders. LT8640SEV#WPBF returns no results at Digi-Key. The page shows the NON-automotive LT8640SIV#PBF / LT8643SIV#PBF at 16.94000 USD for ONE"
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "MAX96751GTN/V+",
+    "mfr": "Analog Devices",
+    "desc": "GMSL2 serializer with HDMI 2.0 input, single / dual GMSL2 output",
+    "why": "OBSOLETE: Digi-Key page for MAX96751GTN/V+ (175-MAX96751GTN/V+-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no price table, no backorders; no Grade field. The /VY+ code named by the discovery pass exists at Digi-Key (MAX96751GTN/VY+, \"GMSL2 serializer with HDMI 2.0 interface\") but the results list shows it \"Not Available\" with no price - its product page was not read. No franchi"
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "LT8648SJV#WPBF",
+    "mfr": "Analog Devices",
+    "desc": "42 V, 15 A synchronous step-down Silent Switcher 2",
+    "why": "OBSOLETE: Digi-Key page for LT8648SJV#WPBF (505-LT8648SJV#WPBF-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", Grade Automotive, Qualification AEC-Q100, 36-LQFN (7x4), tray, stock 0, no price table, no backorders. Substitutes shown are the NON-automotive LT8648SJV#PBF (19.76000 USD, one piece) and LT8648SHV#PBF (21.58000), both 0 in stock - not the automotive code, not recorded. Supplier qu"
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "LTC6812HLWE-1#3ZZPBF",
+    "mfr": "Analog Devices",
+    "desc": "15-cell battery stack monitor with daisy-chain isoSPI",
+    "why": "OBSOLETE: Digi-Key page for LTC6812HLWE-1#3ZZPBF (LTC6812HLWE-1#3ZZPBF-ND, read 23 Nov 2026) shows \"Discontinued at DigiKey\", stock 0, no backorders, no lead time, no substitute named. Not priced. For reference only, the page still prints ONE tray row: 160 = 30.17800 USD. Grade field \"Automotive\" (so aecq true); no Qualification field. 64-LQFP-EP (10x10)."
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TC489QP16NF400MCAAKXUMA1",
+    "mfr": "Infineon",
+    "desc": "AURIX TC4x 28 nm TriCore MCU, 4 lockstep cores up to 400 MHz (SAK-TC489QP-16NF400MC AA)",
+    "why": "NO-LISTING: one web search for the OPN TC489QP16NF400MCAAKXUMA1 / SAK-TC489QP-16NF400MC returned only Infineon's own part pages and a product directory - no franchised distributor listing; Digi-Key results were for other AURIX TC4x codes (TC4D9XP20MF500MCABKXUMA1 - not this part). Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again, so the '2 Emb"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TLF4D985QKV01R1",
+    "mfr": "Infineon",
+    "desc": "Functional-safety PMIC (ASIL-D) for AURIX TC3x / TC4x and TRAVEO, -40 to 175 C; LQFP-64 and VQFN-56 options in the family",
+    "why": "NO-LISTING: one web search for TLF4D985QKV01R1 / TLF4D985QVV01R1 returned only Infineon's own part pages (QKV01R1, QKV02R1, QKV03R1, QVV01R1, QVV02R1; QKV03) - no franchised distributor listing and no orderable (…XUMA1) code seen; the Digi-Key results were for the older TLF35585 PMIC (not this part). Grade not confirmed (aecq false). Supplier quote needed."
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TLE9350BVLE",
+    "mfr": "Infineon",
+    "desc": "CAN FD transceiver, 5 Mbit/s, leadless TSON-8 versions of TLE9350Bx; takes over from TLE9250xLE (now not-for-new-design)",
+    "why": "NO-LISTING: no orderable code found - one web search for TLE9350BVLEXTMA1 (and the SJ codes) returned no listing for any leadless TLE9350B…LE code; 'mpn' here is the maker's sales name from the task, NOT an orderable code. aecq is the task's reading of Infineon's transceiver deck (family row), not confirmed for a code. The DSO-8 sibling TLE9350BVSJXTMA1 is listed (see that line)."
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "IAUCN08S7L110",
+    "mfr": "Infineon",
+    "desc": "N-MOSFET 80 V 11 mOhm max logic level, OptiMOS 7, SSO8 5x6",
+    "why": "NO-LISTING at TME: TME's search listing for IAUCN08S7 (read 23 Nov 2026) names 5 codes - IAUCN08S7N013ATMA1, IAUCN08S7N019ATMA1, IAUCN08S7L013ATMA1, IAUCN08S7N034ATMA1, IAUCN08S7N024ATMA1 - and NOT an L110 code; 'mpn' is the maker's sales name from the task, the orderable code (…ATMA1 by the family's pattern) was not seen on any page. Discovery: Mouser showed it 'coming soon'. Digi-Key refused (HT"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "MLX81332",
+    "mfr": "Melexis",
+    "desc": "Smart LIN driver for small DC / stepper / BLDC motors, < 1 A, up to 10 W, 32 KB flash",
+    "why": "NO-LISTING: no orderable code found - one web search for MLX81332 / MLX81340 order codes at Digi-Key / Mouser returned only other Melexis parts; 'mpn' is the family name from the task, NOT an orderable code. Master Electronics does not list Melexis (no result for MLX90425GDC-ABA-600-RE). Grade not confirmed (aecq false). Supplier quote needed (Melexis smart LIN drivers are usually sold on quotatio"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "MLX81340",
+    "mfr": "Melexis",
+    "desc": "Smart LIN pre-driver for DC / BLDC motors up to 500 W, 58 KB memory",
+    "why": "NO-LISTING: no orderable code found - the same web search as MLX81332 returned no listing for MLX81340; 'mpn' is the family name from the task, NOT an orderable code. Grade not confirmed (aecq false). Supplier quote needed."
+   },
+   {
+    "file": "b10-ics",
+    "mpn": "OX03H10-E74Y-001A-Z",
+    "mfr": "OMNIVISION",
+    "desc": "3 MP 1/2.44-inch 3.0 um TheiaCel automotive viewing sensor, 60 fps, pin-compatible with OX03F10",
+    "why": "NO-LISTING: Digi-Key keyword search \"OX03H10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused; TME does not carry OMNIVISION and its page limit was spent). OMNIVISION sensors are sold direct / through its agents - supplier quote needed. Code as on the maker page (not seen at a distributor). AEC-Q"
+   },
+   {
+    "file": "b10-ics",
+    "mpn": "OX08D10-E92U-001A-Z",
+    "mfr": "OMNIVISION",
+    "desc": "8 MP 1/1.73-inch 2.1 um TheiaCel HDR / LED-flicker-free automotive image sensor",
+    "why": "NO-LISTING: Digi-Key keyword search \"OX08D10\" returned \"did not return any results\" (read today). No other franchised page could be read (Master Electronics, Mouser, Avnet, Newark, Verical refused). OMNIVISION sensors are sold direct / through its agents - supplier quote needed. Code as on the maker page (not seen at a distributor). AEC-Q100 not confirmed."
+   },
+   {
+    "file": "b10-ics",
+    "mpn": "AR0823AT2C18XUEA0-DPBR-E",
+    "mfr": "onsemi",
+    "desc": "8.3 MP 1/1.8-inch 2.1 um automotive HDR CMOS image sensor (150 dB, LFM), ASIL-D process",
+    "why": "NO-LISTING: Digi-Key has a product page for the exact code (Active per the attributes; \"CMOS Image Sensor 3840H x 2160V 2.1 um 149-IBGA (11x8)\"; Grade: Automotive, Qualification: AEC-Q100) but it shows NO price table and says \"This product is no longer carried by DigiKey\". Supplier quote needed. Package corrected from the page."
+   },
+   {
+    "file": "b10-ics",
+    "mpn": "NCV7410MWR2G",
+    "mfr": "onsemi",
+    "desc": "10BASE-T1S (802.3cg) single-pair Ethernet controller, MAC + PHY",
+    "why": "NO-LISTING: Digi-Key keyword search for the exact code returned \"did not return any results\" (read today; the page only offered \"2 Substitute Part result(s)\" and \"did you mean ncv7311mwr2g\"). The code itself is right: a search summary of the onsemi product page gives NCV7410MWR2G as the only orderable (QFNW-32, reel 5,000, Active) and Octopart lists it as in production (introduced 2024-10) - no di"
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "SI8921BD-AS4",
+    "mfr": "Skyworks",
+    "desc": "Automotive isolated analog amplifier for current sensing",
+    "why": "NO-LISTING: Digi-Key product page for the exact code (digikey.com/en/products/detail/skyworks-solutions-inc/SI8921BD-AS4/16730935; USD, Active, Tube, no stock - \"Available To Order\", lead time 24 weeks) prints ONE price row only: tube 80 = 4.79200 - a break below 100 is not a price under the rules, so nothing is recorded. Tried for a second source: Master Electronics - no search result for the cod"
+   },
+   {
+    "file": "b12-ics",
+    "mpn": "IMX623",
+    "mfr": "Sony Semiconductor Solutions",
+    "desc": "3.0 MP 1/2.42-type 3.0 um automotive CMOS image sensor, MIPI CSI-2",
+    "why": "NO-LISTING: no orderable code and no franchised listing with a break >= 100 found. Page row: \"IMX623 - 3.00M, 1/2.42, 3.0 um, 10bit 60fps / 12bit 30fps, MIPI CSI-2, RGB\". No Digi-Key page was read for this code (Digi-Key had returned HTTP 403 on the IMX728 try just before). Sony automotive image-sensor page (sony-semicon.com, read today): the row is marked \"New\"; no package, no specification PDF l"
+   },
+   {
+    "file": "b12-ics",
+    "mpn": "IMX728",
+    "mfr": "Sony Semiconductor Solutions",
+    "desc": "8.39 MP 1/1.72-type 2.1 um automotive CMOS image sensor, MIPI CSI-2",
+    "why": "NO-LISTING: no orderable code and no franchised listing with a break >= 100 found. Page row: \"IMX728 - 8.39M, 1/1.72, 2.1 um, 10bit 40fps, MIPI CSI-2, RGB\". The one Digi-Key try (keyword IMX728) returned HTTP 403 - a refusal, not a \"no results\" page; Digi-Key was not read again. Sony automotive image-sensor page (sony-semicon.com, read today): the row is marked \"New\"; no package, no specification "
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "L9965A-TR",
+    "mfr": "STMicroelectronics",
+    "desc": "L9965A - 18s battery monitor / cell AFE, ASIL-D target",
+    "why": "NO-LISTING: orderable code L9965A-TR is listed by Farnell (ie.farnell.com dp/4739119, \"BATTERY MONITOR, 16 CELL, TQFP-EP\", AEC-Q100 per a search summary) and RS (stock no. 0719453, TQFP-64), but no break of 100 or more was seen - the only price in the results is an RS Philippines single-unit price. Digi-Key (keyword page read today): \"did not return any results\". ST eStore lists l9965a-tr; ST page"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TPS2HCS05-Q1",
+    "mfr": "Texas Instruments",
+    "desc": "5 mOhm automotive dual-channel SPI-controlled smart high-side switch",
+    "why": "NO-LISTING: pre-production. TI product page ti.com/product/TPS2HCS05-Q1 (read 2026-11-23) prints status PREVIEW with a NEW badge, \"Automotive, dual-channel 5mOhm smart high-side switch with I2T wire protection, low-Iq mode and SPI\", \"AEC-Q100 qualified for automotive applications\", package \"UNKNOWN (PWC)\" 18 pins (HTSSOP per the description) and NO orderable code. A search limited to digikey / mou"
+   }
+  ],
+  "UNPRICED": [
+   {
+    "file": "b05-passives",
+    "mpn": "RCA060310K0FKEA",
+    "mfr": "Vishay",
+    "desc": "Thick film resistor 10 k 1% 0.1 W 75 V, 0603, -55..155 C, AEC-Q200",
+    "why": "TME detail page read 22 Nov 2026: code and \"Conform to the norm: AEC-Q200\" stated, reel 5,000, stock 7,522, no lifecycle remark. ONE figure only. TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is rounded to 2 dp (\"0.00 USD\") so no other TME break could be recorded; net = gross on the page (no VAT). Reviewe"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "CY8C4147LWE-HVS035",
+    "mfr": "Infineon",
+    "desc": "12 V Cortex-M0+ MCU with integrated LIN PHY and 12 V regulator, CAPSENSE, 128 KB flash, ASIL B",
+    "why": "NOT PRICED - no page served: TME search page for CY8C4147LWE (read 23 Nov 2026) shows no products (not in TME's standard offer); the Digi-Key keyword URL for this code returned HTTP 403 (the refusal that stopped Digi-Key reads); Mouser, Avnet, Newark, Verical refused. Code not re-confirmed on a distributor page today; aecq and package are the task's (maker page via search result: AEC-Q100 / ASIL-B"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "AM263P2ASPDFZCZRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive Cortex-R5F MCU, up to 400 MHz, real-time control, expandable memory",
+    "why": "UNPRICED: TME product page read (https://www.tme.eu/en/details/am263p2aspdfzczrq1/texas-instruments-microcontrollers/texas-instruments/ , USD, 2026-11-23): code and maker confirmed (symbol AM263P2ASPDFZCZRQ1, TEXAS INSTRUMENTS, ARM microcontroller 400 MHz, NFBGA324, -40...150 C), 0 in TME stock, minimum 1, and ONE price row only - \"from 1 pcs\" = 29.63 USD. A break below 100 is not a price: nothing"
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "MAX9296AGTM/V+",
+    "mfr": "Analog Devices",
+    "desc": "GMSL2 dual deserializer",
+    "why": "UNPRICED: Digi-Key page (www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX9296AGTM-V/10451975) read today says \"Discontinued at DigiKey\", in stock 0, no price table, backorders not accepted. Mouser refuses page reads. The stored Digi-Key 520 price can no longer be seen - worth a check that the part is still current."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "XEL4030-102MEB",
+    "mfr": "Coilcraft",
+    "desc": "Power inductor 1uH, 4x4 mm, AEC-Q200",
+    "why": "UNPRICED: no listing for XEL4030-102MEB or -MEC with a price seen in two searches; Digi-Key says \"no longer available at DigiKey\"; Mouser / Farnell / TrustedParts refuse page reads."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "XFL3012-472MEB",
+    "mfr": "Coilcraft",
+    "desc": "Power inductor 4.7uH, 3x3 mm, AEC-Q200",
+    "why": "UNPRICED: no listing for XFL3012-472MEB or -MEC found in three searches (Digi-Key, Mouser, Farnell / element14 domains); Mouser / Farnell / TrustedParts refuse page reads."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "FA-128 54.00M-C0AANNG60RE5",
+    "mfr": "Epson",
+    "desc": "Crystal 54 MHz 12 pF +-10/+-20 ppm, 2.0x1.6 mm",
+    "why": "UNPRICED: exact code not found at Digi-Key or in a general search; Mouser (stored distributor) refuses page reads."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "FA2016AA 40.00M-A0AABBJ60RG0",
+    "mfr": "Epson",
+    "desc": "Epson automotive crystal 40 MHz, AEC-Q200 (FA-128-size automotive series)",
+    "why": "UNPRICED: Digi-Key search for the exact code returns no results; Future Electronics (stored distributor) refused the page read (HTTP 403); nothing in a general search."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "FC-12M 32.768kHz",
+    "mfr": "Epson",
+    "desc": "Epson 32.768 kHz crystal +/-30 ppm 2.05x1.2",
+    "why": "UNPRICED: the catalogue code is not an orderable code (Digi-Key lists FC-12M 32.7680KA-A0 / -A3 / -A5, +-20 ppm 12.5 pF) so no exact-code break can be read; RS (stored distributor) refused the page read (HTTP 403). The entry needs an orderable code before it can take a slope."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "IS46LQ32512A-046BLA1",
+    "mfr": "ISSI",
+    "desc": "LPDDR4 16Gb (512M x32), 2133 MHz, A1 automotive -40..85 C",
+    "why": "UNPRICED: not read (budget). A search summary of Digi-Key lists the -TR variant (IS46LQ32512A-046BLA1-TR, id 29286502) as \"Not For New Designs\" with 0 in stock - check the life-cycle status before the stored price is relied on. Mouser and Farnell (stored distributors) refuse page reads."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "T598D227M010AHS025",
+    "mfr": "KEMET",
+    "desc": "Polymer tantalum 220uF 10V 20% 25 mOhm, D case 7343, T598 automotive series",
+    "why": "UNPRICED: TME page for the exact code says \"Product withdrawn from the offer\" (no price); not found at Digi-Key or Mouser in search (they list -ATE025 / -AHS080 / -ATE080, different codes); LCSC (stored distributor) page is served without a price table. Likely a supplier-quote part."
+   }
+  ],
+  "OBSOLETE": [
+   {
+    "file": "b07-ics",
+    "mpn": "AD2433WCCPZ",
+    "mfr": "Analog Devices",
+    "desc": "A2B (Automotive Audio Bus) transceiver, 32-channel, second-generation AD243x",
+    "why": "OBSOLETE: Digi-Key page for AD2433WCCPZ (505-AD2433WCCPZ-ND, read 23 Nov 2026) shows Part Status \"Obsolete - This product is no longer manufactured\", tray, no price table, no stock, and names NO substitute (only \"View Alternative Package Types\"). The silicon-revision replacement code in the discovery note was not found on the page, so nothing is priced - supplier quote needed for the live AD2433W "
+   },
+   {
+    "file": "b07-ics",
+    "mpn": "ADT7311WTRZ-RL7",
+    "mfr": "Analog Devices",
+    "desc": "16-bit digital SPI temperature sensor, -40 to +150 C",
+    "why": "OBSOLETE: Digi-Key page for ADT7311WTRZ-RL7 (ADT7311WTRZ-RL7TR-ND / CT-ND, read 23 Nov 2026) shows Part Status \"Last Time Buy\", Last Time Buy Date 7/29/2027, no substitute named; stock 1,004. Not priced (end of life announced). For reference only, the page still shows: cut tape 500 = 4.00876, tape & reel 1,000 = 3.88813, 2,000 = 3.77746 USD. Grade field \"Automotive\" (so aecq true); no Qualificatio"
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "RC21211A000GNA#BB0",
+    "mfr": "Renesas",
+    "desc": "AutoClock automotive clock generator",
+    "why": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock (packaging Tray). No replacement named on the page. Page fields: Clock Generator 650 MHz, 1:12, Grade \"Automotive\", Qualification \"AEC-Q100\"; package not shown."
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "ISL76683AROZ-T7A",
+    "mfr": "Renesas",
+    "desc": "Light-to-digital sensor with I2C interface",
+    "why": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Last Time Buy\", Last Time Buy Date 1/17/2027, and that Digi-Key cannot accept backorders; stock not shown. Page still prints tape & reel 250 = 2.43576 USD and cut tape 1 = 3.57 - not recorded (last-time-buy). GRADE NOT CONFIRMED: no Grade / Qualification field on the page - aecq left false."
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "ISL78100ARZ-T7A",
+    "mfr": "Renesas",
+    "desc": "LED driver regulator, PWM dimming, 1 A",
+    "why": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock. No replacement named on the page. Page fields: buck / boost LED driver regulator 1 A, backlight, Grade \"Automotive\", Qualification \"AEC-Q100\"."
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "ISL78365ARZ-T7A",
+    "mfr": "Renesas",
+    "desc": "Laser diode driver, 4 channel, 3.3 V",
+    "why": "OBSOLETE: Digi-Key page for the exact code shows Part Status \"Obsolete\" and \"This product is no longer manufactured\"; no price table, no stock. No replacement named on the page. Page fields: 4-channel laser driver, 40-QFN 6x6 (task said WQFN-40), Grade \"Automotive\", Qualification \"AEC-Q100\"."
+   },
+   {
+    "file": "b11-ics",
+    "mpn": "ISL79985IRZ",
+    "mfr": "Renesas",
+    "desc": "Analog video decoder",
+    "why": "OBSOLETE: Digi-Key product page (digikey.com/en/products/detail/renesas-electronics-corporation/ISL79985IRZ/6173413) says \"ISL79985IRZ is Obsolete and no longer manufactured\"; the search list shows it \"Not Available\"; no price table. Manufacturer-recommended substitute named on the page: ISL79987IRZ (480 in stock, 1-piece price 14.12 USD - a different part, not recorded). Page fields: Grade \"Autom"
+   }
+  ],
+  "SUMMARY-ONLY": [
+   {
+    "file": "b08-ics",
+    "mpn": "TLE9371VSJXTMA1",
+    "mfr": "Infineon",
+    "desc": "CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s, VIO pin, bus wake-up",
+    "why": "SUMMARY-ONLY: the exact code is listed by Digi-Key (product id 17399579, PG-DSO-8), Newark, Avnet and Octopart per search-result titles, but no page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; Future, Farnell, RS, Avnet, Newark, Mouser refused). summary figures, NOT prices: Avnet Americas 2,500+ = USD 0.56733 (min 2,500, f"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TLE7258SJXUMA1",
+    "mfr": "Infineon",
+    "desc": "Basic LIN transceiver, up to 20 kbit/s, 5.5-18 V (TLE7258SJ)",
+    "why": "SUMMARY-ONLY: family line - representative chosen = TLE7258SJXUMA1, the DSO-8 code Digi-Key (product id 5213944, 'active', about 13,000 in stock on its UK / NL sites per the summary) and RS list. No page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; RS refused), and the summary gave only 1-piece prices - nothing recorded. Gr"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TLE9350BVSJXTMA1",
+    "mfr": "Infineon",
+    "desc": "CAN FD transceiver, 5 Mbit/s, VIO pin (TLE9350BVSJ), successor of TLE9250V / TLE9350V",
+    "why": "SUMMARY-ONLY: family line - representative chosen = TLE9350BVSJXTMA1 (the VIO version, the commonest in zonal / body ECUs), the code Digi-Key (product id 21852871, 8-SOIC, tape & reel and cut tape, lead time 20 weeks), Mouser (726-TLE9350BVSJXTMA1, factory pack 2,500) and Newark (03AM8333, 'AEC-Q100 qualified') list per the search summary. No page could be read (Digi-Key refused (HTTP 403) on its "
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "TLE4971A120T5UE0001XUMA1",
+    "mfr": "Infineon",
+    "desc": "Coreless Hall current sensor with integrated current rail, 25-120 A, analog, ASIL B",
+    "why": "SUMMARY-ONLY: family line - orderable codes seen in distributor listing URLs / summaries (not on a page read): TLE4971A120T5UE0001XUMA1 (Digi-Key product id 18700476; element14 4203308), TLE4971A120N5E0001XUMA1, TLE4971A025N5E0001XUMA1, TLE4971A025N5UE0001XUMA1 (element14), and TLE4971A120T5E0001XUMA1 / TLE4971A050W2S0001XUMA1 (named on Digi-Key's TLE4971 product-highlight page, AEC-Q100 Grade 1 p"
+   },
+   {
+    "file": "b08-ics",
+    "mpn": "MX25V1635FZNQ03",
+    "mfr": "Macronix",
+    "desc": "NOR Flash 16Mbit 16M x 1/8M x 2/4M x 4 Serial-SPI 3.3V 8-Pin WSON WSON8",
+    "why": "SUMMARY-ONLY: the exact code is listed by Digi-Key (product id 15284027, 'FLASH - NOR Memory IC 16Mbit SPI - Quad I/O 80 MHz 8-WSON (6x5)', tray) and Avnet (tray MX25V1635FZNQ03 and tape-and-reel MX25V1635FZNQ03/TR) per search-result titles; no page could be read (Digi-Key refused (HTTP 403) on its 6th read of this task, so by Addendum 2 rule 6 it was not read again; Avnet returned HTTP 400; Maste"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "S32M244CCABWKHST",
+    "mfr": "NXP",
+    "desc": "12 V motor-control system-in-package: Cortex-M4 MCU + MOSFET gate pre-driver + LIN / CAN FD PHY + regulator",
+    "why": "SUMMARY-ONLY: no page read. Search summaries for the exact code (snapshot dates unknown, NOT prices): digikey.ca 1 = 27.54, 640 = 18.18711 (currency not shown in the summary - the .ca site prices in CAD); digikey.co.uk 'Manufacturers Standard Package Unit Price without VAT: GBP 12.95000'; Octopart headline USD 11.29 'Production'; element14 AU ~AUD 23 at 100+ (AUD cannot be used). Listed as a produ"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "KW45B41Z83AFTBT",
+    "mfr": "NXP",
+    "desc": "32-bit Bluetooth 6.0 long-range MCU with CAN FD and LIN options, Cortex-M33",
+    "why": "SUMMARY-ONLY: no page read. Orderable codes seen as Digi-Key product pages in search results: KW45B41Z83AFTBT (48-VFQFN / HVQFN48, tray, id 18713091; chosen as representative), KW45B41Z83AFPBT (40-HVQFN 6x6, tray, id 18711432), KW45B41Z83AFTBR (reel), also KW45Z41083AFPBR / AFTBR (no-CAN variants). Summary figures (NOT prices; snapshot dates unknown): digikey.gr KW45B41Z83AFTBT 260 = EUR 6.41442 e"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "S32K388HHT0MJBST",
+    "mfr": "NXP",
+    "desc": "S32K3 Cortex-M7 MCU, high-memory member (EVB S32K388EVB-Q289)",
+    "why": "SUMMARY-ONLY: no page read. Orderable codes from search results: S32K388HHT0MJBST (289 MAPBGA / LFBGA, tray; Digi-Key id 26220629, Mouser, Newark, nxp.com/part/S32K388HHT0MJBST) and S32K388HHT0MJBSR (tape & reel; Digi-Key id 26221029). Summary figures (NOT prices; snapshot dates unknown): Digi-Key reel code 1,000 = USD 23.46575 (26-week lead time); Digi-Key tray code single-unit offer USD 50.14 (s"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "TJA1410ATK/0J",
+    "mfr": "NXP",
+    "desc": "10BASE-T1S PMD transceiver (OPEN Alliance TC14)",
+    "why": "SUMMARY-ONLY: no page read. Orderable code TJA1410ATK/0J is a Digi-Key product (digikey.com/en/products/detail/nxp-usa-inc/TJA1410ATK-0J/29280798; HVSON8 per the TK code). Search summary of that page (NOT prices; snapshot date unknown): cut tape 1 = 1.43, 1,000 = 0.74756; tape & reel 6,000 = 0.69862, 12,000 = 0.68574 (USD), about 3,971 in stock. Earlier rounds found live Digi-Key prices 9-39 % abo"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "TJA1466BHG/0J",
+    "mfr": "NXP",
+    "desc": "CAN SIC transceiver with partial networking and advanced system monitoring, CAN FD up to 8 Mbit/s",
+    "why": "SUMMARY-ONLY: no page read. Orderable codes from search results: TJA1466AHG/0J, TJA1466BHG/0J, TJA1466CHG/0J (DHVQFN18; nxp.com/part pages for AHG / BHG / CHG). BHG chosen as representative because two US distributors list it (Arrow, Avnet); the A / B / C feature difference was not read. Summary figures (NOT prices; snapshot dates unknown): Avnet TJA1466BHG/0J 6,000+ = USD 0.97227 (minimum 6,000);"
+   },
+   {
+    "file": "b12-ics",
+    "mpn": "SKYA21003",
+    "mfr": "Skyworks",
+    "desc": "AEC-Q100 SPDT RF switch, 100 MHz to 6 GHz",
+    "why": "SUMMARY-ONLY: Digi-Key lists SKYA21003 (product pages .../skyworks-solutions-inc/SKYA21003/5965454 and /5965401 - two Digi-Key listings, which is tape & reel / cut tape was not read) but digikey.com had returned HTTP 403 before this line, so NO price was read on a page. Search summary of the Digi-Key pages (stale risk, NOT a price): \"RF Switch IC General Purpose SPDT 12-QFN (2x2)\", about 76,000 in"
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "A7986ATR",
+    "mfr": "STMicroelectronics",
+    "desc": "38 V, 3 A step-down switching regulator",
+    "why": "SUMMARY-ONLY (no page read - budget): all three figures come from search summaries, date unknown; live Digi-Key pages read today for other ST parts were up to 39 % ABOVE their search summaries - re-read before use. Reel code A7986ATR (Digi-Key: cut tape 1,000 = 1.43055, tape & reel 2,500 = 1.32808, 8-SOIC exposed pad). The Mouser figure ($1.41 at 1,000, extended $1,410.00) is on the page of the TU"
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "LDLL16ENTR",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 16-channel LED driver IC, 32-pin QFN (Farnell: 16 channel, 5 to 28 V supply)",
+    "why": "SUMMARY-ONLY (no page read - budget): Farnell UK \"1000+ GBP 1.720\" ex VAT, cut tape, the top of its price table, from a search summary of the Farnell page; date unknown - re-read before use. Farnell states Qualification AEC-Q100, 16 channels, 5 to 28 V supply, QFN-EP-32 (the task's RS listing said 5-40 V; desc now follows Farnell for the channel count). No second distributor found."
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "LMV358IYDT",
+    "mfr": "STMicroelectronics",
+    "desc": "dual low-power rail-to-rail op amp",
+    "why": "SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (1,000 = 0.34903 ext 349.03; 2,500 = 0.33456 ext 836.40), date unknown; live Digi-Key pages read today for other ST analog parts were 9-39 % above their summaries - re-read before use. GRADE: the same summary reports Grade Automotive, Qualification AEC-Q100 on the Digi-Key page."
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M24512-DRMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 512-Kbit serial I2C bus EEPROM, 1.8-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): Farnell UK \"2500+ GBP 1.070\" ex VAT, the only break shown, from a search summary of the Farnell page; date unknown. GRADE: Farnell title \"EEPROM, AEC-Q100, 512KBIT, I2C, SOIC\"; Arrow tags it automotive AEC-Q100 (summary). NOT recorded: Arrow \"From $1.0797 to $1.0906 per unit\" (no break stated); ST eStore $1.56 at 500 (maker list price)."
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M24C04-DRMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 4-Kbit serial I2C bus EEPROM, 1.8-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (\"All prices are in USD\"; 1,000 = 0.35628 ext 356.28; 2,500 = 0.34507 ext 862.67), date unknown. The same search batch gave M95M02-DWMN3TP/K figures that matched the live page exactly, so the EEPROM summaries look current - still re-read before use. GRADE: Digi-Key lists Qualification AEC-Q100 (summa"
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M24M01-DWMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 1-Mbit serial I2C bus EEPROM, 2.5-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (cut tape 1,000 = 2.58598 ext 2,585.98; tape & reel 2,500 = 2.50038 ext 6,250.95), date unknown. The same summary gave M95M02-DWMN3TP/K figures that matched the live page exactly. GRADE: the summary reports Grade Automotive on the Digi-Key page (no AEC-Q100 field seen in the snippet); ST selection gu"
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M95040-DRMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 4-Kbit SPI bus EEPROM, 1.8-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): tape & reel 2,500 = 0.49571 (ext 1,239.27) from a search summary of the Digi-Key page, date unknown. GRADE: the summary reports Grade Automotive, AEC-Q100 on that page. NOT recorded: 1,000 = 0.51201 on a second Digi-Key listing (.../stmicroelectronics-va/M95040-DRMN3TP-K/4729199) whose packaging is not stated."
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M95080-DRMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 8-Kbit SPI bus EEPROM, 1.8-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): LCSC \"1,000+ $0.6829\" (ext $682.90) from a search summary of the LCSC page; the listing is OUT OF STOCK and shows no larger break; date unknown - weak, re-read or cross-check before use. No Digi-Key / Mouser / Farnell price surfaced in two searches. GRADE NOT CONFIRMED for this exact code on a page (ST selection guide: the -A125 series is AEC-Q100) - aecq left"
+   },
+   {
+    "file": "b13-ics",
+    "mpn": "M95512-DRMN3TP/K",
+    "mfr": "STMicroelectronics",
+    "desc": "automotive 512-Kbit SPI bus EEPROM, 1.8-5.5 V",
+    "why": "SUMMARY-ONLY (no page read - budget): both figures come from a search summary of the Digi-Key page (1,000 = 1.64318 ext 1,643.18; tape & reel 2,500 = 1.58926 ext 3,973.15), date unknown. The same search batch gave M95M02-DWMN3TP/K figures that matched the live page exactly. GRADE: the summary reports Grade Automotive, Qualification AEC-Q100 on that page."
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "BQ79758QPAPRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "18S battery cell monitor with current sense",
+    "why": "SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/BQ79758QPAPRQ1/25324528 - result title \"BQ79758QPAPRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN1473CDMTRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive low-power signal-improvement (SIC) CAN FD transceiver with INH and WAKE",
+    "why": "SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN1473-Q1/part-details/TCAN1473CDMTRQ1, read 2026-11-23): ACTIVE, VSON (DMT) "
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN1575DMTRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive CAN SIC transceiver with partial networking (selective wake)",
+    "why": "SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; Mouser 503). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN1575-Q1/part-details/TCAN1575DMTRQ1, read 2026-11-23): ACTIVE, "
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TPS4HC120AQDGQRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Four-channel automotive smart high-side switch",
+    "why": "SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS4HC120AQDGQRQ1/25881361 - result title \"TPS4HC120AQDGQRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read aga"
+   }
+  ],
+  "NOT-READ": [
+   {
+    "file": "b09-ics",
+    "mpn": "ATTINY1616-MZ-VAO",
+    "mfr": "Microchip",
+    "desc": "8-bit tinyAVR, 16 KB flash, 16 MHz, automotive VAO grade",
+    "why": "NOT-READ: the code is confirmed on TME's product page (symbol ATTINY1616-MZ-VAO, Microchip, VQFN20, 16 kB flash, 2.7-5.5 V, -40 to 125 C, tube, standard package 490, 0 in stock) but TME shows NO price table ('This product is not available for sale in your country', 'Offer available for logged-in customers'). Master refused (HTTP 403) on this code; Digi-Key was already refusing. TME page states no "
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "MPQ4322C",
+    "mfr": "MPS",
+    "desc": "36 V, 2 A ultra-compact synchronous buck, 42 V load dump",
+    "why": "NOT-READ: orderable code NOT confirmed (mpn here is the task's family name, not an orderable code; aecq set false until a code and its grade are read). Master: 'No Search Results found for MPQ4322C' (Master carries no MPS). A search found only MPQ4322 (MPQ4322GDE-AEC1-Z / -P, MPQ4322GLE-AEC1-Z / -P on MPS's AEC-Q100 series page) and an MPQ4323C-AEC1 page - no MPQ4322C product page surfaced; MPS's "
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "MPQ4323GDE-AEC1-Z",
+    "mfr": "MPS",
+    "desc": "3 A synchronous step-down converter, VIN max 42 V per catalogue, ultra-compact, MPQ4320 series",
+    "why": "NOT-READ: orderable code MPQ4323GDE-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4323GDE-AEC1-Z/16705336 - search result, page not read) and on MPS's 'mpq4323-aec1' automotive AEC-Q grade page (search result). LCSC: its datasheet host names the code as C5775975 (QFN-12 2x3) but the product page read today says 'Part not found'. No price seen a"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "MPQ4420AGJ-AEC1-Z",
+    "mfr": "MPS",
+    "desc": "2 A synchronous step-down converter, VIN max 40 V per catalogue, 410 kHz, MPQ4420 series",
+    "why": "NOT-READ: orderable code MPQ4420AGJ-AEC1-Z exists as a Digi-Key product (digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4420AGJ-AEC1-Z/7361614 - search result: adjustable 2 A buck, TSOT-23-8, 16-week lead time; page not read). Master: 'No Search Results found' for this exact code. Sibling MPQ4420HGJ-AEC1-Z is on LCSC as C6595663 (search result, not read). No price seen. No distribu"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "74HC595PW-Q100,118",
+    "mfr": "Nexperia",
+    "desc": "8-bit serial-in shift register with output latches, 2–6 V, AEC-Q100",
+    "why": "NOT-READ: Master 'No Search Results found for 74HC595PW-Q100,118'; TME search for '74HC595PW-Q100' shows no product (TME lists only the non-Q100 74HC595PW,118 / 74HC595PW, the latter 'withdrawn from the offer' per a search summary); Newark search refused (503). The discovery's Digi-Key URL (.../74HC595PW-Q100-118/3749019) was not read - Digi-Key was refusing. This line also links the catalogue's 7"
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "BMA7318",
+    "mfr": "NXP",
+    "desc": "BMA7318 - 18-channel Li-ion battery cell controller for EV high-voltage BMS and 48 V systems",
+    "why": "NOT-READ: orderable code not found - one search (Digi-Key / Mouser terms) returned no BMA7318 / BMI7318 / BMA7518 distributor listing; the discovery saw only a Mouser new-product page. Family announced for November 2025; may still be sampling / contract-only. Grade not confirmed - aecq false. No distributor page could be read for this line: Digi-Key refused (HTTP 403) from the 9th page on and was "
+   },
+   {
+    "file": "b09-ics",
+    "mpn": "TJA1104",
+    "mfr": "NXP",
+    "desc": "MACsec-enabled, ASIL B 100BASE-T1 Ethernet PHY (NXP's first MACsec 100BASE-T1 PHY)",
+    "why": "NOT-READ: orderable code not found - one search returned no Digi-Key / Mouser / Arrow / Avnet / Farnell listing for TJA1104 (only NXP's own in-vehicle-networking page naming it). Possibly not yet in distribution; not enough tried to call it NO-LISTING. No distributor page could be read for this line: Digi-Key refused (HTTP 403) from the 9th page on and was not used again; Master Electronics does n"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "AM263P4ACOKFZCZRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Sitara AM263Px real-time MCU (zone controller MCU)",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). The task line names a FAMILY (the TIDA-020079 BOM prints \"AM263PxC\"); representative chosen: AM263P4ACOKFZCZRQ1 - TI part-details p"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "BQ79731-Q1",
+    "mfr": "Texas Instruments",
+    "desc": "Battery pack monitor (BJB): pack voltage, current and insulation-resistance measurement for HV BMS",
+    "why": "NOT-READ: NO orderable code could be confirmed, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried. What was read on ti.com today: ti.com/product/BQ79731-Q1 returned HTTP 404; ti.com/product/BQ"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "CC2745R10E0WRHARQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive SimpleLink Bluetooth LE wireless MCU, 1 MB flash, HSM, APU, CAN FD (channel-sounding capable family)",
+    "why": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/CC2745R10E0WRHARQ1/25891591 - result title \"CC2745R10E0WRHARQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "DRV8000QWRGZRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Multifunction door-control driver: H-bridge gate driver, half-bridges and high-side drivers in one IC, 4.5-35 V",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/DRV8000-Q1/part-details/DRV8000QWRGZRQ1, read 2026-11-23): ACTIV"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "LMR604303SRAKRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "3-36 V, 3 A synchronous buck, 5 uA IQ in auto mode, 30 ns minimum on-time",
+    "why": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/LMR604303SRAKRQ1/26812419); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). summary (no figu"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "LMR60440-Q1",
+    "mfr": "Texas Instruments",
+    "desc": "3-36 V, 4 A synchronous buck, 5 uA IQ, EMI-optimised",
+    "why": "NOT-READ: NO automotive orderable code was seen on a distributor listing, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried. Found: TI product page ti.com/product/LMR60440-Q1 (read 2026-11-23)"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN2451RHBRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive CAN FD SIC system basis chip (SBC) with buck regulator and partial networking",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2451-Q1/part-details/TCAN2451RHBRQ1, read 2026-11-23): ACTIV"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN28453RHBRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive CAN FD system basis chip (SBC) with partial networking",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2845-Q1/part-details/TCAN28453RHBRQ1, read 2026-11-23): ACTI"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN28553RHBRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive CAN FD SIC system basis chip (SBC) with partial networking",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2855-Q1/part-details/TCAN28553RHBRQ1, read 2026-11-23): ACTI"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TCAN28573RHBRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Automotive CAN FD SIC and LIN system basis chip (SBC) with partial networking",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details page (ti.com/product/TCAN2857-Q1/part-details/TCAN28573RHBRQ1, read 2026-11-23): ACTI"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TPS1HC120CQDYCRQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Single-channel smart high-side switch",
+    "why": "NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC120CQDYCRQ1/28721586 - result title \"TPS1HC120CQDYCRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again a"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "TPS48160QRGERQ1",
+    "mfr": "Texas Instruments",
+    "desc": "Smart high-side switch controller for 12 / 24 / 48 V, 3.5-95 V in, adjustable I2t overcurrent and short-circuit protection, bidirectional current monitor",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; the Mouser product page mouser.com/ProductDetail/Texas-Instruments/TPS48160QRGERQ1 returned 503 on the single try). Orderable code c"
+   },
+   {
+    "file": "b16-ics",
+    "mpn": "LM74900QRGERQ1",
+    "mfr": "Texas Instruments",
+    "desc": "3-65 V ideal-diode controller (DGATE) for reverse-input protection, with switched output path",
+    "why": "NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE confirmed on TI's part-details page (ti.com/product/LM74900-Q1/part-details/LM74900QRGERQ1, read 2026-11-23): ACTIVE, \"Automo"
+   },
+   {
+    "file": "b17-ics",
+    "mpn": "W25Q64JVSSAQ",
+    "mfr": "Winbond",
+    "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
+    "why": "NOT-READ: no franchised distributor page could be read for this code. Digi-Key had returned HTTP 403 earlier in this run (not read again); Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"; the TME limit of 8 pages was spent before this line; Mouser, Arrow, Farnell 503 and Rutronik 403 on other lines. The code is as printed in Winbond's automotive brief (task note: W2"
+   }
+  ],
+  "HELD-PERSON": [
+   {
+    "file": "b12-ics",
+    "mpn": "SPC58NE84E7QMSAR",
+    "why": "Digi-Key 26.02 USD @500 (factory-order row, not stocked) v TME 9.22 USD @500: 2.8x apart, and TME is below its own price for the smaller SPC58EC80 - a person decides"
+   }
+  ],
+  "NO-LARGER-BREAK": [
+   {
+    "file": "s1-slope",
+    "mpn": "MAX96752GTN/VY+T",
+    "mfr": "Analog Devices",
+    "desc": "GMSL2 display deserializer",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today shows ONE break only, Tape & Reel 2,500 @ $20.49740 (stored 2,500 was $18.634), available to order, no stock figure. URL https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96752GTN-VY-T/24617876"
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "MAX9286GTN/V+T",
+    "mfr": "Analog Devices (Maxim)",
+    "desc": "GMSL 4-channel deserializer, 1.5 Gbps, CSI-2 out",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX9286GTN-V-T/5396707) shows cut tape 100 @ $41.33320 and ONE reel break 2,500 @ $43.59740 - the reel is DEARER than the 100-off price and stock (1,043) is below one reel, so not recorded (stale-price rule). Stored distributor Farnell refused the page read (HTTP 503). Note the"
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "AFBR-S50MV85G",
+    "mfr": "Broadcom",
+    "desc": "Multipixel ToF distance sensor module, 850 nm",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/broadcom-limited/AFBR-S50MV85G/9808765) - tube, breaks 1 / 5 / 10 / 25 / 60 / 120, largest 120 @ $53.95017 (stored 120 was $47.09); in stock 6."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "XAL4020-102MEC",
+    "mfr": "Coilcraft",
+    "desc": "Molded power inductor 1.0uH 9.6A, 4x4x2mm, AEC-Q200 (MEC)",
+    "why": "NO-LARGER-BREAK: no franchised page could be read for this code (Mouser HTTP 503, Farnell HTTP 503, TrustedParts HTTP 403; Digi-Key says \"no longer available at DigiKey\" for Coilcraft). Search summary only, NOT recorded: in.element14.com/coilcraft/xal4020-102mec/inductor-1uh-9-6a-20-pwr-79mhz/dp/2289051 cut tape 500+ Rs.123.16, 1000+ Rs.115.47 (largest 1,000; tax basis not stated)."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "XAL5030-472MEC",
+    "mfr": "Coilcraft",
+    "desc": "Molded power inductor 4.7uH, 5.3x5.5x3mm, AEC-Q200",
+    "why": "NO-LARGER-BREAK: Mouser (stored distributor) refused the page read; a search summary of the Mouser US listing shows one full-reel price ($1.52, reel multiples of 400) - dearer than the stored 100-off $1.36 and a snapshot, so not recorded. Digi-Key lists the code as out of stock, backorders unavailable."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "XGL4020-222MEB",
+    "mfr": "Coilcraft",
+    "desc": "Power inductor 2.2uH, 4x4 mm, AEC-Q200",
+    "why": "NO-LARGER-BREAK: LCSC (stored distributor) page is served but carries no price table for a reader. A search summary gives LCSC XGL4020-222MEC 500+ $1.1102 / 1000+ $1.0824 (largest 1,000; snapshot, source page not identified) - not recorded. Not at Digi-Key."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "FA-128 31.2500MB30X-K0",
+    "mfr": "Epson",
+    "desc": "Crystal 31.25 MHz +-50/+-30 ppm -40..85 C, 2.0x1.6 mm",
+    "why": "NO-LARGER-BREAK (not confirmed): Digi-Key lists FA-128 31.2500MB30X-K0 only as a line on the -K page (unit price $0.27493, 0 in stock, break quantity not shown); the -K code itself is bulk 100 @ $0.90900. LEAD for a re-check: a search summary of mouser.sg (stored distributor, search page ?q=4541 naming the exact code) shows reel tiers 0.381 (ext 381.00), 0.371 (ext 742.00), 0.356 (ext 1,780.00) la"
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "MR20H40CDFR",
+    "mfr": "Everspin",
+    "desc": "SPI MRAM 4Mb, DFN-8 (industrial)",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (www.digikey.com/en/products/result?keywords=MR20H40CDFR, resolves to the product page) shows ONE break, Tape & Reel 4,000 @ $26.06115, \"not normally stocked\", lead time 26 weeks. The stored 4,000 @ $18.759 (Digi-Key via Findchips) is 28% below what the page shows today."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "SAK-TC297TP-128F300S BC",
+    "mfr": "Infineon",
+    "desc": "AURIX TC2 tri-core TriCore 300 MHz, 8 MB flash",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/infineon-technologies/TC297TP128F300SBCKXUMA1/7791613) - reel 1,000 @ $34.69895 is the only reel break (confirms the stored $34.70); cut tape stops at 100 @ $35.15860; in stock 4,692."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "SAK-TC377TX-96F300S AA",
+    "mfr": "Infineon",
+    "desc": "AURIX TC3 tri-core TriCore 300 MHz, 6 MB flash",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/infineon-technologies/TC377TX96F300SAAKXUMA1/11500287) shows ONE break, reel 1,000 @ $27.95978 - the stored 1,000 was $34.30397 (page is 18% lower today). Not kept in stock, lead time 99 weeks."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "TC499PP20MF400MSABKXUMA1",
+    "mfr": "Infineon",
+    "desc": "AURIX TC49x 5-core TriCore 400 MHz, 20 MB",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/infineon-technologies/TC499PP20MF400MSABKXUMA1/27356926) - reel 500 @ $64.53182 is the only reel break (stored 500 was $59.75166); cut tape stops at 100 @ $68.50560; in stock 139."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "88Q5072-B2-BYZ2A000-P123",
+    "mfr": "Infineon Technologies (ex-Marvell)",
+    "desc": "Automotive Ethernet switch",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/infineon-technologies/88Q5072-B2-BYZ2A000-P123/29513260) shows ONE break, reel 500 @ $17.32500 (USD site; stored was SGD 24.1372 at 500 on digikey.sg), available to order, lead time 26 weeks."
+   },
+   {
+    "file": "s1-slope",
+    "mpn": "88Q6113-B2-BYZ2A000-P123",
+    "mfr": "Infineon Technologies (ex-Marvell)",
+    "desc": "Automotive multi-gigabit Ethernet switch",
+    "why": "NO-LARGER-BREAK: Digi-Key page read today (https://www.digikey.com/en/products/detail/infineon-technologies/88Q6113-B2-BYZ2A000-P123/29513254) shows ONE break, reel 500 @ $18.86500 (USD site; stored was EUR 16.95 at 500 on digikey.pt), available to order. Arrow (stored 3,000) not read; Rutronik refused (HTTP 403)."
+   }
+  ]
+ },
+ "decisions": [
+  {
+   "file": "b02-passives",
+   "mpn": "DLM11CN900HH2L",
+   "action": "category",
+   "from": "passive_0603",
+   "to": "transformer",
+   "reason": "rule 6: common-mode choke"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "DLW32PH122XK2L",
+   "action": "category",
+   "from": "passive_1206",
+   "to": "transformer",
+   "reason": "rule 6: common-mode choke"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "DLW43MH201XK2L",
+   "action": "category",
+   "from": "passive_1206",
+   "to": "transformer",
+   "reason": "rule 6: common-mode choke"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "PLT10HH351100PNL",
+   "action": "category",
+   "from": "passive_1206",
+   "to": "transformer",
+   "reason": "rule 6: common-mode choke"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "ERJ-2GEJ511X",
+   "action": "dropObs",
+   "obs": "Master Electronics 0.006 USD @10000",
+   "reason": "rule 2: a price under 0.10 printed with fewer than two significant figures"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW04021K00FKED",
+   "action": "dropObs",
+   "obs": "TME 0.0015 USD @100000",
+   "reason": "rule 1: TME figure taken from page JSON-LD (hidden data)"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW0402100KJNED",
+   "action": "dropObs",
+   "obs": "TME 0.0011 USD @30000",
+   "reason": "rule 1: TME figure taken from page JSON-LD (hidden data)"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "RCA060310K0FKEA",
+   "action": "dropObs",
+   "obs": "TME 0.0054 USD @50000",
+   "reason": "rule 1: TME figure taken from page JSON-LD (hidden data)"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "TSV7722IYDT",
+   "action": "dropObs",
+   "obs": "TME 0.57 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "VNF9Q20FTR",
+   "action": "dropObs",
+   "obs": "Mouser 2.82 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "VNF9Q20FTR",
+   "action": "dropObs",
+   "obs": "Mouser 2.68 USD @3000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "VNQ9050LAJTR",
+   "action": "dropObs",
+   "obs": "Avnet 0.95746 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "L9026-YO-TR",
+   "action": "dropObs",
+   "obs": "Farnell 1.39 GBP @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "A7986ATR",
+   "action": "dropObs",
+   "obs": "Digi-Key 1.43055 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "A7986ATR",
+   "action": "dropObs",
+   "obs": "Digi-Key 1.32808 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "A7986ATR",
+   "action": "dropObs",
+   "obs": "Mouser 1.41 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "L9945TR",
+   "action": "dropObs",
+   "obs": "Mouser 5.91 USD @960",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "LDLL16ENTR",
+   "action": "dropObs",
+   "obs": "Farnell 1.72 GBP @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "LMV358IYDT",
+   "action": "dropObs",
+   "obs": "Digi-Key 0.34903 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "LMV358IYDT",
+   "action": "dropObs",
+   "obs": "Digi-Key 0.33456 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M24512-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Farnell 1.07 GBP @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M24C04-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 0.35628 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M24C04-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 0.34507 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M24M01-DWMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 2.58598 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M24M01-DWMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 2.50038 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95040-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 0.49571 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95080-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "LCSC 0.6829 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95512-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 1.64318 USD @1000",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95512-DRMN3TP/K",
+   "action": "dropObs",
+   "obs": "Digi-Key 1.58926 USD @2500",
+   "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95M02-DWMN3TP/K",
+   "action": "dropObs",
+   "obs": "Mouser 3.28 GBP @2500",
+   "reason": "rule 1: search-summary"
+  }
+ ]
+}

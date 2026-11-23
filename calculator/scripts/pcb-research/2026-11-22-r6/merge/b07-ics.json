@@ -1,0 +1,1132 @@
+{
+ "domain": "b07-ics",
+ "researched": "2026-11-23",
+ "parts": [
+  {
+   "mpn": "ACS37610LLUATR-010B3",
+   "family": "ACS37610",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Coreless differential Hall current sensor IC with common-mode field rejection, overcurrent and overtemperature detection",
+   "category": "ic_soic",
+   "pkg": "TSSOP-8 (LU)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter busbar",
+    "BMS",
+    "48 V inverter"
+   ],
+   "observedMpn": "ACS37610LLUATR-010B3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.42975,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37610LLUATR-010B3",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 3.23892,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37610LLUATR-010B3",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-ACS37610LLUATR-010B3TR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, 8-TSSOP, stock 2,498, lead time 40 weeks. Cut tape ladder ends at 1,000 (500 = 3.53822); tape & reel has ONE break, 4,000 (smallest = largest). Cross-check: Master Electronics keyword search for the exact code = \"No Search Results found\" (Allegro not carried there)."
+  },
+  {
+   "mpn": "A17802PLEATR",
+   "family": "A17802",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Inductive position sensor IC with sin/cos outputs for e-motor rotor position",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14 (LE)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction motor rotor position",
+    "EPS motor",
+    "e-axle"
+   ],
+   "observedMpn": "A17802PLEATR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.23278,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/A17802PLEATR/26741161",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.10086,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/A17802PLEATR/26741161",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-A17802PLEATR-ND reel / 620-A17802PLEATRCT-ND): Active, Grade Automotive, Qualification AEC-Q100, 14-TSSOP, stock 11,980, lead time 40 weeks. Cut tape ladder ends at 1,000 (500 = 2.30780); tape & reel has ONE break, 4,000."
+  },
+  {
+   "mpn": "ACS37030LLZATR-020B3",
+   "family": "ACS37030",
+   "mfr": "Allegro MicroSystems",
+   "desc": "DC-5 MHz isolated Hall + inductive current sensor with zero-current reference (GaN / SiC stages)",
+   "category": "ic_soic",
+   "pkg": "6-pin fused-lead SOIC (LZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC converter",
+    "GaN / SiC power stage"
+   ],
+   "observedMpn": "ACS37030LLZATR-020B3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 3.50658,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37030LLZATR-020B3/22106958",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-ACS37030LLZATR-020B3TR-ND): Active, 6-SOIC fused lead, \"not normally stocked\" (available to order), lead time 40 weeks. ONE break only: tape & reel 9,000 (minimum order) - no 1,000 price, no own slope. GRADE: no Grade / Qualification field on the Digi-Key page for this code; aecq true rests on the Allegro datasheet quoted in the discovery pass (\"Grade 0, AEC-Q100 automotive qualified\"), not re-read today. The page names ACS37032LLZATR-020B3 as a substitute (stock 0)."
+  },
+  {
+   "mpn": "ACS37035KLACTR-020B5",
+   "family": "ACS37035",
+   "mfr": "Allegro MicroSystems",
+   "desc": "1 MHz isolated Hall current sensor with low output offset",
+   "category": "ic_soic",
+   "pkg": "SOICW-16",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC converter",
+    "xEV charger"
+   ],
+   "observedMpn": "ACS37035KLACTR-020B5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.7248,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37035KLACTR-020B5",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.61141,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37035KLACTR-020B5",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.50739,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37035KLACTR-020B5",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: SIBLING PRICED, not the task code - ACS37035KLACTR-020B3 (3.3 V supply, from the Allegro selection guide) returns NO results at Digi-Key (\"did you mean ACS37035KLACTR-020B5\"); the 5 V-supply sibling ACS37035KLACTR-020B5 is the code Digi-Key stocks and is the one priced - a different orderable (supply 4.5-5.5 V, +/-20 A). Digi-Key product page read 23 Nov 2026 (620-ACS37035KLACTR-020B5TR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, 16-SOIC wide, stock 861, lead time 40 weeks. Cut tape ladder ends at 500 (100 = 4.02920); tape & reel 1,000 and 2,000 (largest)."
+  },
+  {
+   "mpn": "ACS37100LMAETR-025B3",
+   "family": "ACS37100",
+   "mfr": "Allegro MicroSystems",
+   "desc": "10 MHz isolated TMR (XtremeSense) current sensor, +/-25 / 50 A",
+   "category": "ic_soic",
+   "pkg": "SOICW-16 (MA, 8 mm creepage)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC converter",
+    "GaN / SiC protection"
+   ],
+   "observedMpn": "ACS37100LMAETR-025B3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 4.1884,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37100LMAETR-025B3/29529340",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.06296,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37100LMAETR-025B3/29529340",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.94788,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37100LMAETR-025B3/29529340",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-ACS37100LMAETR-025B3TR-ND / CT-ND): Active, OUT OF STOCK (0; 1,000 expected 24 Dec 2026), lead time 40 weeks; normal table. Cut tape ladder ends at 500 (100 = 4.52500); tape & reel 1,000 and 2,000 (largest). GRADE: no Grade / Qualification field on the Digi-Key page; aecq true rests on the Allegro datasheet quoted in the discovery pass (\"Grade 0, AEC-Q100 automotive qualified\"), not re-read today. Second code ACS37100LMAETR-050B3 not priced."
+  },
+  {
+   "mpn": "ACS37630LOLTR-004B5",
+   "family": "ACS37630",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Linear vertical-Hall sensor IC for U-core current sensing, 250 kHz analog output",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (OL)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter phase current",
+    "BMS"
+   ],
+   "observedMpn": "ACS37630LOLTR-004B5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.27028,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS37630LOLTR-004B5",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-ACS37630LOLTR-004B5TR-ND): Active, stock 3,000, lead time 10 weeks. ONE break only: tape & reel 3,000 (no cut tape offered) - no 1,000 price, no own slope. GRADE: no Grade / Qualification field on the Digi-Key page; aecq true rests on the Allegro datasheet quoted in the discovery pass (\"AEC-Q100 Grade 0, automotive qualified\"), not re-read today."
+  },
+  {
+   "mpn": "ACS39402KLHLT-010U",
+   "family": "ACS39402",
+   "mfr": "Allegro MicroSystems",
+   "desc": "TMR current sensor in 5-pin SOT-23W, no external sense resistor",
+   "category": "ic_soic",
+   "pkg": "SOT-23W 5-pin (LH)",
+   "aecq": true,
+   "ecuRoles": [
+    "body / zonal loads",
+    "motor drives",
+    "DC-DC"
+   ],
+   "observedMpn": "ACS39402KLHLT-010U",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.63072,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS39402KLHLT-010U",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.59518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS39402KLHLT-010U",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.55119,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ACS39402KLHLT-010U",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (620-ACS39402KLHLT-010UTR-ND / CT-ND): Active, SOT-23W, OUT OF STOCK (0; 1,733 expected 24 Dec 2026), lead time 16 weeks; normal table. Cut tape ladder ends at 1,000 (500 = 0.65580); tape & reel 3,000, 6,000 = 0.57515, 9,000 = 0.56421, 15,000 (largest). GRADE - CONFLICT TO NOTE: the Digi-Key page shows Grade \"Automotive\", Qualification \"AEC-Q100\" (so aecq true), but the Allegro datasheet Rev 1 of 19 May 2026 read in the discovery pass said \"AEC-Q100 Grade 1, automotive qualified (pending)\" - confirm with Allegro before relying on it."
+  },
+  {
+   "mpn": "LTC4359HMS8#WTRPBF",
+   "family": "LTC4359",
+   "mfr": "Analog Devices",
+   "desc": "Ideal diode controller with reverse-input protection, 4-80 V",
+   "category": "ic_soic",
+   "pkg": "MSOP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "reverse-battery protection",
+    "ORing of redundant supplies",
+    "zonal controller"
+   ],
+   "observedMpn": "LTC4359HMS8#WTRPBF",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 7.05328,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC4359HMS8-WTRPBF/12385731",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 6.34009,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC4359HMS8-WTRPBF/12385731",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-LTC4359HMS8#WTRPBFTR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, 8-MSOP, stock 1,791, lead time 12 weeks. NO 1,000 break on the page: cut tape ladder ends at 250 (100 = 7.14560); tape & reel has ONE break, 2,500. Cross-check: Master Electronics keyword search for the exact code = \"No Search Results found\" (Analog Devices not carried there - not tried again for ADI lines)."
+  },
+  {
+   "mpn": "MAX20075ATCA/V+T",
+   "family": "MAX20075",
+   "mfr": "Analog Devices",
+   "desc": "36 V, 600 mA mini synchronous buck converter, 3.5 uA Iq, fixed 5 V",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12",
+   "aecq": false,
+   "ecuRoles": [
+    "always-on 12 V rail",
+    "camera / radar module",
+    "body ECU"
+   ],
+   "observedMpn": "MAX20075ATCA/V+T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.1114,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAX20075ATCA%2FV%2BT",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.94308,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAX20075ATCA%2FV%2BT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.90606,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MAX20075ATCA%2FV%2BT",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: the task gives MAX20075ATCA/V+; the tape-and-reel orderable MAX20075ATCA/V+T is priced (the code a 200k programme buys). Digi-Key product page read 23 Nov 2026 (175-MAX20075ATCA/V+TTR-ND / CT-ND): Active, 12-TDFN (3x3), stock 1,745 (+22,500 factory stock), lead time 26 weeks. Cut tape ladder ends at 500 (250 = 2.13336); tape & reel 2,500 and 5,000 (largest). GRADE NOT CONFIRMED: the Digi-Key page has NO Grade / Qualification field for this code (/V = Maxim automotive suffix; AEC-Q100 wording not read on any page) - aecq left false. Page shows output \"1 V min / 10 V max\" although the task line says fixed 5 V - output option not confirmed."
+  },
+  {
+   "mpn": "MAX25232ATCA/V+",
+   "family": "MAX25232 (5 V)",
+   "mfr": "Analog Devices",
+   "desc": "36 V, 3 A mini synchronous buck converter, fixed 5 V output",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12 (side-wettable)",
+   "aecq": true,
+   "ecuRoles": [
+    "12 V battery rail buck",
+    "USB supply",
+    "ADAS / infotainment ECU"
+   ],
+   "observedMpn": "MAX25232ATCA/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 624,
+     "price": 2.70054,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCA-V/17878685",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1248,
+     "price": 2.63177,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCA-V/17878685",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3120,
+     "price": 2.55916,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCA-V/17878685",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX25232ATCA/V+-ND): Active, Grade Automotive, Qualification AEC-Q100, 12-TDFN (3x3), 5 V fixed 3 A, packaging shown as Tray, stock 535 (+3,744 factory stock), lead time 10 weeks. Ladder 1 ... 250 = 2.81448, 624 = 2.70054, 1,248 = 2.63177, 3,120 = 2.55916 (largest). The tape-and-reel code MAX25232ATCA/V+T has its own Digi-Key page (505-MAX25232ATCA/V+TTR-ND, Active, Automotive / AEC-Q100, lead time 11 weeks, no stock shown): ONE break, reel 2,500 = 2.83360 USD - DEARER than the tray code at 1,248, so not paired here (different orderable code)."
+  },
+  {
+   "mpn": "MAX96793GTJ/VY+",
+   "family": "MAX96793",
+   "mfr": "Analog Devices",
+   "desc": "Single CSI-2 to GMSL3 serializer (12 Gbps forward link), backward compatible with GMSL2; companion of MAX96792A",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32-EP 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS camera",
+    "surround-view ECU"
+   ],
+   "observedMpn": "MAX96793GTJ/VY+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 34.9922,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96793GTJ-VY/25581058",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code found by one web search (Digi-Key listing MAX96793GTJ/VY+), then read on the page. Digi-Key product page read 23 Nov 2026 (175-MAX96793GTJ/VY+-ND): Active, Grade Automotive, Qualification AEC-Q100, 32-TQFN-EP (5x5), tray, OUT OF STOCK (0, backorder; 490 expected 25 Jan 2027), lead time 12 weeks. ONE break of 100 or more: 100 = 34.99220 (ladder 1 = 48.29000, 10 = 39.56400, 25 = 37.38600) - no 1,000 price, no own slope; a new part, so expect the contract price to be well below this. The reel code MAX96793GTJ/VY+T is named on the page (36.72900 USD, no break shown, 0 stock) - not recorded. Summary (not recorded): digikey.co.uk 100 = GBP 23.63580."
+  },
+  {
+   "mpn": "AD8418AWBRZ",
+   "family": "AD8418A",
+   "mfr": "Analog Devices",
+   "desc": "Bidirectional zero-drift current-sense amplifier, high common-mode, gain 20",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "motor / solenoid current sense",
+    "EPS",
+    "DC-DC converter",
+    "battery current monitor"
+   ],
+   "observedMpn": "AD8418AWBRZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 196,
+     "price": 2.64117,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1078,
+     "price": 2.44891,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2548,
+     "price": 2.38172,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-AD8418AWBRZ-ND): Active, tube only, 8-SOIC, OUT OF STOCK (0; 98 expected 2 Dec 2026), lead time 10 weeks; normal table. Tube ladder (multiples of 98): 98 = 2.74980 (below 100, not recorded), 196, 294 = 2.58677, 588 = 2.50701, 1,078, 2,548 (largest). No reel code named on the page. GRADE: the page shows Grade \"Automotive\" (so aecq true) but NO Qualification field - the words AEC-Q100 were not read."
+  },
+  {
+   "mpn": "ADA4571WHRZ-1-R7",
+   "family": "ADA4571",
+   "mfr": "Analog Devices",
+   "desc": "Integrated AMR angle sensor and signal conditioner (sin / cos outputs)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BLDC rotor position",
+    "EPS motor",
+    "actuator position",
+    "wiper motor"
+   ],
+   "observedMpn": "ADA4571WHRZ-1-R7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 3.5917,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADA4571WHRZ-1-R7/29768945",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.48181,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADA4571WHRZ-1-R7/29768945",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 3.32591,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADA4571WHRZ-1-R7/29768945",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: the task code ADA4571WHRZ-R7 is OBSOLETE at Digi-Key (\"Obsolete and no longer manufactured\", no price); its \"MFR Recommended\" substitute ADA4571WHRZ-1-R7 is the live code and is priced. Digi-Key product page read 23 Nov 2026 (505-ADA4571WHRZ-1-R7TR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, 8-SOIC, stock 1,919, lead time 10 weeks. Cut tape ladder ends at 500 (100 = 3.88670); tape & reel 1,000, 2,000 = 3.38099, 3,000 (largest)."
+  },
+  {
+   "mpn": "ADAU1467WBCPZ300",
+   "family": "ADAU1467",
+   "mfr": "Analog Devices",
+   "desc": "SigmaDSP digital audio processor, 294.912 MHz, 80-kword program memory",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-88 12x12",
+   "aecq": true,
+   "ecuRoles": [
+    "audio amplifier",
+    "infotainment head unit",
+    "ANC / RNC",
+    "AVAS"
+   ],
+   "observedMpn": "ADAU1467WBCPZ300",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 144,
+     "price": 17.7484,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADAU1467WBCPZ300/7915234",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 528,
+     "price": 16.83331,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADAU1467WBCPZ300/7915234",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-ADAU1467WBCPZ300-ND): Active, tray only, 88-LFCSP (12x12), stock 255, lead time 11 weeks. NO 1,000 break: tray ladder 48 = 18.80229 (below 100), 144, 288 = 17.22035, 528 (largest). GRADE: the page shows Grade \"Automotive\" (so aecq true) but NO Qualification field - the words AEC-Q100 were not read."
+  },
+  {
+   "mpn": "ADXL312WACPZ",
+   "family": "ADXL312",
+   "mfr": "Analog Devices",
+   "desc": "3-axis digital accelerometer, +/-1.5 to 12 g selectable, SPI / I2C",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-32 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "car alarm / tilt sensing",
+    "telematics",
+    "black box / event recorder"
+   ],
+   "observedMpn": "ADXL312WACPZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 9.8735,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADXL312WACPZ/7175506",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1020,
+     "price": 9.03621,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADXL312WACPZ/7175506",
+     "date": "2026-11-23",
+     "packing": "tube",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-ADXL312WACPZ-ND): Active, tube only, 32-LFCSP-LQ (5x5), stock 9, lead time 52 weeks. Tube ladder 60 = 10.19600 (below 100), 120, 540 = 9.26228, 1,020 (largest). GRADE: the page shows Grade \"Automotive\" (so aecq true) but NO Qualification field - the words AEC-Q100 were not read."
+  },
+  {
+   "mpn": "LT8646SIV#WPBF",
+   "family": "LT8646S",
+   "mfr": "Analog Devices",
+   "desc": "65 V, 8 A synchronous step-down Silent Switcher 2, 200 kHz-2.2 MHz",
+   "category": "ic_qfn",
+   "pkg": "LQFN-32 6x4",
+   "aecq": true,
+   "ecuRoles": [
+    "48 V / 24 V rail pre-regulator",
+    "ADAS domain controller",
+    "infotainment"
+   ],
+   "observedMpn": "LT8646SIV#WPBF",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 15.2505,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8646SIV-WPBF/13684358",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 490,
+     "price": 14.33741,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8646SIV-WPBF/13684358",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-LT8646SIV#WPBF-ND): Active, Grade Automotive, Qualification AEC-Q100, tray only, 32-LQFN (6x4), OUT OF STOCK (0, backorder; in-stock date \"unavailable due to market conditions\"), lead time 29 weeks; normal table. NO 1,000 break: ladder 25 = 16.45760, 100, 490 (one tray, largest)."
+  },
+  {
+   "mpn": "LT8686SJV#WPBF",
+   "family": "LT8686S",
+   "mfr": "Analog Devices",
+   "desc": "Quad-output 42 V, 2 A-per-channel synchronous step-down Silent Switcher",
+   "category": "ic_qfn",
+   "pkg": "LQFN-32 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS camera / radar ECU",
+    "infotainment",
+    "multi-rail point of load"
+   ],
+   "observedMpn": "LT8686SJV#WPBF",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 490,
+     "price": 8.27159,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8686SJV-WPBF/27544010",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-LT8686SJV#WPBF-ND): Active, Grade Automotive, Qualification AEC-Q100, 32-LQFN (5x5), not stocked (\"Available To Order\"), lead time 14 weeks. ONE break only: tray 490 (minimum order) - no 1,000 price, no own slope. The reel code LT8686SJV#WTRPBF is named on the page as a separate product (not read)."
+  },
+  {
+   "mpn": "MAX17852ACB/V+",
+   "family": "MAX17852",
+   "mfr": "Analog Devices",
+   "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor) with current-sense input, ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS cell monitoring unit",
+    "48 V / HV battery pack"
+   ],
+   "observedMpn": "MAX17852ACB/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 15.90956,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17852ACB-V/10452049",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 640,
+     "price": 15.15478,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17852ACB-V/10452049",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX17852ACB/V+-ND): Active, tray only, 64-LQFP (10x10), stock 618 (+6,720 factory stock), lead time 10 weeks. NO 1,000 break: tray ladder 25 = 17.51160, 160, 320 = 15.49553, 640 (largest). GRADE NOT CONFIRMED: no Grade / Qualification field on the page (/V = Maxim automotive suffix) - aecq left false."
+  },
+  {
+   "mpn": "MAX17854ACB/V+",
+   "family": "MAX17854",
+   "mfr": "Analog Devices",
+   "desc": "14-channel high-voltage battery data-acquisition IC (cell monitor), ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS cell monitoring unit",
+    "HV battery pack"
+   ],
+   "observedMpn": "MAX17854ACB/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 11.89313,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17854ACB-V/15903588",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 640,
+     "price": 11.29905,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17854ACB-V/15903588",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX17854ACB/V+-ND, \"IC DATA ACQUISITION SYST 64-LQFP\"): Active, tray only, 64-LQFP (10x10), stock 664 (+1,120 factory stock), no lead time shown (\"temporary constrained supply - no backorders\"). NO 1,000 break: tray ladder 25 = 13.15360, 160, 320 = 11.56719, 640 (largest). GRADE NOT CONFIRMED: no Grade / Qualification field on the page (/V = Maxim automotive suffix) - aecq left false. Function (14-channel cell monitor, ASIL D) is from the task line, not read on the page."
+  },
+  {
+   "mpn": "MAX25232ATCE/V+",
+   "family": "MAX25232 (3.3 V)",
+   "mfr": "Analog Devices",
+   "desc": "36 V, 3 A mini synchronous buck converter, fixed 3.3 V output",
+   "category": "ic_qfn",
+   "pkg": "TDFN-12 (side-wettable)",
+   "aecq": true,
+   "ecuRoles": [
+    "12 V battery rail buck",
+    "ADAS / infotainment ECU"
+   ],
+   "observedMpn": "MAX25232ATCE/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 624,
+     "price": 2.70054,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCE-V/17885170",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1248,
+     "price": 2.63177,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCE-V/17885170",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3120,
+     "price": 2.55916,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25232ATCE-V/17885170",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX25232ATCE/V+-ND): Active, Grade Automotive, Qualification AEC-Q100, 12-TDFN (3x3), 3.3 V fixed 3 A, packaging shown as Tray, stock 701 (+1,248 factory stock), lead time 11 weeks. Ladder 100 = 2.96200, 250 = 2.81448, 624, 1,248, 3,120 (largest) - the same figures as the 5 V MAX25232ATCA/V+ page, read separately."
+  },
+  {
+   "mpn": "MAX25410AGTE/V+",
+   "family": "MAX25410",
+   "mfr": "Analog Devices",
+   "desc": "Automotive USB Power Delivery port protector (CC / SBU / D+ D- short-to-battery protection, CDP / HS modes)",
+   "category": "ic_qfn",
+   "pkg": "TQFN-16-EP 4x4",
+   "aecq": true,
+   "ecuRoles": [
+    "USB-C charge port",
+    "infotainment head unit",
+    "media hub"
+   ],
+   "observedMpn": "MAX25410AGTE/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 225,
+     "price": 1.61991,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25410AGTE-V/11565222",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX25410AGTE/V+-ND): Active, Grade Automotive, Qualification AEC-Q100, 16-TQFN (4x4), not stocked (\"Available To Order\"), lead time 15 weeks. ONE break only: 225 units, packaging printed as \"Strip\" (recorded as packing unknown) - no 1,000 price, no own slope. The tape-and-reel code (T suffix) and the MAX25410AGTEA/V+ variant were not read."
+  },
+  {
+   "mpn": "MAX25430AATLF/V+",
+   "family": "MAX25430",
+   "mfr": "Analog Devices",
+   "desc": "Automotive 100 W USB-PD buck-boost port controller and protector, 4.5-36 V input",
+   "category": "ic_qfn",
+   "pkg": "TQFN-40 6x6",
+   "aecq": false,
+   "ecuRoles": [
+    "USB-C PD charge port",
+    "rear-seat charger",
+    "infotainment head unit"
+   ],
+   "observedMpn": "MAX25430AATLF/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 490,
+     "price": 6.20678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25430AATLF-V/13175523",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 980,
+     "price": 6.06056,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25430AATLF-V/13175523",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1470,
+     "price": 5.98736,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25430AATLF-V/13175523",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (505-MAX25430AATLF/V+-ND, \"AUTOMOTIVE USB POWER DELIVERY PO...\"): Active, tray only, 40-TQFN (6x6), stock 1,385 (+1,960 factory stock), lead time 10 weeks. Tray ladder 100 = 6.67180, 490, 980 (nearest 1,000), 1,470 (largest). GRADE NOT CONFIRMED: no Grade / Qualification field on the page (the description line says \"automotive\"; /V = Maxim automotive suffix; AEC-Q100 not read) - aecq left false."
+  },
+  {
+   "mpn": "MAX96706GTJ/V+",
+   "family": "MAX96706",
+   "mfr": "Analog Devices",
+   "desc": "GMSL1 14-bit deserializer with coax / STP input (camera link)",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "surround-view ECU",
+    "camera monitor system",
+    "rear camera receiver"
+   ],
+   "observedMpn": "MAX96706GTJ/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 14.9883,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96706GTJ-V/5880886",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 490,
+     "price": 14.08816,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96706GTJ-V/5880886",
+     "date": "2026-11-23",
+     "packing": "tray",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 23 Nov 2026 (MAX96706GTJ/V+-ND): Active, Grade Automotive, Qualification AEC-Q100, tray only, 32-TQFN (5x5), stock 808 (+980 factory stock), lead time 10 weeks. NO 1,000 break: ladder 25 = 16.17840, 100, 490 (one tray, largest). The reel code MAX96706GTJ/V+T was not read."
+  },
+  {
+   "mpn": "AP63203QWU-7",
+   "family": "AP63203Q",
+   "mfr": "Diodes Inc.",
+   "desc": "3.8–32 V input, 2 A synchronous buck, fixed 3.3 V, 1.1 MHz",
+   "category": "ic_soic",
+   "pkg": "TSOT26 (TSOT-23-6)",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU point-of-load",
+    "infotainment",
+    "body control module"
+   ],
+   "observedMpn": "AP63203QWU-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.6559,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AP63203QWU-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.54052,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AP63203QWU-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.52138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=AP63203QWU-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: the brochure prints the base number AP63203Q; the orderable Digi-Key lists is AP63203QWU-7 (7-inch reel of 3,000). Digi-Key product page read 23 Nov 2026 (31-AP63203QWU-7TR-ND / CT-ND): Active, TSOT-23-6, 3.3 V fixed, OUT OF STOCK (0; no in-stock date), lead time 52 weeks; normal table. NO 1,000 break: cut tape ladder ends at 100; tape & reel 3,000 and 9,000 (largest). GRADE: the Digi-Key page has no Grade / Qualification field for this code; aecq true rests on the maker brochure read in the discovery pass (Diodes automotive \"Q\" portfolio: all Q parts AEC-Q qualified, AP63203Q named)."
+  },
+  {
+   "mpn": "74LVC1G08QSE-7",
+   "family": "74LVC1GxxQ / 74AHC1GxxQ / 74AHCT1GxxQ",
+   "mfr": "Diodes Inc.",
+   "desc": "Single 2-input AND gate 74LVC1G08, 1.65-5.5 V, -40 to +125 C, automotive (representative of the 74LVC1GxxQ single-gate logic family)",
+   "category": "ic_soic",
+   "pkg": "SOT353 (SC-70-5)",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "74LVC1G08QSE-7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1072,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74LVC1G08QSE-7",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.08266,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74LVC1G08QSE-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.07859,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74LVC1G08QSE-7",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Representative part for the family line (74LVC / 74AHC / 74AHCT 1GxxQ): the 2-input AND in SOT353, the most common single gate; ONE member priced - the other functions / logic families are separate codes, not priced. Digi-Key product page read 23 Nov 2026 (74LVC1G08QSE-7DITR-ND / DICT-ND, Diodes Incorporated): Active, Grade Automotive, Qualification AEC-Q100, SOT-353, stock 277, lead time 52 weeks. NO 1,000 break: cut tape ladder ends at 100; tape & reel 3,000 and 9,000 (largest)."
+  },
+  {
+   "mpn": "LM2903QS-13",
+   "family": "LM2903Q / LM2903AQ",
+   "mfr": "Diodes Inc.",
+   "desc": "Dual comparator, 2–36 V, open-collector, -40 to +125 °C",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observedMpn": "LM2903QS-13",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.1077,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM2903QS-13",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.07893,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM2903QS-13",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 0.07484,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM2903QS-13",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: the brochure prints the family label LM2903Q/AQ; the orderable priced is LM2903QS-13 (SO-8, 13-inch reel of 2,500) - the LM2903AQ (tighter offset) and TSSOP / MSOP codes are separate orderables, not priced. Digi-Key product page read 23 Nov 2026 (LM2903QS-13DITR-ND / DICT-ND, Diodes Incorporated): Active, Grade Automotive, Qualification AEC-Q100, 8-SO, stock 2,123, lead time 24 weeks. NO 1,000 break: cut tape ladder ends at 100; tape & reel 2,500 and 7,500 (largest). Cross-check: TME search lists LM2903QS-13 (Diodes Incorporated) but shows no price table - nothing recorded."
+  },
+  {
+   "mpn": "BTG70008A1ESWXUMA1",
+   "family": "PROFET Wire Guard",
+   "mfr": "Infineon",
+   "desc": "Single-channel 12 V automotive eFuse (smart high-side switch) with selectable integrated I2t wire-harness protection",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-24 (24-TSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "observedMpn": "BTG70008A1ESWXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 4.1954,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTG70008A1ESWXUMA1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 3.78912,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTG70008A1ESWXUMA1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: BTG70008A-1ESW is the type number; the orderable is BTG70008A1ESWXUMA1. Digi-Key product page read 23 Nov 2026 (448-BTG70008A1ESWXUMA1TR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, PG-TSDSO-24-75, stock 3,058, lead time 39 weeks. NO 1,000 break: cut tape ladder ends at 250 (100 = 4.33930); tape & reel has ONE break, 3,000. Package read on the page (the task had none). Cross-check: Master Electronics returned HTTP 403 - not used again. TME search for the code: no result."
+  },
+  {
+   "mpn": "BTG70013A1ESWXUMA2",
+   "family": "PROFET Wire Guard",
+   "mfr": "Infineon",
+   "desc": "PROFET Wire Guard smart power high-side switch (I2t wire protection)",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-24 (24-TSSOP exposed pad)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "power distribution box"
+   ],
+   "observedMpn": "BTG70013A1ESWXUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.16618,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTG70013A1ESWXUMA2",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.87471,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BTG70013A1ESWXUMA2",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code: BTG70013A-1ESW is the type number. Digi-Key shows BTG70013A1ESWXUMA1 as OBSOLETE (\"will no longer be stocked once stock is depleted\", 564 left; cut tape only, 500 = 3.13014 - not recorded) with BTG70013A1ESWXUMA2 as the \"MFR Recommended\" substitute - the UMA2 code is priced. Digi-Key product page read 23 Nov 2026 (448-BTG70013A1ESWXUMA2TR-ND / CT-ND): Active, Grade Automotive, Qualification AEC-Q100, PG-TSDSO-24-32, stock 2,952, lead time 39 weeks. Cut tape ladder ends at 1,000 (250 = 3.35616); tape & reel has ONE break, 3,000. Package read on the page (the task had none)."
+  }
+ ]
+}

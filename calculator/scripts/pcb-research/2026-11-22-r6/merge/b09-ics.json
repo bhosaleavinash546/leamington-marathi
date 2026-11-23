@@ -1,0 +1,382 @@
+{
+ "domain": "b09-ics",
+ "researched": "2026-11-23",
+ "parts": [
+  {
+   "mpn": "ATA6501T-4CWVAO",
+   "family": "ATA6501 (ATA650x mini CAN FD SBC)",
+   "mfr": "Microchip",
+   "desc": "Mini CAN FD system basis chip: CAN FD transceiver + 5 V / 150 mA LDO, 3.3 / 5 V I/O",
+   "category": "ic_qfn",
+   "pkg": "VDFN-8 (wettable flanks)",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller satellite node",
+    "sensor / actuator node",
+    "body ECU"
+   ],
+   "observedMpn": "ATA6501T-4CWVAO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.6579,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA6501T-4CWVAO",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.6,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA6501T-4CWVAO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 0.534,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ATA6501T-4CWVAO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 10,254, 8-VDFN 2x3): Grade 'Automotive', Qualification 'AEC-Q100'. Cut tape 1 = 0.79, 25 = 0.66, 100 = 0.65790 (largest cut-tape break); tape & reel 5,000 = 0.60000 (only reel break). Master page (USD, stock 0, MOQ 1,250, reel of 5,000, lead time 11 weeks): 1,250 = 1.118 NOT recorded (dearer than Digi-Key's one-piece price - MOQ part-reel premium), 2,500 = 0.688, 3,750 = 0.545, 5,000+ = 0.534. No 1,000 break at either; no break above one reel. MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows."
+  },
+  {
+   "mpn": "ATA6562-GAQW1",
+   "family": "ATA6562",
+   "mfr": "Microchip",
+   "desc": "High-speed CAN FD transceiver with standby and silent mode, wake-up pattern, 5 Mbit/s",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "body control module",
+    "gateway",
+    "any CAN FD node"
+   ],
+   "observedMpn": "ATA6562-GAQW1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.3978,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA6562-GAQW1",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA6562-GAQW1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 4000,
+     "price": 0.3227,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ATA6562-GAQW1",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 5, 8-SOIC): Grade 'Automotive', Qualification 'AEC-Q100'. Cut tape 1 = 0.48, 25 = 0.40, 100 = 0.39780; tape & reel 4,000 = 0.36000 (only reel break). Master page (USD, stock 0, MOQ 1,000, reel of 4,000, 7 weeks): 1,000 = 0.6760 NOT recorded (dearer than Digi-Key's one-piece price), 2,000 = 0.4160, 3,000 = 0.3293, 4,000+ = 0.3227. Master's description text says 'DFN8' for this SOIC code - its own template error. No break above one reel. MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows."
+  },
+  {
+   "mpn": "MCP16361T-E/NMXVAO",
+   "family": "MCP16361 / MCP16362 / MCP16363",
+   "mfr": "Microchip",
+   "desc": "48 V input, 3 A, 2.2 MHz integrated-switch step-down regulator (PFM / PWM; MCP16362 PWM-only; MCP16363 PWM with dithering)",
+   "category": "ic_qfn",
+   "pkg": "VDFN-8",
+   "aecq": true,
+   "ecuRoles": [
+    "12 V / 24 V / 48 V rail buck",
+    "body ECU",
+    "USB supply"
+   ],
+   "observedMpn": "MCP16361T-E/NMXVAO",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3300,
+     "price": 1.76,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=MCP16361T-E%2FNMXVAO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 3300,
+     "price": 1.58,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=MCP16361T-E%2FNMXVAO",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key page (USD, Active, stock 2,080, 8-VDFN 3x3): Grade 'Automotive', Qualification 'AEC-Q100'. Cut tape shows only 1 = 2.33 and 25 = 1.9432 (below 100 - not recorded); tape & reel 3,300 = 1.76000 (only reel break). Master page (USD, stock 0, MOQ 825, reel of 3,300, 8 weeks): 825 = 4.32 NOT recorded (dearer than Digi-Key's one-piece price), 1,650 = 2.29, 2,475 = 1.61, 3,300+ = 1.58. No slope: one break per distributor; no break above one reel anywhere. MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows."
+  },
+  {
+   "mpn": "AT24C64D-SSHM-T",
+   "family": "AT24C64D",
+   "mfr": "Microchip",
+   "desc": "64 Kbit I2C serial EEPROM, 1.7-5.5 V, 1 MHz, -40 to +125 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "configuration / calibration memory on any ECU",
+    "camera module"
+   ],
+   "observedMpn": "AT24C64D-SSHM-T",
+   "observations": [
+    {
+     "distributor": "Master Electronics",
+     "qty": 1000,
+     "price": 0.3654,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=AT24C64D-SSPD-T",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 16000,
+     "price": 0.3253,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=AT24C64D-SSPD-T",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "SIBLING GRADE - the automotive code was not found on sale. Automotive codes AT24C64D-SSPD-T (SOIC-8) and AT24C64D-XPD-T (TSSOP-8) exist as Digi-Key product pages (a search summary of digikey.at gives -XPD-T as Grade Automotive / AEC-Q100, -40 to 125 C), but both pages read today say only 'This product is no longer available at DigiKey' - no price. Master: 'No exact match found' for AT24C64D-SSPD-T; its result list names AT24C64D-SSHM-T (tape & reel, stock 12,339): 1,000 = 0.3654, 4,000 = 0.3278, 8,000 = 0.3270, 12,000 = 0.3262, 16,000 = 0.3253 (USD), and AT24C64D-SSHM-B (tube) 100 = 0.3464 ... 5,000 = 0.3278. -SSHM is Microchip's standard (industrial) ordering code; Master's description line says 'Automotive' but no AEC-Q statement was read - aecq set false. Digi-Key page for -SSHM-T not read."
+  },
+  {
+   "mpn": "ATA663211-GAQW",
+   "family": "ATA663211",
+   "mfr": "Microchip",
+   "desc": "LIN transceiver (LIN 2.0-2.2A, SAE J2602-2), 5-28 V",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN slave node",
+    "door / seat / HVAC module",
+    "ambient lighting"
+   ],
+   "observedMpn": "ATA663211-GAQW",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.3978,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA663211-GAQW",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA663211-GAQW",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 4000,
+     "price": 0.3227,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ATA663211-GAQW",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code chosen: ATA663211-GAQW = SOIC-8 tape & reel (the code Digi-Key and Master both list). Digi-Key page (USD, Active, stock 4,770, 8-SO, Series 'Functional Safety (FuSa)'): NO Grade / Qualification field on the page. Cut tape 1 = 0.48, 25 = 0.40, 100 = 0.39780; tape & reel 4,000 = 0.36000 (only reel break). Master result list (USD, stock 0, 7 weeks): 1,000 = 0.6760 NOT recorded (dearer than Digi-Key's one-piece price), 2,000 = 0.4160, 3,000 = 0.3293, 4,000+ = 0.3227; it also names ATA663211-GAQW-V10 and -V10-VW (no prices). Prices are identical to ATA6562-GAQW1 at both distributors (same Microchip price point - checked on both pages). MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows. GRADE: aecq true rests on the discovery's maker source (Microchip Automotive Product Selector Guide DS00003019A); neither distributor page states AEC-Q100 for this code."
+  },
+  {
+   "mpn": "ATA663254-GAQW",
+   "family": "ATA663254",
+   "mfr": "Microchip",
+   "desc": "LIN system basis chip: LIN transceiver with 5 V / 85 mA regulator",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "LIN slave node",
+    "door / seat / HVAC module",
+    "ambient lighting"
+   ],
+   "observedMpn": "ATA663254-GAQW",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.4743,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA663254-GAQW",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.44,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=ATA663254-GAQW",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Master Electronics",
+     "qty": 4000,
+     "price": 0.3848,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=ATA663254-GAQW",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Code chosen: ATA663254-GAQW = SOIC-8 tape & reel (the code Digi-Key and Master list with a price). Digi-Key page (USD, Active, stock 2,877, 8-SO, -40 to 150 C): NO Grade / Qualification field. Cut tape 1 = 0.57, 25 = 0.48, 100 = 0.47430; tape & reel 4,000 = 0.44000 (only reel break). Master result list (USD, stock 0, 7 weeks): 1,000 = 0.8060, 2,000 = 0.4960, 3,000 = 0.3927, 4,000+ = 0.3848. MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows. Master also names ATA663254-GAQW-VAO ('LIN SBC with 5V Regulator Automotive', manufacturer stock 90,973, NO price shown) and ATA663254-GAQW-VAO-GM (no price) - the -VAO code is the explicit automotive ordering code but no price was readable for it. GRADE: aecq true rests on the discovery's maker source (Microchip Automotive Product Selector Guide DS00003019A); no distributor page read today states AEC-Q100 for the plain code."
+  },
+  {
+   "mpn": "LAN8660B0T-11-00000-E/LMX",
+   "family": "LAN8660",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S endpoint with Remote Control Protocol (control variant: sensors / actuators over I2C / SPI / UART), software-less",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 wettable flank",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "lighting / sensor edge node"
+   ],
+   "observedMpn": "LAN8660B0T-11-00000-E/LMX",
+   "observations": [
+    {
+     "distributor": "Master Electronics",
+     "qty": 5000,
+     "price": 2.97,
+     "currency": "USD",
+     "url": "https://www.masterelectronics.com/en/keywordsearch?text=LAN8660",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable codes found on Master's result list for 'LAN8660' (both 'No exact match' hits, description '10BASE-T1S Control Endpoint', stock 0, 15 weeks): LAN8660B0T-11-00000-E/LMX (ladder 1,250 = 8.70, 2,500 = 4.45, 3,750 = 3.03, 5,000+ = 2.97 USD - packing not printed; taken as the reel code from the T and the 5,000 pack) and LAN8660B0-11-00000-E/LMX (123 = 6.06, 245 = 3.74, 368 = 2.96, 490+ = 2.90 USD - 490 = tray pack; not recorded, other code). MASTER LADDER: on this non-stocked line Master's table is a pack-fraction ladder (1/4, 1/2, 3/4 and full reel; the part-reel rows carry an order surcharge: about 2.1x / 1.3x / 1.02x the full-reel price) - NOT volume breaks, so only the FULL-REEL row is recorded; a slope must not be drawn from the part-reel rows. Single distributor, one break - no slope. Digi-Key not read (it refused, HTTP 403, on this keyword - not used again). GRADE: Master page does not mention AEC-Q100; aecq true rests on the discovery's maker source (sell sheet DS00006257C 'AEC-Q100 Grade 1')."
+  },
+  {
+   "mpn": "BUK7M6R0-40HX",
+   "family": "BUK7M6R0-40H",
+   "mfr": "Nexperia",
+   "desc": "N-channel 40 V, 6.0 mΩ standard-level MOSFET in LFPAK33 — window lifter / door motors",
+   "category": "ic_qfn",
+   "pkg": "LFPAK33 (SOT1210)",
+   "aecq": true,
+   "ecuRoles": [
+    "door module",
+    "window lifter"
+   ],
+   "observedMpn": "BUK7M6R0-40HX",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 0.67,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/buk7m6r0-40hx/smd-n-channel-transistors/nexperia/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code = type number + X (reel) - BUK7M6R0-40HX is the code TME lists. TME page (USD net, 0 in TME stock, 'Hardly available product', package 'reel, tape', minimum 1): from 1 = 0.84, from 10 = 0.75, from 100 = 0.67 (largest break). Page data: N-MOSFET 40 V, 50 A, 70 W, LFPAK33 / SOT1210, on-state resistance 6 mOhm - matches the task desc. TME shows the net price in USD on this page (net = gross shown); TME rounds to 2 decimals and publishes no break above 100 for this line - no slope. Digi-Key and Master were refusing by this point (HTTP 403) - not read. GRADE: TME says only 'Application: automotive industry'; aecq true rests on the discovery's maker source (Nexperia 'Automotive MOSFETs' deck; BUK7 = Nexperia's automotive MOSFET range) - no AEC-Q101 statement read today."
+  },
+  {
+   "mpn": "BUK7Y3R5-40HX",
+   "family": "BUK7Y3R5-40H",
+   "mfr": "Nexperia",
+   "desc": "N-channel 40 V, 3.5 mΩ standard-level MOSFET — brushed-motor H-bridge / high-side switch",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56 (SOT669)",
+   "aecq": true,
+   "ecuRoles": [
+    "door / body domain controller",
+    "motor drive"
+   ],
+   "observedMpn": "BUK7Y3R5-40HX",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 1.21,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/buk7y3r5-40hx/smd-n-channel-transistors/nexperia/",
+     "date": "2026-11-23",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code = type number + X (reel) - BUK7Y3R5-40HX is the code TME lists. TME page (USD net, 0 in TME stock, 'Hardly available product', package 'reel, tape', minimum 1): from 1 = 1.78, from 10 = 1.34, from 100 = 1.21 (largest break). Page data: N-MOSFET 40 V, 93 A, 115 W, LFPAK56 / SOT669; TME prints 'on-state resistance 6.7 mOhm' (the type number says 3.5 mOhm typical-class - TME's figure is probably the hot / maximum value; datasheet not read). TME shows the net price in USD on this page (net = gross shown); TME rounds to 2 decimals and publishes no break above 100 for this line - no slope. Digi-Key and Master were refusing by this point (HTTP 403) - not read. GRADE: TME says only 'Application: automotive industry'; aecq true rests on the discovery's maker source (Nexperia 'Automotive MOSFETs' deck) - no AEC-Q101 statement read today."
+  },
+  {
+   "mpn": "TJA1445AT/0Z",
+   "family": "TJA1445",
+   "mfr": "NXP",
+   "desc": "CAN FD transceiver with partial networking, up to 5 Mbit/s (TJA1445A SO14 / HVSON14, TJA1445B DHVQFN18)",
+   "category": "ic_soic",
+   "pkg": "SO14",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal controller",
+    "body control module",
+    "gateway"
+   ],
+   "observedMpn": "TJA1445AT/0Z",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 2500,
+     "price": 0.86,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/tja1445at_0z/can-interfaces-integrated-circuits/nxp/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable codes read on TME's search list for 'TJA14': TJA1445AT/0Z (SO14 variant, chosen - the plain SO package) and TJA1445ATK/0J (HVSON14, not read). TME product page for TJA1445AT/0Z (USD net, 0 in TME stock, 'Check availability', minimum 2,500, multiple 2,500): from 2,500 = 0.86 - the only break; package not printed on the page. Single distributor, one break - no slope; TME rounds to 2 decimals. Digi-Key / Master not read (refusing by then). GRADE: TME page has no AEC statement; aecq true rests on the discovery's maker source (nxp.com/products/TJA1445 'AEC-Q100 Grade 1')."
+  }
+ ]
+}

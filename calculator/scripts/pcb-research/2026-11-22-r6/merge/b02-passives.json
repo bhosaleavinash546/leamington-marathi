@@ -1,0 +1,1655 @@
+{
+ "domain": "b02-passives",
+ "researched": "2026-11-22",
+ "parts": [
+  {
+   "mpn": "GCM155R71H472KA37D",
+   "family": "GCM155",
+   "mfr": "Murata",
+   "desc": "CAP, CERM, 4700 pF, 50 V, +/- 10%, X7R, AEC-Q200 Grade 1, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDA-020076 HV BMS 18S wired / wireless cell supervisor unit (BMS CMU)",
+    "TI TIDEP-01034 entry-level blind-spot detection radar",
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)",
+    "TI TIDA-020088 eight-channel 1 kVA Class-H audio amplifier",
+    "TI TIDEP-01037 low-power in-cabin radar"
+   ],
+   "observedMpn": "GCM155R71H472KA37D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.00934,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71H472KA37D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00503,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71H472KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.0043,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71H472KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named): Active; Ratings \"AEC-Q200\", Applications \"Automotive\"; out of stock (0; 10,000 expected 11-Jan-2027, lead time 21 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel table shows 10,000 and 30,000 only. Cross-check tried for this code, one try each, all without a price: LCSC search page (navigation shell only, no products), Mouser (HTTP 503), Avnet (HTTP 400), Farnell UK (HTTP 503) - those sites were not used again.",
+   "boards": 5
+  },
+  {
+   "mpn": "GCM155R71E103KA37D",
+   "family": "GCM155",
+   "mfr": "Murata",
+   "desc": "CAP, CERM, 0.01 uF, 25 V, +/- 10%, X7R, AEC-Q200, 0402",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDEP-01034 entry-level blind-spot detection radar",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "Infineon KIT_A3G_TC487_LITE AURIX A3G lite kit"
+   ],
+   "observedMpn": "GCM155R71E103KA37D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.00898,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71E103KA37D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00481,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71E103KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.00411,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM155R71E103KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-6043): Active; Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq set true and AEC-Q200 added to desc (task had false: grade not read by discovery); stock 694,749. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel table shows 10,000 and 30,000 only. No second distributor read.",
+   "boards": 4
+  },
+  {
+   "mpn": "GRT155R70J105KE01D",
+   "family": "GRT155",
+   "mfr": "Murata",
+   "desc": "MLCC 1 uF 6.3 V X7R 10%, 0402, GRT series, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01034 entry-level blind-spot detection radar",
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+   ],
+   "observedMpn": "GRT155R70J105KE01D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.02246,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRT155R70J105KE01D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.01317,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRT155R70J105KE01D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.01164,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRT155R70J105KE01D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-18216): Active; Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq set true (task had false); out of stock (0; 10,000 expected 11-Jan-2027, lead time 21 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel table shows 10,000 and 30,000 only. No second distributor read.",
+   "boards": 4
+  },
+  {
+   "mpn": "GCM188R72A472KA37D",
+   "family": "GCM188",
+   "mfr": "Murata",
+   "desc": "CAP, CERM, 4700 pF, 100 V,+/- 10%, X7R, AEC-Q200 Grade 1, 0603",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "TI TIDM-02014 SiC traction inverter",
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-020106 electro-mechanical brake (EMB)"
+   ],
+   "observedMpn": "GCM188R72A472KA37D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0247,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM188R72A472KA37D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01639,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM188R72A472KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.01423,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GCM188R72A472KA37D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-4930): Active; Ratings \"AEC-Q200\", Applications \"Automotive\"; stock 44,798. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read.",
+   "boards": 3
+  },
+  {
+   "mpn": "GRM033C71A104KE14D",
+   "family": "GRM033",
+   "mfr": "Murata",
+   "desc": "MLCC 100 nF 10 V X7S 10%, 0201, general purpose (GRM)",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01037 low-power in-cabin radar",
+    "TI TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "GRM033C71A104KE14D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0097,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM033C71A104KE14D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.00494,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM033C71A104KE14D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 45000,
+     "price": 0.00427,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM033C71A104KE14D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named; page link /en/products/detail/murata-electronics/GRM033C71A104KE14D/6606079): Active; no AEC-Q200 / automotive text on the page -> aecq false (general-purpose GRM); out of stock (0; 15,000 expected 18-Mar-2027, lead time 17 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (15,000 pcs) table shows 15,000 and 45,000 only. No second distributor read.",
+   "boards": 3
+  },
+  {
+   "mpn": "GRM188R71A225KE15J",
+   "family": "GRM188",
+   "mfr": "Murata",
+   "desc": "MLCC 2.2 uF 10 V X7R 10%, 0603, general purpose (GRM)",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDM-02014 SiC traction inverter",
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-020106 electro-mechanical brake (EMB)"
+   ],
+   "observedMpn": "GRM188R71A225KE15J",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0398,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188R71A225KE15J",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.02615,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188R71A225KE15J",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.02355,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188R71A225KE15J",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named): Active; stock 1,526,779. The task desc (from the TI BOM) said \"AEC-Q200 Grade 1\" but the Digi-Key page shows NO AEC-Q200 / automotive text for this code (GRM = general-purpose series) -> aecq set false and desc corrected. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (10,000 pcs) table shows 10,000 and 30,000 only. No second distributor read.",
+   "boards": 3
+  },
+  {
+   "mpn": "GRM21BZ71E106KE15L",
+   "family": "GRM21B",
+   "mfr": "Murata",
+   "desc": "MLCC 10 uF 25 V X7R 10%, 0805, general purpose (GRM)",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-050082 HV positive-rail active precharge",
+    "TI TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+    "TI TIDA-050063 HV solid-state relay active precharge"
+   ],
+   "observedMpn": "GRM21BZ71E106KE15L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.10002,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BZ71E106KE15L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.07509,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BZ71E106KE15L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.06793,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BZ71E106KE15L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named): Active; no AEC-Q200 / automotive text -> aecq false; out of stock (0; 3,000 estimated 04-May-2027, lead time 17 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (3,000 pcs) table shows 3,000 and 9,000 only. No second distributor read.",
+   "boards": 3
+  },
+  {
+   "mpn": "GRM31BR73A472KW01L",
+   "family": "GRM31B",
+   "mfr": "Murata",
+   "desc": "MLCC 4700 pF 1000 V X7R 10%, 1206, general purpose (GRM)",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020071 TDA4 quad automotive PHY RGMII reference design (ADAS domain controller Ethernet)",
+    "TI TIDA-020072 100/1000Base-T1 automotive Ethernet expansion reference design (Jacinto 7)",
+    "TI TIDEP-01030 high-end corner radar diagnostic (xWR2944EVM)"
+   ],
+   "observedMpn": "GRM31BR73A472KW01L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.19792,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM31BR73A472KW01L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.15377,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM31BR73A472KW01L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.14169,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM31BR73A472KW01L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-3498): Active; no AEC-Q200 / automotive text -> aecq false; stock 171,194. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (3,000 pcs) table shows 3,000 and 9,000 only. No second distributor read.",
+   "boards": 3
+  },
+  {
+   "mpn": "KAM21BR71H104KT",
+   "family": "KAM (automotive MLCC)",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, KAM automotive series",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "KAM21BR71H104KT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04422,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03273,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0289,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: the keyword KAM21BR71H104KT lands on the product page headed with the LEGACY manufacturer number 08055C104K4T2A (KYOCERA AVX, CAP CER 0.1UF 50V X7R 0805) whose Digi-Key part numbers are 478-KAM21BR71H104KTTR-ND / ...CT-ND / ...DKR-ND - i.e. Digi-Key sells the new KAM code and the legacy code as one item; the KAM code is named on the page only inside the Digi-Key part numbers (reviewer: accept or drop on that basis; legacy alias 08055C104K4T2A). Active; Ratings \"AEC-Q200\", Applications \"Automotive\"; stock 7,088; lead time 15 weeks. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "DFE2MCPHR47MJLLQ",
+   "family": "DFE2MCPH_JL",
+   "mfr": "Murata",
+   "desc": "Metal power inductor 0.47 uH 20% 5.4 A 0806, automotive grade",
+   "category": "passive_0805",
+   "pkg": "0806",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "radar"
+   ],
+   "observedMpn": "DFE2MCPHR47MJLLQ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.36859,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DFE2MCPHR47MJLLQ",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.32624,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DFE2MCPHR47MJLLQ",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 21000,
+     "price": 0.28125,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DFE2MCPHR47MJLLQ",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-DFE2MCPHR47MJLLQTR-ND): Active; series DFE2MCPH_JL; Ratings \"AEC-Q200\"; out of stock (0; 3,000 expected 20-Jan-2027), normal table (reel 6,000 @ 0.30767, 9,000 @ 0.29732, 15,000 @ 0.28478 also shown). Digi-Key describes it as 470 nH, 4.4 A, 22 mOhm max, 0806 (2016 metric); the task's 5.4 A was not seen on the page (probably the saturation current) - desc left as given. No second distributor read. AEC-Q200 also stated for the series on Murata's news page of 7 Sep 2026 (read)."
+  },
+  {
+   "mpn": "GCM31CC71E226ME36L",
+   "family": "GCM",
+   "mfr": "Murata",
+   "desc": "MLCC 22 uF 25 V X7S 20%, 1206, GCM automotive series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU"
+   ],
+   "observedMpn": "GCM31CC71E226ME36L",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 2000,
+     "price": 0.22,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/gcm31cc71e226me36l/mlcc-smd-capacitors/murata/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code found: TME lists GCM31CC71E226ME36L and GCM31CC71E226ME36K (search page read 22 Nov 2026); the L reel code is used as mpn (task gave the code without packing suffix). TME product page for ...ME36L: MLCC 22 uF 25 V X7S 20% 1206, series GCM, label NEW, 0 in TME stock (\"Check availability\"), MOQ = multiple = 2,000 (full reel); ONE visible break: 2,000 @ 0.22 USD, net = gross (no VAT), rounded to 2 dp -> no own slope. Digi-Key keyword search for GCM31CC71E226ME36 read the same day: \"did not return any results\" (its only suggestion, GCM31CC71C226ME36K, is the 16 V part - not used); one web search found no other franchised listing. AEC-Q200: Murata news page of 8 Apr 2026 (murata.com/en-global/news/capacitor/ceramiccapacitor/2026/0408, read) names GCM31CC71E226ME36 among \"seven AEC-Q200-qualified\" MLCCs; dielectric X7S taken from the TME page. Single-source, out-of-stock, new part: treat the price as weak."
+  },
+  {
+   "mpn": "GRM188Z71A106MA73D",
+   "family": "GRM188 X7R 0603",
+   "mfr": "Murata",
+   "desc": "MLCC 10 uF 10 V X7R 0603",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020101 automotive 48 V 300 W HVAC pump / blower / fan",
+    "TI TIDA-020106 electro-mechanical brake (EMB)",
+    "TI TIDEP-01036 mmWave radar kick-to-open",
+    "TI TIDEP-01033 60 GHz radar small form factor",
+    "TI TIDEP-01034 entry-level blind-spot detection radar"
+   ],
+   "observedMpn": "GRM188Z71A106MA73D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.07388,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188Z71A106MA73D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.05292,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188Z71A106MA73D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.04771,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM188Z71A106MA73D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-GRM188Z71A106MA73DTR-ND): Active; series GRM; no AEC-Q200 / automotive text -> aecq false; out of stock (0; 4,000 estimated 12-Apr-2027, lead time 17 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "NCU15XH103FBSRC",
+   "family": "NCU15 (150 C, B 0.5%)",
+   "mfr": "Murata",
+   "desc": "NTC thermistor 10 k 1% B3380 0.5%, 0402, -55..150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "powertrain ECU"
+   ],
+   "observedMpn": "NCU15XH103FBSRC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.03353,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCU15XH103FBSRC",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-NCU15XH103FBSRCTR-ND): Active, \"not kept in stock at DigiKey\" (non-stock, lead time 19 weeks); ONE break only - Tape & Reel 10,000 @ 0.03353 (no cut tape, no larger break) -> no own slope. The Digi-Key page showed no attribute values; AEC-Q200 confirmed on Murata's news page of 24 Apr 2024 (murata.com/en-global/news/thermistor/ntc/2024/0424, read): NCU15XH103FBSRC is listed under \"Product numbers for in-vehicle applications\", marked \"AEC-Q200 compliant\", 10 k 1%, B 3380 K 0.5%, 0402, -55..150 C. No second distributor read."
+  },
+  {
+   "mpn": "GYA1V271MCQ1GS",
+   "family": "GYA (hybrid)",
+   "mfr": "Nichicon",
+   "desc": "Hybrid polymer Al SMD 270 uF 35 V 20 mohm, 4000 h @125 C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYA1V271MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.65382,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYA1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.61018,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYA1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.53525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYA1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 493-16376): Active; series GYA, hybrid, 270 uF 35 V 20 mOhm, 4000 h @ 125 C, 10 x 10.5 mm; Ratings \"AEC-Q200\", Applications \"Automotive\"; out of stock (0; 500 expected 30-Nov-2026, lead time 27 weeks), normal table. Cut tape stops at 100 (0.79240); the 1,000 break is Tape & Reel (reel = 500 pcs; 1,500 @ 0.58816, 2,500 @ 0.56361, 3,500 @ 0.54918 also shown). No second distributor read."
+  },
+  {
+   "mpn": "GYC1V271MCQ1GS",
+   "family": "GYC (hybrid, 135 C)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer hybrid aluminium capacitor 270 uF 35 V 20%, 20 mohm, 4000 h @135 C, 10x10.5 mm SMD can, GYC series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10.5 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYC1V271MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.6778,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYC1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.63291,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYC1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.55585,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYC1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK GYC1V271MCQ1TR-ND): Active; series GYC, hybrid, 270 uF 35 V 20 mOhm, 4000 h @ 135 C, 10 mm dia x 10.5 mm; Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq set true and desc / pkg completed from the page (task had false: grade not read by discovery); stock 483; lead time 27 weeks. Cut tape stops at 100 (0.86960); the 1,000 break is Tape & Reel (reel = 500 pcs; 1,500 @ 0.61026, 2,500 @ 0.58502, 3,500 @ 0.57018 also shown). No second distributor read."
+  },
+  {
+   "mpn": "GYE1V101MCQADNGS",
+   "family": "GYE (hybrid, 125 C 4000 h)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer hybrid aluminium capacitor 100 uF 35 V 20%, 35 mohm, 4000 h @125 C, 6.3x7.7 mm SMD can, GYE series (AEC-Q200)",
+   "category": "passive_1206",
+   "pkg": "6.3x7.7 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYE1V101MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 900,
+     "price": 0.45187,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYE1V101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.37213,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYE1V101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 900,
+     "price": 0.17,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/gye1v101mcq1gs/smd-hybrid-capacitors/nichicon/gye1v101mcqadngs/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key keyword search for GYE1V101MCQADNGS read 22 Nov 2026: \"did not return any results\". Digi-Key has no entry under the ...MCQADNGS spelling; TME's product page prints TME symbol GYE1V101MCQ1GS beside manufacturer part number GYE1V101MCQADNGS, and Digi-Key lists GYE1V101MCQ1GS (Nichicon) as the manufacturer number - so the Digi-Key figures are for the sibling spelling GYE1V101MCQ1GS (observedMpn). What 'ADN' means was not read on a page. Digi-Key page for GYE1V101MCQ1GS (DK 493-GYE1V101TR-ND): Active; series GYE, hybrid, 100 uF 35 V, 35 mOhm, 4000 h @ 125 C, 6.3 mm dia x 8.0 mm max; Ratings \"AEC-Q200\", Applications \"Automotive\"; stock 888; cut tape stops at 100 (0.60670); reel = 900 pcs, breaks 900 / 1,800 @ 0.42252 / 2,700 @ 0.40771 / 4,500 @ 0.39120 / 6,300 @ 0.38150 / 9,000. TME page (names GYE1V101MCQADNGS): 100 uF 35 V hybrid, 6.3x7.7 mm, stock 639, reel of 900, visible table in USD net = gross (no VAT), rounded to 2 dp: 100 @ 0.20, 450 @ 0.18, 900 @ 0.17 (largest shown). PROBLEM: TME 900 is 2.7x BELOW Digi-Key 900 for what the two sites present as the same part - reviewer to judge."
+  },
+  {
+   "mpn": "KAF15AR71H104KT",
+   "family": "KAF (automotive MLCC, FLEXITERM)",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0603, KAF automotive FLEXITERM series",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "KAF15AR71H104KT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04072,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF15AR71H104KT",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.02998,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF15AR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.02639,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF15AR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: the keyword KAF15AR71H104KT lands on the product page headed with the LEGACY manufacturer number 06035C104K4Z2A (KYOCERA AVX, CAP CER 0.1UF 50V X7R 0603, series FLEXITERM, Features \"Soft Termination\") whose Digi-Key part numbers are 478-KAF15AR71H104KTTR-ND / CT / DKR - the KAF code is named on the page only inside the Digi-Key part numbers (legacy alias 06035C104K4Z2A). Active; Ratings \"AEC-Q200\", Applications \"Automotive, Boardflex Sensitive\"; stock 103,506; lead time 15 weeks. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "KAF21BR71H104KT",
+   "family": "KAF (automotive MLCC, FLEXITERM)",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0805, KAF automotive FLEXITERM series",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "KAF21BR71H104KT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04908,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03658,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.03241,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAF21BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: the keyword KAF21BR71H104KT lands on the product page headed with the LEGACY manufacturer number 08055C104K4Z2A (KYOCERA AVX, CAP CER 0.1UF 50V X7R 0805, series FLEXITERM, Features \"Soft Termination\") whose Digi-Key part numbers are 478-KAF21BR71H104KTTR-ND / CT / DKR - the KAF code is named on the page only inside the Digi-Key part numbers (legacy alias 08055C104K4Z2A). Active; Ratings \"AEC-Q200\", Applications \"Automotive, Boardflex Sensitive\"; out of stock (0; 3,965 expected 24-Dec-2026), normal table; lead time 15 weeks. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "KAM31BR71H104KT",
+   "family": "KAM (automotive MLCC)",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 1206, KAM automotive series",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "all ECUs"
+   ],
+   "observedMpn": "KAM31BR71H104KT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0674,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM31BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.05128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM31BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0459,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM31BR71H104KT",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026: the keyword KAM31BR71H104KT lands on the product page headed with the LEGACY manufacturer number 12065C104K4T2A (KYOCERA AVX, CAP CER 0.1UF 50V X7R 1206) whose Digi-Key part numbers are 478-KAM31BR71H104KTTR-ND / CT / DKR - the KAM code is named on the page only inside the Digi-Key part numbers (legacy alias 12065C104K4T2A). Active; Ratings \"AEC-Q200\", Applications \"Automotive\"; stock 4,783; lead time 15 weeks. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "BLE32SN120SZ1L",
+   "family": "BLE32SN",
+   "mfr": "Murata",
+   "desc": "Power-line ferrite bead 12 ohm @100 MHz 20 A 0.6 mohm, 1210, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller"
+   ],
+   "observedMpn": "BLE32SN120SZ1L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 0.61493,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BLE32SN120SZ1L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4500,
+     "price": 0.58012,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BLE32SN120SZ1L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-BLE32SN120SZ1LTR-ND): Active; series EMIFIL BLE32, 12 ohm @ 100 MHz, 20 A, 0.6 mOhm, 1210; Ratings \"AEC-Q200\", Features \"Automotive\"; stock 16,441; lead time 16 weeks. Cut tape stops at 250 (0.75268; 100 @ 0.87490); the break nearest 1,000 is Tape & Reel 1,500 (reel = 1,500 pcs), largest shown 4,500. No second distributor read."
+  },
+  {
+   "mpn": "DLM11CN900HH2L",
+   "family": "DLM11C_HH2",
+   "mfr": "Murata",
+   "desc": "Chip common-mode choke 90 ohm @100 MHz 80 mA, 0504, for LVDS / SerDes / USB / HDMI, AEC-Q200",
+   "category": "transformer",
+   "pkg": "0504",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "display",
+    "infotainment"
+   ],
+   "observedMpn": "DLM11CN900HH2L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.28436,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLM11CN900HH2L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.25039,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLM11CN900HH2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 28000,
+     "price": 0.21538,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLM11CN900HH2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-DLM11CN900HH2LTR-ND): Active; series DLM11, 2-line signal CMC 90 ohm @ 100 MHz, 80 mA, DCR 2.7 ohm, 5 V, 0504; Ratings \"AEC-Q200\"; stock 4,000; lead time 19 weeks. Reel (4,000 pcs) also shows 8,000 @ 0.23614, 12,000 @ 0.22819, 20,000 @ 0.21857. No second distributor read. Category copied from the task; note RULES-R4 files common-mode chokes under `transformer` - reviewer to decide."
+  },
+  {
+   "mpn": "DLW32PH122XK2L",
+   "family": "DLW32PH",
+   "mfr": "Murata",
+   "desc": "Wirewound common-mode choke for power lines 1.2 kohm @100 MHz 1.2 A 60 V, 1210, AEC-Q200",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "PoDL",
+    "camera",
+    "zonal controller"
+   ],
+   "observedMpn": "DLW32PH122XK2L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.683,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW32PH122XK2L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 1.4441,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW32PH122XK2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.375,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW32PH122XK2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-DLW32PH122XK2LTR-ND): Active; series DLW32, 2-line power-line CMC 1.2 kohm @ 100 MHz, 1.2 A, DCR 60 mOhm, 60 V, 3.2 x 2.5 mm; Ratings \"AEC-Q200\"; stock 5,695; lead time 19 weeks. Cut tape stops at 500; reel (1,500 pcs) shows 1,500 and 3,000 only. No second distributor read. Category copied from the task; note RULES-R4 files common-mode chokes under `transformer` - reviewer to decide."
+  },
+  {
+   "mpn": "DLW43MH201XK2L",
+   "family": "DLW43MH",
+   "mfr": "Murata",
+   "desc": "CAN FD common-mode choke 200 uH 110 mA, 1812, AEC-Q200",
+   "category": "transformer",
+   "pkg": "1812",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN FD node",
+    "gateway"
+   ],
+   "observedMpn": "DLW43MH201XK2L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.89844,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW43MH201XK2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.84723,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW43MH201XK2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.73955,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=DLW43MH201XK2L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-DLW43MH201XK2LTR-ND; description \"CMC 200UH 110MA 2LN SMD AEC-Q200\"): Active; series DLW43, 200 uH @ 100 kHz, 110 mA, DCR 4.5 ohm, 20 V, 4.5 x 3.2 mm, -40..105 C; Ratings \"AEC-Q200\"; stock 32,089; lead time 21 weeks. Cut tape stops at 250 (0.90772); the 1,000 break is Tape & Reel (reel = 500 pcs; 1,500 @ 0.81867, 2,500 @ 0.78409, 3,500 @ 0.76213 also shown). No second distributor read. Category copied from the task; note RULES-R4 files common-mode chokes under `transformer` - reviewer to decide."
+  },
+  {
+   "mpn": "GRM21BR61E226ME44L",
+   "family": "GRM21B X5R 0805",
+   "mfr": "Murata",
+   "desc": "MLCC 22 uF 25 V X5R 0805",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": false,
+   "ecuRoles": [
+    "TI TIDA-020079 zone reference design (zonal controller)",
+    "TI TIDA-020106 electro-mechanical brake (EMB)",
+    "TI TIDA-050063 HV solid-state relay active precharge",
+    "TI TIDA-050082 HV positive-rail active precharge"
+   ],
+   "observedMpn": "GRM21BR61E226ME44L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.11062,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BR61E226ME44L",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.08348,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BR61E226ME44L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.07574,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GRM21BR61E226ME44L",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-10749): Active; series GRM, general purpose, 22 uF 20% 25 V X5R 0805, -55..85 C; no AEC-Q200 / automotive text -> aecq false; out of stock (0; 3,000 estimated 23-Mar-2027, lead time 17 weeks), normal table. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (3,000 pcs) table shows 3,000 and 9,000 only. No second distributor read."
+  },
+  {
+   "mpn": "NCU03XH103F6SRL",
+   "family": "NCU03",
+   "mfr": "Murata",
+   "desc": "NTC thermistor 10 k 1% B3380, 0201 (0603M), copper electrode, automotive",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment",
+    "camera",
+    "BMS"
+   ],
+   "observedMpn": "NCU03XH103F6SRL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.03189,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCU03XH103F6SRL",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.02428,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCU03XH103F6SRL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 150000,
+     "price": 0.02107,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NCU03XH103F6SRL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-NCU03XH103F6SRLTR-ND): Active; Grade \"Automotive\", Qualification \"AEC-Q200\"; NTC 10k 1%, B25/50 3380 K 1%, 0201, -55..125 C; stock 7; lead time 19 weeks. Cut tape also 5,000 @ 0.02830; reel (15,000 pcs) also 30,000 @ 0.02322, 45,000 @ 0.02263, 75,000 @ 0.02194, 105,000 @ 0.02151. The page also shows a separate Digi-Reel ladder (1,000 @ 0.03008) - not recorded (re-reeling service, $7 fee). No second distributor read."
+  },
+  {
+   "mpn": "NFM15HC105D0G3D",
+   "family": "NFM15HC (3-terminal)",
+   "mfr": "Murata",
+   "desc": "3-terminal feed-through capacitor 1 uF 4 V 2 A 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS ECU",
+    "domain / zonal controller",
+    "infotainment"
+   ],
+   "observedMpn": "NFM15HC105D0G3D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.06368,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NFM15HC105D0G3D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.04862,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NFM15HC105D0G3D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.04138,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=NFM15HC105D0G3D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-NFM15HC105D0G3DTR-ND): Active; series EMIFIL NFM15, feed-through 1 uF 20% 4 V 2 A 30 mOhm, 0402 3-pad; Ratings \"AEC-Q200\"; stock 402,553; lead time 17 weeks. Cut tape also 2,500 @ 0.05695, 5,000 @ 0.05290; reel (10,000 pcs) also 20,000 @ 0.04593, 30,000 @ 0.04459, 50,000 @ 0.04309, 70,000 @ 0.04222. No second distributor read."
+  },
+  {
+   "mpn": "PLT10HH351100PNL",
+   "family": "PLT10HH",
+   "mfr": "Murata",
+   "desc": "Power-line common-mode choke 350 ohm @10 MHz 10 A 100 V, 150 C, SMD",
+   "category": "transformer",
+   "pkg": "SMD power-line CMC 12.9x6.6x9.4 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "48 V systems",
+    "on-board charger"
+   ],
+   "observedMpn": "PLT10HH351100PNL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 125,
+     "price": 2.88696,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PLT10HH351100PNL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 875,
+     "price": 2.44896,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PLT10HH351100PNL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1250,
+     "price": 2.37642,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PLT10HH351100PNL",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-PLT10HH351100PNLTR-ND; description \"CMC SMD AEC-Q200\"): Active; series PLT10HH, 2-line power-line CMC 350 ohm @ 10 MHz, 10 A, DCR 4.1 mOhm, 100 V, -55..150 C, 12.9 x 6.6 x 9.4 mm (size added to pkg from the page); stock 138; lead time 19 weeks. Cut tape stops at 50 (below 100, not recorded); reel = 125 pcs, breaks 125 / 250 @ 2.72240 / 375 @ 2.63061 / 625 @ 2.51950 / 875 / 1,250 (largest shown). No second distributor read. Category copied from the task; note RULES-R4 files common-mode chokes under `transformer` - reviewer to decide."
+  },
+  {
+   "mpn": "GYB1H101MCQADNGS",
+   "family": "GYB (hybrid)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer hybrid aluminium capacitor 100 uF 50 V 20%, 28 mohm, 10000 h @105 C, 10x10.5 mm SMD can, GYB series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10.5 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYB1H101MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.66616,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1H101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.62131,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1H101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.54429,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1H101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 500,
+     "price": 0.24,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/gyb1h101mcq1gs/smd-hybrid-capacitors/nichicon/gyb1h101mcqadngs/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key was read under the sibling spelling GYB1H101MCQ1GS (observedMpn): for GYE1V101 the ...MCQADNGS spelling returned no Digi-Key result, while TME prints TME symbol ...MCQ1GS beside manufacturer part number ...MCQADNGS (TME search page lists GYB1H101MCQADNGS with the link .../details/gyb1h101mcq1gs/smd-hybrid-capacitors/nichicon/gyb1h101mcqadngs/) - the GYB1H101MCQADNGS spelling itself was NOT tried at Digi-Key. What 'ADN' means was not read on a page. Digi-Key product page for GYB1H101MCQ1GS read 22 Nov 2026 (DK 493-17896): Active; series GYB, hybrid, 100 uF 50 V, 28 mOhm, 10000 h @ 105 C, 10 mm dia x 10.5 mm; Ratings \"AEC-Q200\" -> aecq set true, desc / pkg completed from the page (task had false: grade not read by discovery); stock 3,449; lead time 27 weeks. Cut tape stops at 100 (0.80860); reel = 500 pcs (1,500 @ 0.59867, 2,500 @ 0.57344, 3,500 @ 0.55861 also shown). TME product page read 22 Nov 2026 - it prints TME symbol GYB1H101MCQ1GS and manufacturer part number GYB1H101MCQADNGS (so this page names the task code): hybrid 100 uF 50 V, ESR 28 mOhm, dia 10 x 10 mm, -55..105 C; stock 249; reel = 500 pcs, MOQ 1; visible table in USD, net = gross (no VAT), rounded to 2 dp: 100 @ 0.27, 500 @ 0.24 (largest shown). PROBLEM: TME is 2.8x BELOW Digi-Key at the same quantity (500) - recorded as shown, reviewer to judge."
+  },
+  {
+   "mpn": "GYB1V271MCQADNGS",
+   "family": "GYB (hybrid)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer hybrid aluminium capacitor 270 uF 35 V 20%, 20 mohm, 10000 h @105 C, 10x10.5 mm SMD can, GYB series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10.5 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYB1V271MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.65382,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.61018,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.53525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYB1V271MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 500,
+     "price": 0.24,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/gyb1v271mcq1gs/smd-hybrid-capacitors/nichicon/gyb1v271mcqadngs/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key was read under the sibling spelling GYB1V271MCQ1GS (observedMpn): for GYE1V101 the ...MCQADNGS spelling returned no Digi-Key result, while TME prints TME symbol ...MCQ1GS beside manufacturer part number ...MCQADNGS (TME search page lists GYB1V271MCQADNGS with the link .../details/gyb1v271mcq1gs/smd-hybrid-capacitors/nichicon/gyb1v271mcqadngs/) - the GYB1V271MCQADNGS spelling itself was NOT tried at Digi-Key. What 'ADN' means was not read on a page. Digi-Key product page for GYB1V271MCQ1GS read 22 Nov 2026 (DK 493-17892): Active; series GYB, hybrid, 270 uF 35 V, 20 mOhm, 10000 h @ 105 C, 10 mm dia x 10.5 mm; Ratings \"AEC-Q200\" (Applications \"General Purpose\") -> aecq set true, desc / pkg completed from the page (task had false); stock 1,571; lead time 27 weeks. Cut tape stops at 100 (0.79240); reel = 500 pcs (1,500 @ 0.58816, 2,500 @ 0.56361, 3,500 @ 0.54918 also shown). The ladder is identical to GYA1V271MCQ1GS's on the same day (two separate page reads). TME product page read 22 Nov 2026 - it prints TME symbol GYB1V271MCQ1GS and manufacturer part number GYB1V271MCQADNGS (so this page names the task code): hybrid 270 uF 35 V, ESR 20 mOhm, dia 10 x 10 mm, -55..105 C; stock 335; reel = 500 pcs, MOQ 1; visible table in USD, net = gross (no VAT), rounded to 2 dp: 100 @ 0.27, 500 @ 0.24 (largest shown). PROBLEM: TME is 2.7x BELOW Digi-Key at the same quantity (500) - recorded as shown, reviewer to judge."
+  },
+  {
+   "mpn": "GYF1E101MCQADNGS",
+   "family": "GYF (hybrid, high capacitance)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer hybrid aluminium capacitor 100 uF 25 V 20%, 50 mohm, 4000 h @125 C, 6.3x5.8 mm SMD can, GYF series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "6.3x5.8 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "ADAS ECU",
+    "EPS"
+   ],
+   "observedMpn": "GYF1E101MCQ1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.43364,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYF1E101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.40201,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYF1E101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.33061,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=GYF1E101MCQ1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 0.15,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/gyf1e101mcq1gs/smd-hybrid-capacitors/nichicon/gyf1e101mcqadngs/",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key was read under the sibling spelling GYF1E101MCQ1GS (observedMpn): for GYE1V101 the ...MCQADNGS spelling returned no Digi-Key result, while TME prints TME symbol ...MCQ1GS beside manufacturer part number ...MCQADNGS (TME search page lists GYF1E101MCQADNGS with the link .../details/gyf1e101mcq1gs/smd-hybrid-capacitors/nichicon/gyf1e101mcqadngs/) - the GYF1E101MCQADNGS spelling itself was NOT tried at Digi-Key. What 'ADN' means was not read on a page. Digi-Key product page for GYF1E101MCQ1GS read 22 Nov 2026 (DK 493-GYF1E101MCQ1GSCT-ND): Active; series GYF, hybrid, 100 uF 25 V, 50 mOhm, 4000 h @ 125 C, 6.3 mm dia x 6.1 mm; Ratings \"AEC-Q200\", Applications \"Automotive\" -> aecq set true, desc / pkg completed from the page (task had false); out of stock (0; 998 expected 05-Apr-2027; lead time 47 weeks), normal table. Reel = 1,000 pcs (2,000 @ 0.37573, 3,000 @ 0.36247, 5,000 @ 0.34769, 7,000 @ 0.33900 also shown). TME product page read 22 Nov 2026 - it prints TME symbol GYF1E101MCQ1GS and manufacturer part number GYF1E101MCQADNGS (so this page names the task code): hybrid 100 uF 25 V, dia 6.3 x 5.8 mm, -55..125 C; stock 87; reel = 1,000 pcs, MOQ 1; visible table in USD, net = gross (no VAT), rounded to 2 dp: 100 @ 0.17, 500 @ 0.16, 1,000 @ 0.15 (largest shown). PROBLEM: TME is 2.7x BELOW Digi-Key at the same quantity (1,000) - recorded as shown, reviewer to judge."
+  },
+  {
+   "mpn": "PCV1V101MCL1GS",
+   "family": "PCV (conductive polymer chip)",
+   "mfr": "Nichicon",
+   "desc": "Conductive polymer aluminium solid capacitor 100 uF 35 V 20%, 29 mohm, 3000 h @105 C, 10x10 mm SMD can, PCV series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x10 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "DC-DC converter",
+    "engine ECU"
+   ],
+   "observedMpn": "PCV1V101MCL1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.54848,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PCV1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.46264,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PCV1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.31539,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PCV1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 493-4388): Active; series PCV, polymer, 100 uF 35 V, 29 mOhm, 3000 h @ 105 C, 10 mm dia x 10.0 mm; Ratings \"AEC-Q200\" (Applications \"General Purpose\") -> aecq set true, desc / pkg completed from the page (task had false: grade not read by discovery); stock 6,612; lead time 27 weeks. Cut tape stops at 100 (1.71830); reel = 500 pcs (1,500 @ 1.41935, 2,500 @ 1.37112, 3,500 @ 1.34276 also shown). No second distributor read."
+  },
+  {
+   "mpn": "UCM1V101MCL1GS",
+   "family": "UCM (chip aluminium, automotive)",
+   "mfr": "Nichicon",
+   "desc": "Aluminium electrolytic 100 uF 35 V 20%, 6.3 x 5.8 mm SMD can, 105 C, UCM series (AEC-Q200)",
+   "category": "passive_1206",
+   "pkg": "6.3x5.8 mm can",
+   "aecq": true,
+   "ecuRoles": [
+    "body ECU",
+    "DC-DC converter"
+   ],
+   "observedMpn": "UCM1V101MCL1GS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.23418,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.21485,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.17116,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 493-14537): Active; series UCM, aluminium electrolytic 100 uF 35 V 20%, 2000 h @ 105 C, 6.3 mm dia, 6.1 mm max seated height (task pkg 6.3x5.8 mm kept: nominal body height); Ratings \"AEC-Q200\", Applications \"Automotive\"; stock 32,478; lead time 39 weeks. Reel = 1,000 pcs (2,000 @ 0.19878, 3,000 @ 0.19066, 5,000 @ 0.18162, 7,000 @ 0.17630 also shown). No second distributor read."
+  },
+  {
+   "mpn": "KAE15AR71H104KT24",
+   "family": "KAE",
+   "mfr": "KYOCERA AVX",
+   "desc": "MLCC 100 nF 50 V X7R 10%, 0603, KAE ESD-SAFE series, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN / LIN interface",
+    "sensor input"
+   ],
+   "observedMpn": "KAE15AR71H104KT24",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.04748,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAE15AR71H104KT24",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.03518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAE15AR71H104KT24",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.03107,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAE15AR71H104KT24",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named as the manufacturer number, DK 478-KAE15AR71H104KT24TR-ND): Active; series \"ESD-SAFE\", Applications \"Automotive, ESD Protection\", Ratings \"AEC-Q200\" -> the discovery's inference (KAE = ESD-Safe) is confirmed on the page and aecq set true (task had false); stock 185,344; lead time 15 weeks. Cut-tape table on the page stops at 500 (no 1,000 row shown), so 500 is the break nearest 1,000. Reel (4,000 pcs) table shows 4,000 and 12,000 only. No second distributor read."
+  },
+  {
+   "mpn": "BLM15VM150BH1D",
+   "family": "BLM15VM",
+   "mfr": "Murata",
+   "desc": "Chip ferrite bead for 5.9 GHz C-V2X (1000 ohm typ @5.9 GHz; 15 ohm @100 MHz), 0402, 150 C, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "V2X",
+    "telematics"
+   ],
+   "observedMpn": "BLM15VM150BH1D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.08311,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BLM15VM150BH1D",
+     "date": "2026-11-22",
+     "packing": "cut tape",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.06088,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=BLM15VM150BH1D",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-BLM15VM150BH1DTR-ND): Active; series BLM15VM, 15 ohm @ 100 MHz, 900 mA, DCR 245 mOhm, 0402, -55..150 C; Ratings \"AEC-Q200\", Features \"Automotive\"; out of stock (0; 10,000 expected 22-Dec-2026, lead time 24 weeks), normal table. Cut tape also 5,000 @ 0.07451; Tape & Reel shows ONE break (10,000) - the own slope is cut tape 1,000 -> reel 10,000. No second distributor read."
+  },
+  {
+   "mpn": "KCM55WC71E107MH13K",
+   "family": "KCM (metal terminal)",
+   "mfr": "Murata",
+   "desc": "Metal-terminal stacked MLCC 100 uF 25 V X7S, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "stacked 2220, J-lead (6.1x5.3x6.7 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC converter",
+    "zonal controller",
+    "body ECU",
+    "inverter"
+   ],
+   "observedMpn": "KCM55WC71E107MH13K",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.57858,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=KCM55WC71E107MH13K",
+     "date": "2026-11-22",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Digi-Key product page read 22 Nov 2026 (exact code named, DK 490-KCM55WC71E107MH13KTR-ND): Active; series KCM, 100 uF 20% 25 V X7S, stacked SMD 2 J-lead, 6.1 x 5.3 mm, 6.7 mm max; Ratings \"AEC-Q200\", Applications \"Automotive\"; no stock figure (\"Available To Order\", lead time 17 weeks). ONE break only: Tape & Reel 500 @ 2.57858 (no cut tape, no larger break) -> no own slope. No second distributor read."
+  }
+ ]
+}

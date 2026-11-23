@@ -1,0 +1,108 @@
+{
+ "domain": "b17-ics",
+ "researched": "2026-11-23",
+ "method": "LATEST task b17-ics, 23 Nov 2026 - 5 lines, worked after b16-ics in the same run (shared limits; the full source log is in b16-ics.json \"method\"). Digi-Key had returned HTTP 403 on the 2nd read of the run and was not read again, so no line here has a Digi-Key price. Both Vishay lines are priced from the TME product page (USD, evidence page-read, visible table only - 2 decimals, full-pack breaks only, 0 in TME stock); the Winbond line is NOT-READ; the two TI lines were not reached (notResearched, exact codes, one Digi-Key read each). Master Electronics returned \"no search results\" for the Vishay and Winbond codes; Mouser, Arrow, Farnell (503) and Rutronik (403) refused the single try. Grades of the two Vishay parts were read on vishay.com product pages. Requests spent on this task: TME 4 (2 search pages for the product link, 2 product pages), Master 3, vishay.com 3, Arrow / Farnell / Rutronik 1 each; no web search.",
+ "parts": [
+  {
+   "mpn": "SQJ140EP-T1_GE3",
+   "family": "SQJ140EP",
+   "mfr": "Vishay",
+   "desc": "Automotive N-channel 40 V, 266 A, 1.7 mΩ TrenchFET Gen IV MOSFET, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "PowerPAK SO-8L",
+   "aecq": true,
+   "ecuRoles": [
+    "motor drive",
+    "DC/DC",
+    "battery switch"
+   ],
+   "observedMpn": "SQJ140EP-T1_GE3",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.59,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/sqj140ep-t1-ge3/smd-n-channel-transistors/vishay/sqj140ep-t1-ge3/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "TME",
+     "qty": 6000,
+     "price": 0.58,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/sqj140ep-t1-ge3/smd-n-channel-transistors/vishay/sqj140ep-t1-ge3/",
+     "date": "2026-11-23",
+     "packing": "reel",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT): symbol SQJ140EP-T1-GE3, manufacturer part number SQJ140EP-T1_GE3, VISHAY, N-MOSFET TrenchFET 40 V, PowerPAK SO8, kind of package \"reel, tape\", application \"automotive industry\", 0 in TME stock, minimum order 3,000, multiple 3,000. Price table (2 rows, 2 decimals - TME rounds): from 3,000 = 0.59, from 6,000 = 0.58 (one and two full reels - both recorded; the 2-decimal rounding makes the slope between them coarse). No row near 1,000 and nothing near 200,000 is published. The Digi-Key page was NOT read (digikey.com returned HTTP 403 earlier in this run) - one read of https://www.digikey.com/en/products/result?keywords=SQJ140EP-T1_GE3 would add the cut-tape 1,000 row and a cross-check. Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"; Arrow 503, Farnell 503 on the single try. GRADE: Vishay product page (vishay.com/en/product/77368, read today): \"Automotive N-Channel 40 V (D-S) 175 C MOSFET\", Automotive Grade logo, \"AEC-Q101 qualified\"; package documents PowerPAK SO-8L. RATINGS: the TME page prints drain current 154 A and on-resistance 2.1 mOhm; the task line's 266 A / 1.7 mOhm came from a search result and was not seen on a page today (desc left as in the task - check it against the datasheet)."
+  },
+  {
+   "mpn": "VOMDA1271T",
+   "family": "VOMDA1271",
+   "mfr": "Vishay",
+   "desc": "Optically isolated photovoltaic MOSFET driver with integrated fast turn-off, no VCC needed",
+   "category": "ic_soic",
+   "pkg": "SOP-4",
+   "aecq": true,
+   "ecuRoles": [
+    "pre-charge relay",
+    "BMS",
+    "custom solid-state relay",
+    "HV MOSFET gate drive"
+   ],
+   "observedMpn": "VOMDA1271T",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 2000,
+     "price": 1.49,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/vomda1271t/optocouplers-digital-output/vishay/",
+     "date": "2026-11-23",
+     "packing": "unknown",
+     "evidence": "page-read"
+    }
+   ],
+   "notes": "Orderable code: VOMDA1271T (the task gave the type number VOMDA1271; TME lists it as VOMDA1271T and Vishay's own \"Buy Now\" link uses VOMDA1271T). TME product page (tme.eu/en, USD, read 2026-11-23; net and gross printed as the same figure - no VAT): symbol and manufacturer part number VOMDA1271T, VISHAY, \"Optocoupler; SMD; Ch: 1; OUT: MOSFET driver; Uinsul: 3.75kV; SOP4\", 0 in TME stock, minimum order 2,000, multiple 2,000 (packing not stated - a 2,000 pack, presumably the reel). ONE price row: from 2,000 = 1.49 USD (2 decimals). No larger break published (no own slope), no row at 1,000. The Digi-Key page was NOT read (digikey.com returned HTTP 403 earlier in this run) - one read of https://www.digikey.com/en/products/result?keywords=VOMDA1271T would add the cut-tape rows and a cross-check. Master Electronics keyword search VOMDA1271: \"NO SEARCH RESULTS FOUND\"; Rutronik (named as stocking it in the task note) 403 on the single try. GRADE: Vishay product page (vishay.com/en/product/80316, read today): \"Automotive Photovoltaic MOSFET Driver With Integrated Fast Turn-Off\", \"an automotive qualified optically isolated MOSFET driver\", Automotive Grade logo, \"AEC-Q102 qualified\"; sell sheet names the SOP-4 package."
+  },
+  {
+   "mpn": "W25Q64JVSSAQ",
+   "family": "W25Q64JV (automotive)",
+   "mfr": "Winbond",
+   "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
+   "category": "ic_soic",
+   "pkg": "unknown",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU boot / config flash",
+    "cluster",
+    "camera"
+   ],
+   "observedMpn": "W25Q64JVSSAQ",
+   "observations": [],
+   "notes": "NOT-READ: no franchised distributor page could be read for this code. Digi-Key had returned HTTP 403 earlier in this run (not read again); Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"; the TME limit of 8 pages was spent before this line; Mouser, Arrow, Farnell 503 and Rutronik 403 on other lines. The code is as printed in Winbond's automotive brief (task note: W25Q64JVSSAQ = Grade 2, W25Q64JVSSSQ = Grade 1) and was NOT re-confirmed on a distributor listing today; package (SS = SOIC-8 208 mil in Winbond's code) and grade not read on a page. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=W25Q64JVSSAQ (no exact result there = try W25Q64JVSSSQ, else NO-LISTING)."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "W25Q64JVSSAQ",
+   "family": "W25Q64JV (automotive)",
+   "why": "worked, not priced (see parts): Master has no result, Digi-Key refused earlier, TME limit used. One Digi-Key read: https://www.digikey.com/en/products/result?keywords=W25Q64JVSSAQ ; Grade 1 alternative W25Q64JVSSSQ"
+  },
+  {
+   "code": "AM2732CDRFHQZCERQ1",
+   "family": "AM2732-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (not read again) and no other page source prices TI parts (Master: no TI; TME: 1-piece prices only on non-stocked TI parts, and its 8-page limit was used). The code is exact - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=AM2732CDRFHQZCERQ1 — Automotive dual Cortex-R5F 400 MHz MCU with C66x DSP, Ethernet, for radar processing"
+  },
+  {
+   "code": "TPSI3100QDVXRQ1",
+   "family": "TPSI3100-Q1",
+   "why": "not reached: digikey.com returned HTTP 403 on the 2nd read of this run (not read again) and no other page source prices TI parts (Master: no TI; TME: 1-piece prices only on non-stocked TI parts, and its 8-page limit was used). The code is exact - one Digi-Key product-page read prices it: https://www.digikey.com/en/products/result?keywords=TPSI3100QDVXRQ1 — Automotive reinforced isolated switch driver with integrated 15 V gate supply (solid-state relay / precharge)"
+  }
+ ]
+}
