@@ -1,0 +1,800 @@
+[
+ {
+  "mfr": "Texas Instruments",
+  "family": "AM263Px",
+  "desc": "Sitara AM263Px real-time MCU (zone controller MCU)",
+  "category": "ic_bga",
+  "pkg": "NFBGA324",
+  "aecq": false,
+  "launched": "2026-01",
+  "usedIn": [
+   "TI TIDA-020079 zone reference design (zonal controller)"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/lit/pdf/SLVRBZ9",
+  "note": "BOM prints 'AM263PxC' (not an orderable code). BOM text does not state AEC-Q. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). The task line names a FAMILY (t",
+  "catalogue": "no",
+  "orderableCode": "AM263P4ACOKFZCZRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "BQ79731-Q1",
+  "desc": "Battery pack monitor (BJB): pack voltage, current and insulation-resistance measurement for HV BMS",
+  "category": "ic_tqfp",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "2022-12",
+  "usedIn": [
+   "BMS battery junction box"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ti.com/product/BQ79731-Q1",
+  "note": "AEC-Q100 -40 to +125 C. Datasheet SLUSF55 Dec 2022, Rev. A Oct 2024; a BQ79731B-Q1 variant also has a product page (https://www.ti.com/product/BQ79731B-Q1). TI generic part number - no orderable (package / reel) code was seen. | first pass: NOT-READ: NO orderable code could be confirmed, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was",
+  "catalogue": "no",
+  "orderableCode": "BQ79731-Q1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "BQ79758-Q1",
+  "desc": "18S battery cell monitor with current sense",
+  "category": "ic_tqfp",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "2024-08",
+  "usedIn": [
+   "BMS cell monitoring unit",
+   "48 V battery"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://ti.com/lit/gpn/bq79758-q1",
+  "note": "AEC-Q100 grade 1. First datasheet (SLUSFV4) Aug 2024; BQ79758B-Q1 variant datasheet 13 Aug 2025 (https://www.ti.com/product/BQ79758B-Q1). The catalogue has BQ79718 (18S, no current sense) but not this. TI generic part number - no orderable (package / reel) code was seen. | first pass: SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/BQ79758QPAPRQ1/25324528 - result title \"BQ79758QPAPRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword",
+  "catalogue": "no",
+  "orderableCode": "BQ79758QPAPRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "CC2745R10-Q1",
+  "desc": "Automotive SimpleLink Bluetooth LE wireless MCU, 1 MB flash, HSM, APU, CAN FD (channel-sounding capable family)",
+  "category": "ic_qfn",
+  "pkg": "VQFN-40 6x6 wettable flank (RHA)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "digital key / car access ECU",
+   "body control module",
+   "TPMS receiver",
+   "wireless BMS"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/CC2745R10-Q1",
+  "note": "AEC-Q100 Grade 2. Data sheet Rev. D dated 5 Nov 2025. Digi-Key keyword search shows 2 RF transceiver ICs (22 Nov 2026); exact code not seen. | first pass: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/CC2745R10E0WRHARQ1/25891591 - result title \"CC2745R10E0WRHARQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyw",
+  "catalogue": "no",
+  "orderableCode": "CC2745R10E0WRHARQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "DRV8000-Q1",
+  "desc": "Multifunction door-control driver: H-bridge gate driver, half-bridges and high-side drivers in one IC, 4.5-35 V",
+  "category": "ic_qfn",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "2024-05",
+  "usedIn": [
+   "door module",
+   "zonal controller"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/DRV8000-Q1",
+  "note": "AEC-Q100 grade 1 per the product page; datasheet SLVSH22 first issued May 2024, Rev. B Jan 2026. TI generic part number - no orderable (package / reel) code was seen. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI'",
+  "catalogue": "no",
+  "orderableCode": "DRV8000QWRGZRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LMR60430-Q1",
+  "desc": "3-36 V, 3 A synchronous buck, 5 uA IQ in auto mode, 30 ns minimum on-time",
+  "category": "ic_qfn",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "any 12 V ECU primary rail"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmr60430-q1-synchronous-buck-converters/",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. | first pass: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/LMR604303SRAKRQ1/26812419); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product pa",
+  "catalogue": "no",
+  "orderableCode": "LMR604303SRAKRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LMR60440-Q1",
+  "desc": "3-36 V, 4 A synchronous buck, 5 uA IQ, EMI-optimised",
+  "category": "ic_qfn",
+  "pkg": "HotRod QFN",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "any 12 V ECU primary rail"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-lmr60440-converter/",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. | first pass: NOT-READ: NO automotive orderable code was seen on a distributor listing, so the mpn field still holds the generic number. digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and n",
+  "catalogue": "no",
+  "orderableCode": "LMR60440-Q1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN1473-Q1",
+  "desc": "Automotive low-power signal-improvement (SIC) CAN FD transceiver with INH and WAKE",
+  "category": "ic_soic",
+  "pkg": "SOIC-14 / VSON-14 / SOT-23-THN-14",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN1473-Q1",
+  "note": "Data sheet Rev. B dated 13 May 2026. Page lists a newer TCAN1473A-Q1 tagged NEW. | first pass: SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI's part-details",
+  "catalogue": "no",
+  "orderableCode": "TCAN1473CDMTRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN1575-Q1",
+  "desc": "Automotive CAN SIC transceiver with partial networking (selective wake)",
+  "category": "ic_soic",
+  "pkg": "SOIC-14 / VSON-14 / SOT-23-THN-14",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN1575-Q1",
+  "note": "Page: AEC-Q100 Grade 1. Data sheet Rev. B dated 31 Oct 2025. | first pass: SUMMARY-ONLY: no price was read on a page (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; Mouser 503). Orderable code confirmed on TI's p",
+  "catalogue": "no",
+  "orderableCode": "TCAN1575DMTRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN2451-Q1",
+  "desc": "Automotive CAN FD SIC system basis chip (SBC) with buck regulator and partial networking",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 (RHB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN2451-Q1",
+  "note": "Data sheet Rev. C dated 17 Nov 2025. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI'",
+  "catalogue": "no",
+  "orderableCode": "TCAN2451RHBRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN2845-Q1",
+  "desc": "Automotive CAN FD system basis chip (SBC) with partial networking",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 (RHB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN2845-Q1",
+  "note": "Data sheet Rev. B dated 20 Nov 2025. Page cites a migration note to a TCAN29xx-Q1 successor family (14 Oct 2026). | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI'",
+  "catalogue": "no",
+  "orderableCode": "TCAN28453RHBRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN2855-Q1",
+  "desc": "Automotive CAN FD SIC system basis chip (SBC) with partial networking",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 (RHB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN2855-Q1",
+  "note": "Data sheet Rev. A dated 29 Oct 2025. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI'",
+  "catalogue": "no",
+  "orderableCode": "TCAN28553RHBRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TCAN2857-Q1",
+  "desc": "Automotive CAN FD SIC and LIN system basis chip (SBC) with partial networking",
+  "category": "ic_qfn",
+  "pkg": "VQFN-32 5x5 (RHB)",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "body control module",
+   "gateway"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.ti.com/product/TCAN2857-Q1",
+  "note": "Data sheet dated 29 Oct 2025. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). Orderable code confirmed on TI'",
+  "catalogue": "no",
+  "orderableCode": "TCAN28573RHBRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS1HC120-Q1",
+  "desc": "Single-channel smart high-side switch",
+  "category": "ic_soic",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body / zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://mouser.com/new/texas-instruments/ti-tps1hc120-q1-smart-high-side-switch",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read. | first pass: NOT-READ: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC120CQDYCRQ1/28721586 - result title \"TPS1HC120CQDYCRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keywor",
+  "catalogue": "no",
+  "orderableCode": "TPS1HC120CQDYCRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS4816-Q1",
+  "desc": "Smart high-side switch controller for 12 / 24 / 48 V, 3.5-95 V in, adjustable I2t overcurrent and short-circuit protection, bidirectional current monitor",
+  "category": "ic_qfn",
+  "pkg": "VQFN 23",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "power distribution box",
+   "48 V loads"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps4816-q1-smart-high-side-switch-controllers/",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried; the Mouser product page mouser.c",
+  "catalogue": "no",
+  "orderableCode": "TPS48160QRGERQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS4HC120-Q1",
+  "desc": "Four-channel automotive smart high-side switch",
+  "category": "ic_soic",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "body / zonal controller"
+  ],
+  "distribution": "distributor",
+  "priority": 1,
+  "sourceUrl": "https://www.mouser.com/en/new/texas-instruments/ti-tps4hc120-q1-switches/",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Package not read. | first pass: SUMMARY-ONLY: code found on a Digi-Key listing by search (https://www.digikey.com/en/products/detail/texas-instruments/TPS4HC120AQDGQRQ1/25881361 - result title \"TPS4HC120AQDGQRQ1 Texas Instruments\"); the page itself was not read (digikey.com returned HTTP 403 on the 2nd read of this run (generic ke",
+  "catalogue": "no",
+  "orderableCode": "TPS4HC120AQDGQRQ1",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "ADS131B26-Q1",
+  "orderableCode": "ADS131B26QPHPRQ1",
+  "desc": "HV battery-pack monitor: six ADC channels for shunt current, pack voltage and temperature, ASIL-oriented",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-48 (PHP)",
+  "aecq": true,
+  "launched": "2022-09",
+  "usedIn": [
+   "BMS battery junction box",
+   "battery disconnect unit"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/ADS131B26-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Related ADS131B23-Q1 / ADS131B24-Q1.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AM263P2-Q1",
+  "orderableCode": "AM263P2ASPDFZCZRQ1",
+  "desc": "Automotive Cortex-R5F MCU, up to 400 MHz, real-time control, expandable memory",
+  "category": "ic_bga",
+  "pkg": "NFBGA 324 (ZCZ) 15x15 mm",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "traction inverter",
+   "OBC / DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/AM263P2-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. TI page: AEC-Q100 qualified, ACTIVE. | first pass: UNPRICED: TME product page read (https://www.tme.eu/en/details/am263p2aspdfzczrq1/texas-instruments-microcontrollers/texas-instruments/ , USD, 2026-11-23): code and maker confirmed (symbol AM263P2ASPDFZCZRQ1, TEXAS INSTRUMENTS, ARM microcontroller 400 MHz, NFBGA324, -40...150 C), 0 in TME stock, min",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AMC131M03-Q1",
+  "orderableCode": "AMC131M03QDFMRQ1",
+  "desc": "3-channel simultaneous-sampling 24-bit isolated delta-sigma ADC with integrated DC-DC",
+  "category": "ic_soic",
+  "pkg": "SOIC-20 wide (DFM)",
+  "aecq": true,
+  "launched": "2023-05",
+  "usedIn": [
+   "BMS shunt current + HV sense",
+   "OBC",
+   "EV charger metering"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/AMC131M03-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AWRL6432",
+  "orderableCode": "AWRL6432BDBGAMFRQ1",
+  "desc": "57-64 GHz low-power single-chip automotive radar sensor (kick-to-open, in-cabin, intrusion)",
+  "category": "ic_bga",
+  "pkg": "FCCSP 102-ball 6.45x6.45 mm (AMF)",
+  "aecq": true,
+  "launched": "2022-12",
+  "usedIn": [
+   "in-cabin radar",
+   "kick sensor",
+   "intrusion alarm"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/AWRL6432",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AWRL6432",
+  "orderableCode": "AWRL6432BGAMFQ1",
+  "desc": "60 GHz low-power single-chip mmWave radar sensor (in-cabin sensing)",
+  "category": "ic_bga",
+  "pkg": "FCCSP102",
+  "aecq": true,
+  "launched": "2025-01",
+  "usedIn": [
+   "TI TIDEP-01037 low-power in-cabin radar"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDQ8",
+  "note": "Code as printed in the BOM. Digi-Key lists the family under AWRL6432BDBGAMFRQ1 (AEC-Q100); the BOM spelling itself was not seen at a distributor. The 77 GHz sibling AWRL1432BGAMFQ1 is on TIDEP-01034 / TIDEP-01036.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AWRL6844",
+  "orderableCode": "AWRL6844DBGANCRQ1",
+  "desc": "60 GHz 4T4R single-chip in-cabin radar sensor with edge AI (occupancy, child presence, intrusion)",
+  "category": "ic_bga",
+  "pkg": "FCCSP",
+  "aecq": true,
+  "launched": "2025-01",
+  "usedIn": [
+   "in-cabin radar",
+   "child presence detection",
+   "seat-belt reminder"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/AWRL6844",
+  "note": "Datasheet SWRS325 (Dec 2024) states \"AEC Q-100 qualified\"; orderable code from the datasheet package addendum; Mouser new-product page seen. Launch per TI CES 2025 release (6 Jan 2025).",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "HDC3020-Q1",
+  "orderableCode": "HDC3020QDEFRQ1",
+  "desc": "Automotive relative-humidity + temperature sensor, 0.5 %RH typ, I2C",
+  "category": "ic_qfn",
+  "pkg": "WSON-8 2.5x2.5 mm (DEF)",
+  "aecq": true,
+  "launched": "2021-06",
+  "usedIn": [
+   "HVAC",
+   "windscreen fog sensor",
+   "battery pack",
+   "camera / lidar heater control"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/HDC3020-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Siblings HDC3021-Q1 / HDC3022-Q1 (covers).",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "INA791x-Q1",
+  "orderableCode": "INA791BQWDEKRQ1",
+  "desc": "110 V bidirectional high-bandwidth current-sense amplifier with integrated shunt (EZShunt), 75 A rms",
+  "category": "ic_qfn",
+  "pkg": "15-pin wettable-flank VQFN (DEK)",
+  "aecq": true,
+  "launched": "2026-01",
+  "usedIn": [
+   "48 V systems",
+   "motor drive",
+   "DC-DC"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/INA791B-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. Also INA791AQWDEKRQ1.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "LM74900-Q1",
+  "orderableCode": "LM74900QRGERQ1",
+  "desc": "3-65 V ideal-diode controller (DGATE) for reverse-input protection, with switched output path",
+  "category": "ic_qfn",
+  "pkg": "VQFN (RGE)",
+  "aecq": false,
+  "launched": "unknown",
+  "usedIn": [
+   "zonal controller",
+   "ADAS ECU input protection"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/LM74900QRGERQ1?qs=1Kr7Jg1SGW%2BjHxEKWn%2FhLA%3D%3D",
+  "note": "AEC-Q statement not read on the page (automotive-named device); confirm at pricing. Sibling LM74930QRGERQ1 is in the catalogue. | first pass: NOT-READ: no distributor page with a price could be read (digikey.com returned HTTP 403 on the 2nd read of this run (generic keyword URL keywords=TCAN1473, straight after one product page had served) - Digi-Key was not read again and no other Digi-Key host was tried). GRADE confirmed on TI's part-de",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "MSPM0L2228-Q1",
+  "orderableCode": "M0L2228QPTRQ1",
+  "desc": "Automotive 32 MHz Cortex-M0+ MCU, 256 KB dual-bank flash, 32 KB SRAM, LCD controller, VBAT backup",
+  "category": "ic_tqfp",
+  "pkg": "LQFP 48 (PT); also LQFP 64 / 80",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "HVAC panel",
+   "segment display",
+   "e-bike / two-wheeler cluster"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/MSPM0L2228-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. Also M0L2228QPMRQ1, M0L2228QPNRQ1. TI page: 'AEC-Q100 Grade 1 qualified'; siblings MSPM0L1227 / L1228 / L2227-Q1.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TAA5412-Q1",
+  "orderableCode": "TAA5412WQRTVRQ1",
+  "desc": "Stereo audio ADC, 112 dB, high-voltage inputs, mic bias and diagnostics",
+  "category": "ic_qfn",
+  "pkg": "WQFN-32 5x5 mm wettable flank (RTV)",
+  "aecq": true,
+  "launched": "2024-01",
+  "usedIn": [
+   "microphone array",
+   "ANC / RNC",
+   "eCall"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TAA5412-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TAC5412-Q1",
+  "orderableCode": "TAC5412WQRTVRQ1",
+  "desc": "Stereo audio codec (112 dB ADC, 120 dB DAC), high-voltage mic inputs, mic bias and diagnostics",
+  "category": "ic_qfn",
+  "pkg": "WQFN-32 5x5 mm wettable flank (RTV)",
+  "aecq": true,
+  "launched": "2024-01",
+  "usedIn": [
+   "eCall",
+   "hands-free microphone",
+   "ANC / RNC",
+   "head unit"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TAC5412-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. DAC-only sibling TAD5212-Q1 (TAD5212QRGERQ1, 2023-12).",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TAS6511-Q1",
+  "orderableCode": "TAS6511QPWPRQ1",
+  "desc": "1-channel 50 W 2 MHz digital-input class-D amplifier, heatsink-free, with current sense",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-28 (PWP) / VQFN-24 (RGE)",
+  "aecq": true,
+  "launched": "2023-12",
+  "usedIn": [
+   "eCall / telematics",
+   "AVAS",
+   "instrument cluster",
+   "head unit"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TAS6511-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. QFN code: TAS6511QRGERQ1.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TAS6754-Q1",
+  "orderableCode": "TAS6754QDKQRQ1",
+  "desc": "4-channel 2 MHz digital-input class-D audio amplifier with 1L modulation (one inductor per channel)",
+  "category": "ic_soic",
+  "pkg": "HSSOP-56 pad-up (DKQ)",
+  "aecq": true,
+  "launched": "2024-12",
+  "usedIn": [
+   "audio amplifier",
+   "head unit",
+   "premium audio"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TAS6754-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). Announced CES 2025. Drop-in successor TAS67524-Q1 (TAS67524QDKQRQ1, datasheet first issue Nov 2025) is also absent from the catalogue.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMAG5173-Q1",
+  "orderableCode": "TMAG5173A1QDBVRQ1",
+  "desc": "High-precision 3D linear Hall-effect sensor, I2C, Grade 1",
+  "category": "ic_soic",
+  "pkg": "SOT-23-6 (DBV)",
+  "aecq": true,
+  "launched": "2022-09",
+  "usedIn": [
+   "shifter",
+   "steering-column stalk",
+   "knob / HMI",
+   "actuator position"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TMAG5173-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMAG6181-Q1",
+  "orderableCode": "TMAG6181EDGKRQ1",
+  "desc": "High-precision analog AMR angle sensor with integrated turns counter, Grade 0",
+  "category": "ic_soic",
+  "pkg": "VSSOP-8 (DGK)",
+  "aecq": true,
+  "launched": "2023-03",
+  "usedIn": [
+   "EPS motor position",
+   "BLDC rotor position",
+   "steering angle"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TMAG6181-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TMCS1133-Q1",
+  "orderableCode": "TMCS1133A1AQDVGRQ1",
+  "desc": "Isolated Hall current sensor, 1 MHz, reinforced isolation, ambient-field rejection, ALERT",
+  "category": "ic_soic",
+  "pkg": "SOIC-10 wide (DVG)",
+  "aecq": true,
+  "launched": "2024-07",
+  "usedIn": [
+   "OBC",
+   "DC-DC converter",
+   "GaN / SiC stage"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TMCS1133-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPS929160-Q1",
+  "orderableCode": "TPS929160QDCPRQ1",
+  "desc": "16-channel 40 V high-side LED / OLED driver with FlexWire interface",
+  "category": "ic_soic",
+  "pkg": "HTSSOP-38 (DCP)",
+  "aecq": true,
+  "launched": "2023-04",
+  "usedIn": [
+   "rear combination lamp",
+   "animated exterior lighting",
+   "OLED tail lamp"
+  ],
+  "distribution": "distributor",
+  "priority": 2,
+  "sourceUrl": "https://www.ti.com/product/TPS929160-Q1",
+  "note": "Digi-Key lists the exact code (checked 2026-11-22). launched = first issue date printed on the TI datasheet. 24-channel sibling TPS929240-Q1 (TPS929240QDCPRQ1, first issue 2022-07) also absent.",
+  "catalogue": "no",
+  "from": "b16-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "AM2732-Q1",
+  "orderableCode": "AM2732CDRFHQZCERQ1",
+  "desc": "Automotive dual Cortex-R5F 400 MHz MCU with C66x DSP, Ethernet, for radar processing",
+  "category": "ic_bga",
+  "pkg": "NFBGA 285 (ZCE) 13x13 mm 0.65 mm; also NFBGA 225",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "radar ECU processing",
+   "audio"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.ti.com/product/AM2732-Q1",
+  "note": "Code read on the TME (franchised distributor) search listing, 22 Nov 2026. TI page: 'AEC-Q100 Qualified', ACTIVE.",
+  "catalogue": "no",
+  "from": "b17-ics"
+ },
+ {
+  "mfr": "Texas Instruments",
+  "family": "TPSI3100-Q1",
+  "orderableCode": "TPSI3100QDVXRQ1",
+  "desc": "Automotive reinforced isolated switch driver with integrated 15 V gate supply (solid-state relay / precharge)",
+  "category": "ic_soic",
+  "pkg": "SSOP16",
+  "aecq": true,
+  "launched": "2024-09",
+  "usedIn": [
+   "TI TIDA-050080 HV passive precharge with overcurrent protection"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.ti.com/lit/pdf/TIDMDB8",
+  "note": "Listed by Digi-Key (search 22 Nov 2026), AEC-Q100. Related codes in the same design set: TPSI3052QDWZRQ1 (TIDA-050063), TPSI31P1QDVXRQ1 (TIDA-050082).",
+  "catalogue": "no",
+  "from": "b17-ics"
+ },
+ {
+  "mfr": "Winbond",
+  "family": "W25Q64JV (automotive)",
+  "orderableCode": "W25Q64JVSSAQ",
+  "desc": "SPI NOR 64 Mb, 3 V, automotive Grade 2 -40..105 C (Grade 1 example: W25Q64JVSSSQ)",
+  "category": "ic_soic",
+  "pkg": "unknown",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "ECU boot / config flash",
+   "cluster",
+   "camera"
+  ],
+  "distribution": "unknown",
+  "priority": 1,
+  "sourceUrl": "https://www.winbond.com/productResource-files/Winbond%20Automotive%20Flash%20Product%20Brief_EN_2024Q3_v1.pdf",
+  "note": "Part # examples printed in Winbond's automotive brief (Aug 2024): W25Q64JVSSAQ = Grade 2, W25Q64JVSSSQ = Grade 1. Catalogue holds W25Q64JW (1.8 V) as an estimate only. | first pass: NOT-READ: no franchised distributor page could be read for this code. Digi-Key had returned HTTP 403 earlier in this run (not read again); Master Electronics keyword search for the exact code: \"NO SEARCH RESULTS FOUND\"; the TME limit of 8 pages was spent before this line; Mouser, Arrow, Farnell 503",
+  "catalogue": "no",
+  "from": "b17-ics"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "SKYA21003",
+  "orderableCode": "SKYA21003",
+  "desc": "AEC-Q100 SPDT RF switch, 100 MHz to 6 GHz",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "telematics",
+   "V2X",
+   "antenna switching"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Page text: 'AEC-Q100 SPDT switch'. Named in the page intro, not in a product grid. | first pass: SUMMARY-ONLY: Digi-Key lists SKYA21003 (product pages .../skyworks-solutions-inc/SKYA21003/5965454 and /5965401 - two Digi-Key listings, which is tape & reel / cut tape was not read) but digikey.com had returned HTTP 403 before this line, so NO price was read on a page. Search summary of the Digi-Ke",
+  "catalogue": "no",
+  "from": "b12-ics"
+ },
+ {
+  "mfr": "Skyworks",
+  "family": "SKYA21041",
+  "orderableCode": "SKYA21041",
+  "desc": "AEC-Q100 5 GHz switch / low-noise-amplifier front-end module",
+  "category": "ic_qfn",
+  "pkg": "not read on the page",
+  "aecq": true,
+  "launched": "unknown",
+  "usedIn": [
+   "automotive Wi-Fi",
+   "V2X"
+  ],
+  "distribution": "distributor",
+  "priority": 3,
+  "sourceUrl": "https://www.digikey.com/en/product-highlight/s/skyworks-solutions/automotive-semiconductor-products",
+  "note": "Page text: 'AEC-Q100 5 GHz switch/low noise amplifier FEM module'. Named in the page intro.",
+  "catalogue": "no",
+  "from": "b12-ics"
+ }
+]
