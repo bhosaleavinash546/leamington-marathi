@@ -8,7 +8,7 @@ H = os.path.dirname(os.path.abspath(__file__)); random.seed(20261123)
 sample, truth = [], {}
 for f in sorted(glob.glob(os.path.join(H, 'merge', '*.json'))):
     name = os.path.basename(f)[:-5]
-    parts = [p for p in json.load(open(f))['parts'] if any('digi' in o['distributor'].lower() for o in p['observations'])]
+    parts = [p for p in json.load(open(f)).get('parts', []) if any('digi' in o['distributor'].lower() for o in p['observations'])]
     done = set(json.load(open(os.path.join(H, 'verify-sampled.json'))).get(name, [])) if os.path.exists(os.path.join(H, 'verify-sampled.json')) else set()
     pool = [p for p in parts if p['mpn'] not in done]
     k = max(0, math.ceil(0.2 * len(parts)) - len(done))

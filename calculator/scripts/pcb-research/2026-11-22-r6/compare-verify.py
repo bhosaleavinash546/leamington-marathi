@@ -11,7 +11,7 @@ import json, glob, os, re, collections
 H = os.path.dirname(os.path.abspath(__file__)); norm = lambda s: re.sub(r'[^A-Z0-9]', '', str(s or '').upper())
 research = {}
 for f in glob.glob(os.path.join(H, 'merge', '*.json')):
-    for p in json.load(open(f))['parts']: research[norm(p.get('observedMpn') or p['mpn'])] = (os.path.basename(f)[:-5], p)
+    for p in json.load(open(f)).get('parts', []): research[norm(p.get('observedMpn') or p['mpn'])] = (os.path.basename(f)[:-5], p)
 rep, tally, by_file = [], collections.Counter(), collections.defaultdict(collections.Counter)
 for f in sorted(glob.glob(os.path.join(H, 'v[0-9][0-9]-verify.json'))):
     for v in json.load(open(f)).get('verified', []):

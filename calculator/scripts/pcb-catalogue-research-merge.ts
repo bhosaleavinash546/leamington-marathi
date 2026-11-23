@@ -46,6 +46,8 @@
  *     franchise curve, and the basis says so); 10k–300k follow each distributor's PUBLISHED full-packaging ladder
  *     (log-log between its rows, derived beyond its largest row along b), one value a distributor, the median taken;
  *     the 1k price stays rule 4 (it is what a 1,000-piece buyer pays). No break is ever dearer than a smaller one.
+ *  8a. A row READ ON THE PAGE (round 6) replaces an earlier stored reading of the same distributor and break: the
+ *     earlier ones were search summaries, which the pilot found 9–39 % below the live page on 10 of 17 parts.
  *  9. Family keys (an estimate named by a family, "TC387", "LM74700") take the price of the
  *     catalogued member named in scripts/pcb-research/family-links.json — a reviewed list, never
  *     a guess. They stay labelled estimates (the BOM line does not say which variant) and say so.
@@ -216,7 +218,7 @@ function sourceText(p: Priced, sibling?: string): string {
 
 /** Merge research into the catalogue file (rules 7–8). Returns the report. */
 export function mergeResearch(catalogue: { parts: Entry[] }, research: Researched[], date: string) {
-  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[], repriced: [] as string[], removed: [] as string[] };
+  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[], repriced: [] as string[], removed: [] as string[], superseded: [] as string[] };
   const index = new Map<string, number>();
   catalogue.parts.forEach((e, i) => { for (const k of [e.mpn, e.family, ...(e.aliases ?? [])]) if (k) index.set(norm(k), i); });
   for (const r of research) {
@@ -224,10 +226,16 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     const prior = pre != null ? (catalogue.parts[pre].observations ?? []) : [];
     // One row per distributor + break + price; the same row read on a normal listing replaces a test-storefront read.
     const seen = new Map<string, Obs>();
-    for (const o of [...prior, ...(r.observations ?? [])]) {
+    // Rule 8a (round 6): a row READ ON THE PAGE replaces an earlier reading of the same distributor and break. The
+    // earlier one was a search summary (the pilot measured live prices 9–39 % above the summaries on 10 of 17 parts),
+    // so keeping both would average a stale figure into the price.
+    const fresh = new Set((r.observations ?? []).filter(o => o.evidence === 'page-read').map(o => `${String(o.distributor).toLowerCase()}|${o.qty}`));
+    const kept = prior.filter(o => o.evidence === 'page-read' || !fresh.has(`${String(o.distributor).toLowerCase()}|${o.qty}`));
+    for (const o of prior) if (!kept.includes(o)) report.superseded.push(`${r.mpn}: ${o.distributor} ${o.price} ${o.currency} @${o.qty} (${o.date}) replaced by the page read of ${r.observations.find(n => String(n.distributor).toLowerCase() === String(o.distributor).toLowerCase() && n.qty === o.qty)?.price}`);
+    for (const o of [...kept, ...(r.observations ?? [])]) {
       const k = `${String(o.distributor).toLowerCase()}|${o.qty}|${o.price}`;
       const was = seen.get(k);
-      if (!was || (TEST_STOREFRONT.test(hostOf(was.url)) && !TEST_STOREFRONT.test(hostOf(o.url)))) seen.set(k, o);
+      if (!was || (TEST_STOREFRONT.test(hostOf(was.url)) && !TEST_STOREFRONT.test(hostOf(o.url))) || (!was.packing && o.packing)) seen.set(k, o);
     }
     const union = [...seen.values()];
     const priced = priceFromObservations(union);
@@ -238,7 +246,9 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
       mpn: r.mpn.trim(), family: (r.family || r.mpn).trim(), mfr: r.mfr, desc: r.desc, category, pkg: r.pkg, aecq: !!r.aecq,
       gbp: priced.gbp, confidence: 'distributor', source: sourceText(priced, r.observedMpn && norm(r.observedMpn) !== norm(r.mpn) ? r.observedMpn.trim() : undefined), asOf: date,
       ecuRoles: r.ecuRoles?.length ? r.ecuRoles : undefined,
-      observations: priced.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date, gbp: r4(o.gbp) })),
+      observations: priced.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date,
+        // how the row is sold and how it was read (round 6) are part of the observation: the price is recomputed from them
+        ...(o.packing ? { packing: String(o.packing).toLowerCase() } : {}), ...(o.evidence ? { evidence: o.evidence } : {}), gbp: r4(o.gbp) })),
       volumeModel: { b: priced.b, basis: priced.basis, derivedAbove: Math.max(...priced.obs.map(o => o.qty)) },
     };
     if (r.observedMpn && norm(r.observedMpn) !== norm(entry.mpn)) entry.aliases = [r.observedMpn];

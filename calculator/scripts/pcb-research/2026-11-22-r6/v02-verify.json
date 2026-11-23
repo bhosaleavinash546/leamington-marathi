@@ -1,0 +1,1293 @@
+{
+ "domain": "v02-verify",
+ "researched": "2026-11-23",
+ "verified": [
+  {
+   "mpn": "R7F7016453AFP-C#AA1",
+   "pageMpn": "R7F7016453AFP-C#AA1",
+   "status": "Active",
+   "stock": "In-Stock: 90",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "tray",
+     "qty": 180,
+     "price": 14.01211,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 540,
+     "price": 12.69633,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Digi-Key (digikey.com, USD). One table, headed 'Tray'. Rows below 100 not recorded: 1 $20.89000, 10 $16.62500, 90 $14.46067. Manufacturer Standard Lead Time 26 Weeks. Series RH850/F1KM-S4, 100-LQFP. No lifecycle notice on the page.",
+   "url": "https://www.digikey.com/en/products/result?keywords=R7F7016453AFP-C%23AA1",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "SCT011HU75G3AG",
+   "pageMpn": "SCT011HU75G3AG",
+   "status": "Active",
+   "stock": "In-Stock: 0",
+   "grade": "Automotive",
+   "qualification": "AEC-Q101",
+   "rows": [
+    {
+     "packing": "reel",
+     "qty": 600,
+     "price": 16.51375,
+     "currency": "USD"
+    }
+   ],
+   "notes": "OUT OF STOCK ('Estimated in-stock date unavailable due to product's market conditions'; Manufacturer Standard Lead Time 36 Weeks). Table 'Cut Tape (CT) & Digi-Reel®' has no row of 100 or more (1 $28.85000, 10 $21.02800, 50 $20.21280); table 'Tape & Reel (TR)' has the single row recorded. Page shows a maximum purchase limit of 600 units per 30 days. Package TO-263-8 / D2PAK (7 leads + tab). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=SCT011HU75G3AG",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "EEH-ZK1V101XP",
+   "pageMpn": "EEH-ZK1V101XP",
+   "status": "Active",
+   "stock": "In-Stock: 11,903",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.4796,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 900,
+     "price": 0.3467,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1800,
+     "price": 0.32306,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2700,
+     "price": 0.31113,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 4500,
+     "price": 0.29783,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 6300,
+     "price": 0.29001,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 9000,
+     "price": 0.28246,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 43 Weeks. Series ZK, Radial Can - SMD. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V101XP",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "STL140N4F7AG",
+   "pageMpn": "STL140N4F7AG",
+   "status": "Active",
+   "stock": "In-Stock: 5,599",
+   "grade": "Automotive",
+   "qualification": "AEC-Q101",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.9655,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.7682,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3000,
+     "price": 0.6709,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 9000,
+     "price": 0.60518,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 24 Weeks. Series STripFET, 8-PowerVDFN. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=STL140N4F7AG",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "AD8418AWBRZ",
+   "pageMpn": "AD8418AWBRZ",
+   "status": "Active",
+   "stock": "In-Stock: 0 (98 expected in stock on 02-Dec-2026)",
+   "grade": "Automotive",
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "tube",
+     "qty": 196,
+     "price": 2.64117,
+     "currency": "USD"
+    },
+    {
+     "packing": "tube",
+     "qty": 294,
+     "price": 2.58677,
+     "currency": "USD"
+    },
+    {
+     "packing": "tube",
+     "qty": 588,
+     "price": 2.50701,
+     "currency": "USD"
+    },
+    {
+     "packing": "tube",
+     "qty": 1078,
+     "price": 2.44891,
+     "currency": "USD"
+    },
+    {
+     "packing": "tube",
+     "qty": 2548,
+     "price": 2.38172,
+     "currency": "USD"
+    }
+   ],
+   "notes": "OUT OF STOCK (98 expected 02-Dec-2026; Manufacturer Standard Lead Time 10 Weeks). One table, headed 'Tube'. Rows below 100 not recorded: 1 $4.36000, 10 $3.30100, 98 $2.74980. Grade field prints 'Automotive'; the attributes list has NO Qualification field and the text 'AEC-Q' does not appear on the page (checked with a second pass over the same page). 8-SOIC. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD8418AWBRZ/4571735",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "TS3011IYLT",
+   "pageMpn": "TS3011IYLT",
+   "status": "Active",
+   "stock": "In-Stock: 8,211",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.5849,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 1.49748,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.46096,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3000,
+     "price": 1.50489,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 6000,
+     "price": 1.47563,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. As printed, both reel rows (3,000 $1.50489; 6,000 $1.47563) are DEARER than the cut-tape 500 row ($1.46096). Manufacturer Standard Lead Time 30 Weeks. SC-74A / SOT-753. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=TS3011IYLT",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "MAX17854ACB/V+",
+   "pageMpn": "MAX17854ACB/V+",
+   "status": "Active",
+   "stock": "In-Stock: 664 (Factory Stock: 1,120)",
+   "grade": null,
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "tray",
+     "qty": 160,
+     "price": 11.89313,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 320,
+     "price": 11.56719,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 640,
+     "price": 11.29905,
+     "currency": "USD"
+    }
+   ],
+   "notes": "One table, headed 'Tray'. Rows below 100 not recorded: 1 $17.71000, 10 $14.06400, 25 $13.15360. The attributes table has NO Grade, Qualification, Features or Ratings field; the text 'AEC-Q' does not appear on the page and 'Automotive' appears only in the site menu (confirmed by a second read of the page; the rows and stock were identical on both reads). Page notice: 'Due to temporary constrained supply, DigiKey is unable to accept backorders at this time.' Manufacturer printed as 'Analog Devices Inc./Maxim Integrated'. 64-LQFP.",
+   "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX17854ACB-V/15903588",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "R5F10BAGLSP#G5",
+   "pageMpn": "R5F10BAGLSP#G5",
+   "status": "Active",
+   "stock": "In-Stock: 1,231",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "tray",
+     "qty": 100,
+     "price": 3.1724,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 500,
+     "price": 2.75238,
+     "currency": "USD"
+    }
+   ],
+   "notes": "One table, headed 'Tray' (page note: packaging type may change below the standard package). Rows below 100 not recorded: 1 $5.02000, 10 $3.80900, 50 $3.32300. Manufacturer Standard Lead Time 18 Weeks. Series RL78/F13, 30-LSSOP. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=R5F10BAGLSP%23G5",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "IHLP4040EDER4R7M5A",
+   "pageMpn": "IHLP4040EDER4R7M5A",
+   "status": "Active",
+   "stock": "In-Stock: 0 (500 expected in stock on 25-Jan-2027)",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.0378,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 0.96016,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 500,
+     "price": 0.8795,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1000,
+     "price": 0.82936,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1500,
+     "price": 0.80141,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 0.76756,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3500,
+     "price": 0.74607,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 0.72396,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. OUT OF STOCK ('out of stock and can be placed on backorder'; 500 expected 25-Jan-2027; Manufacturer Standard Lead Time 13 Weeks). Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Series IHLP-4040ED-5A. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP4040EDER4R7M5A/9698200",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "SRP4020TA-4R7M",
+   "pageMpn": "SRP4020TA-4R7M",
+   "status": "Active",
+   "stock": "In-Stock: 10,492",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.7233,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 0.6692,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.63098,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 1000,
+     "price": 0.59498,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3000,
+     "price": 0.54218,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 6000,
+     "price": 0.51136,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 9000,
+     "price": 0.49418,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 15000,
+     "price": 0.47875,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 20 Weeks. Series SRP4020TA, 2-SMD. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=SRP4020TA-4R7M",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "L4995AJTR",
+   "pageMpn": "L4995AJTR",
+   "status": "Active",
+   "stock": "Not stocked ('This product is not kept in stock at DigiKey')",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 0.97166,
+     "currency": "USD"
+    }
+   ],
+   "notes": "NOT STOCKED at Digi-Key (no In-Stock line; Manufacturer Standard Lead Time 30 Weeks). Only one table, headed 'Tape & Reel (TR)', with the single 2,500 row; no cut-tape table. PowerSSO-12. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=L4995AJTR",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "GRM188R71A225KE15J",
+   "pageMpn": "GRM188R71A225KE15J",
+   "status": "Active",
+   "stock": "In-Stock: 1,526,779",
+   "grade": null,
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.0532,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.0398,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 10000,
+     "price": 0.02615,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 30000,
+     "price": 0.02355,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Cut-tape table ends at 500 (5 rows: 1, 10, 50, 100, 500) and the reel table has 2 rows — row count re-checked with a second pass over the same page. No Grade, Qualification, Features or Ratings value on the page (nothing states AEC-Q; Series 'GRM'). Manufacturer Standard Lead Time 17 Weeks. 0603 (1608 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=GRM188R71A225KE15J",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "AIMZA75R016M1HXKSA1",
+   "pageMpn": "AIMZA75R016M1HXKSA1",
+   "status": "Active",
+   "stock": "In-Stock: 331",
+   "grade": "Automotive",
+   "qualification": "AEC-Q101",
+   "rows": [
+    {
+     "packing": "tube",
+     "qty": 120,
+     "price": 14.03008,
+     "currency": "USD"
+    },
+    {
+     "packing": "tube",
+     "qty": 510,
+     "price": 13.87275,
+     "currency": "USD"
+    }
+   ],
+   "notes": "One table, headed 'Tube'. Rows below 100 not recorded: 1 $25.14000, 30 $16.02333, 60 $14.94033. Manufacturer Standard Lead Time 52 Weeks. Series CoolSiC, TO-247-4. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/infineon-technologies/AIMZA75R016M1HXKSA1/21675980",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "AM263P4AFONFZCZRQ1",
+   "pageMpn": "AM263P4AFONFZCZRQ1",
+   "status": "Active",
+   "stock": "Not stocked ('This product is not kept in stock at DigiKey')",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "reel",
+     "qty": 1000,
+     "price": 28.3283,
+     "currency": "USD"
+    }
+   ],
+   "notes": "NOT STOCKED at Digi-Key (no In-Stock line; Manufacturer Standard Lead Time 26 Weeks). Only one table, headed 'Tape & Reel (TR)', with the single 1,000 row. Series Sitara, 324-LFBGA. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=AM263P4AFONFZCZRQ1",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "R7F7016843AFP-C#AA1",
+   "pageMpn": "R7F7016843AFP-C#AA1",
+   "status": "Active",
+   "stock": "In-Stock: 114",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "tray",
+     "qty": 100,
+     "price": 10.1827,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 101,
+     "price": 10.17762,
+     "currency": "USD"
+    },
+    {
+     "packing": "tray",
+     "qty": 500,
+     "price": 9.51698,
+     "currency": "USD"
+    }
+   ],
+   "notes": "One table, headed 'Tray'. The table prints a row at quantity 101 ($10.17762, ext $1,027.94) between 100 and 500 — recorded as printed. Rows below 100 not recorded: 1 $15.02000, 10 $11.84700, 50 $10.57620. Manufacturer Standard Lead Time 26 Weeks. Series RH850/F1KM-S1, 100-LQFP. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=R7F7016843AFP-C%23AA1",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "ERJ-2GEJ511X",
+   "pageMpn": "ERJ-2GEJ511X",
+   "status": "Active",
+   "stock": "In-Stock: 149,532",
+   "grade": null,
+   "qualification": "Automotive AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.0141,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 0.011,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.00922,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 1000,
+     "price": 0.00784,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 5000,
+     "price": 0.00565,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 10000,
+     "price": 0.00512,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 20000,
+     "price": 0.00461,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 30000,
+     "price": 0.00436,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 50000,
+     "price": 0.00409,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 70000,
+     "price": 0.00394,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 100000,
+     "price": 0.00379,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'Automotive AEC-Q200' is printed under Features; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 19 Weeks. Series ERJ-2G, 0402 (1005 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=ERJ-2GEJ511X",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "T598D106M050ATS090",
+   "pageMpn": "T598D106M050ATS090",
+   "status": "Active",
+   "stock": "Not stocked ('Available To Order'; 'This product is not kept in stock at DigiKey')",
+   "grade": null,
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "reel",
+     "qty": 500,
+     "price": 3.38138,
+     "currency": "USD"
+    }
+   ],
+   "notes": "NOT STOCKED at Digi-Key ('Available To Order', 'Check Lead Time'; Manufacturer Standard Lead Time 39 Weeks). Only one table, headed 'Tape & Reel (TR)', with the single 500 row. The page's attributes are sparse: only Category (Tantalum - Polymer Capacitors), Packaging, Manufacturer and Part Status are printed; description reads '10.0UF 50.0V'; no Grade / Qualification / Ratings field and the text 'AEC-Q' does not appear on the page (checked with a second pass over the same page). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/kemet/T598D106M050ATS090/21817565",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "ERJ-S06F1002V",
+   "pageMpn": "ERJ-S06F1002V",
+   "status": "Active",
+   "stock": "In-Stock: 8,085",
+   "grade": null,
+   "qualification": "Anti-Sulfur, Automotive AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.0925,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 0.07916,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.07144,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 1000,
+     "price": 0.06532,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 0.05344,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 10000,
+     "price": 0.05069,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 15000,
+     "price": 0.04935,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 25000,
+     "price": 0.0479,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 35000,
+     "price": 0.04707,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 50000,
+     "price": 0.04629,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'Anti-Sulfur, Automotive AEC-Q200' is printed under Features; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 15 Weeks. Series ERJ-S06, 0805 (2012 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=ERJ-S06F1002V",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "EEH-ZK1V221UP",
+   "pageMpn": "EEH-ZK1V221UP",
+   "status": "Active",
+   "stock": "In-Stock: 2,318",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.7251,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 500,
+     "price": 0.56954,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1000,
+     "price": 0.53073,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1500,
+     "price": 0.51115,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 0.48933,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3500,
+     "price": 0.47651,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 0.46411,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 43 Weeks. Series printed as 'ZKU', Radial Can - SMD. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V221UP",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "UPD166033T1U-E1-AY",
+   "pageMpn": "UPD166033T1U-E1-AY",
+   "status": "Active",
+   "stock": "In-Stock: 2,475",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.6938,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 1.6014,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.56672,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 1.45145,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 1.42227,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 18 Weeks. TO-252-7 / DPAK (6 leads + tab). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=UPD166033T1U-E1-AY",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "VNQ9050LAJTR",
+   "pageMpn": "VNQ9050LAJTR",
+   "status": "Active",
+   "stock": "In-Stock: 0 (2,445 expected in stock on 16-Aug-2027; 55 estimated in stock on 26-Nov-2027)",
+   "grade": null,
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.3267,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 1.2514,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.2116,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 1.26081,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 1.23429,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 7500,
+     "price": 1.221,
+     "currency": "USD"
+    }
+   ],
+   "notes": "OUT OF STOCK (Manufacturer Standard Lead Time 99 Weeks). Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. As printed, all three reel rows (2,500 $1.26081; 5,000 $1.23429; 7,500 $1.22100) are DEARER than the cut-tape 500 row ($1.21160). The attributes table has NO Grade and NO Qualification field; 'Features' prints 'Status Flag'; the text 'AEC-Q' does not appear on the page and 'Automotive' appears only in the site menu (checked with a second pass over the same page). Series printed as 'ECOPACK®'; PowerSSO-16. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VNQ9050LAJTR/27557733",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "TC387QP160F300SAEKXUMA2",
+   "pageMpn": "TC387QP160F300SAEKXUMA2",
+   "status": "Active",
+   "stock": "In-Stock: 1,555",
+   "grade": null,
+   "qualification": null,
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 32.0159,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1000,
+     "price": 29.7717,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Reel table has the single 1,000 row. The attributes table has NO Grade, Qualification, Features or Ratings field; the text 'AEC-Q' does not appear on the page and 'Automotive' appears only in the site menu (checked with a second pass over the same page; operating temperature printed -40°C ~ 125°C (TA)). Manufacturer Standard Lead Time 33 Weeks. Series AURIX, 292-LFBGA. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=TC387QP160F300SAEKXUMA2",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "T599B336M010ATE090",
+   "pageMpn": "T599B336M010ATE090",
+   "status": "Active",
+   "stock": "Not stocked ('This product is not kept in stock at DigiKey')",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "reel",
+     "qty": 2000,
+     "price": 0.52715,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; 'Automotive' printed under Features; no Grade or Qualification field on the page. NOT STOCKED at Digi-Key ('The lead time shown will apply to the manufacturer's shipment to DigiKey'; Manufacturer Standard Lead Time 31 Weeks). Only one table, headed 'Tape & Reel (TR)', with the single 2,000 row. Series KO-CAP T599, 1411 (3528 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/kemet/T599B336M010ATE090/13235648",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "DLW32PH122XK2L",
+   "pageMpn": "DLW32PH122XK2L",
+   "status": "Active",
+   "stock": "In-Stock: 5,695",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.8339,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 1.6968,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.683,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1500,
+     "price": 1.4441,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3000,
+     "price": 1.375,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 19 Weeks. Series DLW32. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=DLW32PH122XK2L",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "STL059N4S8AG",
+   "pageMpn": "STL059N4S8AG",
+   "status": "Active",
+   "stock": "In-Stock: 3,000",
+   "grade": "Automotive",
+   "qualification": "AEC-Q101",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.4696,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.18692,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 3000,
+     "price": 1.05416,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 9000,
+     "price": 0.96013,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 24 Weeks. 8-PowerVDFN. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=STL059N4S8AG",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "TCAN1463DRQ1",
+   "pageMpn": "TCAN1463DRQ1",
+   "status": "Active",
+   "stock": "In-Stock: 3,089",
+   "grade": "Automotive",
+   "qualification": "AEC-Q100",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 1.355,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 1.27764,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 1.23502,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 1000,
+     "price": 1.16511,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2500,
+     "price": 1.15215,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 5000,
+     "price": 1.12774,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 7500,
+     "price": 1.11552,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 26 Weeks. 14-SOIC. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=TCAN1463DRQ1",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "CGA3E2X7R2A103K080AA",
+   "pageMpn": "CGA3E2X7R2A103K080AA",
+   "status": "Active",
+   "stock": "In-Stock: 0 (4,000 expected in stock on 15-Feb-2027)",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.0286,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.02074,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 4000,
+     "price": 0.01366,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 12000,
+     "price": 0.0118,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. OUT OF STOCK ('out of stock and can be placed on backorder'; Manufacturer Standard Lead Time 24 Weeks). Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Series CGA, 0603 (1608 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=CGA3E2X7R2A103K080AA",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "SCT040HU65G3AG",
+   "pageMpn": "SCT040HU65G3AG",
+   "status": "Active",
+   "stock": "In-Stock: 46",
+   "grade": "Automotive",
+   "qualification": "AEC-Q101",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 8.1901,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 600,
+     "price": 6.33832,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Reel table has the single 600 row. Manufacturer Standard Lead Time 36 Weeks. TO-263-8 / D2PAK (7 leads + tab). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCT040HU65G3AG/17775599",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "WSLT2512R0100FEA",
+   "pageMpn": "WSLT2512R0100FEA",
+   "status": "Active",
+   "stock": "In-Stock: 47,269",
+   "grade": null,
+   "qualification": "Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.618,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 250,
+     "price": 0.5692,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.54094,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 1000,
+     "price": 0.51846,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2000,
+     "price": 0.48167,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 4000,
+     "price": 0.46796,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 6000,
+     "price": 0.46127,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 10000,
+     "price": 0.45401,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 14000,
+     "price": 0.44985,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 20000,
+     "price": 0.44592,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding' is printed under Features; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer printed as 'Vishay Dale'. Manufacturer Standard Lead Time 53 Weeks. Series WSLT, 2512 (6332 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=WSLT2512R0100FEA",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "AC0603KRX7R9BB104",
+   "pageMpn": "AC0603KRX7R9BB104",
+   "status": "Active",
+   "stock": "In-Stock: 48,144",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.0653,
+     "currency": "USD"
+    },
+    {
+     "packing": "cut tape",
+     "qty": 500,
+     "price": 0.0489,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 4000,
+     "price": 0.03633,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 12000,
+     "price": 0.03213,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Page states a maximum purchase limit (100,000 per 30 days for both CT/Digi-Reel and TR). Manufacturer Standard Lead Time 20 Weeks. Series AC, 0603 (1608 Metric). No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=AC0603KRX7R9BB104",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  },
+  {
+   "mpn": "UCH1V101MCL1GS",
+   "pageMpn": "UCH1V101MCL1GS",
+   "status": "Active",
+   "stock": "In-Stock: 4,224",
+   "grade": null,
+   "qualification": "AEC-Q200",
+   "rows": [
+    {
+     "packing": "cut tape",
+     "qty": 100,
+     "price": 0.491,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 900,
+     "price": 0.37082,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 1800,
+     "price": 0.34533,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 2700,
+     "price": 0.33247,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 4500,
+     "price": 0.31813,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 6300,
+     "price": 0.30971,
+     "currency": "USD"
+    },
+    {
+     "packing": "reel",
+     "qty": 9000,
+     "price": 0.30157,
+     "currency": "USD"
+    }
+   ],
+   "notes": "Qualification text 'AEC-Q200' is printed under Ratings; no Grade or Qualification field on the page. Small-quantity table is headed 'Cut Tape (CT) & Digi-Reel®' on the page (recorded as cut tape; page footnote: all Digi-Reel orders add a $7.00 reeling fee); full-reel table headed 'Tape & Reel (TR)'. Manufacturer Standard Lead Time 35 Weeks. Series UCH, Radial Can - SMD. No lifecycle notice.",
+   "url": "https://www.digikey.com/en/products/result?keywords=UCH1V101MCL1GS",
+   "read": "2026-11-23",
+   "evidence": "page-read"
+  }
+ ],
+ "notReached": []
+}

@@ -1,0 +1,584 @@
+{
+  "domain": "v01-verify",
+  "researched": "2026-11-23",
+  "method": "Blind re-read of the Digi-Key product page for each task line (digikey.com, USD, 'All prices are in USD'), one page at a time, 20 s pause before every read. Rows are the visible price table's UNIT prices, every packing, qty >= 100 only. 'Cut Tape (CT) & Digi-Reel' is recorded as 'cut tape'; 'Tape & Reel (TR)' as 'reel'. grade / qualification are the product-attribute fields as printed (null = the page shows no such field; a 'Features' / 'Ratings' mention is put in notes).",
+  "verified": [
+    {
+      "mpn": "BM2LC120FJ-CE2",
+      "pageMpn": "BM2LC120FJ-CE2",
+      "status": "Active",
+      "stock": "In-Stock: 0 (2,500 expected in stock on 19-Feb-2027); Manufacturer Standard Lead Time 17 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.36500, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 1.28788, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.24848, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 1.16278, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 1.13844, "currency": "USD" },
+        { "packing": "reel", "qty": 7500, "price": 1.12626, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/BM2LC120FJ-CE2/12359496",
+      "notes": "out of stock (In-Stock: 0, 2,500 expected 19-Feb-2027). Manufacturer printed: Rohm Semiconductor. Cut-tape table ends at 500 (no 1,000 row shown)."
+    },
+    {
+      "mpn": "MAX25410AGTE/V+",
+      "pageMpn": "MAX25410AGTE/V+",
+      "status": "Active",
+      "stock": "no in-stock quantity shown; 'Available To Order' / 'Check Lead Time'; Manufacturer Standard Lead Time 15 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "strip", "qty": 225, "price": 1.61991, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX25410AGTE-V/11565222",
+      "notes": "not in stock (available to order only). The page shows ONE price table headed 'Strip' with ONE row (225 pcs) - 'strip' is the page's own packing word and is outside the five packing values of the rules. Manufacturer printed: Analog Devices Inc./Maxim Integrated. No break at or near 1,000 is published."
+    },
+    {
+      "mpn": "ADAU1467WBCPZ300",
+      "pageMpn": "ADAU1467WBCPZ300",
+      "status": "Active",
+      "stock": "In-Stock: 255; Manufacturer Standard Lead Time 11 Weeks",
+      "grade": "Automotive",
+      "qualification": null,
+      "rows": [
+        { "packing": "tray", "qty": 144, "price": 17.74840, "currency": "USD" },
+        { "packing": "tray", "qty": 288, "price": 17.22035, "currency": "USD" },
+        { "packing": "tray", "qty": 528, "price": 16.83331, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADAU1467WBCPZ300/7915234",
+      "notes": "Grade 'Automotive' is printed; no Qualification field was shown on the page as read. One table, 'Tray'; largest break 528. Rows below 100 not recorded (1, 10, 48)."
+    },
+    {
+      "mpn": "NVMFWS1D1N04XMT1G",
+      "pageMpn": "NVMFWS1D1N04XMT1G",
+      "status": "Active",
+      "stock": "In-Stock: 134; Manufacturer Standard Lead Time 78 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q101",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.28210, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.03218, "currency": "USD" },
+        { "packing": "reel", "qty": 1500, "price": 0.82579, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 0.79387, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D1N04XM",
+      "notes": "The keyword URL landed on the single product page for NVMFWS1D1N04XMT1G (onsemi). Lead time printed as 78 Weeks."
+    },
+    {
+      "mpn": "L9026-YO-TR",
+      "pageMpn": "L9026-YO-TR",
+      "status": "Active",
+      "stock": "In-Stock: 1,355; Manufacturer Standard Lead Time 99 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.96660, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 1.86188, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.83278, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 1.87054, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 1.83394, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=L9026-YO-TR",
+      "notes": "The keyword URL landed on the single product page. As printed, the 2,500 reel price (1.87054) is DEARER than the 500 cut-tape price (1.83278), and the 5,000 reel price (1.83394) is marginally dearer too. Lead time printed as 99 Weeks."
+    },
+    {
+      "mpn": "RK73B1JTTD103J",
+      "pageMpn": "RK73B1JTTD103J",
+      "status": "Active",
+      "stock": "In-Stock: 3,084,267; Manufacturer Standard Lead Time 7 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.01010, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.00772, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.00640, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.00535, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.00373, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.00326, "currency": "USD" },
+        { "packing": "reel", "qty": 15000, "price": 0.00303, "currency": "USD" },
+        { "packing": "reel", "qty": 25000, "price": 0.00279, "currency": "USD" },
+        { "packing": "reel", "qty": 35000, "price": 0.00265, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.00252, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73B1JTTD103J/9846741",
+      "notes": "No Grade / Qualification field shown; the page prints 'Automotive AEC-Q200' under Features. Manufacturer printed: KOA Speer Electronics, Inc. Largest reel break shown 50,000."
+    },
+    {
+      "mpn": "STPS15H100CBY-TR",
+      "pageMpn": "STPS15H100CBY-TR",
+      "status": "Active",
+      "stock": "In-Stock: 2,534; Manufacturer Standard Lead Time 15 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q101",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.64470, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.50442, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 0.43698, "currency": "USD" },
+        { "packing": "reel", "qty": 7500, "price": 0.38842, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=STPS15H100CBY-TR",
+      "notes": "The keyword URL landed on the single product page. Cut-tape table ends at 500 (no 1,000 row shown)."
+    },
+    {
+      "mpn": "AC0805KRX7R9BB104",
+      "pageMpn": "AC0805KRX7R9BB104",
+      "status": "Active",
+      "stock": "In-Stock: 626; Manufacturer Standard Lead Time 20 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.08360, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.06342, "currency": "USD" },
+        { "packing": "reel", "qty": 4000, "price": 0.04792, "currency": "USD" },
+        { "packing": "reel", "qty": 12000, "price": 0.04275, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=AC0805KRX7R9BB104",
+      "notes": "The keyword URL landed on the single product page (YAGEO). No Grade / Qualification field shown; the attributes print Ratings 'AEC-Q200'. Stock (626) is below one reel (4,000). The page carries a maximum-purchase notice (limit 100000 for both packings)."
+    },
+    {
+      "mpn": "CRCW040282K5FKED",
+      "pageMpn": "CRCW040282K5FKED",
+      "status": "Active",
+      "stock": "In-Stock: 90,044; Manufacturer Standard Lead Time 21 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.01570, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.01228, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.01034, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.00882, "currency": "USD" },
+        { "packing": "cut tape", "qty": 5000, "price": 0.00642, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.00584, "currency": "USD" },
+        { "packing": "reel", "qty": 20000, "price": 0.00528, "currency": "USD" },
+        { "packing": "reel", "qty": 30000, "price": 0.00501, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.00472, "currency": "USD" },
+        { "packing": "reel", "qty": 70000, "price": 0.00455, "currency": "USD" },
+        { "packing": "reel", "qty": 100000, "price": 0.00439, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
+      "notes": "No Grade / Qualification field shown; the page prints Features 'Automotive AEC-Q200'. Manufacturer printed: Vishay Dale. Largest reel break shown 100,000."
+    },
+    {
+      "mpn": "M24C64-DRMN3TP/K",
+      "pageMpn": "M24C64-DRMN3TP/K",
+      "status": "Active",
+      "stock": "In-Stock: 10,127; Manufacturer Standard Lead Time 26 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.80420, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.78008, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.76182, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.74358, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 0.71964, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.70174, "currency": "USD" },
+        { "packing": "reel", "qty": 7500, "price": 0.69138, "currency": "USD" },
+        { "packing": "reel", "qty": 12500, "price": 0.67847, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=M24C64-DRMN3TP%2FK",
+      "notes": "The keyword URL landed on the single product page. Largest reel break shown 12,500."
+    },
+    {
+      "mpn": "STL225N6F7AG",
+      "pageMpn": "STL225N6F7AG",
+      "status": "Active",
+      "stock": "In-Stock: 5,973; Manufacturer Standard Lead Time 24 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q101",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.79770, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.47644, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 1.31883, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=STL225N6F7AG",
+      "notes": "The keyword URL landed on the single product page. Only ONE reel break is shown (3,000)."
+    },
+    {
+      "mpn": "TSC2020IYST",
+      "pageMpn": "TSC2020IYST",
+      "status": "Active",
+      "stock": "In-Stock: 569; Manufacturer Standard Lead Time 30 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.30950, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 1.23504, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.19508, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 1.24403, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 1.21779, "currency": "USD" },
+        { "packing": "reel", "qty": 7500, "price": 1.20465, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=TSC2020IYST",
+      "notes": "The keyword URL landed on the single product page. As printed, every reel price (2,500: 1.24403; 5,000: 1.21779; 7,500: 1.20465) is DEARER than the 500 cut-tape price (1.19508). Stock (569) is below one reel."
+    },
+    {
+      "mpn": "NTCSP163JF103FT1H",
+      "pageMpn": "NTCSP163JF103FT1H",
+      "status": "Active",
+      "stock": "In-Stock: 5,531; Manufacturer Standard Lead Time 20 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q200",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.21400, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.19126, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.18281, "currency": "USD" },
+        { "packing": "reel", "qty": 4000, "price": 0.16476, "currency": "USD" },
+        { "packing": "reel", "qty": 8000, "price": 0.15839, "currency": "USD" },
+        { "packing": "reel", "qty": 12000, "price": 0.15491, "currency": "USD" },
+        { "packing": "reel", "qty": 20000, "price": 0.15078, "currency": "USD" },
+        { "packing": "reel", "qty": 28000, "price": 0.14820, "currency": "USD" },
+        { "packing": "reel", "qty": 40000, "price": 0.14558, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=NTCSP163JF103FT1H",
+      "notes": "The keyword URL landed on the single product page (TDK). Largest reel break shown 40,000."
+    },
+    {
+      "mpn": "MAASU21GSB7104KTNA01",
+      "pageMpn": "MAASU21GSB7104KTNA01",
+      "status": "Active",
+      "stock": "In-Stock: 2,980; Manufacturer Standard Lead Time 14 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.09570, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.07362, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 0.05513, "currency": "USD" },
+        { "packing": "reel", "qty": 9000, "price": 0.04933, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=MAASU21GSB7104KTNA01",
+      "notes": "The keyword URL landed on the single product page (Taiyo Yuden). No Grade / Qualification field shown; the attributes print Ratings 'AEC-Q200'. Stock (2,980) is below one reel (3,000). The page carries a maximum-purchase-limit notice."
+    },
+    {
+      "mpn": "M95M02-DWMN3TP/K",
+      "pageMpn": "M95M02-DWMN3TP/K",
+      "status": "Active",
+      "stock": "In-Stock: 9,906; Manufacturer Standard Lead Time 26 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 4.37800, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 4.23812, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 4.13330, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 4.02980, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 3.89548, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/M95M02-DWMN3TP-K/5250474",
+      "notes": "Only ONE reel break is shown (2,500)."
+    },
+    {
+      "mpn": "BTM9020EPXUMA1",
+      "pageMpn": "BTM9020EPXUMA1",
+      "status": "Active",
+      "stock": "In-Stock: 2,415; Manufacturer Standard Lead Time 20 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.78090, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 1.68456, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.65148, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 1.51955, "currency": "USD" },
+        { "packing": "reel", "qty": 6000, "price": 1.49065, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=BTM9020EPXUMA1",
+      "notes": "The keyword URL landed on the single product page (Infineon Technologies). Stock (2,415) is below one reel (3,000)."
+    },
+    {
+      "mpn": "AG047FLS4FRATCB",
+      "pageMpn": "AG047FLS4FRATCB",
+      "status": "Active",
+      "stock": "In-Stock: 1,678; Manufacturer Standard Lead Time 16 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q101",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.14050, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.91152, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 0.70232, "currency": "USD" },
+        { "packing": "reel", "qty": 9000, "price": 0.63750, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=AG047FLS4FRATCB",
+      "notes": "The keyword URL landed on the single product page (Rohm Semiconductor). Stock (1,678) is below one reel (3,000)."
+    },
+    {
+      "mpn": "EEH-ZK1V331P",
+      "pageMpn": "EEH-ZK1V331P",
+      "status": "Active",
+      "stock": "In-Stock: 7,477; Manufacturer Standard Lead Time 43 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.83400, "currency": "USD" },
+        { "packing": "reel", "qty": 500, "price": 0.65872, "currency": "USD" },
+        { "packing": "reel", "qty": 1000, "price": 0.61526, "currency": "USD" },
+        { "packing": "reel", "qty": 1500, "price": 0.59333, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 0.56890, "currency": "USD" },
+        { "packing": "reel", "qty": 3500, "price": 0.55453, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.54065, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=EEHZK1V331P",
+      "notes": "The keyword URL (EEHZK1V331P, no hyphen) landed on the single product page for EEH-ZK1V331P (Panasonic Industry). No Grade / Qualification field shown; the attributes print Ratings 'AEC-Q200'. The reel is 500 pcs, so the 1,000 row is a REEL row. Lead time printed as 43 Weeks."
+    },
+    {
+      "mpn": "TPS7B8133QDRVRQ1",
+      "pageMpn": "TPS7B8133QDRVRQ1",
+      "status": "Active",
+      "stock": "In-Stock: 0 (2,188 expected in stock on 07-Dec-2026; 812 expected on 01-Apr-2027); 'out of stock and can be placed on backorder'; Manufacturer Standard Lead Time 26 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.29320, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 1.21888, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 1.17580, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 1.02981, "currency": "USD" },
+        { "packing": "reel", "qty": 6000, "price": 1.00877, "currency": "USD" },
+        { "packing": "reel", "qty": 9000, "price": 0.99824, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8133QDRVRQ1",
+      "notes": "out of stock (In-Stock: 0, backorder). The keyword URL landed on the single product page (Texas Instruments). Unlike the other pages, this one prints THREE tables: 'Tape & Reel (TR)', 'Cut Tape (CT)' and a separate 'Digi-Reel' table with its own (lower) prices - Digi-Reel rows, not in rows[] because Digi-Reel is not one of the five packings: 100 @ 1.22000, 250 @ 1.14988, 500 @ 1.10924 USD (plus a $7.00 reeling fee per order)."
+    },
+    {
+      "mpn": "A7987TR",
+      "pageMpn": "A7987TR",
+      "status": "Active",
+      "stock": "In-Stock: 8,109; Manufacturer Standard Lead Time 30 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 3.17370, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 3.02600, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 3.08579, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A7987TR/10058596",
+      "notes": "Cut-tape table ends at 250; only ONE reel break (2,500). As printed, the 2,500 reel price (3.08579) is DEARER than the 250 cut-tape price (3.02600)."
+    },
+    {
+      "mpn": "A6985F",
+      "pageMpn": "A6985F",
+      "status": "Active",
+      "stock": "In-Stock: 1,785; Manufacturer Standard Lead Time 30 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "tube", "qty": 192, "price": 2.23552, "currency": "USD" },
+        { "packing": "tube", "qty": 288, "price": 2.18701, "currency": "USD" },
+        { "packing": "tube", "qty": 576, "price": 2.11592, "currency": "USD" },
+        { "packing": "tube", "qty": 1056, "price": 2.06415, "currency": "USD" },
+        { "packing": "tube", "qty": 2592, "price": 2.00195, "currency": "USD" },
+        { "packing": "tube", "qty": 5088, "price": 1.96454, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6985F/5398726",
+      "notes": "One table, 'Tube'. Rows below 100 not recorded: 1 @ 3.75000, 10 @ 2.81800, 96 @ 2.33229 (the 96 row is just under the 100 limit). Break nearest 1,000 is 1,056; largest 5,088."
+    },
+    {
+      "mpn": "PMR18EZPFU10L0",
+      "pageMpn": "PMR18EZPFU10L0",
+      "status": "Active",
+      "stock": "In-Stock: 43,127; Manufacturer Standard Lead Time 8 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.34960, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.30524, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.27748, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.25390, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.21190, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.19817, "currency": "USD" },
+        { "packing": "reel", "qty": 15000, "price": 0.19112, "currency": "USD" },
+        { "packing": "reel", "qty": 25000, "price": 0.18315, "currency": "USD" },
+        { "packing": "reel", "qty": 35000, "price": 0.17840, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.17376, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=PMR18EZPFU10L0",
+      "notes": "The keyword URL landed on the single product page (Rohm Semiconductor). No Grade / Qualification field shown; the page prints Features 'Automotive AEC-Q200, Current Sense'. Largest reel break shown 50,000."
+    },
+    {
+      "mpn": "ATA6501T-4CWVAO",
+      "pageMpn": "ATA6501T-4CWVAO",
+      "status": "Active",
+      "stock": "In-Stock: 10,254; Manufacturer Standard Lead Time 11 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.65790, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.60000, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=ATA6501T-4CWVAO",
+      "notes": "The keyword URL landed on the single product page (Microchip Technology). The whole table is three cut-tape rows (1 @ 0.79000, 25 @ 0.66000, 100 @ 0.65790) and ONE reel row (5,000 @ 0.60000) - no break at or near 1,000 is published."
+    },
+    {
+      "mpn": "NFM15HC105D0G3D",
+      "pageMpn": "NFM15HC105D0G3D",
+      "status": "Active",
+      "stock": "In-Stock: 402,553; Manufacturer Standard Lead Time 17 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.09080, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.07006, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.06368, "currency": "USD" },
+        { "packing": "cut tape", "qty": 2500, "price": 0.05695, "currency": "USD" },
+        { "packing": "cut tape", "qty": 5000, "price": 0.05290, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.04862, "currency": "USD" },
+        { "packing": "reel", "qty": 20000, "price": 0.04593, "currency": "USD" },
+        { "packing": "reel", "qty": 30000, "price": 0.04459, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.04309, "currency": "USD" },
+        { "packing": "reel", "qty": 70000, "price": 0.04222, "currency": "USD" },
+        { "packing": "reel", "qty": 100000, "price": 0.04138, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=NFM15HC105D0G3D",
+      "notes": "The keyword URL landed on the single product page (Murata Electronics). No Grade / Qualification field shown; the attributes print Ratings 'AEC-Q200'. Largest reel break shown 100,000."
+    },
+    {
+      "mpn": "NCU03XH103F6SRL",
+      "pageMpn": "NCU03XH103F6SRL",
+      "status": "Active",
+      "stock": "In-Stock: 7; Manufacturer Standard Lead Time 19 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q200",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.03850, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.03368, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.03189, "currency": "USD" },
+        { "packing": "cut tape", "qty": 5000, "price": 0.02830, "currency": "USD" },
+        { "packing": "reel", "qty": 15000, "price": 0.02428, "currency": "USD" },
+        { "packing": "reel", "qty": 30000, "price": 0.02322, "currency": "USD" },
+        { "packing": "reel", "qty": 45000, "price": 0.02263, "currency": "USD" },
+        { "packing": "reel", "qty": 75000, "price": 0.02194, "currency": "USD" },
+        { "packing": "reel", "qty": 105000, "price": 0.02151, "currency": "USD" },
+        { "packing": "reel", "qty": 150000, "price": 0.02107, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=NCU03XH103F6SRL",
+      "notes": "effectively out of stock (In-Stock: 7). The keyword URL landed on the single product page (Murata Electronics). This page prints THREE tables: 'Tape & Reel (TR)', 'Cut Tape (CT)' and a separate 'Digi-Reel' table with its own (lower) prices - Digi-Reel rows, not in rows[] because Digi-Reel is not one of the five packings: 100 @ 0.03640, 500 @ 0.03178, 1,000 @ 0.03008, 5,000 @ 0.02670 USD (plus a $7.00 reeling fee per order). The page lists NCU03XH103F60RL as a parametric-equivalent substitute (quantity available 0). Largest reel break shown 150,000."
+    },
+    {
+      "mpn": "ACT45B-101-2P-TL003",
+      "pageMpn": "ACT45B-101-2P-TL003",
+      "status": "Active",
+      "stock": "In-Stock: 42,821; Manufacturer Standard Lead Time 20 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q200",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.03400, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.95668, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.90208, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.89046, "currency": "USD" },
+        { "packing": "reel", "qty": 2500, "price": 0.77963, "currency": "USD" },
+        { "packing": "reel", "qty": 5000, "price": 0.73535, "currency": "USD" },
+        { "packing": "reel", "qty": 7500, "price": 0.72750, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=ACT45B-101-2P-TL003",
+      "notes": "The keyword URL landed on the single product page (TDK). Largest reel break shown 7,500."
+    },
+    {
+      "mpn": "TSV912IYST",
+      "pageMpn": "TSV912IYST",
+      "status": "Active",
+      "stock": "In-Stock: 17,496; Manufacturer Standard Lead Time 30 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.88260, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.82916, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.79698, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.78818, "currency": "USD" },
+        { "packing": "reel", "qty": 4000, "price": 0.81587, "currency": "USD" },
+        { "packing": "reel", "qty": 8000, "price": 0.79937, "currency": "USD" },
+        { "packing": "reel", "qty": 12000, "price": 0.79112, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=TSV912IYST",
+      "notes": "The keyword URL landed on the single product page. As printed, every reel price (4,000: 0.81587; 8,000: 0.79937; 12,000: 0.79112) is DEARER than the 1,000 cut-tape price (0.78818)."
+    },
+    {
+      "mpn": "NVMFWS1D7N04XMT1G",
+      "pageMpn": "NVMFWS1D7N04XMT1G",
+      "status": "Active",
+      "stock": "In-Stock: 877; Manufacturer Standard Lead Time 67 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q101",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 1.00180, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.79830, "currency": "USD" },
+        { "packing": "reel", "qty": 1500, "price": 0.63416, "currency": "USD" },
+        { "packing": "reel", "qty": 3000, "price": 0.58909, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=NVMFWS1D7N04XM",
+      "notes": "The keyword URL landed on the single product page for NVMFWS1D7N04XMT1G (onsemi). Stock (877) is below one reel (1,500). Lead time printed as 67 Weeks."
+    },
+    {
+      "mpn": "R5F10BBGLNA#G5",
+      "pageMpn": "R5F10BBGLNA#G5",
+      "status": "Active",
+      "stock": "In-Stock: 2,756; Manufacturer Standard Lead Time 18 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "tray", "qty": 100, "price": 3.00890, "currency": "USD" },
+        { "packing": "tray", "qty": 500, "price": 2.76746, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=R5F10BBGLNA%23G5",
+      "notes": "The keyword URL landed on the single product page (Renesas Electronics Corporation). One table, 'Tray'; largest break shown 500 - no break at 1,000 or above is published."
+    },
+    {
+      "mpn": "CRCW020133R2FNED",
+      "pageMpn": "CRCW020133R2FNED",
+      "status": "Active",
+      "stock": "In-Stock: 782; Manufacturer Standard Lead Time 25 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.02220, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.01764, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.01508, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.01305, "currency": "USD" },
+        { "packing": "cut tape", "qty": 5000, "price": 0.00983, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.00857, "currency": "USD" },
+        { "packing": "reel", "qty": 20000, "price": 0.00786, "currency": "USD" },
+        { "packing": "reel", "qty": 30000, "price": 0.00751, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.00714, "currency": "USD" },
+        { "packing": "reel", "qty": 70000, "price": 0.00692, "currency": "USD" },
+        { "packing": "reel", "qty": 100000, "price": 0.00672, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
+      "notes": "No Grade / Qualification field shown, and - unlike the two CRCW0402 pages (Features 'Automotive AEC-Q200') - no AEC-Q200 / automotive mention was reported from this page as read (grade NOT confirmed by this read). Manufacturer printed: Vishay Dale. Stock (782) is far below one reel (10,000). Largest reel break shown 100,000."
+    },
+    {
+      "mpn": "M0G3519QPTRQ1",
+      "pageMpn": "M0G3519QPTRQ1",
+      "status": "Active",
+      "stock": "In-Stock: 1,206; Manufacturer Standard Lead Time 26 Weeks",
+      "grade": "Automotive",
+      "qualification": "AEC-Q100",
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 3.07640, "currency": "USD" },
+        { "packing": "reel", "qty": 1000, "price": 2.59542, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/result?keywords=M0G3519QPTRQ1",
+      "notes": "The keyword URL landed on the single product page (Texas Instruments). The page prints the manufacturer product number as 'M0G3519QPTRQ1' (the task's code, as given). The reel is 1,000 pcs: the 1,000 row is a REEL row and is the ONLY reel break shown. Cut-tape table ends at 100."
+    },
+    {
+      "mpn": "CRCW0402100KJNED",
+      "pageMpn": "CRCW0402100KJNED",
+      "status": "Active",
+      "stock": "In-Stock: 101,175; Manufacturer Standard Lead Time 21 Weeks",
+      "grade": null,
+      "qualification": null,
+      "rows": [
+        { "packing": "cut tape", "qty": 100, "price": 0.01550, "currency": "USD" },
+        { "packing": "cut tape", "qty": 250, "price": 0.01204, "currency": "USD" },
+        { "packing": "cut tape", "qty": 500, "price": 0.01012, "currency": "USD" },
+        { "packing": "cut tape", "qty": 1000, "price": 0.00861, "currency": "USD" },
+        { "packing": "cut tape", "qty": 5000, "price": 0.00622, "currency": "USD" },
+        { "packing": "reel", "qty": 10000, "price": 0.00533, "currency": "USD" },
+        { "packing": "reel", "qty": 20000, "price": 0.00480, "currency": "USD" },
+        { "packing": "reel", "qty": 30000, "price": 0.00455, "currency": "USD" },
+        { "packing": "reel", "qty": 50000, "price": 0.00427, "currency": "USD" },
+        { "packing": "reel", "qty": 70000, "price": 0.00411, "currency": "USD" },
+        { "packing": "reel", "qty": 100000, "price": 0.00397, "currency": "USD" }
+      ],
+      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100KJNED/1177616",
+      "notes": "No Grade / Qualification field shown; the page prints Features 'Automotive AEC-Q200'. Manufacturer printed: Vishay Dale. This page prints THREE tables: 'Tape & Reel (TR)', 'Cut Tape (CT)' and a separate 'Digi-Reel' table with its own (lower) prices - Digi-Reel rows, not in rows[] because Digi-Reel is not one of the five packings: 100 @ 0.01460, 250 @ 0.01136, 500 @ 0.00954, 1,000 @ 0.00812, 5,000 @ 0.00587 USD (plus a $7.00 reeling fee per order). Largest reel break shown 100,000."
+    }
+  ],
+  "notReached": [],
+  "readLog": "32 Digi-Key page reads, 0 searches, 0 refusals (no 403 / 429 / 503). 9 detail URLs and 23 keyword URLs; every keyword URL landed directly on the single product page for the exact code, so no second read was needed. Pages were read through a fetch-and-extract tool that returns the visible page content as text; hidden data (JSON-LD, script variables) was excluded by instruction. Caveat for whoever compares: on 14 pages the cut-tape table stops at 100 / 250 / 500 with no 1,000 row although the reel is larger than 1,000 - recorded as returned, not filled in. On 4 pages (L9026-YO-TR, TSC2020IYST, A7987TR, TSV912IYST - all STMicroelectronics) a reel price is dearer than the largest cut-tape break, as printed. One packing outside the rules' five values occurs: 'strip' (MAX25410AGTE/V+)."
+}

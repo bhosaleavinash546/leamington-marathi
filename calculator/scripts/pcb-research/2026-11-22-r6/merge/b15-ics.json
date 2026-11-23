@@ -1045,7 +1045,7 @@
   },
   {
    "mpn": "TCAN1043ADYYRQ1",
-   "family": "TCAN1043",
+   "family": "TCAN1043ADYYRQ1",
    "mfr": "Texas Instruments",
    "desc": "Low-power fault-protected CAN FD transceiver with INH and WAKE",
    "category": "ic_soic",

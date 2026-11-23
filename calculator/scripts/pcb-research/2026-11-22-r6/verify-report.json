@@ -1,0 +1,3277 @@
+{
+ "tally": {
+  "MATCH": 94,
+  "grade MATCH": 84,
+  "grade RESEARCHER-TRUE-PAGE-SILENT": 10
+ },
+ "byFile": {
+  "b11-ics": {
+   "MATCH": 6
+  },
+  "b07-ics": {
+   "MATCH": 6
+  },
+  "b10-ics": {
+   "MATCH": 5
+  },
+  "b13-ics": {
+   "MATCH": 6
+  },
+  "b01-passives": {
+   "MATCH": 6
+  },
+  "b14-ics": {
+   "MATCH": 8
+  },
+  "b06-passives": {
+   "MATCH": 6
+  },
+  "b05-passives": {
+   "MATCH": 5
+  },
+  "b12-ics": {
+   "MATCH": 7
+  },
+  "b05b-passives": {
+   "MATCH": 3
+  },
+  "b04-passives": {
+   "MATCH": 8
+  },
+  "b08-ics": {
+   "MATCH": 1
+  },
+  "b03-passives": {
+   "MATCH": 8
+  },
+  "b15-ics": {
+   "MATCH": 7
+  },
+  "b09-ics": {
+   "MATCH": 1
+  },
+  "b02-passives": {
+   "MATCH": 7
+  },
+  "s1-slope": {
+   "MATCH": 3
+  },
+  "b16-ics": {
+   "MATCH": 1
+  }
+ },
+ "parts": [
+  {
+   "file": "b11-ics",
+   "mpn": "BM2LC120FJ-CE2",
+   "pageMpn": "BM2LC120FJ-CE2",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.24848,
+     "seen": 1.24848,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 1.16278,
+     "seen": 1.16278,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 1.12626,
+     "seen": 1.12626,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "MAX25410AGTE/V+",
+   "pageMpn": "MAX25410AGTE/V+",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 225,
+     "packing": "unknown",
+     "recorded": 1.61991,
+     "seen": 1.61991,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "ADAU1467WBCPZ300",
+   "pageMpn": "ADAU1467WBCPZ300",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 144,
+     "packing": "tray",
+     "recorded": 17.7484,
+     "seen": 17.7484,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 528,
+     "packing": "tray",
+     "recorded": 16.83331,
+     "seen": 16.83331,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b10-ics",
+   "mpn": "NVMFWS1D1N04XMT1G",
+   "pageMpn": "NVMFWS1D1N04XMT1G",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.03218,
+     "seen": 1.03218,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1500,
+     "packing": "reel",
+     "recorded": 0.82579,
+     "seen": 0.82579,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.79387,
+     "seen": 0.79387,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "L9026-YO-TR",
+   "pageMpn": "L9026-YO-TR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 2500,
+     "packing": null,
+     "recorded": 1.87054,
+     "seen": 1.87054,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": null,
+     "recorded": 1.83394,
+     "seen": 1.83394,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "RK73B1JTTD103J",
+   "pageMpn": "RK73B1JTTD103J",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.00535,
+     "seen": 0.00535,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.00373,
+     "seen": 0.00373,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.00252,
+     "seen": 0.00252,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "STPS15H100CBY-TR",
+   "pageMpn": "STPS15H100CBY-TR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.50442,
+     "seen": 0.50442,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.43698,
+     "seen": 0.43698,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 0.38842,
+     "seen": 0.38842,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "AC0805KRX7R9BB104",
+   "pageMpn": "AC0805KRX7R9BB104",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.06342,
+     "seen": 0.06342,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.04792,
+     "seen": 0.04792,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.04275,
+     "seen": 0.04275,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW040282K5FKED",
+   "pageMpn": "CRCW040282K5FKED",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 0.00882,
+     "seen": 0.00882,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": null,
+     "recorded": 0.00584,
+     "seen": 0.00584,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": null,
+     "recorded": 0.00439,
+     "seen": 0.00439,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "M24C64-DRMN3TP/K",
+   "pageMpn": "M24C64-DRMN3TP/K",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.74358,
+     "seen": 0.74358,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.71964,
+     "seen": 0.71964,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12500,
+     "packing": "reel",
+     "recorded": 0.67847,
+     "seen": 0.67847,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "STL225N6F7AG",
+   "pageMpn": "STL225N6F7AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.47644,
+     "seen": 1.47644,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.31883,
+     "seen": 1.31883,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "TSC2020IYST",
+   "pageMpn": "TSC2020IYST",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.19508,
+     "seen": 1.19508,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 1.24403,
+     "seen": 1.24403,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 1.20465,
+     "seen": 1.20465,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05b-passives",
+   "mpn": "NTCSP163JF103FT1H",
+   "pageMpn": "NTCSP163JF103FT1H",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.18281,
+     "seen": 0.18281,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.16476,
+     "seen": 0.16476,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 40000,
+     "packing": "reel",
+     "recorded": 0.14558,
+     "seen": 0.14558,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "MAASU21GSB7104KTNA01",
+   "pageMpn": "MAASU21GSB7104KTNA01",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.07362,
+     "seen": 0.07362,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.05513,
+     "seen": 0.05513,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.04933,
+     "seen": 0.04933,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "M95M02-DWMN3TP/K",
+   "pageMpn": "M95M02-DWMN3TP/K",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 4.0298,
+     "seen": 4.0298,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": null,
+     "recorded": 3.89548,
+     "seen": 3.89548,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b08-ics",
+   "mpn": "BTM9020EPXUMA1",
+   "pageMpn": "BTM9020EPXUMA1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.65148,
+     "seen": 1.65148,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.51955,
+     "seen": 1.51955,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 6000,
+     "packing": "reel",
+     "recorded": 1.49065,
+     "seen": 1.49065,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b11-ics",
+   "mpn": "AG047FLS4FRATCB",
+   "pageMpn": "AG047FLS4FRATCB",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.91152,
+     "seen": 0.91152,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.70232,
+     "seen": 0.70232,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.6375,
+     "seen": 0.6375,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "EEH-ZK1V331P",
+   "pageMpn": "EEH-ZK1V331P",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "reel",
+     "recorded": 0.65872,
+     "seen": 0.65872,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 0.61526,
+     "seen": 0.61526,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.54065,
+     "seen": 0.54065,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "TPS7B8133QDRVRQ1",
+   "pageMpn": "TPS7B8133QDRVRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.1758,
+     "seen": 1.1758,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.02981,
+     "seen": 1.02981,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.99824,
+     "seen": 0.99824,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "A7987TR",
+   "pageMpn": "A7987TR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 2500,
+     "packing": null,
+     "recorded": 3.08579,
+     "seen": 3.08579,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "A6985F",
+   "pageMpn": "A6985F",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 192,
+     "packing": "tube",
+     "recorded": 2.23552,
+     "seen": 2.23552,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1056,
+     "packing": "tube",
+     "recorded": 2.06415,
+     "seen": 2.06415,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5088,
+     "packing": "tube",
+     "recorded": 1.96454,
+     "seen": 1.96454,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "PMR18EZPFU10L0",
+   "pageMpn": "PMR18EZPFU10L0",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.2539,
+     "seen": 0.2539,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.2119,
+     "seen": 0.2119,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.17376,
+     "seen": 0.17376,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b09-ics",
+   "mpn": "ATA6501T-4CWVAO",
+   "pageMpn": "ATA6501T-4CWVAO",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 100,
+     "packing": "cut tape",
+     "recorded": 0.6579,
+     "seen": 0.6579,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.6,
+     "seen": 0.6,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "NFM15HC105D0G3D",
+   "pageMpn": "NFM15HC105D0G3D",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.06368,
+     "seen": 0.06368,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.04862,
+     "seen": 0.04862,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": "reel",
+     "recorded": 0.04138,
+     "seen": 0.04138,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "NCU03XH103F6SRL",
+   "pageMpn": "NCU03XH103F6SRL",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.03189,
+     "seen": 0.03189,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 15000,
+     "packing": "reel",
+     "recorded": 0.02428,
+     "seen": 0.02428,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 150000,
+     "packing": "reel",
+     "recorded": 0.02107,
+     "seen": 0.02107,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "ACT45B-101-2P-TL003",
+   "pageMpn": "ACT45B-101-2P-TL003",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.89046,
+     "seen": 0.89046,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.77963,
+     "seen": 0.77963,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 0.7275,
+     "seen": 0.7275,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "TSV912IYST",
+   "pageMpn": "TSV912IYST",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.78818,
+     "seen": 0.78818,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.81587,
+     "seen": 0.81587,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.79112,
+     "seen": 0.79112,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b10-ics",
+   "mpn": "NVMFWS1D7N04XMT1G",
+   "pageMpn": "NVMFWS1D7N04XMT1G",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.7983,
+     "seen": 0.7983,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1500,
+     "packing": "reel",
+     "recorded": 0.63416,
+     "seen": 0.63416,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.58909,
+     "seen": 0.58909,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b10-ics",
+   "mpn": "R5F10BBGLNA#G5",
+   "pageMpn": "R5F10BBGLNA#G5",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 100,
+     "packing": "tray",
+     "recorded": 3.0089,
+     "seen": 3.0089,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 500,
+     "packing": "tray",
+     "recorded": 2.76746,
+     "seen": 2.76746,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW020133R2FNED",
+   "pageMpn": "CRCW020133R2FNED",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 0.01305,
+     "seen": 0.01305,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": null,
+     "recorded": 0.00857,
+     "seen": 0.00857,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": null,
+     "recorded": 0.00672,
+     "seen": 0.00672,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": false,
+    "page": null,
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "M0G3519QPTRQ1",
+   "pageMpn": "M0G3519QPTRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 100,
+     "packing": "cut tape",
+     "recorded": 3.0764,
+     "seen": 3.0764,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 2.59542,
+     "seen": 2.59542,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW0402100KJNED",
+   "pageMpn": "CRCW0402100KJNED",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 0.00861,
+     "seen": 0.00861,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": null,
+     "recorded": 0.00397,
+     "seen": 0.00397,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b11-ics",
+   "mpn": "R7F7016453AFP-C#AA1",
+   "pageMpn": "R7F7016453AFP-C#AA1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 180,
+     "packing": "tray",
+     "recorded": 14.01211,
+     "seen": 14.01211,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 540,
+     "packing": "tray",
+     "recorded": 12.69633,
+     "seen": 12.69633,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "SCT011HU75G3AG",
+   "pageMpn": "SCT011HU75G3AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 600,
+     "packing": "reel",
+     "recorded": 16.51375,
+     "seen": 16.51375,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "EEH-ZK1V101XP",
+   "pageMpn": "EEH-ZK1V101XP",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 900,
+     "packing": "reel",
+     "recorded": 0.3467,
+     "seen": 0.3467,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.28246,
+     "seen": 0.28246,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "STL140N4F7AG",
+   "pageMpn": "STL140N4F7AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.7682,
+     "seen": 0.7682,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.6709,
+     "seen": 0.6709,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.60518,
+     "seen": 0.60518,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "AD8418AWBRZ",
+   "pageMpn": "AD8418AWBRZ",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 196,
+     "packing": "tube",
+     "recorded": 2.64117,
+     "seen": 2.64117,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1078,
+     "packing": "tube",
+     "recorded": 2.44891,
+     "seen": 2.44891,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2548,
+     "packing": "tube",
+     "recorded": 2.38172,
+     "seen": 2.38172,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "TS3011IYLT",
+   "pageMpn": "TS3011IYLT",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.46096,
+     "seen": 1.46096,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.50489,
+     "seen": 1.50489,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 6000,
+     "packing": "reel",
+     "recorded": 1.47563,
+     "seen": 1.47563,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "MAX17854ACB/V+",
+   "pageMpn": "MAX17854ACB/V+",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 160,
+     "packing": "tray",
+     "recorded": 11.89313,
+     "seen": 11.89313,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 640,
+     "packing": "tray",
+     "recorded": 11.29905,
+     "seen": 11.29905,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": false,
+    "page": null,
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b10-ics",
+   "mpn": "R5F10BAGLSP#G5",
+   "pageMpn": "R5F10BAGLSP#G5",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 100,
+     "packing": "tray",
+     "recorded": 3.1724,
+     "seen": 3.1724,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 500,
+     "packing": "tray",
+     "recorded": 2.75238,
+     "seen": 2.75238,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05b-passives",
+   "mpn": "IHLP4040EDER4R7M5A",
+   "pageMpn": "IHLP4040EDER4R7M5A",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "reel",
+     "recorded": 0.8795,
+     "seen": 0.8795,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 0.82936,
+     "seen": 0.82936,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.72396,
+     "seen": 0.72396,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "SRP4020TA-4R7M",
+   "pageMpn": "SRP4020TA-4R7M",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.59498,
+     "seen": 0.59498,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.54218,
+     "seen": 0.54218,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 15000,
+     "packing": "reel",
+     "recorded": 0.47875,
+     "seen": 0.47875,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "L4995AJTR",
+   "pageMpn": "L4995AJTR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 2500,
+     "packing": null,
+     "recorded": 0.97166,
+     "seen": 0.97166,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "GRM188R71A225KE15J",
+   "pageMpn": "GRM188R71A225KE15J",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.0398,
+     "seen": 0.0398,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.02615,
+     "seen": 0.02615,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 30000,
+     "packing": "reel",
+     "recorded": 0.02355,
+     "seen": 0.02355,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": false,
+    "page": null,
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "s1-slope",
+   "mpn": "AIMZA75R016M1HXKSA1",
+   "pageMpn": "AIMZA75R016M1HXKSA1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 120,
+     "packing": null,
+     "recorded": 14.03008,
+     "seen": 14.03008,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 510,
+     "packing": null,
+     "recorded": 13.87275,
+     "seen": 13.87275,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "AM263P4AFONFZCZRQ1",
+   "pageMpn": "AM263P4AFONFZCZRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 28.3283,
+     "seen": 28.3283,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b10-ics",
+   "mpn": "R7F7016843AFP-C#AA1",
+   "pageMpn": "R7F7016843AFP-C#AA1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 100,
+     "packing": "tray",
+     "recorded": 10.1827,
+     "seen": 10.1827,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 500,
+     "packing": "tray",
+     "recorded": 9.51698,
+     "seen": 9.51698,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "ERJ-2GEJ511X",
+   "pageMpn": "ERJ-2GEJ511X",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.00784,
+     "seen": 0.00784,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.00512,
+     "seen": 0.00512,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": "reel",
+     "recorded": 0.00379,
+     "seen": 0.00379,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "s1-slope",
+   "mpn": "T598D106M050ATS090",
+   "pageMpn": "T598D106M050ATS090",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": null,
+     "recorded": 3.38138,
+     "seen": 3.38138,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "ERJ-S06F1002V",
+   "pageMpn": "ERJ-S06F1002V",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.06532,
+     "seen": 0.06532,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.05344,
+     "seen": 0.05344,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.04629,
+     "seen": 0.04629,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Anti-Sulfur, Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "EEH-ZK1V221UP",
+   "pageMpn": "EEH-ZK1V221UP",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "reel",
+     "recorded": 0.56954,
+     "seen": 0.56954,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 0.53073,
+     "seen": 0.53073,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.46411,
+     "seen": 0.46411,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b11-ics",
+   "mpn": "UPD166033T1U-E1-AY",
+   "pageMpn": "UPD166033T1U-E1-AY",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.56672,
+     "seen": 1.56672,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 1.45145,
+     "seen": 1.45145,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 1.42227,
+     "seen": 1.42227,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "VNQ9050LAJTR",
+   "pageMpn": "VNQ9050LAJTR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 2500,
+     "packing": null,
+     "recorded": 1.26081,
+     "seen": 1.26081,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": null,
+     "recorded": 1.221,
+     "seen": 1.221,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": false,
+    "page": null,
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "s1-slope",
+   "mpn": "TC387QP160F300SAEKXUMA2",
+   "pageMpn": "TC387QP160F300SAEKXUMA2",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 29.7717,
+     "seen": 29.7717,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": null,
+    "verdict": "RESEARCHER-TRUE-PAGE-SILENT"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "T599B336M010ATE090",
+   "pageMpn": "T599B336M010ATE090",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 2000,
+     "packing": "reel",
+     "recorded": 0.52715,
+     "seen": 0.52715,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "DLW32PH122XK2L",
+   "pageMpn": "DLW32PH122XK2L",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.683,
+     "seen": 1.683,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1500,
+     "packing": "reel",
+     "recorded": 1.4441,
+     "seen": 1.4441,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.375,
+     "seen": 1.375,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "STL059N4S8AG",
+   "pageMpn": "STL059N4S8AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.18692,
+     "seen": 1.18692,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.05416,
+     "seen": 1.05416,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.96013,
+     "seen": 0.96013,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "TCAN1463DRQ1",
+   "pageMpn": "TCAN1463DRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 1.16511,
+     "seen": 1.16511,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 1.15215,
+     "seen": 1.15215,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 1.11552,
+     "seen": 1.11552,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "CGA3E2X7R2A103K080AA",
+   "pageMpn": "CGA3E2X7R2A103K080AA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.02074,
+     "seen": 0.02074,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.01366,
+     "seen": 0.01366,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.0118,
+     "seen": 0.0118,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b13-ics",
+   "mpn": "SCT040HU65G3AG",
+   "pageMpn": "SCT040HU65G3AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 600,
+     "packing": null,
+     "recorded": 6.33832,
+     "seen": 6.33832,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "WSLT2512R0100FEA",
+   "pageMpn": "WSLT2512R0100FEA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.51846,
+     "seen": 0.51846,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2000,
+     "packing": "reel",
+     "recorded": 0.48167,
+     "seen": 0.48167,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 20000,
+     "packing": "reel",
+     "recorded": 0.44592,
+     "seen": 0.44592,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "AC0603KRX7R9BB104",
+   "pageMpn": "AC0603KRX7R9BB104",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.0489,
+     "seen": 0.0489,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.03633,
+     "seen": 0.03633,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.03213,
+     "seen": 0.03213,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "UCH1V101MCL1GS",
+   "pageMpn": "UCH1V101MCL1GS",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 900,
+     "packing": "reel",
+     "recorded": 0.37082,
+     "seen": 0.37082,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.30157,
+     "seen": 0.30157,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "STL285N4F7AG",
+   "pageMpn": "STL285N4F7AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.24678,
+     "seen": 1.24678,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "GCM155R71H472KA37D",
+   "pageMpn": "GCM155R71H472KA37D",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.00934,
+     "seen": 0.00934,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.00503,
+     "seen": 0.00503,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 30000,
+     "packing": "reel",
+     "recorded": 0.0043,
+     "seen": 0.0043,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Applications: Automotive)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b11-ics",
+   "mpn": "BD16950EFV-CE2",
+   "pageMpn": "BD16950EFV-CE2",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 250,
+     "packing": "cut tape",
+     "recorded": 3.91832,
+     "seen": 3.91832,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2000,
+     "packing": "reel",
+     "recorded": 3.58261,
+     "seen": 3.58261,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "BLM15VM150BH1D",
+   "pageMpn": "BLM15VM150BH1D",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.08311,
+     "seen": 0.08311,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.06088,
+     "seen": 0.06088,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive; Ratings: AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "LTR18EZPF10R0",
+   "pageMpn": "LTR18EZPF10R0",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.04477,
+     "seen": 0.04477,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.0349,
+     "seen": 0.0349,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.02934,
+     "seen": 0.02934,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200, Pulse Withstanding",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "WSLP2010R0100FEA",
+   "pageMpn": "WSLP2010R0100FEA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.38839,
+     "seen": 0.38839,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.3483,
+     "seen": 0.3483,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 28000,
+     "packing": "reel",
+     "recorded": 0.32746,
+     "seen": 0.32746,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Anti-Sulfur, Automotive AEC-Q200, Current Sense, Moisture Resistant, Pulse Withstanding; Ratings: AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "ERA-2AEB103X",
+   "pageMpn": "ERA-2AEB103X",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.06778,
+     "seen": 0.06778,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.0549,
+     "seen": 0.0549,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 30000,
+     "packing": "reel",
+     "recorded": 0.05156,
+     "seen": 0.05156,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b16-ics",
+   "mpn": "UCC21551CQDWKRQ1",
+   "pageMpn": "UCC21551CQDWKRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 2.65914,
+     "seen": 2.65914,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2000,
+     "packing": "reel",
+     "recorded": 2.45145,
+     "seen": 2.45145,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 2.40407,
+     "seen": 2.40407,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "LT8686SJV#WPBF",
+   "pageMpn": "LT8686SJV#WPBF",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 490,
+     "packing": "tray",
+     "recorded": 8.27159,
+     "seen": 8.27159,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b02-passives",
+   "mpn": "KCM55WC71E107MH13K",
+   "pageMpn": "KCM55WC71E107MH13K",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "reel",
+     "recorded": 2.57858,
+     "seen": 2.57858,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Applications: Automotive)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "TPS389C0300CRTERQ1",
+   "pageMpn": "TPS389C0300CRTERQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 250,
+     "packing": "cut tape",
+     "recorded": 3.79136,
+     "seen": 3.79136,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 2.22164,
+     "seen": 2.22164,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "STL64DN4F7AG",
+   "pageMpn": "STL64DN4F7AG",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.8518,
+     "seen": 0.8518,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.74739,
+     "seen": 0.74739,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 0.67601,
+     "seen": 0.67601,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "TPS12130QDGXRQ1",
+   "pageMpn": "TPS12130QDGXRQ1",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 3.11696,
+     "seen": 3.11696,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05b-passives",
+   "mpn": "CRCW120610K0FKEAHP",
+   "pageMpn": "CRCW120610K0FKEAHP",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.06242,
+     "seen": 0.06242,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.05092,
+     "seen": 0.05092,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.04398,
+     "seen": 0.04398,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200, Pulse Withstanding",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW04020000Z0EDHP",
+   "pageMpn": "CRCW04020000Z0EDHP",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 0.01816,
+     "seen": 0.01816,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": null,
+     "recorded": 0.01297,
+     "seen": 0.01297,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": null,
+     "recorded": 0.00995,
+     "seen": 0.00995,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200, Pulse Withstanding",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "MCASH168SB7104KTNA01",
+   "pageMpn": "MCASH168SB7104KTNA01",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.04712,
+     "seen": 0.04712,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.03323,
+     "seen": 0.03323,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.02949,
+     "seen": 0.02949,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Applications: Automotive)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "T599X336M035ATE065",
+   "pageMpn": "T599X336M035ATE065",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 2.16236,
+     "seen": 2.16236,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 500,
+     "packing": "reel",
+     "recorded": 2.24396,
+     "seen": 2.24396,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3500,
+     "packing": "reel",
+     "recorded": 2.04963,
+     "seen": 2.04963,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive; Ratings: AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "RCA120610K0FKEA",
+   "pageMpn": "RCA120610K0FKEA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.02482,
+     "seen": 0.02482,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.01898,
+     "seen": 0.01898,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.01527,
+     "seen": 0.01527,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Anti-Sulfur, Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "MCASU168SB7104KTNA01",
+   "pageMpn": "MCASU168SB7104KTNA01",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.03476,
+     "seen": 0.03476,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.02557,
+     "seen": 0.02557,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.0225,
+     "seen": 0.0225,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Applications: Automotive)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b03-passives",
+   "mpn": "ERJ-U06F1002V",
+   "pageMpn": "ERJ-U06F1002V",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.03111,
+     "seen": 0.03111,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.02274,
+     "seen": 0.02274,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.01857,
+     "seen": 0.01857,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Anti-Sulfur, Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b05-passives",
+   "mpn": "CRCW080510K0FKEA",
+   "pageMpn": "CRCW080510K0FKEA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": null,
+     "recorded": 0.01329,
+     "seen": 0.01329,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": null,
+     "recorded": 0.00965,
+     "seen": 0.00965,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": null,
+     "recorded": 0.0073,
+     "seen": 0.0073,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b11-ics",
+   "mpn": "AG540EGS4FRATCB",
+   "pageMpn": "AG540EGS4FRATCB",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 1.3575,
+     "seen": 1.3575,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 1.13122,
+     "seen": 1.13122,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 9000,
+     "packing": "reel",
+     "recorded": 1.1,
+     "seen": 1.1,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "VNH7040AYTR",
+   "pageMpn": "VNH7040AYTR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 250,
+     "packing": "cut tape",
+     "recorded": 3.58004,
+     "seen": 3.58004,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 3.743,
+     "seen": 3.743,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2000,
+     "packing": "reel",
+     "recorded": 3.6615,
+     "seen": 3.6615,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "STPST5H100SBY-TR",
+   "pageMpn": "STPST5H100SBY-TR",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.49586,
+     "seen": 0.49586,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.42926,
+     "seen": 0.42926,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 0.38137,
+     "seen": 0.38137,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q101",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "RN73H1JTTD1002B25",
+   "pageMpn": "RN73H1JTTD1002B25",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.08254,
+     "seen": 0.08254,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 5000,
+     "packing": "reel",
+     "recorded": 0.07386,
+     "seen": 0.07386,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 50000,
+     "packing": "reel",
+     "recorded": 0.06496,
+     "seen": 0.06496,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Automotive AEC-Q200, Moisture Resistant",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b01-passives",
+   "mpn": "C0805F104K5RACAUTO",
+   "pageMpn": "C0805F104K5RACAUTO",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.23264,
+     "seen": 0.23264,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.1977,
+     "seen": 0.1977,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 7500,
+     "packing": "reel",
+     "recorded": 0.18148,
+     "seen": 0.18148,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Features: Open Mode; Applications: Automotive; Series: SMD Auto X7R FO)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b06-passives",
+   "mpn": "AF0402FR-0710KL",
+   "pageMpn": "AF0402FR-0710KL",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.01463,
+     "seen": 0.01463,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 10000,
+     "packing": "reel",
+     "recorded": 0.01012,
+     "seen": 0.01012,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 100000,
+     "packing": "reel",
+     "recorded": 0.00803,
+     "seen": 0.00803,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Features: Anti-Sulfur, Automotive AEC-Q200",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b04-passives",
+   "mpn": "CGA3E2X7R1H473K080AA",
+   "pageMpn": "CGA3E2X7R1H473K080AA",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 0.02218,
+     "seen": 0.02218,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 4000,
+     "packing": "reel",
+     "recorded": 0.01467,
+     "seen": 0.01467,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 12000,
+     "packing": "reel",
+     "recorded": 0.0127,
+     "seen": 0.0127,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Ratings: AEC-Q200 (Applications: Automotive)",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b12-ics",
+   "mpn": "LMV321IYLT",
+   "pageMpn": "LMV321IYLT",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.29535,
+     "seen": 0.29535,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 0.31323,
+     "seen": 0.31323,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 30000,
+     "packing": "reel",
+     "recorded": 0.29146,
+     "seen": 0.29146,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b14-ics",
+   "mpn": "TS393IYDT",
+   "pageMpn": "TS393IYDT",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 1000,
+     "packing": "cut tape",
+     "recorded": 0.68132,
+     "seen": 0.68132,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 2500,
+     "packing": "reel",
+     "recorded": 0.60387,
+     "seen": 0.60387,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 17500,
+     "packing": "reel",
+     "recorded": 0.56933,
+     "seen": 0.56933,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  },
+  {
+   "file": "b07-ics",
+   "mpn": "ADA4571WHRZ-1-R7",
+   "pageMpn": "ADA4571WHRZ-1-R7",
+   "status": "Active",
+   "rows": [
+    {
+     "qty": 500,
+     "packing": "cut tape",
+     "recorded": 3.5917,
+     "seen": 3.5917,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 1000,
+     "packing": "reel",
+     "recorded": 3.48181,
+     "seen": 3.48181,
+     "verdict": "MATCH",
+     "change": 0.0
+    },
+    {
+     "qty": 3000,
+     "packing": "reel",
+     "recorded": 3.32591,
+     "seen": 3.32591,
+     "verdict": "MATCH",
+     "change": 0.0
+    }
+   ],
+   "grade": {
+    "recordedAecq": true,
+    "page": "Automotive AEC-Q100",
+    "verdict": "MATCH"
+   },
+   "verdict": "MATCH"
+  }
+ ]
+}

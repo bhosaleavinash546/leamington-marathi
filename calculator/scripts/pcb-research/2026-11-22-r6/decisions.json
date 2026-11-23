@@ -985,6 +985,22 @@
    "action": "dropObs",
    "obs": "Mouser 3.28 GBP @2500",
    "reason": "rule 1: search-summary"
+  },
+  {
+   "file": "b15-ics",
+   "mpn": "TCAN1043ADYYRQ1",
+   "action": "family",
+   "from": "TCAN1043",
+   "to": "TCAN1043ADYYRQ1",
+   "reason": "rule 8: 'TCAN1043' has a reviewed family link to TCAN1043ADRQ1"
+  },
+  {
+   "file": "s1-slope",
+   "mpn": "TC387QP160F300SAEKXUMA2",
+   "action": "family",
+   "from": "TC387",
+   "to": "TC387QP160F300SAEKXUMA2",
+   "reason": "rule 8: 'TC387' has a reviewed family link to SAK-TC387QP-160F300S AE"
   }
  ]
 }

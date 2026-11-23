@@ -27,7 +27,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -35,7 +36,8 @@
      "price": 0.00414,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page: Active, Features \"Automotive AEC-Q200\", stock 3,477,957; 1k = Cut Tape, 100k = Tape & Reel (reel 10,000 @ 0.00551, 50,000 @ 0.00445 also shown). TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is rounded to 2 dp (\"0.00 USD\") so no other TME break could be recorded; net = gross on the page (no VAT). Reviewer: drop it if a lowPrice pairing is not accepted. TME stock 932,082, reel 10,000; TME 100k is 2.8x below Digi-Key 100k (known reel spread). Not recorded: Rutronik24 search page lists the code at \"0.0131 $\" (pack 10,000) with no stated break."
@@ -62,7 +64,8 @@
      "price": 0.00861,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100KJNED/1177616",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -70,7 +73,8 @@
      "price": 0.00397,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100KJNED/1177616",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page: Active, Features \"Automotive AEC-Q200\", stock 101,855; 1k = Cut Tape, 100k = Tape & Reel (reel 10,000 @ 0.00533 also shown). The page reader also returned a separate Digi-Reel ladder (1,000 @ 0.00812) for this code; the Cut Tape figure is recorded because it is consistent with this code's reel ladder. TME figure = the page's JSON-LD lowPrice (lowest price on the page) paired with the LARGEST break row the page lists; the visible TME table is rounded to 2 dp (\"0.00 USD\") so no other TME break could be recorded; net = gross on the page (no VAT). Reviewer: drop it if a lowPrice pairing is not accepted. TME stock 6,464, largest TME break shown 30,000."
@@ -97,7 +101,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -105,7 +110,8 @@
      "price": 0.00551,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -113,7 +119,8 @@
      "price": 0.00414,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402100RFKED/1177893",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 3,353,684. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -140,7 +147,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -148,7 +156,8 @@
      "price": 0.00584,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -156,7 +165,8 @@
      "price": 0.00439,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K49FKED/1178050",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 160,693. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -183,7 +193,8 @@
      "price": 0.00812,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -191,7 +202,8 @@
      "price": 0.00503,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -199,7 +211,8 @@
      "price": 0.00374,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04024K70JNED/1177584",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 540,742. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -226,7 +239,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -234,7 +248,8 @@
      "price": 0.00584,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -242,7 +257,8 @@
      "price": 0.00439,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K87FKED/1178109",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 59,871. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -269,7 +285,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -277,7 +294,8 @@
      "price": 0.00584,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -285,7 +303,8 @@
      "price": 0.00439,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040282K5FKED/1178226",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 92,312. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -311,7 +330,8 @@
      "price": 0.01305,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -319,7 +339,8 @@
      "price": 0.00857,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -327,7 +348,8 @@
      "price": 0.00672,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW020133R2FNED/1178474",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series CRCW0201 e3, stock 782; NO AEC-Q200 / automotive statement on the page (no Features row) -> aecq false. 1k = Cut Tape, larger = Tape & Reel (same page)."
@@ -353,7 +375,8 @@
      "price": 0.01816,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -361,7 +384,8 @@
      "price": 0.01297,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -369,7 +393,8 @@
      "price": 0.00995,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0EDHP/2222496",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series CRCW-HP e3, Features \"Automotive AEC-Q200, Pulse Withstanding\", 0 ohm jumper 1/5 W, stock 691,580. 1k = Cut Tape, larger = Tape & Reel (same page). About 2x the standard CRCW0402 jumper."
@@ -395,7 +420,8 @@
      "price": 0.00812,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -403,7 +429,8 @@
      "price": 0.00503,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -411,7 +438,8 @@
      "price": 0.00374,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04022K20JNED/1177576",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 22,214. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -437,7 +465,8 @@
      "price": 0.00812,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -445,7 +474,8 @@
      "price": 0.00503,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -453,7 +483,8 @@
      "price": 0.00374,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW0402470RJNED/1177560",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 128,990. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -479,7 +510,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -487,7 +519,8 @@
      "price": 0.00551,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -495,7 +528,8 @@
      "price": 0.00414,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040249R9FKED/1177858",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 2,893,985. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -521,7 +555,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -529,7 +564,8 @@
      "price": 0.00551,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -537,7 +573,8 @@
      "price": 0.00414,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040261R9FKED/1177869",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 39,940. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -563,7 +600,8 @@
      "price": 0.00882,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -571,7 +609,8 @@
      "price": 0.00584,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -579,7 +618,8 @@
      "price": 0.00439,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04027K50FKED/1178107",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 232,023. 1k = Cut Tape, larger breaks = Tape & Reel (same page)."
@@ -605,7 +645,8 @@
      "price": 0.01496,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -613,7 +654,8 @@
      "price": 0.01098,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -621,7 +663,8 @@
      "price": 0.0084,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW12061M00JNEA/1176277",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, Features \"Automotive AEC-Q200\", series D/CRCW e3, stock 33,169. 1k = Cut Tape, 5k / 50k = Tape & Reel (reel 5,000; 50,000 is the largest break shown)."
@@ -645,7 +688,8 @@
      "price": 0.01329,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -653,7 +697,8 @@
      "price": 0.00965,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -661,7 +706,8 @@
      "price": 0.0073,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW080510K0FKEA/1175751",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series D/CRCW e3, 0.125 W, stock 2,274,876. Grade: the page lists Features \"Automotive AEC-Q200\" for this code -> aecq true (task had false, not read); desc completed from the page. 1k = Cut Tape, 5k / 50k = Tape & Reel (50,000 largest shown)."
@@ -688,7 +734,8 @@
      "price": 0.63732,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -696,7 +743,8 @@
      "price": 0.58385,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -704,7 +752,8 @@
      "price": 0.51674,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M5A/4070066",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series IHLP-2525CZ-5A, 4.7 uH shielded molded 5.6 A 38.4 mohm max, stock 3,913. Grade: Ratings attribute \"AEC-Q200\" on this code's page -> aecq true (task had false, not read); desc completed from the page. 1k = Cut Tape, 2k / 10k = Tape & Reel (reel 2,000; 10,000 largest shown)."
@@ -729,7 +778,8 @@
      "price": 0.17369,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -737,7 +787,8 @@
      "price": 0.15645,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -745,7 +796,8 @@
      "price": 0.13813,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/NTCS0603E3103FLT/2615420",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026 (Vishay Beyschlag/Draloric/BC Components): Active, \"THERMISTOR NTC 10KOHM 3435K 0603\", Qualification AEC-Q200, Grade Automotive, stock 72,480. 1k = Cut Tape, 4k / 40k = Tape & Reel (reel 4,000; 40,000 largest shown)."
@@ -770,7 +822,8 @@
      "price": 0.1693,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -778,7 +831,8 @@
      "price": 0.14463,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -786,7 +840,8 @@
      "price": 0.13583,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/TNPW060310K0BEEA/1606881",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series TNPW e3, 0.21 W, Features \"Anti-Sulfur, Automotive AEC-Q200, Moisture Resistant\" on this code's page, stock 178,446. No 1,000 break returned: Cut Tape stops at 500, Tape & Reel 5,000 and 15,000 (largest shown)."
@@ -812,7 +867,8 @@
      "price": 0.27909,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -820,7 +876,8 @@
      "price": 0.24515,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -828,7 +885,8 @@
      "price": 0.22929,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL0805R0100FEA/712452",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series WSL, 0.125 W metal element, stock 28,860. Grade: Features \"Anti-Sulfur, Automotive AEC-Q200, Current Sense, ...\" on this code's page -> aecq true (task had false, not read); desc completed. 1k = Cut Tape, 5k / 35k = Tape & Reel (35,000 largest shown)."
@@ -854,7 +912,8 @@
      "price": 0.2492,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -862,7 +921,8 @@
      "price": 0.22033,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     },
     {
      "distributor": "Digi-Key",
@@ -870,7 +930,8 @@
      "price": 0.20243,
      "currency": "USD",
      "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSLP1206R0100FEA/1883279",
-     "date": "2026-11-22"
+     "date": "2026-11-22",
+     "evidence": "page-read"
     }
    ],
    "notes": "Digi-Key page read 22 Nov 2026: Active, series WSLP, 1 W metal element, stock 193,420. Grade: Features \"Automotive AEC-Q200\" and Ratings AEC-Q200 on this code's page -> aecq true (task had false, not read); desc completed. 1k = Cut Tape, 4k / 40k = Tape & Reel (40,000 largest shown)."

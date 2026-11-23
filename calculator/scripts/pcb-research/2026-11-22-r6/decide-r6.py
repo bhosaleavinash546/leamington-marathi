@@ -15,6 +15,7 @@ Rules (each decision is written with its reason):
     for the automotive code) is not merged.
  5. HOLD list (a person decides): parts named in HOLD with the reason.
  6. Common-mode chokes are `transformer` (RULES-R4); categories outside the 17 are refused by validate.mts.
+ 8. A reviewed family link keeps its family key: a new part of that family is filed under its own code.
  7. Verification (verify-*.json, an independent re-read of a sample): a part the verifier found DIFFERENT is replaced by
     the verifier's reading when the verifier read the page (both kept in decisions.json); a batch with any DIFFERENT
     price is flagged for a full re-read."""
@@ -29,6 +30,7 @@ OUTCOME = re.compile(r'^\s*(OBSOLETE|NRND|WRONG-CODE|NO-LISTING|SUMMARY-ONLY|NOT
 def sigfigs(x):
     s = ('%.10f' % float(x)).rstrip('0').replace('.', '').lstrip('0'); return len(s)
 dec, out_lists = [], collections.defaultdict(list)
+LINKED = {norm(k): (v.get('member') if isinstance(v, dict) else v) for k, v in json.load(open(os.path.join(H, '..', 'family-links.json')))['links'].items()}
 os.makedirs(os.path.join(H, 'merge'), exist_ok=True)
 for f in glob.glob(os.path.join(H, 'merge', '*.json')): os.remove(f)
 stats = collections.Counter()
@@ -45,7 +47,9 @@ for f in RAW:
             elif float(o.get('qty') or 0) < 100: why = 'rule 2: break below 100'
             elif float(o.get('price') or 0) < 0.1 and sigfigs(o.get('price') or 0) < 2: why = 'rule 2: a price under 0.10 printed with fewer than two significant figures'
             if why: dec.append({'file': name, 'mpn': mpn, 'action': 'dropObs', 'obs': f"{o.get('distributor')} {o.get('price')} {o.get('currency')} @{o.get('qty')}", 'reason': why})
-            else: obs.append(o)
+            else:
+                if name in ('b05-passives', 's1-slope'): o = {**o, 'evidence': 'page-read'}   # the pilot predates the field; both files were page reads
+                obs.append(o)
         # rule 2: part-reel rows, per distributor and packing
         by = collections.defaultdict(list)
         for o in obs: by[(str(o.get('distributor')).lower(), o.get('packing', '?'))].append(o)
@@ -68,6 +72,10 @@ for f in RAW:
         if p.get('aecq') is False and p.get('observedMpn') and norm(p['observedMpn']) != norm(mpn) and re.search(r'industrial sibling|non-automotive sibling|priced on the industrial', notes, re.I):
             out_lists['SIBLING-NOT-AUTOMOTIVE'].append({'file': name, 'mpn': mpn, 'why': notes[:300]}); stats['sibling'] += 1; continue
         q = dict(p); q['observations'] = obs
+        # rule 8: a reviewed family link (family-links.json) keeps its family-key entry and its reviewed member; a new
+        # part of that family is filed under its own code, not over the family key
+        if norm(q.get('family')) in LINKED:
+            dec.append({'file': name, 'mpn': mpn, 'action': 'family', 'from': q['family'], 'to': mpn, 'reason': f"rule 8: '{q['family']}' has a reviewed family link to {LINKED[norm(q['family'])]}"}); q['family'] = mpn
         if re.search(r'common.?mode', str(p.get('desc', '')), re.I) and p.get('category', '').startswith('passive'):
             dec.append({'file': name, 'mpn': mpn, 'action': 'category', 'from': p['category'], 'to': 'transformer', 'reason': 'rule 6: common-mode choke'}); q['category'] = 'transformer'
         keep.append(q); stats['toMerge'] += 1

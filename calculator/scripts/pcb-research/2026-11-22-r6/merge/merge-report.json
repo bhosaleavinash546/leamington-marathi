@@ -415,6 +415,7 @@
   "M0G3519QPTRQ1",
   "M0L1306QRHBRQ1",
   "M0G3507QPMRQ1",
+  "TCAN1043ADYYRQ1",
   "TCAN1463DRQ1",
   "TCAN28473RHBRQ1",
   "TCAN3404DDFRQ1",
@@ -430,8 +431,7 @@
  ],
  "replacedEstimate": [
   "SPC58EC → SPC58EC80E3QMC1Y",
-  "SN74LVC1G → SN74LVC1G17QDCKRQ1",
-  "TCAN1043 → TCAN1043ADYYRQ1"
+  "SN74LVC1G → SN74LVC1G17QDCKRQ1"
  ],
  "updated": [
   "ABM8AIG-16.000MHZ-8-1Z-T (cross-checked: Digi-Key)",
@@ -447,13 +447,19 @@
   "TLE8888QKXUMA1 (cross-checked: Future Electronics, Farnell, Digi-Key)",
   "T598D106M050ATS090 (cross-checked: Farnell, Digi-Key)",
   "T598D336M035ATE065 (cross-checked: Farnell, Digi-Key)",
-  "T598D337M006ATE025 (cross-checked: TME, Digi-Key)"
+  "T598D337M006ATE025 (cross-checked: Digi-Key, TME)"
  ],
  "keptExisting": [],
  "notFound": [],
  "badCategory": [],
  "repriced": [],
  "removed": [],
+ "superseded": [
+  "ABM8AIG-16.000MHZ-8-1Z-T: Digi-Key 0.44305 USD @1000 (2026-10-06) replaced by the page read of 0.51801",
+  "SMBJ24CA-Q: Digi-Key 0.145 USD @3000 (2026-10-06) replaced by the page read of 0.13286",
+  "SMBJ33CA-Q: Digi-Key 11.26 INR @3000 (2026-10-09) replaced by the page read of 0.17782",
+  "T598D337M006ATE025: TME 0.64 USD @1500 (2026-10-13) replaced by the page read of 0.62"
+ ],
  "auditRemoved": [],
  "familyLinked": [
   "TC264: £16.4706 → £10.2834 (SAK-TC264DA-40F200W BC)",
@@ -468,7 +474,7 @@
   "STM32H743: £8.2353 → £7.1244 (STM32H743ZIT6)",
   "STM32G474: £4.7059 → £4.6501 (STM32G474RET3)",
   "TEF8232: £16.4706 → £20.6906 (TEF8232EN1/N1/ZUZ)",
-  "TCAN1043: link not applied (no key)",
+  "TCAN1043: £0.9412 → £0.7334 (TCAN1043ADRQ1)",
   "TLE9251: £0.5294 → £0.7004 (TLE9251VSJXUMA1)",
   "TLE9255: £1.0588 → £1.1829 (TLE9255WSKXUMA1)",
   "TLE9471: £2.5882 → £1.3709 (TLE94713ESXUMA1)",
