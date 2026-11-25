@@ -360,6 +360,8 @@ what is true** — nothing here has been compared with a price JLR paid.
 - Conformal scores are relative to the calibrated estimate.
 
 ## Working notes
+- JLR server deployment: plan and readiness status in `docs/deployment/jlr-deployment-readiness-2026-11-26.md` (Phase 1 no AI,
+  Option A = Docker on a JLR Linux VM behind the gateway, `AIR_GAPPED=1`). Update its status columns as items close.
 - Default dev branch is `claude/new-session-ts4byp`.
 - Programme life (`#programme-years`) is a costing input: CAD Apply writes `*-amort` = annual × years, and every CAD
   request sends `programmeYears` so the rules size tools that wear out (moulding cavitation / steel) over the same
