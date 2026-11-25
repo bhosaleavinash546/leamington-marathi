@@ -28,7 +28,15 @@ const STD_LAYERS = [1, 2, 4, 6, 8, 10, 12, 14, 16];
 /** Automotive boards run sparser than consumer — ~1.6 placements/cm² is typical. */
 const PLACEMENT_DENSITY_PER_CM2 = 1.6;
 const AREA_MIN_CM2 = 6;
+/** The largest ESTIMATED size the tool will cost (a guess beyond it is clamped). */
 const AREA_MAX_CM2 = 600;
+/**
+ * The largest MEASURED / typed size kept exactly: a 24 × 32 in production panel (610 × 813 mm ≈ 4,960 cm²) less its
+ * border — a CostVision engineering bound, not a sourced figure. A measured size above 600 cm² used to be treated as an
+ * estimate and shrunk to 600 cm²: a typed 395 × 215 mm inverter control board (849 cm²) was costed at 332 × 181 mm,
+ * its bare board and coating area ~30 % short (EDU control board, 25 Nov 2026).
+ */
+const MEASURED_AREA_MAX_CM2 = 4800;
 /**
  * The physical density band an ESTIMATED size must sit in (placements per cm² per populated side).
  * It used to be ±30–40% around 1.6/cm² — right for a sparse ECU, but it turned a 20×20 mm automotive
@@ -147,7 +155,7 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   // reads of one board disagreeing, and it assumes ~1.6 placements/cm², so it
   // turned a measured 87.8×48.9 mm automotive radar board (7.6/cm²) into 161×89.
   const measured = String(spec.dimensionsSource ?? '').toLowerCase() === 'measured'
-    && modelAreaCm2 >= AREA_MIN_CM2 && modelAreaCm2 <= AREA_MAX_CM2;
+    && modelAreaCm2 >= AREA_MIN_CM2 && modelAreaCm2 <= MEASURED_AREA_MAX_CM2;
   let areaCm2 = modelAreaCm2;
   if (!measured) {
     const sides = Math.max(1, Math.min(2, Math.round(n(asm.reflowSides, 1)) || 1));
