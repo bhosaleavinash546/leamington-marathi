@@ -2935,7 +2935,7 @@ export function printPDF(
     y = calloutBox(doc, y, 'Key Assumptions', [
       pcba.basis + '.',
       `Ex-works ${money(pcba.exWorks)} is the board built, tested and packed at the ${pcba.country.split(' (')[0]} factory gate; delivered ${money(pcba.total)} adds freight to the UK and UK import duty (${money(pcba.total - pcba.exWorks)}).`,
-      `Board: ${pcba.domainLabel}${pcba.safety ? ` · costed at ${pcba.safety.costed}` : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
+      `Board: ${pcba.domainLabel}${pcba.safety ? (pcba.safety.costed === 'Not confirmed' ? ' · ASIL not confirmed' : ` · costed at ${pcba.safety.costed}`) : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
       'Component prices follow the parts bought (qty per board × boards); fabricator and EMS prices carry their own overhead and margin — none is added on top.',
     ], NAVY, HDR);
     const money4 = (n: number) => `${sym}${(n * fxRate).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;

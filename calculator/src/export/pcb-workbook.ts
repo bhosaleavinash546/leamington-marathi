@@ -565,7 +565,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
     ['Board', rep.domainLabel], ['Build country', rep.country], ['Annual volume', rep.annualVolume ? `${rep.annualVolume.toLocaleString('en-GB')} boards` : '—'],
     ['Parts list from', `${rep.bomOrigin} · ${rep.bom.length} lines · ${rep.bomPieces} parts`],
     ...rep.boardRows.filter(([k]) => /^(Size|Layers)$/.test(k)).map(([k, v]) => [k, v] as [string, string]),
-    ...(rep.safety ? [['ISO 26262', `${rep.safety.costed} costed${rep.safety.claimed ? ` (claimed ${rep.safety.claimed})` : ''}`] as [string, string]] : []),
+    ...(rep.safety ? [['ISO 26262', rep.safety.costed === 'Not confirmed' ? `ASIL not confirmed${rep.safety.claimed ? ` (photos suggest ${rep.safety.claimed})` : ''}` : `${rep.safety.costed} costed${rep.safety.claimed ? ` (photos suggested ${rep.safety.claimed})` : ''}`] as [string, string]] : []),
     ['Price engine', 'Deterministic — the AI never sets a price'],
   ];
   facts.forEach(([k, v], i) => {
