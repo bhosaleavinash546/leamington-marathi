@@ -13,7 +13,7 @@ import { enclosedShell, cavityShell } from '../../src/engine/cost-input-rules/de
 import { createHash } from 'node:crypto';
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
 import { extractSkinMesh } from '../utils/geometry-bridge.js';
-import { developBlank, blankToDxf } from '../utils/blank-unfold.js';
+import { developBlankOffThread } from '../utils/blank-unfold-worker.js';
 import { putBlank, putBlankDxf } from '../utils/geometry-store.js';
 import { decimateOutline } from '../../src/engine/nesting.js';
 
@@ -53,13 +53,13 @@ export async function developBlankFromCad(
   const t0 = Date.now();
   const mesh = await extractSkinMesh(buffer, filename, { timeoutMs: opts.timeoutMs ?? 180_000, unitScale: opts.unitScale });
   if (mesh.status !== 'success') return { error: mesh.error };
-  let developed;
+  // The unfold runs in a worker (JLR Phase 1 readiness): on the main thread it stopped every other user for ~40 s.
+  let developed, dxf: string;
   try {
-    developed = developBlank(mesh.mesh);
+    ({ developed, dxf } = await developBlankOffThread(mesh.mesh, filename.replace(/\.[^.]+$/, ''), opts.timeoutMs ?? 300_000));
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }
-  const dxf = blankToDxf(developed.skins[0], filename.replace(/\.[^.]+$/, ''));
   const blankHash = createHash('sha256').update(dxf).digest('hex');
   const blank: DevelopedBlankRecord = {
     grossAreaMm2: developed.grossAreaMm2,
