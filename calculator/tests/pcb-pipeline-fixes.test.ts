@@ -257,14 +257,25 @@ describe('F18 — a "read off the chip" claim needs a real part token, not a fra
 
 import { guardAsil } from '../server/utils/pcb-asil-guard.js';
 
-describe('F22 — ASIL-C/D is costed only with a named safety supply', () => {
-  it('a lockstep MCU family alone, or the model\'s words, do not keep ASIL-C', () => {
-    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'FS32R294KCMJD' }] }).costed).toBe('ASIL-B');
-    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: '', description: 'safety PMIC (ASIL-D)' }] }).costed).toBe('ASIL-B');
+describe('F22 — ASIL-C/D is supported only with a named safety supply; the ENGINEER sets the costed level (EDU audit G-15)', () => {
+  it('a lockstep MCU family alone, or the model\'s words, do not support ASIL-C', () => {
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'FS32R294KCMJD' }] }).supported).toBe('ASIL-B');
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: '', description: 'safety PMIC (ASIL-D)' }] }).supported).toBe('ASIL-B');
   });
-  it('a safety PMIC / SBC named by part number keeps it', () => {
-    expect(guardAsil({ asil: 'ASIL-D', bom: [{ partNumber: 'TLF35584QVVS1' }] }).costed).toBe('ASIL-D');
-    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'MFS2633HMDA0ADR2' }] }).costed).toBe('ASIL-C');
+  it('a safety PMIC / SBC named by part number supports it', () => {
+    expect(guardAsil({ asil: 'ASIL-D', bom: [{ partNumber: 'TLF35584QVVS1' }] }).supported).toBe('ASIL-D');
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'MFS2633HMDA0ADR2' }] }).supported).toBe('ASIL-C');
+  });
+  it('nothing ASIL-dependent is costed until the engineer sets the level; then theirs is costed', () => {
+    const g = guardAsil({ asil: 'ASIL-D', bom: [{ partNumber: 'TLF35584QVVS1' }] });
+    expect(g.costed).toBe('Unknown');
+    expect(g.costedFrom).toBe('not confirmed');
+    expect(g.notes.join(' ')).toMatch(/ASIL not confirmed/);
+    const c = guardAsil({ asil: 'ASIL-D', bom: [{ partNumber: 'FS32R294KCMJD' }], confirmed: 'asil-c' });
+    expect(c.costed).toBe('ASIL-C');
+    expect(c.costedFrom).toBe('engineer');
+    expect(guardAsil({ asil: 'Unknown', bom: [], confirmed: 'QM' }).costed).toBe('QM');
+    expect(guardAsil({ asil: 'ASIL-B', bom: [], confirmed: 'nonsense' }).costed).toBe('Unknown');
   });
 });
 

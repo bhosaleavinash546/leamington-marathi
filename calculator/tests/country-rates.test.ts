@@ -545,7 +545,8 @@ describe('11. all commodities: no fixed UK £ survives a country change ("twice 
     expect(src).toMatch(/computeAutomotiveNRE\(asilLevel, bomTotal, selectedCountry\)/);
     expect(src).toMatch(/computeConformalCoatingCost\(boardSpec, domain, asilLevel, selectedCountry\)/);
     expect(src).toMatch(/computeAutomotiveAssemblyCost\(assemblyData, asil, orderQty, bd\.assemblyPerBoard, bd\.countryId\)/);
-    expect(src).toMatch(/computeAutomotiveFabAdjustment\(boardSpec, bd\.pcbFabPerBoard, domain, bd\.panelInfo\?\.boardsPerPanel \?\? 1, bd\.countryId\)/);
+    // The country is passed; the options carry the order and what an ASP cannot hold (EDU audit, Nov 2026).
+    expect(src).toMatch(/computeAutomotiveFabAdjustment\(boardSpec, bd\.pcbFabPerBoard, domain, bd\.panelInfo\?\.boardsPerPanel \?\? 1, bd\.countryId,/);
   });
 
   it('heat-treat load QC follows the country (it was a UK £ per load)', async () => {

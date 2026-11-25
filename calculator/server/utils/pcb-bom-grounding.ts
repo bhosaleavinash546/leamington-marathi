@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch } from './pcb-price-catalogue.js';
+import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch, packagePinsConflict } from './pcb-price-catalogue.js';
 import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
@@ -60,7 +60,13 @@ export function reconcileBomWithCatalogue(
     const qty = num(line.qty, 1);
     let hit = pn.length > 0 ? byMpn.get(pn) : undefined;
 
-    const hitEntry = hit && hit.provider === 'catalogue' ? catalogueEntry(pn) : null;
+    let hitEntry = hit && hit.provider === 'catalogue' ? catalogueEntry(pn) : null;
+    // A FAMILY match whose package differs from the line's is another part: an analogue in a 12-pin package priced a
+    // QFN-16 line (EDU audit G-14). Only an exact code may cross packages (the code is the part).
+    if (hit && hitEntry && !isExactCatalogueMatch(pn, hitEntry) && packagePinsConflict(String(line.pkg ?? ''), String(hitEntry.pkg ?? ''))) {
+      (line as Record<string, unknown>).packageMismatchNote = `Catalogue family entry ${hitEntry.mpn} is a ${hitEntry.pkg} part and this line is ${String(line.pkg)} — not used. `;
+      hit = undefined; hitEntry = null;
+    }
     if (hit && IMAGER_RE.test(`${hitEntry?.desc ?? ''} ${hit.description ?? ''}`)) {
       // An imager: the listing is a reference; capUnconfirmedPrices prices the line by the imager volume rule.
       return {
@@ -280,7 +286,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
         priceSource: range.generic ? 'function-range' : 'known-range',
         priceCapped: inRange < unit - 1e-6,
         priceRaised: inRange > unit + 1e-6,
-        priceNote: `${range.generic ? 'Part not read; ' : line.bomSource === 'file' || line.bomSource === 'image' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume, priced at its lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''} — confirm with a quote`
+        priceNote: `${String(line.packageMismatchNote ?? '')}${range.generic ? 'Part not read; ' : line.bomSource === 'file' || line.bomSource === 'image' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume, priced at its lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''} — confirm with a quote`
           + (line.priceNote ? ` · ${String(line.priceNote)}` : ''),
         needsVerification: true,
       };

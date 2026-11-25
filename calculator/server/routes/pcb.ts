@@ -21,6 +21,8 @@ import {
   PCB_BASIS_SOURCE,
   getActivePCBCountryOverrides,
 } from '../data/pcb-country-rates.js';
+import { CNY_PER_GBP_2026_09, lotBoards, programmeBoards } from '../data/pcb-country-rates.js';
+import { marketAspClass } from '../data/pcb-market-evidence.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
@@ -378,9 +380,13 @@ export function applyAutomotiveGrade(
 ): { assembly: AutomotiveAssemblyCost; fab: AutomotiveFabAdjustment } | null {
   if (domain !== 'automotive_adas') return null;
   const assembly = computeAutomotiveAssemblyCost(assemblyData, asil, orderQty, bd.assemblyPerBoard, bd.countryId);
-  const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1, bd.countryId);
+  const b0 = (bd.breakdown ?? {}) as unknown as Record<string, number>;
+  const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1, bd.countryId,
+    { orderQty, extras: { pcbVias: b0.pcbVias, pcbHDI: b0.pcbHDI, pcbCopper: b0.pcbCopper, pcbSetup: b0.pcbSetup } });
   const asmPremium = Math.max(0, assembly.totalAutomotiveAssemblyGBP - assembly.standardAssemblyGBP);
-  const fabPremium = Math.max(0, fab.totalAutomotiveFabGBP - fab.standardFabGBP);
+  // On the market basis the "premium" is the ASP-based board less the table's standard board, and may be negative: the
+  // table's standard build-up is not the market (EDU audit G-06). On the table basis it is never negative.
+  const fabPremium = fab.basis === 'market' ? fab.totalAutomotiveFabGBP - fab.standardFabGBP : Math.max(0, fab.totalAutomotiveFabGBP - fab.standardFabGBP);
   const duty = PCB_COUNTRY_RATES[bd.countryId]?.logistics.importDutyFraction ?? 0;
   const dutyDelta = (asmPremium + fabPremium) * duty;
   const r = (n: number) => Math.round(n * 100) / 100;
@@ -398,10 +404,13 @@ export function applyAutomotiveGrade(
     const insp = countryFactor('inspection', pcbRegionOf(bd.countryId)), proc = countryFactor('process', pcbRegionOf(bd.countryId));
     const layers = Number(boardSpec.estimatedLayers) || 2;
     const burnShifts = asil === 'ASIL-D' ? 6 : asil === 'ASIL-C' ? 4 : 0;
-    bd.basis.push(
-      { item: 'Automotive fab grade', gbp: fabPremium, source: `${E}; UK lab £ figures × the country's inspection factor ${insp.toFixed(3)}`,
+    const per = fab.sampling === 'lot' ? `${fab.samplingDivisor} boards a lot (sampled per lot)` : `${fab.samplingDivisor ?? bd.panelInfo?.boardsPerPanel ?? 1} boards a panel`;
+    bd.basis.push(fab.basis === 'market'
+      ? { item: 'Automotive fab grade', gbp: fabPremium, source: `the country's automotive bare-board selling price per m² (server/data/pcb-market-evidence.ts: prospectus ASP, trade-press price rise, PCBasic class-3 extras) — it holds panel yield, drilling, finish, test and the automotive grade, so no IATF / laminate / microsection / coupon adder is added`,
+          formula: `market board ${fab.marketFormula} = ${g(fab.totalAutomotiveFabGBP)}; less the table's standard board ${g(fab.standardFabGBP)} = ${g(fabPremium)}` }
+      : { item: 'Automotive fab grade', gbp: fabPremium, source: `${E}; UK lab £ figures × the country's inspection factor ${insp.toFixed(3)}`,
         formula: `IATF 18 % × ${g(fab.standardFabGBP)} = ${g(fab.iatfFabPremiumGBP)}; laminate: fab × 40 % (laminate share) × ${layers >= 8 ? 50 : 35} % (automotive v standard FR4) = ${g(fab.automotiveLaminatePremiumGBP)}; `
-          + `class-3 microsection min(45, max(8, area cm² × 0.08)) × ${insp.toFixed(3)} ÷ ${bd.panelInfo?.boardsPerPanel ?? 1} boards a panel = ${g(fab.ipcClass3InspectionGBP)}; coupons min(35, max(5, ${layers} layers × 2.5)) × ${insp.toFixed(3)} ÷ ${bd.panelInfo?.boardsPerPanel ?? 1} = ${g(fab.couponTestingGBP)}; total ${g(fabPremium)} (each item rounded to the penny; the premium is the rounded graded fab less the rounded standard fab)` },
+          + `class-3 microsection min(45, max(8, area cm² × 0.08)) × ${insp.toFixed(3)} ÷ ${per} = ${g(fab.ipcClass3InspectionGBP)}; coupons min(35, max(5, ${layers} layers × 2.5)) × ${insp.toFixed(3)} ÷ ${per} = ${g(fab.couponTestingGBP)}; total ${g(fabPremium)} (each item rounded to the penny; the premium is the rounded graded fab less the rounded standard fab)` },
       { item: 'Automotive assembly grade', gbp: asmPremium, source: `${E}; flat £ figures × the country's process / inspection factor (${proc.toFixed(3)} / ${insp.toFixed(3)})`,
         formula: `IATF line 20 % × ${g(assembly.standardAssemblyGBP)} = ${g(assembly.iatfPremiumGBP)}; class-3 workmanship 5 % = ${g(assembly.ipcClass3GBP)}; serialisation £${orderQty >= 1000 ? '0.05' : '0.80'} × ${proc.toFixed(3)} = ${g(assembly.serialisationGBP)}`
           + (burnShifts ? `; burn-in ${asil}: ${burnShifts} shifts × £180 × ${insp.toFixed(3)} ÷ ${orderQty >= 1000 ? 500 : Math.max(1, Math.min(200, orderQty))} boards a shift = ${g(assembly.burnInGBP)}` : '; no burn-in below ASIL-C')
@@ -414,14 +423,17 @@ export function applyAutomotiveGrade(
 }
 
 /** The same premiums on a volume-curve point (which carries no breakdown). */
-export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number, countryId = 'gb'): VolumeCurvePoint[] {
+export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number, countryId = 'gb', extras?: FabExtras): VolumeCurvePoint[] {
   if (domain !== 'automotive_adas') return points;
   const r = (n: number) => Math.round(n * 100) / 100;
   return points.map(pt => {
     const a = computeAutomotiveAssemblyCost(assemblyData, asil, pt.qty, pt.assemblyPerBoard, countryId);
-    const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel, countryId);
+    // A curve point carries no breakdown: what an ASP cannot hold is rebuilt from the headline's (vias, HDI, copper) and
+    // the tooling set-up at this point's quantity over the programme.
+    const setupAt = (PCB_COUNTRY_RATES[countryId]?.pcbFab.setupCostGBP ?? 0) / programmeBoards({ orderQuantity: pt.qty, programmeYears: Number(boardSpec.programmeYears) || undefined });
+    const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel, countryId, { orderQty: pt.qty, extras: { ...(extras ?? {}), pcbSetup: setupAt } });
     const asmP = Math.max(0, a.totalAutomotiveAssemblyGBP - a.standardAssemblyGBP);
-    const fabP = Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
+    const fabP = f.basis === 'market' ? f.totalAutomotiveFabGBP - f.standardFabGBP : Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
     // Duty on the premiums, as the headline charges it (applyAutomotiveGrade) — the
     // curve was £0.10 under the headline at its own quantity.
     const dutyP = (asmP + fabP) * (PCB_COUNTRY_RATES[countryId]?.logistics.importDutyFraction ?? 0);
@@ -974,16 +986,56 @@ interface AutomotiveFabAdjustment {
   couponTestingGBP: number;
   totalAutomotiveFabGBP: number;
   premiumPctOverStandard: number;
+  /** 'market': the country's sourced automotive ASP per m² (pcb-market-evidence.ts); 'table': standard + premiums. */
+  basis: 'market' | 'table';
+  /** Market basis: the ASP part and what an ASP cannot hold, with the arithmetic. */
+  marketCoreGBP?: number;
+  notInAspGBP?: number;
+  marketFormula?: string;
+  /** Table basis: what the microsection and coupons are shared by. */
+  samplingDivisor?: number;
+  sampling?: 'panel' | 'lot';
 }
-function computeAutomotiveFabAdjustment(
+/** What a bare-board ASP per m² cannot hold: holes above the drilling allowance, blind / micro vias, HDI, heavy copper
+ *  and the one-off tooling set-up — read from the country breakdown. */
+export interface FabExtras { pcbVias?: number; pcbHDI?: number; pcbCopper?: number; pcbSetup?: number }
+/** The test-sampling cadence: per production lot only when the engineer says so (the control plan sets it — EDU audit
+ *  G-04: "do not universalise either per-lot or per-panel sampling"). Default per panel, as before. */
+export function samplingCadence(boardSpec: Record<string, unknown>): 'panel' | 'lot' {
+  return String(boardSpec.samplingCadence ?? '').toLowerCase() === 'lot' ? 'lot' : 'panel';
+}
+export function computeAutomotiveFabAdjustment(
   boardSpec: Record<string, unknown>,
   fabCostMid: number,
   domain: string,
   boardsPerPanel = 1,
   countryId = 'gb',
+  opts: { extras?: FabExtras; orderQty?: number } = {},
 ): AutomotiveFabAdjustment {
   if (domain !== 'automotive_adas' || fabCostMid <= 0) {
-    return { standardFabGBP: fabCostMid, iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0, totalAutomotiveFabGBP: fabCostMid, premiumPctOverStandard: 0 };
+    return { standardFabGBP: fabCostMid, iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0, totalAutomotiveFabGBP: fabCostMid, premiumPctOverStandard: 0, basis: 'table' };
+  }
+  const rr = (n: number) => Math.round(n * 100) / 100;
+  {
+    // Market basis (EDU audit G-06): an automotive board in a country with a sourced ASP is priced at it.
+    const layersM = Number(boardSpec.estimatedLayers) || 2;
+    const m = marketAspClass(countryId, layersM);
+    const row = PCB_COUNTRY_RATES[countryId]?.pcbFab;
+    if (m && row) {
+      const wM = Number(boardSpec.widthMm) || 100, hM = Number(boardSpec.heightMm) || 80;
+      const m2 = wM * hM / 1e6;
+      const shapeOf = (L: number) => row.baseCostPerDm2_2L + row.layerAdderPerDm2 * Math.max(0, L - 2);
+      const shape = shapeOf(layersM) / shapeOf(m.cls.anchorLayers);
+      const perM2 = m.cls.aspLocalPerM2 * (1 + m.ev.rise.used) * shape + m.ev.class3ExtrasPerM2.value;
+      const core = m2 * perM2 / CNY_PER_GBP_2026_09;
+      const x = opts.extras ?? {};
+      const notInAsp = (x.pcbVias ?? 0) + (x.pcbHDI ?? 0) + (x.pcbCopper ?? 0) + (x.pcbSetup ?? 0);
+      const total = core + notInAsp;
+      const marketFormula = `${m2.toFixed(6)} m² × (¥${m.cls.aspLocalPerM2.toLocaleString('en-GB')}/m² (${m.cls.minLayers}–${m.cls.maxLayers === 99 ? '' : m.cls.maxLayers}${m.cls.maxLayers === 99 ? '+' : ''}-layer automotive ASP ${m.cls.baseYear}) × ${(1 + m.ev.rise.used).toFixed(3)} (2026 rise) × ${shape.toFixed(4)} (${layersM} v ${m.cls.anchorLayers} layers, the table's shape) + ¥${m.ev.class3ExtrasPerM2.value}/m² class-3 extras) ÷ ${CNY_PER_GBP_2026_09} ¥/£ = £${core.toFixed(4)}; + not in an ASP (holes above the allowance, blind / micro vias, HDI, heavy copper, tooling set-up) £${notInAsp.toFixed(4)}`;
+      return { standardFabGBP: rr(fabCostMid), iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0,
+        totalAutomotiveFabGBP: rr(total), premiumPctOverStandard: Math.round((total / fabCostMid - 1) * 100), basis: 'market',
+        marketCoreGBP: rr(core), notInAspGBP: rr(notInAsp), marketFormula };
+    }
   }
   const layers = Number(boardSpec.estimatedLayers) || 2;
   const widthMm = Number(boardSpec.widthMm) || 100;
@@ -992,9 +1044,12 @@ function computeAutomotiveFabAdjustment(
   const iatfFabPremiumGBP = fabCostMid * 0.18;
   const laminatePct = layers >= 8 ? 0.50 : 0.35;
   const automotiveLaminatePremiumGBP = fabCostMid * 0.40 * laminatePct;
-  // Class-3 microsection inspection and coupon testing are done per PANEL (the
-  // coupons are cut from the panel rails), so they are shared by its boards.
-  const perPanel = Math.max(1, boardsPerPanel);
+  // Class-3 microsection inspection and coupon testing: the coupons are cut from the panel rails, so they are shared by
+  // the panel's boards — or, when the control plan samples per production LOT, by the lot's boards (EDU audit G-04).
+  const sampling = samplingCadence(boardSpec);
+  const perPanel = sampling === 'lot'
+    ? lotBoards({ orderQuantity: Number(opts.orderQty) || 1, lotSize: Number(boardSpec.lotSize) || undefined })
+    : Math.max(1, boardsPerPanel);
   // UK lab prices — microsection and coupon testing — in the board's country.
   const insp = countryFactor('inspection', pcbRegionOf(countryId));
   const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08)) * insp / perPanel;
@@ -1006,7 +1061,7 @@ function computeAutomotiveFabAdjustment(
     standardFabGBP: r(fabCostMid), iatfFabPremiumGBP: r(iatfFabPremiumGBP),
     automotiveLaminatePremiumGBP: r(automotiveLaminatePremiumGBP),
     ipcClass3InspectionGBP: r(ipcClass3InspectionGBP), couponTestingGBP: r(couponTestingGBP),
-    totalAutomotiveFabGBP: r(totalAutomotiveFabGBP), premiumPctOverStandard,
+    totalAutomotiveFabGBP: r(totalAutomotiveFabGBP), premiumPctOverStandard, basis: 'table', samplingDivisor: perPanel, sampling,
   };
 }
 
@@ -1647,7 +1702,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
     bomCompleteness: null, programPricing: null, failed: false, domain: inp.domain,
     // Unchanged until the parts list is known (a failed Stage 4 still reports what was claimed).
-    asil: guardAsil({ asil: inp.asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: [] }),
+    asil: guardAsil({ asil: inp.asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: [], confirmed: (inp.analysis?.boardSpec as Record<string, unknown> | undefined)?.asilConfirmed }),
   };
   try {
     const boardSpec = (a.boardSpec ?? (a.boardSpec = {})) as Record<string, unknown>;
@@ -1718,7 +1773,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
     // with the safety hardware it needs — on EVIDENCED part numbers (gateIdentities, in prepareBOMFromOCR) — and a
     // rationale the BOM contradicts is withheld.
-    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: prepared.bom });
+    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: prepared.bom, confirmed: boardSpec.asilConfirmed });
     asilLevel = out.asil.costed as ASILLevel;
     for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 4. Placements from the list BEFORE the board is sized from them — the fab
@@ -1885,6 +1940,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       // The BOM is the BOM: it used to fall back to the fab estimate, costing the board twice.
       totalBOMCostGBP: bomTotal, orderQuantity: orderQty,
       copperOzByLayer: copperLayersFromSpec(boardSpec), weightKg: weightKgFromSpec(boardSpec),
+      // The engineer's lot size and programme life (PCB form; EDU audit G-08): set-ups per lot, one-offs over the programme.
+      lotSize: Number(boardSpec.lotSize) > 0 ? Number(boardSpec.lotSize) : undefined,
+      programmeYears: Number(boardSpec.programmeYears) > 0 ? Number(boardSpec.programmeYears) : undefined,
     };
     out.countryComparison = computeAllCountryCosts(costInput);
     const resolved = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
@@ -1936,9 +1994,10 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const bpp = bd.panelInfo?.boardsPerPanel ?? 1;
     // Component prices follow each point's quantity (parts bought per line); edited lines stay as typed.
     const bomAt = (q: number) => bomAtQty(bom, q, orderQty);
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, qtys, bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id);
+    const extrasOf = (id: string) => { const row = id === bd.countryId ? bd : out.countryComparison.find(c => c.countryId === id); const b = (row?.breakdown ?? {}) as unknown as Record<string, number>; return { pcbVias: b.pcbVias, pcbHDI: b.pcbHDI, pcbCopper: b.pcbCopper }; };
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, qtys, bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id, extrasOf(id));
     // The NPI run is the same costing at NPI_RUN_QTY boards (the volume curve's arithmetic), not the headline × 1.38.
-    const npiPoint = gradeVolumeCurve(computeVolumeCurve(costInput, resolved, [NPI_RUN_QTY], bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, resolved)[0];
+    const npiPoint = gradeVolumeCurve(computeVolumeCurve(costInput, resolved, [NPI_RUN_QTY], bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, resolved, extrasOf(resolved))[0];
     out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard, npiPoint?.totalPerBoard);
     // The basis lines are printed for the selected country only; the other rows carry their figures, not 14 copies.
     for (const c of out.countryComparison) if (c.countryId !== bd.countryId) delete c.basis;
@@ -2711,6 +2770,8 @@ router.post('/scenario', (req, res): void => {
     orderQuantity:        Number(b.orderQuantity)       || 100,
     copperOzByLayer:      Array.isArray(b.copperOzByLayer) ? b.copperOzByLayer.map(Number) : undefined,
     weightKg:             Number(b.weightKg) > 0 ? Number(b.weightKg) : undefined,
+    lotSize:              Number(b.boardSpec?.lotSize) > 0 ? Number(b.boardSpec?.lotSize) : undefined,
+    programmeYears:       Number(b.boardSpec?.programmeYears) > 0 ? Number(b.boardSpec?.programmeYears) : undefined,
   };
 
   // Copper and weight exactly as the headline derives them from the board spec.

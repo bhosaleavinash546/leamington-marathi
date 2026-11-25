@@ -225,12 +225,29 @@ export function descriptionCap(description: string): number | null {
 /** Pads, test points or an unfitted footprint — a BOM line with no part to buy.
  *  Needs both a no-part word AND a connector/test context, so an IC's "exposed
  *  thermal pad" never matches. */
+/** The pin / ball count a package name states ("QFN-16", "VQFN-HR 12", "SOIC (DW) 16", "LFBGA-292"), or null. */
+export function packagePins(pkg: string): number | null {
+  const m = /\b(?:[A-Z]*QFN|DFN|[A-Z]*SON|SOIC|SOP|TSSOP|SSOP|MSOP|HSOIC|[A-Z]*BGA|[A-Z]*QFP|LGA|SOT-?23|SC-?70)[^0-9A-Z]{0,4}(?:[A-Z]{1,3}[^0-9A-Z]{0,3})?(?:\([A-Z]{1,4}\)[^0-9]{0,2})?(\d{1,4})\b/i.exec(String(pkg || ''));
+  return m ? Number(m[1]) : null;
+}
+/** Two package names that both state a pin count, and the counts differ. */
+export function packagePinsConflict(a: string, b: string): boolean {
+  const x = packagePins(a), y = packagePins(b);
+  return x != null && y != null && x !== y;
+}
+
 export function isNotFitted(line: Record<string, unknown>): boolean {
   const d = `${String(line.description ?? '')} ${String(line.value ?? '')}`;
   if (/\b(DNP|DNF|not fitted|not populated|unpopulated|footprint only|no[- ]?pop)\b/i.test(d)) return true;
   const ct = String(line.componentType ?? '').toLowerCase();
-  const connectorish = /connector|header|through_hole/.test(ct) || /header|connector|test|pogo|probe/i.test(d);
-  return connectorish && /\b(test ?points?|test ?pads?|header pads|pads)\b/i.test(d) && !/thermal pad|exposed pad/i.test(d);
+  // Only a test / connector / mechanical line can be bare pads. A PMIC described "beside the test points" was priced
+  // £0 as not fitted (EDU control board, Nov 2026 — audit G-02).
+  if (ct && !/^(testpoint|test_point|connector|header|through_hole|mechanical|unknown|other)/.test(ct)) return false;
+  // A loop, terminal or named test-point part (Keystone 5015 …) is a FITTED part with a price: 50 SMD test loops were
+  // priced £0 because "test point" read as a pad (audit G-01). Bare pads stay free.
+  if (/\b(loop|loops|terminal|keystone|hook|post|turret)\b|\b50(1[0-9]|0[0-9])\b/i.test(d)) return false;
+  const connectorish = /connector|header|through_hole|testpoint/.test(ct) || /header|connector|test|pogo|probe/i.test(d);
+  return connectorish && /\b(test ?pads?|header pads|pads|bare copper)\b/i.test(d) && !/thermal pad|exposed pad/i.test(d);
 }
 
 /**

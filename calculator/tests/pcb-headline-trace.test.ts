@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computePCBCountryCost, PCB_COUNTRY_RATES, ICT_FIXTURE_GBP, XRAY_SECONDS_PER_BOARD, XRAY_SETUP_GBP, AOI_SECONDS_PER_BOARD, AOI_PROGRAM_GBP, materialBurdenFor, type PCBCostInput } from '../server/data/pcb-country-rates.js';
+import { computePCBCountryCost, PCB_COUNTRY_RATES, ICT_FIXTURE_GBP, VIA_HOLES_INCLUDED_PER_DM2, XRAY_SECONDS_PER_BOARD, XRAY_SETUP_GBP, AOI_SECONDS_PER_BOARD, AOI_PROGRAM_GBP, materialBurdenFor, type PCBCostInput } from '../server/data/pcb-country-rates.js';
 const ICT_SEC = 90;   // the radar input's ictTimeSec
 import { applyAutomotiveGrade, derivePlacementsFromBOM, setDeterministicCostEstimates, gradeVolumeCurve, EXTRACT_MODEL, DEEP_EXTRACT_MODEL, OCR_MODEL } from '../server/routes/pcb.js';
 
@@ -27,7 +27,9 @@ describe('China breakdown by hand (rates as of 2026-09-29)', () => {
     const base = area * r.pcbFab.baseCostPerDm2_2L * waste;
     const layers = area * r.pcbFab.layerAdderPerDm2 * 6 * waste;
     const finish = (base + layers) * (r.pcbFab.surfaceFinishMultiplier.iteq - 1);   // immersion silver
-    const vias = 2.2 * r.pcbFab.viaAdderPer100Through;
+    // Drilling up to VIA_HOLES_INCLUDED_PER_DM2 is inside the per-area price (EDU audit G-05): 220 vias on 0.43 dm² are all inside it.
+    const vias = Math.max(0, 220 - Math.round(VIA_HOLES_INCLUDED_PER_DM2 * area)) / 100 * r.pcbFab.viaAdderPer100Through;
+    expect(vias).toBe(0);
     const imp = (base + layers) * r.pcbFab.impedanceUpliftPct / 100;
     const setup = r.pcbFab.setupCostGBP / 250000;
     expect(bd.pcbFabPerBoard).toBeCloseTo(base + layers + finish + vias + imp + setup, 2);

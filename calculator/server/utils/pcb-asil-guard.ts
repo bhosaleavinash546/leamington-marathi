@@ -15,6 +15,11 @@
  *  - withholds a rationale that names a board function the parts list contradicts
  *    (radar text on a camera BOM, and the reverse), with the reason.
  * The claimed level is kept and shown; the engineer confirms against the safety concept.
+ *
+ * EDU audit (Nov 2026, G-15): "do not infer ASIL from photographs, dual MCUs or an ASIL-capable component". The costed
+ * level is now the ENGINEER'S (`confirmed`, the PCB form's ASIL field). With none, nothing ASIL-dependent is costed
+ * (no burn-in, the QM / unknown NRE tier) and the result says so; the photos' claim and what the parts list supports
+ * are shown as the reason to ask, never as a price.
  */
 export type AsilLevel = 'QM' | 'ASIL-A' | 'ASIL-B' | 'ASIL-C' | 'ASIL-D' | 'Unknown';
 
@@ -53,8 +58,12 @@ function functionInText(s: string): BoardFunction {
 export interface AsilGuardResult {
   /** What the classifier said. */
   claimed: AsilLevel;
-  /** What the costing used. */
+  /** What the costing used: the engineer's confirmed level, or 'Unknown' (nothing ASIL-dependent costed). */
   costed: AsilLevel;
+  /** The highest level the parts list supports (ASIL-B when C/D is claimed with no named safety supply). */
+  supported: AsilLevel;
+  /** Where the costed level came from. */
+  costedFrom: 'engineer' | 'not confirmed';
   rationale: string;
   safetyFunctions: string[];
   boardFunction: BoardFunction;
@@ -64,7 +73,7 @@ export interface AsilGuardResult {
   notes: string[];
 }
 
-export function guardAsil(inp: { asil: AsilLevel; rationale?: string; safetyFunctions?: string[]; bom: BomLine[] }): AsilGuardResult {
+export function guardAsil(inp: { asil: AsilLevel; rationale?: string; safetyFunctions?: string[]; bom: BomLine[]; confirmed?: unknown }): AsilGuardResult {
   const bom = Array.isArray(inp.bom) ? inp.bom : [];
   const claimed = inp.asil ?? 'Unknown';
   const boardFunction = boardFunctionFromBom(bom);
@@ -84,9 +93,25 @@ export function guardAsil(inp: { asil: AsilLevel; rationale?: string; safetyFunc
     safetyFunctions = [];
   }
 
+  let supported: AsilLevel = claimed;
   if ((claimed === 'ASIL-C' || claimed === 'ASIL-D') && bom.length > 0 && safetyHardware.length === 0) {
-    costed = 'ASIL-B';
-    notes.push(`${claimed} was claimed from the photos, but the parts list names no safety PMIC / SBC (an independent safety supply) that an ${claimed} design carries — costed at ASIL-B (no burn-in). Confirm the level against the safety concept; an ${claimed} answer adds burn-in and the higher NRE tier.`);
+    supported = 'ASIL-B';
+    notes.push(`${claimed} was suggested from the photos, but the parts list names no safety PMIC / SBC (an independent safety supply) that an ${claimed} design carries — the parts support at most ASIL-B.`);
   }
-  return { claimed, costed, rationale, safetyFunctions, boardFunction, safetyHardware, notes };
+  const confirmed = normaliseAsil(inp.confirmed);
+  if (confirmed) {
+    costed = confirmed;
+    if (claimed !== 'Unknown' && claimed !== confirmed) notes.push(`Costed at ${confirmed} as the engineer set it (the photos suggested ${claimed}).`);
+  } else {
+    costed = 'Unknown';
+    if (claimed !== 'Unknown' && claimed !== 'QM') notes.push(`ASIL not confirmed: costed without ASIL-dependent items (no burn-in; the QM / unknown NRE tier). The photos suggested ${claimed}${supported !== claimed ? ` (the parts list supports at most ${supported})` : ''} — set the level from the safety concept in the PCB form.`);
+  }
+  return { claimed, costed, supported, costedFrom: confirmed ? 'engineer' : 'not confirmed', rationale, safetyFunctions, boardFunction, safetyHardware, notes };
+}
+
+/** An engineer's ASIL answer, normalised; null when none (or not a level). */
+export function normaliseAsil(v: unknown): AsilLevel | null {
+  const t = String(v ?? '').trim().toUpperCase().replace(/^ASIL[\s_-]*/, 'ASIL-');
+  if (t === 'QM') return 'QM';
+  return /^ASIL-[ABCD]$/.test(t) ? (t as AsilLevel) : null;
 }

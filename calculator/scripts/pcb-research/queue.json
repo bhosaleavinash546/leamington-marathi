@@ -2,6 +2,11 @@
  "note": "Listed parts still WITHOUT a franchised-distributor price after six research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key. Round 4 (13 Oct 2026, scripts/pcb-research/2026-10-13-gap) added its unpriced and not-reached lines; group notReached = budget ran out before the part was searched. Round 6 (23 Nov 2026): prices are now READ ON THE DISTRIBUTOR PAGE; entries marked \"round 6\" came from the discovery pass (2026-11-22-r6/discovery/consolidated.json holds 1,861 discovered candidates - 1,100 of them outside scope B and not listed here).",
  "remaining": [
   {
+   "mpn": "TLF35584QVVS2",
+   "group": "reReadStored",
+   "why": "EDU control board audit (25 Nov 2026, G-13): stored £2.47 at 20k is below every listing seen — LCSC own stock $9.748 @100 (read 25 Nov 2026); an external audit cites Newark $3.82–3.99 @1,000–5,000 and DigiKey $4.11898 @2,500 (not re-confirmed: Newark 503, Findchips no result). Re-read on a franchised page or the Digi-Key API and merge through pcb-catalogue-research-merge.ts — never by hand."
+  },
+  {
    "mpn": "DRA821U",
    "group": "noUsablePrice",
    "why": "Automotive orderable is DRA821U4TCBALMRQ1 / -MQ1 (TI direct only, excluded). Mouser DRA821U4TGBALMR $38.24 @500 is the non-Q1 code - not recorded."

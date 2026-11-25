@@ -15,6 +15,19 @@
  * variant. Each entry names what it is for, so a reviewer can argue with it.
  */
 
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
+/**
+ * AEC-Q ranges set by the catalogue's own distributor prices (p10–p90 at 10k, rows with ≥ 10 parts from ≥ 2
+ * distributors), written by scripts/pcb-class-rows/check.mts --write (EDU audit G-12, Nov 2026). They replace the
+ * table's automotive range for that row; the non-automotive range and every other row are unchanged.
+ */
+const CLASS_ROWS_FILE = resolve(dirname(fileURLToPath(import.meta.url)), '../data/pcb-class-rows.json');
+export const EVIDENCE_ROWS: Record<string, { lo: number; hi: number; n: number; distributors: number; p50: number }> =
+  (() => { try { return JSON.parse(readFileSync(CLASS_ROWS_FILE, 'utf8')).rows ?? {}; } catch { return {}; } })();
+
 export interface ClassRange {
   /** Table key, e.g. "passive_0402.cap.automotive" */
   key: string;
@@ -36,11 +49,17 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'cap', row: R(0.001, 0.015, 'MLCC 0402', [0.005, 0.025]) },   // GCM155 100 nF AEC $0.006–0.0087 @10k (2026-10-01)
   ],
   passive_0603: [
+    // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
+    // resistor rows' catalogue evidence (EDU audit G-12): their own row.
+    { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.001, 0.005, 'chip resistor 0603', [0.004, 0.015]) },
     { kind: 'ind', test: /inductor|choke|ferrite|bead/i, row: R(0.006, 0.06, 'chip inductor / ferrite 0603', [0.025, 0.15]) },
     { kind: 'cap', row: R(0.002, 0.04, 'MLCC 0603', [0.012, 0.06]) },   // GCM188 1 µF AEC $0.030 @28k (2026-10-01)
   ],
   passive_0805: [
+    // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
+    // resistor rows' catalogue evidence (EDU audit G-12): their own row.
+    { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.002, 0.01, 'chip resistor 0805', [0.006, 0.03]) },
     { kind: 'ind', test: /inductor|choke/i, row: R(0.018, 0.6, 'power / RF inductor 0805-class', [0.06, 1.8]) },
     { kind: 'fb', test: /ferrite|bead/i, row: R(0.008, 0.08, 'ferrite bead 0805', [0.02, 0.15]) },
@@ -50,6 +69,9 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     // Round 5: SMD tantalum / polymer tantalum, 6 catalogue parts (KEMET T598 / T495, AVX), 10k p10–p90 £0.36–1.42 (AEC-Q £0.55–1.50) —
     // they were priced as an MLCC (£0.09 v £1.18–2.15 sourced).
     { kind: 'tant', test: /tantal|polymer tant/i, row: R(0.36, 1.42, 'tantalum / polymer tantalum capacitor', [0.55, 1.5]) },
+    // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
+    // resistor rows' catalogue evidence (EDU audit G-12): their own row.
+    { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.003, 0.015, 'chip resistor 1206', [0.008, 0.04]) },
     { kind: 'ind', test: /inductor|choke/i, row: R(0.03, 0.8, 'power inductor 1206-class', [0.08, 1.8]) },
     { kind: 'cap', row: R(0.008, 0.25, 'MLCC 1206', [0.02, 0.3]) },
@@ -88,6 +110,8 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   ic_soic: [
     // Round 5: IMU / accelerometer / gyroscope, 14 catalogue parts, 10k p10–p90 £1.43–15.6 (AEC-Q 10: £1.32–5.11).
     { kind: 'imu', test: /\bimu\b|accelerometer|gyro|inertial|6-?(dof|axis)/i, row: R(1.4, 15.6, 'IMU / inertial sensor', [1.3, 5.1]) },
+    // Logic before the package row: a single-gate buffer in SC-70 took the generic small-IC row (EDU audit G-02).
+    { kind: 'logic', test: /^(?!.*\b(driver|drivers|mosfet|igbt|transistor|sensor|isolat\w*)\b)(?=.*(\blogic\b(?![- ]?level)|single[- ]gate|\b(and|or|nand|nor|xor|xnor)[- ]gate\b|\bbuffer\b|\binverter\b|\b74[a-z]{1,4}\d))/i, row: R(0.03, 0.25, 'logic IC', [0.08, 0.6]) },
     { kind: 'sot', test: /\b(SOT-?23-?[5-8]?|SOT-?353|SOT-?363|SC-?70|TSOT|SOT-?553)\b/i, row: R(0.05, 0.6, 'small IC in SOT-23 / SC-70', [0.12, 1.2]) },
     { kind: 'flash', test: /flash|eeprom|memory|\bnor\b|fram/i, row: R(0.15, 1.5, 'serial memory SOIC', [0.3, 2.5]) },
     { kind: 'can', test: /\bcan\b|\blin\b|transceiver|rs-?485|rs-?232/i, row: R(0.3, 1.5, 'interface transceiver SOIC', [0.5, 3]) },
@@ -95,7 +119,6 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'opamp_p', test: /precision|instrumentation/i, row: R(0.5, 4, 'precision op-amp', [1.5, 8]) },
     { kind: 'opamp', test: /op-?amp|comparator|amplifier/i, row: R(0.1, 1.2, 'op-amp / comparator SOIC', [0.3, 3.5]) },
     { kind: 'driver', test: /driver|switch|mosfet driver/i, row: R(0.12, 1.8, 'driver IC SOIC', [0.4, 5]) },
-    { kind: 'logic', test: /logic|gate|buffer|inverter|74[a-z]+/i, row: R(0.03, 0.25, 'logic IC', [0.08, 0.6]) },
     { kind: 'any', row: R(0.08, 1.8, 'SOIC / SOT IC (unidentified)', [0.25, 5]) },
   ],
   ic_qfn: [
@@ -161,6 +184,12 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'conn', test: /connector|header|terminal|socket/i, row: R(0.12, 1.8, 'TH connector', [0.4, 4]) },
     { kind: 'any', row: R(0.05, 1.8, 'through-hole part (unidentified)', [0.12, 4]) },
   ],
+  // An SMD test point fitted as a part (loop / terminal). Keystone 5015: Digi-Key $0.18 at 5,000 = £0.142 (page read
+  // 25 Nov 2026, scripts/edu-ctrl-2026-11-25/xcheck/components.json); Future Electronics $0.12 at 5,000 = £0.094 (a search
+  // listing, not read). No Chinese equivalent was read, so the row is the franchised range (EDU audit G-01).
+  testpoint: [
+    { kind: 'any', row: R(0.09, 0.15, 'SMD test point (loop / terminal)', [0.09, 0.15]) },
+  ],
   manual_solder: [
     { kind: 'any', row: R(0.02, 0.22, 'wire / jumper / hand-fitted part', [0.05, 0.5]) },
   ],
@@ -193,11 +222,15 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
   // Passives: the ref-des letter is the strongest signal (R/C/L/FB), then the
   // words; "X7R" must not read as a 7 Ω resistor.
   if (ct.startsWith('passive')) {
-    const ref = refDes.toUpperCase();
+    // The ref-des letter counts only on a real designator (R12, FB3): a group label "Resolver boost inductor pair"
+    // read as a resistor (EDU audit G-02).
+    const ref = /^[A-Z]{1,3}\d/i.test(refDes.trim()) ? refDes.toUpperCase() : '';
     const want = /^R/.test(ref) ? 'res' : /^C/.test(ref) ? 'cap' : /^(L|FB)/.test(ref) ? 'ind'
       : CAP_WORDS.test(text) ? 'cap' : IND_WORDS.test(text) ? 'ind' : null;
     const tant = /tantal|polymer tant/i.test(text) ? rows.find(x => x.kind === 'tant') : undefined;
     if (tant) return { key: `${ct}.tant`, row: tant.row };
+    const shunt = rows.find(x => x.kind === 'shunt' && x.test!.test(text));
+    if (shunt && want !== 'cap' && want !== 'ind') return { key: `${ct}.shunt`, row: shunt.row };
     if (want) {
       const r = rows.find(x => x.kind === want || (want === 'ind' && x.kind === 'fb') || (want === 'cap' && x.kind === 'cap_c0g' && /c0g|np0/i.test(text)))
         ?? rows.find(x => x.kind === want);
@@ -234,12 +267,22 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
   }
   if (/image sensor|cmos sensor|camera sensor|imager\b/.test(p)) return 'ic_bga';   // CSP / BGA imagers
   // Hardware the ref-des prefixes do not know (SH1 shield can, MP1 standoff).
-  if (/shield can|\bshield\b|\bcan\b|screw|standoff|spacer|heatsink|heat sink|bracket|\blabel\b|gasket|clip|mechanical/.test(p)) return 'mechanical';
-  const size = (/(?:^|[^0-9])(0402|0603|0805|1206|1210|2512)(?![0-9])/.exec(`${ct} ${p}`) ?? [])[1];
+  // A fitted test point (loop / terminal) has its own row (EDU audit G-01).
+  if (/^test_?point/.test(ct) || (!ct || ct === 'unknown') && /test ?point|test loop/.test(p) && !/\bpads?\b/.test(p)) return 'testpoint';
+  // Hardware words read only on a line that is not an electrical part: "CAN common-mode choke" typed inductor was
+  // priced as a shield can (EDU audit G-02).
+  const electrical = /^(resistor|capacitor|inductor|ferrite|ic|diode|transistor|connector|crystal|led|switch|relay|transformer|fuse|passive|power)/.test(ct)
+    || /\b(choke|inductor|transceiver|capacitor|resistor|diode|mosfet|regulator)\b/.test(p);
+  if (!electrical && /shield can|\bshield\b|\bcan\b|screw|standoff|spacer|heatsink|heat sink|bracket|\blabel\b|gasket|clip|mechanical/.test(p)) return 'mechanical';
+  const size = (/(?:^|[^0-9])(0402|0603|0805|1206|1210|1812|2010|2220|2512)(?![0-9])/.exec(`${ct} ${p}`) ?? [])[1];
+  // A body stated in mm ("SMD 6x6", "10 x 10") larger than an 1206 is a large part, never the 0603 default: power
+  // inductors fell to the 0603 row (EDU audit G-02).
+  const body = /(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/.exec(p);
+  const bigBody = body ? Math.max(Number(body[1]), Number(body[2])) >= 3.2 && Math.max(Number(body[1]), Number(body[2])) <= 30 : false;
   if (/^(resistor|capacitor|inductor|ferrite)/.test(ct) || ct.startsWith('passive')) {
     if (ct === 'capacitor_electrolytic' || /electrolytic|radial|tht|through/.test(p)) return 'through_hole';
     if (/tantal|polymer tant/.test(p)) return 'passive_1206';   // case A–E (3216–7343): not an 0603 MLCC (round 5)
-    return size === '0402' ? 'passive_0402' : size === '0603' ? 'passive_0603' : size === '0805' ? 'passive_0805' : size ? 'passive_1206' : 'passive_0603';
+    return size === '0402' ? 'passive_0402' : size === '0603' ? 'passive_0603' : size === '0805' ? 'passive_0805' : size || bigBody ? 'passive_1206' : 'passive_0603';
   }
   if (ct.startsWith('ic') || ct === 'unknown') {
     if (/bga|csp/.test(p)) return 'ic_bga';
@@ -255,7 +298,7 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
   if (ct.startsWith('switch') || ct.startsWith('relay')) return 'relay_switch';
   if (ct.startsWith('transformer')) return 'transformer';
   if (ct.startsWith('mechanical')) return 'mechanical';
-  if (ct.startsWith('testpoint')) return 'mechanical';
+  if (ct.startsWith('testpoint')) return 'testpoint';
   return 'ic_soic';
 }
 
@@ -278,8 +321,9 @@ export function classRange(line: { componentType?: unknown; description?: unknow
     const p = pick(ct, text, String((line as { refDes?: unknown }).refDes ?? '')) ?? pick('ic_soic', '')!;
     key = p.key; row = p.row;
   }
-  const [lo, hi] = auto && row.auto ? row.auto : [row.lo, row.hi];
-  return { key: `${key}${auto ? '.automotive' : ''}`, label: `${row.label}${auto ? ', AEC-Q' : ''}`, lo, hi };
+  const ev = auto ? EVIDENCE_ROWS[`${key}.automotive`] : undefined;
+  const [lo, hi] = ev ? [ev.lo, ev.hi] : auto && row.auto ? row.auto : [row.lo, row.hi];
+  return { key: `${key}${auto ? '.automotive' : ''}`, label: `${row.label}${auto ? ', AEC-Q' : ''}${ev ? ` (catalogue p10–p90 of ${ev.n} parts)` : ''}`, lo, hi };
 }
 
 /** Where a class-range line lands with no better information: the lower-half
@@ -299,6 +343,7 @@ export function classRowByKey(key: string): { lo: number; hi: number; label: str
   if (k.startsWith('discrete.')) row = DISCRETE.find(d => d.row.label === k.slice('discrete.'.length))?.row;
   else { const [ct, kind] = k.split('.'); row = TABLE[ct]?.find(x => x.kind === kind)?.row; }
   if (!row) return null;
-  const [lo, hi] = auto && row.auto ? row.auto : [row.lo, row.hi];
+  const ev = auto ? EVIDENCE_ROWS[key] : undefined;
+  const [lo, hi] = ev ? [ev.lo, ev.hi] : auto && row.auto ? row.auto : [row.lo, row.hi];
   return { lo, hi, label: row.label };
 }

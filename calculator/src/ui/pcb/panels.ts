@@ -109,8 +109,11 @@ export function buildSanityWarningsBanner(r: PCBImageAnalysis): string {
 }
 
 export function buildASILBadge(r: PCBImageAnalysis): string {
-  const level = r._asilLevel;
-  if (!level || level === 'Unknown') return '';
+  // The costed level is the engineer's (EDU audit G-15). With none set, the badge says "Not confirmed" beside what the
+  // photos suggested, so the question is visible — it used to hide when the level was unknown.
+  const claimedRaw = r._asilClaimed && r._asilClaimed !== 'Unknown' ? r._asilClaimed : '';
+  const level = r._asilLevel && r._asilLevel !== 'Unknown' ? r._asilLevel : (claimedRaw ? 'Not confirmed' : '');
+  if (!level) return '';
   const colors: Record<string, string> = {
     'QM': '#6b7280', 'ASIL-A': '#2563eb', 'ASIL-B': '#d97706', 'ASIL-C': '#ea580c', 'ASIL-D': '#dc2626',
   };
@@ -125,7 +128,7 @@ export function buildASILBadge(r: PCBImageAnalysis): string {
   const esc = (t: string) => t;
   // Model text arrives escaped (escapedForDisplay). The guard's notes say why the costed level or the words differ.
   const rationale = r._asilRationale ? `<div style="margin-top:4px;font-size:0.62rem;color:var(--text-muted);font-style:italic">${esc(r._asilRationale)}</div>` : '';
-  const claimed = r._asilClaimed && r._asilClaimed !== level ? ` <span style="font-size:0.62rem;color:var(--text-muted)">(classifier said ${esc(r._asilClaimed)})</span>` : '';
+  const claimed = claimedRaw && claimedRaw !== level ? ` <span style="font-size:0.62rem;color:var(--text-muted)">(photos suggest ${esc(claimedRaw)} — set the level in the PCB form)</span>` : '';
   const notes = (r._asilNotes ?? []).map(n => `<div style="margin-top:4px;font-size:0.62rem;color:var(--text-secondary)">${esc(n)}</div>`).join('');
   return `<div style="margin-top:8px;padding:10px 12px;background:${color}18;border:1px solid ${color}55;border-radius:8px">
     <div style="display:flex;align-items:center;gap:8px">

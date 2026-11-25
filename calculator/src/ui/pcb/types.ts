@@ -118,6 +118,8 @@ export interface PCBImageAnalysis {
     copperOzByLayer?: number[];
     /** Measured board weight, g. */
     boardWeightG?: number;
+    /** The engineer's production and safety inputs (PCB form; EDU audit, Nov 2026). */
+    lotSize?: number; programmeYears?: number; samplingCadence?: string; asilConfirmed?: string;
   };
   bom: PCBBOMItem[];
   assembly: {

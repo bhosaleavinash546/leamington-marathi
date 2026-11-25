@@ -461,7 +461,9 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   };
   const sf = rep.safety;
   block('Functional safety (ISO 26262)', sf ? [
-    `Costed as ${sf.costed}${sf.claimed ? ` — the photo classifier claimed ${sf.claimed}, not supported by the parts list` : ''}; quality grade ${sf.qualityGrade}.`,
+    sf.costed === 'Not confirmed'
+      ? `ASIL not confirmed — nothing ASIL-dependent costed${sf.claimed ? `; the photos suggested ${sf.claimed}` : ''}; quality grade ${sf.qualityGrade}.`
+      : `Costed as ${sf.costed}, as the engineer set it${sf.claimed ? ` (the photos suggested ${sf.claimed})` : ''}; quality grade ${sf.qualityGrade}.`,
     'An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.',
     ...sf.notes, ...(sf.rationale ? [`Classifier's reading: ${sf.rationale}`] : []),
     ...(sf.functions.length ? [`Safety functions suggested by the classifier (unverified): ${sf.functions.join('; ')}`] : []),

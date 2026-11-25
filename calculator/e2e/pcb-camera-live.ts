@@ -156,8 +156,9 @@ async function main(): Promise<void> {
     if (api.bomCompleteness?.estimatedMissingPassiveCount) fail(`"${api.bomCompleteness.estimatedMissingPassiveCount} missing passives" against a supplied BOM`);
     // 5. Automotive (the classifier and 4 of 5 -Q1 ICs agree; the BOM-only path is in tests/pcba-report.test.ts).
     if (api.boardDomain !== 'automotive_adas') fail(`board costed as "${api.boardDomain}"`);
-    // 5b. The classifier's ASIL-C rests on a radar description of a camera: costed ASIL-B, no burn-in, text withheld.
-    if (api.asilLevel !== 'ASIL-B' || api.asilClaimed !== 'ASIL-C') fail(`ASIL costed ${api.asilLevel} (claimed ${api.asilClaimed}), expected ASIL-B from a claimed ASIL-C`);
+    // 5b. The classifier's ASIL-C is a photo claim: nothing ASIL-dependent is costed until the engineer sets the level
+    //     (EDU audit G-15, Nov 2026); no burn-in, radar text withheld.
+    if (api.asilLevel !== 'Unknown' || api.asilClaimed !== 'ASIL-C') fail(`ASIL costed ${api.asilLevel} (claimed ${api.asilClaimed}), expected "Unknown" (not confirmed) from a claimed ASIL-C`);
     if ((api.automotiveAssemblyCost?.burnInGBP ?? 0) > 0) fail(`burn-in £${api.automotiveAssemblyCost!.burnInGBP} charged on an ASIL-B camera board`);
     if (/radar|doppler/i.test(api.asilRationale ?? '')) fail('the radar rationale reached the response');
     if (!codes.includes('ASIL_CHECKED_AGAINST_BOM')) fail('no ASIL_CHECKED_AGAINST_BOM note');
@@ -184,7 +185,7 @@ async function main(): Promise<void> {
     if (process.env.CV_SHOT_DIR) writeFileSync(join(process.env.CV_SHOT_DIR, 'camera-report.pdf'), readFileSync(pdfPath));
     const pdf = pdfText(readFileSync(pdfPath));
     for (const must of ['Built in: China', 'Delivered: UK, duty paid', 'Cost Breakdown per Board', 'UK import duty', 'Bill of Materials',
-      'Build-Country Comparison', 'Costed as ASIL-B (the photo classifier said ASIL-C)', `£${headline.toFixed(2)}`,
+      'Build-Country Comparison', 'ASIL not confirmed', `£${headline.toFixed(2)}`,
       'Ex-works / board (China)', 'Delivered UK / board', `£${(headline - bd.logisticsPerBoard).toFixed(2)}`]) {
       if (!pdf.includes(must)) fail(`report lacks "${must}"`);
     }

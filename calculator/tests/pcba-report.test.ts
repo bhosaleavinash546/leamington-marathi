@@ -41,7 +41,8 @@ describe('ASIL guard — the classifier against the parts list', () => {
     const g = guardAsil({ asil: 'ASIL-C', rationale: LIVE_RATIONALE, safetyFunctions: LIVE_FUNCTIONS,
       bom: [{ description: 'Image sensor' }, { description: 'FPD-Link III Serializer With CSI-2 Interface', partNumber: 'DS90UB935-Q1' }, { description: 'LDO', partNumber: 'TLV70233-Q1' }] });
     expect(g.claimed).toBe('ASIL-C');
-    expect(g.costed).toBe('ASIL-B');
+    expect(g.supported).toBe('ASIL-B');
+    expect(g.costed).toBe('Unknown');   // nothing ASIL-dependent until the engineer sets it (EDU audit G-15)
     expect(g.rationale).toBe('');
     expect(g.safetyFunctions).toEqual([]);
     expect(g.notes.join(' ')).toMatch(/radar module.*camera board/);
@@ -52,18 +53,18 @@ describe('ASIL guard — the classifier against the parts list', () => {
     // The radar fixture's S32R and its "safety supervisor" description are not an independent safety supply named
     // by part number: costed ASIL-B, with the reason; the rationale (radar on a radar board) is kept.
     const g = guardAsil({ asil: 'ASIL-C', rationale: 'Radar MCU with safety PMIC', bom: RADAR.analysis.bom });
-    expect(g.costed).toBe('ASIL-B');
+    expect(g.supported).toBe('ASIL-B');
     expect(g.rationale).toMatch(/Radar/);
     expect(g.notes.join(' ')).toMatch(/names no safety PMIC/);
     const named = guardAsil({ asil: 'ASIL-C', rationale: 'Radar MCU with safety PMIC', bom: [...RADAR.analysis.bom, { partNumber: 'TLF35584QVVS1' }] });
-    expect(named.costed).toBe('ASIL-C');
-    expect(named.notes).toEqual([]);
+    expect(named.supported).toBe('ASIL-C');
+    expect(named.notes.join(' ')).not.toMatch(/names no safety PMIC/);
   });
 
   it('a camera with a safety PMIC keeps its ASIL-C; ASIL-B and QM are never changed', () => {
-    expect(guardAsil({ asil: 'ASIL-C', bom: [{ description: 'Image sensor' }, { partNumber: 'TLF35584QVVS2' }] }).costed).toBe('ASIL-C');
-    expect(guardAsil({ asil: 'ASIL-B', bom: [{ description: 'Image sensor' }] }).costed).toBe('ASIL-B');
-    expect(guardAsil({ asil: 'QM', bom: [{ description: 'Image sensor' }] }).costed).toBe('QM');
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ description: 'Image sensor' }, { partNumber: 'TLF35584QVVS2' }] }).supported).toBe('ASIL-C');
+    expect(guardAsil({ asil: 'ASIL-B', bom: [{ description: 'Image sensor' }] }).supported).toBe('ASIL-B');
+    expect(guardAsil({ asil: 'QM', bom: [{ description: 'Image sensor' }] }).supported).toBe('QM');
   });
 
   it('a consistent rationale is kept', () => {
@@ -76,12 +77,13 @@ describe('camera board, China, 250k — the live run through Stage 4', () => {
   let c: Awaited<ReturnType<typeof camera>>, b: Awaited<ReturnType<typeof camera>>;
   beforeAll(async () => { c = await camera('ASIL-C'); b = await camera('ASIL-B'); });
 
-  it('the classifier\'s ASIL-C is costed as ASIL-B (no burn-in) and the response says why', () => {
+  it('the classifier\'s ASIL-C is not costed: the parts support ASIL-B, the engineer sets the level (no burn-in until then)', () => {
     expect(c.s4.failed).toBe(false);
     expect(c.s4.asil?.claimed).toBe('ASIL-C');
-    expect(c.s4.asil?.costed).toBe('ASIL-B');
+    expect(c.s4.asil?.supported).toBe('ASIL-B');
+    expect(c.s4.asil?.costed).toBe('Unknown');
     expect(c.s4.sanityWarnings.some(w => w.code === 'ASIL_CHECKED_AGAINST_BOM')).toBe(true);
-    expect(c.s4.selectedCountryBreakdown!.automotiveGrade?.asil).toBe('ASIL-B');
+    expect(c.s4.selectedCountryBreakdown!.automotiveGrade?.asil).toBe('Unknown');
     expect(c.s4.automotiveAssemblyCost?.burnInGBP ?? 0).toBe(0);
     // Identical to a run the classifier called ASIL-B in the first place.
     expect(c.s4.selectedCountryBreakdown!.totalPerBoard).toBeCloseTo(b.s4.selectedCountryBreakdown!.totalPerBoard, 2);
@@ -135,7 +137,7 @@ describe('camera board, China, 250k — the live run through Stage 4', () => {
 
     it('states the ASIL as costed, the claim, and withholds the radar text', () => {
       const rep = buildPcbaReport(analysis(), { annualVolume: 250_000 });
-      expect(rep.safety!.costed).toBe('ASIL-B');
+      expect(rep.safety!.costed).toBe('Not confirmed');
       expect(rep.safety!.claimed).toBe('ASIL-C');
       expect(rep.safety!.rationale).toBe('');
       expect(JSON.stringify(rep)).not.toMatch(/Doppler|radar target/i);

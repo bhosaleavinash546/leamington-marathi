@@ -18,6 +18,11 @@ export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' |
   { id: 'pcbf-board-w', key: 'widthMm', kind: 'num' },
   { id: 'pcbf-board-h', key: 'heightMm', kind: 'num' },
   { id: 'pcbf-board-weight', key: 'boardWeightG', kind: 'num' },
+  // Production and safety (EDU audit, Nov 2026: G-08 lot / programme, G-04 sampling cadence, G-15 the engineer's ASIL).
+  { id: 'pcbf-lot-size', key: 'lotSize', kind: 'num' },
+  { id: 'pcbf-programme-years', key: 'programmeYears', kind: 'num' },
+  { id: 'pcbf-sampling', key: 'samplingCadence', kind: 'text' },
+  { id: 'pcbf-asil', key: 'asilConfirmed', kind: 'text' },
   { id: 'pcbf-layers', key: 'estimatedLayers', kind: 'num' },
   { id: 'pcbf-vias', key: 'throughVias', kind: 'num' },
   { id: 'pcbf-blind-vias', key: 'blindVias', kind: 'num' },

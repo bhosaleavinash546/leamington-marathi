@@ -1,4 +1,5 @@
 import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 /**
  * PCB Manufacturing Country Rates Database — 2026 Edition
  *
@@ -1006,7 +1007,32 @@ export interface PCBCostInput {
   copperOzByLayer?: number[];
   /** Measured bare/assembled board weight, kg — replaces the area×layers estimate for freight. */
   weightKg?: number;
+  /** Boards in one production lot (set-ups, per-lot sampling). Absent = one lot a year (the order quantity). */
+  lotSize?: number;
+  /** Programme life in years: one-off tooling, fixtures and programmes are spread over orderQuantity × years.
+   *  Absent = 1 (the order alone, as before — EDU audit G-08, Nov 2026). */
+  programmeYears?: number;
 }
+
+/** Boards in a production lot, never more than the order. */
+export function lotBoards(input: { orderQuantity: number; lotSize?: number }): number {
+  const q = Math.max(1, input.orderQuantity || 1);
+  const l = Number(input.lotSize);
+  return l > 0 ? Math.min(q, Math.round(l)) : q;
+}
+/** Boards a one-off cost is spread over: the order × the programme years (≥ 1). */
+export function programmeBoards(input: { orderQuantity: number; programmeYears?: number }): number {
+  const y = Number(input.programmeYears);
+  return Math.max(1, input.orderQuantity || 1) * (y >= 1 ? Math.min(30, y) : 1);
+}
+
+/**
+ * Drilling a fab includes in its per-area price. PCBasic (Shenzhen) prices 4-layer-and-up boards on a base of
+ * 100,000 holes per m² and charges only the holes above it; JLCPCB charges extra only above 150,000 holes per m²
+ * (pages read 25 Nov 2026, scripts/edu-ctrl-2026-11-25/xcheck/bare-pcb.json). Through vias were charged per 100 on
+ * top of the per-area price — counted twice (EDU audit G-05). The lower, PCBasic figure is used.
+ */
+export const VIA_HOLES_INCLUDED_PER_DM2 = 1000;
 
 /**
  * Heavy-copper surcharge: Chinese fabricators add ~25 CNY/m² per layer for every
@@ -1015,7 +1041,7 @@ export interface PCBCostInput {
  * scaled to other countries by their 2-layer base rate relative to China's.
  */
 export const HEAVY_CU_CNY_PER_M2_PER_HALF_OZ = 25;
-const CNY_PER_GBP_2026_09 = 8.88;
+export const CNY_PER_GBP_2026_09 = 8.88;
 
 export interface PCBCountryCostBreakdown {
   countryId: string;
@@ -1086,8 +1112,10 @@ export const PCB_BASIS_SOURCE = {
 
 // ─── Panelisation optimiser (Feature 3) ────────────────────────────────────
 // Standard panel sizes by region (mm)
+// 18 × 24 in (457 × 610 mm) is the most common production panel (Epec, "Controlling PCB costs, part 2", read 25 Nov 2026).
+// The list used to stop at 480 × 350 mm, so a 395 × 215 mm board could only run 1-up (EDU audit G-03).
 const STANDARD_PANELS: Record<string, { w: number; h: number }[]> = {
-  default: [{ w: 480, h: 350 }, { w: 380, h: 280 }, { w: 250, h: 330 }],
+  default: [{ w: 480, h: 350 }, { w: 380, h: 280 }, { w: 250, h: 330 }, { w: 457, h: 610 }],
 };
 
 export interface PanelFit {
@@ -1097,7 +1125,8 @@ export interface PanelFit {
   panelH: number;
 }
 
-/** Find the best panel fit (most boards per panel, then highest utilisation). */
+/** Find the best panel fit: the highest utilisation (laminate is bought by the panel), then the most boards a panel.
+ *  "Most boards first" would put every small board on the largest panel whatever its waste. */
 export function bestPanelFit(boardW: number, boardH: number, panels = STANDARD_PANELS.default): PanelFit {
   let best: PanelFit = { boardsPerPanel: 1, utilisation: 0, panelW: panels[0].w, panelH: panels[0].h };
   for (const p of panels) {
@@ -1111,7 +1140,7 @@ export function bestPanelFit(boardW: number, boardH: number, panels = STANDARD_P
       const rows = Math.floor((usableH + gapY) / (bh + gapY));
       const n = cols * rows;
       const util = (n * bw * bh) / (p.w * p.h);
-      if (n > best.boardsPerPanel || (n === best.boardsPerPanel && util > best.utilisation)) {
+      if (n >= 1 && (util > best.utilisation + 1e-9 || (Math.abs(util - best.utilisation) <= 1e-9 && n > best.boardsPerPanel))) {
         best = { boardsPerPanel: Math.max(1, n), utilisation: util, panelW: p.w, panelH: p.h };
       }
     }
@@ -1183,7 +1212,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const finishKey = normaliseFinish(input.surfaceFinish) as keyof typeof r.surfaceFinishMultiplier;
   const finishMult = r.surfaceFinishMultiplier[finishKey] ?? r.surfaceFinishMultiplier.enig;
   const pcbSurface = (pcbBase + pcbLayers) * (finishMult - 1);
-  const pcbVias = (input.throughVias / 100) * r.viaAdderPer100Through
+  const includedHoles = Math.round(VIA_HOLES_INCLUDED_PER_DM2 * boardAreaDm2);
+  const chargedThrough = Math.max(0, input.throughVias - includedHoles);
+  const pcbVias = (chargedThrough / 100) * r.viaAdderPer100Through
     + (input.blindVias / 10) * r.viaAdderPer10Blind
     + (input.microVias / 10) * r.viaAdderPer10Micro;
   const pcbHDI = (input.hdiStructure !== 'none')
@@ -1193,7 +1224,8 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // Amortise one-time Gerber/tooling setup across all boards in the order.
   // Panelisation: setup is per panel-design; total boards = panels × boardsPerPanel,
   // but cost is divided by the actual ordered board quantity for per-board figure.
-  const pcbSetup = r.setupCostGBP / Math.max(input.orderQuantity, 1);
+  const progQ = programmeBoards(input), lotQ = lotBoards(input);
+  const pcbSetup = r.setupCostGBP / progQ;
   // Heavy copper, per layer. Copper weight used to be read, shown and editable but
   // never costed — a 2 oz outer stack priced the same as 1 oz.
   const halfOzSteps = (input.copperOzByLayer ?? []).reduce((t, oz) => t + Math.max(0, (Number(oz) || 1) - 1) / 0.5, 0);
@@ -1205,22 +1237,22 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // SMT Assembly — rate model: cost/placement = smtLineRatePerHr / 3600 CPH reference
   // Simplified: cost = placements × (rate / placements-per-hr)
   const smtAssembly = (input.smtPlacements / 3600) * a.smtLineRatePerHr +
-    (input.smtPlacements > 0 ? a.batchSetupGBP / Math.max(input.orderQuantity, 1) : 0);
+    (input.smtPlacements > 0 ? a.batchSetupGBP / lotQ : 0);
   const thAssembly = input.throughHoleJoints * a.thRatePerJoint;
   const manualAssembly = input.manualJoints * a.manualSolderPerJoint;
   // AOI on the same basis as ICT / X-ray (Oct 2026): in-line inspection time at volume, the table's
   // small-batch price as the ceiling (a 250k camera board paid the flat £0.37).
-  const aoiCost = input.aoiRequired ? Math.min(a.aoiPerBoard, (AOI_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + AOI_PROGRAM_GBP / Math.max(input.orderQuantity, 1)) : 0;
+  const aoiCost = input.aoiRequired ? Math.min(a.aoiPerBoard, (AOI_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + AOI_PROGRAM_GBP / progQ) : 0;
   // X-ray of BGA / CSP joints, same basis as ICT: station time (XRAY_SECONDS_PER_BOARD at 2 × the labour
   // rate) at volume, the table's small-batch cabinet price as the ceiling (Oct 2026: a 250k camera board
   // with one CSP imager was charged £1.27 a board).
-  const xrayCost = input.bgaCount > 0 ? Math.min(a.xrayPerBoard, (XRAY_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + XRAY_SETUP_GBP / Math.max(input.orderQuantity, 1)) : 0;
+  const xrayCost = input.bgaCount > 0 ? Math.min(a.xrayPerBoard, (XRAY_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + XRAY_SETUP_GBP / progQ) : 0;
   // ICT at volume (Oct 2026): the table's ictPerBoard is a small-batch price (it carries the bed-of-nails
   // fixture). At volume a board costs its TEST TIME on the station plus the fixture spread over the
   // order: station = operator + tester ≈ 2 × the country's assembly labour rate; fixture
   // ICT_FIXTURE_GBP (an engineering figure, stated). The table price stays the ceiling for small runs.
   // A 250k camera board was charged the flat £2.64 — 15× its £0.17 build-up.
-  const ictBuildUp = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr + ICT_FIXTURE_GBP / Math.max(input.orderQuantity, 1);
+  const ictBuildUp = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr + ICT_FIXTURE_GBP / progQ;
   const ictCost = input.ictTimeSec > 0 ? Math.min(a.ictPerBoard, ictBuildUp) : 0;
   const confCost = input.conformalCoatAreaCm2 * a.conformalCoatPerCm2;
   const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost;
@@ -1281,28 +1313,29 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const T = PCB_BASIS_SOURCE;
   const ictTime = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr;
   const basis: PCBBasisLine[] = [
-    { item: 'Board area and panel', gbp: 0, source: `${T.measured}; panel sizes 480×350 / 380×280 / 250×330 mm, 10 mm border, 3 mm gap — ${T.engineering}`,
+    { item: 'Board area and panel', gbp: 0, source: `${T.measured}; panel sizes 480×350 / 380×280 / 250×330 mm (${T.engineering}) and 457×610 mm (18 × 24 in, Epec); 10 mm border, 3 mm gap; the highest utilisation wins`,
       formula: `${input.widthMm} × ${input.heightMm} mm = ${boardAreaDm2.toFixed(4)} dm²; ${panel.boardsPerPanel}-up on ${panel.panelW}×${panel.panelH} mm, utilisation ${(panel.utilisation * 100).toFixed(1)} % → waste factor 1 ÷ max(0.4, ${panel.utilisation.toFixed(3)}) = ${wasteFactor.toFixed(4)}` },
     { item: 'Bare board — 2-layer base', gbp: pcbBase, source: T.table, formula: `${boardAreaDm2.toFixed(4)} dm² × ${f(r.baseCostPerDm2_2L)}/dm² × waste ${wasteFactor.toFixed(4)} = ${f(pcbBase)}` },
     { item: 'Bare board — layers above 2', gbp: pcbLayers, source: T.table, formula: `${boardAreaDm2.toFixed(4)} dm² × ${f(r.layerAdderPerDm2, 5)}/dm²/layer × ${extraLayers} × waste ${wasteFactor.toFixed(4)} = ${f(pcbLayers)}` },
     { item: `Bare board — finish (${finishKey})`, gbp: pcbSurface, source: T.table, formula: `(base + layers) × (${finishMult} − 1) = ${f(pcbSurface)}` },
-    { item: 'Bare board — vias', gbp: pcbVias, source: T.table, formula: `${input.throughVias}/100 × ${f(r.viaAdderPer100Through)} + ${input.blindVias}/10 × ${f(r.viaAdderPer10Blind)} + ${input.microVias}/10 × ${f(r.viaAdderPer10Micro)} = ${f(pcbVias)}` },
+    { item: 'Bare board — vias', gbp: pcbVias, source: `${T.table}; drilling up to ${VIA_HOLES_INCLUDED_PER_DM2.toLocaleString('en-GB')} holes a dm² is in the per-area price (PCBasic: 100,000 holes/m²)`, formula: `max(0, ${input.throughVias} − ${includedHoles} included)/100 × ${f(r.viaAdderPer100Through)} + ${input.blindVias}/10 × ${f(r.viaAdderPer10Blind)} + ${input.microVias}/10 × ${f(r.viaAdderPer10Micro)} = ${f(pcbVias)}` },
     ...(pcbHDI > 0 ? [{ item: 'Bare board — HDI uplift', gbp: pcbHDI, source: T.table, formula: `(base + layers) × ${r.hdiUpliftPct} % = ${f(pcbHDI)}` }] : []),
     ...(pcbImpedance > 0 ? [{ item: 'Bare board — controlled impedance', gbp: pcbImpedance, source: T.table, formula: `(base + layers) × ${r.impedanceUpliftPct} % = ${f(pcbImpedance)}` }] : []),
-    { item: 'Bare board — tooling set-up', gbp: pcbSetup, source: `${T.table}; spread over the order quantity`, formula: `${f(r.setupCostGBP, 2)} ÷ ${q.toLocaleString('en-GB')} boards = ${f(pcbSetup)}` },
+    { item: 'Bare board — tooling set-up', gbp: pcbSetup, source: `${T.table}; one-off, spread over the programme (order × years)`, formula: `${f(r.setupCostGBP, 2)} ÷ ${progQ.toLocaleString('en-GB')} boards = ${f(pcbSetup)}` },
     ...(pcbCopper > 0 ? [{ item: 'Bare board — heavy copper', gbp: pcbCopper, source: 'Queen EMS / AIVON 2026 copper-weight guides (25 CNY/m² per layer per ½ oz), CNY 8.88/£, scaled by the country\'s 2-layer base v China\'s',
       formula: `${halfOzSteps} half-oz steps × 25/8.88 £/m² × ${(boardAreaDm2 / 100).toFixed(6)} m² × waste ${wasteFactor.toFixed(4)} × ${(r.baseCostPerDm2_2L / cnBase).toFixed(4)} = ${f(pcbCopper)}` }] : []),
-    { item: 'SMT placement', gbp: smtAssembly, source: `line rate: ${T.table}; 3,600 placements an hour (one a second) per line-hour and one batch set-up over the order: ${T.engineering}`,
-      formula: `${input.smtPlacements} placements ÷ 3,600 /h × ${f(a.smtLineRatePerHr, 2)}/h + ${f(a.batchSetupGBP, 2)} ÷ ${q.toLocaleString('en-GB')} = ${f(smtAssembly)}` },
+    { item: 'SMT placement', gbp: smtAssembly, source: `line rate: ${T.table}; 3,600 placements an hour (one a second) per line-hour and one set-up a lot: ${T.engineering}`,
+      formula: `${input.smtPlacements} placements ÷ 3,600 /h × ${f(a.smtLineRatePerHr, 2)}/h + ${f(a.batchSetupGBP, 2)} ÷ ${lotQ.toLocaleString('en-GB')} boards a lot = ${f(smtAssembly)}` },
     ...(thAssembly + manualAssembly > 0 ? [{ item: 'Through-hole and hand-soldered joints', gbp: thAssembly + manualAssembly, source: T.table, formula: `${input.throughHoleJoints} × ${f(a.thRatePerJoint, 6)} + ${input.manualJoints} × ${f(a.manualSolderPerJoint, 5)} = ${f(thAssembly + manualAssembly)}` }] : []),
     ...(aoiCost > 0 ? [{ item: 'AOI', gbp: aoiCost, source: `ceiling: ${T.table}; ${AOI_SECONDS_PER_BOARD} s a board, station = 2 × labour (operator + tester), £${AOI_PROGRAM_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
-      formula: `min(table ${f(a.aoiPerBoard)}, ${AOI_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${AOI_PROGRAM_GBP} ÷ ${q.toLocaleString('en-GB')}) = ${f(aoiCost)}` }] : []),
+      formula: `min(table ${f(a.aoiPerBoard)}, ${AOI_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${AOI_PROGRAM_GBP} ÷ ${progQ.toLocaleString('en-GB')}) = ${f(aoiCost)}` }] : []),
     ...(xrayCost > 0 ? [{ item: 'X-ray (BGA / CSP)', gbp: xrayCost, source: `ceiling: ${T.table}; ${XRAY_SECONDS_PER_BOARD} s a board, station = 2 × labour, £${XRAY_SETUP_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
-      formula: `min(table ${f(a.xrayPerBoard)}, ${XRAY_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${XRAY_SETUP_GBP} ÷ ${q.toLocaleString('en-GB')}) = ${f(xrayCost)}` }] : []),
+      formula: `min(table ${f(a.xrayPerBoard)}, ${XRAY_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${XRAY_SETUP_GBP} ÷ ${progQ.toLocaleString('en-GB')}) = ${f(xrayCost)}` }] : []),
     ...(ictCost > 0 ? [{ item: 'In-circuit test', gbp: ictCost, source: `ceiling: ${T.table}; station = 2 × labour, £${ICT_FIXTURE_GBP} fixture: ${T.engineering}; test time: the board spec (estimated unless typed); labour: ${T.regional}`,
-      formula: `min(table ${f(a.ictPerBoard)}, ${input.ictTimeSec}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${ICT_FIXTURE_GBP} ÷ ${q.toLocaleString('en-GB')} = ${f(ictTime + ICT_FIXTURE_GBP / q)}) = ${f(ictCost)}` }] : []),
+      formula: `min(table ${f(a.ictPerBoard)}, ${input.ictTimeSec}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${ICT_FIXTURE_GBP} ÷ ${progQ.toLocaleString('en-GB')} = ${f(ictTime + ICT_FIXTURE_GBP / progQ)}) = ${f(ictCost)}` }] : []),
     ...(confCost > 0 ? [{ item: 'Conformal coating', gbp: confCost, source: T.table, formula: `${input.conformalCoatAreaCm2.toFixed(1)} cm² × ${f(a.conformalCoatPerCm2, 6)}/cm² = ${f(confCost)}` }] : []),
-    { item: 'Components', gbp: bomAtCost, source: 'the BOM lines, each priced at its own parts-bought quantity (see each line\'s price note)', formula: `Σ qty × unit price = ${f(bomAtCost)}` },
+    // The FX behind catalogue prices is printed (EDU audit G-19): a US$ listing is £ at the catalogue's snapshot, not today's rate.
+    { item: 'Components', gbp: bomAtCost, source: `the BOM lines, each priced at its own parts-bought quantity (see each line's price note); catalogue prices in £ at the catalogue's FX snapshot of 29 Sep 2026 (US$1 = £${FX_TO_GBP_TABLE.USD}, €1 = £${FX_TO_GBP_TABLE.EUR}, ¥1 = £${FX_TO_GBP_TABLE.CNY}) — not a contract rate`, formula: `Σ qty × unit price = ${f(bomAtCost)}` },
     { item: 'EMS material burden', gbp: materialBurden, source: `${T.engineering} (cost-plus EMS practice; 10 % ≤ 1k, 7 % at 10k, 5 % ≥ 100k boards, log-linear between)`,
       formula: `${f(bomAtCost)} × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}` },
     { item: `Freight (${useSea ? 'sea' : 'air'})`, gbp: freight, source: `freight rates: ${T.table}; ${input.weightKg && input.weightKg > 0 ? 'weight measured' : `weight estimated as area × layers × 28 g/dm² (at least 20 g) — ${T.engineering}; it over-states a bare board, which is about 30 g/dm² at 1.6 mm whatever the layer count`}; sea at ≥ 2,500 boards: ${T.engineering}`,

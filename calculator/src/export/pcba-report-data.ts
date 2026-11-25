@@ -233,7 +233,9 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const confidence = cb ? { label: cb.overallLabel, low: cb.totalLow, high: cb.totalHigh, verifyCount: toVerify.length, verifyValue: toVerify.reduce((t, l) => t + l.ext, 0) } : null;
 
   // ── Functional safety: the level the costing used, what was claimed, why they differ.
-  const asil = a._asilLevel && !/^(unknown|n\/?a|none)$/i.test(a._asilLevel) ? a._asilLevel : null;
+  // The costed level is the engineer's (EDU audit G-15); with none, "Not confirmed" is printed beside what the photos suggested.
+  const asilSet = a._asilLevel && !/^(unknown|n\/?a|none)$/i.test(a._asilLevel) ? a._asilLevel : null;
+  const asil = asilSet ?? (a._asilClaimed && !/^(unknown|n\/?a|none)$/i.test(a._asilClaimed) ? 'Not confirmed' : null);
   const safety = asil ? {
     costed: asil, claimed: a._asilClaimed && a._asilClaimed !== asil ? a._asilClaimed : null,
     notes: a._asilNotes ?? [], rationale: String(a._asilRationale ?? ''), functions: a._asilSafetyFunctions ?? [],

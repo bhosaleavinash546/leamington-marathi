@@ -5239,6 +5239,13 @@ function renderPCBFabForm(): string {
       <div class="field-group"><label>Board Height (mm)</label><input type="number" id="pcbf-board-h" step="1" min="5" value="150"/></div>
       <div class="field-group"><label>Board Weight, populated (g)</label><input type="number" id="pcbf-board-weight" step="1" min="0" placeholder="estimated" title="Weighed populated board — freight uses it; blank = the tool's estimate"/></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Production and safety</div>
+    <div class="field-row">
+      <div class="field-group"><label>Boards a production lot</label><input type="number" id="pcbf-lot-size" step="100" min="1" placeholder="one lot a year" title="Set-ups are charged per lot; blank = one lot a year"/></div>
+      <div class="field-group"><label>Programme life (years)</label><input type="number" id="pcbf-programme-years" step="1" min="1" max="30" placeholder="1" title="One-off tooling, fixtures and programmes are spread over annual volume × years; blank = 1 year"/></div>
+      <div class="field-group"><label>Class-3 coupon sampling</label><select id="pcbf-sampling" title="Per the customer's control plan: microsection and coupons per panel, or per production lot"><option value="panel">Per panel</option><option value="lot">Per production lot</option></select></div>
+      <div class="field-group"><label>ASIL (from the safety concept)</label><select id="pcbf-asil" title="Set from the hazard analysis, never from a photograph — until set, nothing ASIL-dependent is costed"><option value="">Not confirmed</option><option value="QM">QM</option><option value="ASIL-A">ASIL-A</option><option value="ASIL-B">ASIL-B</option><option value="ASIL-C">ASIL-C</option><option value="ASIL-D">ASIL-D</option></select></div>
+    </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Panel Width (mm)</label><input type="number" id="pcbf-panel-w" step="50" min="100" value="500"/></div>
       <div class="field-group"><label>Panel Height (mm)</label><input type="number" id="pcbf-panel-h" step="50" min="100" value="600"/></div>
@@ -10880,6 +10887,10 @@ function fillFabFormFromAnalysis(): void {
   setF('pcbf-board-w', b.widthMm);
   setF('pcbf-board-h', b.heightMm);
   setF('pcbf-board-weight', Number(b.boardWeightG) > 0 ? Number(b.boardWeightG) : '');
+  setF('pcbf-lot-size', Number(b.lotSize) > 0 ? Number(b.lotSize) : '');
+  setF('pcbf-programme-years', Number(b.programmeYears) > 0 ? Number(b.programmeYears) : '');
+  setSelectSafe('pcbf-sampling', String(b.samplingCadence ?? 'panel'), 'panel');
+  setSelectSafe('pcbf-asil', String(b.asilConfirmed ?? ''), '');
   setF('pcbf-panel-util', b.panelUtilisation);
   setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
   setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');

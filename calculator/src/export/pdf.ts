@@ -2456,7 +2456,9 @@ function renderPcbaSections(
   if (rep.safety) {
     const sf = rep.safety;
     const lines = [
-      `Costed as ${sf.costed}${sf.claimed ? ` — an assumption, not a finding: the photo classifier said ${sf.claimed}, which the parts list does not support` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.`,
+      (sf.costed === 'Not confirmed'
+        ? `ASIL not confirmed — nothing ASIL-dependent is costed (no burn-in, the QM / unknown NRE tier)${sf.claimed ? `; the photos suggested ${sf.claimed}` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — set it from the safety concept.`
+        : `Costed as ${sf.costed}, as the engineer set it${sf.claimed ? ` (the photos suggested ${sf.claimed})` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph.`),
       ...sf.notes,
       ...(sf.rationale ? [`Classifier's reading: ${sf.rationale}`] : []),
       ...(sf.functions.length ? [`Safety functions suggested by the photo classifier (unverified): ${sf.functions.join('; ')}`] : []),
