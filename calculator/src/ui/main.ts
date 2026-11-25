@@ -5237,6 +5237,7 @@ function renderPCBFabForm(): string {
     <div class="field-row">
       <div class="field-group"><label>Board Width (mm)</label><input type="number" id="pcbf-board-w" step="1" min="5" value="200"/></div>
       <div class="field-group"><label>Board Height (mm)</label><input type="number" id="pcbf-board-h" step="1" min="5" value="150"/></div>
+      <div class="field-group"><label>Board Weight, populated (g)</label><input type="number" id="pcbf-board-weight" step="1" min="0" placeholder="estimated" title="Weighed populated board — freight uses it; blank = the tool's estimate"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Panel Width (mm)</label><input type="number" id="pcbf-panel-w" step="50" min="100" value="500"/></div>
@@ -10878,6 +10879,7 @@ function fillFabFormFromAnalysis(): void {
   setF('pcbf-layers', String(b.estimatedLayers));
   setF('pcbf-board-w', b.widthMm);
   setF('pcbf-board-h', b.heightMm);
+  setF('pcbf-board-weight', Number(b.boardWeightG) > 0 ? Number(b.boardWeightG) : '');
   setF('pcbf-panel-util', b.panelUtilisation);
   setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
   setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');

@@ -17,6 +17,7 @@ import type { UniversalStackInput, MaterialLineItem } from '../../engine/types.j
 export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' | 'bool' }> = [
   { id: 'pcbf-board-w', key: 'widthMm', kind: 'num' },
   { id: 'pcbf-board-h', key: 'heightMm', kind: 'num' },
+  { id: 'pcbf-board-weight', key: 'boardWeightG', kind: 'num' },
   { id: 'pcbf-layers', key: 'estimatedLayers', kind: 'num' },
   { id: 'pcbf-vias', key: 'throughVias', kind: 'num' },
   { id: 'pcbf-blind-vias', key: 'blindVias', kind: 'num' },
@@ -72,6 +73,9 @@ export function boardSpecPatch(edited: string[], doc: Document = document): { sp
     if (def.key === 'widthMm' || def.key === 'heightMm') { spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'user'; }
     if (def.key === 'estimatedLayers') { spec.layersSource = 'measured'; spec.layersEvidence = 'user'; }
     if (def.key === 'throughVias') { spec.viasSource = 'measured'; spec.viasEvidence = 'user'; }
+    // A weighed board is the engineer's figure: freight uses it instead of area × layers × 28 g/dm² (EDU board, Nov 2026 —
+    // the estimate put a 552 g board at 1.43 kg). Cleared (blank / 0) → the estimate again.
+    if (def.key === 'boardWeightG') spec.weightEvidence = Number(spec.boardWeightG) > 0 ? 'user' : undefined;
     // Typed outer copper is the engineer's figure: it replaces the model's per-layer list (which the evidence gate
     // then struck back to 1 oz — the 2 oz typed from the board data sheet was lost, 360 review Oct 2026).
     if (def.key === 'copperWeightOz') { spec.copperEvidence = 'user'; spec.copperOzByLayer = []; }

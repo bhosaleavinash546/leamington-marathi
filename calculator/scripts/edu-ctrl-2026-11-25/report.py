@@ -124,13 +124,13 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <div class=cover>
 <div class=sm>CostVision · PCB Image to BOM should-cost · 25 Nov 2026</div>
 <h1>EDU control board PCBA — should-cost report</h1>
-<div>Dana TM4 Gemini CTRL board, PC-10465018-D (read off the photos) · 395 × 215 mm · conformal coating on the entire board</div>
+<div>Dana TM4 Gemini CTRL board, PC-10465018-D (read off the photos) · 395 × 215 mm · 552 g · conformal coating on the entire board</div>
 <div>Build in <b>China</b> · <b>10,000 boards a year</b> · <b>6-year programme</b> (60,000 boards) · £ per board, ¥ at {FX} CNY per £ (CostVision PCB table)</div>
 <div class=kpis>
 <div class=kpi><span>Manual should-cost, ex-works China</span><b>{gbp(C['exWorks'])}</b><span>{cny(C['exWorks'])}</span></div>
 <div class=kpi><span>Manual, delivered UK duty paid</span><b>{gbp(C['delivered'])}</b><span>{cny(C['delivered'])}</span></div>
 <div class=kpi><span>Tool (live run), ex-works China</span><b>{gbp(T['exWorks'])}</b><span>{cny(T['exWorks'])}</span></div>
-<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range £225.62–£414.07</span></div>
+<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range £225.25–£413.70</span></div>
 </div>
 <p><b>Recommendation.</b> Use the manual figure, <b>{gbp(C['exWorks'])} ex-works</b>, as the should-cost target for a supplier discussion and the tool's {gbp(T['exWorks'])} as the upper bound until the board is confirmed. The tool is {gbp(gap)} ({gap / C['exWorks'] * 100:.0f} %) higher, for three reasons shown in §6: it prices 70 of 71 parts lines at the top of an automotive class range because only the AURIX was read off a chip, it charges an IPC class-3 microsection on every board, and it leaves out functional test, programming, press-fit and the second coated face — which the manual adds back.</p>
 <p class=note><b>What this rests on.</b> Eight photos and the size you gave. One part number was read off a chip (2 × Infineon AURIX SAK-TC387QP-160F300S AE). Every other identity is a description and a package read from the photos; layer count (6) and via count (4,500) cannot be seen and are estimates. No BOM, drawing, Gerber or quote was supplied. Accuracy against a price paid is not measured.</p>
@@ -141,10 +141,10 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <div class=legend>{legend}</div>
 <div class=sm style='margin-top:6px'>Manual ex-works</div>{stack(mv, C['exWorks'], scale)}
 <div class=sm>Tool ex-works</div>{stack(tv, T['exWorks'], scale)}
-<p class=sm>Not in either unit cost: the automotive programme NRE of £15,500 (PPAP, FMEA, DV/PV, audit) — £0.26 a board if spread over 60,000. Freight 0.75 kg sea at £0.40/kg; duty 3.7 % is the tool table's assumption (HS line not confirmed; a UK importer may pay 0 % under the applicable tariff line).</p>
+<p class=sm>Not in either unit cost: the automotive programme NRE of £15,500 (PPAP, FMEA, DV/PV, audit) — £0.26 a board if spread over 60,000. Freight: the weighed board, 552 g, plus 0.12 kg of packaging by sea at £0.40/kg (the tool ships the 552 g alone); duty 3.7 % is the tool table's assumption (HS line not confirmed; a UK importer may pay 0 % under the applicable tariff line).</p>
 
 <h2>2. Scope and inputs</h2>
-<ul><li><b>Given:</b> annual volume 10,000, programme 6 years, China, board 395 × 215 mm, conformal coating both sides.</li>
+<ul><li><b>Given:</b> annual volume 10,000, programme 6 years, China, board 395 × 215 mm, weight 552 g populated, conformal coating both sides.</li>
 <li><b>Read off the photos</b> (71 BOM lines, 2,080 parts, 2,054 SMT placements incl. 50 test loops, 68 through-hole joints, 3 press-fit connectors + 2 press-in nuts): dual AURIX TC387, two safety PMICs (VQFN-48), 180 × 1206 discharge resistors (10 × 18 grid, marking 4642 = 46.4 kΩ), isolated HV sensing, flyback, hybrid polymer capacitors, a sealed 34-way customer connector and two 20-way press-fit headers.</li>
 <li><b>Estimated:</b> 6 layers, 4,500 through vias, 1 oz copper, ENIG, controlled impedance, automotive grade 2; every rate not in the CostVision rate book (labelled amber in the workbook).</li>
 <li><b>Rates:</b> CostVision rate book China (SMT high-speed line £{I['smtHS']:.2f}/h, SMT line £{I['smtStd']:.2f}/h, X-ray £{I['xray']:.2f}/h, ICT £{I['ict']:.2f}/h, operator £{I['opRate']:.2f}/h, technician £{I['techRate']:.2f}/h) and the CostVision PCB country table for China (board £/dm², ENIG, vias, impedance, coating £{I['coatRate']}/cm², freight).</li>
@@ -178,6 +178,7 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <h2>7. What the live run found in the tool</h2>
 <ul>
 <li><b>Fixed in this run:</b> a typed board size larger than 600 cm² was treated as an estimate and clamped to 332 × 181 mm. Measured / typed sizes are now kept up to 4,800 cm² (a production panel); estimated sizes are still bounded at 600 cm². With the fix the tool went £278.89 → £285.13 delivered. Test: <code>tests/pcb-measured-size-large-board.test.ts</code>.</li>
+<li><b>Added in this run:</b> the PCB form had no board-weight field, so a weight could not be typed and freight used area × layers × 28 g/dm² = 1.43 kg. A "Board Weight, populated (g)" field now carries the weighed board to the costing (user evidence, kept by the evidence gate); 552 g took freight from £0.57 to £0.22 and the delivered figure to £284.76. Test: <code>tests/pcb-board-weight.test.ts</code>.</li>
 <li><b>Open (not changed):</b> panel list stops at 480 × 350 mm; class-3 microsection charged per panel, so per board on a large board; conformal coating one face only; no functional test, programming, press-fit or selective-solder line; a description containing "test points" or "probe pads" makes a part not fitted (£0); "CAN common-mode choke" falls into the shield-can (mechanical) class; one-off fixtures spread over the annual order, not the programme; the should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li></ul>
 
 <h2>8. To confirm before using the figure</h2>
@@ -191,7 +192,7 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <table><tr><th>RefDes</th><th>Description</th><th>Qty</th><th>Man. unit £</th><th>Man. line £</th><th>Tool unit £</th><th>Tool line £</th><th>Tool − man.</th><th>Tool price class</th></tr>{app}</table>
 <h2 class=pb>Appendix B — inputs and their basis</h2>
 <table><tr><th>Key</th><th>Value</th><th>Unit</th><th>Class</th><th>Basis</th></tr>{inputs}</table>
-<p class=sm>Part B of this document is the tool's own PCBA should-cost report from the live run (CostVision, China, 10,000 boards, size typed 395 × 215 mm), unchanged.</p>
+<p class=sm>Part B of this document is the tool's own PCBA should-cost report from the live run (CostVision, China, 10,000 boards, size typed 395 × 215 mm, weight typed 552 g), unchanged.</p>
 </body></html>"""
 open(os.path.join(OUT, 'manual-report.html'), 'w').write(doc)
 print('ok', round(chk, 2))

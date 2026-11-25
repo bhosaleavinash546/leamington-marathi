@@ -83,7 +83,8 @@ inp('reworkMin', 10, 'min', 'estimate', 'Engineering: rework per failed board (t
 inp('scrap', 0.003, 'fraction', 'estimate', 'Engineering: boards scrapped')
 inp('nre', 31400, '£ one-off', 'estimate', 'Engineering: stencils £700, ICT fixture £7,000, FCT/EOL fixture £15,000, press-fit tooling £3,000, selective-solder pallets £2,000, coating masks £1,500, AOI/X-ray/programming set-up £1,000, bare-board tooling £1,200')
 inp('autoNre', 15500, '£ one-off', 'tool', 'Tool: automotive programme NRE (PPAP, FMEA, DV/PV, audit) — shown, not in the unit cost')
-inp('shipKg', 0.75, 'kg / board', 'estimate', 'Engineering: board ~0.45 kg + packaging')
+inp('boardKg', 0.552, 'kg / board', 'given', 'User: weighed populated board, 552 g')
+inp('packKg', 0.12, 'kg / board', 'estimate', 'Engineering: share of ESD tray + carton a board')
 inp('seaKg', 0.40, '£ / kg', 'table', 'CostVision PCB country table, China: sea freight')
 inp('duty', 0.037, 'fraction', 'table', 'CostVision PCB country table, China → UK: import duty (an assumption, HS line not confirmed)')
 v = {k: d['v'] for k, d in I.items()}
@@ -132,7 +133,7 @@ C['scrapGBP'] = v['scrap'] * (C['components'] + C['burdenGBP'] + C['fab'] + C['c
 C['quality'] = C['rework'] + C['scrapGBP']
 C['nrePerBoard'] = v['nre'] / C['programme']
 C['exWorks'] = C['components'] + C['burdenGBP'] + C['fab'] + C['conversionOHP'] + C['quality'] + C['nrePerBoard']
-C['freight'] = v['shipKg'] * v['seaKg']
+C['freight'] = (v['boardKg'] + v['packKg']) * v['seaKg']
 C['dutyGBP'] = (C['exWorks'] + C['freight']) * v['duty']
 C['delivered'] = C['exWorks'] + C['freight'] + C['dutyGBP']
 C['autoNrePerBoard'] = v['autoNre'] / C['programme']
@@ -250,7 +251,7 @@ S = [('Components', f"={compTotal}", T['components'], 'Named catalogue analogues
      ('Energy, packaging, cost of quality (tool)', None, T['other'], 'Tool only: energy, ESD pack, rework / scrap (manual carries these in assembly and the line above)'),
      ('One-off tooling and fixtures ÷ programme', f"={ref['nre']}/({ref['boards']}*{ref['years']})", None, '£31,400 over 60,000 boards (tool spreads its fixtures over the 10,000-board order inside assembly)'),
      ('Ex-works China', '=SUM(B5:B11)', T['exWorks'], 'Built, tested, packed at the factory gate'),
-     ('Freight to the UK (sea)', f"={ref['shipKg']}*{ref['seaKg']}", T['freight'], '0.75 kg × £0.40 / kg'),
+     ('Freight to the UK (sea)', f"=({ref['boardKg']}+{ref['packKg']})*{ref['seaKg']}", T['freight'], 'Board 0.552 kg (weighed) + 0.12 kg packaging × £0.40 / kg; the tool ships the board weight alone'),
      ('UK import duty', f"=(B12+B13)*{ref['duty']}", T['duty'], '3.7 % — the tool table\'s assumption, HS line not confirmed'),
      ('Delivered UK, duty paid', '=B12+B13+B14', T['delivered'], ''),
      ('Not in the unit cost: automotive programme NRE', f"={ref['autoNre']}", 15500, 'PPAP, FMEA, DV/PV, audit (tool figure), one-off; £0.26 a board if spread over 60,000')]
