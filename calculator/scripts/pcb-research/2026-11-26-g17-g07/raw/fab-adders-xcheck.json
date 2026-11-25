@@ -1,0 +1,397 @@
+{
+  "readOn": "2026-11-25",
+  "purpose": "Independent cross-check of PCB fabrication option adders (second source to the Chinese fabs' per-m2 price lists). Fab's own statements first; secondary sources recorded separately and labelled.",
+  "kinds": {
+    "fab price list / help page": "the fab's own published statement of a price, surcharge, free option or relative price (help centre, price notice, fab's own cost webinar / design guide)",
+    "secondary": "blogs, guides, forum posts, a fab's generic educational blog that does not state that fab's own price, third-party summaries"
+  },
+  "options": [
+    {
+      "option": "1. Board thickness other than 1.6 mm (0.8 / 1.0 / 2.0 / 2.4 / 3.2 mm)",
+      "findings": [
+        {
+          "value": {"0.50mm": 1.07, "1.00mm": 0.96, "1.60mm": 1.00, "3.20mm": 1.37},
+          "unit": "price indicator relative to 1.60 mm (1.00 = 100%), whole board price",
+          "conditions": "4-layer multilayer, Tg150, 35 um copper; stackups ML4_TG150_0.50_35 (1x0.10 core + 4x1080), ML4_TG150_1.00_35 (1x0.41 core + 4x2116), ML4_TG150_1.60_35 (1x0.71 core + 4x7628), ML4_TG150_3.20_35 (1x2.40 core + 4x7628). Volume / board size not stated. German fab (Wuerth Elektronik CBT). Same slide repeated unchanged in the 05.04.2023 German webinar (slide 17). 2.0 / 2.4 / 0.8 mm named as 'further standards' but not priced.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-video-center-layout-affect-costs-cbt-en.pdf",
+          "quote": "Comparison of a 4-layer multilayer with different thicknesses ... Standard: 1,55 mm / 1,60 mm  Optimum: 1,00 mm  Further standards: 0,80mm / 2,00 mm / 2,40 mm ... Price indicator 107% [0.50] Price indicator 96% [1.00] Price indicator 100% [1.60] Price indicator 137% [3.20]",
+          "kind": "fab price list / help page",
+          "dateOfSource": "webinar 14.07.2020 (PDF modified 23.03.2022); German version webinar 05.04.2023 slide 17 identical figures (https://www.we-online.com/files/pdf1/webinar-91-wie-beeinflusst-ihr-leiterplattenlayout-die-kosten-in-der-leiterplattenfertigung-cbt-de.pdf)"
+        },
+        {
+          "value": {"specificStackup_1.60mm_6L": 1.16, "coreBasedStackup_1.60mm_6L": 1.22},
+          "unit": "price indicator relative to the standard 6-layer 1.60 mm stackup",
+          "conditions": "6-layer 1.60 mm: standard (2x0.36 core, 6x2116) = 100%; specific stackup with thin cores (2x0.10 core, 2x2116 + 8x7628) = 116%; core-based (3x0.20 core) = 122%. Not a thickness change but shows the stackup (prepreg / core count) effect that a non-standard thickness triggers.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-video-center-layout-affect-costs-cbt-en.pdf",
+          "quote": "Comparison of a 6-layer multilayer: 1,60 mm standard vs. individual stackup ... Price indicator 100% ... Price indicator 116% ... Additional costs: Handling thin laminate, 4 prepregs more in stackup ... Core-based stackup ... Price indicator 122%",
+          "kind": "fab price list / help page",
+          "dateOfSource": "14.07.2020"
+        },
+        {
+          "value": "same price for 0.8 / 1.0 / 1.2 / 1.6 mm",
+          "unit": "statement (no adder)",
+          "conditions": "Seeed Fusion standard PCB (2-layer prototype service); old capabilities page (copyright 2008-2016). The current Seeed wiki (updated 16 Sep 2026) no longer states this and shows no option prices.",
+          "fab": "Seeed Fusion",
+          "url": "https://seeeddoc.github.io/Service_for_Fusion_PCB",
+          "quote": "The costs of 0.8mm, 1.0mm, 1.2mm, and 1.6mm are same",
+          "kind": "fab price list / help page",
+          "dateOfSource": "(c) 2008-2016 - OLD"
+        },
+        {
+          "value": "extra cost for special thickness; amounts only in a chart image",
+          "unit": "n/a (chart image not readable)",
+          "conditions": "JLCPCB help centre 'In what cases will there be charged extra' (last updated 10 Nov 2026). The thickness surcharge table is an image; the text gives no figure. The quote page shows a price only after interaction.",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/In-what-cases-will-there-be-charged-extra",
+          "quote": "(thickness surcharge given in a chart image only - not readable as text)",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on Nov 10, 2026"
+        },
+        {
+          "value": "0.8, 1.0, 1.2, 1.6 mm free on 2- and 4-layer with standard options",
+          "unit": "statement",
+          "conditions": "Blog author's reading of the JLCPCB quote page; 'most of these are only free of extra charge when choosing green silkscreen ... and no other special options'. No amount for 2.0 mm etc.",
+          "fab": "JLCPCB (as read by TechOverflow)",
+          "url": "https://techoverflow.net/2024/11/26/what-pcb-thickness-options-are-free-of-charge-on-jlcpcb/",
+          "quote": "2-layer and 4-layer PCBs with standard options ... 0.8mm, 1.0mm, 1.2mm, 1.6mm ... most of these are only free of extra charge when choosing green silkscreen and (and no other special options)",
+          "kind": "secondary",
+          "dateOfSource": "26 Nov 2024"
+        }
+      ],
+      "notFound": "No fab states an absolute add-on ($ / order, $ / m2, EUR / dm2) for 2.0 / 2.4 / 3.2 mm. Eurocircuits: thickness only described as pooled (1.00 / 1.55 / 2.40 mm in STANDARD pool) vs non-pooled with no figure; Beta LAYOUT, Multi-CB, PCBWay, NextPCB, ALLPCB, Elecrow list thicknesses without prices (price only after the online calculator is run - not read). JLCPCB's figure is in a chart image. ALLPCB's site shows a notice that it is temporarily suspending operations."
+    },
+    {
+      "option": "2. High-Tg laminate (Tg150 / Tg170, S1000-2, IT-180A) v standard FR-4 Tg130-140; high-CTI (>= 600) laminate",
+      "findings": [
+        {
+          "value": 0.23,
+          "unit": "fraction of board price (+23%), Tg135 -> Tg150",
+          "conditions": "Example comparison 1.6 mm / 6-layer multilayer. Wuerth base-material recommendation: standard FR4 Tg135 up to 3 lead-free solder processes; Tg150 for higher Cu, filled buried vias, > 3 solder processes; Tg170 halogen-free for high layer counts. No Tg170 figure.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-video-center-layout-affect-costs-cbt-en.pdf",
+          "quote": "Example comparison: 1,6mm / 6 layers  Multilayer price increase  Tg135 to Tg150: 23%",
+          "kind": "fab price list / help page",
+          "dateOfSource": "14.07.2020"
+        },
+        {
+          "value": "10%-30%",
+          "unit": "increase in PCBWay's production cost (absorbed - not charged to the customer)",
+          "conditions": "PCBWay switched 4-layer-and-above boards from Kingboard to Shengyi laminate and says it gives this upgrade free. PCBWay default material Tg 150-160 C. This is a laminate-brand change at mid-Tg, not a priced Tg130 -> Tg170 adder.",
+          "fab": "PCBWay",
+          "url": "https://www.pcbway.com/helpcenter/ordering_parameter_instruction/What_is_PCB_Tg_.html",
+          "quote": "The default material of PCBWay has a TG of 150-160℃ ... despite a 10%-30% increase in production costs ... this upgrade will be provided to customers free of charge.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on 07/03/2025"
+        },
+        {
+          "value": "Tg150 / Tg170 (S1000-2, S1000-2M) and High-CTI >= 600 V (Shengyi S1600) are selectable; price shown only after 'Calculate'",
+          "unit": "n/a",
+          "conditions": "PCBWay advanced (high quality) order form. Total reads $0.00 until Calculate is clicked; some materials not stocked (7-20 day purchase). Not read.",
+          "fab": "PCBWay",
+          "url": "https://www.pcbway.com/HighQualityOrderOnline.aspx",
+          "quote": "To ensure quality, we will not stock these materials generally. 7-20 days purchase period",
+          "kind": "fab price list / help page",
+          "dateOfSource": "read 2026-11-25"
+        },
+        {
+          "value": "price not stated; options listed",
+          "unit": "n/a",
+          "conditions": "JLCPCB 6-layer page lists material 'Tg 135-140 / Tg 155' with no price. JLCPCB CTI blog says JLCPCB carries 'high CTI materials' but states no price and does not say >= 600 V.",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/6-layer-pcb",
+          "quote": "Tg 135-140 / Tg 155",
+          "kind": "fab price list / help page",
+          "dateOfSource": "(c) 2026, no page date"
+        },
+        {
+          "value": {"standardFR4": 1.0, "highTgFR4": "1.3-1.6", "lowLossHalogenFree": "1.8-2.5"},
+          "unit": "relative cost index (laminate selection guide)",
+          "conditions": "Generic guide on JLCPCB's blog, not a JLCPCB price; FAQ: 'Typically 30-60% higher than standard FR-4'. Basis not stated.",
+          "fab": "JLCPCB blog (generic)",
+          "url": "https://jlcpcb.com/blog/pcb-laminate-selection",
+          "quote": "Cost Index | 1.0 | 1.3–1.6 | 1.8–2.5 ... Typically 30–60% higher than standard FR-4",
+          "kind": "secondary",
+          "dateOfSource": "Published Mar 07, 2026, updated Mar 11, 2026"
+        },
+        {
+          "value": {"standardFR4_Tg130-140": 1.0, "highTg170": "1.2-1.4", "highTg180": "1.4-1.6"},
+          "unit": "relative cost factor; also 'manufacturing cost impact ... 15-25% higher'",
+          "conditions": "OurPCB blog (a Chinese fab's generic guide, not its price list); basis (volume, size) not stated.",
+          "fab": "OurPCB blog (generic)",
+          "url": "https://ourpcb.com/blog/pcb/high-tg",
+          "quote": "Relative Cost Factor | 1.0x | 1.2-1.4x | 1.4-1.6x ... The manufacturing cost impact for high-Tg materials is typically 15-25% higher than standard FR-4",
+          "kind": "secondary",
+          "dateOfSource": "Published 29 Jan 2025; updated 27 Aug 2026"
+        },
+        {
+          "value": "4x - 20x",
+          "unit": "raw-material price increase relative to Tg150 material",
+          "conditions": "Wuerth impedance webinar, slide 'Impact of new Materials' - refers to high-speed / low-loss materials (Dk 3.6, Df 0.004 class), NOT to high-Tg FR-4. Recorded only so it is not mistaken for a high-Tg figure.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://we-online.com/files/pdf1/presentation-webinar-116-impedance-cbt-en.pdf",
+          "quote": "Raw Material ... Price increase 4x - 20x to Tg150 Material",
+          "kind": "fab price list / help page",
+          "dateOfSource": "webinar November 2025"
+        }
+      ],
+      "notFound": "High-CTI (>= 600): NO fab price or relative price found anywhere (PCBWay lists S1600 CTI>=600 but prices only after Calculate; JLCPCB says it carries high-CTI material without a figure). Tg170 / S1000-2 / IT-180A: no fab's own priced adder found (only Wuerth Tg135->150 +23%, and PCBWay's absorbed 10-30% Kingboard->Shengyi cost). Eurocircuits, Beta LAYOUT (lists Tg135 / Tg170), Multi-CB (lists Tg135 / HTg150 / HTg170), NextPCB (TG130-TG170 listed) give no figure."
+    },
+    {
+      "option": "3. Via fill: resin-filled, via-in-pad plated over (POFV), solder-mask plugged / tented",
+      "findings": [
+        {
+          "value": 0,
+          "unit": "$ (free)",
+          "conditions": "Epoxy filled & capped (POFV) via-in-pad on 6-20 layer boards, international market, sample and batch. 4-layer POFV still charged (amount not stated).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/news/free-via-in-pad-6-20-layer-pcbs-pofv",
+          "quote": "For international market, JLCPCB via-in-pad on 6- 20 layer PCBs are upgraded to POFV (Plated Over Filled Via) for free ... its costs will no longer be added to the total price whether it's a sample or batch order ... (POFV for 4-layer PCBs still requires charges.)",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Nov 02, 2022"
+        },
+        {
+          "value": 0,
+          "unit": "$ (free)",
+          "conditions": "Resin filling on 6-layer and above; help article last updated 10 Nov 2026. Same article: epoxy-filled vias 'Complex process, high cost' (no figure).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/pcb-via-covering",
+          "quote": "For our 6-layer and above multi-layer boards, resin filling is now available for free",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on Nov 10, 2026"
+        },
+        {
+          "value": "'slight increase' (no figure)",
+          "unit": "n/a",
+          "conditions": "Price notice during resin-plugging line expansion: 4-layer boards with resin-filled vias; 6+ layer only lead time +~5 days; ~15 day adjustment period.",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/news/pcb-lead-time-and-price-adjustment-august2026",
+          "quote": "4-Layer PCBs with Resin Filled Vias: Prices will experience a slight increase.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Aug 06, 2026"
+        },
+        {
+          "value": {"plugged_IPC4761_IIIa": 1, "filled_typeV": 2, "filledCovered_typeVI": 1, "filledCapped_typeVII_viaInPad": 3},
+          "unit": "Wuerth 'Kostenindikator' - number of EUR coin symbols (ordinal, not a price)",
+          "conditions": "Design guide Plugging - Filling - Tenting, Version 1 / Dezember 2019. Type VII (resin filled + copper capped) is the only one for via-in-pad. Plugged made in Germany; filled-and-covered made in China.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/design-guide-plugging-filling-tenting-cbt-de.pdf",
+          "quote": "Kostenindikator: Plugged Via IPC-4761 Type III-a € | Filled Via Type V €€ | Filled & Covered Via Type VI-a € | Filled & Capped Via Type VII €€€ (read from the rendered table, page 4)",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Version 1 / Dezember 2019 (PDF modified 11.03.2022)"
+        },
+        {
+          "value": "no figure",
+          "unit": "n/a",
+          "conditions": "Eurocircuits: resin via filling selectable in Advanced options (soldermask filling discontinued July 2020); plugging not offered; no price stated. PCBWay: tenting / plugged with solder mask / not covered on standard form; resin plugging and via-in-pad under advanced options 'We may add extra cost for these special options which will be confirmed after review' (not read).",
+          "fab": "Eurocircuits / PCBWay",
+          "url": "https://www.eurocircuits.com/pcb-design-guidelines/via-filling/",
+          "quote": "In our manufacturing processes we only use Filling as it has considerably more advantages than Plugging.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "update history to 28/03/2022"
+        },
+        {
+          "value": "10%-30%",
+          "unit": "% of overall PCB manufacturing cost (via filling for via-in-pad)",
+          "conditions": "ALLPCB generic blog (not its price list).",
+          "fab": "ALLPCB blog (generic)",
+          "url": "https://www.allpcb.com/es-ES/blog/pcb-knowledge/the-impact-of-via-in-pad-on-pcb-manufacturing-costs.html",
+          "quote": "via filling can add anywhere from 10% to 30% to the overall manufacturing cost of a PCB with via-in-pad designs (as returned by search summary; page not opened)",
+          "kind": "secondary",
+          "dateOfSource": "not checked"
+        }
+      ],
+      "notFound": "No fab states a $ / order, $ / m2 or % adder for resin fill / POFV on 4-layer, nor for solder-mask plugging v tenting (both free / default at JLCPCB and PCBWay standard forms, no figure). Seeed, NextPCB, Multi-CB, Beta LAYOUT: nothing priced. Wuerth gives only an ordinal cost indicator."
+    },
+    {
+      "option": "4. ENIG gold thickness 2 u\" or 3 u\" v 1 u\"",
+      "findings": [
+        {
+          "value": {"1U_per_1pct_excess": 0.8992, "2U_per_1pct_excess": 1.7985},
+          "unit": "$ per m2 for every 1% of ENIG area above 30% of the board (top + bottom = 200%)",
+          "conditions": "JLCPCB ENIG area surcharge. 2U is exactly 2.0x the 1U rate per excess-area point (1.7985 / 0.8992 = 2.000, arithmetic). Charge applies only to the gold area above 30%; the base ENIG option price is in the quote tool (not read).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/In-what-cases-will-there-be-charged-extra",
+          "quote": "For 1U'' gold thickness, $0.8992/m² will be charged for every 1% for the portion exceeding 30%. ... For 2U'' gold thickness, $1.7985/m² will be charged for every 1% for the portion exceeding 30%.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on Nov 10, 2026"
+        },
+        {
+          "value": "2U default / no extra cost on 6+ layers",
+          "unit": "statement",
+          "conditions": "JLCPCB 6-20 layer boards: 2u\" gold is the default at no extra cost (blog 'Free Upgrade to ENIG 2u\"', Feb 2024 per search summary; direct page returned 404 on 2026-11-25). JLCPCB 6-layer page lists only 'ENIG 2u\"'. A later JLCPCB OSP notice says ENIG is no longer a free finish (layer scope / date not confirmed - page 404).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/6-layer-pcb",
+          "quote": "ENIG 2u\"",
+          "kind": "fab price list / help page",
+          "dateOfSource": "(c) 2026; blog Feb 2024 not re-read"
+        },
+        {
+          "value": {"HAL": 1.34, "HAL_LF": 1.00, "ImmSn_0.8um": 1.18, "ImmSn_1um": 1.33, "ImmAg": 1.44, "ENIG_Ni5.5um_Au0.075um": 2.50},
+          "unit": "Kostenfaktor (cost factor) of the surface finish, HAL lead-free = 1.00",
+          "conditions": "Wuerth webinar 05.04.2023 slide 14 'Vergleich der verschiedenen Endoberflaechen'. ENIG at Au 0.075 um (~3 u\"). Finish-only factor, NOT a whole-board % and NOT a 1u v 2u v 3u comparison. Electroplated gold (Au 1-3 um) 'Preisindikator: bis zu 500% oder mehr (je nach aktuellem Goldpreis)'.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-91-wie-beeinflusst-ihr-leiterplattenlayout-die-kosten-in-der-leiterplattenfertigung-cbt-de.pdf",
+          "quote": "Vergleich der verschiedenen Endoberflaechen ... Kostenfaktor 1,34 [HAL] 1,00 [HAL LF] 1,18 [Chem. Sn 0,8um] 1,33 [Chem. Sn 1um] 1,44 [Chem. Ag] 2,50 [Chem. Ni/Au: Ni 5,5um Au 0,075um]",
+          "kind": "fab price list / help page",
+          "dateOfSource": "webinar 05.04.2023"
+        },
+        {
+          "value": 10,
+          "unit": "$ per order (ENIG v HASL), old",
+          "conditions": "Seeed Fusion standard PCB, old service page ((c) 2008-2016): 'HASL (Lead Free) +$5, ENIG+$10'. Gold thickness not stated. Out of date.",
+          "fab": "Seeed Fusion",
+          "url": "https://seeeddoc.github.io/Service_for_Fusion_PCB",
+          "quote": "HASL, HASL (Lead Free) +$5, ENIG+$10.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "(c) 2008-2016 - OLD"
+        },
+        {
+          "value": "gold extra cost depends on gold area",
+          "unit": "statement, no figure",
+          "conditions": "PCBWay 'What PCBs will be charged of extra cost' (last updated 18/06/2024); PCBWay order page shows 1U\" default, other thicknesses priced after review / Calculate (not read).",
+          "fab": "PCBWay",
+          "url": "https://www.pcbway.com/helpcenter/paymentproblems/What_PCBs_will_be_charged_of_extra_cost_.html",
+          "quote": "the extra cost depends on gold area, the larger area the higher cost.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on 18/06/2024"
+        },
+        {
+          "value": "5-15%",
+          "unit": "% of bare board cost (ENIG v baseline finish)",
+          "conditions": "JLCPCB generic blog on hard gold; ENIG premium, no thickness split; no basis stated.",
+          "fab": "JLCPCB blog (generic)",
+          "url": "https://jlcpcb.com/blog/hard-gold-pcb-finish",
+          "quote": "ENIG typically adds 5-15% to the bare board cost,",
+          "kind": "secondary",
+          "dateOfSource": "Published Feb 28, 2026; updated Aug 08, 2026"
+        }
+      ],
+      "notFound": "No fab states a whole-board $ or % for 2u\" or 3u\" v 1u\" ENIG. The only fab figure that separates thickness is JLCPCB's excess-area surcharge (2U = 2x 1U per point of area above 30%). 3u\" not priced anywhere (Wuerth's ENIG factor is at Au 0.075 um ~3u\" but against HAL LF, not against 1u\"). Eurocircuits, Multi-CB, Beta LAYOUT, NextPCB, ALLPCB, Elecrow: nothing."
+    },
+    {
+      "option": "5. Impedance control fee; tolerance +/-5% v +/-10%",
+      "findings": [
+        {
+          "value": "standard impedance testing free (+/-20%); precision impedance testing chargeable (amount not stated)",
+          "unit": "statement",
+          "conditions": "JLCPCB multilayer standard laminated structures help article (last updated 16 Nov 2026).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/multi-layer-pcb-standard-laminated-structures",
+          "quote": "we offer standard free impedance testing (impedance tolerance ±20%) and precision impedance testing (chargeable).",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on Nov 16, 2026"
+        },
+        {
+          "value": "+/-10% standard; +/-5% on special request (no price)",
+          "unit": "statement",
+          "conditions": "JLCPCB PCB capabilities page; FAQ: tight impedance control 'may increase both cost and production time'.",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/capabilities/pcb-capabilities",
+          "quote": "±10% ... Tighter tolerance of ±5% is available upon special request",
+          "kind": "fab price list / help page",
+          "dateOfSource": "(c) 2026, no page date"
+        },
+        {
+          "value": 80,
+          "unit": "$ minimum extra for a non-standard stack-up (standard stack-ups: no extra cost)",
+          "conditions": "NextPCB, 4-layer: three standard stack-ups at no extra cost; any deviation >= $80. Separate page: 40+ standard stack-ups at no additional cost, tolerance > 50 ohm +/-10%, <= 50 ohm +/-5%.",
+          "fab": "NextPCB",
+          "url": "https://www.nextpcb.com/blog/How-to-Achieve-50Ohm-Impedance-Requirements-for-PCB-Routing-without-extra-charges",
+          "quote": "customers can choose among three standard four-layer stack-up options at no extra cost for production ... deviations from these standard stack-ups will incur an additional cost of at least $80.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Posted June 2025, last updated September 2025"
+        },
+        {
+          "value": 0,
+          "unit": "$ (no additional cost on standard stack-ups)",
+          "conditions": "NextPCB impedance control service page; tolerance > 50 ohm +/-10%, <= 50 ohm +/-5%.",
+          "fab": "NextPCB",
+          "url": "https://www.nextpcb.com/service-type/pcb-impedance-control",
+          "quote": "40+ standard stack-ups at no additional cost ... > 50 Ω: ± 10% ... ≤ 50 Ω: ± 5%",
+          "kind": "fab price list / help page",
+          "dateOfSource": "no date (images Sep 2025)"
+        },
+        {
+          "value": "defined stackups 'komplett ohne Aufpreis'; measured impedance control = Sonderfertigung (10% / 5% tolerance), price not stated",
+          "unit": "statement",
+          "conditions": "Multi-CB staff member (M. H., Multi-CB Ltd.) on mikrocontroller.net forum; 4 / 6 / 8 layer defined stackups in the pool at no surcharge; impedance-controlled special production with test coupon at 10% or 5% tolerance.",
+          "fab": "Multi-CB",
+          "url": "https://www.mikrocontroller.net/topic/579307",
+          "quote": "komplett ohne Aufpreis ... Wenn es genau gehen soll, bestellt man Sonderfertigung mit Impedanzkontrolle (10% bzw. 5% Toleranz).",
+          "kind": "secondary",
+          "dateOfSource": "28.07.2025 (forum post by fab staff - not a price list)"
+        },
+        {
+          "value": "+/-10% in DEFINED IMPEDANCE pool; no price figure",
+          "unit": "statement",
+          "conditions": "Eurocircuits Defined Impedance pool: predefined 4/6/8-layer IS400 stackups, 50 ohm SE / 90 ohm diff; 'Cost- and price-effective solution', no figure.",
+          "fab": "Eurocircuits",
+          "url": "https://www.eurocircuits.com/?p=27474",
+          "quote": "we achieve stable impedance values within a ±10 % tolerance",
+          "kind": "fab price list / help page",
+          "dateOfSource": "12 November 2025"
+        },
+        {
+          "value": "cost mechanism only: TDR coupon(s) on the panel, fewer PCBs per panel",
+          "unit": "statement, no figure",
+          "conditions": "Wuerth distinguishes impedance-calculated (no coupons) from impedance-controlled (coupons, fewer boards per panel).",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-video-center-layout-affect-costs-cbt-en.pdf",
+          "quote": "Impedance control - additional TDR coupon (or coupons) on manufacturing panel - reduced number of PCBS on manufacturing panel",
+          "kind": "fab price list / help page",
+          "dateOfSource": "14.07.2020"
+        },
+        {
+          "value": "+/-5% premium quoted variously 10-20%, 15-25%, 15-30%, 25-40% v +/-10%; impedance control 10-25% / $5-15 per order / $20-50",
+          "unit": "% of board cost / $ per order",
+          "conditions": "Search-returned vendor blogs (AtlasPCB, dev.to, pcbsync, zbotic etc.) - conflicting, unsourced, not opened individually. Record only as an indication that no consensus figure exists.",
+          "fab": "various blogs",
+          "url": "https://atlaspcb.com/blog/impedance-controlled-pcb-standard-vs-tight-tolerance-comparison",
+          "quote": "(search summary) +15-30% / 10-20% / +/-5% tolerance adds 25-40% to board cost vs +/-10% / +15-25%",
+          "kind": "secondary",
+          "dateOfSource": "2025-2026 blogs"
+        }
+      ],
+      "notFound": "No fab publishes a $ fee for impedance control itself or for +/-5% v +/-10% (JLCPCB: 'chargeable' / 'special request' with no amount; NextPCB: free on standard stackups, >= $80 non-standard stackup; PCBWay: 'We may add extra cost ... confirmed after review'; Seeed: only 'impedance control may be required', 2 oz not combinable). Eurocircuits / Wuerth / Beta LAYOUT: no figure."
+    },
+    {
+      "option": "6. Inner-layer copper 1 oz / 2 oz",
+      "findings": [
+        {
+          "value": "options listed, no price",
+          "unit": "n/a",
+          "conditions": "JLCPCB: inner layer 0.5 oz default, 1 oz, 2 oz; 'Availability depends on total layers and overall thickness'; 'Always refer to the actual online order page for current availability and pricing.' 2 oz inner only on 4-layer 1.6 mm with a named stackup and 2 oz outer (help centre).",
+          "fab": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/jlcpcb-copper-weight",
+          "quote": "0.5oz (default), 1oz, 2oz ... Always refer to the actual online order page for current availability and pricing.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "Last updated on Nov 10, 2026"
+        },
+        {
+          "value": "laminate purchase price rises with copper cladding (bar chart, approximate)",
+          "unit": "% of the 35/35 um laminate purchase price (2020 = 100%) - MATERIAL price, not board price",
+          "conditions": "Wuerth webinar 05.04.2023 slide 13 'Vergleich Materialpreise Einkauf FR4 (Stand 09.07.2020 / Stand 03.04.2023)'. Bars read off the chart, about +/-5 points: 1.55 mm 35/35 um 100% (2020) / ~147% (2023); 70/70 um ~140% / ~205%; 105/105 um ~210% / ~327%. 0.51 mm cores: 70/70 ~152% / ~202%. Applies to clad laminate (cores), i.e. the inner-layer copper weight. Chart-read values, not printed numbers.",
+          "fab": "Wuerth Elektronik Circuit Board Technology",
+          "url": "https://www.we-online.com/files/pdf1/webinar-91-wie-beeinflusst-ihr-leiterplattenlayout-die-kosten-in-der-leiterplattenfertigung-cbt-de.pdf",
+          "quote": "Vergleich Materialpreise Einkauf FR4 (Stand 09.07.2020 / Stand 03.04.2023) ... Vergleich pro Material immer mit 35 µm Kupferkaschierung als 100%-Basis ... Kupfer spielt also eine wichtige Rolle im Leiterplattenpreis!",
+          "kind": "fab price list / help page",
+          "dateOfSource": "webinar 05.04.2023"
+        },
+        {
+          "value": "2 oz cannot be combined with impedance control",
+          "unit": "statement",
+          "conditions": "Seeed Fusion pricing update (via search summary); no price for inner copper.",
+          "fab": "Seeed Fusion",
+          "url": "https://support.seeedstudio.com/knowledgebase/articles/1835581-why-do-fusion-pcb-prices-fluctuate-so-much",
+          "quote": "2oz copper weight cannot be combined with impedance control.",
+          "kind": "fab price list / help page",
+          "dateOfSource": "not checked (search summary)"
+        }
+      ],
+      "notFound": "No fab states a $ / % / per-m2 adder for 1 oz or 2 oz inner copper (JLCPCB, PCBWay, NextPCB, Elecrow, Eurocircuits, Beta LAYOUT list the options; prices only in the calculators - not read). Wuerth's chart is laminate PURCHASE price, not board price."
+    }
+  ],
+  "notes": "Fab-published add-on PRICES are rare: the Chinese prototype fabs (JLCPCB, PCBWay, NextPCB, Elecrow, ALLPCB) and the European pools (Eurocircuits, Beta LAYOUT, Multi-CB, WEdirekt) show option prices only inside their JavaScript calculators after interaction; those were NOT read or estimated. The fab's own quantitative statements found: (a) Wuerth Elektronik CBT cost webinars (14.07.2020 EN; 05.04.2023 DE) - thickness 0.5/1.0/1.6/3.2 mm = 107/96/100/137% (4L Tg150), Tg135->Tg150 +23% (6L 1.6 mm), ENIG finish factor 2.50 v HAL-LF 1.00, plus an ordinal via-fill cost indicator in the Dec 2019 design guide (plugged EUR, filled EURx2, filled & covered EUR, filled & capped EURx3); (b) JLCPCB help centre (Nov 2026) - ENIG excess-area surcharge $0.8992 (1U) v $1.7985 (2U) per m2 per 1% over 30%; resin fill / POFV free on 6+ layers, charged on 4 layers (slight increase Aug 2026); standard impedance test free at +/-20%, precision chargeable, +/-5% on request; (c) NextPCB - impedance free on standard stackups, >= $80 for a non-standard stackup; (d) PCBWay - absorbed 10-30% cost for Kingboard->Shengyi on 4L+ (free to customer), everything else 'confirmed after review'. Wuerth figures are a German fab's relative prices (volume not stated) and are 3-6 years old; they cross-check DIRECTION and rough size, not Chinese per-m2 levels. Secondary (blog) figures are recorded but conflict widely and should not set a price. High-CTI >= 600 laminate: nothing found from any source. All dates of reading: 2026-11-25. WE PDFs were retrieved through WebFetch (direct curl blocked by Akamai 403) and read with pdftotext + page renders; Wuerth via-fill indicator and finish factors were read from the rendered slides."
+}

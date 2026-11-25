@@ -99,6 +99,8 @@ export interface PcbaReport {
   infoRequest: InfoItem[];
   /** A typed contract US$ / £ (G-19). */
   contractFx: { usdPerGbp: number; factor: number } | null;
+  /** Fab options set but not priced (G-17): inside the board price, or with no published price. */
+  fabOptionNotes: { included: string[]; notCosted: string[] } | null;
   /** Components at the build country's market, when chosen (EDU v6). */
   componentMarket: { market: string; source: string; components: number; global: number } | null;
   /** The board with the automotive programme NRE spread over the programme (EDU v6). */
@@ -273,6 +275,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const ranges = cbx ? { conditional: cbx.conditional ?? null, judgementLow: cbx.totalLow, judgementHigh: cbx.totalHigh, basis: cbx.basis ?? '' } : null;
   const infoRequest = pcbInfoRequest(a as never);
   const contractFx = a._contractFx ?? null;
+  const fabOptionNotes = (bd as { fabOptionNotes?: { included: string[]; notCosted: string[] } }).fabOptionNotes ?? null;
   const qb = a._quantityBand;
   const quantity = qb && qb.parts > 0 ? { parts: qb.parts, low: qb.partsLow, high: qb.partsHigh, note: qb.note } : null;
   const emsInvoice = csGbp > 0 ? { amount: num((bd as { emsInvoicePerBoard?: number }).emsInvoicePerBoard) || r2(bd.totalPerBoard - csGbp), customerSupplied: csGbp } : null;
@@ -331,7 +334,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       { label: 'Freight & duty', amount: bd.logisticsPerBoard, pct: bd.logisticsPerBoard / bd.totalPerBoard * 100 },
     ],
     stack, bom, bomPieces, bomTotal, componentsAtCost, sourcingFactor, bomReconciliation, sourceKey,
-    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, termsLabel, ranges, infoRequest, contractFx, safety, nre, nreTotal: n?.totalNRE ?? 0,
+    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, termsLabel, ranges, infoRequest, contractFx, fabOptionNotes, safety, nre, nreTotal: n?.totalNRE ?? 0,
     drivers, warnings,
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
     // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM

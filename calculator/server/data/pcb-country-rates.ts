@@ -1,5 +1,6 @@
 import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
-import { operationsCost, type OperationsInput } from './pcb-operations.js';
+import { operationsCost, thtMethodCost, type OperationsInput } from './pcb-operations.js';
+import { fabOptionsCost, type FabOptions } from './pcb-fab-options.js';
 import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 /**
  * PCB Manufacturing Country Rates Database — 2026 Edition
@@ -1026,6 +1027,9 @@ export interface PCBCostInput {
   /** First-pass yield 0.5–0.999 (EDU audit G-11): the share of boards that pass first time. When given, the boards reworked
    *  are 1 − FPY instead of placements × the country's dppm (an unsourced table figure, capped at 30 %). */
   firstPassYield?: number;
+  /** Fab specification options the engineer set (EDU audit G-17): thickness, laminate Tg / CTI, via fill, ENIG gold,
+   *  impedance tolerance — priced only with a published adder (server/data/pcb-fab-options.ts), the rest listed. */
+  fabOptions?: FabOptions;
 }
 
 /** Boards in a production lot, never more than the order. */
@@ -1088,6 +1092,8 @@ export interface PCBCountryCostBreakdown {
     pcbImpedance: number;
     /** Heavy-copper surcharge (layers above 1 oz) */
     pcbCopper: number;
+    /** Fab options the engineer set (G-17): thickness, laminate, via fill, ENIG gold — the sum of their basis lines. */
+    pcbOptions?: number;
     /** Automotive grade folded into the headline (IATF, laminate, class 3, coupons) — automotive boards only */
     automotiveFab?: number;
     /** Automotive grade folded into the headline (IATF line, class 3, serialisation, burn-in) — automotive boards only */
@@ -1122,6 +1128,8 @@ export interface PCBCountryCostBreakdown {
    * The screen and both reports should print these lines — see docs/review/arith-audit/pcb.md.
    */
   basis?: PCBBasisLine[];
+  /** Fab options set but not priced here (G-17): included in the board price, or with no published price. */
+  fabOptionNotes?: { included: string[]; notCosted: string[] };
 }
 
 /** One line of a PCB cost basis: what, the arithmetic done, the £ it gives, and where each figure in it comes from. */
@@ -1257,13 +1265,20 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const cnBase = PCB_COUNTRY_RATES.cn?.pcbFab.baseCostPerDm2_2L || r.baseCostPerDm2_2L;
   const pcbCopper = halfOzSteps * (HEAVY_CU_CNY_PER_M2_PER_HALF_OZ / CNY_PER_GBP_2026_09)
     * (boardAreaDm2 / 100) * wasteFactor * (r.baseCostPerDm2_2L / cnBase);
-  const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup + pcbCopper;
+  // Fab options the engineer set (EDU audit G-17): % adders act on base + layers (with the panel waste); ¥/m² adders on the
+  // board's area with the waste, at the country's price level against China's — as heavy copper.
+  const fabOpts = fabOptionsCost(input.fabOptions, { coreGBP: pcbBase + pcbLayers, gbpPerCnyM2: (boardAreaDm2 / 100) * wasteFactor * (r.baseCostPerDm2_2L / cnBase) / CNY_PER_GBP_2026_09,
+    layers: input.layers, finish: finishKey, basis: 'table' });
+  const pcbOptions = fabOpts.total;
+  const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup + pcbCopper + pcbOptions;
 
   // SMT Assembly — rate model: cost/placement = smtLineRatePerHr / 3600 CPH reference
   // Simplified: cost = placements × (rate / placements-per-hr)
   const smtAssembly = (input.smtPlacements / 3600) * a.smtLineRatePerHr +
     (input.smtPlacements > 0 ? a.batchSetupGBP / lotQ : 0);
-  const thAssembly = input.throughHoleJoints * a.thRatePerJoint;
+  // Through-hole joints by the chosen method (EDU audit G-07): selective drag or hand, else the country table's rate.
+  const thtM = thtMethodCost(input.operations?.thtMethod, input.throughHoleJoints, a.labourRatePerHr, progQ);
+  const thAssembly = thtM ? thtM.gbp : input.throughHoleJoints * a.thRatePerJoint;
   const manualAssembly = input.manualJoints * a.manualSolderPerJoint;
   // AOI on the same basis as ICT / X-ray (Oct 2026): in-line inspection time at volume, the table's
   // small-batch price as the ceiling (a 250k camera board paid the flat £0.37).
@@ -1357,9 +1372,11 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     { item: 'Bare board — tooling set-up', gbp: pcbSetup, source: `${T.table}; one-off, spread over the programme (order × years)`, formula: `${f(r.setupCostGBP, 2)} ÷ ${progQ.toLocaleString('en-GB')} boards = ${f(pcbSetup)}` },
     ...(pcbCopper > 0 ? [{ item: 'Bare board — heavy copper', gbp: pcbCopper, source: 'Queen EMS / AIVON 2026 copper-weight guides (25 CNY/m² per layer per ½ oz), CNY 8.88/£, scaled by the country\'s 2-layer base v China\'s',
       formula: `${halfOzSteps} half-oz steps × 25/8.88 £/m² × ${(boardAreaDm2 / 100).toFixed(6)} m² × waste ${wasteFactor.toFixed(4)} × ${(r.baseCostPerDm2_2L / cnBase).toFixed(4)} = ${f(pcbCopper)}` }] : []),
+    ...fabOpts.lines,
     { item: 'SMT placement', gbp: smtAssembly, source: `line rate: ${T.table}; 3,600 placements an hour (one a second) per line-hour and one set-up a lot: ${T.engineering}`,
       formula: `${input.smtPlacements} placements ÷ 3,600 /h × ${f(a.smtLineRatePerHr, 2)}/h + ${f(a.batchSetupGBP, 2)} ÷ ${lotQ.toLocaleString('en-GB')} boards a lot = ${f(smtAssembly)}` },
-    ...(thAssembly + manualAssembly > 0 ? [{ item: 'Through-hole and hand-soldered joints', gbp: thAssembly + manualAssembly, source: T.table, formula: `${input.throughHoleJoints} × ${f(a.thRatePerJoint, 6)} + ${input.manualJoints} × ${f(a.manualSolderPerJoint, 5)} = ${f(thAssembly + manualAssembly)}` }] : []),
+    ...(thtM ? [thtM, ...(manualAssembly > 0 ? [{ item: 'Hand-soldered joints', gbp: manualAssembly, source: T.table, formula: `${input.manualJoints} × ${f(a.manualSolderPerJoint, 5)} = ${f(manualAssembly)}` }] : [])]
+      : thAssembly + manualAssembly > 0 ? [{ item: 'Through-hole and hand-soldered joints', gbp: thAssembly + manualAssembly, source: T.table, formula: `${input.throughHoleJoints} × ${f(a.thRatePerJoint, 6)} + ${input.manualJoints} × ${f(a.manualSolderPerJoint, 5)} = ${f(thAssembly + manualAssembly)}` }] : []),
     ...(aoiCost > 0 ? [{ item: 'AOI', gbp: aoiCost, source: `ceiling: ${T.table}; ${AOI_SECONDS_PER_BOARD} s a board, station = 2 × labour (operator + tester), £${AOI_PROGRAM_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
       formula: `min(table ${f(a.aoiPerBoard)}, ${AOI_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${AOI_PROGRAM_GBP} ÷ ${progQ.toLocaleString('en-GB')}) = ${f(aoiCost)}` }] : []),
     ...(xrayCost > 0 ? [{ item: 'X-ray (BGA / CSP)', gbp: xrayCost, source: `ceiling: ${T.table}; ${XRAY_SECONDS_PER_BOARD} s a board, station = 2 × labour, £${XRAY_SETUP_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
@@ -1412,6 +1429,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       pcbSetup: Math.round(pcbSetup * 100) / 100,
       pcbImpedance: Math.round(pcbImpedance * 100) / 100,
       pcbCopper: Math.round(pcbCopper * 100) / 100,
+      ...(pcbOptions > 0 ? { pcbOptions: Math.round(pcbOptions * 100) / 100 } : {}),
       smtAssembly: Math.round((smtAssembly + thAssembly + manualAssembly) * 100) / 100,
       thAssembly: Math.round(thAssembly * 100) / 100,
       aoi: Math.round((aoiCost + xrayCost + ictCost + confCost) * 100) / 100,
@@ -1426,6 +1444,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       yieldLoss: Math.round(yieldLossCost * 100) / 100,
     },
     basis,
+    ...(fabOpts.included.length || fabOpts.notCosted.length ? { fabOptionNotes: { included: fabOpts.included, notCosted: fabOpts.notCosted } } : {}),
     panelInfo: {
       boardsPerPanel: panel.boardsPerPanel,
       utilisation: Math.round(panel.utilisation * 1000) / 1000,

@@ -1,0 +1,387 @@
+{
+  "readOn": "2026-11-25 (UTC; 25–26 Nov 2026 China time)",
+  "options": [
+    {
+      "option": "1. Board thickness other than 1.6 mm (2.0 / 2.4 / 3.2 mm; thin 0.8 / 1.0 mm)",
+      "findings": [
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "Standard thickness range 0.8–1.6 mm; outside it 'additional costs ... subject to the quoted order price'. No figure published.",
+          "fab": "PCBasic (Shenzhen)",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "③ Pricing Notes:The factory considers 0.8–1.6mm as the standard thickness range. Thickness outside this range will incur additional costs, which are subject to the quoted order price.",
+          "translation": "(page is in English)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 150,
+          "unit": "CNY per order (engineering fee)",
+          "conditions": "JLC small-batch ('小批量') orders, 0.4 and 0.6 mm only; notice dated 2015-05-21 — OLD, may not be current. Not a per-m² adder; nothing for 2.0/2.4/3.2 mm.",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/t7i1001.html",
+          "quote": "小批量订单：1 、0.4 0.6 这2种板厚工程费在原来的基础上加150。",
+          "translation": "Small-batch orders: 1. For the two thicknesses 0.4 and 0.6, the engineering fee is +150 on top of the original.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No Chinese fab page read gives a per-m² (or %) adder for 2.0, 2.4 or 3.2 mm, nor for 0.8/1.0 mm (PCBasic treats 0.8–1.6 mm as standard, i.e. no adder inside that range, but gives no figure outside it). Huaqiu's quote-page tooltip for board thickness states tolerances only. JLCPCB (English help page, updated 10 Nov 2026) shows its thickness surcharge only as an image table — not read. A search snippet attributes '0.6mm或2.0mm板厚触发50元/平方米的厚度附加费' to a Jiepei (捷配) article, but jiepei.com is behind a captcha and the page could not be read, so it is not recorded."
+    },
+    {
+      "option": "2. Laminate Tg (Tg150 / Tg170 v standard Tg130–140) and high-CTI (CTI ≥ 600)",
+      "findings": [
+        {
+          "value": {
+            "Tg150": 8,
+            "Tg170": 15
+          },
+          "unit": "% of board price (cost increase)",
+          "conditions": "Fab's own price-factor guide, written for SAMPLE (prototype) pricing; base = Tg130. Undated.",
+          "fab": "Shenzhen Guanzhongxin Technology (深圳市冠众鑫科技有限公司, gzxpcb.com) — 'Price guide' page (价格指引), table titled 'PCB样品价格的影响因素' (factors in PCB SAMPLE price); page undated, footer © 2020",
+          "url": "http://www.gzxpcb.com/index.php?m=content&c=index&a=lists&catid=125",
+          "quote": "20 | TG值 | 常规PCBTG值为130，中TG为150，高TG170，对应的提高成本分别为8%和15%",
+          "translation": "20 | Tg value | Standard PCB Tg is 130, medium Tg 150, high Tg 170; the corresponding cost increases are 8% and 15% respectively.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "PCBasic order form offers TG130 / TG135 / TG150 / TG155 / TG170 and a 'CTI≥600' special-technique tick box, but prints no price for any of them. A per-Tg price table embedded in the page's script is labelled '模拟数据' (simulated data) and is a 5-pcs prototype table — NOT used.",
+          "fab": "PCBasic (Shenzhen)",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "TG: Non-conductive base material TG130 TG135 TG150 TG155 TG170 … Special technique: … CTI≥600",
+          "translation": "(page is in English; script comment '// 模拟数据' = 'simulated data')",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "Tg170 +30–50 % (board-material fee)",
+          "unit": "% (secondary)",
+          "conditions": "Prototype-oriented 2026 article on sohu.com (account appears to be a PCB platform's marketing); not a fab price list.",
+          "fab": "sohu.com article 'PCB打样多少钱？2026最新价格表来了！'",
+          "url": "https://www.sohu.com/a/1075726605_120986608",
+          "quote": "普通 FR4（Tg130）板材价格最低，高 Tg FR4（Tg170）价格高出 30%~50%",
+          "translation": "Ordinary FR4 (Tg130) laminate is cheapest; high-Tg FR4 (Tg170) is 30–50 % more expensive.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "Tg130→Tg170 +15–20 %",
+          "unit": "% (secondary)",
+          "conditions": "Generic blog article by a Shenzhen PCBA company; not its price list.",
+          "fab": "Shenzhen Jiechuang Electronics (捷创电子, jc-pcba.com) article",
+          "url": "https://www.jc-pcba.com/Infodetial/3804.html",
+          "quote": "TG值每提高一个等级（如TG130→TG170），成本增加15-20%。",
+          "translation": "Each step up in Tg (e.g. TG130→TG170) raises cost by 15–20 %.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No ¥/m² Tg adder found on any Chinese fab page for FR-4 (Huaqiu's quote script lists +15 / +30 元/㎡ only for aluminium-base alloys 3003 / 5052 v 1060 under a 'TG150' label — not FR-4, not recorded as a Tg adder). No price found anywhere for high-CTI (CTI ≥ 600 / PLC 0) laminate: PCBasic offers the option with no price. Nothing for S1000-2 / IT-180A by name."
+    },
+    {
+      "option": "3. Via fill: resin plugging (树脂塞孔), via-in-pad plated over (POFV / 盘中孔 / 电镀填平), solder-mask plugging (绿油塞孔)",
+      "findings": [
+        {
+          "value": 500,
+          "unit": "CNY/m² (cost increase)",
+          "conditions": "Via-in-pad = resin plugging = copper hole fill (the fab treats them as one item). Fab's price-factor guide for SAMPLE pricing; undated.",
+          "fab": "Shenzhen Guanzhongxin Technology (深圳市冠众鑫科技有限公司, gzxpcb.com) — 'Price guide' page (价格指引), table titled 'PCB样品价格的影响因素' (factors in PCB SAMPLE price); page undated, footer © 2020",
+          "url": "http://www.gzxpcb.com/index.php?m=content&c=index&a=lists&catid=125",
+          "quote": "11 | 盘中孔 | 也叫树脂塞孔或孔铜填孔，较正常工序增填孔工艺，成本增加500元/平米",
+          "translation": "11 | Via-in-pad | Also called resin plugging or copper hole filling; adds a hole-filling process to the normal flow; cost increases 500 CNY/m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 0,
+          "unit": "CNY (free)",
+          "conditions": "JLC 6–32 layer boards: via-in-pad (resin plug + plated cap) is the default and free (notice 2025-06-03; also 2022-10-19 guide: '6、8-20层...免费，4层收费' — 4-layer is charged, amount not stated). Promotional; the free process is bundled into JLC's multilayer price.",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/q7i51734.html",
+          "quote": "针对6-32层PCB，嘉立创免费开放盘中孔工艺。… 1、嘉立创6层板盘中孔工艺免费，业内其他收费极高：400元/平方米",
+          "translation": "For 6–32 layer PCBs JLC offers the via-in-pad process free. … 1. JLC 6-layer via-in-pad is free; others in the industry charge a very high 400 CNY/m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 400,
+          "unit": "CNY/m² (secondary — JLC's claim about OTHER fabs)",
+          "conditions": "JLC marketing notice 2025-06-03 stating what 'others in the industry' charge for via-in-pad on 6-layer boards; not a price list of any named fab.",
+          "fab": "JLC notice citing unnamed competitors",
+          "url": "https://www.jlc.com/portal/q7i51734.html",
+          "quote": "业内其他收费极高：400元/平方米",
+          "translation": "Others in the industry charge a very high 400 CNY/m².",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "JLCPCB (JLC's export arm) notice 2026-08-06: 4-layer resin-filled-via boards get 'a slight increase'; no amount.",
+          "fab": "JLCPCB (Shenzhen)",
+          "url": "https://jlcpcb.com/news/pcb-lead-time-and-price-adjustment-august2026",
+          "quote": "4-Layer PCBs with Resin Filled Vias: Prices will experience a slight increase.",
+          "translation": "(page is in English)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 0,
+          "unit": "CNY (free upgrade)",
+          "conditions": "PCBasic, 4-layer boards: tented vias are upgraded to solder-mask-filled vias at no extra cost. On other boards solder-mask via filling is 'with an extra charge' — no figure printed. Resin plug + plated cap (max via Ø0.5 mm) offered, no price printed.",
+          "fab": "PCBasic (Shenzhen)",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "③ For 4-layer boards, via covering is upgraded to via filling at no additional cost. … ② If you select via filling with solder mask (with an extra charge), but provide Gerber files where the vias are shown as open, … You may contact our sales team for a refund of the via cover fee",
+          "translation": "(page is in English)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": {
+            "standard resin plug": 0.08,
+            "large volume": 0.05,
+            "economy resin plug": 0.03
+          },
+          "unit": "USD per hole",
+          "conditions": "Stated by the fab in its own knowledge-base article (baike), 'as low as' figures, per HOLE not per m²; undated (refers to 2026 prices). Marketing article rather than a price table.",
+          "fab": "Kingsun / 景阳电子 (Shenzhen, kingsunpcb.com.cn)",
+          "url": "https://www.kingsunpcb.com.cn/baike/25989.html",
+          "quote": "景阳电子 透明报价：标准树脂塞孔 0.08 美元 / 孔，大批量采购低至 0.05 美元 / 孔 … 经济型树脂堵孔工艺仅需 0.03 美元 / 孔",
+          "translation": "Kingsun transparent quote: standard resin plugging USD 0.08/hole, as low as USD 0.05/hole for large-volume purchase … economy resin plugging only USD 0.03/hole.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "resin plug +20–60 % v ink plug; conductive fill +50–100 % v resin; electroplated fill +80–150 % v conductive",
+          "unit": "% relative (secondary)",
+          "conditions": "Generic process explainer on a PCB platform's help pages, dated 2025-10-30; relative cost only, no base.",
+          "fab": "百能云板 (pcbpp.com) help article 'PCB塞孔工艺详解'",
+          "url": "https://www.pcbpp.com/help/167.html",
+          "quote": "成本较高，相比普通油墨塞孔 增加 20%-60%；… 成本高昂，相比树脂塞孔 增加 50%-100%；… 成本最高，相比导电材料塞孔 增加 80%-150%；",
+          "translation": "Higher cost: +20–60 % v ordinary ink plugging; … expensive: +50–100 % v resin plugging; … highest: +80–150 % v conductive-material plugging.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No fab page read gives a ¥/m² price for solder-mask plugging (绿油塞孔) — PCBasic says it is an extra charge but prints no figure. No volume (批量) ¥/m² price for resin plug + plated cap from JLC for 4-layer, from Huaqiu (option listed '过孔塞树脂+电镀填平', price computed server-side), or from Jiepei (captcha-blocked)."
+    },
+    {
+      "option": "4. ENIG gold thickness (1 µ\" standard v 2 µ\" / 3 µ\")",
+      "findings": [
+        {
+          "value": {
+            "1U\"": 140,
+            "2U\"": 240
+          },
+          "unit": "CNY/m² (full ENIG charge, not an increment)",
+          "conditions": "JLC 'conventional' ENIG (gold area ≤ 30 % of both faces), effective 2025-12-25/26 at a gold basis of 1,000 CNY/g; notice says 1U up 20, 2U down 10. Applies to JLC's standard (non-6+-layer) ENIG.",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/q7i58163.html",
+          "quote": "一、常规沉金收费标准（沉金面积比例 ≤ 30%）… 1. 1U\" 金厚沉金：调整为 140 元/平方米（上调 20 元/平方米） 2. 2U\" 金厚沉金：调整为 240 元/平方米（下调 10 元/平方米）",
+          "translation": "1. Conventional ENIG charge (ENIG area ratio ≤ 30 %) … 1. 1U\" gold ENIG: adjusted to 140 CNY/m² (up 20 CNY/m²); 2. 2U\" gold ENIG: adjusted to 240 CNY/m² (down 10 CNY/m²).",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": {
+            "1U\" per 1% over 30%": 5.6,
+            "2U\" per 1% over 30%": 11.2
+          },
+          "unit": "CNY/m² per 1 % of ENIG area above 30 %",
+          "conditions": "JLC large-area ENIG surcharge on the portion above 30 % of board area (both faces), gold basis 1,000 CNY/g, floats with gold price; 2025-12-26.",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/q7i58163.html",
+          "quote": "1）.1U\"金厚沉金工艺：每超出 1% 的面积，每平方米加收 5.6 元 … 2）.2U\"金厚沉金工艺：每超出 1% 的面积，每平方米加收11.2元",
+          "translation": "1) 1U\" ENIG: for every 1 % of area exceeded, +5.6 CNY per m² … 2) 2U\" ENIG: for every 1 % of area exceeded, +11.2 CNY per m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": {
+            "1U\"": 100,
+            "2U\"": 140
+          },
+          "unit": "CNY/m² (full ENIG charge)",
+          "conditions": "JLC 6–64 layer PCBs, notice 2026-01-20 (1U restored as default for 6–64 layers).",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/q7i58671.html",
+          "quote": "默认工艺：1U金厚：仅需100元/平方米 2U金厚：仅需140元/平方米",
+          "translation": "Default process: 1U gold thickness: only 100 CNY/m²; 2U gold thickness: only 140 CNY/m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": {
+            "1U\" per 1% over 30%": 0.8992,
+            "2U\" per 1% over 30%": 1.7985
+          },
+          "unit": "USD/m² per 1 % of ENIG area above 30 %",
+          "conditions": "JLCPCB (export site) help page, last updated 2026-11-10; the USD form of the JLC large-area rule.",
+          "fab": "JLCPCB (Shenzhen)",
+          "url": "https://jlcpcb.com/help/article/in-what-cases-will-there-be-charged-extra",
+          "quote": "For 1U'' gold thickness, $0.8992/m² will be charged for every 1% for the portion exceeding 30%. For 2U'' gold thickness, $1.7985/m² will be charged for every 1% for the portion exceeding 30%.",
+          "translation": "(page is in English)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": {
+            "1U": 100,
+            "2U": 200,
+            "3U": 300
+          },
+          "unit": "CNY/m² (adder for ENIG v HASL/OSP)",
+          "conditions": "Fab's price-factor guide for SAMPLE pricing; OSP / leaded HASL no adder; undated.",
+          "fab": "Shenzhen Guanzhongxin Technology (深圳市冠众鑫科技有限公司, gzxpcb.com) — 'Price guide' page (价格指引), table titled 'PCB样品价格的影响因素' (factors in PCB SAMPLE price); page undated, footer © 2020",
+          "url": "http://www.gzxpcb.com/index.php?m=content&c=index&a=lists&catid=125",
+          "quote": "8 | 表面处理 | 表面处理沉金时，1U加价100元/㎡，2U加价200元/㎡，3U加价300元/㎡，OSP/有铅喷锡不加价，无铅喷锡+30元/㎡.",
+          "translation": "8 | Surface finish | For ENIG: 1U +100 CNY/m², 2U +200 CNY/m², 3U +300 CNY/m²; OSP / leaded HASL no adder; lead-free HASL +30 CNY/m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 250,
+          "unit": "CNY/m² (batch)",
+          "conditions": "Boyunfa HDI price package, published 2019-04-25 (OLD); the item is selective ENIG 2U\" + OSP (not plain 2U v 1U ENIG); samples +300 CNY per design.",
+          "fab": "Shenzhen Boyunfa Technology (博运发, byfpcb.com)",
+          "url": "http://www.byfpcb.com/view_1187.html",
+          "quote": "3. 沉金2U\"+OSP样品增加300/款，交期延长2天，批量增加250元/平米，交期延长3-7天.",
+          "translation": "3. ENIG 2U\" + OSP: samples +300 per design, lead time +2 days; batch +250 CNY/m², lead time +3–7 days.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 100,
+          "unit": "CNY/m² (secondary — JLC's claim about other fabs)",
+          "conditions": "JLC notice 2023-10-24: what 'many makers in the industry' charge to go from 1u\" to 2u\".",
+          "fab": "JLC notice citing unnamed competitors",
+          "url": "https://www.jlc.com/portal/q7i41881.html",
+          "quote": "2u\"相对于1u\"，多了一倍的沉金厚度，生产成本自然也更高，因此业内很多厂商往往要多收取100元/㎡的加厚费用。",
+          "translation": "2u\" has double the gold of 1u\", so production cost is higher; therefore many makers in the industry often charge an extra 100 CNY/m² thickening fee.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "PCBasic offers ENIG thickness 1U\"–5U\" (and plated-gold 0.5–8U\"), no price printed. Huaqiu quote page offers 沉金厚度 1μ″/2μ″/3μ″, price computed server-side.",
+          "fab": "PCBasic (Shenzhen); Huaqiu",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "ENIG Thickness 1U\" 2U\" 3U\" 4U\" 5U\"",
+          "translation": "(option list only)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No 3 µ\" ENIG price on a current (2025–26) fab list; only Guanzhongxin's undated sample guide (+300 CNY/m²)."
+    },
+    {
+      "option": "5. Impedance control: ±10 % standard v ±5 % / ±7 %, or the impedance-control fee",
+      "findings": [
+        {
+          "value": "10–15",
+          "unit": "% of board price",
+          "conditions": "Fab's price-factor guide for SAMPLE pricing; undated; tolerance not stated.",
+          "fab": "Shenzhen Guanzhongxin Technology (深圳市冠众鑫科技有限公司, gzxpcb.com) — 'Price guide' page (价格指引), table titled 'PCB样品价格的影响因素' (factors in PCB SAMPLE price); page undated, footer © 2020",
+          "url": "http://www.gzxpcb.com/index.php?m=content&c=index&a=lists&catid=125",
+          "quote": "9 | 阻抗要求 | 阻抗有要求时，加价10-15%",
+          "translation": "9 | Impedance requirement | When impedance is required, price +10–15 %.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "Huaqiu quote-page tooltip: impedance trial calculation and line-width adjustment free; controlled to ±10 % (±5 Ω below 50 Ω). A customer-specified stack-up is charged extra, amount not stated.",
+          "fab": "Huaqiu Electronics (华秋电路, hqpcb.com; formerly 华强PCB)",
+          "url": "https://www.hqpcb.com/quote?tid=32",
+          "quote": "②、此选项华秋提供免费的试算阻抗及调整线宽服务，阻抗按照±10%（＜50Ω±5Ω）要求进行管控。… ②、选择“客户指定叠层”，需要额外收取费用",
+          "translation": "② For this option Huaqiu provides free impedance trial calculation and line-width adjustment; impedance controlled to ±10 % (±5 Ω below 50 Ω). … ② Choosing 'customer-specified stack-up' incurs an additional charge.",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "JLC capability table: impedance tolerance ±10 %, marked chargeable, no amount. (A 2018-02-26 JLC notice said impedance boards were not charged extra — superseded.)",
+          "fab": "Shenzhen JLC (深圳嘉立创科技集团, jlc.com)",
+          "url": "https://www.jlc.com/portal/vtechnology.html",
+          "quote": "阻抗公差：+/-10%（收费）",
+          "translation": "Impedance tolerance: ±10 % (charged).",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "PCBasic: default stack-up free, custom stack-up extra; no figure.",
+          "fab": "PCBasic (Shenzhen)",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "Default stack-up is free of charge, but custom stack-up will incur additional cost.",
+          "translation": "(page is in English)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "100–300",
+          "unit": "CNY per design (secondary)",
+          "conditions": "Prototype-oriented 2026 article; not a fab list.",
+          "fab": "sohu.com article 'PCB打样多少钱？2026最新价格表来了！'",
+          "url": "https://www.sohu.com/a/1075726605_120986608",
+          "quote": "阻抗控制通常加收 100~300 元 / 款",
+          "translation": "Impedance control usually adds 100–300 CNY per design.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "15–25",
+          "unit": "% (secondary)",
+          "conditions": "Generic blog by a PCBA company.",
+          "fab": "Shenzhen Jiechuang Electronics (捷创电子) article",
+          "url": "https://www.jc-pcba.com/Infodetial/3804.html",
+          "quote": "阻抗控制需加收15-25%费用",
+          "translation": "Impedance control costs an extra 15–25 %.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No fab page prices a tighter impedance tolerance (±5 % or ±7 %) against ±10 %. Huaqiu, JLC, PCBasic all state ±10 % as their controlled tolerance."
+    },
+    {
+      "option": "6. Inner-layer copper weight (1 oz / 2 oz inner); check of outer heavy copper ¥25/m² per layer per ½ oz",
+      "findings": [
+        {
+          "value": {
+            "per extra 1 oz above 1 oz finished (≤ 6 layers)": "100–120",
+            "per extra 1 oz above 6 layers": "600–650"
+          },
+          "unit": "CNY/m² (cost increase)",
+          "conditions": "Fab's price-factor guide for SAMPLE pricing; refers to FINISHED copper ('成品铜厚'), not split inner/outer, not per layer; undated.",
+          "fab": "Shenzhen Guanzhongxin Technology (深圳市冠众鑫科技有限公司, gzxpcb.com) — 'Price guide' page (价格指引), table titled 'PCB样品价格的影响因素' (factors in PCB SAMPLE price); page undated, footer © 2020",
+          "url": "http://www.gzxpcb.com/index.php?m=content&c=index&a=lists&catid=125",
+          "quote": "3 | 成品铜厚 | 铜厚越厚成本越高，常规完成铜厚为1OZ（35um)，当超过这个铜厚时，每增加1OZ，成本会增加100-120元/㎡，另外层数越多铜厚越厚生产难度越大。超过6层时，每增加1OZ，成本会增加600-650元/㎡",
+          "translation": "3 | Finished copper | Thicker copper costs more; standard finished copper is 1 oz (35 µm); above that, each additional 1 oz adds 100–120 CNY/m²; more layers make thick copper harder. Above 6 layers, each additional 1 oz adds 600–650 CNY/m².",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "none stated",
+          "conditions": "PCBasic offers inner copper 0.5–10 oz and outer 0.4–15 oz with no price printed. JLC Shaoguan plant lists inner HOZ/1OZ/2OZ, no price.",
+          "fab": "PCBasic (Shenzhen); JLC",
+          "url": "https://www.pcbasic.com/standard_pcb.html",
+          "quote": "Inner copper 0.5oz 0.75oz 1oz 2oz 3oz … 10oz",
+          "translation": "(option list only)",
+          "kind": "fab price list",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No fab page gives a per-m² price for 1 oz or 2 oz INNER copper. The outer heavy-copper figure the tool uses (¥25/m² per layer per ½ oz) was NOT found on any page read — neither confirmed nor corrected; the only published copper adder seen is Guanzhongxin's undated sample-price guide (+100–120 CNY/m² per extra 1 oz finished copper, ≤ 6 layers), which is on a different basis (whole board, not per layer)."
+    }
+  ],
+  "notes": "Read 25 Nov 2026 (UTC; 25–26 Nov China time). Firecrawl was out of credits; pages were fetched with curl / WebFetch and read as text. (1) PCBasic and Huaqiu are probably NOT independent: PCBasic's form says 'Panel by NextPCB' (NextPCB is Huaqiu's export brand) and both carry the identical 4-wire test text (min 100 CNY + 80 CNY/m²) and interleaving-paper text (50 CNY + 20 CNY/m²) — Huaqiu quote tooltip: '收费标准:四线低阻需要全流程热测筛查，测试慢，成本较高，最低收费100元，每平方米加多80元。' This corroborates the 4-wire +¥80/m² already used, but from the same price book. (2) PCBasic also prints a hole-density adder: 'For 4-layer and above, pricing is based on 100,000 holes per square meter. An additional charge of 4 RMB per 10,000 holes per square meter will apply.' (2-layer basis 80,000 holes/m²), and hole copper 20 µm setup 50 RMB/design + 10 RMB/m², 25 µm 100 + 25, 30 µm 150 + 50, 35 µm 200 + 100. (3) Guanzhongxin's guide also lists: IPC-6012 class III ~+20 %, halogen-free +30 %, lead-free HASL +30 CNY/m², plated half-holes +200 CNY/m², blind/buried +20 %, aspect ratio > 1:8 +20 %, Shengyi laminate ~10 % over KB, untaxed = taxed × 0.92. It is a SAMPLE-price factor table, undated (© 2020 footer). (4) Base-price context (not requested): JLC 2026-09-21 notice — single/double 410 CNY/m², 4-layer 460 CNY/m² (A1 laminate, 1.6 mm, 8 plies); JLC 2026-01-08 +20 CNY/m² on 2/4-layer FR4 batch; JLC lead-free HASL 30 CNY/m² (2026-08-24 notice); Huaqiu volume ladder (2024-09-18) lowest 220 CNY/m² double-sided, 410 CNY/m² 4-layer. (5) Not readable: jiepei.com (Aliyun captcha), dzsc.com showroom (WAF 405), JLC / Huaqiu / Jiepei online calculators (prices computed server-side; not 'published' lists). JLCPCB's board-thickness surcharge table exists only as an image. (6) No page gives automotive-volume (100k+ boards) adders; every figure here is a quick-turn / small-batch fab's list or a sample-price guide, so treat as an upper bound for volume production. (7) JLC ENIG prices are the whole ENIG charge per m², not the step from 1U to 2U; any subtraction is left to the caller."
+}

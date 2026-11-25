@@ -5253,11 +5253,21 @@ function renderPCBFabForm(): string {
       <div class="field-group"><label>Class-3 coupon sampling</label><select id="pcbf-sampling" title="Per the customer's control plan: microsection and coupons per panel, or per production lot"><option value="panel">Per panel</option><option value="lot">Per production lot</option></select></div>
       <div class="field-group"><label>ASIL (from the safety concept)</label><select id="pcbf-asil" title="Set from the hazard analysis, never from a photograph — until set, nothing ASIL-dependent is costed"><option value="">Not confirmed</option><option value="QM">QM</option><option value="ASIL-A">ASIL-A</option><option value="ASIL-B">ASIL-B</option><option value="ASIL-C">ASIL-C</option><option value="ASIL-D">ASIL-D</option></select></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Fab specification</div>
+    <div class="field-row">
+      <div class="field-group"><label>Board thickness (mm)</label><input type="number" id="pcbf-thickness" step="0.1" min="0.2" max="6.5" placeholder="1.6 (standard)" title="0.8–1.6 mm is a fab's standard range (no extra); thicker or thinner is priced from Würth's relative prices — blank: standard"/></div>
+      <div class="field-group"><label>Via fill</label><select id="pcbf-via-fill" title="Resin fill / via-in-pad: +¥500/m² (Shenzhen fab list), free on 6+ layers (JLC, JLCPCB); solder-mask plugging free on 4+ layers (PCBasic)"><option value="">Not set (tented)</option><option value="mask">Solder-mask plugged</option><option value="resin">Resin filled</option><option value="pofv">Via-in-pad, plated over (POFV)</option></select></div>
+      <div class="field-group"><label>ENIG gold thickness</label><select id="pcbf-enig-gold" title="Each µ&quot; above 1 µ&quot;: +¥100/m² (Shenzhen fab list; JLC's 1U → 2U step is the same)"><option value="">1 µ" (standard)</option><option value="2">2 µ"</option><option value="3">3 µ"</option></select></div>
+      <div class="field-group"><label>Impedance tolerance</label><select id="pcbf-imp-tol" title="±10 % is standard; tighter tolerances have no published price — listed, not costed"><option value="">±10 % (standard)</option><option value="7">±7 %</option><option value="5">±5 %</option></select></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Operations and component prices</div>
     <div class="field-row">
       <div class="field-group"><label>Conformal-coated sides</label><input type="number" id="pcbf-coat-sides" step="1" min="0" max="2" placeholder="auto" title="0, 1 or 2 — blank: one side when the board is coated"/></div>
       <div class="field-group"><label>Press-fit connectors</label><input type="number" id="pcbf-press-fit" step="1" min="0" placeholder="from the BOM" title="Connectors pressed in (TE: 3–5 s each) — blank: counted from the BOM's press-fit lines"/></div>
       <div class="field-group"><label>Programming time (s a board)</label><input type="number" id="pcbf-prog-sec" step="1" min="0" placeholder="from the MCU flash" title="Blank: each MCU's flash × 2 s/MB (write + erase, AURIX data sheet) + 10 s handling"/></div>
+      <div class="field-group"><label>Through-hole soldering</label><select id="pcbf-tht-method" title="Selective drag: 0.71 s a joint + pallet (Vitronics test data); by hand: 3.5 s a joint lead-free — blank: the country table's rate a joint"><option value="">Country table rate</option><option value="selective">Selective solder</option><option value="hand">By hand</option></select></div>
+      <div class="field-group"><label>Staking dots (a board)</label><input type="number" id="pcbf-staking" step="1" min="0" placeholder="none" title="Silicone staking dots: 3 s and 0.05 g a dot (engineering estimates), DOWSIL 3145 at the distributor's pail price"/></div>
+      <div class="field-group"><label>Potting compound (g a board)</label><input type="number" id="pcbf-potting" step="1" min="0" placeholder="none" title="Potting: SYLGARD 170 at the distributor's 40 kg kit price + 30 s a board handling (engineering estimate); the cure is not charged"/></div>
       <div class="field-group"><label>Functional test time (s a board)</label><input type="number" id="pcbf-fct-sec" step="1" min="0" placeholder="60 s (automotive)" title="End-of-line functional test — blank: 60 s on an automotive board (an engineering estimate, no published figure found)"/></div>
       <div class="field-group"><label>Delivery terms</label><select id="pcbf-delivery-terms" title="Delivered UK, duty paid (the default) or ex-works at the factory gate — no freight, no UK duty"><option value="DAP">Delivered UK, duty paid</option><option value="EXW">Ex-works (factory gate)</option></select></div>
       <div class="field-group"><label>First-pass yield (0.5–0.999)</label><input type="number" id="pcbf-fpy" step="0.001" min="0.5" max="0.999" placeholder="from the dppm table" title="Share of boards passing first time — replaces the rework from an unsourced dppm table"/></div>
@@ -5274,6 +5284,7 @@ function renderPCBFabForm(): string {
         <option value="130">130°C — Standard FR4</option>
         <option value="150">150°C — Mid-Tg FR4</option>
         <option value="170" selected>170°C — High-Tg FR4</option>
+        <option value="cti600">High CTI (≥ 600) — not priced, listed</option>
       </select></div>
     </div>
 
@@ -10936,7 +10947,15 @@ function fillFabFormFromAnalysis(): void {
   setF('pcbf-fpy', b.firstPassYield !== undefined && b.firstPassYield !== '' ? Number(b.firstPassYield) : '');
   setF('pcbf-contract-usd', b.contractUsdPerGbp !== undefined && b.contractUsdPerGbp !== '' ? Number(b.contractUsdPerGbp) : '');
   setF('pcbf-panel-util', b.panelUtilisation);
-  setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
+  setSelectSafe('pcbf-cu', String(Number(b.innerCopperOz) > 0 ? b.innerCopperOz : 1), '1');
+  // Fab specification and the G-07 operations (EDU audit G-17 / G-07): the engineer's own entries, kept on the analysis.
+  setF('pcbf-thickness', Number(b.boardThicknessMm) > 0 ? Number(b.boardThicknessMm) : '');
+  setSelectSafe('pcbf-via-fill', String(b.viaFill ?? ''), '');
+  setSelectSafe('pcbf-enig-gold', b.enigGoldUin ? String(b.enigGoldUin) : '', '');
+  setSelectSafe('pcbf-imp-tol', b.impedanceTolPct ? String(b.impedanceTolPct) : '', '');
+  setSelectSafe('pcbf-tht-method', String(b.thtMethod ?? ''), '');
+  setF('pcbf-staking', Number(b.stakingDots) > 0 ? Number(b.stakingDots) : '');
+  setF('pcbf-potting', Number(b.pottingGrams) > 0 ? Number(b.pottingGrams) : '');
   setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');
   setSelectSafe('pcbf-via-type', b.microVias > 0 ? 'microvia_hdi' : 'through_only', 'through_only');
   setSelectSafe('pcbf-hdi-structure', mappedHdi, 'none');
@@ -10953,7 +10972,7 @@ function fillFabFormFromAnalysis(): void {
 
   // Infer Tg from technology
   const tgMap: Record<string, string> = { FR4_STD: '130', FR4_HTg: '150', HDI_RIGID: '170', RF_MICRO: '170' };
-  setF('pcbf-tg', tgMap[b.technologyType] ?? '150');
+  setF('pcbf-tg', b.laminateTg ? String(b.laminateTg) : tgMap[b.technologyType] ?? '150');
 
   // Packaging & logistics: the generic £0.15 / £0.25 defaults on this form are
   // sized for a mechanical part. A stack of vacuum-sealed bare boards is much

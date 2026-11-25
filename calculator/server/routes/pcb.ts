@@ -21,7 +21,8 @@ import {
   PCB_BASIS_SOURCE,
   getActivePCBCountryOverrides,
 } from '../data/pcb-country-rates.js';
-import { lotBoards, programmeBoards } from '../data/pcb-country-rates.js';
+import { lotBoards, programmeBoards, CNY_PER_GBP_2026_09 } from '../data/pcb-country-rates.js';
+import { fabOptionsFromSpec, fabOptionsCost } from '../data/pcb-fab-options.js';
 import { marketAspClass, marketLocalPerGbp, marketSymbol, PCB_FAB_MARKET } from '../data/pcb-market-evidence.js';
 import { verifyList, customerSuppliedGBP, type VerifyLine } from '../utils/pcb-verify-list.js';
 import { normaliseCount, quantityBand, symmetryLines, type QuantityBand } from '../utils/pcb-counting.js';
@@ -396,6 +397,10 @@ export function applyAutomotiveGrade(
   const b0 = (bd.breakdown ?? {}) as unknown as Record<string, number>;
   const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1, bd.countryId,
     { orderQty, extras: { pcbVias: b0.pcbVias, pcbHDI: b0.pcbHDI, pcbCopper: b0.pcbCopper, pcbSetup: b0.pcbSetup } });
+  // On the market basis the fab options were re-priced on the market board: its notes replace the table's (G-17).
+  if (fab.basis === 'market') {
+    if (fab.fabOptionNotes) bd.fabOptionNotes = fab.fabOptionNotes; else delete bd.fabOptionNotes;
+  }
   const asmPremium = Math.max(0, assembly.totalAutomotiveAssemblyGBP - assembly.standardAssemblyGBP);
   // On the market basis the "premium" is the ASP-based board less the table's standard board, and may be negative: the
   // table's standard build-up is not the market (EDU audit G-06). On the table basis it is never negative.
@@ -1008,6 +1013,8 @@ interface AutomotiveFabAdjustment {
   marketCoreGBP?: number;
   notInAspGBP?: number;
   marketFormula?: string;
+  /** The fab options on the market basis (G-17): included in the market price, or not costed. */
+  fabOptionNotes?: { included: string[]; notCosted: string[] };
   /** Table basis: what the microsection and coupons are shared by. */
   samplingDivisor?: number;
   sampling?: 'panel' | 'lot';
@@ -1047,11 +1054,17 @@ export function computeAutomotiveFabAdjustment(
       const core = m2 * perM2 / perGbp;
       const x = opts.extras ?? {};
       const notInAsp = (x.pcbVias ?? 0) + (x.pcbHDI ?? 0) + (x.pcbCopper ?? 0) + (x.pcbSetup ?? 0);
-      const total = core + notInAsp;
-      const marketFormula = `${m2.toFixed(6)} m² × (${sym}${m.cls.aspLocalPerM2.toLocaleString('en-GB')}/m² (${m.cls.maxLayers === 99 ? `${m.cls.minLayers}+` : `${m.cls.minLayers}–${m.cls.maxLayers}`}-layer ASP ${m.cls.baseYear}) × ${(1 + m.ev.rise.used).toFixed(3)} (rise to 2026) × ${shape.toFixed(4)} (${layersM} v ${m.cls.anchorLayers} layers, the table's shape) + ${sym}${m.ev.class3ExtrasPerM2.value}/m² class-3 extras) ÷ ${perGbp.toFixed(perGbp >= 100 ? 2 : 4)} ${m.ev.currency}/£ = £${core.toFixed(4)}; + not in an ASP (holes above the allowance, blind / micro vias, HDI, heavy copper, tooling set-up) £${notInAsp.toFixed(4)}`;
+      // The engineer's fab options (G-17) on the market basis: % adders on the market board, ¥/m² on its area (no panel
+      // waste — the ASP is a price a m² sold) at the country's price level; the laminate is inside an automotive ASP.
+      const cnBaseM = PCB_COUNTRY_RATES.cn?.pcbFab.baseCostPerDm2_2L || row.baseCostPerDm2_2L;
+      const optsM = fabOptionsCost(fabOptionsFromSpec(boardSpec), { coreGBP: core, gbpPerCnyM2: m2 * (row.baseCostPerDm2_2L / cnBaseM) / CNY_PER_GBP_2026_09,
+        layers: layersM, finish: String(boardSpec.surfaceFinish || 'enig'), basis: 'market' });
+      const total = core + notInAsp + optsM.total;
+      const marketFormula = `${m2.toFixed(6)} m² × (${sym}${m.cls.aspLocalPerM2.toLocaleString('en-GB')}/m² (${m.cls.maxLayers === 99 ? `${m.cls.minLayers}+` : `${m.cls.minLayers}–${m.cls.maxLayers}`}-layer ASP ${m.cls.baseYear}) × ${(1 + m.ev.rise.used).toFixed(3)} (rise to 2026) × ${shape.toFixed(4)} (${layersM} v ${m.cls.anchorLayers} layers, the table's shape) + ${sym}${m.ev.class3ExtrasPerM2.value}/m² class-3 extras) ÷ ${perGbp.toFixed(perGbp >= 100 ? 2 : 4)} ${m.ev.currency}/£ = £${core.toFixed(4)}; + not in an ASP (holes above the allowance, blind / micro vias, HDI, heavy copper, tooling set-up) £${notInAsp.toFixed(4)}${optsM.total > 0 ? `; + fab options (${optsM.lines.map(l => `${l.item.replace(/^Bare board — /, '')} £${l.gbp.toFixed(4)}`).join(', ')}) £${optsM.total.toFixed(4)}` : ''}${optsM.included.length ? ` (${optsM.included.join('; ')})` : ''}`;
       return { standardFabGBP: rr(fabCostMid), iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0,
         totalAutomotiveFabGBP: rr(total), premiumPctOverStandard: Math.round((total / fabCostMid - 1) * 100), basis: 'market',
-        marketCoreGBP: rr(core), notInAspGBP: rr(notInAsp), marketFormula };
+        marketCoreGBP: rr(core), notInAspGBP: rr(notInAsp), marketFormula,
+        ...(optsM.included.length || optsM.notCosted.length ? { fabOptionNotes: { included: optsM.included, notCosted: optsM.notCosted } } : {}) };
     }
   }
   const layers = Number(boardSpec.estimatedLayers) || 2;
@@ -1060,7 +1073,9 @@ export function computeAutomotiveFabAdjustment(
   const areaCm2 = (widthMm * heightMm) / 100;
   const iatfFabPremiumGBP = fabCostMid * 0.18;
   const laminatePct = layers >= 8 ? 0.50 : 0.35;
-  const automotiveLaminatePremiumGBP = fabCostMid * 0.40 * laminatePct;
+  // The engineer's laminate (G-17) is priced on the board itself — the generic automotive laminate premium would count it twice.
+  const lamSet = fabOptionsFromSpec(boardSpec)?.laminate;
+  const automotiveLaminatePremiumGBP = lamSet ? 0 : fabCostMid * 0.40 * laminatePct;
   // Class-3 microsection inspection and coupon testing: the coupons are cut from the panel rails, so they are shared by
   // the panel's boards — or, when the control plan samples per production LOT, by the lot's boards (EDU audit G-04).
   const sampling = samplingCadence(boardSpec);
@@ -2068,8 +2083,14 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
           programmingSec: typed('programmingSec') ?? programmingSecFor(ob.mcuFlashMB),
           functionalTestSec: typed('functionalTestSec') ?? (auto ? 60 : 0),
           hvTest: ob.hv,
+          // EDU audit G-07: the soldering method of the through-hole joints, staking dots and potting (PCB form only).
+          ...(['selective', 'hand'].includes(String(boardSpec.thtMethod)) ? { thtMethod: String(boardSpec.thtMethod) as 'selective' | 'hand' } : {}),
+          ...(typed('stakingDots') ? { stakingDots: typed('stakingDots') } : {}),
+          ...(typed('pottingGrams') ? { pottingGrams: typed('pottingGrams') } : {}),
         };
       })(),
+      // Fab options the engineer set on the PCB form (EDU audit G-17).
+      fabOptions: fabOptionsFromSpec(boardSpec),
     };
     // The operations as costed (counts and seconds), on the analysis: the reports and the shadow model read them.
     (a as Record<string, unknown>).operationsCosted = costInput.operations;
@@ -2090,6 +2111,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       ? computePCBCountryCost({ ...costInput, totalBOMCostGBP: globalBomTotal }, c.countryId) : c);
     const resolved = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     const bd = computePCBCountryCost(costInput, resolved);
+    // Fab options the engineer set that no published price covers (EDU audit G-17): said, never silently dropped.
+    if (bd.fabOptionNotes?.notCosted.length) warnings.push({ code: 'FAB_OPTION_NOT_COSTED', severity: 'warn',
+      message: `Fab option${bd.fabOptionNotes.notCosted.length > 1 ? 's' : ''} not costed: ${bd.fabOptionNotes.notCosted.join('; ')}. Ask the fab for the adder.` });
     for (const c of out.countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, asilLevel, orderQty, domain);
     const graded = applyAutomotiveGrade(bd, boardSpec, assemblyData, asilLevel, orderQty, domain);
     if (graded) { out.automotiveAssemblyCost = graded.assembly; out.automotiveFabAdjustment = graded.fab; }
@@ -2951,6 +2975,7 @@ router.post('/scenario', (req, res): void => {
     customerSuppliedGBP:  Number(b.customerSuppliedGBP) > 0 ? Number(b.customerSuppliedGBP) : undefined,
     deliveryTerms:        String(b.boardSpec?.deliveryTerms ?? '').toUpperCase() === 'EXW' ? 'EXW' : 'DAP',
     ...(Number(b.boardSpec?.firstPassYield) >= 0.5 && Number(b.boardSpec?.firstPassYield) <= 0.999 ? { firstPassYield: Number(b.boardSpec?.firstPassYield) } : {}),
+    fabOptions:           fabOptionsFromSpec(b.boardSpec),
   };
 
   // Copper and weight exactly as the headline derives them from the board spec.

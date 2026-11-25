@@ -209,6 +209,12 @@ automotive (`AUTOMOTIVE_FROM_BOM`); a BOM without designators is checked by coun
 AOI, ICT and X-ray are all station time + programme / fixture over the order (table price = small-batch ceiling); the
 components carry an EMS material burden (`materialBurdenFor`: 5% ≥ 100k, 7% ≥ 10k, 10% below — inside `bomCostPerBoard`,
 shown as `breakdown.materialBurden`); imagers are priced at automotive volume ASPs (£3–15), not distributor listings — a NAMED imager too: a catalogue / live hit matching `IMAGER_RE` (pcb-bom-grounding.ts) is kept as `distributorListingGBP` (reference) and the line takes the imager class rule (decision 9 Oct 2026; LCSC stays in the catalogue median).
+**Fab options and G-07 operations (EDU audit G-17 / G-07, 26 Nov 2026, `tests/pcb-g17-g07.test.ts`):** the PCB form's
+thickness, laminate Tg / CTI, inner copper, via fill, ENIG gold and impedance tolerance reach the analysis costing; an option
+is costed ONLY with a published adder (`server/data/pcb-fab-options.ts`, each with source + URL; sample prices = upper bounds),
+the rest are listed (Stage 4 warning `FAB_OPTION_NOT_COSTED`, PDF / workbook notes). The market path recomputes the options on
+the market board (laminate inside an automotive ASP); a set laminate drops the table path's generic laminate premium. The
+through-hole method (`thtMethod`: selective / hand), staking dots and potting grams are operations (`pcb-operations.ts`).
 **Pure arithmetic (pipeline review + fixes, 9 Oct 2026, `docs/pcb/pcb-pipeline-review-2026-10-09.md`, `docs/pcb/pcb-pipeline-fixes-2026-10-09.md`,
 `tests/pcb-pipeline-fixes.test.ts`):** a model number never sets a price. A part number prices from the catalogue only with
 EVIDENCE — an agreeing OCR marking, the user's BOM file / image, or the user's edit (`gateIdentities`, pcb-identity.ts, run

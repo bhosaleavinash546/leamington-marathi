@@ -76,9 +76,22 @@ price paid.
   - G-19: a contract US$ / £ re-prices catalogue and class-range prices (US$ listings at the 29 Sep 2026 snapshot);
     China-market and engineer prices keep theirs.
 
+- **G-17 fab specification and G-07 remainder** (26 Nov 2026, `tests/pcb-g17-g07.test.ts`; research and decisions in
+  `calculator/scripts/pcb-research/2026-11-26-g17-g07/`). PCB form "Fab specification": board thickness, via fill, ENIG
+  gold thickness, impedance tolerance; the existing "Base Material Tg" (now with high CTI) and "Inner Copper" selects are
+  linked to the analysis. Costed only with a published adder (`server/data/pcb-fab-options.ts`): thickness 0.8–1.6 mm free
+  (PCBasic), linear to +37 % at 3.2 mm / +7 % at 0.5 mm (Würth relative prices); Tg150 +8 %, Tg170 +15 % (Shenzhen fab
+  price guide) — inside an automotive market ASP, and on the table basis it replaces the generic automotive laminate
+  premium; resin / via-in-pad fill +¥500/m² below 6 layers, free on 6+ (JLC, JLCPCB); mask plugging free on 4+ (PCBasic);
+  ENIG +¥100/m² a µ" above 1 µ". Listed, not costed (no published price): high-CTI laminate, impedance tolerance tighter
+  than ±10 %, mask plugging on 1–2 layers — a Stage 4 warning, PDF and workbook notes. Inner copper feeds the existing
+  per-layer copper rule. Every adder is a sample / small-batch list price, so an upper bound at volume.
+  Operations: through-hole soldering by method — selective drag 0.706 s a joint + 20 s pallet handling on a station,
+  pallets $200–1,000 (mid) a 20,000 cycles (Vitronics Soltec data), or by hand 3.5 s a joint lead-free; staking dots
+  (3 s and 0.05 g a dot — engineering estimates; DOWSIL 3145 at the pail price); potting in grams (SYLGARD 170 at the 40 kg
+  kit price, 30 s station handling — engineering; the cure is not charged). Shadow model: 738 PASS, 0 FAIL.
+
 ## Not done
-- Package B remainder: staking / potting and a selective-solder line as operations.
-- Package D: fab inputs for thickness, inner copper, Tg/CTI, via fill, ENIG thickness, impedance tolerance (G-17).
 - G-13: TLF35584QVVS2 catalogue price (queued for re-read, round 6).
 - Class rows with too few catalogue parts keep their hand-set ranges (pin headers, hybrid capacitors, large
   electrolytics, logic); the China SMT rate per placement was not changed (the EDU assembly gap is missing operations,

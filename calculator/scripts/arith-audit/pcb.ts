@@ -22,6 +22,8 @@ import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/region
 import { PCB_FAB_MARKET } from '../../server/data/pcb-market-evidence.js';
 // The operations' FIGURES (data, each sourced or labelled) — the arithmetic below is the shadow's own (EDU v6).
 import { OPS } from '../../server/data/pcb-operations.js';
+// The fab options' FIGURES (data, each with its source) — the arithmetic below is the shadow's own (EDU audit G-17).
+import { FAB_OPTION_EVIDENCE as FOE } from '../../server/data/pcb-fab-options.js';
 import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 import { countryFactor } from '../../src/engine/regional-services.js';
 import { computePCBFabDrivers, type PCBFabInputs } from '../../src/engine/modules/pcb-fab.js';
@@ -122,7 +124,10 @@ interface Board { w: number; h: number; layers: number; finish: string; through:
   /** Boards a lot (set-ups) and programme years (one-off tooling, fixtures, programmes) — EDU audit G-08. */
   lot?: number; years?: number;
   /** The operations as costed (counts and seconds — analysis.operationsCosted), EDU v6. */
-  ops?: { reflowSides?: number; coatSides?: number; pressFitConnectors?: number; pressFitPins?: number; pressFitLines?: number; programmingSec?: number; functionalTestSec?: number; hvTest?: boolean };
+  ops?: { reflowSides?: number; coatSides?: number; pressFitConnectors?: number; pressFitPins?: number; pressFitLines?: number; programmingSec?: number; functionalTestSec?: number; hvTest?: boolean;
+    thtMethod?: string; stakingDots?: number; pottingGrams?: number };
+  /** EDU audit G-17: the fab options as typed on the form (raw board-spec values — read here, not by the code checked). */
+  fo?: { t?: number; lam?: string; via?: string; gold?: number };
   /** EDU audit G-10 / G-11: ex-works (no freight, no duty) and a typed first-pass yield. */
   exw?: boolean; fpy?: number }
 function shadowCountry(b: Board, cc: string) {
@@ -142,7 +147,8 @@ function shadowCountry(b: Board, cc: string) {
   const hdi = b.hdi ? (base + lay) * r.pcbFab.hdiUpliftPct / 100 : 0;
   const imp = b.imp ? (base + lay) * r.pcbFab.impedanceUpliftPct / 100 : 0;
   const setup = r.pcbFab.setupCostGBP / progQ;
-  const fab = base + lay + fin + vias + hdi + imp + setup;
+  const optT = shadowFabOptions(b, base + lay, A / 100 * W * (r.pcbFab.baseCostPerDm2_2L / PCB_COUNTRY_RATES.cn.pcbFab.baseCostPerDm2_2L) / 8.88, false);
+  const fab = base + lay + fin + vias + hdi + imp + setup + optT;
   const st = (sec: number, nre: number, cap: number) => Math.min(cap, sec / 3600 * 2 * labour + nre / progQ);
   const smt = b.smt / 3600 * r.assembly.smtLineRatePerHr + (b.smt > 0 ? r.assembly.batchSetupGBP / lotQ : 0);
   const aoi = b.aoi ? st(20, 200, r.assembly.aoiPerBoard) : 0;
@@ -160,7 +166,13 @@ function shadowCountry(b: Board, cc: string) {
     const hv = o.hvTest ? OPS.hipotSec.value + OPS.hipotHandlingSec.value : 0;
     ops += sec((o.functionalTestSec ?? 0) + hv) + ((o.functionalTestSec ?? 0) > 0 ? OPS.functionalFixtureGBP.value / progQ : 0) + (o.hvTest ? OPS.hipotTesterGBP.value / progQ : 0);
   }
-  const asm = smt + b.th * r.assembly.thRatePerJoint + b.manual * r.assembly.manualSolderPerJoint + aoi + xray + ict + coat1 + ops;
+  // G-07: staking (operator) and potting (station) — figures from OPS, arithmetic here.
+  if ((o.stakingDots ?? 0) > 0) ops += (o.stakingDots! * OPS.stakeSecPerDot.value) / 3600 * labour + o.stakingDots! * OPS.stakeGramsPerDot.value / 1000 * OPS.stakeAdhesiveGBPPerKg.value;
+  if ((o.pottingGrams ?? 0) > 0) ops += sec(OPS.pottingHandlingSec.value) + o.pottingGrams! / 1000 * OPS.pottingGBPPerKg.value;
+  // G-07: the through-hole joints by method — selective (station + pallets over the programme) or by hand (operator).
+  const thJ = o.thtMethod === 'selective' && b.th > 0 ? sec(b.th * OPS.selectiveSecPerJoint.value + OPS.palletHandlingSec.value) + Math.max(1, Math.ceil(progQ / OPS.palletCycles.value)) * OPS.palletGBP.value / progQ
+    : o.thtMethod === 'hand' && b.th > 0 ? b.th * OPS.handSecPerJoint.value / 3600 * labour : b.th * r.assembly.thRatePerJoint;
+  const asm = smt + thJ + b.manual * r.assembly.manualSolderPerJoint + aoi + xray + ict + coat1 + ops;
   const lq = Math.log10(Math.max(1, b.qty));
   const burdenPct = b.qty <= 1000 ? 0.10 : b.qty >= 100_000 ? 0.05 : Math.round((lq <= 4 ? 0.10 - 0.03 * (lq - 3) : 0.07 - 0.02 * (lq - 4)) * 1e5) / 1e5;
   const bom = b.bom * (1 + burdenPct);
@@ -174,6 +186,19 @@ function shadowCountry(b: Board, cc: string) {
   const yieldLoss = lambda * (0.95 * (0.2 * asm + 0.5 * ict) + 0.05 * (fab + asm + bom));
   return { fab, asm, bom, burden: b.bom * burdenPct, freight, duty, energy, pack, yieldLoss, test: aoi + xray + ict, ict,
     total: fab + asm + freight + duty + bom + energy + pack + yieldLoss, panel: p, notInAsp: vias + hdi + setup };   // heavy copper: not on these boards (1 oz)
+}
+/** The fab options (G-17): % of the board for thickness and laminate (laminate not on a market ASP), ¥/m² for via fill and
+ *  ENIG gold — `perCny` is the £ a ¥/m² costs on this board. Rules from the research (scripts/pcb-research/2026-11-26-g17-g07). */
+function shadowFabOptions(b: Board, core: number, perCny: number, market: boolean): number {
+  const f = b.fo; if (!f) return 0;
+  let pct = 0, cny = 0;
+  if (f.t && f.t > 1.6) pct += FOE.thickness3_2.value * (Math.min(f.t, 3.2) - 1.6) / 1.6;
+  else if (f.t && f.t < 0.8) pct += FOE.thickness0_5.value * (0.8 - Math.max(f.t, 0.5)) / 0.3;
+  if (!market && (f.lam === '150' || f.lam === 'tg150')) pct += FOE.tg150.value;
+  if (!market && (f.lam === '170' || f.lam === 'tg170')) pct += FOE.tg170.value;
+  if ((f.via === 'resin' || f.via === 'pofv') && b.layers < 6) cny += FOE.viaInPad.value;
+  if (f.gold && f.gold > 1 && /enig|enepig/.test(b.finish)) cny += (f.gold - 1) * FOE.enigGoldStep.value;
+  return core * pct / 100 + cny * perCny;
 }
 // The automotive premiums (CostVision engineering figures; pcb.ts computeAutomotiveFab/AssemblyCost).
 function shadowAuto(fabStd: number, asmStd: number, b: Board, cc: string, asil: string, bpp: number, notInAsp = 0) {
@@ -191,8 +216,10 @@ function shadowAuto(fabStd: number, asmStd: number, b: Board, cc: string, asil: 
     const perM2 = cls.aspLocalPerM2 * (1 + mk.rise.used) * shapeOf(b.layers) / shapeOf(cls.anchorLayers) + mk.class3ExtrasPerM2.value;
     // The evidence's FX: China ¥8.88 / £ (the tool's China figures); others the catalogue's 29 Sep 2026 snapshot (data).
     const perGbp = mk.currency === 'CNY' ? 8.88 : 1 / FX_TO_GBP_TABLE[mk.currency];
-    fabT = r2(b.w * b.h / 1e6 * perM2 / perGbp + notInAsp);
-  } else fabT = r2(fabStd + fabStd * 0.18 + fabStd * 0.4 * (b.layers >= 8 ? 0.5 : 0.35)
+    const core = b.w * b.h / 1e6 * perM2 / perGbp;
+    const opt = shadowFabOptions(b, core, b.w * b.h / 1e6 * (row.baseCostPerDm2_2L / PCB_COUNTRY_RATES.cn.pcbFab.baseCostPerDm2_2L) / 8.88, true);
+    fabT = r2(core + notInAsp + opt);
+  } else fabT = r2(fabStd + fabStd * 0.18 + (b.fo?.lam ? 0 : fabStd * 0.4 * (b.layers >= 8 ? 0.5 : 0.35))
     + Math.min(45, Math.max(8, area * 0.08)) * insp / bpp + Math.min(35, Math.max(5, b.layers * 2.5)) * insp / bpp);
   const shifts = asil === 'ASIL-D' ? 6 : asil === 'ASIL-C' ? 4 : 0;
   const perShift = b.qty >= 1000 ? 500 : Math.max(1, Math.min(200, b.qty));
@@ -239,7 +266,8 @@ async function board(name: string, fixture: string, cc: string, qty: number, spe
     smt: n(as.smtPlacements), th: n(as.throughHoleJoints), manual: n(as.manualJoints), bga: n(as.bgaCount), aoi: Boolean(as.aoiRequired), ict: n(as.ictTimeSec),
     coatCm2: 0, bom: ce.totalBOMCostGBP, qty, weightKg: n(bs.boardWeightG) > 0 ? n(bs.boardWeightG) / 1000 : undefined,
     lot: n(bs.lotSize) || undefined, years: n(bs.programmeYears) || undefined, ops: a.operationsCosted,
-    exw: String(bs.deliveryTerms ?? '').toUpperCase() === 'EXW', fpy: n(bs.firstPassYield) || undefined };
+    exw: String(bs.deliveryTerms ?? '').toUpperCase() === 'EXW', fpy: n(bs.firstPassYield) || undefined,
+    fo: { t: n(bs.boardThicknessMm) || undefined, lam: bs.laminateTg ? String(bs.laminateTg).toLowerCase() : undefined, via: bs.viaFill ? String(bs.viaFill) : undefined, gold: n(bs.enigGoldUin) || undefined } };
   const S = shadowCountry(B, s4.selectedCountry);
   checkTrue(`${tag}: panel ${S.panel.n}-up on ${S.panel.pw}×${S.panel.ph}`, S.panel.n === bd.panelInfo.boardsPerPanel && S.panel.pw === bd.panelInfo.panelW);
   let fab = S.fab, asm = S.asm;
@@ -353,6 +381,11 @@ await board('radar', 'pcb-radar-replies.json', 'gb', 1_000);
 await board('radar', 'pcb-radar-replies.json', 'pl', 25_000);
 // EDU audit G-10 / G-11: ex-works terms and a typed first-pass yield, re-added.
 await board('radar EXW FPY 0.97', 'pcb-radar-replies.json', 'cn', 250_000, { deliveryTerms: 'EXW', firstPassYield: 0.97 });
+// EDU audit G-17 / G-07: every fab option and operation set, on the market basis (cn) and the table basis (gb, pl).
+const G17 = { boardThicknessMm: 2.4, laminateTg: '170', viaFill: 'resin', enigGoldUin: 2, impedanceTolPct: 5, thtMethod: 'selective', stakingDots: 12, pottingGrams: 40, programmeYears: 6 };
+await board('radar G-17/G-07', 'pcb-radar-replies.json', 'cn', 250_000, G17);
+await board('radar G-17/G-07', 'pcb-radar-replies.json', 'gb', 1_000, G17);
+await board('radar G-17/G-07 hand', 'pcb-radar-replies.json', 'pl', 25_000, { ...G17, thtMethod: 'hand', boardThicknessMm: 0.6, viaFill: 'pofv' });
 // ASIL-C (burn-in): the guard costs the radar at ASIL-B (no safety PMIC named), so the ASIL-C premiums are checked on
 // the product's own functions directly, on the radar figures of tests/pcb-headline-trace.test.ts.
 {

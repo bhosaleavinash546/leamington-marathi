@@ -137,6 +137,9 @@ export interface PCBImageAnalysis {
     conformalCoatSides?: number | ''; pressFitConnectors?: number | ''; programmingSec?: number | ''; functionalTestSec?: number | ''; componentMarket?: string;
     /** EDU audit quick closes: delivery terms, first-pass yield, contract US$ / £. */
     deliveryTerms?: string; firstPassYield?: number | ''; contractUsdPerGbp?: number | '';
+    // EDU audit G-17 (fab specification) and G-07 (soldering method, staking, potting) — the engineer's entries.
+    boardThicknessMm?: number | ''; laminateTg?: string; innerCopperOz?: number | ''; viaFill?: string; enigGoldUin?: number | '';
+    impedanceTolPct?: number | ''; thtMethod?: string; stakingDots?: number | ''; pottingGrams?: number | '';
   };
   bom: PCBBOMItem[];
   assembly: {

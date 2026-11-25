@@ -1,0 +1,407 @@
+{
+  "readOn": "2026-11-25 (pages read with WebFetch / curl on 25 Nov 2026; Firecrawl unavailable — credits exhausted)",
+  "items": [
+    {
+      "topic": "A1. Chinese EMS published price per through-hole joint (selective / wave / hand / 插件)",
+      "findings": [
+        {
+          "value": 0.1,
+          "unit": "CNY per through-hole joint (插件焊点)",
+          "conditions": "Huaqiu SMT online valuation page, standard rate table; 插件焊点数 = pad count of all through-hole packages in the BOM; soldering method not named (selective vs wave vs hand not separated). Prices subject to customer-service confirmation.",
+          "source": "Huaqiu (华秋智造) SMT online valuation",
+          "url": "https://smt.hqchip.com/online/valuation.html",
+          "quote": "收费标准： 贴片：￥0.01/焊点 插件：￥0.10/焊点 X-ray：￥3.00/元件 钢网：￥100/印刷面 拆板费：￥0.50/PCB … 插件焊点数： BOM清单中所有插件封装的物料焊盘个数 … 备：因材料及工艺不同，具体价格以下单后客服的报价为准",
+          "translation": "Rate card: SMT ¥0.01/joint; through-hole ¥0.10/joint; X-ray ¥3.00/component; stencil ¥100/printed side; depanel ¥0.50/PCB … THT joint count = number of pads of all through-hole packages in the BOM … Note: price depends on material and process; final price is the customer-service quote after ordering.",
+          "kind": "price list",
+          "dateRead": "2026-11-25",
+          "comparatorSmt": "¥0.01 per SMT joint on the same page"
+        },
+        {
+          "value": 0.2,
+          "unit": "CNY per joint (hand soldering, 手工焊接) + CNY 20 engineering fee per order",
+          "conditions": "JLC (嘉立创) hand-soldering service; page created 2020-12-01, updated 2026-03-03. Same page: SMT 0.01 CNY/joint + 50 CNY engineering fee.",
+          "source": "JLC 嘉立创 service guide",
+          "url": "https://www.jlc.com/portal/server_guide_21925.html",
+          "quote": "手工焊接收费方式： 工程费：20元 + 焊接费：0.2元每个焊点 … 贴片收费方式：工程费：50元+焊点费 + 0.01元每个焊点",
+          "translation": "Hand soldering charge: engineering fee CNY 20 + soldering fee CNY 0.2 per joint … SMT placement charge: engineering fee CNY 50 + CNY 0.01 per joint",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 0.0164,
+          "unit": "USD per manually soldered joint (THT 'manual assembly'), 1–10,000 joints",
+          "conditions": "JLCPCB global price page, last updated Oct 22 2026; tiers 10,001–30,000 joints $0.015; 30,001–100,000 joints $0.012; plus hand-soldering labor $3.58 per order. Same for Economic and Standard PCBA.",
+          "source": "JLCPCB — What does your PCB assembly price include?",
+          "url": "https://jlcpcb.com/help/article/pcb-assembly-price",
+          "quote": "1–10,000 joints: $0.0164/joint; 10,001–30,000 joints: $0.015/joint; 30,001–100,000 joints: $0.012/joint; Hand-soldering Labor $3.58 per order; 'The fee is calculated based on the number of solder joints requiring manual soldering.' Last updated on Oct 22, 2026",
+          "translation": "",
+          "kind": "price list",
+          "dateRead": "2026-11-25",
+          "tiers": [
+            {
+              "joints": "1-10000",
+              "usd": 0.0164
+            },
+            {
+              "joints": "10001-30000",
+              "usd": 0.015
+            },
+            {
+              "joints": "30001-100000",
+              "usd": 0.012
+            }
+          ],
+          "perOrderUSD": 3.58
+        },
+        {
+          "value": 0.0173,
+          "unit": "USD per joint for parts marked 'wave soldering' (assembled manually) + USD 3.5 per order",
+          "conditions": "JLCPCB PCB assembly FAQ, last updated Sep 09 2026 (older figure than the Oct 2026 price page).",
+          "source": "JLCPCB PCB assembly FAQs",
+          "url": "https://jlcpcb.com/help/article/PCB-assembly-faqs",
+          "quote": "Now JLCPCB can support through-hole components by offering wave soldering services, like connectors. … The part's assembly type marked with \"wave soldering\" in our assembly parts library will be assembled manually. … Cost: $3.5 hand-soldering labor fee + $0.0173 manual assembly fee per joint.",
+          "translation": "",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 0.04,
+          "unit": "CNY per point (后焊插件, post/hand soldered through-hole, 1 joint = 1 point)",
+          "conditions": "Above the sample threshold; small-batch sample fee 200–600 CNY. Large pads counted 2–3 points. Page dated 2016-09-27 (10 years old).",
+          "source": "深圳板朗科技 (Shenzhen Banglang) PCBA加工收费标准",
+          "url": "http://www.pcbacn.com/news/gsxw/35.html",
+          "quote": "后焊插件收费标准 小批量插件后悔收取200-600元不等的打样费，超过打样标准按0.04元/点计算。 注：一个角算一个点，一般焊盘较大的一个点这算为2-3个点。 … 插件及后焊元件按一个焊点为一点计算。 … 时间：2016-09-27",
+          "translation": "Post-solder through-hole charge: small batches pay a sample fee of 200–600 CNY; above the sample threshold 0.04 CNY/point. Note: one lead = one point; a large pad counts as 2–3 points. … Through-hole and post-soldered parts are counted one joint = one point. … Date: 2016-09-27",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "process statement (no price)",
+          "conditions": "JLC states its through-hole soldering is done by selective wave soldering; its SMT price is 1 fen per joint; plug-in (插装件) parts are excluded from the SMT price cut.",
+          "source": "JLC 嘉立创 SMT site + 焊点超低价说明",
+          "url": "https://www.jlc-smt.com/ ; https://www.jlc.com/portal/server_guide_42886.html",
+          "quote": "插件焊接 选择性波峰焊可对每一个焊点的焊接参数进行设置 … 注：非嘉立创EDA设计的产品、插装件、插装改贴装件、邮寄到嘉立创的元器件（不管来源），暂不在降价范围内。（创建时间：2024-03-12 更新时间：2025-04-23）",
+          "translation": "Through-hole soldering: selective wave soldering lets the parameters of every joint be set … Note: products not designed in JLC EDA, through-hole parts, … are not in the price reduction.",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "rule (no figure)",
+          "conditions": "Huaqiu notice effective 2023-07-20: DIP (through-hole) soldering priced per joint again, customer no longer pays the wave-solder fixture fee.",
+          "source": "华秋SMT计价方式调整通知函",
+          "url": "https://www.hqpcb.com/help/p_1812.html",
+          "quote": "本次计价调整于2023年7月20日起实施 … DIP焊接计价调整，计价方式回归按照焊点单价计算，不再涉及由客户承担治波峰具费用；",
+          "translation": "This pricing change takes effect 20 Jul 2023 … DIP soldering pricing returns to a per-joint unit price; the customer no longer bears the wave-solder fixture cost.",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "1.5–2",
+          "unit": "points per DIP lead (counting rule)",
+          "conditions": "Shenzhen JC (捷创) blog, updated 2025-07-29; marketing article, no price for DIP given on this page.",
+          "source": "捷创电子 PCBA加工费用如何计算",
+          "url": "https://www.jc-pcba.com/Infodetial/4877.html",
+          "quote": "通常一个SMT焊盘算1个点，一个DIP引脚算1.5-2个点。",
+          "translation": "Usually one SMT pad counts as 1 point, one DIP lead counts as 1.5–2 points.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No Chinese EMS page read that publishes a SEPARATE per-joint price for 选择焊/选择性波峰焊 versus 波峰焊. Huaqiu (插件 ¥0.10/joint) and JLC (selective wave is its through-hole process; hand 0.2 CNY/joint) do not split by method. Ordinary wave-solder per-joint price: not read on any page (a 2018 Zhihu post said to give 波峰焊 0.02 / 手焊 0.03 元/焊点 returned 403 — NOT recorded). Nodpcba (诺的电子) pages said by search snippets to give 插件焊点 0.045元 (incl. 13% VAT) and 后焊 0.03–0.08元/焊点 could not be read (HTTP 503 / expired TLS certificate) — NOT recorded. No page states prices at 10k–250k boards/yr volume; all lists are prototype / small-batch web rate cards."
+    },
+    {
+      "topic": "A2. Selective soldering machine cycle data (s per joint, dip / drag)",
+      "findings": [
+        {
+          "value": "1–10",
+          "unit": "min per board cycle (single-nozzle miniwave, joints soldered one after another)",
+          "conditions": "SEHO design guideline; versus multi-nozzle dip tool 20–40 s per cycle (all joints at once, product-specific nozzle tool). Based on realised projects; no date on the extracted text.",
+          "source": "SEHO 'Recommendations for the Design of Assemblies to be Soldered Selectively' (hosted by distributor VR Elektronika)",
+          "url": "https://vr-elektronika.si/Seho_Design_Guidelines_en.pdf",
+          "quote": "miniwave soldering with single nozzle • all solder joints are approached successively • cycle time: approx. 1 min–10 min depending on the number of joints • high flexibility – long cycle time | miniwave dip soldering with multi-nozzle tool • all solder joints are processed simultaneously • product-specific nozzle tool • cycle time: approx. 20–40 sec. • low flexibility – short cycle time",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25",
+          "multiNozzleCycleSec": "20-40"
+        },
+        {
+          "value": "2–3",
+          "unit": "s per assembly (multiwave dip, soldering step only)",
+          "conditions": "Ersa (Kurtz Ersa) selective soldering product overview; soldering tool made specifically for each product.",
+          "source": "Ersa Selective Soldering Product Overview (en)",
+          "url": "https://kurtzersa.com/fileadmin/user_upload/download/Ersa-Selective-Soldering-Product-Overview-en.pdf",
+          "quote": "In high-volume production, simultaneous selective soldering processes are necessary in order to meet the cycle times required. Multiwave soldering technology enables all solder joints on an assembly to be soldered in a single operation, achieving very short soldering times of two to three seconds. The soldering tool is manufactured specifically for each product.",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 59.3,
+          "unit": "s soldering time for an 84-joint test board, drag over selective wave at 25 mm/s",
+          "conditions": "Vitronics Soltec (G. Diepstraten) study, Circuits Assembly Dec 2002. Same board: multiwave dip 27.4 s (SnPb); lead-free dip cycle 36 s (30 s preheat + 6 s conveyor); wave solder cycle 16.5 s (20 mm/s conveyor, 160 mm gap); hand soldering 2.7 s/joint SnPb, 3.5 s/joint lead-free. Arithmetic of the quoted figures (not stated in the article): 59.3/84 = 0.71 s per joint drag; hand 84 × 3.5 = 294 s. Old (2002) machine generation.",
+          "source": "Circuits Assembly, Dec 2002, 'Defining the Correct Soldering Process' (Vitronics Soltec)",
+          "url": "http://circuitsassembly.com/cms/images/stories/pdf/0212/0212vitronics.pdf",
+          "quote": "The test board contained 84 through-hole joints to be soldered (Figure 2). The average soldering time in hand soldering is 2.7 seconds. … lead-free alloys are harder to solder by hand, resulting in an increase of the solder time to 3.5 seconds. … For dragging over the selective wave, 59.3 seconds is required, and, for dipping on the multiwave, 27.4 seconds is needed. In the lead-free process, the solder time is still 59.3 seconds for the selective wave, since the assembly is soldered with the same speed (25 mm/sec.). For dip soldering … resulting in a 36-second cycle time (30 seconds of preheat, plus 6 seconds of conveyor time). … The conveyor speed during the soldering of the assembly is 20 mm/sec. (120 cm/min.). Leaving a space of 160 mm between each board results in a cycle time of 16.5 seconds in one wave soldering machine",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25",
+          "handSecPerJoint": {
+            "SnPb": 2.7,
+            "leadFree": 3.5
+          },
+          "multiwaveDipSec": 27.4,
+          "leadFreeDipCycleSec": 36,
+          "waveCycleSec": 16.5
+        },
+        {
+          "value": "10–25 mm/s drag; dip time 1–3 s",
+          "unit": "process parameters",
+          "conditions": "Vitronics Soltec (G. Diepstraten), Circuits Assembly Sep 2002, Part 1 of 3. Drag: 275–300 °C, drag speed 10–25 mm/s. Multidip: dip speed 20–25 mm/s, dip time typically 1–3 s, speed after dip typically 2 mm/s.",
+          "source": "Circuits Assembly, Sep 2002, 'Making Selective Soldering Work for You'",
+          "url": "http://circuitsassembly.com/cms/images/stories/pdf/0209/0209vitronics.pdf",
+          "quote": "With drag soldering, the following parameter settings may be used: • solder temperature of 275°C to 300°C • drag speed of 10 to 25 mm/s • tilting angle, typically 10° … With dip soldering, the following parameter settings may be used: … • dip speed of 20 to 25 mm/s • pump frequency, depends on number of nozzles • dip time, typically 1 to 3 sec • speed after dip, typically 2 mm/s.",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": 10,
+          "unit": "solder connections per second (multi-dip, 300 connections in 30 s)",
+          "conditions": "Vitronics Soltec (G. Diepstraten), SMTA paper: 32 shavers in one dip. High-volume consumer case, many identical small boards in one dip.",
+          "source": "'Reliable Selective Soldering for High Volume Assemblies' (smtnet library)",
+          "url": "https://smtnet.com/library/files/upload/Reliable-Selective-Soldering.pdf",
+          "quote": "Selective dip soldering is a robot controlled soldering process that could solder 32 shavers in one dip. In other words 300 solder connections in a cycle time of 30 seconds; equals 10 solder connections per second 24 hours a day; being 30 times faster than hand soldering.",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "5–10",
+          "unit": "s dipping time, absolute maximum",
+          "conditions": "Vitronics Soltec (G. Diepstraten) IPC paper; experiments at drag speeds 2 and 3 mm/s; average contact time 3.6 s (8 mm wettable) vs 2.3 s (6 mm non-wettable nozzle).",
+          "source": "IPC APEX paper 'Design Improvements for Selective Soldering Assemblies'",
+          "url": "https://www.electronics.org/system/files/technical_resource/E39&S08_02%20-%20Gerjan%20Diepstraten.pdf",
+          "quote": "A dipping time of 5 to 10 seconds is absolutely the maximum for this application. Longer dipping times will not improve the through-hole filling and will only damage the assembly materials. … In this experiment, 2 and 3 mm/s. were compared. … The average contact time is 3.6 seconds versus 2.3 seconds for",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No maker data sheet read that states 'seconds per joint' or 'joints per hour' for ERSA VERSAFLOW / ECOSELECT, Pillarhouse, SEHO, Ebso or Kurtz machines — makers quote per-assembly cycle times and parameters (drag speed, dip time). Figures such as '1 s per joint' (Wikipedia, citation needed) and '2.5–4 s per joint' / '3–8 joints per second' (blogs: electricalflux.com, huaxingpcba.com) were seen only in search summaries from non-maker sites and NOT recorded. SEHO SmartSplit article (smta.org) returned 403."
+    },
+    {
+      "topic": "A3. Selective / wave solder pallet (fixture) price per design",
+      "findings": [
+        {
+          "value": "200–1000",
+          "unit": "USD per wave-solder pallet (carrier)",
+          "conditions": "Vitronics Soltec 2002; pallet life ~20,000 cycles; average handling time per pallet ~20 s; a minimum number of carriers is needed per assembly. WAVE pallet, not a selective pallet.",
+          "source": "Circuits Assembly, Dec 2002 (Vitronics Soltec)",
+          "url": "http://circuitsassembly.com/cms/images/stories/pdf/0212/0212vitronics.pdf",
+          "quote": "The lifetime of the carrier is also limited to approximately 20,000 cycles. Good pallets, depending on design and size, cost $200 to $1,000 each. The average handling time of a pallet is approximately 20 seconds.",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25",
+          "lifeCycles": 20000,
+          "handlingSec": 20
+        },
+        {
+          "value": "80–1000",
+          "unit": "CNY per set, synthetic-stone (合成石) wave-solder fixture, ≥30 pcs",
+          "conditions": "Dongguan fixture maker, page dated 2016-09-09; also FR4 glass-fibre 50–450 CNY/set and titanium 500–3000 CNY/set (≥30 pcs). Wave fixtures, not selective.",
+          "source": "东莞市赐宏智能设备制造有限公司 — 波峰焊治具多少钱一个",
+          "url": "http://icttest.cn/index.php/page-10-130.html",
+          "quote": "玻纤板波峰焊治具价格：数量在30个以上的价格范围：50-450元之间一套。 合成石波峰焊治具价格：数量在30个以上的价格范围：80-1000元之间一套。 钛合金波峰焊治具价格：数量在30个以上的价格范围：500-3000元之间一套。（日期:16-09-09）",
+          "translation": "FR4 wave fixture: qty ≥30, 50–450 CNY per set. Synthetic-stone wave fixture: qty ≥30, 80–1000 CNY per set. Titanium wave fixture: qty ≥30, 500–3000 CNY per set. (Date 2016-09-09)",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No page read that publishes a price for a SELECTIVE-solder pallet / carrier (选择焊治具 / 选择性波峰焊载具). Huaqiu's 2023 notice says the customer no longer pays the wave fixture fee (no figure). Selective nozzle / multiwave nozzle-plate prices: not found."
+    },
+    {
+      "topic": "B1. Chinese EMS price for 点胶 (staking / corner bond / glue dots), 灌胶 (potting), and coating for comparison",
+      "findings": [
+        {
+          "value": 0.03,
+          "unit": "CNY per cm² of PCB (conformal coating area fee) + 40 CNY (single side) / 60 CNY (double side) engineering fee per order",
+          "conditions": "JLC personalised-service fee rules, created 2023-05-13, updated 2026-08-25; area by PCB length × width. Also on the page: dry-ice cleaning 1 CNY/board, cleaning solvent 1.5 CNY/board. No 点胶 or 灌胶 rule on the page.",
+          "source": "JLC 嘉立创 SMT个性化服务收费规则",
+          "url": "https://www.jlc.com/portal/server_guide_40512.html",
+          "quote": "喷涂工程费（每单）：单面/40元；双面/60元。 喷涂面积（按PCB的长、宽）：0.03元/CM² … 干冰清洗:1元/片 洗板水清洗:1.5元/片",
+          "translation": "Coating engineering fee per order: single side 40 CNY; double side 60 CNY. Coated area (by PCB length × width): 0.03 CNY/cm² … Dry-ice cleaning 1 CNY/board; wash-solvent cleaning 1.5 CNY/board",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "100–300",
+          "unit": "CNY per board added for potting (灌封), by material",
+          "conditions": "Shenzhen JC (捷创) marketing blog, updated 2025-07-29; no board size, volume or material stated; conformal coating 50–100 CNY/m² in the same sentence.",
+          "source": "捷创电子 PCBA加工费用如何计算",
+          "url": "https://www.jc-pcba.com/Infodetial/4877.html",
+          "quote": "例如，三防漆处理每平米增加50-100元，灌封工艺根据材料不同增加100-300元/块。",
+          "translation": "For example, conformal coating adds 50–100 CNY per m²; potting adds 100–300 CNY per board depending on material.",
+          "kind": "secondary",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": "0.0070–0.0090",
+          "unit": "CNY per point, SMT red-glue (红胶, adhesive-fix SMT for wave side) process, lead-free",
+          "conditions": "Volume tiers: 0.0090 at 100k–500k points, 0.0080 at 500k–1M, 0.0075 at 1M–2M, 0.0070 above 2M points. This is the SMT placement point price on the red-glue route, NOT a staking / glue-dot service price. Page dated 2016-09-27.",
+          "source": "深圳板朗科技 PCBA加工收费标准",
+          "url": "http://www.pcbacn.com/news/gsxw/35.html",
+          "quote": "无铅红胶 点 0.0090 10-50万点 … 无铅红胶 点 0.0080 50-100万点 0 免费 无铅红胶 点 0.0075 100万点-200万点 0 免费 无铅红胶 点 0.0070 200万点以上",
+          "translation": "Lead-free red glue, per point: 0.0090 (100k–500k points) … 0.0080 (0.5M–1M) … 0.0075 (1M–2M) … 0.0070 (above 2M points)",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        },
+        {
+          "value": null,
+          "unit": "fee line, no rate",
+          "conditions": "Huaqiu valuation calculator has a conformal-coating line but no published rate; no 点胶 / 灌胶 line.",
+          "source": "Huaqiu SMT online valuation",
+          "url": "https://smt.hqchip.com/online/valuation.html",
+          "quote": "三防漆： 是 否 … 三防涂漆费：￥ 0",
+          "translation": "Conformal coat: yes / no … coating fee: ¥0 (calculator placeholder)",
+          "kind": "price list",
+          "dateRead": "2026-11-25"
+        }
+      ],
+      "notFound": "No Chinese EMS page read with a published price for 点胶 (staking / corner bond / glue dots) per point, per board, per gram or per ml, nor for 灌胶 / 灌封 per gram or per ml. JLC, Huaqiu and the blogs read list coating and cleaning but not dispensing/potting rates. B2B listings (1688, gys.cn) show prices without a unit and were not recorded."
+    },
+    {
+      "topic": "B2. Dispensing machine speed (dots per hour / s per dot)",
+      "findings": [
+        {
+          "value": 49000,
+          "unit": "dots per hour (DPH), single valve",
+          "conditions": "Nordson ASYMTEK Vantage Series data sheet, July 2026 (hosted on components101.com). Dual valve: ≥45,000 DPH per valve. Platform carries DispenseJet DJ-9500 jet; 'micro-dot jetting up to 1,000 Hz'. Accuracy footnotes verified on a 722-dot grid — the DPH is a jetted-dot X-Y placement rating; a staking bead of RTV with a needle/auger valve is slower and is not covered by this figure.",
+          "source": "Nordson ASYMTEK Vantage Series data sheet",
+          "url": "https://components101.com/sites/default/files/2026-08/DS-Vantage-Series-Nordson-ASYMTEK-datasheet.pdf",
+          "quote": "Wet Dispense X-Y Placement Accuracy and Repeatability: Single valve 49,000 DPH (4) … Dual valve ≥ 45,000 DPH (4) per valve … (4) DPH: Dots Per Hour. … micro-dot jetting up to 1,000 Hz",
+          "translation": "",
+          "kind": "maker data",
+          "dateRead": "2026-11-25",
+          "dualValveDphPerValve": 45000
+        }
+      ],
+      "notFound": "No maker data read for seconds per staking dot / bead with a needle (time-pressure, auger or volumetric) valve, which is what silicone staking and corner bond use. Musashi (ML-5000XII), GPD Global and Axxon (Mycronic) publish no dots-per-hour figure on pages found; an Axxon Ai800 '1,000 dots per second' figure and a Spectrum II '30,000 dots/hr' figure appeared only in search summaries of press items (not read on page) and were NOT recorded. Mycronic MY700JX (>1 M dots/h) is solder-paste jet printing, not staking."
+    },
+    {
+      "topic": "B3. Material prices: staking adhesive / RTV, conformal coat, potting compound",
+      "findings": [
+        {
+          "value": 75.88,
+          "unit": "USD per 90 mL tube, DOWSIL 3145 RTV clear (MIL-A-46146)",
+          "conditions": "Tiers: 1–3 $75.88; 4–20 $58.44; 21+ $53.73. Page said backorder. (A search summary showed an older $62.43 — superseded by the page read.)",
+          "source": "Ellsworth Adhesives (Dow distributor)",
+          "url": "https://www.ellsworth.com/products/adhesives/silicone/dow-3145-silicone-adhesive-clear-90-ml-tube/",
+          "quote": "Quantity 1-3 $75.88; 4-20 $58.44; 21+ $53.73 — Dow DOWSIL™ 3145 Silicone Adhesive Clear, 90 mL tube (Part #: 3145 90ML CLR MIL-A-46146)",
+          "translation": "",
+          "kind": "distributor",
+          "dateRead": "2026-11-25",
+          "tiers": [
+            {
+              "qty": "1-3",
+              "usd": 75.88
+            },
+            {
+              "qty": "4-20",
+              "usd": 58.44
+            },
+            {
+              "qty": "21+",
+              "usd": 53.73
+            }
+          ]
+        },
+        {
+          "value": 6967.56,
+          "unit": "USD per 19 kg pail, DOWSIL 3145 RTV clear",
+          "conditions": "Qty 1+; part 3145 RTV ADH/SLNT CLR 19KG, Dow SKU 2298112; in stock. Arithmetic: 6,967.56 / 19 = 366.7 USD/kg (not stated on page).",
+          "source": "Ellsworth Adhesives",
+          "url": "https://ellsworth.com/products/adhesives/silicone/dow-3145-silicone-adhesive-clear-19-kg-pail",
+          "quote": "1+ $6,967.56 — 3145 RTV ADH/SLNT CLR 19KG (Manufacturer SKU: 2298112) — In stock",
+          "translation": "",
+          "kind": "distributor",
+          "dateRead": "2026-11-25",
+          "perKgDerivedUSD": 366.7
+        },
+        {
+          "value": 1912.25,
+          "unit": "USD per 18.1 kg pail, DOWSIL 3-1953 silicone conformal coating",
+          "conditions": "Qty 1+; part 3-1953 CONF CTG 18.1KG PL, Dow SKU 4001900; in stock. Arithmetic: 105.6 USD/kg. 3.6 kg pail: $486.08 (1–2), $446.91 (3+), part 3-1953 CONFORM CTG 3.6KG, SKU 4007531.",
+          "source": "Ellsworth Adhesives",
+          "url": "https://ellsworth.com/products/conformal-coatings/silicone/dow-3-1953-silicone-conformal-coating-18.1-kg-pail",
+          "quote": "1+ $1,912.25 — 3-1953 CONF CTG 18.1KG PL (SKU 4001900), In stock | 3.6 kg pail: Qty 1-2 $486.08; Qty 3+ $446.91 (https://www.ellsworth.com/products/conformal-coatings/silicone/dow-3-1953-silicone-conformal-coating-3.6-kg-pail/)",
+          "translation": "",
+          "kind": "distributor",
+          "dateRead": "2026-11-25",
+          "perKgDerivedUSD": 105.6,
+          "pail3_6kgUSD": {
+            "1-2": 486.08,
+            "3+": 446.91
+          }
+        },
+        {
+          "value": 101.24,
+          "unit": "USD per 0.9 kg kit (A+B), SYLGARD 170 black silicone encapsulant",
+          "conditions": "Tiers: 1–2 $101.24; 3–12 $92.25; 13+ $90.28; part 170 A/B ELASTOMER KIT .9KG, Dow SKU 1696157; in stock. Arithmetic: 100.3–112.5 USD/kg.",
+          "source": "Ellsworth Adhesives",
+          "url": "https://www.ellsworth.com/products/by-market/consumer-products/encapsulants/silicone/dow-sylgard-170-silicone-encapsulant-black-0.9-kg-kit/",
+          "quote": "1-2 $101.24; 3-12 $92.25; 13+ $90.28 — 170 A/B ELASTOMER KIT .9KG (Manufacturer SKU: 1696157) — In stock",
+          "translation": "",
+          "kind": "distributor",
+          "dateRead": "2026-11-25",
+          "tiers": [
+            {
+              "qty": "1-2",
+              "usd": 101.24
+            },
+            {
+              "qty": "3-12",
+              "usd": 92.25
+            },
+            {
+              "qty": "13+",
+              "usd": 90.28
+            }
+          ]
+        },
+        {
+          "value": 2456.87,
+          "unit": "GBP ex VAT per 40 kg kit, SYLGARD 170 Fast Cure",
+          "conditions": "Tiers ex VAT: 1+ £2,456.87; 2+ £2,334.03; 4+ £2,272.60; 8+ £2,211.18. Out of stock, lead time 68 business days. Silmid P/N SG1700040K. Arithmetic: £55.3–61.4/kg.",
+          "source": "Silmid (UK distributor)",
+          "url": "https://www.silmid.com/silicones/silicone-elastomers/dow-corning-sylgard-170-40kg-kit/",
+          "quote": "SYLGARD™ 170 Fast Cure Silicone Elastomer, 40Kg Kit — £2,456.87 ex VAT (£2,948.24 inc VAT); 2+ £2,334.03; 4+ £2,272.60; 8+ £2,211.18; No Stock – Lead time 68 business days",
+          "translation": "",
+          "kind": "distributor",
+          "dateRead": "2026-11-25",
+          "tiers": [
+            {
+              "qty": "1+",
+              "gbp": 2456.87
+            },
+            {
+              "qty": "2+",
+              "gbp": 2334.03
+            },
+            {
+              "qty": "4+",
+              "gbp": 2272.6
+            },
+            {
+              "qty": "8+",
+              "gbp": 2211.18
+            }
+          ]
+        }
+      ],
+      "notFound": "No Chinese-market (CNY) distributor price read for DOWSIL 3145, 3-1953, SYLGARD 170 or a Chinese-brand potting / staking silicone (LCSC / element14 China pages blocked, 403/503). No Wacker or PU potting compound price read. Chinese B2B listings (soyjg.com, 1688) not recorded."
+    }
+  ],
+  "notes": "Only values read on the page are recorded; 'dateRead' is 2026-11-25 for all. Derived per-joint / per-kg figures are labelled as arithmetic on the quoted numbers, not page values. Key gaps: (1) no Chinese EMS publishes a selective-solder (选择焊) per-joint price separate from wave / hand; Huaqiu prices all through-hole joints at CNY 0.10 and JLC (which says its through-hole is selective wave) prices hand soldering at CNY 0.2/joint and global manual assembly at USD 0.012–0.0164/joint; these are web prototype / small-batch rate cards, not 10k–250k/yr contract prices. (2) No maker 'seconds per joint' spec; best maker evidence is per-board: 84 joints dragged in 59.3 s at 25 mm/s (Vitronics 2002, ~0.7 s/joint by arithmetic), multiwave dip 2–3 s soldering (Ersa) / 20–40 s cycle (SEHO), single-nozzle 1–10 min (SEHO); hand 2.7–3.5 s/joint (Vitronics). (3) No selective pallet price; wave pallets USD 200–1,000 (2002) / CNY 80–1,000 synthetic stone (2016). (4) No Chinese 点胶 / 灌胶 price per point / gram / ml; only JLC coating (CNY 0.03/cm² + 40/60 per order) and a blog's CNY 100–300 per board for potting. (5) Dispenser DPH found only for Nordson Vantage jetting (49k DPH), not for needle staking. Several Chinese EMS pages failed (nodpcba.com expired TLS cert / 503; zhihu 403; bbs.huaqiu.com 404)."
+}

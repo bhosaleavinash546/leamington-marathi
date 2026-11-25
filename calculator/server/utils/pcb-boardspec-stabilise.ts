@@ -76,9 +76,11 @@ export function copperLayersFromSpec(spec: Record<string, unknown>): number[] | 
   const list = spec.copperOzByLayer;
   if (Array.isArray(list) && list.length > 0) return list.map(v => Math.max(0.5, n(v, 1)));
   const oz = n(spec.copperWeightOz, 1);
+  // Inner copper the engineer set on the PCB form (EDU audit G-17) — the inner layers, priced by the same per-layer rule.
+  const inner = n(spec.innerCopperOz, 1) >= 0.5 && n(spec.innerCopperOz, 1) <= 6 ? n(spec.innerCopperOz, 1) : 1;
   const layers = Math.max(1, Math.round(n(spec.estimatedLayers, 2)));
-  if (oz <= 1) return undefined;
-  return Array.from({ length: layers }, (_, i) => (i === 0 || i === layers - 1 ? oz : 1));
+  if (oz <= 1 && (inner <= 1 || layers <= 2)) return undefined;
+  return Array.from({ length: layers }, (_, i) => (i === 0 || i === layers - 1 ? oz : inner));
 }
 
 /** Measured board weight (boardWeightG, grams) → kg, when the board data gives it. */

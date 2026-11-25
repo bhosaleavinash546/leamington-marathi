@@ -2473,7 +2473,13 @@ function renderPcbaSections(
   if (rep.quantity) { para(`Count: ${rep.quantity.note}`); y += 1; }
   if (rep.ranges) {
     const cr = rep.ranges.conditional;
-    para(`Sourced range ${cr ? `${c(cr.low)} – ${c(cr.high)}` : '—'}: only what sourced alternatives move${cr && cr.items.length ? ` (${cr.items.map(i => `${i.label}: ${i.low < 0 ? `−${c(-i.low)}` : c(i.low)} / +${c(i.high)}`).join('; ')})` : ' (none on this costing)'}. Judgement corridor ${c(rep.ranges.judgementLow)} – ${c(rep.ranges.judgementHigh)}: part identity and scope by CostVision engineering ratios, not a measured accuracy${rep.ranges.basis ? ` — ${rep.ranges.basis.replace(/\.\s*$/, '')}` : ''}.`); y += 1;
+    para(`Sourced range ${cr ? `${c(cr.low)} – ${c(cr.high)}` : '—'}: only what sourced alternatives move${cr && cr.items.length ? ` (${cr.items.map(i => `${i.label}: ${i.low < 0 ? `-${c(-i.low)}` : c(i.low)} / +${c(i.high)}`).join('; ')})` : ' (none on this costing)'}. Judgement corridor ${c(rep.ranges.judgementLow)} – ${c(rep.ranges.judgementHigh)}: part identity and scope by CostVision engineering ratios, not a measured accuracy${rep.ranges.basis ? ` — ${rep.ranges.basis.replace(/\.\s*$/, '')}` : ''}.`); y += 1;
+  }
+  if (rep.fabOptionNotes) {
+    const fo = rep.fabOptionNotes;
+    const segs = [...(fo.included.length ? [`Fab options inside the board price (no extra): ${fo.included.join('; ')}`] : []),
+      ...(fo.notCosted.length ? [`Fab options not costed (no published price): ${fo.notCosted.join('; ')}`] : [])];
+    if (segs.length) { para(`${segs.join('. ')}.`); y += 1; }
   }
   if (rep.contractFx) { para(`Catalogue and class prices at the contract rate US$${rep.contractFx.usdPerGbp} / £ (× ${rep.contractFx.factor.toFixed(4)} on the catalogue's 29 Sep 2026 rate).`); y += 1; }
   if (rep.infoRequest.length) {

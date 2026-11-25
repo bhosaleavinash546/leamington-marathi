@@ -33,6 +33,16 @@ export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' |
   { id: 'pcbf-delivery-terms', key: 'deliveryTerms', kind: 'text' },
   { id: 'pcbf-fpy', key: 'firstPassYield', kind: 'num' },
   { id: 'pcbf-contract-usd', key: 'contractUsdPerGbp', kind: 'num' },
+  // EDU audit G-17 (fab specification) and G-07 (soldering method, staking, potting).
+  { id: 'pcbf-thickness', key: 'boardThicknessMm', kind: 'num' },
+  { id: 'pcbf-tg', key: 'laminateTg', kind: 'text' },
+  { id: 'pcbf-cu', key: 'innerCopperOz', kind: 'num' },
+  { id: 'pcbf-via-fill', key: 'viaFill', kind: 'text' },
+  { id: 'pcbf-enig-gold', key: 'enigGoldUin', kind: 'num' },
+  { id: 'pcbf-imp-tol', key: 'impedanceTolPct', kind: 'num' },
+  { id: 'pcbf-tht-method', key: 'thtMethod', kind: 'text' },
+  { id: 'pcbf-staking', key: 'stakingDots', kind: 'num' },
+  { id: 'pcbf-potting', key: 'pottingGrams', kind: 'num' },
   { id: 'pcbf-layers', key: 'estimatedLayers', kind: 'num' },
   { id: 'pcbf-vias', key: 'throughVias', kind: 'num' },
   { id: 'pcbf-blind-vias', key: 'blindVias', kind: 'num' },
@@ -74,7 +84,8 @@ export function editedFields(snapshot: Record<string, string>, doc: Document = d
  * A quality grade picks the costing: an automotive grade costs the board as automotive.
  */
 /** Number fields whose blank means "the tool's own figure", not 0 (EDU v6 operations). */
-const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec', 'firstPassYield', 'contractUsdPerGbp']);
+const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec', 'firstPassYield', 'contractUsdPerGbp',
+  'boardThicknessMm', 'enigGoldUin', 'impedanceTolPct', 'stakingDots', 'pottingGrams']);
 
 export function boardSpecPatch(edited: string[], doc: Document = document): { spec: Record<string, unknown>; domain?: string; notes: string[] } {
   const spec: Record<string, unknown> = {};

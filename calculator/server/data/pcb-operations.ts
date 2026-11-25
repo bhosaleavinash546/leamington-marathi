@@ -40,7 +40,45 @@ export const OPS = {
   coatInspectSecPerSide: { value: 25, unit: 's a coated side', kind: 'sourced', basis: 'Axxon-Mycronic coating inspection: full-surface image of 419 × 528 mm in 25 s' },
   /** Masking connectors / test points before coating — only relative figures found (boots cut masking 60–70 %). */
   maskSecPerConnector: { value: 10, unit: 's a connector masked', kind: 'engineering', basis: 'CostVision engineering estimate (only relative figures found: boots cut masking time 60–70 %, I-Connect007)' },
+  // EDU audit G-07 (Nov 2026) — research scripts/pcb-research/2026-11-26-g17-g07/raw/ops-selective-staking.json, read 25 Nov 2026.
+  /** Selective drag soldering: an 84-joint board in 59.3 s at 25 mm/s (Vitronics Soltec test) = 0.706 s a joint. */
+  selectiveSecPerJoint: { value: 59.3 / 84, unit: 's a joint', kind: 'sourced', basis: 'Vitronics Soltec, Circuits Assembly Dec 2002: drag selective soldering of an 84-joint test board took 59.3 s at 25 mm/s (59.3 ÷ 84)' },
+  /** Handling a solder pallet a cycle. */
+  palletHandlingSec: { value: 20, unit: 's a board', kind: 'sourced', basis: 'Vitronics Soltec, Circuits Assembly Dec 2002: a solder carrier takes about 20 s to handle' },
+  /** A solder pallet: $200–1,000 by design and size, about 20,000 cycles (wave pallet — no selective-pallet price found). */
+  palletGBP: { value: 600 / 1.27, unit: '£ a pallet ($600, mid of $200–1,000)', kind: 'sourced', basis: 'Vitronics Soltec, Circuits Assembly Dec 2002: pallets $200–1,000 by design and size (mid-point), life about 20,000 cycles — a wave pallet, used for the selective pallet (no selective price found)' },
+  palletCycles: { value: 20000, unit: 'cycles', kind: 'sourced', basis: 'Vitronics Soltec, Circuits Assembly Dec 2002: carrier lifetime about 20,000 cycles' },
+  /** Hand soldering, lead-free: 3.5 s a joint (2.7 s tin-lead). */
+  handSecPerJoint: { value: 3.5, unit: 's a joint', kind: 'sourced', basis: 'Vitronics Soltec, Circuits Assembly Dec 2002: hand soldering 3.5 s a joint lead-free (2.7 s tin-lead)' },
+  /** Staking: a needle-dispensed silicone dot — no published time or dot mass found. */
+  stakeSecPerDot: { value: 3, unit: 's a staking dot', kind: 'engineering', basis: 'CostVision engineering estimate (makers publish jetted-dot speeds, 49,000 an hour — not needle-dispensed silicone)' },
+  stakeGramsPerDot: { value: 0.05, unit: 'g a dot', kind: 'engineering', basis: 'CostVision engineering estimate' },
+  /** DOWSIL 3145 RTV (MIL-A-46146), 19 kg pail $6,967.56 = $366.71/kg. */
+  stakeAdhesiveGBPPerKg: { value: 6967.56 / 19 / 1.27, unit: '£/kg ($366.71)', kind: 'sourced', basis: 'Ellsworth Adhesives: DOWSIL 3145 RTV clear, 19 kg pail $6,967.56 ($366.71/kg), at $1.27 / £' },
+  /** SYLGARD 170 Fast Cure potting, 40 kg kit £2,456.87 ex VAT = £61.42/kg (UK distributor, a traded material). */
+  pottingGBPPerKg: { value: 2456.87 / 40, unit: '£/kg', kind: 'sourced', basis: 'Silmid (UK): SYLGARD 170 Fast Cure silicone, 40 kg kit £2,456.87 ex VAT (£61.42/kg)' },
+  /** Potting a board: load, dispense, unload — no published time; cure time is not charged (it runs unattended). */
+  pottingHandlingSec: { value: 30, unit: 's a board', kind: 'engineering', basis: 'CostVision engineering estimate (load, dispense, unload); the cure runs unattended and is not charged' },
 } satisfies Record<string, OperationFigure>;
+
+/** How the through-hole joints are soldered (EDU audit G-07): the country table's rate, selective drag, or by hand. */
+export type ThtMethod = 'table' | 'selective' | 'hand';
+/** Through-hole joints soldered by the chosen method — null for the table rate (the caller keeps its own line). */
+export function thtMethodCost(method: ThtMethod | undefined, joints: number, labourPerHr: number, progQ: number): { gbp: number; item: string; formula: string; source: string } | null {
+  const j = Math.max(0, joints || 0);
+  if (!j || !method || method === 'table') return null;
+  const f = (v: number) => `£${v.toFixed(4)}`;
+  if (method === 'hand') {
+    const sec = j * OPS.handSecPerJoint.value, g = sec / 3600 * labourPerHr;
+    return { gbp: g, item: 'Through-hole joints — hand soldered', source: `sourced: ${OPS.handSecPerJoint.basis}; operator at the country's labour rate`,
+      formula: `${j} joints × ${OPS.handSecPerJoint.value} s = ${sec.toFixed(1)} s × £${labourPerHr.toFixed(2)}/h = ${f(g)}` };
+  }
+  const sec = j * OPS.selectiveSecPerJoint.value + OPS.palletHandlingSec.value;
+  const pallets = Math.max(1, Math.ceil(progQ / OPS.palletCycles.value));
+  const g = sec / 3600 * 2 * labourPerHr + pallets * OPS.palletGBP.value / progQ;
+  return { gbp: g, item: 'Through-hole joints — selective solder', source: `sourced: ${OPS.selectiveSecPerJoint.basis}; ${OPS.palletHandlingSec.basis}; ${OPS.palletGBP.basis}; station = 2 × labour`,
+    formula: `(${j} joints × ${OPS.selectiveSecPerJoint.value.toFixed(3)} s + ${OPS.palletHandlingSec.value} s pallet) = ${sec.toFixed(1)} s → ${f(sec / 3600 * 2 * labourPerHr)} + ${pallets} pallet${pallets > 1 ? 's' : ''} × £${OPS.palletGBP.value.toFixed(2)} ÷ ${progQ.toLocaleString('en-GB')} = ${f(g)}` };
+}
 
 export interface OperationsInput {
   /** Reflow sides (1 or 2). The second side repeats the line set-up per lot and needs its own stencil. */
@@ -53,6 +91,10 @@ export interface OperationsInput {
   programmingSec?: number;
   /** Functional (end-of-line) test seconds a board, and whether an HV insulation test runs. */
   functionalTestSec?: number; hvTest?: boolean;
+  /** How the through-hole joints are soldered (G-07) — applied by the caller to its through-hole line. */
+  thtMethod?: ThtMethod;
+  /** Staking dots a board (silicone, needle dispensed) and potting compound, g a board (G-07). */
+  stakingDots?: number; pottingGrams?: number;
 }
 
 export interface OperationLine { item: string; gbp: number; formula: string; source: string }
@@ -99,6 +141,19 @@ export function operationsCost(o: OperationsInput, labourPerHr: number, progQ: n
     out.push({ item: `Functional test${o.hvTest ? ' + HV insulation (hipot)' : ''}`, gbp: g,
       source: `${tag(OPS.functionalTestSec)} unless typed; ${tag(OPS.functionalFixtureGBP)}${o.hvTest ? `; ${tag(OPS.hipotSec)}; ${tag(OPS.hipotTesterGBP)}` : ''}; station = 2 × labour`,
       formula: `(${fct} s${o.hvTest ? ` + ${hv} s hipot` : ''}) → ${f(st(fct + hv))}${fct > 0 ? ` + £${OPS.functionalFixtureGBP.value.toLocaleString('en-GB')} fixture` : ''}${o.hvTest ? ` + £${OPS.hipotTesterGBP.value.toFixed(0)} tester` : ''} ÷ ${progQ.toLocaleString('en-GB')} = ${f(g)}` });
+  }
+  const dots = Math.max(0, Number(o.stakingDots) || 0);
+  if (dots > 0) {
+    const sec = dots * OPS.stakeSecPerDot.value, mat = dots * OPS.stakeGramsPerDot.value / 1000 * OPS.stakeAdhesiveGBPPerKg.value;
+    const g = sec / 3600 * labourPerHr + mat;
+    out.push({ item: 'Staking (silicone)', gbp: g, source: `${tag(OPS.stakeSecPerDot)}; ${tag(OPS.stakeGramsPerDot)}; ${tag(OPS.stakeAdhesiveGBPPerKg)}; operator at the labour rate`,
+      formula: `${dots} dots × ${OPS.stakeSecPerDot.value} s → ${f(sec / 3600 * labourPerHr)} + ${dots} × ${OPS.stakeGramsPerDot.value} g × £${OPS.stakeAdhesiveGBPPerKg.value.toFixed(2)}/kg → ${f(mat)} = ${f(g)}` });
+  }
+  const pg = Math.max(0, Number(o.pottingGrams) || 0);
+  if (pg > 0) {
+    const mat = pg / 1000 * OPS.pottingGBPPerKg.value, g = st(OPS.pottingHandlingSec.value) + mat;
+    out.push({ item: 'Potting', gbp: g, source: `${tag(OPS.pottingGBPPerKg)}; ${tag(OPS.pottingHandlingSec)}; station = 2 × labour`,
+      formula: `${pg} g × £${OPS.pottingGBPPerKg.value.toFixed(2)}/kg → ${f(mat)} + ${OPS.pottingHandlingSec.value} s → ${f(st(OPS.pottingHandlingSec.value))} = ${f(g)}` });
   }
   return out;
 }
