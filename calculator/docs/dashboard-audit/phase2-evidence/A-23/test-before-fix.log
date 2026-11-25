@@ -1,0 +1,80 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a23-names-and-ids.test.ts (4 tests | 3 failed) 189ms
+   ❯ A-23 display names (2)
+     × no e-mail as a name: blank / whitespace / e-mail-shaped names show "Unnamed user"; real names stay 19ms
+     × no e-mail anywhere in the rows, the record view, the summary (Created-by filter) or the CSV 24ms
+   ❯ A-23 internal ids (2)
+     × rows and the record view sent to an ordinary user carry no ownerId 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a23-names-and-ids.test.ts > A-23 display names > no e-mail as a name: blank / whitespace / e-mail-shaped names show "Unnamed user"; real names stay
+AssertionError: expected { 'A23-BLANK': '   ', …(5) } to deeply equal { 'A23-NONAME': 'Unnamed user', …(5) }
+
+- Expected
++ Received
+
+  {
+-   "A23-BLANK": "Unnamed user",
++   "A23-BLANK": "   ",
+    "A23-BOB": "Bob Baker",
+-   "A23-EMAILNAME": "Unnamed user",
+-   "A23-IMPMAIL": "Unnamed user",
++   "A23-EMAILNAME": "someone@corp.test",
++   "A23-IMPMAIL": "r.rao@supplier.test",
+    "A23-IMPNAME": "R. Rao",
+-   "A23-NONAME": "Unnamed user",
++   "A23-NONAME": "a23-noname@corp.test",
+  }
+
+ ❯ tests/kpi-p2-a23-names-and-ids.test.ts:57:32
+     55|   it('no e-mail as a name: blank / whitespace / e-mail-shaped names sh…
+     56|     const r = await call(BOB, 'GET', `/api/kpi/records?scope=all&all=1…
+     57|     expect(names(r.json.rows)).toEqual({
+       |                                ^
+     58|       'A23-NONAME': 'Unnamed user', 'A23-BLANK': 'Unnamed user', 'A23-…
+     59|       'A23-IMPNAME': 'R. Rao', 'A23-IMPMAIL': 'Unnamed user',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a23-names-and-ids.test.ts > A-23 display names > no e-mail anywhere in the rows, the record view, the summary (Created-by filter) or the CSV
+AssertionError: expected '{"rows":[{"id":"rec-9614a225-1b22-4ad…' not to match /@corp\.test|@supplier\.test/
+
+- Expected:
+/@corp\.test|@supplier\.test/
+
++ Received:
+"{\"rows\":[{\"id\":\"rec-9614a225-1b22-4add-9175-71f6a1b61179\",\"sourceTool\":\"CostVision\",\"sourceRef\":\"sc-A23-BLANK\",\"ownerId\":\"a23-blank\",\"ownerName\":\"   \",\"partNumber\":\"A23-BLANK\",\"componentName\":\"A23-BLANK\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"UK\",\"status\":\"completed\",\"costingDate\":\"2026-11-17\",\"createdAt\":\"2026-11-17T21:46:54.781Z\",\"updatedAt\":\"2026-11-17T21:46:54.781Z\",\"shouldCost\":7,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-11-17\",\"retrievedAt\":\"2026-11-17T21:46:54.781Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":7,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"},{\"id\":\"rec-d7f437c1-5e9f-4573-be53-1db3bb82af9c\",\"sourceTool\":\"CostVision\",\"sourceRef\":\"sc-A23-NONAME\",\"ownerId\":\"a23-noname\",\"ownerName\":\"a23-noname@corp.test\",\"partNumber\":\"A23-NONAME\",\"componentName\":\"A23-NONAME\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"UK\",\"status\":\"completed\",\"costingDate\":\"2026-11-17\",\"createdAt\":\"2026-11-17T21:46:54.758Z\",\"updatedAt\":\"2026-11-17T21:46:54.758Z\",\"shouldCost\":7,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-11-17\",\"retrievedAt\":\"2026-11-17T21:46:54.758Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":7,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"},{\"id\":\"rec-df0a1015-f3e4-48a0-b7d5-26daf7874f2f\",\"sourceTool\":\"CostVision\",\"sourceRef\":\"sc-A23-BOB\",\"ownerId\":\"a23-bob\",\"ownerName\":\"Bob Baker\",\"partNumber\":\"A23-BOB\",\"componentName\":\"A23-BOB\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"UK\",\"status\":\"completed\",\"costingDate\":\"2026-11-17\",\"createdAt\":\"2026-11-17T21:46:54.803Z\",\"updatedAt\":\"2026-11-17T21:46:54.803Z\",\"shouldCost\":7,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-11-17\",\"retrievedAt\":\"2026-11-17T21:46:54.803Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":7,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"},{\"id\":\"rec-fe196616-7248-4620-b530-acd0dca94b68\",\"sourceTool\":\"CostVision\",\"sourceRef\":\"sc-A23-EMAILNAME\",\"ownerId\":\"a23-emailname\",\"ownerName\":\"someone@corp.test\",\"partNumber\":\"A23-EMAILNAME\",\"componentName\":\"A23-EMAILNAME\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"UK\",\"status\":\"completed\",\"costingDate\":\"2026-11-17\",\"createdAt\":\"2026-11-17T21:46:54.792Z\",\"updatedAt\":\"2026-11-17T21:46:54.792Z\",\"shouldCost\":7,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-11-17\",\"retrievedAt\":\"2026-11-17T21:46:54.792Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":7,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"},{\"id\":\"rec-6e88d87b-2c95-4655-bb5f-ba6126f3cf97\",\"sourceTool\":\"CSS System\",\"sourceRef\":\"I-2\",\"ownerId\":\"import:CSS System:r.rao@supplier.test\",\"ownerName\":\"r.rao@supplier.test\",\"partNumber\":\"A23-IMPMAIL\",\"componentName\":\"P\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"GB\",\"status\":\"completed\",\"costingDate\":\"2026-10-01\",\"createdAt\":\"2026-11-17T21:46:54.818Z\",\"updatedAt\":\"2026-11-17T21:46:54.818Z\",\"shouldCost\":5,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-10-01\",\"retrievedAt\":\"2026-11-17T21:46:54.818Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":5,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"},{\"id\":\"rec-71cb9c5d-e762-42ca-b4d2-422d2e4cbed3\",\"sourceTool\":\"CSS System\",\"sourceRef\":\"I-1\",\"ownerId\":\"import:CSS System:R. Rao\",\"ownerName\":\"R. Rao\",\"partNumber\":\"A23-IMPNAME\",\"componentName\":\"P\",\"commodity\":\"Casting\",\"programme\":\"A23\",\"modelYear\":2028,\"powertrain\":\"BEV\",\"country\":\"GB\",\"status\":\"completed\",\"costingDate\":\"2026-10-01\",\"createdAt\":\"2026-11-17T21:46:54.818Z\",\"updatedAt\":\"2026-11-17T21:46:54.818Z\",\"shouldCost\":5,\"shouldCcy\":\"GBP\",\"shouldTerms\":\"DAP\",\"currentCost\":null,\"currentCcy\":null,\"currentTerms\":null,\"currentSource\":null,\"annualVolume\":null,\"volumeValidated\":false,\"savingStatus\":null,\"savingPerPiece\":null,\"savingCcy\":null,\"fx\":{\"should\":{\"currency\":\"GBP\",\"gbpPerUnit\":1,\"source\":\"GBP — no conversion\",\"effectiveDate\":\"2026-10-01\",\"retrievedAt\":\"2026-11-17T21:46:54.818Z\",\"method\":\"identity\",\"approved\":true},\"current\":null,\"saving\":null},\"gbpShould\":5,\"gbpCurrent\":null,\"gbpSaving\":null,\"gapGbp\":null,\"gapPct\":null,\"role\":\"current\",\"eligible\":false,\"ineligible\":\"missing-current-cost\",\"excluded\":null,\"invalidReasons\":[],\"duplicateOf\":null,\"isTest\":false,\"deleted\":false,\"notes\":\"\",\"shouldBasis\":\"total-only\"}],\"total\":6,\"page\":1,\"pages\":1,\"query\":{\"search\":\"\",\"sort\":\"costingDate\",\"dir\":\"desc\",\"page\":1,\"pageSize\":25,\"scope\":\"all\",\"drill\":{}}}"
+
+ ❯ tests/kpi-p2-a23-names-and-ids.test.ts:66:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a23-names-and-ids.test.ts > A-23 internal ids > rows and the record view sent to an ordinary user carry no ownerId
+AssertionError: expected { …(44) } to not have property "ownerId"
+
+- Expected:
+undefined
+
++ Received:
+"a23-blank"
+
+ ❯ tests/kpi-p2-a23-names-and-ids.test.ts:75:51
+     73|     const rows = await call(BOB, 'GET', `/api/kpi/records?scope=all&al…
+     74|     expect(rows.json.rows.length).toBe(6);
+     75|     for (const r of rows.json.rows) expect(r).not.toHaveProperty('owne…
+       |                                                   ^
+     76|     expect(rows.text).not.toMatch(/a23-noname|import:CSS System/);
+     77|     const own = rows.json.rows.find((x: any) => x.partNumber === 'A23-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  21:46:52
+   Duration  2.29s (transform 65%, import 26%, tests 9%)
+

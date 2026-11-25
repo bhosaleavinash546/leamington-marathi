@@ -1,0 +1,6 @@
+records in both runs: 21 | only before: ['rc-r14'] | only after: []
+original values / GBP values / FX snapshots differing between the pre-fix and fixed runs: none
+rc-r1 : current/should snapshot unchanged; saving snapshot added None → 1
+checked 12 saved records for snapshot changes after their save
+before currency totals: [('GBP', 15, 232, 16, 225.05, 15, 36.95), ('EUR', 1, 25, 1, 20, 1, 5), ('USD', 1, 40, 0, 0, 0, 0)]
+after currency totals: [('GBP', 15, 270, 16, 267.04, 15, 32.96), ('EUR', 1, 25, 1, 20, 1, 5), ('USD', 1, 40, 0, 0, 0, 0)]

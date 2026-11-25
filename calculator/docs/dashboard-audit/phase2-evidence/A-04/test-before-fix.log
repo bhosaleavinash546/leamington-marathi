@@ -1,0 +1,141 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a04-should-readd.test.ts (7 tests | 7 failed) 143ms
+   ❯ A-04 the re-add rule (pure) (2)
+     × tolerance is lines × 0.005; only numeric lines count 5ms
+     × basis: re-added / does not re-add / total only 1ms
+   ❯ A-04 save (4)
+     × refuses a total that does not re-add from its breakdown (P15) and stores nothing 70ms
+     × accepts a total within rounding (8 lines → £0.04) and refuses one beyond it 18ms
+     × a save with no breakdown is accepted and marked "total only" 16ms
+     × an imported record (total, no breakdown) is marked "total only"; a record saved before the rule is "does not re-add" 15ms
+   ❯ A-04 screen (1)
+     × the data-quality table and the record panel show the basis 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 the re-add rule (pure) > tolerance is lines × 0.005; only numeric lines count
+TypeError: reAddCheck is not a function
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:58:12
+     56| describe('A-04 the re-add rule (pure)', () => {
+     57|   it('tolerance is lines × 0.005; only numeric lines count', () => {
+     58|     expect(reAddCheck(13.04, EIGHT)).toMatchObject({ lines: 8, sum: 13…
+       |            ^
+     59|     expect(reAddCheck(12.96, EIGHT)?.ok).toBe(true);
+     60|     expect(reAddCheck(13.05, EIGHT)?.ok).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 the re-add rule (pure) > basis: re-added / does not re-add / total only
+TypeError: shouldCostBasis is not a function
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:68:12
+     66|   });
+     67|   it('basis: re-added / does not re-add / total only', () => {
+     68|     expect(shouldCostBasis(13, EIGHT)).toBe('re-added');
+       |            ^
+     69|     expect(shouldCostBasis(0.01, { rawMaterial: 999, process: 999 })).…
+     70|     expect(shouldCostBasis(13, null)).toBe('total-only');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 save > refuses a total that does not re-add from its breakdown (P15) and stores nothing
+AssertionError: expected 201 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 201
+
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:79:22
+     77|     const n = count();
+     78|     const r = await call(BOB, 'POST', '/api/kpi/records', body('a04-fa…
+     79|     expect(r.status).toBe(400);
+       |                      ^
+     80|     expect(r.json.error).toMatch(/re-add/);
+     81|     expect(count()).toBe(n);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 save > accepts a total within rounding (8 lines → £0.04) and refuses one beyond it
+AssertionError: expected 201 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 201
+
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:87:131
+     85|   it('accepts a total within rounding (8 lines → £0.04) and refuses on…
+     86|     expect((await call(BOB, 'POST', '/api/kpi/records', body('a04-r', …
+     87|     expect((await call(BOB, 'POST', '/api/kpi/records', body('a04-b', …
+       |                                                                                                                                   ^
+     88|     expect((await rowOf('A04-ROUND')).shouldBasis).toBe('re-added');
+     89|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 save > a save with no breakdown is accepted and marked "total only"
+AssertionError: expected undefined to be 'total-only' // Object.is equality
+
+- Expected:
+"total-only"
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:93:51
+     91|   it('a save with no breakdown is accepted and marked "total only"', a…
+     92|     expect((await call(BOB, 'POST', '/api/kpi/records', body('a04-n', …
+     93|     expect((await rowOf('A04-NOBD')).shouldBasis).toBe('total-only');
+       |                                                   ^
+     94|   });
+     95|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 save > an imported record (total, no breakdown) is marked "total only"; a record saved before the rule is "does not re-add"
+AssertionError: expected undefined to be 'total-only' // Object.is equality
+
+- Expected:
+"total-only"
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:100:50
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  |unit| tests/kpi-p2-a04-should-readd.test.ts > A-04 screen > the data-quality table and the record panel show the basis
+AssertionError: expected undefined to deeply equal { reAdded: 1, notReAdded: 1, …(1) }
+
+- Expected:
+{
+  "notReAdded": 1,
+  "reAdded": 1,
+  "totalOnly": 1,
+}
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-a04-should-readd.test.ts:132:39
+    130|     const s = buildDashboard([r('a', 're-added', 'P1'), r('b', 'total-…
+    131|       { today: '2026-11-11', nowIso: '2026-11-11T00:00:00Z', fxPolicy:…
+    132|     expect(s.dataQuality.shouldBasis).toEqual({ reAdded: 1, notReAdded…
+       |                                       ^
+    133|     const html = dataQualityHtml(s, false);
+    134|     expect(html).toMatch(/Should-cost total only, not re-added<\/th><t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  21:28:24
+   Duration  2.33s (transform 67%, import 27%, tests 6%)
+

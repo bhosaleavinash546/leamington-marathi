@@ -1,0 +1,265 @@
+CostVision | Global Cost Engineering KPI Dashboard
+Generated 17/11/2026, 22:51:49
+Period: All time
+No other filter — all commodities, programmes, model years and powertrains
+GBP at each record's frozen FX snapshot. Policy: Approved monthly rate for the costing month. 6 approved rate(s) loaded; 0 current record(s) converted at the built-in reference (not approved).
+
+
+ KPI                                                       Value                         Basis
+
+ Total eligible costing records                                                     21   17 current; revisions included
+
+ Unique components analysed                                                         16   By part number; 0 record(s) without one not counted
+
+ Completed costing records                                                          17   Current records completed, reviewed or approved
+
+ Commodities covered                                                                 3   Current records
+
+ Vehicle programmes covered                                                          7   Current records
+
+ Weighted average cost gap                                                     11.7%     Sum of gaps / sum of GBP current cost; 17 eligible record(s)
+
+ Potential unit cost opportunity                                               £39.70    Sum of per-piece gaps above should-cost; 16 record(s). Not an annual saving.
+
+ Unfavourable gaps (below should-cost)                                         -£2.00    1 record(s)
+
+ Annualised opportunity                                                   £20,000.00     1 record(s) with an admin-validated annual volume
+
+ Validated savings                                                              £0.50    1 record(s), per piece
+
+ Implemented savings                                                      Not tracked    0 record(s), per piece
+
+ Records requiring review or approval                                               14   14 to review, 0 to approve
+
+
+
+ Insight                                                                   Detail
+
+ Most costing activity: Casting                                            17 of 21 saved costings (81.0%) in this view.
+
+ Largest potential unit cost opportunity: Casting                          £34.16 per piece summed over 15 component application(s) where the current cost is above should-cost. Not an annual saving.
+
+ Coverage: 5 of 5 programmes, 4 of 5 powertrains                           Every programme has a current costing. No current costing for Diesel PHEV.
+
+ 2 commodities have fewer than 3 current costings                          Forging (1), Machining (1).
+
+ 11 component application(s) with a gap of 15% or more                     REC-TST-10: £10.00 (20.0%); REC-EUR-02: £4.20 (20.0%); REC-TIE-07: £3.00 (15.0%); …
+
+ 14 costing(s) awaiting review or approval                                 14 completed and not yet reviewed, 0 reviewed and not yet approved.
+
+ 14 costing(s) saved in the last 30 days                                   6 in the 30 days before (+133.3%). Counts every save, revisions included.
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 1 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+Charts
+Costing activity over time                                                                                          Costing records by commodity
+Saves per week, revisions included                                                                                  Saves, revisions included
+
+
+
+
+Current cost v should-cost by commodity                                                                             Potential cost opportunity by commodity
+GBP per piece, summed over eligible current records                                                                 Ranked · per-piece gaps above should-cost, summed — not an annual saving
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 2 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+Programme distribution                                                                                              Powertrain distribution
+Current records                                                                                                     Current records
+
+
+
+
+Model year analysis                                                                                                 Costing tool contribution
+Current records                                                                                                     Saves, revisions included
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 3 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+Cost opportunity by powertrain
+Per-piece gaps above should-cost, summed
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 4 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+ Commodity                      Records (saves)                          Eligible             GBP current                      GBP should-cost   GBP gap   Opportunity
+
+ Casting                        17                                       15                   £231.01                          £198.85           £32.16    £34.16
+
+ Machining                      3                                        1                    £60.00                           £55.00            £5.00     £5.00
+
+ Forging                        1                                        1                    £30.53                           £30.00            £0.53     £0.53
+
+
+
+ Programme                          Current records
+
+ L460                               7
+
+ L461                               3
+
+ L663                               3
+
+ EMA                                1
+
+ JEA                                1
+
+ q901                               1
+
+ Q901                               1
+
+
+
+ Powertrain                         Current records
+
+ MHEV                               2
+
+ Petrol PHEV                        1
+
+ Petrol                             2
+
+ BEV                                12
+
+
+
+ Model year                     Current records
+
+ MY2026                         1
+
+ MY2027                         9
+
+ MY2028                         7
+
+
+
+ Status                        Current records
+
+ Completed                     14
+
+ Approved                      3
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 5 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+ Costing tool                     Current records
+
+ CostVision                       12
+
+ CSS System                       8
+
+ CPSC II                          1
+
+
+
+ Currency          Sum current (original)               Sum should-cost (original)                  Same-currency gap
+
+ GBP               270.00 (15)                          267.04 (16)                                 32.96
+
+ EUR               25.00 (1)                            20.00 (1)                                   5.00
+
+ USD               40.00 (1)                            0.00 (0)                                    -
+
+
+
+ Data quality                                             Records
+
+ Total retrieved records                                  21
+
+ Included (all revisions)                                 21
+
+ Records excluded                                         0
+
+  deleted                                                 0
+
+  test                                                    0
+
+  invalid                                                 0
+
+ Financially eligible                                     17
+
+ Missing should-cost                                      0
+
+ Missing current cost                                     0
+
+ Missing FX rate                                          0
+
+ Different cost basis                                     0
+
+ Reference FX (not approved)                              0
+
+ Should-cost total only, not re-added                     6
+
+ Should-cost does not re-add                              0
+
+ Duplicate candidates                                     0
+
+ Older revisions                                          4
+
+ No part number                                           0
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 6 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+ Data quality                                             Records
+
+ No commodity                                             0
+
+ No programme                                             0
+
+ No model year                                            0
+
+ No powertrain                                            0
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 7 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+Current costing records
+Part number      Component                   Commodity     Prog.   MY     Powertrain    Current (orig.)   Should (orig.)   GBP current   GBP should   GBP gap   Gap %    Tool         Status      Created by   Date
+
+REC-PN-12B       R12 owner part number       Casting       L460    2027   Petrol PHEV   9.00 GBP          8.00 GBP         9.00          8.00         1.00      11.1%    CostVision   Completed   Alice Able   2026-11-17
+
+REC-GBP-01       R1 GBP bracket              Casting       L460    2027   BEV           12.00 GBP         10.00 GBP        12.00         10.00        2.00      16.7%    CostVision   Completed   Alice Able   2026-11-17
+
+REC-CASE-18      R18 programme case          Casting       q901    2028   BEV           9.00 GBP          7.00 GBP         9.00          7.00         2.00      22.2%    CostVision   Completed   Bob Baker    2026-11-17
+
+REC-TIE-07       R7 same-day tie             Casting       L460    2028   MHEV          20.00 GBP         17.00 GBP        20.00         17.00        3.00      15.0%    CostVision   Completed   Alice Able   2026-11-17
+
+REC-TST-10       R10 owner test flag         Casting       EMA     2028   BEV           50.00 GBP         40.00 GBP        50.00         40.00        10.00     20.0%    CostVision   Approved    Bob Baker    2026-11-17
+
+REC-VOL-09       R9 validated volume         Casting       L461    2027   BEV           12.00 GBP         10.00 GBP        12.00         10.00        2.00      16.7%    CostVision   Completed   Bob Baker    2026-11-17
+
+REC-DRF-13       R13 owner downgrade         Casting       L663    2027   BEV           6.00 GBP          5.00 GBP         6.00          5.00         1.00      16.7%    CostVision   Approved    Bob Baker    2026-11-17
+
+REC-RND-15       R15 rounding only           Casting       L461    2028   MHEV          14.00 GBP         13.04 GBP        14.00         13.04        0.96      6.9%     CostVision   Completed   Bob Baker    2026-11-17
+
+REC-COM-11       R11 owner commodity         Casting       JEA     2028   BEV           33.00 GBP         30.00 GBP        33.00         30.00        3.00      9.1%     CostVision   Approved    Bob Baker    2026-11-17
+
+REC-CASE-18      R18 programme case          Casting       Q901    2028   BEV           9.00 GBP          7.00 GBP         9.00          7.00         2.00      22.2%    CostVision   Completed   Alice Able   2026-11-17
+
+REC-NEG-16       R16 unfavourable            Casting       L663    2028   Petrol        18.00 GBP         20.00 GBP        18.00         20.00        -2.00     -11.1%   CostVision   Completed   Alice Able   2026-11-17
+
+REC-REV-04       R4 three revisions          Machining     L663    2026   Petrol        60.00 GBP         55.00 GBP        60.00         55.00        5.00      8.3%     CSS System   Completed   R. Rao       2026-11-10
+
+REC-MIX-03       R3 mixed-currency forging   Forging       L461    2027   BEV           40.00 USD         30.00 GBP        30.53         30.00        0.53      1.7%     CPSC II      Completed   J. Lee       2026-10-20
+
+REC-EUR-02       R2 EUR casting              Casting       L460    2027   BEV           25.00 EUR         20.00 EUR        21.01         16.81        4.20      20.0%    CSS System   Completed   R. Rao       2026-10-15
+
+LR_REC_200       R17 variant                 Casting       L460    2027   BEV           6.00 GBP          5.00 GBP         6.00          5.00         1.00      16.7%    CSS System   Completed   R. Rao       2026-10-04
+
+LRREC200         R17 variant                 Casting       L460    2027   BEV           6.00 GBP          5.00 GBP         6.00          5.00         1.00      16.7%    CSS System   Completed   R. Rao       2026-10-03
+
+lr-rec-200       R17 variant                 Casting       L460    2027   BEV           6.00 GBP          5.00 GBP         6.00          5.00         1.00      16.7%    CSS System   Completed   R. Rao       2026-10-02
+
+
+
+
+CostVision | Global Cost Engineering KPI Dashboard · page 8 of 8 · GBP at frozen FX; opportunity = per-piece gaps summed, not an annual saving
+

@@ -1,0 +1,27 @@
+{
+ "P17_malformed_filter": {
+  "before": {
+   "malformedStatus": 200,
+   "malformedTotal": 16,
+   "wellFormedNoMatchTotal": 0
+  },
+  "after": {
+   "malformedStatus": 400,
+   "wellFormedNoMatchTotal": 0
+  }
+ },
+ "P12_long_filter": {
+  "before": {
+   "filterJsonChars": 18724,
+   "overLongFilterStatus": 431,
+   "overLongFilterBodyHead": "",
+   "matchingNothingResultTotal": 0
+  },
+  "after": {
+   "filterJsonChars": 18724,
+   "overLongFilterStatus": 431,
+   "overLongFilterBodyHead": "",
+   "matchingNothingResultTotal": 0
+  }
+ }
+}

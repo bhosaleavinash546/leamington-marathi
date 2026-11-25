@@ -1,0 +1,81 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a27-negative-money.test.ts (4 tests | 4 failed) 104ms
+   ❯ A-27: one sign-first formatter for negative money (4)
+     × the engine formatter is the screen formatter 4ms
+     × insights print a negative gap as −£4.03, never £-4.03 4ms
+     × the export KPI rows and the PDF text are sign-first 2ms
+     × every GBP number format in the workbook puts the sign first, as −£ 93ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a27-negative-money.test.ts > A-27: one sign-first formatter for negative money > the engine formatter is the screen formatter
+TypeError: gbpSigned is not a function
+ ❯ tests/kpi-p2-a27-negative-money.test.ts:32:12
+     30| describe('A-27: one sign-first formatter for negative money', () => {
+     31|   it('the engine formatter is the screen formatter', () => {
+     32|     expect(gbpSigned(-4.03)).toBe('−£4.03');
+       |            ^
+     33|     expect(gbpSigned(1234.5)).toBe('£1,234.50');
+     34|     expect(gbpSigned(-1234.5, 0)).toBe('−£1,235');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  |unit| tests/kpi-p2-a27-negative-money.test.ts > A-27: one sign-first formatter for negative money > insights print a negative gap as −£4.03, never £-4.03
+AssertionError: expected 'P-NEG: £-4.03 (-67.5%); P-a: £2.00 (1…' to contain 'P-NEG: −£4.03'
+
+Expected: "P-NEG: −£4.03"
+Received: "P-NEG: £-4.03 (-67.5%); P-a: £2.00 (16.7%)."
+
+ ❯ tests/kpi-p2-a27-negative-money.test.ts:41:24
+     39|   it('insights print a negative gap as −£4.03, never £-4.03', () => {
+     40|     const sig = summary.insights.find(i => i.id === 'significant-gaps'…
+     41|     expect(sig.detail).toContain('P-NEG: −£4.03');
+       |                        ^
+     42|     expect(sig.detail).not.toMatch(/£-/);
+     43|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  |unit| tests/kpi-p2-a27-negative-money.test.ts > A-27: one sign-first formatter for negative money > the export KPI rows and the PDF text are sign-first
+AssertionError: expected '£-4.03' to be '−£4.03' // Object.is equality
+
+Expected: "−£4.03"
+Received: "£-4.03"
+
+ ❯ tests/kpi-p2-a27-negative-money.test.ts:46:20
+     44|   it('the export KPI rows and the PDF text are sign-first', () => {
+     45|     const unf = kpiRows(summary).find(r => r[0].startsWith('Unfavourab…
+     46|     expect(unf[1]).toBe('−£4.03');
+       |                    ^
+     47|     expect(pdfSafe(unf[1])).toBe('-£4.03');
+     48|     expect(pdfSafe(summary.insights.find(i => i.id === 'significant-ga…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  |unit| tests/kpi-p2-a27-negative-money.test.ts > A-27: one sign-first formatter for negative money > every GBP number format in the workbook puts the sign first, as −£
+AssertionError: £#,##0.00: expected '£#,##0.00' to match /^£#,##0\.00;(\[Red\])?"−"£#,##0\.00$/
+
+- Expected:
+/^£#,##0\.00;(\[Red\])?"−"£#,##0\.00$/
+
++ Received:
+"£#,##0.00"
+
+ ❯ tests/kpi-p2-a27-negative-money.test.ts:56:40
+     54|     wb.eachSheet(ws => ws.eachRow(r => r.eachCell(c => { if (c.numFmt?…
+     55|     expect(fmts.size).toBeGreaterThan(0);
+     56|     for (const f of fmts) expect(f, f).toMatch(/^£#,##0\.00;(\[Red\])?…
+       |                                        ^
+     57|     const ex = wb.getWorksheet('Executive summary')!;
+     58|     let unf: unknown; ex.eachRow(r => { if (String(r.getCell(1).value)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  22:25:55
+   Duration  705ms (import 40%, transform 39%, tests 20%, worker 1%)
+

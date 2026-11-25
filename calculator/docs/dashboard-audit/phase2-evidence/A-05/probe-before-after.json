@@ -1,0 +1,129 @@
+{
+ "P02_owner_powers": {
+  "before": {
+   "ownerSetsIsTestStatus": 200,
+   "recordNowExcluded": "test",
+   "ownerDowngradesApprovedToDraftStatus": 200,
+   "statusAfter": "draft",
+   "ownerDeletesApprovedRecordStatus": 200
+  },
+  "after": {
+   "ownerSetsIsTestStatus": 403,
+   "recordNowExcluded": null,
+   "ownerDowngradesApprovedToDraftStatus": 403,
+   "ownerDeletesApprovedRecordStatus": 200
+  }
+ },
+ "P02b_identity_on_approved": {
+  "before": {
+   "ownerChangesPartNumber": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "ownerChangesCommodity": {
+    "status": 200,
+    "commodityAfter": "Forging"
+   },
+   "ownerChangesCountry": {
+    "status": 200,
+    "countryAfter": "CN"
+   },
+   "ownerNotesOnlyFullFormSave": {
+    "status": 403,
+    "error": "Only an admin can mark a costing reviewed or approved"
+   },
+   "adminChangesProgramme": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "adminReapproves": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "ownerChangesVolume": {
+    "status": 200,
+    "statusAfter": "approved"
+   }
+  },
+  "after": {
+   "ownerChangesPartNumber": {
+    "status": 200,
+    "statusAfter": "completed"
+   },
+   "ownerChangesCommodity": {
+    "status": 403
+   },
+   "ownerChangesCountry": {
+    "status": 403
+   },
+   "ownerNotesOnlyFullFormSave": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "adminChangesProgramme": {
+    "status": 200,
+    "statusAfter": "completed"
+   },
+   "adminReapproves": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "ownerChangesVolume": {
+    "status": 200,
+    "statusAfter": "completed"
+   }
+  }
+ },
+ "P14_owner_inflates_validated_volume": {
+  "before": {
+   "ownerPatchStatus": 200,
+   "stillValidated": true,
+   "statusAfter": "approved",
+   "volumeAfter": 6000000,
+   "annualisedBefore": {
+    "n": 1,
+    "gbp": 120000
+   },
+   "annualisedAfter": {
+    "n": 1,
+    "gbp": 12000000
+   }
+  },
+  "after": {
+   "ownerPatchStatus": 200,
+   "stillValidated": false,
+   "statusAfter": "completed",
+   "volumeAfter": 6000000,
+   "annualisedBefore": {
+    "n": 1,
+    "gbp": 120000
+   },
+   "annualisedAfter": {
+    "n": 0,
+    "gbp": 0
+   }
+  }
+ },
+ "P13_controls": {
+  "before": {
+   "noTokenSummary": 401,
+   "userExcludedList": 403,
+   "userAudit": 403,
+   "userFxPolicy": 403,
+   "userRecalc": 403,
+   "userImport": 403,
+   "userEditsOthersRecord": 403,
+   "userSetsApproved": 403
+  },
+  "after": {
+   "noTokenSummary": 401,
+   "userExcludedList": 403,
+   "userAudit": 403,
+   "userFxPolicy": 403,
+   "userRecalc": 403,
+   "userImport": 403,
+   "userEditsOthersRecord": 403,
+   "userSetsApproved": 403
+  }
+ }
+}

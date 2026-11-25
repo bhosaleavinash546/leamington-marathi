@@ -1,0 +1,71 @@
+{
+ "book": "unit-book.xlsx",
+ "sheets": 11,
+ "formulaErrors": [],
+ "reconciliation": [
+  [
+   "Financially eligible records",
+   4,
+   4,
+   "✓"
+  ],
+  [
+   "Σ GBP current cost",
+   41.47,
+   41.47,
+   "✓"
+  ],
+  [
+   "Σ GBP should-cost",
+   40,
+   40,
+   "✓"
+  ],
+  [
+   "Σ GBP cost gap",
+   1.47,
+   1.47,
+   "✓"
+  ],
+  [
+   "Potential unit cost opportunity",
+   5.5,
+   5.5,
+   "✓"
+  ],
+  [
+   "Unfavourable gaps",
+   -4.03,
+   -4.03,
+   "✓"
+  ],
+  [
+   "Weighted cost gap %",
+   0.0354473113093803,
+   0.0354473113093803,
+   "✓"
+  ],
+  [
+   "Annualised opportunity (validated volumes)",
+   180000,
+   180000,
+   "✓"
+  ],
+  [
+   "Validated savings",
+   1.05,
+   1.05,
+   "✓"
+  ],
+  [
+   "Implemented savings",
+   1.275,
+   1.275,
+   "✓"
+  ]
+ ],
+ "failed": [],
+ "negativeMoneyAsDisplayed": [
+  "−£4.03"
+ ]
+}

@@ -1,0 +1,82 @@
+{
+ "unknown-key-dark-1440": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "unknown-key-dark-390": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "unknown-key-light-1440": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "unknown-key-light-390": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "bad-preset-dark-1440": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "bad-preset-dark-390": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "bad-preset-light-1440": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ },
+ "bad-preset-light-390": {
+  "alert": null,
+  "clearButton": false,
+  "kpiCardBlocks": 2,
+  "totalsText": "Potential unit cost opportunity iSum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual s",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": null
+ }
+}

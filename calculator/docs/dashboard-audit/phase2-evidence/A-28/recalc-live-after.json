@@ -1,0 +1,74 @@
+{
+ "book": "costvision-kpi-dashboard.xlsx",
+ "sheets": 11,
+ "formulaErrors": [],
+ "reconciliation": [
+  [
+   "Financially eligible records",
+   6,
+   6,
+   "✓"
+  ],
+  [
+   "Σ GBP current cost",
+   76.9285172029161,
+   76.9285172029161,
+   "✓"
+  ],
+  [
+   "Σ GBP should-cost",
+   70.1042742276767,
+   70.1042742276767,
+   "✓"
+  ],
+  [
+   "Σ GBP cost gap",
+   6.82424297523941,
+   6.82424297523941,
+   "✓"
+  ],
+  [
+   "Potential unit cost opportunity",
+   8.97844144852185,
+   8.97844144852185,
+   "✓"
+  ],
+  [
+   "Unfavourable gaps",
+   -2.15419847328244,
+   -2.15419847328244,
+   "✓"
+  ],
+  [
+   "Weighted cost gap %",
+   0.08870888486306,
+   0.08870888486306,
+   "✓"
+  ],
+  [
+   "Annualised opportunity (validated volumes)",
+   344000,
+   344000,
+   "✓"
+  ],
+  [
+   "Validated savings",
+   0.8,
+   0.8,
+   "✓"
+  ],
+  [
+   "Implemented savings",
+   1.14503816793893,
+   1.14503816793893,
+   "✓"
+  ]
+ ],
+ "failed": [],
+ "negativeMoneyAsDisplayed": [
+  "−£0.58",
+  "−£1.00",
+  "−£1.15",
+  "−£2.15"
+ ]
+}

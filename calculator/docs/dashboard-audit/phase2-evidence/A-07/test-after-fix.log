@@ -1,0 +1,9 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+
+ Test Files  10 passed (10)
+      Tests  104 passed (104)
+   Start at  21:39:55
+   Duration  5.30s (import 34%, tests 33%, transform 32%)
+

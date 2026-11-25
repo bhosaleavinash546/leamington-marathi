@@ -1,0 +1,14 @@
+# Phase 2 evidence kept out of git (~100 MB). Each can be regenerated; what it showed is recorded in the
+# report and in the small files kept here:
+#  - full 12-view screenshot runs (before / after each block, regression): screens-v-phase1.txt, the axe and
+#    overflow results, and block3/ + A-18/ keep the before / after shots of every UI change
+#  - live-run downloads (e2e baseline and regression): e2e-live*.log
+#  - A-17's 10.9 MB "before" PDF and the other live-run exports: A-17/live-before.log (sizes recorded)
+screens/before/
+screens/after-*/
+baseline/e2e-live/
+regression/e2e-live/
+regression/screens/
+A-17/live-before/*.pdf
+A-17/live-before/*.xlsx
+A-17/live-before/*.csv

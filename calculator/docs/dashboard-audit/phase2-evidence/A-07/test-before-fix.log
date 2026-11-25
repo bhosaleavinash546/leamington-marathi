@@ -1,0 +1,90 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a07-fx-inversion.test.ts (8 tests | 3 failed) 100ms
+   ❯ A-07 inversion check (parser) (6)
+     × refuses EUR 1.19 and USD 1.31 (inverted), naming row and column 12ms
+     × a reference within 10 % of 1.0 warns instead of refusing 2ms
+   ❯ A-07 over HTTP (2)
+     × the admin upload of inverted EUR / USD is refused 400 and nothing is loaded; a correct file loads 65ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a07-fx-inversion.test.ts > A-07 inversion check (parser) > refuses EUR 1.19 and USD 1.31 (inverted), naming row and column
+AssertionError: expected [ { currency: 'EUR', …(4) }, …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "currency": "EUR",
++     "gbpPerUnit": 1.19,
++     "loadedAt": "2026-11-17T00:00:00Z",
++     "period": "2026-01",
++     "source": "Treasury",
++   },
++   {
++     "currency": "USD",
++     "gbpPerUnit": 1.31,
++     "loadedAt": "2026-11-17T00:00:00Z",
++     "period": "2026-01",
++     "source": "Treasury",
++   },
++ ]
+
+ ❯ tests/kpi-p2-a07-fx-inversion.test.ts:52:21
+     50|   it('refuses EUR 1.19 and USD 1.31 (inverted), naming row and column'…
+     51|     const r = parseFxRows(rows(['EUR', '2026-01', 1.19], ['USD', '2026…
+     52|     expect(r.rates).toEqual([]);
+       |                     ^
+     53|     expect(r.errors.map(e => `${e.row}:${e.column}`)).toEqual(['2:gbp_…
+     54|     expect(r.errors[0].message).toMatch(/inverted/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a07-fx-inversion.test.ts > A-07 inversion check (parser) > a reference within 10 % of 1.0 warns instead of refusing
+AssertionError: expected '' to match /CHF.*inverted/
+
+- Expected:
+/CHF.*inverted/
+
++ Received:
+""
+
+ ❯ tests/kpi-p2-a07-fx-inversion.test.ts:75:31
+     73|     expect(w.errors).toEqual([]);
+     74|     expect(w.rates).toHaveLength(1);
+     75|     expect(w.notes.join(' ')).toMatch(/CHF.*inverted/);
+       |                               ^
+     76|     // a reference above 1 is checked the other way round
+     77|     expect(parseFxRows(rows(['KWD', '2026-01', 0.40]), HEADERS, near, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a07-fx-inversion.test.ts > A-07 over HTTP > the admin upload of inverted EUR / USD is refused 400 and nothing is loaded; a correct file loads
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/kpi-p2-a07-fx-inversion.test.ts:88:24
+     86|   it('the admin upload of inverted EUR / USD is refused 400 and nothin…
+     87|     const bad = await call(ADMIN, 'POST', '/api/kpi/fx/rates', { fileB…
+     88|     expect(bad.status).toBe(400);
+       |                        ^
+     89|     expect(bad.json.errors.map((e: any) => `${e.row}:${e.column}`)).to…
+     90|     expect((await call(ADMIN, 'GET', '/api/kpi/fx')).json.rates).toEqu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 5 passed (8)
+   Start at  21:39:41
+   Duration  2.33s (transform 66%, import 29%, tests 5%)
+

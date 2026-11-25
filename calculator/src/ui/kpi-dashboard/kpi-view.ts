@@ -5,15 +5,16 @@
  */
 import { apiBase } from '../../api-base.js';
 import {
-  DEFAULT_FILTERS, DIMENSIONS, STATUS_LABEL, INELIGIBLE_LABEL, FX_METHOD_LABEL,
-  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset,
+  DEFAULT_FILTERS, DIMENSIONS, STATUS_LABEL, INELIGIBLE_LABEL, FX_METHOD_LABEL, validateFilters,
+  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type RecordStatus, type DatePreset, type ShouldBasis,
 } from '../../engine/kpi-dashboard.js';
 import {
   esc, gbp, money, pct, int, day, dateTime, fxLine, statusBadge, roleNote, financialCardsHtml, operationalCardsHtml, dqSummaryHtml, currencyTotalsHtml, insightsHtml,
-  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml,
+  dataQualityHtml, drillHtml, recordsTableHtml, pagerHtml, multiSelectHtml, dateControlHtml, chipsHtml, skeletonHtml, shouldBasisHtml, badFilterHtml,
   type RecordRowView,
 } from './kpi-builders.js';
 import { renderCharts, destroyCharts } from './kpi-charts.js';
+import { COMMODITY_REPORT_LABELS } from '../data/commodity-meta.js';
 import { showToast } from '../toast.js';
 
 const STORE_KEY = 'cv-kpi-dashboard';
@@ -40,6 +41,8 @@ const S = {
   msQuery: '',
   loading: false,
   error: '',
+  /** A-18: the server refused the filter (400 BAD_FILTER); no figures are shown until it is cleared. */
+  badFilter: '',
   refreshedAt: '',
   seq: 0,
   timer: 0 as unknown as ReturnType<typeof setInterval>,
@@ -53,7 +56,12 @@ function restore(): void {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return;
     const v = JSON.parse(raw) as { filters?: DashboardFilters; currencyMode?: 'gbp' | 'original'; pageSize?: number };
-    if (v.filters) S.filters = { ...structuredClone(DEFAULT_FILTERS), ...v.filters };
+    if (v.filters) {
+      // A-18: a stored filter this version cannot apply is reported (with "Clear filters"), never dropped silently.
+      const ok = validateFilters({ ...structuredClone(DEFAULT_FILTERS), ...v.filters });
+      if (ok.ok) S.filters = { ...structuredClone(DEFAULT_FILTERS), ...v.filters };
+      else S.badFilter = `This filter could not be applied: ${ok.reason}. It is the filter saved in this browser from an earlier visit.`;
+    }
     if (v.currencyMode === 'original') S.currencyMode = 'original';
     if (v.pageSize && [10, 25, 50, 100].includes(v.pageSize)) S.q.pageSize = v.pageSize;
   } catch { /* storage blocked */ }
@@ -81,6 +89,7 @@ function recordsQuery(extra = ''): string {
 // ─── Loading ──────────────────────────────────────────────────────────────────
 
 async function loadAll(opts: { quiet?: boolean } = {}): Promise<void> {
+  if (S.badFilter) return;   // A-18: nothing loads under a refused filter until it is changed or cleared
   const seq = ++S.seq;
   if (!opts.quiet) { S.loading = true; S.error = ''; renderBody(); }
   try {
@@ -91,10 +100,13 @@ async function loadAll(opts: { quiet?: boolean } = {}): Promise<void> {
     ]);
     if (seq !== S.seq) return;
     S.summary = summary; S.records = records; S.drill = drill;
-    S.refreshedAt = summary.refreshedAt; S.error = '';
+    S.refreshedAt = summary.refreshedAt; S.error = ''; S.badFilter = '';
   } catch (e) {
     if (seq !== S.seq) return;
-    S.error = (e as Error).message || 'The dashboard could not be loaded.';
+    if ((e as { body?: { code?: string } }).body?.code === 'BAD_FILTER') {
+      // A-18: never keep showing the previous view's totals under a filter the server could not apply.
+      S.badFilter = (e as Error).message; S.summary = null; S.records = null; S.error = '';
+    } else S.error = (e as Error).message || 'The dashboard could not be loaded.';
   } finally {
     if (seq === S.seq) { S.loading = false; renderAll(); }
   }
@@ -118,7 +130,7 @@ async function loadRecords(): Promise<void> {
 
 let debounce = 0 as unknown as ReturnType<typeof setTimeout>;
 function filtersChanged(): void {
-  S.q.page = 1; S.drillPath = [];
+  S.q.page = 1; S.drillPath = []; S.badFilter = '';
   persist();
   renderFilters();
   const body = S.root?.querySelector('#kd-body');
@@ -129,7 +141,7 @@ function filtersChanged(): void {
 
 // ─── Rendering ───────────────────────────────────────────────────────────────
 
-function shell(): string {
+export function shell(): string {
   return `<div class="kd-wrap">
     <div class="kd-head">
       <div class="kd-head-t"><p class="kd-eyebrow">CostVision</p><h1>Global Cost Engineering KPI Dashboard</h1>
@@ -139,7 +151,7 @@ function shell(): string {
           <button type="button" class="btn btn-secondary btn-sm" data-act="refresh" aria-label="Refresh now"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></svg> Refresh</button></div>
         <div class="kd-seg-ctl" role="radiogroup" aria-label="Currency view">
           <button type="button" role="radio" data-ccy-mode="gbp">Consolidated GBP</button><button type="button" role="radio" data-ccy-mode="original">Original currency</button></div>
-        <div class="kd-menu"><button type="button" class="btn btn-primary btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
+        <div class="kd-menu"><button type="button" class="btn btn-secondary btn-sm" data-act="export-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="kd-export-menu">Export</button>
           <div class="kd-menu-pop" id="kd-export-menu" role="menu" hidden>
             <button type="button" role="menuitem" data-act="export-pdf">PDF dashboard report</button>
             <button type="button" role="menuitem" data-act="export-xlsx">Excel report</button>
@@ -206,6 +218,7 @@ function renderBody(): void {
   const body = S.root?.querySelector<HTMLElement>('#kd-body');
   if (!body) return;
   body.setAttribute('aria-busy', String(S.loading));
+  if (S.badFilter && !S.loading) { destroyCharts(); body.innerHTML = badFilterHtml(S.badFilter); return; }
   if (S.error && !S.summary) {
     body.innerHTML = `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">The dashboard could not be loaded</p><p>${esc(S.error)}</p><button type="button" class="btn btn-secondary" data-act="refresh">Try again</button></div>`;
     return;
@@ -281,6 +294,27 @@ interface Detail {
 
 const BUCKETS: [string, string][] = [['rawMaterial', 'Material'], ['process', 'Process'], ['labour', 'Labour'], ['tooling', 'Tooling'], ['packaging', 'Packaging'], ['logistics', 'Logistics'], ['overhead', 'Overhead'], ['margin', 'Margin']];
 
+/** F-25: the panel's "Original costing analysis" — the heading only when there is an analysis to show (an
+ *  eight-bucket breakdown or operations), otherwise one line; the commodity by its display name (the same labels
+ *  the record's Commodity field uses), never the raw id. Imported records keep their source note. */
+export function costingAnalysisHtml(costing: Detail['costing'], r: { sourceTool: string; sourceRef: string }): string {
+  const res = costing?.result;
+  if (!costing || !res) {
+    return r.sourceTool !== 'CostVision' ? `<h3>Original costing</h3><p>This record was imported from <strong>${esc(r.sourceTool)}</strong>; its costing lives in that tool under record <span class="kd-mono">${esc(r.sourceRef)}</span>.</p>` : '';
+  }
+  const bd = res.breakdown;
+  const rows = bd ? BUCKETS.filter(([k]) => typeof bd[k] === 'number') : [];
+  const ops = res.operationDetails ?? [];
+  const what = [costing.commodity ? COMMODITY_REPORT_LABELS[costing.commodity] ?? costing.commodity : '', costing.region ?? ''].filter(Boolean).map(esc).join(', ');
+  if (!rows.length && !ops.length) return `<p class="kd-muted" data-costing-note>No cost breakdown was saved with this costing${what ? ` (${what})` : ''}.</p>`;
+  return `<h3>Original costing analysis</h3>
+    <p class="kd-muted">The costing as saved from CostVision${what ? ` (${what})` : ''}. It is not re-run here.</p>
+    ${rows.length ? `<div class="kd-table-wrap"><table class="kd-table kd-table-sm"><caption class="kd-visually-hidden">Eight-bucket breakdown</caption><thead><tr><th scope="col">Bucket</th><th scope="col" class="num">£ per piece</th></tr></thead>
+      <tbody>${rows.map(([k, l]) => `<tr><th scope="row">${l}</th><td class="num">${gbp(bd![k])}</td></tr>`).join('')}
+      <tr class="kd-total"><th scope="row">Should-cost</th><td class="num">${gbp(res.total ?? null)}</td></tr></tbody></table></div>` : ''}
+    ${ops.length ? `<details class="kd-details"><summary>Operations (${ops.length})</summary><ul>${ops.slice(0, 40).map(o => `<li>${esc(o.name ?? '')}${typeof o.cost === 'number' ? ` — ${gbp(o.cost)}` : ''}</li>`).join('')}</ul></details>` : ''}`;
+}
+
 async function openRecord(id: string): Promise<void> {
   const dlg = S.root!.querySelector<HTMLDialogElement>('#kd-drawer')!;
   dlg.innerHTML = `<div class="kd-dialog-in"><p class="kd-muted">Loading…</p></div>`;
@@ -291,14 +325,7 @@ async function openRecord(id: string): Promise<void> {
   }
   const r = d.record;
   const fxS = r.fx as { current?: import('../../engine/kpi-dashboard.js').FxApplied | null; should?: import('../../engine/kpi-dashboard.js').FxApplied | null; saving?: import('../../engine/kpi-dashboard.js').FxApplied | null };
-  const bd = d.costing?.result?.breakdown;
-  const costingHtml = d.costing?.result ? `<h3>Original costing analysis</h3>
-    <p class="kd-muted">The costing as saved from CostVision (${esc(d.costing.commodity ?? '')}, ${esc(d.costing.region ?? '')}). It is not re-run here.</p>
-    ${bd ? `<div class="kd-table-wrap"><table class="kd-table kd-table-sm"><caption class="kd-visually-hidden">Eight-bucket breakdown</caption><thead><tr><th scope="col">Bucket</th><th scope="col" class="num">£ per piece</th></tr></thead>
-      <tbody>${BUCKETS.filter(([k]) => typeof bd[k] === 'number').map(([k, l]) => `<tr><th scope="row">${l}</th><td class="num">${gbp(bd[k])}</td></tr>`).join('')}
-      <tr class="kd-total"><th scope="row">Should-cost</th><td class="num">${gbp(d.costing.result.total ?? null)}</td></tr></tbody></table></div>` : ''}
-    ${d.costing.result.operationDetails?.length ? `<details class="kd-details"><summary>Operations (${d.costing.result.operationDetails.length})</summary><ul>${d.costing.result.operationDetails.slice(0, 40).map(o => `<li>${esc(o.name ?? '')}${typeof o.cost === 'number' ? ` — ${gbp(o.cost)}` : ''}</li>`).join('')}</ul></details>` : ''}`
-    : r.sourceTool !== 'CostVision' ? `<h3>Original costing</h3><p>This record was imported from <strong>${esc(r.sourceTool)}</strong>; its costing lives in that tool under record <span class="kd-mono">${esc(r.sourceRef)}</span>.</p>` : '';
+  const costingHtml = costingAnalysisHtml(d.costing, r);
   const edit = d.canEdit ? editFormHtml(d) : '';
   dlg.innerHTML = `<div class="kd-dialog-in">
     <div class="kd-dialog-h"><div><p class="kd-eyebrow">${esc(r.sourceTool)} · <span class="kd-mono">${esc(r.id)}</span></p>
@@ -321,6 +348,7 @@ async function openRecord(id: string): Promise<void> {
       <tr class="kd-total"><th scope="row">Gap</th><td></td><td></td><td class="num">${r.eligible ? `${gbp(r.gapGbp)} (${pct(r.gapPct)})` : esc(r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : r.excluded ?? '—')}</td><td class="kd-muted">${r.eligible ? 'GBP current − GBP should-cost, each converted on its own rate' : 'Not in financial KPIs'}</td></tr>
       ${r.savingStatus ? `<tr><th scope="row">Saving (${esc(r.savingStatus)})</th><td class="num">${money(r.savingPerPiece, r.savingCcy)}</td><td></td><td class="num">${gbp(r.gbpSaving)}</td><td class="kd-fx">${fxLine(fxS.saving)}</td></tr>` : ''}
       </tbody></table></div>
+    ${shouldBasisHtml(r.shouldBasis as ShouldBasis | null | undefined)}
     ${r.excluded && r.invalidReasons.length ? `<p class="kd-banner is-error">Excluded: ${esc(r.invalidReasons.join('; '))}</p>` : ''}
     ${d.revisions.length ? `<h3>Other costings of this application</h3><ul class="kd-revs">${d.revisions.map(v => `<li><button type="button" class="kd-link" data-open="${esc(v.id)}">${day(v.costingDate)} · ${esc(v.ownerName)}</button> ${statusBadge(v.status)} <span class="kd-muted">${esc(v.role === 'current' ? 'current' : v.role === 'duplicate' ? 'duplicate candidate' : v.role === 'superseded' ? 'older revision' : 'excluded')} · should ${gbp(v.gbpShould)} · current ${gbp(v.gbpCurrent)}</span></li>`).join('')}</ul>` : ''}
     ${costingHtml}
@@ -348,6 +376,16 @@ async function copyRecordLink(): Promise<void> {
   catch { out.hidden = false; out.textContent = link; const sel = getSelection(); const rg = document.createRange(); rg.selectNodeContents(out); sel?.removeAllRanges(); sel?.addRange(rg); }
 }
 
+/** The note under the record edit form. An owner's change to the current cost, a part detail or the annual volume
+ *  of a reviewed / approved costing is saved only with the status set to Completed (A-05); an admin then approves
+ *  it again as a separate save. */
+export function editFormNote(isAdmin: boolean, status: string): string {
+  const base = 'Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.';
+  return !isAdmin && (status === 'reviewed' || status === 'approved')
+    ? `${base} To change the current cost, a part detail or the annual volume, set the status to Completed: an admin then approves the costing again.`
+    : base;
+}
+
 function editFormHtml(d: Detail): string {
   const r = d.record; const a = d.isAdmin;
   const statuses: RecordStatus[] = a ? ['draft', 'completed', 'reviewed', 'approved'] : (r.status === 'reviewed' || r.status === 'approved') ? [r.status, 'draft', 'completed'] : ['draft', 'completed'];
@@ -373,7 +411,7 @@ function editFormHtml(d: Detail): string {
         <div class="kd-field"><label class="kd-check"><input type="checkbox" name="isTest"${r.isTest ? ' checked' : ''}> Test record (exclude)</label></div>` : ''}
         <div class="kd-field kd-field-wide"><label for="kd-e-notes">Notes</label><textarea id="kd-e-notes" class="kd-input" name="notes" rows="2" maxlength="1000">${esc(r.notes ?? '')}</textarea></div>
       </div>
-      <p class="kd-muted">Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.${!a && (r.status === 'reviewed' || r.status === 'approved') ? ' Changing the current cost sends this costing back for review.' : ''}</p>
+      <p class="kd-muted">${esc(editFormNote(a, r.status))}</p>
       <p class="kd-form-err" role="alert" hidden></p>
       <div class="kd-dialog-f"><button type="button" class="btn btn-secondary kd-danger" data-act="delete-ask">Delete record</button>
         <span class="kd-del-confirm" hidden>Delete this record from the dashboard? <button type="button" class="btn btn-secondary btn-sm kd-danger" data-act="delete-yes">Delete</button> <button type="button" class="btn btn-secondary btn-sm" data-act="delete-no">Keep</button></span>
@@ -639,7 +677,11 @@ function toggleMenu(force?: boolean): void {
   if (open) pop.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
 }
 
-function scrollTo(id: string): void { S.root?.querySelector(`#kd-sec-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+/** F-26: an in-page jump is instant under prefers-reduced-motion, smooth otherwise. */
+export function scrollBehavior(): ScrollBehavior {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+function scrollTo(id: string): void { S.root?.querySelector(`#kd-sec-${id}`)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }); }
 
 function onChange(e: Event): void {
   const t = e.target as HTMLInputElement;

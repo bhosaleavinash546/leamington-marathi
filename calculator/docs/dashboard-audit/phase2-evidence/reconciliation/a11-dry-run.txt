@@ -1,0 +1,13 @@
+Records 21 (21 included). Applications now 17 → folded 14. Current records now 17 → folded 14. 2 group(s) would merge 6 record(s).
+All-time KPIs now:    eligible 17, opportunity £39.70, unfavourable £-2.00, annualised £20000.00
+All-time KPIs folded: eligible 14, opportunity £35.70, unfavourable £-2.00, annualised £20000.00
+
+LRREC200|L460|2027|BEV  ← LR-REC-200|L460|2027|BEV  +  LRREC200|L460|2027|BEV  +  LR_REC_200|L460|2027|BEV
+  rec-e516d19c-4724-40cb-a6f5-ba54ef54bdb7  CSS System  LR-REC-200 · L460 · 2027 · BEV  completed  2026-10-01  superseded → superseded
+  rec-dbd9dd83-e015-46e5-abd7-29a00de13825  CSS System  lr-rec-200 · L460 · 2027 · BEV  completed  2026-10-02  current → superseded
+  rec-b2570a09-4123-4444-b3ad-90532868acb6  CSS System  LRREC200 · L460 · 2027 · BEV  completed  2026-10-03  current → superseded
+  rec-b0fc411b-d77c-4031-8095-f17b4b533064  CSS System  LR_REC_200 · L460 · 2027 · BEV  completed  2026-10-04  current → current
+
+RECCASE18|Q901|2028|BEV  ← REC-CASE-18|Q901|2028|BEV  +  REC-CASE-18|q901|2028|BEV
+  rec-5733bd74-0cd5-4234-bfb0-5f26a8c643c4  CostVision  REC-CASE-18 · q901 · 2028 · BEV  completed  2026-11-17  current → current
+  rec-cc500e00-a634-4ec0-bdbd-1f84e4017cda  CostVision  REC-CASE-18 · Q901 · 2028 · BEV  completed  2026-11-17  current → duplicate

@@ -1,0 +1,74 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a03-validated-volume.test.ts (5 tests | 3 failed) 222ms
+   ❯ A-03 validated annual volume (5)
+     × the OWNER changing a validated volume clears the validation, and the annualised KPI drops it 110ms
+     × an ADMIN changing a validated volume clears it too (whoever makes the change) 36ms
+     × changing a validated volume and re-validating it in the SAME request is refused; a separate re-validation works 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a03-validated-volume.test.ts > A-03 validated annual volume > the OWNER changing a validated volume clears the validation, and the annualised KPI drops it
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/kpi-p2-a03-validated-volume.test.ts:64:43
+     62|     expect(r.status).toBe(200);
+     63|     expect(r.json.record.annualVolume).toBe(6_000_000);
+     64|     expect(r.json.record.volumeValidated).toBe(false);
+       |                                           ^
+     65|     expect(await annualised('A03P1')).toEqual({ n: 0, gbp: 0 });
+     66|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a03-validated-volume.test.ts > A-03 validated annual volume > an ADMIN changing a validated volume clears it too (whoever makes the change)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/kpi-p2-a03-validated-volume.test.ts:72:43
+     70|     const r = await call(ADMIN, 'PATCH', `/api/kpi/records/${id}`, { a…
+     71|     expect(r.status).toBe(200);
+     72|     expect(r.json.record.volumeValidated).toBe(false);
+       |                                           ^
+     73|   });
+     74|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a03-validated-volume.test.ts > A-03 validated annual volume > changing a validated volume and re-validating it in the SAME request is refused; a separate re-validation works
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/kpi-p2-a03-validated-volume.test.ts:86:25
+     84|     const id = await validatedRecord('both', 'A03P4');
+     85|     const both = await call(ADMIN, 'PATCH', `/api/kpi/records/${id}`, …
+     86|     expect(both.status).toBe(400);
+       |                         ^
+     87|     expect(both.json.error).toMatch(/separate/i);
+     88|     const unchanged = await call(ADMIN, 'GET', `/api/kpi/records/${id}…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  21:24:09
+   Duration  2.39s (transform 64%, import 26%, tests 10%)
+

@@ -1,0 +1,46 @@
+{
+ "P15_client_supplied_should_cost": {
+  "before": {
+   "saveStatus": 201,
+   "storedShouldCost": 0.01,
+   "breakdownSum": 1998,
+   "opportunityGbp": 11.99
+  },
+  "after": {
+   "saveStatus": 400,
+   "breakdownSum": 1998,
+   "opportunityGbp": 0
+  }
+ },
+ "P15b_readd_tolerance": {
+  "before": {
+   "roundingOnly_0_04": 201,
+   "beyondTolerance_0_05": 201,
+   "noBreakdown": 201,
+   "importStatus": 200,
+   "basisByPart": {
+    "P15B-ROUND": "(no field)",
+    "P15B-BEYOND": "(no field)",
+    "P15B-NOBD": "(no field)",
+    "P15B-IMP": "(no field)"
+   },
+   "dataQualityShouldBasis": "(no field)"
+  },
+  "after": {
+   "roundingOnly_0_04": 201,
+   "beyondTolerance_0_05": 400,
+   "noBreakdown": 201,
+   "importStatus": 200,
+   "basisByPart": {
+    "P15B-ROUND": "re-added",
+    "P15B-NOBD": "total-only",
+    "P15B-IMP": "total-only"
+   },
+   "dataQualityShouldBasis": {
+    "reAdded": 17,
+    "notReAdded": 0,
+    "totalOnly": 9
+   }
+  }
+ }
+}

@@ -4,8 +4,8 @@
  * from a user, a file or a tool goes through `esc`.
  */
 import {
-  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL,
-  type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type FilterOption,
+  STATUS_LABEL, INELIGIBLE_LABEL, DATE_PRESET_LABEL, DRILL_LABEL, DIMENSIONS, NOT_SET, FX_METHOD_LABEL, SHOULD_BASIS_LABEL, gbpSigned,
+  type ShouldBasis, type DashboardSummary, type DashboardFilters, type Dimension, type DrillGroup, type DrillLevel, type FilterOption,
   type CurrencyTotal, type RecordStatus, type FxApplied, type DatePreset,
 } from '../../engine/kpi-dashboard.js';
 
@@ -16,8 +16,7 @@ export const esc = (s: unknown): string =>
 
 export function gbp(n: number | null | undefined, dp = 2): string {
   if (n === null || n === undefined || !Number.isFinite(n)) return '—';
-  const s = Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
-  return `${n < 0 ? '−' : ''}£${s}`;
+  return gbpSigned(n, dp);   // A-27: the engine's one sign-first formatter
 }
 /** Compact £ for big headline numbers (£1.2m, £45.3k) — the exact figure goes in the title. */
 export function gbpCompact(n: number | null | undefined): string {
@@ -128,7 +127,8 @@ export function financialCardsHtml(s: DashboardSummary): string {
   const elig = `${int(f.eligible)} eligible record${f.eligible === 1 ? '' : 's'}`;
   const cards: Card[] = [
     { id: 'opportunity', label: 'Potential unit cost opportunity', value: gbpCompact(f.opportunity.gbp), exact: gbp(f.opportunity.gbp),
-      sub: `${int(f.opportunity.n)} record${f.opportunity.n === 1 ? '' : 's'} above should-cost · per piece, summed`
+      // F-21: the eligible base, as on the gap card ("x of y eligible").
+      sub: `${int(f.opportunity.n)} of ${elig} above should-cost · per piece, summed`
         + (f.annualised.n ? `<span class="kd-card-x" data-annualised>Annualised: <strong title="${gbp(f.annualised.gbp)}">${gbpCompact(f.annualised.gbp)}</strong> over ${int(f.annualised.n)} validated volume${f.annualised.n === 1 ? '' : 's'}</span>`
           : '<span class="kd-card-x" data-annualised>Not annualised — no admin-validated annual volume</span>'),
       tip: 'Sum of per-piece gaps where the current cost is above should-cost. It is a sum of unit gaps, NOT programme spend or an annual saving. Records below should-cost are shown separately as unfavourable. An annualised figure (gap × annual volume) appears only where an admin has validated the volume.',
@@ -232,6 +232,8 @@ export function dataQualityHtml(s: DashboardSummary, isAdmin: boolean): string {
     ${row('Missing FX rate', q.missingFx, 'No approved or reference rate for the currency')}
     ${row('Different cost basis', q.basisMismatch, 'Current and should-cost on different delivery terms (DAP / EXW)')}
     ${row('Reference FX (not approved)', q.unapprovedFx, 'Converted at the built-in reference rate until an approved rate is loaded')}
+    ${row('Should-cost total only, not re-added', q.shouldBasis.totalOnly, 'No breakdown to re-add the should-cost from (imported, or saved without one)')}
+    ${row('Should-cost does not re-add', q.shouldBasis.notReAdded, 'The saved total differs from its breakdown by more than rounding (saved before the re-add check)')}
     ${row('Duplicate candidates', q.duplicateCandidates, 'Another user’s costing of the same part, programme, model year and powertrain', ' <button type="button" class="kd-link" data-scope="all">View all revisions</button>')}
     ${row('Older revisions', q.supersededRevisions, 'Kept for activity, not in financial KPIs')}
     ${row('No part number', mc.partNumber, 'Cannot be de-duplicated — counted on its own')}
@@ -290,7 +292,7 @@ export const TABLE_COLUMNS: { key: string; label: string; sort?: string; num?: b
   { key: 'shouldOrig', label: 'Should-cost (original)', num: true, mode: 'original', cell: r => money(r.shouldCost, r.shouldCcy) },
   { key: 'sourceTool', label: 'Tool', sort: 'sourceTool', cell: r => esc(r.sourceTool) },
   { key: 'ownerName', label: 'Created by', sort: 'ownerName', cell: r => esc(r.ownerName) },
-  { key: 'costingDate', label: 'Created', sort: 'costingDate', cell: r => day(r.costingDate) },
+  { key: 'costingDate', label: 'Costing date', sort: 'costingDate', cell: r => day(r.costingDate) },   // F-24: what it shows
   { key: 'updatedAt', label: 'Last updated', sort: 'updatedAt', cell: r => dateTime(r.updatedAt) },
   { key: 'id', label: 'Costing ID', sort: 'id', cell: r => `<span class="kd-mono kd-muted">${esc(r.id.replace(/^rec-/, '').slice(0, 8))}</span>` },
 ];
@@ -338,6 +340,20 @@ export function fxLine(fx: FxApplied | null | undefined): string {
   if (!fx) return '<span class="kd-muted">No rate — not converted</span>';
   if (fx.method === 'identity') return 'GBP — no conversion';
   return `£${fx.gbpPerUnit.toPrecision(6)} per ${esc(fx.currency)} · ${esc(fx.source)} · effective ${esc(fx.effectiveDate)} · ${esc(FX_METHOD_LABEL[fx.method] ?? fx.method)} · frozen ${dateTime(fx.retrievedAt)}${fx.approved ? '' : ' · <strong>reference, not approved</strong>'}`;
+}
+
+/** A-18: the server refused the filter (malformed or unknown) — say so and offer to clear it, never
+ *  show totals that are not what the filter asked for. */
+export function badFilterHtml(message: string): string {
+  const reason = message.replace(/^This filter could not be applied:\s*/, '');
+  return `<div class="kd-empty is-error" role="alert"><p class="kd-empty-t">This filter could not be applied</p><p>${esc(reason.charAt(0).toUpperCase() + reason.slice(1))}</p>
+    <p>No figures are shown, because they would not be the ones this filter asks for.</p><button type="button" class="btn btn-secondary" data-clear-all>Clear filters</button></div>`;
+}
+
+/** A-04: the record panel's line on whether the should-cost re-adds from its breakdown. */
+export function shouldBasisHtml(b: ShouldBasis | null | undefined): string {
+  if (!b) return '';
+  return `<p class="kd-muted">Should-cost basis: <strong>${esc(SHOULD_BASIS_LABEL[b])}</strong>${b === 'total-only' ? ' — no breakdown was saved with it, so the total could not be checked.' : b === 'not-re-added' ? ' — the saved total differs from its breakdown by more than rounding.' : '.'}</p>`;
 }
 
 /** Loading placeholder in the page's own shape (F-14): the financial band, the compact tiles, two chart blocks. */

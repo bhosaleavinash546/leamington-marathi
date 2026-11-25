@@ -1,0 +1,31 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-f24-costing-date-column.test.ts (2 tests | 1 failed) 8ms
+   ❯ F-24: the records table says "Costing date" (2)
+     × the costingDate column is labelled "Costing date" and no column is labelled "Created" 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-f24-costing-date-column.test.ts > F-24: the records table says "Costing date" > the costingDate column is labelled "Costing date" and no column is labelled "Created"
+AssertionError: expected 'Created' to be 'Costing date' // Object.is equality
+
+Expected: "Costing date"
+Received: "Created"
+
+ ❯ tests/kpi-p2-f24-costing-date-column.test.ts:19:69
+     17| describe('F-24: the records table says "Costing date"', () => {
+     18|   it('the costingDate column is labelled "Costing date" and no column …
+     19|     expect(TABLE_COLUMNS.find(c => c.key === 'costingDate')?.label).to…
+       |                                                                     ^
+     20|     expect(TABLE_COLUMNS.some(c => c.label === 'Created')).toBe(false);
+     21|     const html = recordsTableHtml([row], 'costingDate', 'desc', 'gbp');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  22:22:33
+   Duration  244ms (transform 79%, import 12%, tests 6%, worker 2%)
+

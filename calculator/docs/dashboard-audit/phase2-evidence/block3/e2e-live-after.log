@@ -1,0 +1,64 @@
+[kpi] PASS costing tool still costs a part and offers "Save to KPI Dashboard"
+[kpi] PASS save refuses a missing part number — Enter the part number.
+[kpi] PASS save refuses a current cost without its currency — Choose the currency of the current cost.
+[kpi] PASS the costing is saved to the dashboard (201) — should-cost £14.81
+[kpi] PASS saved should-cost equals the costing result shown — 14.809092817902815 v £14.81
+[kpi] PASS the record carries a frozen FX snapshot for EUR (reference, not approved)
+[kpi] PASS Alice: no page errors
+[kpi] PASS API saves (incl. revision + other-user duplicate) — 201,201,201,201,201,201
+[kpi] PASS an admin validates an annual volume
+[kpi] PASS a normal user cannot validate a volume
+[kpi] PASS admin sees the Admin button
+[kpi] PASS admin UI: inverted FX rate refused with row and column
+[kpi] PASS admin UI: approved FX rates loaded
+[kpi] PASS admin UI: recalculation preview lists the records that would change — Preview: 3 of 7 record(s) would change.
+[kpi] PASS admin UI: recalculation applied — Applied: 3 of 7 record(s) changed.
+[kpi] PASS admin UI: CSS System + CPSC II rows imported — 2 record(s) added, 0 updated.
+[kpi] PASS admin UI: audit log lists the changes
+[kpi] PASS axe WCAG 2.1 AA — admin dialog — 0 violations
+[kpi] PASS Admin: no page errors
+[kpi] PASS a normal user does not see the Admin button
+[kpi] PASS default period is the last 12 months
+[kpi] PASS card: total records = API — 9 v 9
+[kpi] PASS card: unique components = API — 7
+[kpi] PASS card: programmes covered = API — 5
+[kpi] PASS card: potential unit opportunity = API (exact £) — £6.98 v 6.978441448521854
+[kpi] PASS card: validated savings shows "Not tracked" with no status data
+[kpi] PASS annualised opportunity = gap × validated volume only — £264,000.00 (1 record)
+[kpi] PASS duplicate + revision counted in data quality — dup 1, rev 1
+[kpi] PASS multi-select search narrows the options
+[kpi] PASS filter chip appears and every card follows — 4 v 4
+[kpi] PASS records table follows the filter
+[kpi] PASS heatmap cell click filters commodity and programme
+[kpi] PASS drill: commodity → programme → powertrain → model year → component — All commodities›Commodity: Casting›Programme: L460›Powertrain: BEV›Model year: 2027
+[kpi] PASS drill to component lists its current costing record
+[kpi] PASS search finds Alice's saved part by part number
+[kpi] PASS record drawer shows original + GBP + FX source
+[kpi] PASS record drawer shows the original costing analysis
+[kpi] PASS another user's record has no edit form
+[kpi] PASS axe WCAG 2.1 AA — record drawer — 0 violations
+[kpi] PASS original-currency view lists INR, CNY, EUR, USD and GBP separately
+[kpi] PASS empty state when no record matches
+[kpi] PASS CSV downloaded with the records table (current records, as on screen) — 7 rows
+[kpi] PASS Excel has the six required sheets — Executive summary, Commodity analysis, Programme analysis, Powertrain analysis, Model year & status, Original currencies, Costing records, Older revisions & duplicates, Data quality, Reconciliation, Method & FX
+[kpi] PASS Excel "Costing records" = current records; revisions on their own sheet — 7 + 2
+[kpi] PASS independent re-add: eligible records — 5 v 5
+[kpi] PASS independent re-add: Σ GBP current (original × frozen rate) — 74.8613 v 74.8613
+[kpi] PASS independent re-add: Σ GBP should-cost — 71.9134 v 71.9134
+[kpi] PASS independent re-add: potential unit opportunity — 6.9784 v 6.9784
+[kpi] PASS independent re-add: weighted gap % — 3.9378 v 3.9378
+[kpi] PASS Reconciliation sheet carries live formulas
+[kpi] PASS PDF dashboard report downloaded — 241 KB
+[kpi] PASS axe WCAG 2.1 AA — dashboard — 0 violations
+[kpi] PASS Bob: no page errors
+[kpi] PASS axe WCAG 2.1 AA — dashboard-light — 0 violations
+[kpi] PASS dashboard-light: no page errors
+[kpi] PASS phone width: no horizontal page scroll — 0px
+[kpi] PASS axe WCAG 2.1 AA — dashboard-phone — 0 violations
+[kpi] PASS dashboard-phone: no page errors
+[kpi] PASS server log: no unhandled KPI error — none
+[kpi] 59/59 PASS → /tmp/cv-phase2-b3-live
+
+real	0m55.158s
+user	0m9.411s
+sys	0m1.698s

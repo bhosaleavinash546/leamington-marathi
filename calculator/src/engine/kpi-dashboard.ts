@@ -115,6 +115,41 @@ export interface KpiRecord {
   isTest: boolean;
   deleted: boolean;
   notes: string;
+  /** A-04: does the should-cost re-add from its saved breakdown? Derived when read (no stored field). */
+  shouldBasis?: ShouldBasis | null;
+}
+
+// ─── Should-cost re-add (A-04) ────────────────────────────────────────────────
+
+/** 're-added': the total re-adds from its breakdown within rounding; 'not-re-added': it does not (saved
+ *  before the rule); 'total-only': no breakdown to re-add from (an import, or a save without one). */
+export type ShouldBasis = 're-added' | 'not-re-added' | 'total-only';
+export const SHOULD_BASIS_LABEL: Record<ShouldBasis, string> = {
+  're-added': 'Re-adds from its breakdown',
+  'not-re-added': 'Does not re-add from its breakdown',
+  'total-only': 'Total only, not re-added',
+};
+/** The most rounding ONE breakdown line to two decimals can move the sum (confirmed at Stop 1, Phase 2). */
+export const READD_TOLERANCE_PER_LINE = 0.005;
+
+/**
+ * Re-add a should-cost total from its breakdown: every finite numeric value of the breakdown object is
+ * a line. Tolerance = lines × 0.005 (8 lines → 0.04). Null when there is no breakdown with a numeric line.
+ */
+export function reAddCheck(total: number, breakdown: unknown): { lines: number; sum: number; diff: number; tolerance: number; ok: boolean } | null {
+  if (!breakdown || typeof breakdown !== 'object' || Array.isArray(breakdown)) return null;
+  const vals = Object.values(breakdown as Record<string, unknown>).filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+  if (!vals.length) return null;
+  const sum = vals.reduce((a, b) => a + b, 0);
+  const tolerance = Math.round(vals.length * READD_TOLERANCE_PER_LINE * 1000) / 1000;
+  const diff = total - sum;
+  return { lines: vals.length, sum, diff, tolerance, ok: Math.abs(diff) <= tolerance + 1e-9 };
+}
+
+export function shouldCostBasis(shouldCost: number | null, breakdown: unknown): ShouldBasis | null {
+  if (shouldCost === null || !Number.isFinite(shouldCost)) return null;
+  const c = reAddCheck(shouldCost, breakdown);
+  return !c ? 'total-only' : c.ok ? 're-added' : 'not-re-added';
 }
 
 export type ExcludeReason = 'deleted' | 'test' | 'invalid';
@@ -177,6 +212,18 @@ export function currencySymbol(code: string): string {
 export function normalisePartNumber(pn: string | null | undefined): string | null {
   if (typeof pn !== 'string') return null;
   const k = pn.toUpperCase().replace(/\s+/g, '').trim();
+  return k.length ? k : null;
+}
+
+/**
+ * A-11 (Phase 2): fold a part number or programme code to one key — upper case, with spaces, hyphens,
+ * underscores, full stops and slashes removed — so LR-VAR-100, LRVAR100 and LR_VAR_100 are one key and
+ * Q900 / q900 are one key. NOT USED for grouping, identity or KPIs: switching it on needs the user's
+ * approval (see scripts/kpi-identity-dry-run.ts for what it would merge). Null when nothing is left.
+ */
+export function foldIdentityCode(code: string | null | undefined): string | null {
+  if (typeof code !== 'string') return null;
+  const k = code.toUpperCase().replace(/[\s\-_./]+/g, '');
   return k.length ? k : null;
 }
 
@@ -284,7 +331,9 @@ export function classifyRecords(records: KpiRecord[]): ClassifiedRecord[] {
     g.sort((a, b) =>
       statusRank(b.status) - statusRank(a.status)
       || b.costingDate.localeCompare(a.costingDate)
-      || b.updatedAt.localeCompare(a.updatedAt)
+      // A-06: same-day ties break on when the costing was CREATED — an edit (a note, an admin PATCH)
+      // must not make an older costing current again. Ranking by status beyond draft is decision D-3.
+      || b.createdAt.localeCompare(a.createdAt)
       || b.id.localeCompare(a.id));
     const cur = g[0];
     cur.role = 'current';
@@ -415,6 +464,38 @@ export function parseFilters(raw: unknown): DashboardFilters {
   return f;
 }
 
+/**
+ * A-18 (Phase 2): STRICT check of an untrusted filter object. `parseFilters` silently drops what it cannot
+ * use, so a malformed filter became the unfiltered (company-wide) view. This refuses instead, with the
+ * reason: not an object, an unknown key, a dimension that is not a list of 1–120-character strings (at most
+ * 200), an unknown date preset, a custom date that is not YYYY-MM-DD, an unknown status, a currency that is
+ * not ISO 4217, a model year that is not a year. A well-formed filter that matches nothing is valid.
+ */
+export function validateFilters(raw: unknown): { ok: true; filters: DashboardFilters } | { ok: false; reason: string } {
+  const bad = (reason: string) => ({ ok: false as const, reason });
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return bad('the filter must be an object');
+  const o = raw as Record<string, unknown>;
+  const allowed = new Set<string>([...DIMENSIONS, 'datePreset', 'dateFrom', 'dateTo']);
+  for (const k of Object.keys(o)) if (!allowed.has(k)) return bad(`unknown filter "${k.slice(0, 40)}"`);
+  for (const d of DIMENSIONS) {
+    const v = o[d];
+    if (v === undefined) continue;
+    if (!Array.isArray(v)) return bad(`"${d}" must be a list of values`);
+    if (v.length > 200) return bad(`"${d}" has more than 200 values`);
+    for (const x of v) {
+      if (typeof x !== 'string' || !x.length || x.length > 120) return bad(`"${d}" values must be text of 1–120 characters`);
+      if (d === 'status' && !RECORD_STATUSES.includes(x as RecordStatus)) return bad(`unknown status "${x.slice(0, 40)}"`);
+      if (d === 'currency' && x !== NOT_SET && !isIsoCurrency(x)) return bad(`"${String(x).slice(0, 40)}" is not an ISO 4217 currency code`);
+      if (d === 'modelYear' && x !== NOT_SET && !/^\d{4}$/.test(x)) return bad(`"${x.slice(0, 40)}" is not a model year`);
+    }
+  }
+  if (o.datePreset !== undefined && !(typeof o.datePreset === 'string' && o.datePreset in DATE_PRESET_LABEL)) return bad('unknown date preset');
+  for (const k of ['dateFrom', 'dateTo'] as const) {
+    if (o[k] !== undefined && !isIsoDate(o[k])) return bad(`"${k}" must be a date YYYY-MM-DD`);
+  }
+  return { ok: true, filters: parseFilters(o) };
+}
+
 // ─── Aggregation ──────────────────────────────────────────────────────────────
 
 export interface Sum { n: number; gbp: number }
@@ -471,6 +552,8 @@ export interface DataQuality {
   duplicateCandidates: number;
   supersededRevisions: number;
   missingClassification: { partNumber: number; commodity: number; programme: number; modelYear: number; powertrain: number };
+  /** A-04: current records with a should-cost, by whether it re-adds from its breakdown. */
+  shouldBasis: { reAdded: number; notReAdded: number; totalOnly: number };
 }
 
 export interface Insight { id: string; tone: 'info' | 'good' | 'warn'; title: string; detail: string; filter?: Partial<Record<Dimension, string[]>> }
@@ -659,6 +742,11 @@ export function dataQuality(all: ClassifiedRecord[], filtered: ClassifiedRecord[
       modelYear: cur.filter(r => r.modelYear === null).length,
       powertrain: cur.filter(r => !r.powertrain).length,
     },
+    shouldBasis: {
+      reAdded: cur.filter(r => r.shouldBasis === 're-added').length,
+      notReAdded: cur.filter(r => r.shouldBasis === 'not-re-added').length,
+      totalOnly: cur.filter(r => r.shouldBasis === 'total-only').length,
+    },
   };
 }
 
@@ -668,8 +756,13 @@ export const INSIGHT_THRESHOLDS = {
   significantGapPct: 15,
 } as const;
 
-const gbp0 = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
-const gbp2 = (n: number) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+/** A-27: the ONE money formatter — sign first, "−£4.03" (U+2212), as the screen prints it. The screen's `gbp`,
+ *  the insights and the exports all use it (the PDF's font turns − into - via pdfSafe: still sign-first). */
+export function gbpSigned(n: number, dp = 2): string {
+  return `${n < 0 ? '−' : ''}£${Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+}
+const gbp0 = (n: number) => gbpSigned(Math.round(n), 0);
+const gbp2 = (n: number) => gbpSigned(n, 2);
 const pct1 = (n: number) => `${n.toFixed(1)}%`;
 
 export function buildInsights(filtered: ClassifiedRecord[], today: string): Insight[] {

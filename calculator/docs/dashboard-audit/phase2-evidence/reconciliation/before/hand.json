@@ -1,0 +1,33 @@
+{
+ "eligible": 17,
+ "sumCurrent": 283.5427545063827,
+ "sumShould": 241.8567226890756,
+ "sumGap": 41.686031817307075,
+ "oppN": 16,
+ "opp": 43.686031817307075,
+ "unfN": 1,
+ "unf": -2.0,
+ "annN": 2,
+ "ann": 1220000.0,
+ "valN": 1,
+ "val": 0.5,
+ "impN": 0,
+ "imp": 0.0,
+ "weightedGapPct": 14.701850481024618,
+ "statusOfCurrent": {
+  "completed": 13,
+  "approved": 3,
+  "draft": 1
+ },
+ "completedRecords": 16,
+ "awaitingReview": 13,
+ "awaitingApproval": 0,
+ "currentRecords": 17,
+ "totalRecords": 21,
+ "excluded": 1,
+ "currentByCommodity": {
+  "Casting": 14,
+  "Machining": 1,
+  "Forging": 2
+ }
+}

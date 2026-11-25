@@ -1,0 +1,16 @@
+  round 0: commodity.route=machining, material.family=∅ → answer commodity.route
+  round 1: material.resin=∅ → answer material.resin
+  round 2:  → Get cost
+  PASS  the STL is costed as an injection moulding — £1.15
+  PASS  packaging and logistics sized from the part, not the flat defaults — [{"id":"packaging","value":"0.06","prov":"estimated"},{"id":"logistics","value":"0.06","prov":"estimated"}]
+  PASS  the DFM job is queued for an STL — f98835a6-3898-4c28-9b33-30717bbd84c8
+  PASS  the report lands — 48 findings in 0.0 s
+  PASS  findings = the kernel’s on the STEP (same rules, same counts) — STL {"moulding.undercut.requires-side-action":8,"moulding.boss.wall-ratio":4,"moulding.draft.insufficient":28,"moulding.hole.core-pin-slender":4,"moulding.rib.thicker-than-0p6-wall":4} v kernel {"moulding.draft.insufficient":28,"moulding.hole.core-pin-slender":4,"moulding.undercut.requires-side-action":8,"moulding.boss.wall-ratio":4,"moulding.rib.thicker-than-0p6-wall":4}
+  PASS  the report does not carry the mesh faces
+  PASS  the faces arrive on their own route, one id per triangle — 3076 triangles, 84 faces
+  PASS  the viewer’s face tools switch on for the STL — face-type button enabled in 1 of 1 viewer(s)
+  PASS  a finding names faces the viewer holds — face 45
+  PASS  no page errors
+
+  10/10 PASS
+exit 0

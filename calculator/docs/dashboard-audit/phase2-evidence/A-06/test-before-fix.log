@@ -1,0 +1,56 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a06-same-day-tie.test.ts (4 tests | 2 failed) 183ms
+   ❯ A-06 same-day tie (engine) (3)
+     × the later-created costing is current even when the earlier one was edited later 12ms
+   ❯ A-06 same-day tie (HTTP) (1)
+     × a note on the older same-day costing, or an admin edit of it, does not make it current 158ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a06-same-day-tie.test.ts > A-06 same-day tie (engine) > the later-created costing is current even when the earlier one was edited later
+AssertionError: expected 'superseded' to be 'current' // Object.is equality
+
+Expected: "current"
+Received: "superseded"
+
+ ❯ tests/kpi-p2-a06-same-day-tie.test.ts:36:36
+     34|     const second = rec('z-second', { createdAt: '2026-10-01T10:00:00Z'…
+     35|     const rs = classifyRecords([first, second]);
+     36|     expect(roleOf(rs, 'z-second')).toBe('current');
+       |                                    ^
+     37|     expect(roleOf(rs, 'a-first')).toBe('superseded');
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |unit| tests/kpi-p2-a06-same-day-tie.test.ts > A-06 same-day tie (HTTP) > a note on the older same-day costing, or an admin edit of it, does not make it current
+AssertionError: expected { second: 'superseded', …(1) } to deeply equal { first: 'superseded', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "first": "superseded",
+-   "second": "current",
++   "first": "current",
++   "second": "superseded",
+  }
+
+ ❯ tests/kpi-p2-a06-same-day-tie.test.ts:80:27
+     78|     await new Promise(r => setTimeout(r, 15));
+     79|     await call(ALICE, 'PATCH', `/api/kpi/records/${one}`, { notes: 'a …
+     80|     expect(await roles()).toEqual({ first: 'superseded', second: 'curr…
+       |                           ^
+     81|     await call(ADMIN, 'PATCH', `/api/kpi/records/${one}`, { notes: 'ad…
+     82|     expect(await roles()).toEqual({ first: 'superseded', second: 'curr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  21:38:33
+   Duration  2.29s (transform 65%, import 27%, tests 8%)
+

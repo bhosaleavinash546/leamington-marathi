@@ -1,0 +1,106 @@
+{
+ "unknown-key-dark-1440": {
+  "alert": "This filter could not be appliedUnknown filter \"programmes\". It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "unknown-key-dark-390": {
+  "alert": "This filter could not be appliedUnknown filter \"programmes\". It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "unknown-key-light-1440": {
+  "alert": "This filter could not be appliedUnknown filter \"programmes\". It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "unknown-key-light-390": {
+  "alert": "This filter could not be appliedUnknown filter \"programmes\". It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "bad-preset-dark-1440": {
+  "alert": "This filter could not be appliedUnknown date preset. It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "bad-preset-dark-390": {
+  "alert": "This filter could not be appliedUnknown date preset. It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "bad-preset-light-1440": {
+  "alert": "This filter could not be appliedUnknown date preset. It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ },
+ "bad-preset-light-390": {
+  "alert": "This filter could not be appliedUnknown date preset. It is the filter saved in this browser from an earlier visit. No figures are shown, because they would not be the ones this filter asks for.Clear filters",
+  "clearButton": true,
+  "kpiCardBlocks": 0,
+  "totalsText": "",
+  "overflowPx": 0,
+  "axe": [],
+  "errors": [],
+  "afterClear": {
+   "cards": 2,
+   "stored": "{\"filters\":{\"commodity\":[],\"programme\":[],\"modelYear\":[],\"powertrain\":[],\"tool\":[],\"country\":[],\"currency\":[],\"status\":[],\"createdBy\":[],\"datePreset\":\"12m\"},\"currencyMode\":\"gbp\",\"pageSize\":25}"
+  }
+ }
+}

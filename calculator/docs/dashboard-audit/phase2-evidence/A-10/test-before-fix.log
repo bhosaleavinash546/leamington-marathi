@@ -1,0 +1,132 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a10-import-rows.test.ts (5 tests | 3 failed) 124ms
+   ❯ A-10 future costing date (parser) (1)
+     × today and today + 1 are accepted; today + 2 and 2031 are refused with row and column 9ms
+   ❯ A-10 over HTTP (4)
+     × a row dated 2031 is refused, nothing is imported 60ms
+     × a row that points at a deleted record is refused, naming the row; the rest of the file is not imported 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a10-import-rows.test.ts > A-10 future costing date (parser) > today and today + 1 are accepted; today + 2 and 2031 are refused with row and column
+AssertionError: expected [ { …(26) }, { …(26) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "annualVolume": null,
++     "commodity": null,
++     "componentName": "P",
++     "costingDate": "2026-11-19",
++     "country": null,
++     "currentCcy": null,
++     "currentCost": null,
++     "currentSource": null,
++     "currentTerms": null,
++     "isTest": false,
++     "modelYear": null,
++     "notes": "",
++     "ownerLabel": "R",
++     "partNumber": null,
++     "powertrain": null,
++     "programme": null,
++     "savingCcy": null,
++     "savingPerPiece": null,
++     "savingStatus": null,
++     "shouldCcy": null,
++     "shouldCost": null,
++     "shouldTerms": null,
++     "sourceRef": "X",
++     "sourceTool": "CSS System",
++     "status": "completed",
++     "volumeValidated": false,
++   },
++   {
++     "annualVolume": null,
++     "commodity": null,
++     "componentName": "P",
++     "costingDate": "2031-01-01",
++     "country": null,
++     "currentCcy": null,
++     "currentCost": null,
++     "currentSource": null,
++     "currentTerms": null,
++     "isTest": false,
++     "modelYear": null,
++     "notes": "",
++     "ownerLabel": "R",
++     "partNumber": null,
++     "powertrain": null,
++     "programme": null,
++     "savingCcy": null,
++     "savingPerPiece": null,
++     "savingStatus": null,
++     "shouldCcy": null,
++     "shouldCost": null,
++     "shouldTerms": null,
++     "sourceRef": "Y",
++     "sourceTool": "CSS System",
++     "status": "completed",
++     "volumeValidated": false,
++   },
++ ]
+
+ ❯ tests/kpi-p2-a10-import-rows.test.ts:54:23
+     52|     expect(parseImportRows([row('2026-11-17'), row('2026-11-18')].map(…
+     53|     const r = parseImportRows([row('2026-11-19'), { ...row('2031-01-01…
+     54|     expect(r.records).toEqual([]);
+       |                       ^
+     55|     expect(r.errors.map(e => `${e.row}:${e.column}`)).toEqual(['2:cost…
+     56|     expect(r.errors[0].message).toMatch(/future/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a10-import-rows.test.ts > A-10 over HTTP > a row dated 2031 is refused, nothing is imported
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/kpi-p2-a10-import-rows.test.ts:64:22
+     62|     const csv = `${HEAD}\n${line('OK-1', 'A10-OK', dayOffset(0))}\n${l…
+     63|     const r = await call(ADMIN, 'POST', '/api/kpi/import', { fileBase6…
+     64|     expect(r.status).toBe(400);
+       |                      ^
+     65|     expect(r.json.errors).toEqual([expect.objectContaining({ row: 3, c…
+     66|     expect((db.prepare(`SELECT COUNT(*) AS n FROM costing_records WHER…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a10-import-rows.test.ts > A-10 over HTTP > a row that points at a deleted record is refused, naming the row; the rest of the file is not imported
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/kpi-p2-a10-import-rows.test.ts:81:22
+     79|     const csv = `${HEAD}\n${line('NEW-1', 'A10-NEW', dayOffset(0))}\n$…
+     80|     const r = await call(ADMIN, 'POST', '/api/kpi/import', { fileBase6…
+     81|     expect(r.status).toBe(400);
+       |                      ^
+     82|     expect(r.json.errors).toEqual([expect.objectContaining({ row: 3, c…
+     83|     expect(r.json.errors[0].message).toMatch(/deleted/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  21:40:59
+   Duration  2.17s (transform 68%, import 25%, tests 6%)
+

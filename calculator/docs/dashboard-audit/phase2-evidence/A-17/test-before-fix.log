@@ -1,0 +1,66 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-a17-pdf-compression.test.ts (3 tests | 3 failed) 359ms
+   ❯ A-17 lossless PDF image compression (3)
+     × the export asks jsPDF for a compressed document and Flate-compressed chart images 6ms
+     × with those settings a 1000 × 418 chart is stored Flate-compressed, not as 1.25 MB of raw RGB 205ms
+     × the stored pixels decode to exactly the uncompressed ones (lossless) 146ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-a17-pdf-compression.test.ts > A-17 lossless PDF image compression > the export asks jsPDF for a compressed document and Flate-compressed chart images
+AssertionError: expected undefined to deeply equal { orientation: 'landscape', …(3) }
+
+- Expected:
+{
+  "compress": true,
+  "format": "a4",
+  "orientation": "landscape",
+  "unit": "mm",
+}
+
++ Received:
+undefined
+
+ ❯ tests/kpi-p2-a17-pdf-compression.test.ts:49:29
+     47| describe('A-17 lossless PDF image compression', () => {
+     48|   it('the export asks jsPDF for a compressed document and Flate-compre…
+     49|     expect(PDF_DOC_OPTIONS).toEqual({ orientation: 'landscape', unit: …
+       |                             ^
+     50|     expect(PDF_IMAGE_COMPRESSION).toBe('FAST');
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a17-pdf-compression.test.ts > A-17 lossless PDF image compression > with those settings a 1000 × 418 chart is stored Flate-compressed, not as 1.25 MB of raw RGB
+AssertionError: expected 1257347 to be less than 62867.35
+ ❯ tests/kpi-p2-a17-pdf-compression.test.ts:57:26
+     55|     const after = build(PDF_DOC_OPTIONS, PDF_IMAGE_COMPRESSION);
+     56|     expect(before.length).toBeGreaterThan(1_250_000);                 …
+     57|     expect(after.length).toBeLessThan(before.length / 20);
+       |                          ^
+     58|     expect(imageStream(after).dict).toMatch(/\/Filter \/FlateDecode/);
+     59|     expect(imageStream(before).dict).not.toMatch(/\/Filter/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |unit| tests/kpi-p2-a17-pdf-compression.test.ts > A-17 lossless PDF image compression > the stored pixels decode to exactly the uncompressed ones (lossless)
+Error: incorrect header check
+ ❯ rawOf tests/kpi-p2-a17-pdf-compression.test.ts:65:37
+     63|     const rawOf = (pdf: Buffer, compressed: boolean) => {
+     64|       const { dict, data } = imageStream(pdf);
+     65|       const inflated = compressed ? inflateSync(data) : data;
+       |                                     ^
+     66|       const pred = /\/Predictor (\d+)/.exec(dict);
+     67|       if (!pred) return inflated;
+ ❯ tests/kpi-p2-a17-pdf-compression.test.ts:83:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  21:50:45
+   Duration  767ms (tests 57%, transform 29%, import 14%, worker 1%)
+

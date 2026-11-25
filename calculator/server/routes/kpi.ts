@@ -20,10 +20,11 @@ import {
   getFxPolicy, setFxPolicy, listFxRates, upsertFxRates, builtInFxReference, recalculateFx, audit, type RecordInput, type FxPolicy,
 } from '../data/kpi-store.js';
 import { readSheet, parseFxRows, parseImportRows, importTemplateCsv, IMPORT_COLUMNS, FX_TEMPLATE_COLUMNS } from '../utils/kpi-import.js';
+import { resetRefusal } from '../utils/kpi-edit-wording.js';
 import {
-  classifyRecords, buildFromClassified, parseFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
+  classifyRecords, buildFromClassified, parseFilters, validateFilters, parseRecordQuery, selectRecords, pageOf, drillGroups, recordsCsv,
   isIsoCurrency, iso4217Codes, currencySymbol, STANDARD_PROGRAMMES, STANDARD_POWERTRAINS, RECORD_STATUSES, FX_METHOD_LABEL,
-  INSIGHT_THRESHOLDS, type ClassifiedRecord, type DashboardFilters, type RecordStatus,
+  INSIGHT_THRESHOLDS, reAddCheck, type ClassifiedRecord, type DashboardFilters, type RecordStatus,
 } from '../../src/engine/kpi-dashboard.js';
 import { COMMODITY_REPORT_LABELS } from '../../src/ui/data/commodity-meta.js';
 
@@ -67,12 +68,18 @@ function adminOnly(req: AuthenticatedRequest, res: Response): boolean {
   return false;
 }
 
-/** Filters arrive as one JSON query parameter `f` (values may contain commas). */
-function filtersOf(req: AuthenticatedRequest): DashboardFilters {
+/** Filters arrive as one JSON query parameter `f` (values may contain commas). A-18: a malformed or
+ *  unknown filter is answered 400 BAD_FILTER with the reason — never the unfiltered totals. Returns null
+ *  when the response has been sent. */
+function filtersOf(req: AuthenticatedRequest, res: Response): DashboardFilters | null {
   const raw = typeof req.query.f === 'string' ? req.query.f : '';
   if (!raw) return parseFilters({});
-  if (raw.length > 20_000) return parseFilters({});
-  try { return parseFilters(JSON.parse(raw)); } catch { return parseFilters({}); }
+  const refuse = (reason: string) => { res.status(400).json({ error: `This filter could not be applied: ${reason}.`, code: 'BAD_FILTER' }); return null; };
+  if (raw.length > 20_000) return refuse('it is longer than 20,000 characters');
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { return refuse('it is not valid JSON (the link may be cut off)'); }
+  const v = validateFilters(parsed);
+  return v.ok ? v.filters : refuse(v.reason);
 }
 
 function log(err: unknown, where: string): void {
@@ -85,10 +92,11 @@ function buildOpts() {
   return { today: today(), nowIso: new Date().toISOString(), fxPolicy: policy, approvedRates, referenceLabel: builtInFxReference().source };
 }
 
-/** What a non-admin may see of a record list: never excluded records. */
-function publicRow(r: ClassifiedRecord) {
+/** What a non-admin may see of a record list: never excluded records. A-23: the internal owner id goes
+ *  to admins only (the client never reads it; who may edit is `canEdit`, worked out on the server). */
+function publicRow(r: ClassifiedRecord, admin: boolean) {
   return {
-    id: r.id, sourceTool: r.sourceTool, sourceRef: r.sourceRef, ownerId: r.ownerId, ownerName: r.ownerName,
+    id: r.id, sourceTool: r.sourceTool, sourceRef: r.sourceRef, ...(admin ? { ownerId: r.ownerId } : {}), ownerName: r.ownerName,
     partNumber: r.partNumber, componentName: r.componentName, commodity: r.commodity, programme: r.programme,
     modelYear: r.modelYear, powertrain: r.powertrain, country: r.country, status: r.status, costingDate: r.costingDate,
     createdAt: r.createdAt, updatedAt: r.updatedAt,
@@ -97,7 +105,29 @@ function publicRow(r: ClassifiedRecord) {
     annualVolume: r.annualVolume, volumeValidated: r.volumeValidated, savingStatus: r.savingStatus, savingPerPiece: r.savingPerPiece, savingCcy: r.savingCcy,
     fx: r.fx, gbpShould: r.gbpShould, gbpCurrent: r.gbpCurrent, gbpSaving: r.gbpSaving, gapGbp: r.gapGbp, gapPct: r.gapPct,
     role: r.role, eligible: r.eligible, ineligible: r.ineligible, excluded: r.excluded, invalidReasons: r.invalidReasons,
-    duplicateOf: r.duplicateOf, isTest: r.isTest, deleted: r.deleted, notes: r.notes,
+    duplicateOf: r.duplicateOf, isTest: r.isTest, deleted: r.deleted, notes: r.notes, shouldBasis: r.shouldBasis ?? null,
+  };
+}
+
+/** The eight buckets the record panel prints. */
+const PANEL_BUCKETS = ['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'] as const;
+
+/** A-02: what the record panel shows of a saved costing — commodity, region, total, the eight
+ *  buckets and each operation's name and cost. Nothing else of the costing leaves the server. */
+function panelCosting(raw: unknown) {
+  const c = (raw && typeof raw === 'object' ? raw : {}) as { commodity?: unknown; region?: unknown; result?: unknown };
+  const r = (c.result && typeof c.result === 'object' ? c.result : {}) as { total?: unknown; breakdown?: unknown; operationDetails?: unknown };
+  const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+  const bd = (r.breakdown && typeof r.breakdown === 'object' ? r.breakdown : null) as Record<string, unknown> | null;
+  const breakdown = bd ? Object.fromEntries(PANEL_BUCKETS.filter(k => num(bd[k]) !== null).map(k => [k, bd[k] as number])) : undefined;
+  const ops = Array.isArray(r.operationDetails) ? (r.operationDetails as unknown[]).map(o => {
+    const op = (o && typeof o === 'object' ? o : {}) as { name?: unknown; cost?: unknown };
+    return { name: typeof op.name === 'string' ? op.name : '', cost: num(op.cost) };
+  }) : undefined;
+  return {
+    commodity: typeof c.commodity === 'string' ? c.commodity : null,
+    region: typeof c.region === 'string' ? c.region : null,
+    result: { total: num(r.total), ...(breakdown ? { breakdown } : {}), ...(ops ? { operationDetails: ops } : {}) },
   };
 }
 
@@ -121,7 +151,8 @@ router.get('/meta', (req: AuthenticatedRequest, res: Response) => {
 
 router.get('/summary', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const o = buildOpts();
     const body = cached(`s|${version}|${o.today}|${o.fxPolicy}|${JSON.stringify(f)}`, () => buildFromClassified(loadClassified(), f, o));
     res.json({ ...body, refreshedAt: new Date().toISOString(), version });
@@ -130,19 +161,22 @@ router.get('/summary', (req: AuthenticatedRequest, res: Response) => {
 
 router.get('/records', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const q = parseRecordQuery(req.query as Record<string, unknown>);
     if (q.scope === 'excluded' && !adminOnly(req, res)) return;
+    const admin = isAdmin(req);
     const rows = selectRecords(loadClassified(), f, q, today());
     // all=1: every matching row in one response, for the Excel / PDF exports (capped).
     const p = req.query.all === '1' ? pageOf(rows.slice(0, 100_000), 1, Math.max(1, Math.min(rows.length, 100_000))) : pageOf(rows, q.page, q.pageSize);
-    res.json({ ...p, rows: p.rows.map(publicRow), query: q });
+    res.json({ ...p, rows: p.rows.map(r => publicRow(r, admin)), query: q });
   } catch (e) { log(e, 'records'); res.status(500).json({ error: 'Records could not be listed.' }); }
 });
 
 router.get('/records.csv', (req: AuthenticatedRequest, res: Response) => {
   try {
-    const f = filtersOf(req);
+    const f = filtersOf(req, res);
+    if (!f) return;
     const q = parseRecordQuery(req.query as Record<string, unknown>);
     if (q.scope === 'excluded' && !adminOnly(req, res)) return;
     const rows = selectRecords(loadClassified(), f, q, today());
@@ -155,7 +189,9 @@ router.get('/records.csv', (req: AuthenticatedRequest, res: Response) => {
 router.get('/drill', (req: AuthenticatedRequest, res: Response) => {
   try {
     const q = parseRecordQuery(req.query as Record<string, unknown>);
-    res.json(drillGroups(loadClassified(), filtersOf(req), q.drill, today()));
+    const f = filtersOf(req, res);
+    if (!f) return;
+    res.json(drillGroups(loadClassified(), f, q.drill, today()));
   } catch (e) { log(e, 'drill'); res.status(500).json({ error: 'The drill-down could not be built.' }); }
 });
 
@@ -169,12 +205,15 @@ router.get('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   if (c.sourceTool === 'CostVision' && c.sourceRef) {
     const s = db.prepare('SELECT data FROM scenarios WHERE id = ?').get(c.sourceRef) as { data: string } | undefined;
     if (s) { try { costing = JSON.parse(s.data); } catch { costing = null; } }
+    // A-02: the full saved costing (inputs, target prices, quotes, traces) goes only to its owner or an
+    // admin; anyone else gets what the record panel shows.
+    if (costing && !admin && c.ownerId !== req.user!.userId) costing = panelCosting(costing);
   }
   const revisions = loadClassified()
     .filter(r => r.applicationKey === c.applicationKey && r.id !== c.id && (!r.excluded || admin))
     .map(r => ({ id: r.id, costingDate: r.costingDate, status: r.status, role: r.role, ownerName: r.ownerName, gbpShould: r.gbpShould, gbpCurrent: r.gbpCurrent }));
   res.json({
-    record: publicRow(c), fxHistory: admin || c.ownerId === req.user!.userId ? row?.fxHistory ?? [] : undefined,
+    record: publicRow(c, admin), fxHistory: admin || c.ownerId === req.user!.userId ? row?.fxHistory ?? [] : undefined,
     costing, revisions, canEdit: admin || c.ownerId === req.user!.userId, isAdmin: admin,
   });
 });
@@ -227,6 +266,13 @@ router.post('/records', (req: AuthenticatedRequest, res: Response) => {
     return;
   }
   const { scenario: sc, details: d } = parsed.data;
+  // A-04: a should-cost total must re-add from its breakdown (tolerance: lines × 0.005, the most that
+  // rounding each line to two decimals can add up to). A costing with no breakdown is saved as "total only".
+  const readd = reAddCheck(sc.result.total, (sc.result as { breakdown?: unknown }).breakdown);
+  if (readd && !readd.ok) {
+    res.status(400).json({ error: `The should-cost total ${sc.result.total} does not re-add from its breakdown: ${readd.lines} line(s) sum to ${Math.round(readd.sum * 10000) / 10000}, a difference of ${Math.round(readd.diff * 10000) / 10000} (rounding allows ±${readd.tolerance}). Re-run the costing and save it again.` });
+    return;
+  }
   const userId = req.user!.userId;
   const nowIso = new Date().toISOString();
   // The full costing stays in `scenarios` — the record links to it (no second copy of the costing).
@@ -255,7 +301,7 @@ router.post('/records', (req: AuthenticatedRequest, res: Response) => {
     audit(db, userId, 'record.save', id, { scenario: sc.id, partNumber: d.partNumber });
     invalidateKpiCache();
     const saved = loadClassified().find(r => r.id === id)!;
-    res.status(201).json({ record: publicRow(saved) });
+    res.status(201).json({ record: publicRow(saved, isAdmin(req)) });
   } catch (e) { log(e, 'save'); res.status(500).json({ error: 'The record could not be saved.' }); }
 });
 
@@ -283,8 +329,12 @@ const patchSchema = z.object({
   notes: shortText(1000).optional(),
 }).strict();
 
-const ADMIN_ONLY_FIELDS = ['volumeValidated', 'savingStatus', 'savingPerPiece', 'savingCcy'] as const;
+// A-05: the test flag, commodity and country are admin-only as well.
+const ADMIN_ONLY_FIELDS = ['volumeValidated', 'savingStatus', 'savingPerPiece', 'savingCcy', 'isTest', 'commodity', 'country'] as const;
 const MONEY_FIELDS = ['currentCost', 'currentCcy', 'currentTerms'] as const;
+/** A-05: a change to any of these on a reviewed / approved costing returns it to "completed", whoever makes it. */
+const IDENTITY_FIELDS = ['partNumber', 'programme', 'modelYear', 'powertrain', 'annualVolume'] as const;
+const ADMIN_STATUSES: readonly RecordStatus[] = ['reviewed', 'approved'];
 
 router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   const row = getRecordRow(db, String(req.params.id));
@@ -294,14 +344,38 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   const parsed = patchSchema.safeParse(req.body);
   if (!parsed.success) { const i = parsed.error.issues[0]; res.status(400).json({ error: `${i.path.join('.') || 'body'}: ${i.message}` }); return; }
   const p = parsed.data as Partial<RecordInput> & { status?: RecordStatus };
+  // The edit form sends every field (the current status included), so "changed" is a value comparison.
+  const changed = (k: keyof RecordInput) => k in p && ((p as Record<string, unknown>)[k] ?? null) !== ((row as unknown as Record<string, unknown>)[k] ?? null);
+  const statusChanged = p.status !== undefined && p.status !== row.status;
+  const adminSet = ADMIN_STATUSES.includes(row.status);
+  // A-05: identity / volume changes reset a reviewed or approved costing for everyone; the owner's money
+  // changes too (the existing rule, now value-compared).
+  const resetting = [...IDENTITY_FIELDS.filter(changed), ...(admin ? [] : MONEY_FIELDS.filter(changed))];
   if (!admin) {
     const bad = ADMIN_ONLY_FIELDS.filter(k => k in p);
     if (bad.length) { res.status(403).json({ error: `Only an admin can set ${bad.join(', ')}` }); return; }
-    if (p.status === 'reviewed' || p.status === 'approved') { res.status(403).json({ error: 'Only an admin can mark a costing reviewed or approved' }); return; }
-    // A reviewed / approved costing whose money changes goes back for review.
-    if ((row.status === 'reviewed' || row.status === 'approved') && MONEY_FIELDS.some(k => k in p) && !p.status) p.status = 'completed';
+    if (statusChanged && p.status && ADMIN_STATUSES.includes(p.status)) { res.status(403).json({ error: 'Only an admin can mark a costing reviewed or approved' }); return; }
+    // An owner cannot change a status an admin set — except to "completed" with a change that resets it anyway.
+    if (adminSet && statusChanged && !(p.status === 'completed' && resetting.length)) { res.status(403).json({ error: 'Only an admin can change the status of a reviewed or approved costing' }); return; }
+  }
+  if (adminSet && resetting.length) {
+    if (p.status && ADMIN_STATUSES.includes(p.status)) {
+      res.status(400).json({ error: resetRefusal(resetting, row.status) });
+      return;
+    }
+    if (!p.status) p.status = 'completed';
   }
   if (row.sourceTool === 'CostVision' && ('shouldCost' in (req.body ?? {}))) { res.status(400).json({ error: 'A CostVision should-cost comes from its costing and cannot be edited here' }); return; }
+  // A-03: a validated volume is validated only for the value an admin validated. Changing it clears the
+  // flag, whoever makes the change; re-validating is a separate save (so each is its own audit entry).
+  // The edit form sends every field, so "changed" is a value comparison, not the key being present.
+  if (row.volumeValidated && 'annualVolume' in p && (p.annualVolume ?? null) !== (row.annualVolume ?? null)) {
+    if (p.volumeValidated === true) {
+      res.status(400).json({ error: 'The annual volume changed, so its validation is cleared. Save the new volume first (with "Annual volume validated" unticked), then validate it as a separate save.' });
+      return;
+    }
+    p.volumeValidated = false;
+  }
   const next = { ...row, ...p };
   if (next.currentCost !== null && (!next.currentCcy || !next.currentTerms)) { res.status(400).json({ error: 'A current cost needs its currency and delivery terms' }); return; }
   if (next.savingStatus && (next.savingPerPiece === null || !next.savingCcy)) { res.status(400).json({ error: 'A saving status needs the saving per piece and its currency' }); return; }
@@ -309,7 +383,7 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
     updateRecord(db, row.id, p, fxContext(db));
     audit(db, req.user!.userId, 'record.edit', row.id, p);
     invalidateKpiCache();
-    res.json({ record: publicRow(loadClassified().find(r => r.id === row.id)!) });
+    res.json({ record: publicRow(loadClassified().find(r => r.id === row.id)!, admin) });
   } catch (e) { log(e, 'patch'); res.status(500).json({ error: 'The record could not be updated.' }); }
 });
 
@@ -382,8 +456,17 @@ router.post('/import', (req: AuthenticatedRequest, res: Response) => {
   if (!buf) { res.status(400).json({ error: 'Send the file as fileBase64 (CSV or XLSX)' }); return; }
   try {
     const { rows, headers } = readSheet(buf);
-    const r = parseImportRows(rows, headers);
+    const r = parseImportRows(rows, headers, { today: today() });
     if (r.errors.length) { res.status(400).json({ error: 'Nothing was imported', errors: r.errors.slice(0, 100) }); return; }
+    // A-10: a row that points at a record deleted from the dashboard is refused (a re-import used to
+    // rewrite the hidden record silently). Restoring a deleted record is not an import's job.
+    const deletedErrors = r.records.flatMap((rec, i) => {
+      const existing = findImported(db, rec.sourceTool, rec.sourceRef);
+      return existing && getRecordRow(db, existing)?.deleted
+        ? [{ row: r.rowNumbers[i], column: 'source_record_id', message: `${rec.sourceTool} ${rec.sourceRef} was deleted from the dashboard; an import cannot change or restore it` }]
+        : [];
+    });
+    if (deletedErrors.length) { res.status(400).json({ error: 'Nothing was imported', errors: deletedErrors.slice(0, 100) }); return; }
     const ctx = fxContext(db);
     let added = 0, updated = 0;
     db.transaction(() => {

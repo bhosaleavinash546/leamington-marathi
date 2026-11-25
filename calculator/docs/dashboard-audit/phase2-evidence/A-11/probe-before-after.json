@@ -1,0 +1,34 @@
+{
+ "P16_programme_case": {
+  "before": [
+   "q900:current",
+   "Q900:current"
+  ],
+  "after": [
+   "q900:current",
+   "Q900:current"
+  ]
+ },
+ "P08_P09_import": {
+  "before": {
+   "importStatus": 200,
+   "variantsAsSeparateCurrentRecords": [
+    "LR_VAR_100:current",
+    "LRVAR100:current",
+    "LR-VAR-100:current"
+   ],
+   "futureDatedImported": [
+    {
+     "costingDate": "2031-01-01",
+     "status": "approved",
+     "role": "current"
+    }
+   ]
+  },
+  "after": {
+   "importStatus": 400,
+   "variantsAsSeparateCurrentRecords": [],
+   "futureDatedImported": []
+  }
+ }
+}

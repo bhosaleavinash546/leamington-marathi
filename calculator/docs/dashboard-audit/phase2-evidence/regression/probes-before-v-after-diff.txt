@@ -1,0 +1,85 @@
+## P01_open_signup: no change
+## P02_owner_powers: 4 field(s) changed
+   ownerDowngradesApprovedToDraftStatus: 200  ->  403
+   ownerSetsIsTestStatus: 200  ->  403
+   recordNowExcluded: "test"  ->  null
+   statusAfter: "draft"  ->  null
+## P03_fx_guard: 3 field(s) changed
+   auditEntriesForFxLoad: ["{\"currencies\":[\"CHF\"]}", "{\"currencies\":[\"CHF\"]}", "{\"currencies\":[\"AED\"]}", "{\"currencies\":[\  ->  ["{\"currencies\":[\"CHF\"]}", "{\"currencies\":[\"CHF\"]}", "{\"currencies\":[\"AED\"]}", "{\"currencies\":[\
+   invertedEurUsdAcceptedStatus: 200  ->  400
+   invertedEurUsdLoaded: 2  ->  null
+## P04_P05_periods: no change
+## P06_newer_unapproved_wins: no change
+## P07_saving_lost_on_revision: no change
+## P08_P09_import: 6 field(s) changed
+   futureDatedImported: null  ->  []
+   futureDatedImported[0].costingDate: "2031-01-01"  ->  null
+   futureDatedImported[0].role: "current"  ->  null
+   futureDatedImported[0].status: "approved"  ->  null
+   importStatus: 200  ->  400
+   variantsAsSeparateCurrentRecords: ["LR_VAR_100:current", "LRVAR100:current", "LR-VAR-100:current"]  ->  []
+## P10_ids_and_emails: 4 field(s) changed
+   importOwnerIdExample: "import:CSS System:R. Rao"  ->  null
+   ownerNameShown: "gone@test"  ->  "Unnamed user"
+   rowCarriesOwnerId: "gone"  ->  null
+   rowsCarryingOwnerIdKey: null  ->  0
+## P11_rate_limit: no change
+## P12_long_filter: no change
+## P13_controls: no change
+## P14_owner_inflates_validated_volume: 4 field(s) changed
+   annualisedAfter.gbp: 12000000  ->  0
+   annualisedAfter.n: 1  ->  0
+   statusAfter: "approved"  ->  "completed"
+   stillValidated: true  ->  false
+## P15_client_supplied_should_cost: 3 field(s) changed
+   opportunityGbp: 11.99  ->  0
+   saveStatus: 201  ->  400
+   storedShouldCost: 0.01  ->  null
+## P16_programme_case: no change
+## P17_malformed_filter: 2 field(s) changed
+   malformedStatus: 200  ->  400
+   malformedTotal: 16  ->  null
+## P01b_record_view_fields: 5 field(s) changed
+   bob.bodyMentionsSecretQuote: true  ->  false
+   bob.costingKeys: ["commodity", "input", "region", "result"]  ->  ["commodity", "region", "result"]
+   bob.hasInput: true  ->  false
+   bob.opKeys: ["cost", "cycleTimeSec", "machineId", "name"]  ->  ["cost", "name"]
+   bob.resultKeys: ["breakdown", "internalTrace", "operationDetails", "total"]  ->  ["breakdown", "operationDetails", "total"]
+## P02b_identity_on_approved: 10 field(s) changed
+   adminChangesProgramme.statusAfter: "approved"  ->  "completed"
+   ownerChangesCommodity.commodityAfter: "Forging"  ->  null
+   ownerChangesCommodity.status: 200  ->  403
+   ownerChangesCountry.countryAfter: "CN"  ->  null
+   ownerChangesCountry.status: 200  ->  403
+   ownerChangesPartNumber.statusAfter: "approved"  ->  "completed"
+   ownerChangesVolume.statusAfter: "approved"  ->  "completed"
+   ownerNotesOnlyFullFormSave.error: "Only an admin can mark a costing reviewed or approved"  ->  null
+   ownerNotesOnlyFullFormSave.status: 403  ->  200
+   ownerNotesOnlyFullFormSave.statusAfter: null  ->  "approved"
+## P06b_same_day_tie: 1 field(s) changed
+   rolesAfterNoteOnFirst: ["first:current", "second:superseded"]  ->  ["first:superseded", "second:current"]
+## P08b_variants_only: no change
+## P09b_reimport_deleted: 7 field(s) changed
+   reimport.added: 0  ->  null
+   reimport.error: null  ->  "Nothing was imported"
+   reimport.errors[0].column: null  ->  "source_record_id"
+   reimport.errors[0].message: null  ->  "CSS System DEL-1 was deleted from the dashboard; an import cannot change or restore it"
+   reimport.errors[0].row: null  ->  2
+   reimport.updated: 1  ->  null
+   reimportStatus: 200  ->  400
+## P14b_admin_and_same_request: 4 field(s) changed
+   adminChangesValidatedVolume.validatedAfter: true  ->  false
+   changeAndRevalidateInOneRequest.error: null  ->  "The annual volume changed, so its validation is cleared. Save the new volume first (with \"Annual volume vali
+   changeAndRevalidateInOneRequest.status: 200  ->  400
+   changeAndRevalidateInOneRequest.validatedAfter: true  ->  null
+## P15b_readd_tolerance: 9 field(s) changed
+   basisByPart.P15B-BEYOND: "(no field)"  ->  null
+   basisByPart.P15B-IMP: "(no field)"  ->  "total-only"
+   basisByPart.P15B-NOBD: "(no field)"  ->  "total-only"
+   basisByPart.P15B-ROUND: "(no field)"  ->  "re-added"
+   beyondTolerance_0_05: 201  ->  400
+   dataQualityShouldBasis: "(no field)"  ->  null
+   dataQualityShouldBasis.notReAdded: null  ->  0
+   dataQualityShouldBasis.reAdded: null  ->  17
+   dataQualityShouldBasis.totalOnly: null  ->  8
+serverErrors before [] after []

@@ -1,0 +1,88 @@
+{
+ "records": 20000,
+ "codeTree": "/home/user/cv-phase2/calculator",
+ "seededCostings": false,
+ "database": "throwaway SQLite at /tmp/cv-phase2-perf-842aYL/should-cost.db (created by the real server, filled via insertRecord, deleted after the run)",
+ "insertMs": 858,
+ "dbBytes": 18583552,
+ "api": {
+  "summary_cold_default12m": {
+   "status": 200,
+   "ms": 549,
+   "bytes": 17457
+  },
+  "summary_warm_default12m": {
+   "status": 200,
+   "ms": 4,
+   "bytes": 17457
+  },
+  "summary_new_filter_commodity": {
+   "status": 200,
+   "ms": 141,
+   "bytes": 11321
+  },
+  "summary_all_time": {
+   "status": 200,
+   "ms": 149,
+   "bytes": 17441
+  },
+  "records_page1_sorted_gap": {
+   "status": 200,
+   "ms": 22,
+   "bytes": 73000
+  },
+  "records_search": {
+   "status": 200,
+   "ms": 15,
+   "bytes": 71256
+  },
+  "drill_commodity": {
+   "status": 200,
+   "ms": 11,
+   "bytes": 1490
+  },
+  "records_csv": {
+   "status": 200,
+   "ms": 188,
+   "bytes": 5713064
+  },
+  "records_all_json": {
+   "status": 200,
+   "ms": 397,
+   "bytes": 28370407
+  },
+  "record_detail": {
+   "status": 200,
+   "ms": 7,
+   "bytes": 1688
+  },
+  "summary_after_write": {
+   "status": 200,
+   "ms": 175,
+   "bytes": 17457
+  }
+ },
+ "browser": {
+  "openDashboardToCardsAndTableMs": 384,
+  "jsHeapUsedMB": 16.1,
+  "domNodes": 21507,
+  "changeDateToAllTimeMs": 490,
+  "exportCsv": {
+   "ms": 300,
+   "bytes": 5713064,
+   "file": "/tmp/cv-phase2-perf-dl/after-plain-20000-run3/costvision-kpi-records-2026-11-17.csv"
+  },
+  "exportXlsx": {
+   "ms": 3714,
+   "bytes": 3122627,
+   "file": "/tmp/cv-phase2-perf-dl/after-plain-20000-run3/costvision-kpi-dashboard-2026-11-17-2332.xlsx"
+  },
+  "exportPdf": {
+   "ms": 2701,
+   "bytes": 448206,
+   "file": "/tmp/cv-phase2-perf-dl/after-plain-20000-run3/costvision-kpi-dashboard-2026-11-17-2332.pdf"
+  },
+  "jsHeapUsedAfterExportsMB": 238.4,
+  "pageErrors": []
+ }
+}

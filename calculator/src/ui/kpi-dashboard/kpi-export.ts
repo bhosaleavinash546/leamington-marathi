@@ -16,9 +16,14 @@ export const REPORT_TITLE = 'CostVision | Global Cost Engineering KPI Dashboard'
 
 export interface ExportRow extends RecordRowView {
   sourceRef: string; currentTerms: string | null; shouldTerms: string | null; annualVolume: number | null; volumeValidated: boolean;
+  /** A-28 (b): carried so the Reconciliation sheet can re-add the savings KPIs. */
+  savingStatus?: string | null; gbpSaving?: number | null;
 }
 
 const lbl = (k: string) => (k === NOT_SET ? 'Not set' : k);
+/** A-27: Excel GBP formats, sign first as on the screen ("−£4.03"; a one-section format printed "-£4.03"). */
+const XL_GBP = '£#,##0.00;"−"£#,##0.00';
+const XL_GBP_RED = '£#,##0.00;[Red]"−"£#,##0.00';
 
 export function filterLines(s: DashboardSummary, note = ''): string[] {
   const f = s.filters;
@@ -62,6 +67,7 @@ const dqRows = (s: DashboardSummary): [string, number][] => {
     ['  deleted', q.excludedBy.deleted], ['  test', q.excludedBy.test], ['  invalid', q.excludedBy.invalid],
     ['Financially eligible', q.financiallyEligible], ['Missing should-cost', q.missingShouldCost], ['Missing current cost', q.missingCurrentCost],
     ['Missing FX rate', q.missingFx], ['Different cost basis', q.basisMismatch], ['Reference FX (not approved)', q.unapprovedFx],
+    ['Should-cost total only, not re-added', q.shouldBasis.totalOnly], ['Should-cost does not re-add', q.shouldBasis.notReAdded],
     ['Duplicate candidates', q.duplicateCandidates], ['Older revisions', q.supersededRevisions], ['No part number', m.partNumber],
     ['No commodity', m.commodity], ['No programme', m.programme], ['No model year', m.modelYear], ['No powertrain', m.powertrain]];
 };
@@ -87,9 +93,10 @@ const COLS: { h: string; get: (r: ExportRow) => unknown; fmt?: string; w?: numbe
   { h: 'FX current (GBP per unit)', get: r => r.fx.current?.gbpPerUnit ?? null, fmt: '0.000000' },
   { h: 'FX current source', get: r => (r.fx.current ? `${r.fx.current.source} (${r.fx.current.effectiveDate})${r.fx.current.approved ? '' : ' — reference'}` : null), w: 30 },
   { h: 'FX should (GBP per unit)', get: r => r.fx.should?.gbpPerUnit ?? null, fmt: '0.000000' },
-  { h: 'GBP current cost', get: r => r.gbpCurrent, fmt: '£#,##0.00' }, { h: 'GBP should-cost', get: r => r.gbpShould, fmt: '£#,##0.00' },
-  { h: 'GBP cost gap', get: r => r.gapGbp, fmt: '£#,##0.00;[Red]-£#,##0.00' }, { h: 'Cost gap %', get: r => (r.gapPct === null ? null : r.gapPct / 100), fmt: '0.0%' },
+  { h: 'GBP current cost', get: r => r.gbpCurrent, fmt: XL_GBP }, { h: 'GBP should-cost', get: r => r.gbpShould, fmt: XL_GBP },
+  { h: 'GBP cost gap', get: r => r.gapGbp, fmt: XL_GBP_RED }, { h: 'Cost gap %', get: r => (r.gapPct === null ? null : r.gapPct / 100), fmt: '0.0%' },
   { h: 'Annual volume', get: r => r.annualVolume, fmt: '#,##0' }, { h: 'Volume validated', get: r => (r.volumeValidated ? 'yes' : 'no') },
+  { h: 'Saving status', get: r => r.savingStatus ?? null }, { h: 'GBP saving (per piece)', get: r => r.gbpSaving ?? null, fmt: XL_GBP },
   { h: 'Costing tool', get: r => r.sourceTool }, { h: 'Status', get: r => STATUS_LABEL[r.status] ?? r.status },
   { h: 'Reporting role', get: r => r.role }, { h: 'Financial eligibility', get: r => (r.eligible ? 'eligible' : r.ineligible ? INELIGIBLE_LABEL[r.ineligible] : '') },
   { h: 'Created by', get: r => r.ownerName, w: 18 }, { h: 'Costing date', get: r => r.costingDate }, { h: 'Created', get: r => r.createdAt, w: 20 }, { h: 'Last updated', get: r => r.updatedAt, w: 20 },
@@ -128,7 +135,7 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
     for (const c of counts) {
       const m = money.find(x => x.key === c.key);
       const r = ws.addRow([lbl(c.key), c.count, m?.eligible ?? 0, m?.currentGbp ?? null, m?.shouldGbp ?? null, m?.gapGbp ?? null, m?.opportunityGbp ?? null]);
-      for (const i of [4, 5, 6, 7]) r.getCell(i).numFmt = '£#,##0.00';
+      for (const i of [4, 5, 6, 7]) r.getCell(i).numFmt = XL_GBP;
     }
     ws.addRow([]);
     ws.addRow(['Records = current records except the commodity sheet, which counts every save. GBP columns use eligible current records only.']);
@@ -184,15 +191,20 @@ export async function buildExcel(s: DashboardSummary, rows: ExportRow[], note = 
   const n = current.length + 1;
   const col = (h: string) => `'Costing records'!$${colLetter(COLS.findIndex(x => x.h === h))}$2:$${colLetter(COLS.findIndex(x => x.h === h))}$${Math.max(2, n)}`;
   const el = col('Financial eligibility'), cur = col('GBP current cost'), sh = col('GBP should-cost'), gap = col('GBP cost gap');
+  const vv = col('Volume validated'), vol = col('Annual volume'), sst = col('Saving status'), sav = col('GBP saving (per piece)');
   const f = s.financial;
   const lines: [string, number | null, string, string][] = [
     ['Financially eligible records', f.eligible, `COUNTIF(${el},"eligible")`, '0'],
-    ['Σ GBP current cost', f.sumCurrentGbp, `SUMIFS(${cur},${el},"eligible")`, '£#,##0.00'],
-    ['Σ GBP should-cost', f.sumShouldGbp, `SUMIFS(${sh},${el},"eligible")`, '£#,##0.00'],
-    ['Σ GBP cost gap', f.sumGapGbp, `SUMIFS(${gap},${el},"eligible")`, '£#,##0.00'],
-    ['Potential unit cost opportunity', f.opportunity.gbp, `SUMIFS(${gap},${el},"eligible",${gap},">0")`, '£#,##0.00'],
-    ['Unfavourable gaps', f.unfavourable.gbp, `SUMIFS(${gap},${el},"eligible",${gap},"<0")`, '£#,##0.00'],
+    ['Σ GBP current cost', f.sumCurrentGbp, `SUMIFS(${cur},${el},"eligible")`, XL_GBP],
+    ['Σ GBP should-cost', f.sumShouldGbp, `SUMIFS(${sh},${el},"eligible")`, XL_GBP],
+    ['Σ GBP cost gap', f.sumGapGbp, `SUMIFS(${gap},${el},"eligible")`, XL_GBP],
+    ['Potential unit cost opportunity', f.opportunity.gbp, `SUMIFS(${gap},${el},"eligible",${gap},">0")`, XL_GBP],
+    ['Unfavourable gaps', f.unfavourable.gbp, `SUMIFS(${gap},${el},"eligible",${gap},"<0")`, XL_GBP],
     ['Weighted cost gap %', f.weightedGapPct === null ? null : f.weightedGapPct / 100, `IF(C3=0,"",C5/C3)`, '0.00%'],
+    // A-28 (b): the remaining headline figures — annualised (eligible, gap > 0, admin-validated volume > 0) and the savings
+    ['Annualised opportunity (validated volumes)', f.annualised.gbp, `SUMPRODUCT((${el}="eligible")*(${gap}>0)*(${vv}="yes")*(${vol}>0),${gap},${vol})`, XL_GBP],
+    ['Validated savings', f.validatedSavings.gbp, `SUMIFS(${sav},${sst},"validated",${sav},">=0")`, XL_GBP],
+    ['Implemented savings', f.implementedSavings.gbp, `SUMIFS(${sav},${sst},"implemented",${sav},">=0")`, XL_GBP],
   ];
   lines.forEach(([k, v, formula, fmt], i) => {
     const r = rc.addRow([k, v, { formula }, { formula: `IF(ABS(N(B${i + 2})-N(C${i + 2}))<0.005,"✓","✗")` }]);
@@ -252,10 +264,15 @@ async function chartImages(s: DashboardSummary): Promise<{ title: string; basis:
   return out;
 }
 
+/** A-17: lossless compression — the document's streams (`compress`) and each chart image (Flate, 'FAST').
+ *  jsPDF otherwise stores a PNG's decoded pixels as raw RGB (~1.25 MB a chart). */
+export const PDF_DOC_OPTIONS = { orientation: 'landscape', unit: 'mm', format: 'a4', compress: true } as const;
+export const PDF_IMAGE_COMPRESSION = 'FAST' as const;
+
 export async function buildPdf(s: DashboardSummary, rows: ExportRow[], note = ''): Promise<Blob> {
   const [{ jsPDF }, at] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
   const autoTable = (at as unknown as { default: (d: unknown, o: unknown) => void }).default;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const doc = new jsPDF({ ...PDF_DOC_OPTIONS });
   const W = doc.internal.pageSize.getWidth(), M = 12;
   const NAVY: [number, number, number] = [22, 50, 92];
   const txt = (t: string, x: number, y: number, o?: Record<string, unknown>) => doc.text(pdfSafe(t), x, y, o);
@@ -290,7 +307,7 @@ export async function buildPdf(s: DashboardSummary, rows: ExportRow[], note = ''
         const x = M + k * (cw + 8);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(30); txt(im.title, x, y + 4);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110); txt(im.basis, x, y + 8);
-        doc.addImage(im.url, 'PNG', x, y + 10, cw, hOf(im.url));
+        doc.addImage(im.url, 'PNG', x, y + 10, cw, hOf(im.url), undefined, PDF_IMAGE_COMPRESSION);
       });
       y += rowH + 16;
     }

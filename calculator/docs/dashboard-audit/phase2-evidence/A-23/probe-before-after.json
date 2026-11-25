@@ -1,0 +1,16 @@
+{
+ "P10_ids_and_emails": {
+  "before": {
+   "ownerNameShown": "gone@test",
+   "rowCarriesOwnerId": "gone",
+   "importOwnerIdExample": "import:CSS System:R. Rao",
+   "metaReturnsUserId": true
+  },
+  "after": {
+   "ownerNameShown": "Unnamed user",
+   "importOwnerIdExample": null,
+   "rowsCarryingOwnerIdKey": 0,
+   "metaReturnsUserId": true
+  }
+ }
+}

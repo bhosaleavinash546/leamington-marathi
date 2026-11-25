@@ -1,0 +1,48 @@
+{
+ "P08_P09_import": {
+  "before": {
+   "importStatus": 200,
+   "variantsAsSeparateCurrentRecords": [
+    "LR_VAR_100:current",
+    "LRVAR100:current",
+    "LR-VAR-100:current"
+   ],
+   "futureDatedImported": [
+    {
+     "costingDate": "2031-01-01",
+     "status": "approved",
+     "role": "current"
+    }
+   ]
+  },
+  "after": {
+   "importStatus": 400,
+   "variantsAsSeparateCurrentRecords": [],
+   "futureDatedImported": []
+  }
+ },
+ "P09b_reimport_deleted": {
+  "before": {
+   "deleteStatus": 200,
+   "reimportStatus": 200,
+   "reimport": {
+    "added": 0,
+    "updated": 1
+   }
+  },
+  "after": {
+   "deleteStatus": 200,
+   "reimportStatus": 400,
+   "reimport": {
+    "error": "Nothing was imported",
+    "errors": [
+     {
+      "row": 2,
+      "column": "source_record_id",
+      "message": "CSS System DEL-1 was deleted from the dashboard; an import cannot change or restore it"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,16 @@
+
+> should-cost-calculator@4.2.0 test
+> vitest run
+
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+Warning: failed to launch javaldx - java may not function correctly
+Warning: failed to launch javaldx - java may not function correctly
+
+ Test Files  368 passed (368)
+      Tests  5998 passed (5998)
+   Start at  22:53:27
+   Duration  395.84s (tests 89%, import 10%, transform 1%)
+
+EXIT 0

@@ -1,0 +1,31 @@
+
+ RUN  v5.0.2 /home/user/cv-phase2/calculator
+
+ ❯ |unit| tests/kpi-p2-f28-export-button.test.ts (1 test | 1 failed) 206ms
+   ❯ F-28: Export uses the secondary header style (1)
+     × Export, Refresh and Admin share one class list 204ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| tests/kpi-p2-f28-export-button.test.ts > F-28: Export uses the secondary header style > Export, Refresh and Admin share one class list
+AssertionError: expected 'btn btn-primary btn-sm' to be 'btn btn-secondary btn-sm' // Object.is equality
+
+Expected: "btn btn-secondary btn-sm"
+Received: "btn btn-primary btn-sm"
+
+ ❯ tests/kpi-p2-f28-export-button.test.ts:12:32
+     10|     const html = shell();
+     11|     const cls = (act: string) => html.match(new RegExp(`<button type="…
+     12|     expect(cls('export-menu')).toBe('btn btn-secondary btn-sm');
+       |                                ^
+     13|     expect(cls('export-menu')).toBe(cls('refresh'));
+     14|     expect(cls('export-menu')).toBe(cls('admin'));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  22:25:07
+   Duration  370ms (tests 85%, transform 9%, import 5%, worker 1%)
+

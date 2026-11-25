@@ -1,0 +1,84 @@
+[drawing] PASS server: AI is not available on this server — aiAvailable: false
+[drawing] PASS casting-bracket: AI is off on this page — AI entry points hidden
+[drawing] PASS casting-bracket: the drawing control is on the Part step and visible with AI off — visible true, inside closed "More options" false
+[drawing] PASS casting-bracket: it accepts PDF, image and DXF — .pdf,.png,.jpg,.jpeg,.tif,.tiff,.dxf,application/pdf,image/png,image/jpeg,image/tiff
+[drawing] PASS casting-bracket: it says the drawing is read on this server — PDF, PNG, JPEG, TIFF or DXF. Read on this server — no AI, nothing leaves it. You confirm each reading before it is used in the cost.
+[drawing] PASS casting-bracket: the first response carries the drawing, read on the no-AI path — mode deterministic, drawing ready, reader v1.1.0
+[drawing] PASS casting-bracket: nothing from the drawing is used before the engineer confirms — {}
+[drawing] PASS casting-bracket: the panel names the drawing, the reader and that it is offline — From the drawing real-casting-bracket.pdf · 1 sheet · Read on this server — no AI, nothing leaves it · reader v1.1.0
+[drawing] PASS casting-bracket: every row has a status WORD and says where or how it was read — 44 rows; statuses Read, Needs checking, Inferred; e.g. "Sheet 1 · zone F5 · title block · exact text"
+[drawing] PASS casting-bracket: rows are grouped — Identity | Material | Tolerances | Finish | Threads & holes | Quality
+[drawing] PASS casting-bracket: a reading says which question it would answer — aluminium — Would answer "What is this part made of?" with Aluminium — 0.86 kg. Not used until you confirm it.
+[drawing] PASS casting-bracket: no library id is shown for a grade — LM25 / A356
+[drawing] PASS casting-bracket: what no rule prices is in a collapsed list — Specified on the drawing — not in the cost model yet (20) — collapsed: true
+[drawing] PASS casting-bracket: the sheet is shown — 2400px wide, alt "Sheet 1 of real-casting-bracket.pdf"
+[drawing] PASS casting-bracket: the focused reading is outlined on the sheet (the material cell, bottom right) — at 76 % × 82 % — Sheet 1 — Material as written
+[drawing] PASS casting-bracket: the unconfirmed material is a note on its question — not a tick — note: "The drawing reads Aluminium (“A356-T6 ASTM B108”) — Sheet 1 · zone F7 · title block · inte…", ticked: nothing
+[drawing] PASS casting-bracket: axe on the panel (as read) — 0 violations
+[drawing] PASS casting-bracket: "Confirm all read exactly" confirms exact readings and leaves what needs checking — Confirm all read exactly (6): Material grade (rate book), Temper / delivery condition, Material family, Coating route, Leak / pressure test requirement, Safety / critical characteristic marking; tolerance class still "Needs checking"
+[drawing] PASS casting-bracket: the panel says the review is not in the costing yet — Review changed — it is applied when you press Get cost (or Apply the review).
+[drawing] PASS casting-bracket: the question the confirmed reading answers says so — Answered from the drawing: Aluminium (Sheet 1 · zone F7 · title block · interpreted) — confirmed by you; it is applied when you pr
+[drawing] PASS casting-bracket: confirming on the panel ticks nothing on the question — ticked: nothing
+[drawing] PASS casting-bracket: confirmed answers are chips tagged "from drawing" — Material Aluminium from drawing | Grade LM25 / A356 from drawing | Leak-tight yes from drawing | Tolerance tight from drawing | Safety-critical yes from drawing | Finish E-coat / KTL (zirconium pre-treat) from drawing | Heat treatment T6 from drawing
+[drawing] PASS casting-bracket: the answered questions are no longer asked — material question gone from the list
+[drawing] PASS casting-bracket: an applied reading says what it answers — E-coat / KTL (zirconium pre-treat): Answers the "Finish" question with E-coat / KTL (zirconium pre-treat)
+[drawing] PASS casting-bracket: the masked features go to the finish block, bounded by the holes measured — Fills the finish block of the costing form: 3 masked feature(s), confirmed from the drawing — no more than the 11 measured on the 3D model
+[drawing] PASS casting-bracket: axe on the panel (decisions taken, a correction open) — 0 violations
+[drawing] PASS casting-bracket: a corrected reading says Corrected — CB-2207-11-B — Corrected
+[drawing] PASS casting-bracket: Reject and Undo work on a row — Material standard: Rejected → Read
+[drawing] casting-bracket: Get cost (casting.impressions=1)
+[drawing] PASS casting-bracket: costed — £13.40
+[drawing] PASS casting-bracket: the form holds the drawing's finish and its 3 masked features — {"route":"e_coat","mask":"3","um":"0","mat":"LM25 / A356 · sand / gravity — £2.98/kg"}
+[drawing] PASS casting-bracket: the form holds the drawing's grade — LM25 / A356 · sand / gravity — £2.98/kg
+[drawing] PASS casting-bracket: the cost card shows the drawing's answers as such — Material Aluminium (from drawing) | Grade LM25 / A356 (from drawing) | Leak-tight yes (from drawing) | Tolerance tight (from drawing) | Safety-critical yes (from drawing) | Finish E-coat / KTL (zirconium pre-treat) (from drawing) | Heat treatment T6 (from drawing)
+[drawing] PASS casting-bracket: the comparison is asked with the drawing and the review — drawingHash 6f1a98cf, 11 review decisions
+[drawing] PASS casting-bracket: SCREEN TOTAL = HEADLESS (the comparison's reference row) — headless £13.40± 7.1% v screen £13.40
+[drawing] PASS casting-bracket: the stamp names the reader and the drawing — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · drawing reader v1.1.0 · real-casting-bracket.pdf 6f1a98cf · 17 Nov 2026
+[drawing] PASS casting-bracket: Excel: sheet 10-Drawing lists the readings with source, status and use — Material | Material family | aluminium | Interpreted — real-casting-bracket.pdf · Sheet 1 · zone F7 · title block · interpreted from "A356-T6" (exact text) | Confirmed | Yes
+[drawing] PASS casting-bracket: Excel: the corrected part number and the not-costed list are there — 8 readings used; SPECIFIED ON THE DRAWING — NOT IN THE COST MODEL YET (20; none is priced)
+[drawing] PASS casting-bracket: Excel: the stamp, word for word — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · drawing reader v1.1.0 · real-casting-bracket.pdf 6f1a98cf · 17 Nov 2026
+[drawing] PASS casting-bracket: PDF: the drawing table, the stamp and the headline — "Drawing specification" true, headline £13.40 found
+[drawing] PASS casting-bracket: no page errors — none
+[drawing] PASS casting-bracket: the page asked nothing outside this server — 0 requests off http://127.0.0.1:33263
+[drawing] casting-bracket: 37 s
+[drawing] PASS gear-wrong-drawing: the conflict is shown with both sides, the suggestion marked — nothing chosen — Conflicts — choose a value (nothing is chosen for you): CAD 38 (suggested) v Drawing 40
+[drawing] PASS gear-wrong-drawing: "Confirm all read exactly" does not settle a conflict — the conflict is still open
+[drawing] PASS gear-wrong-drawing: axe on the panel (a conflict open) — 0 violations
+[drawing] PASS gear-wrong-drawing: settled by a click, and it says who chose what — Number of teethConfirmed Settled by E2E Engineer on 17 Nov 2026 22:58 UTC: 38 (the 3D model) Reopen
+[drawing] gear-wrong-drawing: Get cost (gear.helix=0, gear.qualityClass=7, gear.materialClass=case_hardening_steel, service.safetyCritical=∅)
+[drawing] PASS gear-wrong-drawing: costed with helix, class and hardening from the drawing — £17.80
+[drawing] PASS gear-wrong-drawing: the gear answers on the cost card are the drawing's — Helix Spur (from drawing) | Quality class Class 7 (from drawing) | Hardening Carburise, quench and temper (from drawing)
+[drawing] PASS gear-wrong-drawing: the comparison is asked with the drawing and the review — drawingHash c58b93dd, 4 review decisions
+[drawing] PASS gear-wrong-drawing: SCREEN TOTAL = HEADLESS (the comparison's reference row) — headless £17.80± 6.9% v screen £17.80
+[drawing] PASS gear-wrong-drawing: Excel: the conflict and how it was settled — Number of teeth | 3D model: 38  v  Drawing: 40 | 3D model (38) | Settled by e2e@test on 17 Nov 2026 22:58 UTC: 38 (the 3D model)
+[drawing] PASS gear-wrong-drawing: PDF: the drawing table and the conflict — conflict outcome printed
+[drawing] PASS gear-wrong-drawing: no page errors — none
+[drawing] PASS gear-wrong-drawing: the page asked nothing outside this server — 0 requests off http://127.0.0.1:33263
+[drawing] gear-wrong-drawing: 34 s
+[drawing] PASS scanned-drawing: the costing answers without waiting for the OCR — drawing reading, job ead68aa2
+[drawing] PASS scanned-drawing: the panel says the drawing is being read, on this server —  From the drawing gen-gear.scan200.pdf · 0 sheets · Read on this server — no AI, nothing leaves it · reader v1.1.0 Reading the drawing — its sheets have no sele
+[drawing] PASS scanned-drawing: no reading of a scan is "Read": each needs checking (or is in conflict) and says OCR — 16 readings: Needs checking, Conflict; e.g. Part number — Sheet 1 · title block · OCR 90 %
+[drawing] PASS scanned-drawing: "Confirm all read exactly" offers no OCR reading — Confirm all read exactly (0)
+[drawing] PASS scanned-drawing: axe on the panel (OCR readings) — 0 violations
+[drawing] PASS scanned-drawing: no page errors — none
+[drawing] PASS scanned-drawing: the page asked nothing outside this server — 0 requests off http://127.0.0.1:33263
+[drawing] scanned-drawing: 12 s
+[drawing] PASS no-drawing: the response has no drawing key — none
+[drawing] PASS no-drawing: no drawing panel, no drawing note on a question — the Confirm step is as it was
+[drawing] no-drawing: Get cost (gear.helix=0, gear.qualityClass=7, gear.materialClass=case_hardening_steel, service.safetyCritical=∅)
+[drawing] PASS no-drawing: costed, and the stamp names no drawing — £17.80 — United Kingdom rate book v2.2.0 · built-in · book 9b7aee68 · rules v9 · kernel 67caebef99ba · 17 Nov 2026
+[drawing] PASS no-drawing: the workbook has no 10-Drawing sheet — 0-Executive, 1-Summary, 2-Material, 3-Operations, 4-MachineRates, 5-LabourRates, 6-Traceability, 7-Checks, 8-Routes, 9-DFM
+[drawing] PASS no-drawing: no page errors — none
+[drawing] PASS no-drawing: the page asked nothing outside this server — 0 requests off http://127.0.0.1:33263
+[drawing] no-drawing: 8 s
+[drawing] PASS reopen: the saved review is restored, and the panel says so — Your earlier review of this drawing was restored: 11 decisions, saved 17 Nov 2026. “Start the review again” clears them.
+[drawing] PASS reopen: the same confirmations and the correction are back — 8 confirmed: Material grade (rate book), Temper / delivery condition, Material family, General tolerance class, Coating route, Masked features, Leak / pressure test requirement, Safety / critical characteristic marking
+[drawing] PASS reopen: the drawing's answers are applied again — Material Aluminium from drawing | Grade LM25 / A356 from drawing | Leak-tight yes from drawing | Tolerance tight from drawing | Safety-critical yes from drawing | Finish E-coat / KTL (zirconium pre-treat) from drawing | Heat treatment T6 from drawing
+[drawing] reopen: Get cost (commodity.route=cast_and_machine, casting.impressions=1)
+[drawing] PASS reopen: the reopened costing is the same cost — £13.40 v £13.40
+[drawing] PASS reopen: no page errors — none
+[drawing] PASS reopen: the page asked nothing outside this server — 0 requests off http://127.0.0.1:33263
+[drawing] reopen: 9 s
+[drawing] PASS server: no model was called, no key was read — server log holds no model call
+[drawing] 73 / 73 checks passed — /tmp/cv-phase2-drawing-live/results.json
+exit 0

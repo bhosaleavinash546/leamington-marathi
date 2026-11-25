@@ -1,0 +1,328 @@
+{
+ "generated": "2026-11-17T21:26:11.790Z",
+ "database": "throwaway temp SQLite in /tmp (deleted with the temp dir)",
+ "results": {
+  "P01_open_signup": {
+   "signupStatus": 201,
+   "devOtpReturnedToSameMachineRequest": true,
+   "verifyStatus": 200,
+   "gotToken": true,
+   "note": "devOtp is returned only to a same-machine request (devOtpAllowed); from another machine the code is emailed — the point is that ANY email domain may sign up.",
+   "strangerSeesRecords": 1,
+   "strangerSeesSupplierPrice": true,
+   "strangerDetailStatus": 200,
+   "detailIncludesFullCostingBreakdown": true,
+   "strangerCsvStatus": 200,
+   "csvContainsPrice": true
+  },
+  "P02_owner_powers": {
+   "ownerSetsIsTestStatus": 200,
+   "recordNowExcluded": "test",
+   "ownerDowngradesApprovedToDraftStatus": 200,
+   "statusAfter": "draft",
+   "ownerDeletesApprovedRecordStatus": 200
+  },
+  "P03_fx_guard": {
+   "invertedEurUsdAcceptedStatus": 200,
+   "invertedEurUsdLoaded": 2,
+   "referenceEUR": 0.8357709987463435,
+   "referenceUSD": 0.7509198768491402,
+   "ratioInvertedEurToReference": 1.423835,
+   "currenciesWithReferenceRate": 27,
+   "ZARinReference": true,
+   "AEDinReference": false,
+   "noReferenceCurrencyInvertedAcceptedStatus": 200,
+   "noReferenceAbsurdAcceptedStatus": 200,
+   "zarInvertedStatus": 400,
+   "zarInvertedMessage": "The FX file was not loaded",
+   "referenceZAR": 0.04512411387521377,
+   "chfRowsAfterTwoUploads": [
+    {
+     "currency": "CHF",
+     "period": "2026-02",
+     "gbpPerUnit": 0.95,
+     "source": "Treasury v2",
+     "loadedAt": "2026-11-17T21:26:11.176Z"
+    }
+   ],
+   "auditEntriesForFxLoad": [
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"CHF\"]}",
+    "{\"currencies\":[\"AED\"]}",
+    "{\"currencies\":[\"AED\"]}",
+    "{\"currencies\":[\"EUR\",\"USD\"]}"
+   ]
+  },
+  "P04_P05_periods": {
+   "importStatus": 200,
+   "importResult": {
+    "added": 3,
+    "updated": 0
+   },
+   "Q1_2026_view": {
+    "totalRecords": 1,
+    "currentRecords": 0,
+    "eligible": 0,
+    "opportunity": {
+     "n": 0,
+     "gbp": 0
+    }
+   },
+   "note_Q1": "P04-HIST had an approved costing (gap £2) dated Feb 2026; it was superseded by an Oct 2026 revision, so a Q1-2026 view shows the save in activity but NO financial figure for that part.",
+   "default12m_view": {
+    "currentRecords": 1,
+    "eligible": 1,
+    "opportunityGbp": 1.5
+   },
+   "allTime_view": {
+    "currentRecords": 2,
+    "eligible": 2,
+    "opportunityGbp": 7.5
+   },
+   "note_12m": "P05-OLD (approved, still current, gap £6) costed 2025-06-01 is outside \"last 12 months\", so the default view omits £6 of opportunity that is still current."
+  },
+  "P06_newer_unapproved_wins": [
+   {
+    "tool": "CPSC II",
+    "status": "completed",
+    "costingDate": "2026-10-15",
+    "role": "current",
+    "gapGbp": 2
+   },
+   {
+    "tool": "CSS System",
+    "status": "approved",
+    "costingDate": "2026-09-01",
+    "role": "duplicate",
+    "gapGbp": null
+   }
+  ],
+  "P07_saving_lost_on_revision": {
+   "validatedBefore": {
+    "n": 1,
+    "gbp": 1.5
+   },
+   "validatedAfterNewRevision": {
+    "n": 0,
+    "gbp": 0
+   }
+  },
+  "P08_P09_import": {
+   "importStatus": 200,
+   "variantsAsSeparateCurrentRecords": [
+    "LR_VAR_100:current",
+    "LRVAR100:current",
+    "LR-VAR-100:current"
+   ],
+   "futureDatedImported": [
+    {
+     "costingDate": "2031-01-01",
+     "status": "approved",
+     "role": "current"
+    }
+   ]
+  },
+  "P10_ids_and_emails": {
+   "ownerNameShown": "gone@test",
+   "rowCarriesOwnerId": "gone",
+   "importOwnerIdExample": "import:CSS System:R. Rao",
+   "metaReturnsUserId": true
+  },
+  "P11_rate_limit": {
+   "requests": 60,
+   "statuses": [
+    200
+   ],
+   "ms": 121
+  },
+  "P12_long_filter": {
+   "filterJsonChars": 18724,
+   "overLongFilterStatus": 431,
+   "overLongFilterBodyHead": "",
+   "matchingNothingResultTotal": 0
+  },
+  "P13_controls": {
+   "noTokenSummary": 401,
+   "userExcludedList": 403,
+   "userAudit": 403,
+   "userFxPolicy": 403,
+   "userRecalc": 403,
+   "userImport": 403,
+   "userEditsOthersRecord": 403,
+   "userSetsApproved": 403
+  },
+  "P14_owner_inflates_validated_volume": {
+   "ownerPatchStatus": 200,
+   "stillValidated": false,
+   "statusAfter": "approved",
+   "volumeAfter": 6000000,
+   "annualisedBefore": {
+    "n": 1,
+    "gbp": 120000
+   },
+   "annualisedAfter": {
+    "n": 0,
+    "gbp": 0
+   }
+  },
+  "P15_client_supplied_should_cost": {
+   "saveStatus": 201,
+   "storedShouldCost": 0.01,
+   "breakdownSum": 1998,
+   "opportunityGbp": 11.99
+  },
+  "P16_programme_case": [
+   "q900:current",
+   "Q900:current"
+  ],
+  "P17_malformed_filter": {
+   "malformedStatus": 200,
+   "malformedTotal": 16,
+   "wellFormedNoMatchTotal": 0
+  },
+  "P01b_record_view_fields": {
+   "saveStatus": 201,
+   "bob": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": false,
+    "bodyMentionsSecretQuote": false,
+    "opKeys": [
+     "cost",
+     "name"
+    ]
+   },
+   "alice": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   },
+   "ada": {
+    "status": 200,
+    "costingKeys": [
+     "commodity",
+     "input",
+     "region",
+     "result"
+    ],
+    "resultKeys": [
+     "breakdown",
+     "internalTrace",
+     "operationDetails",
+     "total"
+    ],
+    "hasInput": true,
+    "bodyMentionsSecretQuote": true,
+    "opKeys": [
+     "cost",
+     "cycleTimeSec",
+     "machineId",
+     "name"
+    ]
+   }
+  },
+  "P02b_identity_on_approved": {
+   "ownerChangesPartNumber": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "ownerChangesCommodity": {
+    "status": 200,
+    "commodityAfter": "Forging"
+   },
+   "ownerChangesCountry": {
+    "status": 200,
+    "countryAfter": "CN"
+   },
+   "ownerNotesOnlyFullFormSave": {
+    "status": 403,
+    "error": "Only an admin can mark a costing reviewed or approved"
+   },
+   "adminChangesProgramme": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "adminReapproves": {
+    "status": 200,
+    "statusAfter": "approved"
+   },
+   "ownerChangesVolume": {
+    "status": 200,
+    "statusAfter": "approved"
+   }
+  },
+  "P06b_same_day_tie": {
+   "rolesAfterTwoSaves": [
+    "first:superseded",
+    "second:current"
+   ],
+   "rolesAfterNoteOnFirst": [
+    "first:current",
+    "second:superseded"
+   ]
+  },
+  "P09b_reimport_deleted": {
+   "deleteStatus": 200,
+   "reimportStatus": 200,
+   "reimport": {
+    "added": 0,
+    "updated": 1
+   }
+  },
+  "P14b_admin_and_same_request": {
+   "adminChangesValidatedVolume": {
+    "status": 200,
+    "validatedAfter": false
+   },
+   "ownerSameValueSave": {
+    "status": 200,
+    "validatedAfter": true
+   },
+   "changeAndRevalidateInOneRequest": {
+    "status": 400,
+    "error": "The annual volume changed, so its validation is cleared. Save the new volume first (with \"Annual volume validated\" unticked), then validate it as a separate save."
+   }
+  },
+  "P15b_readd_tolerance": {
+   "roundingOnly_0_04": 201,
+   "beyondTolerance_0_05": 201,
+   "noBreakdown": 201,
+   "importStatus": 200,
+   "basisByPart": {
+    "P15B-NOBD": "(no field)",
+    "P15B-ROUND": "(no field)",
+    "P15B-BEYOND": "(no field)",
+    "P15B-IMP": "(no field)"
+   },
+   "dataQualityShouldBasis": "(no field)"
+  },
+  "serverErrors": []
+ }
+}

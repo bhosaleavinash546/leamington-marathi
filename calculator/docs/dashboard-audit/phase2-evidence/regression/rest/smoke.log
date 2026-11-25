@@ -1,0 +1,82 @@
+  ➜  Local:   http://localhost:4180/calculator/
+  ➜  Network: http://192.0.2.2:4180/calculator/  eth0
+[smoke] preview server up
+[smoke] using browser /opt/pw-browsers/chromium
+[smoke] page loaded
+10:57:14 PM [vite] http proxy error: /api/cad/limits
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/rate-library/active
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/auth/me
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/knowledge/intelligence
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/knowledge/scenario
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/knowledge/drift
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/projects?kind=sw_baseline
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/rate-library/sw/status
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/projects?kind=sw_licence_register
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/projects?kind=sw_should_cost
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/rate-library/sw/active
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+10:57:14 PM [vite] http proxy error: /api/projects?kind=sw_actuals
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[smoke] opened SW Should-Cost panel
+[smoke] FAILED: page.waitForSelector: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('.sw-wiz-card') to be visible[22m
+
+11:00:04 PM [vite] http proxy error: /api/cad/limits
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:04 PM [vite] http proxy error: /api/rate-library/active
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:04 PM [vite] http proxy error: /api/auth/me
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:04 PM [vite] http proxy error: /api/knowledge/intelligence
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:04 PM [vite] http proxy error: /api/knowledge/scenario
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:04 PM [vite] http proxy error: /api/knowledge/drift
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/projects?kind=sw_baseline
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/rate-library/sw/status
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/projects?kind=sw_licence_register
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/projects?kind=sw_should_cost
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/rate-library/sw/active
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+11:00:05 PM [vite] http proxy error: /api/projects?kind=sw_actuals
+Error: connect ECONNREFUSED 127.0.0.1:3002
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
