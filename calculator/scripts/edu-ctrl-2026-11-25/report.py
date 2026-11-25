@@ -13,6 +13,15 @@ VER = CORR.get('version', 'v2') if V2 else 'v1'
 _RL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), CORR.get('readingFile', 'reading.json') if V2 else 'reading.json')))
 _RL_n = len(_RL['lines']); _RL_q = sum(l['qty'] for l in _RL['lines']); _RL_smt = _RL['assembly']['smtPlacements']
 e = lambda s: html.escape(str(s))
+# Quick closes (G-10 / G-11 / G-16 / G-18 / G-19): read off the tool's own result, never assumed.
+_COQ = next((x for x in (sb.get('basis') or []) if x['item'] == 'Cost of quality'), {})
+TOOL_FPY = None
+if 'FPY' in str(_COQ.get('formula', '')):
+    import re as _re
+    _m = _re.search(r'FPY ([0-9.]+)', _COQ['formula']); TOOL_FPY = float(_m.group(1)) if _m else None
+TOOL_OPS = float((sb.get('breakdown') or {}).get('operations') or 0)
+TOOL_TERMS = sb.get('deliveryTerms') or 'DAP'
+_CB = tool.get('confidenceBand') or {}; COND = _CB.get('conditional')
 def gbp(x, d=2): return f"£{x:,.{d}f}"
 def cny(x): return f"¥{x * FX:,.2f}"
 def both(x): return f"{gbp(x)}<br><span class=ccy>{cny(x)}</span>"
@@ -48,7 +57,7 @@ bridge = [('Tool ex-works', T['exWorks'], True),
           (('Bare board: the same market ¥/m² in both — the tool shows it as its table board …' if V3 else 'Bare board: tool build-up (1-up, vias charged on top) → ¥/m² sold by an automotive 4–6-layer fab' if V2 else 'Bare board, standard: 1-up on 480×350 mm (51 %) → 2-up on 18×24 in (61 %)'), C['fabStd'] - T['fabStd'], False),
           (('… plus its market adjustment (the two lines net to zero)' if V3 else 'Automotive board grade: tool £15.16 microsection a panel + IATF + laminate + coupons → ' + ('inside the market ¥/m²' if V2 else '30 %')), C['fabAuto'] - T['fabAuto'], False),
           ('Assembly & test: functional / HV test, programming, press-fit, the second coated face and staking are in the manual, not the tool' + ('; Chinese list prices per joint' if V3 else '; effective line rate'), C['conversionOHP'] - T['assembly'], False),
-          ('Energy, packaging, cost of quality: tool rework rate capped at 30 % → FPY 97 %', C['quality'] - T['other'], False),
+          (('Energy, packaging, cost of quality: both at a 97 % first-pass yield now (the FPY typed into the tool); the rest is the tool\'s energy and ESD packaging and the manual\'s rework / scrap build-up' if TOOL_FPY else 'Energy, packaging, cost of quality: tool rework rate capped at 30 % → FPY 97 %'), C['quality'] - T['other'], False),
           ('One-off tooling and fixtures over 60,000 boards (' + ('the tool spreads its own fixtures over the programme too, inside assembly' if V3 else 'tool: fixtures over the 10,000 order, inside assembly') + ')', C['nrePerBoard'], False),
           ('Manual ex-works', C['exWorks'], True)]
 chk = T['exWorks'] + sum(x[1] for x in bridge[1:-1])
@@ -127,7 +136,7 @@ else:
     asm += f"<tr><td>EMS SG&amp;A / engineering / quality</td><td class=sm>{I['sga'] * 100:.0f} % of conversion</td><td class=n>{gbp(C['sgaGBP'], 3)}</td></tr>"
     asm += f"<tr><td>EMS profit</td><td class=sm>{I['profit'] * 100:.0f} % of conversion + SG&amp;A</td><td class=n>{gbp(C['profitGBP'], 3)}</td></tr>"
 asm += f"<tr class=tot><td>Assembly, test and coating — EMS price</td><td></td><td class=n>{gbp(C['conversionOHP'], 3)}</td></tr>"
-toolasm = ''.join(f"<tr><td>{e(x['item'])}</td><td class=sm>{e(x['formula'][:200])}</td><td class=n>{gbp(x['gbp'])}</td></tr>" for x in sb['basis'] if x['item'] in ('SMT placement', 'Through-hole and hand-soldered joints', 'AOI', 'X-ray (BGA / CSP)', 'In-circuit test', 'Conformal coating', 'Energy', 'ESD packaging', 'Cost of quality', 'Automotive assembly grade'))
+toolasm = ''.join(f"<tr><td>{e(x['item'])}</td><td class=sm>{e(x['formula'][:200])}</td><td class=n>{gbp(x['gbp'])}</td></tr>" for x in sb['basis'] if x['item'] in ('SMT placement', 'Through-hole and hand-soldered joints', 'AOI', 'X-ray (BGA / CSP)', 'In-circuit test', 'Conformal coating', 'Second reflow side (set-up a lot + stencil)', 'Conformal coating — second side, inspection, masking', 'Press-fit', 'Programming (MCU flash)', 'Functional test + HV insulation (hipot)', 'Energy', 'ESD packaging', 'Cost of quality', 'Automotive assembly grade'))
 
 nre = [('Stencils (2 sides, step stencil for press-fit area)', 700), ('ICT fixture (bed of nails, 395 × 215 mm)', 7000), ('Functional / EOL test fixture incl. HV insulation', 15000),
        ('Press-fit tooling (J2, J3, J12, nuts)', 3000), ('Selective-solder pallets', 2000), ('Coating masks / boots', 1500), ('AOI, X-ray, programming set-up', 1000), ('Bare-board tooling, test and E-test fixtures', 1200)]
@@ -148,6 +157,16 @@ if V2 and CORR.get('version') in ('v3', 'v4'):
                'the ASIL is the engineer\'s; drilling inside the per-area price; a China automotive board at the market ASP per m²; 34 AEC-Q class ranges from the catalogue\'s own prices. This board: £284.76 → £241.54 delivered (bare board £44.25 → £14.29); with the lot, programme and the AURIX at £13.40: '
                f'{gbp(T["delivered"])} delivered, {gbp(T["exWorks"])} ex-works.</li>')
     OPENLIST = '<li><b>Still open in the tool (package B / D, not approved yet):</b> functional / HV test, programming, press-fit, second coated face and second reflow as operations; full-economic and EMS-invoice lines with a customer-supplied flag; delivery terms; an FPY input (the rework rate is placements × 800 dppm, capped at 30 %); the band\'s basis; fab spec inputs. The should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
+RANGES = (f"sourced range {gbp(COND['low'])}–{gbp(COND['high'])} · judgement corridor {gbp(_CB['totalLow'])}–{gbp(_CB['totalHigh'])}" if COND else f"tool range {gbp(_CB['totalLow'])}–{gbp(_CB['totalHigh'])}")
+INFOREQ = ('<li>The tool\'s report (Part B) prints the same list as a ten-item information request, ticked from what this costing holds.</li>' if COND is not None else '')
+FABNOTE = f"<p>The board would run 2-up on an 18 × 24 in production panel; the tool's panel list stops at 480 × 350 mm, so it costs the board 1-up at 51 % use. The larger difference is the automotive grade: the tool charges one class-3 microsection per panel ({gbp(15.16)}, so per board on a 1-up panel), where a fab sections coupons per lot.</p>"
+if V3:
+    FABNOTE = (f"<p>Since package A both run the board 2-up on the 18 × 24 in production panel (61 %) and both sell the automotive board at the China market ¥/m²: the tool prints its standard table build-up ({gbp(T['fabStd'])}) and adds the market adjustment as 'Automotive fab grade' ({gbp(T['fabAuto'])}), "
+               f"{gbp(T['fabStd'] + T['fabAuto'])} in all against the manual's {gbp(C['fab'])}. Layer count (6), vias (4,500) and laminate are still estimates until the Gerber / drill files are attached.</p>")
+ASMNOTE = ('<p>The tool has no line for functional / HV insulation test, MCU programming, selective solder, press-fit or staking, coats one face (849 cm² of 1,698 cm²), and prices SMT at one placement a second on its table rate. Its cost of quality takes a rework rate of 30 % (2,008 placements × 800 ppm, capped) — the manual assumes a 97 % first-pass yield.</p>')
+if TOOL_OPS > 0:
+    ASMNOTE = (f'<p>Since v6 the tool costs the second reflow side, the second coated face with inspection and masking, press-fit, AURIX programming and functional + HV test as operations ({gbp(TOOL_OPS)} a board, rows above). Selective solder and staking / potting are still not tool lines (audit G-07). '
+               + (f'Its cost of quality uses the first-pass yield typed on the form, {TOOL_FPY * 100:.0f} % — the manual\'s own figure.' if TOOL_FPY else 'Its cost of quality takes placements × 800 ppm (capped at 30 %), a table figure with no source — the manual assumes a 97 % first-pass yield.') + '</p>')
 # Tool v6 (EDU accuracy programme): the operations, full-economic, EMS invoice and customer-supplied flag are in the tool.
 if V2 and float((sb.get('breakdown') or {}).get('operations') or 0) > 0:
     THREE = ' (§6): the bare board and the operations are now costed alike in both; the difference is the components — the 70 parts lines no photo identifies, which the tool prices inside its class ranges at global distributor prices and the manual at named parts at China reel prices. A BOM file, or the tool\'s China-market option, closes most of it.'
@@ -155,6 +174,14 @@ if V2 and float((sb.get('breakdown') or {}).get('operations') or 0) > 0:
                 f'({gbp(float(sb["breakdown"]["operations"]))} a board); full-economic and EMS-invoice lines with a customer-supplied flag; the ten dearest lines ranked to verify; up to 24 photos with zooms for counting, count method and range per line; '
                 'chip markings read on full-resolution tiles; the China component market as an option (379 sourced parts); bare-board market prices for Thailand and Japan.</li>')
     OPENLIST = '<li><b>Still open in the tool:</b> delivery terms and an FPY input (package B remainder); package D (reporting); functional-test time, masking time and press / coater capex are engineering estimates (typed overrides on the form); accuracy against prices paid needs five or more boards.</li>'
+# Audit quick closes (25 Nov 2026): terms, FPY, the two ranges, information request, contract FX.
+if V2 and COND is not None:
+    TOOLFIX += ('<li><b>Audit quick closes (25 Nov 2026):</b> delivery terms on the form — delivered UK duty paid, or ex-works with no freight and no UK duty (G-10); '
+                'a typed first-pass yield sets the boards reworked, otherwise the 800 ppm table is used and said to be unsourced (G-11) — this run takes the manual\'s 97 %; '
+                f'the sourced range ({gbp(COND["low"])}–{gbp(COND["high"])}: what the China-market alternative moves) printed apart from the judgement corridor ({gbp(_CB["totalLow"])}–{gbp(_CB["totalHigh"])}: CostVision ratios, not a measured accuracy) (G-16 / M-06); '
+                'a ten-item information request ticked from what the costing holds (G-18); a contract US$ / £ that re-prices catalogue and class lines (G-19, not used here).</li>')
+    OPENLIST = ('<li><b>Still open in the tool:</b> the TLF35584 safety PMIC price (round 6 research queue, G-13); fab spec inputs — laminate, Tg, copper weight (G-17); selective solder and staking / potting as operations (G-07 remainder); '
+                'spot-market against authorised-distributor prices shown apart (G-12); page reads that can be reproduced (M-10). Functional-test time, masking time and press / coater capex are engineering estimates (typed overrides on the form); accuracy against prices paid needs five or more boards.</li>')
 if V2 and V1 and VER == 'v4':
     c1 = V1['computed']; RENAME = {'U8, U61': 'U8, U15, U61', 'U20, U22': 'U20, U22, U43'}
     prev = {l['refDes']: l for l in V1['lines']}; now = {l['refDes']: l for l in L}
@@ -335,12 +362,12 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <div class=kpi><span>Manual should-cost{f' {VER}' if V2 else ''}, ex-works China</span><b>{gbp(C['exWorks'])}</b><span>{cny(C['exWorks'])}</span></div>
 <div class=kpi><span>Manual{f' {VER}' if V2 else ''}, delivered UK duty paid</span><b>{gbp(C['delivered'])}</b><span>{cny(C['delivered'])}</span></div>
 <div class=kpi><span>Tool (live run), ex-works China</span><b>{gbp(T['exWorks'])}</b><span>{cny(T['exWorks'])}</span></div>
-<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range {gbp(tool['confidenceBand']['totalLow'])}–{gbp(tool['confidenceBand']['totalHigh'])}</span></div>
+<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · {RANGES}</span></div>
 </div>
 {rec2}
 <p><b>{'Against the tool' if V2 else 'Recommendation'}.</b> Use the manual figure, <b>{gbp(C['exWorks'])} ex-works</b>, as the should-cost target for a supplier discussion and the tool's {gbp(T['exWorks'])} as the upper bound until the board is confirmed. The tool is {gbp(gap)} ({gap / C['exWorks'] * 100:.0f} %) higher{THREE}</p>
 {os.environ.get('CV_TOOL_NOTE', '')}
-<p class=note><b>What this rests on.</b> Eight photos and the size you gave. One part number was read off a chip (2 × Infineon AURIX SAK-TC387QP-160F300S AE). Every other identity is a description and a package read from the photos; layer count (6) and via count (4,500) cannot be seen and are estimates. No BOM, drawing, Gerber or quote was supplied. Accuracy against a price paid is not measured.</p>
+<p class=note><b>What this rests on.</b> {'The manual recount uses all 22 photos; the tool run was given the 8 whole-board views' if VER == 'v4' else 'Eight photos'} and the size you gave. One part number was read off a chip (2 × Infineon AURIX SAK-TC387QP-160F300S AE). Every other identity is a description and a package read from the photos; layer count (6) and via count (4,500) cannot be seen and are estimates. No BOM, drawing, Gerber or quote was supplied. Accuracy against a price paid is not measured.</p>
 </div>
 
 {v2sec}
@@ -368,13 +395,13 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <table><tr><th>Item</th><th>Build-up (manual)</th><th>£</th></tr>{pcbt}</table>
 <h3>The tool's bare board, for comparison</h3>
 <table><tr><th>Item</th><th>Tool formula</th><th>£</th></tr>{toolpcb}</table>
-<p>The board would run 2-up on an 18 × 24 in production panel; the tool's panel list stops at 480 × 350 mm, so it costs the board 1-up at 51 % use. The larger difference is the automotive grade: the tool charges one class-3 microsection per panel ({gbp(15.16)}, so per board on a 1-up panel), where a fab sections coupons per lot.</p>
+{FABNOTE}
 
 <h2>5. Assembly, test and coating — {gbp(C['conversionOHP'])} a board</h2>
 <table><tr><th>Operation</th><th>Build-up (manual)</th><th>£</th></tr>{asm}</table>
 <h3>The tool's assembly, for comparison ({gbp(T['assembly'])} + energy / packaging / cost of quality {gbp(T['other'])})</h3>
 <table><tr><th>Item</th><th>Tool formula</th><th>£</th></tr>{toolasm}</table>
-<p>The tool has no line for functional / HV insulation test, MCU programming, selective solder, press-fit or staking, coats one face (849 cm² of 1,698 cm²), and prices SMT at one placement a second on its table rate. Its cost of quality takes a rework rate of 30 % (2,008 placements × 800 ppm, capped) — the manual assumes a 97 % first-pass yield.</p>
+{ASMNOTE}
 
 <h3>One-off tooling and fixtures</h3>
 <table><tr><th>Item</th><th>£</th></tr>{nret}</table>
@@ -396,7 +423,8 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <li>Layer count, via count and laminate (Gerber / drill files or the fab drawing).</li>
 <li>The ASIL level from the safety concept (photos suggest ASIL-D; the tool now costs nothing ASIL-dependent until the engineer sets it).</li>
 <li>Dana's contract prices for the AURIX TC387QP and the safety PMIC — the two largest lines.</li>
-<li>The test strategy (ICT + FCT + HV insulation) and who owns the fixtures; coating material and keep-out areas.</li></ul>
+<li>The test strategy (ICT + FCT + HV insulation) and who owns the fixtures; coating material and keep-out areas.</li>
+{INFOREQ}</ul>
 
 <h2 class=pb>Appendix A — every line, manual against tool</h2>
 <table><tr><th>RefDes</th><th>Description</th><th>Qty</th><th>Man. unit £</th><th>Man. line £</th><th>Tool unit £</th><th>Tool line £</th><th>Tool − man.</th><th>Tool price class</th></tr>{app}</table>
