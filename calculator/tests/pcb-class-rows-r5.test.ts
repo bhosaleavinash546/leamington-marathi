@@ -28,7 +28,8 @@ describe('round 5 class rows', () => {
     expect(t.key).toMatch(/^passive_1206\.tant/);   // a 7343 case is not an 0603 MLCC
   });
   it('a pin header is still a connector, an MLCC still an MLCC', () => {
-    expect(cr('through_hole', '2x2 pin header 2.54mm', 'THT', false).label).toMatch(/connector/);
+    // EDU v5: a plain pin header has its own connector row (it took the TH connector row, £1.24 on a 2 × 4 debug header).
+    expect(cr('through_hole', '2x2 pin header 2.54mm', 'THT', false).key).toBe('through_hole.header');
     expect(cr('passive_0805', 'MLCC 10uF 25V X7R', '0805').label).toMatch(/MLCC 0805/);
   });
   it('a CAN / LIN transceiver in QFN is not an RF IC (TLIN2029-Q1: £7.75 → sourced £0.40)', () => {

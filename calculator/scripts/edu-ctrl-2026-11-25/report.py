@@ -321,17 +321,18 @@ if V2 and V1 and VER == 'v3':
 doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control board should-cost</title><style>{css}</style></head><body>
 <div class=cover>
 <div class=sm>CostVision · PCB Image to BOM should-cost · 25 Nov 2026</div>
-<h1>EDU control board PCBA — should-cost report{f' ({VER})' if V2 else ''}</h1>
+<h1>EDU control board PCBA — should-cost report{f' ({os.environ.get("CV_TITLE_VER") or VER})' if V2 else ''}</h1>
 <div>Dana TM4 Gemini CTRL board, PC-10465018-D (read off the photos) · 395 × 215 mm · 552 g · conformal coating on the entire board</div>
 <div>Build in <b>China</b> · <b>10,000 boards a year</b> · <b>6-year programme</b> (60,000 boards) · £ per board, ¥ at {FX} CNY per £ (CostVision PCB table)</div>
 <div class=kpis>
 <div class=kpi><span>Manual should-cost{f' {VER}' if V2 else ''}, ex-works China</span><b>{gbp(C['exWorks'])}</b><span>{cny(C['exWorks'])}</span></div>
 <div class=kpi><span>Manual{f' {VER}' if V2 else ''}, delivered UK duty paid</span><b>{gbp(C['delivered'])}</b><span>{cny(C['delivered'])}</span></div>
 <div class=kpi><span>Tool (live run), ex-works China</span><b>{gbp(T['exWorks'])}</b><span>{cny(T['exWorks'])}</span></div>
-<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range £225.25–£413.70</span></div>
+<div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range {gbp(tool['confidenceBand']['totalLow'])}–{gbp(tool['confidenceBand']['totalHigh'])}</span></div>
 </div>
 {rec2}
 <p><b>{'Against the tool' if V2 else 'Recommendation'}.</b> Use the manual figure, <b>{gbp(C['exWorks'])} ex-works</b>, as the should-cost target for a supplier discussion and the tool's {gbp(T['exWorks'])} as the upper bound until the board is confirmed. The tool is {gbp(gap)} ({gap / C['exWorks'] * 100:.0f} %) higher{THREE}</p>
+{os.environ.get('CV_TOOL_NOTE', '')}
 <p class=note><b>What this rests on.</b> Eight photos and the size you gave. One part number was read off a chip (2 × Infineon AURIX SAK-TC387QP-160F300S AE). Every other identity is a description and a package read from the photos; layer count (6) and via count (4,500) cannot be seen and are estimates. No BOM, drawing, Gerber or quote was supplied. Accuracy against a price paid is not measured.</p>
 </div>
 

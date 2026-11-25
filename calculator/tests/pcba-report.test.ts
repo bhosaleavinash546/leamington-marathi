@@ -128,7 +128,9 @@ describe('camera board, China, 250k — the live run through Stage 4', () => {
       expect(rep.bom.length).toBe(c.a.bom.length);
       expect(rep.bom.some(l => /^(PCB|ASM)$/.test(l.ref))).toBe(false);
       expect(rep.bomPieces).toBe(c.a.bom.reduce((t: number, l: { qty: number }) => t + l.qty, 0));
-      expect(rep.bomTotal).toBeCloseTo(rep.componentsAtCost, 2);
+      // componentsAtCost is the penny-rounded BOM less the penny-rounded burden: up to ~1p from the exact line sum, the
+      // tolerance the report itself states (bomReconciliation).
+      expect(Math.abs(rep.bomTotal - rep.componentsAtCost)).toBeLessThan(0.01);
       expect(rep.bomReconciliation).toMatch(/the components row of §1/);
       // No line of this BOM has a designator; the ref column is blank, not a dash per line.
       expect(rep.bom.every(l => l.ref === '')).toBe(true);

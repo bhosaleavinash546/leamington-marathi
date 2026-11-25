@@ -18,7 +18,8 @@ import { applyGroundTruth } from '../server/routes/pcb.js';
 describe('class price table — the AI no longer sets a price', () => {
   it('an automotive 0402 resistor lands in its AEC-Q range (automotive board, or the user\'s BOM says so)', () => {
     const r = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', value: '10k' }, true);
-    expect(r.lo).toBe(0.003); expect(r.hi).toBe(0.012); expect(r.key).toMatch(/automotive$/);
+    // EDU v5: general-purpose thick film AEC-Q200 at 10k from the catalogue (AC0402FR £0.0018 … CRCW0402 £0.0047).
+    expect(r.lo).toBe(0.0018); expect(r.hi).toBe(0.0047); expect(r.p50).toBe(0.0042); expect(r.key).toMatch(/automotive$/);
     const fromFile = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', bomSource: 'file' });
     expect(fromFile.key).toMatch(/automotive$/);
   });
@@ -60,9 +61,9 @@ describe('class price table — the AI no longer sets a price', () => {
   });
   it('a line with no estimate lands at the lower-half midpoint', () => {
     const r = classRange({ componentType: 'passive_0402', description: 'resistor' }, true);
-    expect(classDefaultPrice(r)).toBeCloseTo(0.003 + 0.009 * 0.25, 5);
+    expect(classDefaultPrice(r)).toBe(0.00253);   // 0.0018 + 0.0029 × 0.25 = 0.002525, rounded to 5 dp
     const { bom } = capUnconfirmedPrices([{ refDes: 'R1', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0 }], undefined, { automotive: true });
-    expect(bom[0].unitPriceGBP).toBeCloseTo(0.00525, 4);
+    expect(bom[0].unitPriceGBP).toBeCloseTo(0.00253, 5);
   });
   it('small table-priced lines count as priced; £1+ lines still go to verify', () => {
     const out = groundAndSplit([

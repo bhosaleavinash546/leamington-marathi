@@ -88,7 +88,9 @@ function shadowUnit(l: Line, boards: number, auto: boolean): number | null {
       const unidentified = /\.any(\.|$)/.test(key) || /\b(class|est|unknown|generic)\b/i.test(pn) || (pn.length === 0 && /^ic_/.test(key));
       const dCap = descriptionCap(String(l.description ?? ''));
       const ceiling = Math.min(unidentified ? (CLASS_MEDIAN[key.split('.')[0]] ?? CLASS_MEDIAN.ic) * k : Infinity, row.hi * k, dCap != null ? dCap * k : Infinity);
-      const point = Math.round((row.lo + (row.hi - row.lo) * 0.25) * 1e5) / 1e5 * k;   // lower-half midpoint
+      // Lower-half midpoint, never above the median of the sourced prices behind the row (EDU v5, Nov 2026).
+      const quarter = row.lo + (row.hi - row.lo) * 0.25;
+      const point = Math.round((row.p50 !== undefined && row.p50 > 0 ? Math.min(quarter, row.p50) : quarter) * 1e5) / 1e5 * k;
       void auto;
       return Math.round(Math.max(Math.min(row.lo * k, ceiling), Math.min(point, ceiling)) * 1e5) / 1e5;
     }

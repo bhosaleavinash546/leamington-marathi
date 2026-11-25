@@ -3,11 +3,11 @@
  "asOf": "2026-11-25",
  "rows": {
   "ic_soic.any.automotive": {
-   "lo": 0.333,
-   "hi": 3.57,
-   "n": 120,
+   "lo": 0.328,
+   "hi": 3.58,
+   "n": 119,
    "distributors": 8,
-   "p50": 1.52,
+   "p50": 1.49,
    "was": [
     0.328,
     3.58
@@ -25,14 +25,14 @@
    ]
   },
   "ic_soic.driver.automotive": {
-   "lo": 0.582,
-   "hi": 3.77,
-   "n": 116,
+   "lo": 0.579,
+   "hi": 3.57,
+   "n": 114,
    "distributors": 12,
-   "p50": 1.33,
+   "p50": 1.31,
    "was": [
-    0.571,
-    3.99
+    0.579,
+    3.57
    ]
   },
   "ic_qfn.any.automotive": {
@@ -66,17 +66,6 @@
    "was": [
     1.14,
     4.25
-   ]
-  },
-  "passive_1206.cap.automotive": {
-   "lo": 0.0806,
-   "hi": 0.776,
-   "n": 45,
-   "distributors": 12,
-   "p50": 0.263,
-   "was": [
-    0.0806,
-    0.776
    ]
   },
   "passive_1206.ind.automotive": {
@@ -114,57 +103,24 @@
   },
   "passive_0603.cap.automotive": {
    "lo": 0.0089,
-   "hi": 0.108,
-   "n": 35,
-   "distributors": 9,
-   "p50": 0.0207,
+   "hi": 0.0636,
+   "n": 27,
+   "distributors": 8,
+   "p50": 0.0174,
    "was": [
     0.0089,
-    0.108
-   ]
-  },
-  "discrete.SOT-23 / SOD-123 discrete.automotive": {
-   "lo": 0.0139,
-   "hi": 0.127,
-   "n": 33,
-   "distributors": 11,
-   "p50": 0.0476,
-   "was": [
-    0.0139,
-    0.127
+    0.0636
    ]
   },
   "ic_soic.sot.automotive": {
-   "lo": 0.223,
-   "hi": 1.11,
-   "n": 32,
+   "lo": 0.224,
+   "hi": 0.995,
+   "n": 25,
    "distributors": 5,
-   "p50": 0.499,
+   "p50": 0.464,
    "was": [
-    0.223,
-    1.11
-   ]
-  },
-  "passive_0805.cap.automotive": {
-   "lo": 0.0245,
-   "hi": 0.131,
-   "n": 29,
-   "distributors": 9,
-   "p50": 0.0369,
-   "was": [
-    0.0245,
-    0.131
-   ]
-  },
-  "passive_0402.cap.automotive": {
-   "lo": 0.0033,
-   "hi": 0.0287,
-   "n": 28,
-   "distributors": 9,
-   "p50": 0.0065,
-   "was": [
-    0.0033,
-    0.0287
+    0.224,
+    0.995
    ]
   },
   "ic_qfn.phy.automotive": {
@@ -178,6 +134,17 @@
     5.06
    ]
   },
+  "passive_0805.cap.automotive": {
+   "lo": 0.0273,
+   "hi": 0.129,
+   "n": 24,
+   "distributors": 7,
+   "p50": 0.0389,
+   "was": [
+    0.0273,
+    0.129
+   ]
+  },
   "discrete.SiC / GaN power semiconductor.automotive": {
    "lo": 3.85,
    "hi": 17.3,
@@ -189,15 +156,37 @@
     17.3
    ]
   },
-  "ic_soic.flash.automotive": {
-   "lo": 0.176,
-   "hi": 4.33,
-   "n": 21,
-   "distributors": 10,
-   "p50": 0.848,
+  "passive_1206.alu.automotive": {
+   "lo": 0.175,
+   "hi": 0.727,
+   "n": 23,
+   "distributors": 7,
+   "p50": 0.278,
    "was": [
-    0.176,
-    4.33
+    0.175,
+    0.727
+   ]
+  },
+  "passive_1206.cap.automotive": {
+   "lo": 0.0693,
+   "hi": 0.803,
+   "n": 21,
+   "distributors": 11,
+   "p50": 0.229,
+   "was": [
+    0.0693,
+    0.803
+   ]
+  },
+  "passive_0402.cap.automotive": {
+   "lo": 0.004,
+   "hi": 0.0252,
+   "n": 19,
+   "distributors": 9,
+   "p50": 0.0075,
+   "was": [
+    0.004,
+    0.0252
    ]
   },
   "ic_soic.ldo.automotive": {
@@ -211,6 +200,17 @@
     1.78
    ]
   },
+  "discrete.SOT-23 / SOD-123 discrete.automotive": {
+   "lo": 0.0106,
+   "hi": 0.0883,
+   "n": 17,
+   "distributors": 6,
+   "p50": 0.0292,
+   "was": [
+    0.0106,
+    0.0883
+   ]
+  },
   "passive_1206.shunt.automotive": {
    "lo": 0.14,
    "hi": 0.398,
@@ -218,19 +218,19 @@
    "distributors": 6,
    "p50": 0.231,
    "was": [
-    0.14,
-    0.398
+    0.05,
+    0.8
    ]
   },
-  "ic_soic.opamp.automotive": {
-   "lo": 0.169,
-   "hi": 2.69,
-   "n": 15,
-   "distributors": 3,
-   "p50": 1.7,
+  "discrete.ESD / TVS protection SOT-23.automotive": {
+   "lo": 0.0267,
+   "hi": 0.145,
+   "n": 16,
+   "distributors": 8,
+   "p50": 0.066,
    "was": [
-    0.169,
-    2.69
+    0.0267,
+    0.145
    ]
   },
   "ic_bga.soc.automotive": {
@@ -266,6 +266,17 @@
     1.34
    ]
   },
+  "ic_soic.flash.automotive": {
+   "lo": 0.692,
+   "hi": 5.63,
+   "n": 12,
+   "distributors": 7,
+   "p50": 1.71,
+   "was": [
+    0.692,
+    5.63
+   ]
+  },
   "ic_bga.mcu.automotive": {
    "lo": 13.3,
    "hi": 26.3,
@@ -275,6 +286,17 @@
    "was": [
     13.3,
     26.3
+   ]
+  },
+  "ic_soic.csa.automotive": {
+   "lo": 0.336,
+   "hi": 1.69,
+   "n": 12,
+   "distributors": 4,
+   "p50": 1.06,
+   "was": [
+    0.336,
+    1.69
    ]
   },
   "ic_qfn.imu.automotive": {
@@ -332,17 +354,6 @@
     0.357
    ]
   },
-  "fuse_tvs.fuse.automotive": {
-   "lo": 0.0578,
-   "hi": 0.176,
-   "n": 11,
-   "distributors": 5,
-   "p50": 0.101,
-   "was": [
-    0.0578,
-    0.176
-   ]
-  },
   "passive_0805.ind.automotive": {
    "lo": 0.0179,
    "hi": 0.892,
@@ -374,6 +385,17 @@
    "was": [
     9.9,
     49.3
+   ]
+  },
+  "fuse_tvs.rect.automotive": {
+   "lo": 0.0556,
+   "hi": 0.155,
+   "n": 10,
+   "distributors": 4,
+   "p50": 0.0962,
+   "was": [
+    0.0556,
+    0.155
    ]
   }
  }

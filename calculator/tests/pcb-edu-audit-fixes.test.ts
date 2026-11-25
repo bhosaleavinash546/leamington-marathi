@@ -22,7 +22,9 @@ describe('G-01 — fitted test points are priced; bare pads stay free', () => {
     expect(isNotFitted(tp)).toBe(false);
     const r = classRange(tp, true);
     expect(r.key).toBe('testpoint.any.automotive');
-    expect(classDefaultPrice(r)).toBeGreaterThan(0.09);   // Keystone 5015 $0.12–0.18 at 5,000
+    // EDU v5: the range is the page-read prices — RH-5015 szlcsc reel £0.0322 to Keystone 5015 Digi-Key £0.142 at 5,000.
+    expect(r.lo).toBe(0.032); expect(r.hi).toBe(0.142);
+    expect(classDefaultPrice(r)).toBeCloseTo(0.032 + 0.11 * 0.25, 5);
   });
   it('test PADS and DNP stay not fitted', () => {
     expect(isNotFitted({ componentType: 'testpoint', description: 'Test pads on the bottom side' })).toBe(true);

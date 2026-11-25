@@ -338,7 +338,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       priceBasis: cls.key,
       priceCapped: lowered,
       priceRaised: priced > unit + 1e-6 && unit > 0,
-      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}; priced at the lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''}`
+      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}; priced at the lower-half midpoint${cls0.p50 !== undefined && cls0.p50 < cls0.lo + (cls0.hi - cls0.lo) * 0.25 ? `, held at the median of the sourced prices (£${round(cls0.p50 * k, 4)})` : ''}${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''}`
         + (line.imagerVolumeRule === true && line.distributorListingGBP != null
           ? `; distributor listing £${round(num(line.distributorListingGBP), 2)} shown for reference only — imagers are priced at automotive volume`
           : ''),

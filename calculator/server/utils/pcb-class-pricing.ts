@@ -34,33 +34,48 @@ export interface ClassRange {
   label: string;
   lo: number;
   hi: number;
+  /** Median of the sourced prices the range came from, when it came from sourced prices: the default point never
+   *  lies above it (EDU v5, Nov 2026). */
+  p50?: number;
 }
 
-type Row = { lo: number; hi: number; auto?: [number, number]; label: string };
+type Row = { lo: number; hi: number; auto?: [number, number]; label: string; autoP50?: number };
 
-const R = (lo: number, hi: number, label: string, auto?: [number, number]): Row => ({ lo, hi, label, auto });
+const R = (lo: number, hi: number, label: string, auto?: [number, number], autoP50?: number): Row => ({ lo, hi, label, auto, autoP50 });
+
+/** A resistor stated by its film or by a bare k / M value ("Thick film 10k 1%"): catalogue resistors were filed in the
+ *  capacitor rows and lifted them (EDU v5, Nov 2026). */
+const RES_WORDS = /resist|\bres\b|thick[- ]film|thin[- ]film|metal[- ]film|zero[- ]ohm|\bjumper\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)|(^|\s)\d+(\.\d+)?[kKM](?=[\s,]|$)/i;
+
+/** A chip thermistor (NTC / PTC): its own row, not an MLCC (EDU v5). Catalogue, AEC-Q at 10k: NCU03XH103 £0.0188,
+ *  NCU15XH103 £0.0253, NTCG163JF103 £0.090, NTCS0603E3103 £0.114, NTCSP163JF103 £0.119 (Digi-Key); standard grade
+ *  NCP18XH103F03RB szlcsc whole reel £0.0115 (page read 25 Nov 2026, scripts/edu-ctrl-2026-11-25/xcheck/china-volume.json). */
+const THERMISTOR = { kind: 'ntc', test: /thermistor|\bntc\b|\bptc\b/i, row: R(0.0115, 0.12, 'chip NTC / PTC thermistor', [0.019, 0.12], 0.09) };
 
 /** Sub-kinds within a component type, by description / value keywords. Order matters. */
 const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = {
   passive_0402: [
-    { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.0005, 0.003, 'chip resistor 0402', [0.003, 0.012]) },
+    THERMISTOR,
+    { kind: 'res', test: RES_WORDS, row: R(0.0005, 0.003, 'chip resistor 0402', [0.0018, 0.0047], 0.0042) },   // EDU v5 — general-purpose thick film AEC-Q200 at 10k (catalogue): AC0402FR £0.0018, CRCW04020000Z0EDC £0.0012 (jumper), ERJ-2GE0R00 £0.0031, CRCW040210K0 £0.0033, RK73H1E £0.0036, CRCW0402… ×11 £0.0042–0.0047, ERJ-2RKF £0.0043; was [0.003, 0.012], not sourced
     { kind: 'ind', test: /inductor|choke|ferrite|bead/i, row: R(0.004, 0.04, 'chip inductor / ferrite 0402', [0.01, 0.08]) },
     { kind: 'cap_c0g', test: /c0g|np0/i, row: R(0.003, 0.02, 'MLCC C0G 0402', [0.012, 0.04]) },
     { kind: 'cap', row: R(0.001, 0.015, 'MLCC 0402', [0.005, 0.025]) },   // GCM155 100 nF AEC $0.006–0.0087 @10k (2026-10-01)
   ],
   passive_0603: [
+    THERMISTOR,
     // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
     // resistor rows' catalogue evidence (EDU audit G-12): their own row.
     { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
-    { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.001, 0.005, 'chip resistor 0603', [0.004, 0.015]) },
+    { kind: 'res', test: RES_WORDS, row: R(0.001, 0.005, 'chip resistor 0603', [0.0025, 0.0051], 0.0045) },   // EDU v5 — catalogue thick film AEC-Q200 at 10k: RK73B1J £0.0025, RK73H1J £0.0035, CRCW060310K0 £0.0045, AC0603FR £0.0045, ERJ-3GEY0R00 £0.0047, ERJ-3EKF £0.0051; was [0.004, 0.015]
     { kind: 'ind', test: /inductor|choke|ferrite|bead/i, row: R(0.006, 0.06, 'chip inductor / ferrite 0603', [0.025, 0.15]) },
     { kind: 'cap', row: R(0.002, 0.04, 'MLCC 0603', [0.012, 0.06]) },   // GCM188 1 µF AEC $0.030 @28k (2026-10-01)
   ],
   passive_0805: [
+    THERMISTOR,
     // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
     // resistor rows' catalogue evidence (EDU audit G-12): their own row.
     { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
-    { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.002, 0.01, 'chip resistor 0805', [0.006, 0.03]) },
+    { kind: 'res', test: RES_WORDS, row: R(0.002, 0.01, 'chip resistor 0805', [0.0066, 0.0079], 0.0067) },   // EDU v5 — catalogue thick film AEC-Q200 at 10k: ERJ-6ENF £0.0066, CRCW08051K00 £0.0067, AC0805FR £0.0067, CRCW080510K0 £0.0071, RCA0805 £0.0079; was [0.006, 0.03]
     { kind: 'ind', test: /inductor|choke/i, row: R(0.018, 0.6, 'power / RF inductor 0805-class', [0.06, 1.8]) },
     { kind: 'fb', test: /ferrite|bead/i, row: R(0.008, 0.08, 'ferrite bead 0805', [0.02, 0.15]) },
     { kind: 'cap', row: R(0.005, 0.18, 'MLCC 0805', [0.03, 0.5]) },   // GCM21B 10 µF AEC $0.113–0.124 @10k (2026-10-01)
@@ -69,10 +84,18 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     // Round 5: SMD tantalum / polymer tantalum, 6 catalogue parts (KEMET T598 / T495, AVX), 10k p10–p90 £0.36–1.42 (AEC-Q £0.55–1.50) —
     // they were priced as an MLCC (£0.09 v £1.18–2.15 sourced).
     { kind: 'tant', test: /tantal|polymer tant/i, row: R(0.36, 1.42, 'tantalum / polymer tantalum capacitor', [0.55, 1.5]) },
+    // EDU v5: SMD aluminium / hybrid polymer cans were filed as 1206 MLCCs (and lifted that row) or priced as a through-hole
+    // electrolytic. Catalogue, AEC-Q at 10k (Digi-Key / Mouser): UCM1V101 £0.129, EEE-FK1E471 £0.170, GYF1E101 £0.171,
+    // GYE1V101 £0.192, HHXC350ARA271 £0.220, GYB1V271 £0.260, UCZ1V101 £0.274, EEH-ZA1H101 £0.360, GYA1V271 £0.381,
+    // GYC1V271 £0.396, PCV1V101 £0.946 — median £0.26.
+    { kind: 'alu', test: /electrolytic|alumin\w*|hybrid polymer|polymer (alu|hybrid)|conductive polymer/i, row: R(0.12, 0.95, 'SMD aluminium / hybrid polymer capacitor', [0.129, 0.946], 0.26) },
     // Current-sense shunts / precision metal-strip resistors were priced as plain chip resistors and lifted the
     // resistor rows' catalogue evidence (EDU audit G-12): their own row.
     { kind: 'shunt', test: /shunt|current[- ]?sens|sense resistor|milli-?ohm|\bm(Ω|ohm)\b|metal[- ]strip|\d+\s*m(Ω|ohm|R)\b/i, row: R(0.03, 0.6, 'current-sense shunt resistor', [0.05, 0.8]) },
-    { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.003, 0.015, 'chip resistor 1206', [0.008, 0.04]) },
+    // A 2010 / 2512 power resistor is not a 1206 (it took the 1206 row once that row was sourced) — catalogue AEC-Q200 at
+    // 10k: CRCW25121K00 £0.046, CRCW251210R0 £0.078 (EDU v5).
+    { kind: 'res_pwr', test: /\b(2010|2512|2816|3637)\b|\b[1-3]\s*W\b/i, row: R(0.015, 0.08, 'power chip resistor 2010 / 2512', [0.0457, 0.0782]) },
+    { kind: 'res', test: RES_WORDS, row: R(0.003, 0.015, 'chip resistor 1206', [0.0049, 0.0109], 0.008) },   // EDU v5 — catalogue thick film AEC-Q200 at 10k: CRCW120612R0 £0.0049, CRCW120610R0 £0.0076, CRCW12061M00 £0.0080, CRCW120610K0 £0.0087, AC1206FR £0.0109; was [0.008, 0.04]
     { kind: 'ind', test: /inductor|choke/i, row: R(0.03, 0.8, 'power inductor 1206-class', [0.08, 1.8]) },
     { kind: 'cap', row: R(0.008, 0.25, 'MLCC 1206', [0.02, 0.3]) },
   ],
@@ -105,19 +128,39 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'array', test: /array|\d\s*ch/i, row: R(0.1, 0.6, 'TVS / ESD array', [0.2, 1.2]) },
     { kind: 'tvs', test: /tvs|esd|transient|zener/i, row: R(0.03, 0.22, 'TVS diode', [0.12, 0.8]) },
     { kind: 'poly', test: /poly|ptc/i, row: R(0.03, 0.15, 'SMD polyfuse', [0.08, 0.35]) },
+    // A rectifier / Schottky diode fell to the fuse row — and, filed the same way, catalogue rectifiers made up 10 of
+    // the fuse row's 11 evidence parts (EDU v5). Catalogue AEC-Q at 10k: BAT46WJ £0.036, RB160MM-60 £0.058, S1MHE3 £0.062,
+    // STPS2H100AY £0.082, US1MHE3 £0.092, ES1DHE3 £0.101, NRVB140SF £0.108, PMEG6030ELP-Q £0.123, NRVBA340 £0.152,
+    // NRVBS340 £0.176 (median £0.096).
+    { kind: 'rect', test: /rectifier|schottky|power diode|\bdiode\b/i, row: R(0.03, 0.2, 'rectifier / Schottky diode', [0.036, 0.176], 0.096) },
     { kind: 'fuse', row: R(0.08, 0.4, 'SMD chip fuse', [0.15, 0.6]) },   // Littelfuse 0603SF $0.32–0.37 @1–4k (2026-10-01)
   ],
   ic_soic: [
     // Round 5: IMU / accelerometer / gyroscope, 14 catalogue parts, 10k p10–p90 £1.43–15.6 (AEC-Q 10: £1.32–5.11).
     { kind: 'imu', test: /\bimu\b|accelerometer|gyro|inertial|6-?(dof|axis)/i, row: R(1.4, 15.6, 'IMU / inertial sensor', [1.3, 5.1]) },
     // Logic before the package row: a single-gate buffer in SC-70 took the generic small-IC row (EDU audit G-02).
-    { kind: 'logic', test: /^(?!.*\b(driver|drivers|mosfet|igbt|transistor|sensor|isolat\w*)\b)(?=.*(\blogic\b(?![- ]?level)|single[- ]gate|\b(and|or|nand|nor|xor|xnor)[- ]gate\b|\bbuffer\b|\binverter\b|\b74[a-z]{1,4}\d))/i, row: R(0.03, 0.25, 'logic IC', [0.08, 0.6]) },
+    // Logic AEC-Q at 10k from the catalogue (EDU v5): 74LVC1G08QSE £0.059, SN74LVC1G08-Q1 £0.076, SN74LVC1G17-Q1 £0.105,
+    // SN74LV4T125-Q1 £0.538 (median £0.091). Was [0.08, 0.6], not sourced.
+    { kind: 'logic', test: /^(?!.*\b(driver|drivers|mosfet|igbt|transistor|sensor|isolat\w*)\b)(?=.*(\blogic\b(?![- ]?level)|single[- ]gate|\b(and|or|nand|nor|xor|xnor)[- ]gate\b|\bbuffer\b|\binverter\b|\b74[a-z]{1,4}\d))/i, row: R(0.03, 0.25, 'logic IC', [0.059, 0.54], 0.091) },
+    // Isolated amplifiers / modulators and current-sense amplifiers were filed under "op-amp" and set its evidence row
+    // (p50 £1.70 for a row an LM2904 line takes) — EDU v5. Catalogue AEC-Q at 10k: AMC3301 £1.94, AMC1301 £2.40,
+    // AMC1311 £2.46, AMC1350 £2.59, AMC1302 £2.60, AMC3330 £2.74, Si8931 £3.42; INA240 £1.61, AD8418 £1.70, TSC2012
+    // £1.01, TSC2020 £0.90.
+    { kind: 'iso_amp', test: /isolat\w*[^.]*\b(amplifier|amp|modulator|adc|voltage sense)\b|delta[- ]sigma modulator|reinforced[^.]*(amplifier|modulator)/i, row: R(1.5, 3.5, 'isolated amplifier / modulator', [1.94, 3.42], 2.59) },
+    { kind: 'csa', test: /current[- ]sens\w*\s+amp|current[- ]shunt (monitor|amp)|shunt amp/i, row: R(0.6, 1.8, 'current-sense amplifier', [0.9, 1.7], 1.31) },
     { kind: 'sot', test: /\b(SOT-?23-?[5-8]?|SOT-?353|SOT-?363|SC-?70|TSOT|SOT-?553)\b/i, row: R(0.05, 0.6, 'small IC in SOT-23 / SC-70', [0.12, 1.2]) },
-    { kind: 'flash', test: /flash|eeprom|memory|\bnor\b|fram/i, row: R(0.15, 1.5, 'serial memory SOIC', [0.3, 2.5]) },
+    // EEPROMs had their own price lifted by the NOR-flash parts in the memory row (EDU v5). Catalogue at 10k: AEC-Q
+    // M95640 £0.175, M24C02 £0.176, NV24C64 £0.167, M93C86 £0.503, M24C64 £0.517, M95160 £0.557, M95320 £0.696, M95256
+    // £0.775 (median £0.51); standard AT24C02D £0.092, CAT24C512 £0.283.
+    { kind: 'eeprom', test: /eeprom/i, row: R(0.09, 0.78, 'serial EEPROM', [0.167, 0.775], 0.51) },
+    { kind: 'flash', test: /flash|memory|\bnor\b|fram/i, row: R(0.15, 1.5, 'serial memory SOIC', [0.3, 2.5]) },
     { kind: 'can', test: /\bcan\b|\blin\b|transceiver|rs-?485|rs-?232/i, row: R(0.3, 1.5, 'interface transceiver SOIC', [0.5, 3]) },
     { kind: 'ldo', test: /\bldo\b|regulator/i, row: R(0.08, 1.2, 'LDO regulator SOIC', [0.3, 3]) },
     { kind: 'opamp_p', test: /precision|instrumentation/i, row: R(0.5, 4, 'precision op-amp', [1.5, 8]) },
-    { kind: 'opamp', test: /op-?amp|comparator|amplifier/i, row: R(0.1, 1.2, 'op-amp / comparator SOIC', [0.3, 3.5]) },
+    // General-purpose op-amps / comparators, AEC-Q at 10k from the catalogue (EDU v5): LM2903QS £0.056, LM2904BQ £0.128,
+    // LM393BQ £0.149, LMV358AQ £0.182, TLV9002Q £0.199, LMV321 £0.223, TLV9062Q £0.352, TS393 £0.437, TSV912 £0.595
+    // (median £0.199). Was [0.3, 3.5], not sourced.
+    { kind: 'opamp', test: /op-?amp|operational amplifier|comparator|amplifier/i, row: R(0.05, 0.6, 'op-amp / comparator SOIC', [0.056, 0.6], 0.199) },
     { kind: 'driver', test: /driver|switch|mosfet driver/i, row: R(0.12, 1.8, 'driver IC SOIC', [0.4, 5]) },
     { kind: 'any', row: R(0.08, 1.8, 'SOIC / SOT IC (unidentified)', [0.25, 5]) },
   ],
@@ -181,14 +224,20 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'film', test: /film cap|film capacitor|\bmkp\b|\bmkt\b|polypropylene/i, row: R(0.1, 2, 'film capacitor', [0.15, 3]) },
     { kind: 'to220', test: /to-?220|to-?247|to-?263/i, row: R(0.14, 2.8, 'TO-220 / D2PAK power device', [0.4, 5]) },
     { kind: 'pwr_conn', test: /power connector|automotive.*connector/i, row: R(0.4, 4.5, 'TH power connector', [2, 12]) },
+    // A plain pin header / wire-to-board header took the TH connector row (£1.24 on the EDU board's 2 × 4 debug header).
+    // Lower bound page-read 25 Nov 2026 (scripts/edu-ctrl-2026-11-25/xcheck/china-volume.json): JST B5B-XH-A szlcsc whole
+    // reel £0.030 (LCSC £0.040), CJT A2541WV-2x4P £0.051 (LCSC £0.066). No franchised page could be read (503 / wrong
+    // part), so the upper bound £0.40 is a CostVision engineering heuristic, not sourced. Headers carry no AEC-Q grade.
+    { kind: 'header', test: /^(?!.*\b(sealed|press[- ]?fit|ampseal|mx150|hvil|power|automotive)\b).*(pin header|wire[- ]to[- ]board|\b(2\.54|2\.5|2\.0|2|1\.27|1\.25)\s*mm\b.*header|header.*\b(2\.54|2\.5|2\.0|1\.27|1\.25)\s*mm\b)/i, row: R(0.03, 0.4, 'pin / wire-to-board header', [0.03, 0.4]) },
     { kind: 'conn', test: /connector|header|terminal|socket/i, row: R(0.12, 1.8, 'TH connector', [0.4, 4]) },
     { kind: 'any', row: R(0.05, 1.8, 'through-hole part (unidentified)', [0.12, 4]) },
   ],
   // An SMD test point fitted as a part (loop / terminal). Keystone 5015: Digi-Key $0.18 at 5,000 = £0.142 (page read
-  // 25 Nov 2026, scripts/edu-ctrl-2026-11-25/xcheck/components.json); Future Electronics $0.12 at 5,000 = £0.094 (a search
-  // listing, not read). No Chinese equivalent was read, so the row is the franchised range (EDU audit G-01).
+  // 25 Nov 2026, scripts/edu-ctrl-2026-11-25/xcheck/components.json). Lower bound: the equivalent RH-5015 on szlcsc, whole
+  // reel £0.0322 ex-VAT (LCSC £0.040), page read 25 Nov 2026 (xcheck/china-volume.json) — EDU v5; was £0.09, a search
+  // listing never read (EDU audit G-01).
   testpoint: [
-    { kind: 'any', row: R(0.09, 0.15, 'SMD test point (loop / terminal)', [0.09, 0.15]) },
+    { kind: 'any', row: R(0.032, 0.142, 'SMD test point (loop / terminal)', [0.032, 0.142]) },
   ],
   manual_solder: [
     { kind: 'any', row: R(0.02, 0.22, 'wire / jumper / hand-fitted part', [0.05, 0.5]) },
@@ -206,6 +255,12 @@ const DISCRETE: Array<{ test: RegExp; row: Row }> = [
   { test: /\b(sic|silicon carbide|coolsic|elitesic|gan|gallium nitride|coolgan)\b.*\b(mosfet|fet|transistor|hemt|diode|schottky|switch)\b|\b(mosfet|fet|transistor|hemt|diode|schottky)\b.*\b(sic|silicon carbide|gan|gallium nitride)\b/i,
     row: R(1.6, 18, 'SiC / GaN power semiconductor', [4.3, 19]) },
   { test: /\bigbt\b/i, row: R(0.95, 4.5, 'discrete IGBT', [0.95, 4.5]) },
+  // ESD / TVS protection in SOT-23 apart from small-signal transistors and diodes: the CAN / Ethernet protection parts
+  // (£0.05–0.30) lifted the small-signal row (EDU v5). Catalogue AEC-Q at 10k: AQ24CANFD £0.048, SZNUP2105L £0.056,
+  // PESD1CAN £0.065, PESD2CANFD24V £0.067, CDSOT23-T24CAN £0.067, PESD2IVN24 £0.075, ESD2CANFD24 £0.110, PESD2ETH100
+  // £0.113, TPD2E2U06 £0.131, ESD2CAN24 £0.160, TPD2E007 £0.295 (median £0.075).
+  { test: /\b(SOT-?23(-?\d)?|SOD-?323|SC-?70|SOT-?323|SOT-?363)\b.*\b(esd|tvs|transient|surge)\b|\b(esd|tvs|transient|surge)\b.*\b(SOT-?23(-?\d)?|SOD-?323|SC-?70|SOT-?323|SOT-?363)\b/i,
+    row: R(0.04, 0.3, 'ESD / TVS protection SOT-23', [0.048, 0.295], 0.075) },
   { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
     row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]) },   // BC847 $0.017–0.023, 2N7002 AEC $0.025–0.049, BSS138 $0.045–0.06 @3k (2026-10-01)
   // "LFPAK56" / "TOLL" did not match \blfpak\b and fell to "SOIC IC (unidentified)" (round 5).
@@ -226,9 +281,14 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
     // read as a resistor (EDU audit G-02).
     const ref = /^[A-Z]{1,3}\d/i.test(refDes.trim()) ? refDes.toUpperCase() : '';
     const want = /^R/.test(ref) ? 'res' : /^C/.test(ref) ? 'cap' : /^(L|FB)/.test(ref) ? 'ind'
-      : CAP_WORDS.test(text) ? 'cap' : IND_WORDS.test(text) ? 'ind' : null;
-    const tant = /tantal|polymer tant/i.test(text) ? rows.find(x => x.kind === 'tant') : undefined;
-    if (tant) return { key: `${ct}.tant`, row: tant.row };
+      : CAP_WORDS.test(text) ? 'cap' : IND_WORDS.test(text) ? 'ind' : RES_WORDS.test(text) ? 'res' : null;
+    // A thermistor's own words outrank the designator letter (RT1, TH1 read as a resistor); then the capacitor bodies
+    // that are not MLCCs (EDU v5).
+    for (const k of ['ntc', 'tant', 'alu', 'res_pwr'] as const) {
+      const r = rows.find(x => x.kind === k);
+      if (k === 'res_pwr' && ((want !== 'res' && !(want === null && RES_WORDS.test(text))) || rows.some(x => x.kind === 'shunt' && x.test!.test(text)))) continue;
+      if (r && r.test!.test(text) && (k !== 'alu' || !/tantal/i.test(text))) return { key: `${ct}.${k}`, row: r.row };
+    }
     const shunt = rows.find(x => x.kind === 'shunt' && x.test!.test(text));
     if (shunt && want !== 'cap' && want !== 'ind') return { key: `${ct}.shunt`, row: shunt.row };
     if (want) {
@@ -280,6 +340,9 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
   const body = /(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/.exec(p);
   const bigBody = body ? Math.max(Number(body[1]), Number(body[2])) >= 3.2 && Math.max(Number(body[1]), Number(body[2])) <= 30 : false;
   if (/^(resistor|capacitor|inductor|ferrite)/.test(ct) || ct.startsWith('passive')) {
+    // An SMD can (V-chip, "SMD 8x10", hybrid polymer) is not a through-hole electrolytic (EDU v5).
+    const smdCan = /electrolytic|alumin|hybrid polymer|conductive polymer/.test(p) && /\bsmd\b|\bsmt\b|v-?chip|surface[- ]mount/.test(p) && !/radial|\btht\b|through/.test(p);
+    if (smdCan) return 'passive_1206';
     if (ct === 'capacitor_electrolytic' || /electrolytic|radial|tht|through/.test(p)) return 'through_hole';
     if (/tantal|polymer tant/.test(p)) return 'passive_1206';   // case A–E (3216–7343): not an 0603 MLCC (round 5)
     return size === '0402' ? 'passive_0402' : size === '0603' ? 'passive_0603' : size === '0805' ? 'passive_0805' : size || bigBody ? 'passive_1206' : 'passive_0603';
@@ -323,20 +386,26 @@ export function classRange(line: { componentType?: unknown; description?: unknow
   }
   const ev = auto ? EVIDENCE_ROWS[`${key}.automotive`] : undefined;
   const [lo, hi] = ev ? [ev.lo, ev.hi] : auto && row.auto ? row.auto : [row.lo, row.hi];
-  return { key: `${key}${auto ? '.automotive' : ''}`, label: `${row.label}${auto ? ', AEC-Q' : ''}${ev ? ` (catalogue p10–p90 of ${ev.n} parts)` : ''}`, lo, hi };
+  const p50 = ev ? ev.p50 : auto && row.auto ? row.autoP50 : undefined;
+  return { key: `${key}${auto ? '.automotive' : ''}`, label: `${row.label}${auto ? ', AEC-Q' : ''}${ev ? ` (catalogue p10–p90 of ${ev.n} parts)` : ''}`, lo, hi, ...(p50 !== undefined ? { p50 } : {}) };
 }
 
 /** Where a class-range line lands with no better information: the lower-half
- *  midpoint (the prompt's "default to the lower half" rule, made deterministic). */
+ *  midpoint (the prompt's "default to the lower half" rule, made deterministic) — and never above the median of
+ *  the sourced prices the range came from. Class prices are skewed (p10–p90 spans ten times or more), so the
+ *  arithmetic quarter point lay ABOVE the row's own median on 14 of the 34 catalogue rows: "the lower half" priced
+ *  an unread line dearer than half the parts of its kind (EDU v5, Nov 2026). */
 export function classDefaultPrice(r: ClassRange): number {
-  return Math.round((r.lo + (r.hi - r.lo) * 0.25) * 100000) / 100000;
+  const quarter = r.lo + (r.hi - r.lo) * 0.25;
+  const point = r.p50 !== undefined && r.p50 > 0 ? Math.min(quarter, r.p50) : quarter;
+  return Math.round(point * 100000) / 100000;
 }
 
 /**
  * The table row behind a class key ("passive_0402.res.automotive", "discrete.SOT-23 / SOD-123 discrete.automotive") —
  * the table as DATA, for an independent re-add of a line's price (scripts/arith-audit/pcb.ts). Null for an unknown key.
  */
-export function classRowByKey(key: string): { lo: number; hi: number; label: string } | null {
+export function classRowByKey(key: string): { lo: number; hi: number; label: string; p50?: number } | null {
   const auto = /\.automotive$/.test(key);
   const k = key.replace(/\.automotive$/, '');
   let row: Row | undefined;
@@ -345,5 +414,6 @@ export function classRowByKey(key: string): { lo: number; hi: number; label: str
   if (!row) return null;
   const ev = auto ? EVIDENCE_ROWS[key] : undefined;
   const [lo, hi] = ev ? [ev.lo, ev.hi] : auto && row.auto ? row.auto : [row.lo, row.hi];
-  return { lo, hi, label: row.label };
+  const p50 = ev ? ev.p50 : auto && row.auto ? row.autoP50 : undefined;
+  return { lo, hi, label: row.label, ...(p50 !== undefined ? { p50 } : {}) };
 }
