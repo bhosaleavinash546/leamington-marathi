@@ -23,6 +23,12 @@ export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' |
   { id: 'pcbf-programme-years', key: 'programmeYears', kind: 'num' },
   { id: 'pcbf-sampling', key: 'samplingCadence', kind: 'text' },
   { id: 'pcbf-asil', key: 'asilConfirmed', kind: 'text' },
+  // Operations and the component market (EDU v6): blank = the tool's own figure (read off the BOM, or its estimate).
+  { id: 'pcbf-coat-sides', key: 'conformalCoatSides', kind: 'num' },
+  { id: 'pcbf-press-fit', key: 'pressFitConnectors', kind: 'num' },
+  { id: 'pcbf-prog-sec', key: 'programmingSec', kind: 'num' },
+  { id: 'pcbf-fct-sec', key: 'functionalTestSec', kind: 'num' },
+  { id: 'pcbf-component-market', key: 'componentMarket', kind: 'text' },
   { id: 'pcbf-layers', key: 'estimatedLayers', kind: 'num' },
   { id: 'pcbf-vias', key: 'throughVias', kind: 'num' },
   { id: 'pcbf-blind-vias', key: 'blindVias', kind: 'num' },
@@ -63,6 +69,9 @@ export function editedFields(snapshot: Record<string, string>, doc: Document = d
  * typed is ground truth: it is marked measured so the server keeps it exactly.
  * A quality grade picks the costing: an automotive grade costs the board as automotive.
  */
+/** Number fields whose blank means "the tool's own figure", not 0 (EDU v6 operations). */
+const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec']);
+
 export function boardSpecPatch(edited: string[], doc: Document = document): { spec: Record<string, unknown>; domain?: string; notes: string[] } {
   const spec: Record<string, unknown> = {};
   const notes: string[] = [];
@@ -72,7 +81,8 @@ export function boardSpecPatch(edited: string[], doc: Document = document): { sp
     const f = doc.getElementById(id) as Field | null;
     if (!def || !f) continue;
     const v = valueOf(f);
-    if (def.kind === 'num') { const x = Number(v); if (Number.isFinite(x) && x >= 0) spec[def.key] = x; }
+    if (def.kind === 'num' && v.trim() === '' && AUTO_WHEN_BLANK.has(def.key)) spec[def.key] = '';   // blank = the tool's own figure
+    else if (def.kind === 'num') { const x = Number(v); if (Number.isFinite(x) && x >= 0) spec[def.key] = x; }
     else if (def.kind === 'bool') spec[def.key] = v === 'true';
     else spec[def.key] = v;
     if (def.key === 'widthMm' || def.key === 'heightMm') { spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'user'; }

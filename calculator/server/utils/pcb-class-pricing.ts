@@ -18,6 +18,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { marketRow } from '../data/pcb-component-market.js';
 
 /**
  * AEC-Q ranges set by the catalogue's own distributor prices (p10–p90 at 10k, rows with ≥ 10 parts from ≥ 2
@@ -366,7 +367,7 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
 }
 
 /** The price range a line's class and description justify. Never null. */
-export function classRange(line: { componentType?: unknown; description?: unknown; pkg?: unknown; value?: unknown; automotive?: unknown; refDes?: unknown; bomSource?: unknown; userCorrected?: unknown }, automotiveBoard = false): ClassRange {
+export function classRange(line: { componentType?: unknown; description?: unknown; pkg?: unknown; value?: unknown; automotive?: unknown; refDes?: unknown; bomSource?: unknown; userCorrected?: unknown }, automotiveBoard = false, market?: string): ClassRange {
   const desc = String(line.description ?? '');
   const text = `${desc} ${String(line.pkg ?? '')} ${String(line.value ?? '')}`;
   // A line takes the AEC-Q range on an automotive board, or when the USER's BOM (file / picture / edit) says the part is
@@ -384,6 +385,9 @@ export function classRange(line: { componentType?: unknown; description?: unknow
     const p = pick(ct, text, String((line as { refDes?: unknown }).refDes ?? '')) ?? pick('ic_soic', '')!;
     key = p.key; row = p.row;
   }
+  // The build country's market (EDU v6): an automotive row priced from that country's sourced reel prices.
+  const mk = auto ? marketRow(market, key) : null;
+  if (mk) return { key: `${key}.automotive@${market}`, label: `${row.label}, AEC-Q (${market === 'cn' ? 'China' : market} market: own-stock reel prices ex-VAT, p10–p90 of ${mk.n} parts)`, lo: mk.lo, hi: mk.hi, p50: mk.p50 };
   const ev = auto ? EVIDENCE_ROWS[`${key}.automotive`] : undefined;
   const [lo, hi] = ev ? [ev.lo, ev.hi] : auto && row.auto ? row.auto : [row.lo, row.hi];
   const p50 = ev ? ev.p50 : auto && row.auto ? row.autoP50 : undefined;
@@ -405,7 +409,10 @@ export function classDefaultPrice(r: ClassRange): number {
  * The table row behind a class key ("passive_0402.res.automotive", "discrete.SOT-23 / SOD-123 discrete.automotive") —
  * the table as DATA, for an independent re-add of a line's price (scripts/arith-audit/pcb.ts). Null for an unknown key.
  */
-export function classRowByKey(key: string): { lo: number; hi: number; label: string; p50?: number } | null {
+export function classRowByKey(key0: string): { lo: number; hi: number; label: string; p50?: number } | null {
+  // "<key>.automotive@cn": the build country's market row (EDU v6).
+  const [key, market] = key0.split('@');
+  if (market) { const mk = marketRow(market, key.replace(/\.automotive$/, '')); return mk ? { lo: mk.lo, hi: mk.hi, p50: mk.p50, label: `${market} market` } : null; }
   const auto = /\.automotive$/.test(key);
   const k = key.replace(/\.automotive$/, '');
   let row: Row | undefined;

@@ -18,6 +18,11 @@ import { applyAutomotiveGrade } from '../../server/routes/pcb.js';
 import { classRowByKey } from '../../server/utils/pcb-class-pricing.js';
 import { CLASS_MEDIAN, descriptionCap } from '../../server/utils/pcb-price-catalogue.js';
 import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+// Market evidence is DATA (prospectus ASP, trade-press rise, class-3 extras) — read, not the function under check.
+import { PCB_FAB_MARKET } from '../../server/data/pcb-market-evidence.js';
+// The operations' FIGURES (data, each sourced or labelled) — the arithmetic below is the shadow's own (EDU v6).
+import { OPS } from '../../server/data/pcb-operations.js';
+import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 import { countryFactor } from '../../src/engine/regional-services.js';
 import { computePCBFabDrivers, type PCBFabInputs } from '../../src/engine/modules/pcb-fab.js';
 import { computePCBADrivers, type PCBAInputs } from '../../src/engine/modules/pcba.js';
@@ -99,17 +104,25 @@ function shadowUnit(l: Line, boards: number, auto: boolean): number | null {
 }
 
 // ── The country cost, re-added ────────────────────────────────────────────────────────────────────────────────────
+// Panels: the three engineering sizes + 18 × 24 in (457 × 610 mm, Epec); the HIGHEST UTILISATION wins, then the most
+// boards (EDU audit G-03, Nov 2026 — it was "most boards", which puts a small board on the largest panel).
 function panelFit(w: number, h: number) {
   let best = { n: 1, util: 0, pw: 480, ph: 350 };
-  for (const [pw, ph] of [[480, 350], [380, 280], [250, 330]]) for (const [bw, bh] of [[w, h], [h, w]]) {
+  for (const [pw, ph] of [[480, 350], [380, 280], [250, 330], [457, 610]]) for (const [bw, bh] of [[w, h], [h, w]]) {
     const cols = Math.floor((pw - 20 + 3) / (bw + 3)), rows = Math.floor((ph - 20 + 3) / (bh + 3));
     const k = cols * rows, util = k * bw * bh / (pw * ph);
-    if (k > best.n || (k === best.n && util > best.util)) best = { n: Math.max(1, k), util, pw, ph };
+    if (k >= 1 && (util > best.util + 1e-9 || (Math.abs(util - best.util) <= 1e-9 && k > best.n))) best = { n: Math.max(1, k), util, pw, ph };
   }
   return best;
 }
+/** Drilling a fab holds in its per-area price (PCBasic: 100,000 holes / m² = 1,000 / dm²; EDU audit G-05). */
+const HOLES_INCLUDED_PER_DM2 = 1000;
 interface Board { w: number; h: number; layers: number; finish: string; through: number; blind: number; micro: number; hdi: boolean; imp: boolean;
-  smt: number; th: number; manual: number; bga: number; aoi: boolean; ict: number; coatCm2: number; bom: number; qty: number; weightKg?: number }
+  smt: number; th: number; manual: number; bga: number; aoi: boolean; ict: number; coatCm2: number; bom: number; qty: number; weightKg?: number;
+  /** Boards a lot (set-ups) and programme years (one-off tooling, fixtures, programmes) — EDU audit G-08. */
+  lot?: number; years?: number;
+  /** The operations as costed (counts and seconds — analysis.operationsCosted), EDU v6. */
+  ops?: { reflowSides?: number; coatSides?: number; pressFitConnectors?: number; pressFitPins?: number; pressFitLines?: number; programmingSec?: number; functionalTestSec?: number; hvTest?: boolean } }
 function shadowCountry(b: Board, cc: string) {
   const r = PCB_COUNTRY_RATES[cc];
   const rd = REGIONAL_DATA[(cc === 'gb' ? 'UK' : cc.toUpperCase()) as ManufacturingRegion];
@@ -120,16 +133,32 @@ function shadowCountry(b: Board, cc: string) {
   const fk = ({ imag: 'iteq', iteq: 'iteq', enig: 'enig', osp: 'osp', hasl: 'hasl', hasl_lf: 'hasl_lf', enepig: 'enepig' } as Record<string, keyof typeof r.pcbFab.surfaceFinishMultiplier>)[b.finish] ?? 'enig';
   const base = A * r.pcbFab.baseCostPerDm2_2L * W, lay = A * r.pcbFab.layerAdderPerDm2 * x * W;
   const fin = (base + lay) * (r.pcbFab.surfaceFinishMultiplier[fk] - 1);
-  const vias = b.through / 100 * r.pcbFab.viaAdderPer100Through + b.blind / 10 * r.pcbFab.viaAdderPer10Blind + b.micro / 10 * r.pcbFab.viaAdderPer10Micro;
+  const lotQ = b.lot && b.lot > 0 ? Math.min(b.qty, Math.round(b.lot)) : b.qty;
+  const progQ = Math.max(1, b.qty) * (b.years && b.years >= 1 ? Math.min(30, b.years) : 1);
+  const charged = Math.max(0, b.through - Math.round(HOLES_INCLUDED_PER_DM2 * A));
+  const vias = charged / 100 * r.pcbFab.viaAdderPer100Through + b.blind / 10 * r.pcbFab.viaAdderPer10Blind + b.micro / 10 * r.pcbFab.viaAdderPer10Micro;
   const hdi = b.hdi ? (base + lay) * r.pcbFab.hdiUpliftPct / 100 : 0;
   const imp = b.imp ? (base + lay) * r.pcbFab.impedanceUpliftPct / 100 : 0;
-  const fab = base + lay + fin + vias + hdi + imp + r.pcbFab.setupCostGBP / b.qty;
-  const st = (sec: number, nre: number, cap: number) => Math.min(cap, sec / 3600 * 2 * labour + nre / b.qty);
-  const smt = b.smt / 3600 * r.assembly.smtLineRatePerHr + (b.smt > 0 ? r.assembly.batchSetupGBP / b.qty : 0);
+  const setup = r.pcbFab.setupCostGBP / progQ;
+  const fab = base + lay + fin + vias + hdi + imp + setup;
+  const st = (sec: number, nre: number, cap: number) => Math.min(cap, sec / 3600 * 2 * labour + nre / progQ);
+  const smt = b.smt / 3600 * r.assembly.smtLineRatePerHr + (b.smt > 0 ? r.assembly.batchSetupGBP / lotQ : 0);
   const aoi = b.aoi ? st(20, 200, r.assembly.aoiPerBoard) : 0;
   const xray = b.bga > 0 ? st(20, 300, r.assembly.xrayPerBoard) : 0;
   const ict = b.ict > 0 ? st(b.ict, 5000, r.assembly.ictPerBoard) : 0;
-  const asm = smt + b.th * r.assembly.thRatePerJoint + b.manual * r.assembly.manualSolderPerJoint + aoi + xray + ict + b.coatCm2 * r.assembly.conformalCoatPerCm2;
+  // Operations (EDU v6): station seconds × 2 × labour + one-offs ÷ programme boards.
+  const o = b.ops ?? {}, sec = (s: number) => s / 3600 * 2 * labour, coat1 = b.coatCm2 * r.assembly.conformalCoatPerCm2;
+  let ops = 0;
+  if (Math.round(o.reflowSides ?? 1) === 2) ops += r.assembly.batchSetupGBP / lotQ + OPS.stencilGBPPerSide.value / progQ;
+  const cs = Math.max(0, Math.min(2, Math.round(o.coatSides ?? 0)));
+  if (cs >= 1) ops += (cs === 2 ? coat1 : 0) + sec(cs * OPS.coatInspectSecPerSide.value) + sec((o.pressFitConnectors ?? 0) * OPS.maskSecPerConnector.value);
+  if ((o.pressFitConnectors ?? 0) + (o.pressFitPins ?? 0) > 0) ops += sec((o.pressFitConnectors ?? 0) * OPS.pressFitSecPerConnector.value + (o.pressFitPins ?? 0) * OPS.pressFitSecPerPin.value) + (o.pressFitLines ?? 0) * OPS.pressFitToolGBP.value / progQ;
+  if ((o.programmingSec ?? 0) > 0) ops += sec(o.programmingSec!) + OPS.programmerGBP.value / progQ;
+  if ((o.functionalTestSec ?? 0) > 0 || o.hvTest) {
+    const hv = o.hvTest ? OPS.hipotSec.value + OPS.hipotHandlingSec.value : 0;
+    ops += sec((o.functionalTestSec ?? 0) + hv) + ((o.functionalTestSec ?? 0) > 0 ? OPS.functionalFixtureGBP.value / progQ : 0) + (o.hvTest ? OPS.hipotTesterGBP.value / progQ : 0);
+  }
+  const asm = smt + b.th * r.assembly.thRatePerJoint + b.manual * r.assembly.manualSolderPerJoint + aoi + xray + ict + coat1 + ops;
   const lq = Math.log10(Math.max(1, b.qty));
   const burdenPct = b.qty <= 1000 ? 0.10 : b.qty >= 100_000 ? 0.05 : Math.round((lq <= 4 ? 0.10 - 0.03 * (lq - 3) : 0.07 - 0.02 * (lq - 4)) * 1e5) / 1e5;
   const bom = b.bom * (1 + burdenPct);
@@ -142,21 +171,33 @@ function shadowCountry(b: Board, cc: string) {
   const lambda = Math.min(0.3, b.smt * r.assembly.dppm / 1e6);
   const yieldLoss = lambda * (0.95 * (0.2 * asm + 0.5 * ict) + 0.05 * (fab + asm + bom));
   return { fab, asm, bom, burden: b.bom * burdenPct, freight, duty, energy, pack, yieldLoss, test: aoi + xray + ict, ict,
-    total: fab + asm + freight + duty + bom + energy + pack + yieldLoss, panel: p };
+    total: fab + asm + freight + duty + bom + energy + pack + yieldLoss, panel: p, notInAsp: vias + hdi + setup };   // heavy copper: not on these boards (1 oz)
 }
 // The automotive premiums (CostVision engineering figures; pcb.ts computeAutomotiveFab/AssemblyCost).
-function shadowAuto(fabStd: number, asmStd: number, b: Board, cc: string, asil: string, bpp: number) {
+function shadowAuto(fabStd: number, asmStd: number, b: Board, cc: string, asil: string, bpp: number, notInAsp = 0) {
   const reg = (cc === 'gb' ? 'UK' : cc.toUpperCase()) as ManufacturingRegion;
   const insp = countryFactor('inspection', reg), proc = countryFactor('process', reg);
   const r2 = (v: number) => Math.round(v * 100) / 100;
   const area = b.w * b.h / 100;
-  const fabT = r2(fabStd + fabStd * 0.18 + fabStd * 0.4 * (b.layers >= 8 ? 0.5 : 0.35)
+  // Market basis (EDU audit G-06): a country with a sourced automotive ASP prices the board at it — ASP × the price
+  // rise × the table's layer shape against the class anchor + class-3 extras, in the evidence's own currency; plus what
+  // an ASP cannot hold (holes above the allowance, blind / micro vias, HDI, heavy copper, the tooling set-up).
+  const mk = PCB_FAB_MARKET[cc], cls = mk?.classes.find(c => b.layers >= c.minLayers && b.layers <= c.maxLayers);
+  let fabT: number;
+  if (mk && cls) {
+    const row = PCB_COUNTRY_RATES[cc].pcbFab, shapeOf = (L: number) => row.baseCostPerDm2_2L + row.layerAdderPerDm2 * Math.max(0, L - 2);
+    const perM2 = cls.aspLocalPerM2 * (1 + mk.rise.used) * shapeOf(b.layers) / shapeOf(cls.anchorLayers) + mk.class3ExtrasPerM2.value;
+    // The evidence's FX: China ¥8.88 / £ (the tool's China figures); others the catalogue's 29 Sep 2026 snapshot (data).
+    const perGbp = mk.currency === 'CNY' ? 8.88 : 1 / FX_TO_GBP_TABLE[mk.currency];
+    fabT = r2(b.w * b.h / 1e6 * perM2 / perGbp + notInAsp);
+  } else fabT = r2(fabStd + fabStd * 0.18 + fabStd * 0.4 * (b.layers >= 8 ? 0.5 : 0.35)
     + Math.min(45, Math.max(8, area * 0.08)) * insp / bpp + Math.min(35, Math.max(5, b.layers * 2.5)) * insp / bpp);
   const shifts = asil === 'ASIL-D' ? 6 : asil === 'ASIL-C' ? 4 : 0;
   const perShift = b.qty >= 1000 ? 500 : Math.max(1, Math.min(200, b.qty));
   const burn = shifts ? Math.round(180 * insp * shifts / perShift * 100) / 100 : 0;
   const asmT = r2(asmStd * 1.25 + (b.qty >= 1000 ? 0.05 : 0.8) * proc + burn);
-  return { fabP: Math.max(0, fabT - r2(fabStd)), asmP: Math.max(0, asmT - r2(asmStd)), burn };
+  const market = Boolean(mk && cls);
+  return { fabP: market ? fabT - r2(fabStd) : Math.max(0, fabT - r2(fabStd)), asmP: Math.max(0, asmT - r2(asmStd)), burn };
 }
 
 // ── A board through the product's Stage 4, then re-added ──────────────────────────────────────────────────────────
@@ -193,12 +234,13 @@ async function board(name: string, fixture: string, cc: string, qty: number) {
   const B: Board = { w: n(bs.widthMm), h: n(bs.heightMm), layers: n(bs.estimatedLayers), finish: String(bs.surfaceFinish || 'enig').toLowerCase(),
     through: n(bs.throughVias), blind: n(bs.blindVias), micro: n(bs.microVias), hdi: String(bs.hdiStructure || 'none') !== 'none', imp: Boolean(bs.impedanceControlRequired),
     smt: n(as.smtPlacements), th: n(as.throughHoleJoints), manual: n(as.manualJoints), bga: n(as.bgaCount), aoi: Boolean(as.aoiRequired), ict: n(as.ictTimeSec),
-    coatCm2: 0, bom: ce.totalBOMCostGBP, qty, weightKg: n(bs.boardWeightG) > 0 ? n(bs.boardWeightG) / 1000 : undefined };
+    coatCm2: 0, bom: ce.totalBOMCostGBP, qty, weightKg: n(bs.boardWeightG) > 0 ? n(bs.boardWeightG) / 1000 : undefined,
+    lot: n(bs.lotSize) || undefined, years: n(bs.programmeYears) || undefined, ops: a.operationsCosted };
   const S = shadowCountry(B, s4.selectedCountry);
   checkTrue(`${tag}: panel ${S.panel.n}-up on ${S.panel.pw}×${S.panel.ph}`, S.panel.n === bd.panelInfo.boardsPerPanel && S.panel.pw === bd.panelInfo.panelW);
   let fab = S.fab, asm = S.asm;
   if (auto) {
-    const P = shadowAuto(Math.round(S.fab * 100) / 100, Math.round(S.asm * 100) / 100, B, s4.selectedCountry, String(bd.automotiveGrade?.asil), S.panel.n);
+    const P = shadowAuto(Math.round(S.fab * 100) / 100, Math.round(S.asm * 100) / 100, B, s4.selectedCountry, String(bd.automotiveGrade?.asil), S.panel.n, S.notInAsp);
     fab += P.fabP; asm += P.asmP;
     check(`${tag}: automotive fab premium`, P.fabP, bd.breakdown.automotiveFab ?? 0, 0.006);
     check(`${tag}: automotive assembly premium`, P.asmP, bd.breakdown.automotiveAssembly ?? 0, 0.006);
@@ -211,7 +253,9 @@ async function board(name: string, fixture: string, cc: string, qty: number) {
   check(`${tag}: components + EMS burden`, S.bom, bd.bomCostPerBoard);
   check(`${tag}: EMS burden`, S.burden, bd.breakdown.materialBurden ?? 0);
   check(`${tag}: freight`, S.freight, bd.breakdown.logistics);
-  check(`${tag}: UK duty (CIF)`, S.duty, bd.breakdown.importDuty, 0.006);
+  // The product rounds the commercial duty to the penny, then adds the grade's duty and rounds again (applyAutomotiveGrade):
+  // up to a penny from the exact figure, the tolerance the graded fab and assembly take.
+  check(`${tag}: UK duty (CIF)`, S.duty, bd.breakdown.importDuty, auto ? 0.011 : 0.006);
   check(`${tag}: energy`, S.energy, bd.breakdown.energy);
   check(`${tag}: packaging`, S.pack, bd.breakdown.packaging);
   check(`${tag}: cost of quality`, S.yieldLoss, bd.breakdown.yieldLoss);
@@ -245,7 +289,7 @@ async function board(name: string, fixture: string, cc: string, qty: number) {
     const S50 = shadowCountry({ ...B, qty: 50, bom: bom50 }, s4.selectedCountry);
     let t50 = S50.total;
     if (auto) {
-      const P = shadowAuto(Math.round(S50.fab * 100) / 100, Math.round(S50.asm * 100) / 100, { ...B, qty: 50 }, s4.selectedCountry, String(bd.automotiveGrade?.asil), S50.panel.n);
+      const P = shadowAuto(Math.round(S50.fab * 100) / 100, Math.round(S50.asm * 100) / 100, { ...B, qty: 50 }, s4.selectedCountry, String(bd.automotiveGrade?.asil), S50.panel.n, S50.notInAsp);
       t50 += (P.fabP + P.asmP) * (1 + PCB_COUNTRY_RATES[s4.selectedCountry].logistics.importDutyFraction);
     }
     const tooling = (B.smt > 300 ? 220 : B.smt > 100 ? 160 : 120) + 280;

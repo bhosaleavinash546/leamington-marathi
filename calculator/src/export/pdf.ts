@@ -2440,7 +2440,7 @@ function renderPcbaSections(
   const basisRows: string[][] = [
     ['Build country', rep.country, 'Annual volume', rep.annualVolume ? `${rep.annualVolume.toLocaleString('en-GB')} boards` : '—'],
     ['Delivery', 'UK, import duty paid', 'Board type', rep.domainLabel],
-    ['Parts list from', rep.bomOrigin, 'Lines · parts', `${rep.bom.length} lines · ${rep.bomPieces} parts`],
+    ['Parts list from', rep.bomOrigin, 'Lines · parts', `${rep.bom.length} lines · ${rep.bomPieces} parts${rep.quantity && rep.quantity.low !== rep.quantity.high ? ` (likely ${rep.quantity.low}–${rep.quantity.high})` : ''}`],
   ];
   if (rep.confidence) basisRows.push(
     ['Estimate confidence', rep.confidence.label, 'Likely range', `${c(rep.confidence.low)} – ${c(rep.confidence.high)}`],
@@ -2453,6 +2453,28 @@ function renderPcbaSections(
     columnStyles: { 0: { cellWidth: 40, textColor: GREY }, 1: { cellWidth: 51, fontStyle: 'bold', textColor: NAVY }, 2: { cellWidth: 36, textColor: GREY }, 3: { cellWidth: 55, fontStyle: 'bold', textColor: NAVY } },
   });
   y = lastFinalY(doc) + 6;
+  // Verify these first (EDU v6): the dearest lines, ranked — the screen's list.
+  if (rep.verifyFirst.length) {
+    y = chk(doc, y, 30);
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+    doc.text(`Verify these first — the ${rep.verifyFirst.length} dearest lines (${(rep.verifyFirst.reduce((t, v) => t + v.share, 0) * 100).toFixed(0)} % of the components)`, MG, y + 3);
+    y += 5;
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'plain',
+      head: [['#', 'Part', 'Qty', 'A board', 'Share', 'Price basis']],
+      body: rep.verifyFirst.map(v => [String(v.rank), v.part.slice(0, 70) + (v.customerSupplied ? ' (customer-supplied)' : ''), String(v.qty), c(v.amount), `${(v.share * 100).toFixed(1)} %`,
+        `${v.status === 'confirmed' ? 'Confirmed' : 'To verify'} — ${v.why}`]),
+      headStyles: { fontSize: 7.5, textColor: GREY, fontStyle: 'bold' }, bodyStyles: { fontSize: 7.5, cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 } },
+      alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: { 0: { cellWidth: 8 }, 2: { cellWidth: 12, halign: 'right' }, 3: { cellWidth: 20, halign: 'right' }, 4: { cellWidth: 15, halign: 'right' }, 5: { cellWidth: 62 } },
+    });
+    y = lastFinalY(doc) + 4;
+  }
+  if (rep.quantity) { para(`Count: ${rep.quantity.note}`); y += 1; }
+  if (rep.componentMarket) { para(`Components priced at the ${rep.componentMarket.market} market (${rep.componentMarket.source}): ${c(rep.componentMarket.components)} a board, against ${c(rep.componentMarket.global)} at global distributor prices — the engineer's choice; other countries stay at global prices.`); y += 1; }
+  if (rep.operations > 0) { para(`Assembly includes ${c(rep.operations)} of operations beyond placement and inspection (second reflow side, coating sides / inspection / masking, press-fit, programming, functional and HV test) — each priced on the basis lines.`); y += 1; }
+  if (rep.fullEconomic) { para(`Full-economic ${c(rep.fullEconomic.amount)} a board — the delivered cost with the automotive programme NRE (${c(rep.fullEconomic.nrePerBoard)} a board) spread over the programme.`); y += 1; }
+  if (rep.emsInvoice) { para(`EMS invoice ${c(rep.emsInvoice.amount)} a board — the delivered cost less ${c(rep.emsInvoice.customerSupplied)} of parts the customer supplies (directed buy / consignment; no EMS burden on them).`); y += 2; }
   if (rep.safety) {
     const sf = rep.safety;
     const lines = [

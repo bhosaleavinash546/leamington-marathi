@@ -1,51 +1,37 @@
-# PCB vision accuracy fixtures
+# PCB board set — measuring the Image-to-BOM tool
 
-Drop labelled boards here to turn the PCB Image-to-Cost accuracy from an
-*assertion* into a *measured number* (Rec #4).
+Two kinds of file, per board. Nothing here is ever tuned to: a board is a measurement, not a target.
 
-## How to add a board
-
-For each board, add two files:
-
-- `myboard.image.jpg` — the PCB photo (top, and ideally bottom + angled views)
-- `myboard.truth.json` — the hand-verified ground-truth BOM:
+## 1. `<board>.board.json` — the tool's figure against the price paid (EDU v6, Nov 2026)
 
 ```json
 {
-  "board": "Acme Motor Controller rev C",
-  "widthMm": 80, "heightMm": 60, "layers": 4,
-  "bom": [
-    { "refDes": "U1", "partNumber": "STM32F407VGT6", "componentType": "MCU",   "unitPriceGBP": 5.10, "qty": 1 },
-    { "refDes": "U2", "partNumber": "TJA1051T",       "componentType": "CAN PHY", "unitPriceGBP": 0.62, "qty": 1 },
-    { "refDes": "C1", "partNumber": "GRM188R61A106",  "componentType": "MLCC",  "unitPriceGBP": 0.013, "qty": 8 }
-  ]
+  "board": "name / revision",
+  "analysis": { "file": "e2e/fixtures/pcb-camera-replies.json", "kind": "replies", "useBomImage": true },
+  "country": "cn", "annualVolume": 250000, "domain": "automotive_adas", "asil": "Unknown",
+  "pricePaid": { "gbp": 17.00, "basis": "delivered-uk", "date": "2026-10-06", "source": "who paid it, to whom, on what terms" },
+  "reference": { "gbp": 150.56, "basis": "ex-works", "kind": "manual should-cost — NOT a price paid", "source": "" }
 }
 ```
 
-`partNumber`, `unitPriceGBP` and `qty` are optional but enable the part-number-
-accuracy, price-MAPE and total-cost-error metrics respectively.
+- `analysis` is a STORED reading: a model-replies fixture (`kind: replies`, as `e2e/fixtures/`) or the analysis the screen
+  held after the engineer's edits (`kind: analysis` — save it from a live run's `reprice.json`). Photos are not stored here
+  (customer hardware); keep them with the board's owner.
+- `pricePaid.basis`: `delivered-uk` (the tool's headline) or `ex-works` (headline less freight and duty). Say who the
+  seller is — a Tier-1 or distributor margin sits inside a price paid.
+- `reference` is printed beside the tool but never counts as accuracy.
 
-## How it scores
+`npm run accuracy:pcb` runs every board through Stage 4 (no model, no network) and prints the error per board, MAPE and
+bias over the boards with a price paid. Below five prices paid the verdict is "insufficient".
 
-`scoreBom(predicted, truth)` (in `server/utils/pcb-vision-accuracy.ts`) matches
-components by reference designator and reports:
+## 2. `<board>.truth.json` — counting against the real BOM
 
-| Metric | Meaning |
-|---|---|
-| `componentPrecision` | of detected components, fraction that are real (catches hallucinations/duplicates) |
-| `componentRecall` | of real components, fraction detected (catches misses) |
-| `componentF1` | harmonic mean of the two |
-| `partNumberAccuracy` | of matched components, fraction with the correct MPN |
-| `priceMAPE` | mean absolute % price error on matched priced items |
-| `totalCostError` | error on the headline board cost |
+The real BOM from the schematic / BOM file — never from the photo (`truth.template.json`). With it, the board is also scored
+for counting: part-count error (Σ predicted qty ÷ Σ true qty − 1), designator recall / precision and part-number accuracy
+(`server/utils/pcb-vision-accuracy.ts`). `tests/pcb-golden-boards.test.ts` scores `<board>.truth.json` against a saved
+`<board>.prediction.json`.
 
-Use `aggregateScores([...])` to macro-average across the whole fixture set and
-track the numbers release-over-release.
+## What to add first
 
-## Running against the live pipeline
-
-The unit tests in `pcb-vision-accuracy.test.ts` verify the *scoring* with
-synthetic data (no network). To measure the *live* model you also need a running
-server with an `ANTHROPIC_API_KEY`; POST each fixture image to
-`/api/pcb/analyze-image`, then `scoreBom(response.analysis.bom, truth.bom)`.
-That step is intentionally not in CI (it costs API calls and is non-hermetic).
+Boards your team has bought, with the price paid and its terms, and the real BOM: five or more turn "insufficient" into a
+measured MAPE and bias. The camera board (£17.00 delivered) is the only price paid today.

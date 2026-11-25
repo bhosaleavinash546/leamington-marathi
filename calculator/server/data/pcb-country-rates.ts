@@ -1,4 +1,5 @@
 import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { operationsCost, type OperationsInput } from './pcb-operations.js';
 import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 /**
  * PCB Manufacturing Country Rates Database — 2026 Edition
@@ -1012,6 +1013,13 @@ export interface PCBCostInput {
   /** Programme life in years: one-off tooling, fixtures and programmes are spread over orderQuantity × years.
    *  Absent = 1 (the order alone, as before — EDU audit G-08, Nov 2026). */
   programmeYears?: number;
+  /** Components the CUSTOMER buys and supplies (directed buy / consignment — EDU v6, Nov 2026), £ a board at their own
+   *  price. They stay in the board's cost (the customer pays for them) but the EMS charges no material burden on them,
+   *  and the EMS invoice is the board less them. Absent = 0 (the EMS buys every part, as before). */
+  customerSuppliedGBP?: number;
+  /** Operations beyond placement and inspection (EDU v6 — package B): second reflow side, second coated side, coating
+   *  inspection / masking, press-fit, programming, functional + HV test (server/data/pcb-operations.ts). Absent = none. */
+  operations?: OperationsInput;
 }
 
 /** Boards in a production lot, never more than the order. */
@@ -1052,6 +1060,11 @@ export interface PCBCountryCostBreakdown {
   logisticsPerBoard: number;
   bomCostPerBoard: number;
   totalPerBoard: number;
+  /** What the EMS invoices: the board less the parts the customer supplies (EDU v6). Equals totalPerBoard when none. */
+  emsInvoicePerBoard?: number;
+  /** The board with the automotive programme NRE spread over annual × years (EDU v6), and that NRE a board. */
+  fullEconomicPerBoard?: number;
+  nrePerBoard?: number;
   leadTimeWeeks: number;
   qualityIndex: number;
   certifications: string[];
@@ -1077,6 +1090,10 @@ export interface PCBCountryCostBreakdown {
     /** EMS material burden on the components (inside bomCostPerBoard), and its rate */
     materialBurden?: number;
     materialBurdenPct?: number;
+    /** Components the customer supplies (inside bomCostPerBoard, no burden on them) — EDU v6 */
+    customerSupplied?: number;
+    /** Operations beyond placement and inspection (inside assemblyPerBoard) — EDU v6, pcb-operations.ts */
+    operations?: number;
     logistics: number;
     importDuty: number;
     /** Fab + assembly electricity at the country's actual tariff (audit fix) */
@@ -1255,7 +1272,10 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const ictBuildUp = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr + ICT_FIXTURE_GBP / progQ;
   const ictCost = input.ictTimeSec > 0 ? Math.min(a.ictPerBoard, ictBuildUp) : 0;
   const confCost = input.conformalCoatAreaCm2 * a.conformalCoatPerCm2;
-  const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost;
+  // EDU v6 (package B): the operations the costing left out — each line with its arithmetic and sources.
+  const opsLines = input.operations ? operationsCost(input.operations, a.labourRatePerHr, progQ, lotQ, a.batchSetupGBP, confCost) : [];
+  const opsCost = opsLines.reduce((t, l) => t + l.gbp, 0);
+  const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost + opsCost;
 
   // Components are bought on one global market (no country index since F13). The EMS buys the components and charges for doing so: procurement, inventory carrying, scrap and a
   // margin on material (cost-plus EMS practice — Venture Outsource, EMSNow; the rate falls on larger
@@ -1263,7 +1283,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // quote. MATERIAL_BURDEN is an engineering figure by volume, stated in the breakdown.
   const materialBurdenPct = materialBurdenFor(input.orderQuantity);
   const bomAtCost = input.totalBOMCostGBP;   // components are bought on one global market (no country index, F13)
-  const materialBurden = bomAtCost * materialBurdenPct;
+  // Parts the customer buys and supplies carry no EMS burden (the EMS neither buys nor finances them — EDU v6).
+  const customerSupplied = Math.min(bomAtCost, Math.max(0, Number(input.customerSuppliedGBP) || 0));
+  const materialBurden = (bomAtCost - customerSupplied) * materialBurdenPct;
   const bomSourced = bomAtCost + materialBurden;
 
   // Logistics. Sea freight applies at volume (>= 2500 boards/order) where a
@@ -1334,10 +1356,14 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     ...(ictCost > 0 ? [{ item: 'In-circuit test', gbp: ictCost, source: `ceiling: ${T.table}; station = 2 × labour, £${ICT_FIXTURE_GBP} fixture: ${T.engineering}; test time: the board spec (estimated unless typed); labour: ${T.regional}`,
       formula: `min(table ${f(a.ictPerBoard)}, ${input.ictTimeSec}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${ICT_FIXTURE_GBP} ÷ ${progQ.toLocaleString('en-GB')} = ${f(ictTime + ICT_FIXTURE_GBP / progQ)}) = ${f(ictCost)}` }] : []),
     ...(confCost > 0 ? [{ item: 'Conformal coating', gbp: confCost, source: T.table, formula: `${input.conformalCoatAreaCm2.toFixed(1)} cm² × ${f(a.conformalCoatPerCm2, 6)}/cm² = ${f(confCost)}` }] : []),
+    ...opsLines.map(l => ({ item: l.item, gbp: l.gbp, source: `${l.source}; labour: ${T.regional}`, formula: l.formula })),
     // The FX behind catalogue prices is printed (EDU audit G-19): a US$ listing is £ at the catalogue's snapshot, not today's rate.
     { item: 'Components', gbp: bomAtCost, source: `the BOM lines, each priced at its own parts-bought quantity (see each line's price note); catalogue prices in £ at the catalogue's FX snapshot of 29 Sep 2026 (US$1 = £${FX_TO_GBP_TABLE.USD}, €1 = £${FX_TO_GBP_TABLE.EUR}, ¥1 = £${FX_TO_GBP_TABLE.CNY}) — not a contract rate`, formula: `Σ qty × unit price = ${f(bomAtCost)}` },
-    { item: 'EMS material burden', gbp: materialBurden, source: `${T.engineering} (cost-plus EMS practice; 10 % ≤ 1k, 7 % at 10k, 5 % ≥ 100k boards, log-linear between)`,
-      formula: `${f(bomAtCost)} × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}` },
+    { item: 'EMS material burden', gbp: materialBurden, source: `${T.engineering} (cost-plus EMS practice; 10 % ≤ 1k, 7 % at 10k, 5 % ≥ 100k boards, log-linear between)${customerSupplied > 0 ? '; none on the parts the customer supplies' : ''}`,
+      formula: customerSupplied > 0
+        ? `(${f(bomAtCost)} − customer-supplied ${f(customerSupplied)}) × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}`
+        : `${f(bomAtCost)} × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}` },
+
     { item: `Freight (${useSea ? 'sea' : 'air'})`, gbp: freight, source: `freight rates: ${T.table}; ${input.weightKg && input.weightKg > 0 ? 'weight measured' : `weight estimated as area × layers × 28 g/dm² (at least 20 g) — ${T.engineering}; it over-states a bare board, which is about 30 g/dm² at 1.6 mm whatever the layer count`}; sea at ≥ 2,500 boards: ${T.engineering}`,
       formula: `max(${f(l.minAirFreightGBP, 2)} minimum ÷ ${q.toLocaleString('en-GB')}, ${estWeightKg.toFixed(4)} kg × ${f(freightRate, 2)}/kg) = ${f(freight)}` },
     { item: 'UK import duty', gbp: importDuty, source: `duty rate: ${T.table} — an assumption, the HS line for this assembly is not confirmed; customs value = CIF (goods + freight)`,
@@ -1358,6 +1384,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     logisticsPerBoard: Math.round(logisticsPerBoard * 100) / 100,
     bomCostPerBoard: Math.round(bomSourced * 100) / 100,
     totalPerBoard: Math.round(totalPerBoard * 100) / 100,
+    emsInvoicePerBoard: Math.round((totalPerBoard - customerSupplied) * 100) / 100,
     leadTimeWeeks: rate.leadTimeWeeks.production,
     qualityIndex: rate.qualityIndex,
     certifications: rate.certifications,
@@ -1378,6 +1405,8 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       importDuty: Math.round(importDuty * 100) / 100,
       materialBurden: Math.round(materialBurden * 100) / 100,
       materialBurdenPct,
+      ...(customerSupplied > 0 ? { customerSupplied: Math.round(customerSupplied * 100) / 100 } : {}),
+      ...(opsCost > 0 ? { operations: Math.round(opsCost * 100) / 100 } : {}),
       energy: Math.round(energyCost * 100) / 100,
       packaging: Math.round(packagingCost * 100) / 100,
       yieldLoss: Math.round(yieldLossCost * 100) / 100,

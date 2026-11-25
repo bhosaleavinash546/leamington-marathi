@@ -1,0 +1,13 @@
+{
+ "board": "77 GHz radar demo board (photos)",
+ "analysis": {
+  "file": "e2e/fixtures/pcb-radar-replies.json",
+  "kind": "replies"
+ },
+ "country": "cn",
+ "annualVolume": 250000,
+ "domain": "automotive_adas",
+ "asil": "Unknown",
+ "pricePaid": null,
+ "notes": "A demo board: no price paid."
+}

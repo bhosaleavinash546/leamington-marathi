@@ -65,22 +65,22 @@
   color: var(--slot-c); background: color-mix(in srgb, var(--slot-c) 16%, transparent);
   border: 1px solid color-mix(in srgb, var(--slot-c) 35%, transparent);
 }
-.pcb-slot--closeup .pcb-slot__badge { min-width: 18px; text-align: center; padding: 2px 5px; }
+.pcb-slot--closeup .pcb-slot__badge , .pcb-slot--zoom .pcb-slot__badge { min-width: 18px; text-align: center; padding: 2px 5px; }
 .pcb-slot__icon {
   display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   color: var(--slot-c); background: color-mix(in srgb, var(--slot-c) 14%, transparent); font-size: 1.05rem;
 }
-.pcb-slot--closeup .pcb-slot__icon { width: 26px; height: 26px; font-size: 0.85rem; }
+.pcb-slot--closeup .pcb-slot__icon , .pcb-slot--zoom .pcb-slot__icon { width: 26px; height: 26px; font-size: 0.85rem; }
 .pcb-slot__title { font-size: 0.7rem; font-weight: 650; color: var(--text-primary); line-height: 1.2; }
-.pcb-slot--closeup .pcb-slot__title { font-size: 0.62rem; font-weight: 600; color: var(--text-secondary); }
+.pcb-slot--closeup .pcb-slot__title , .pcb-slot--zoom .pcb-slot__title { font-size: 0.62rem; font-weight: 600; color: var(--text-secondary); }
 .pcb-slot__hint { font-size: 0.6rem; color: var(--text-muted); line-height: 1.25; }
 .pcb-slot__add {
   display: inline-flex; align-items: center; gap: 3px; margin-top: 3px;
   font-size: 0.6rem; font-weight: 600; color: var(--slot-c); opacity: .85;
 }
 .pcb-slot__add .ic { width: 0.8em; height: 0.8em; }
-.pcb-slot--closeup .pcb-slot__add { opacity: 0; transition: opacity .15s; }
-.pcb-slot--closeup:hover .pcb-slot__add, .pcb-slot--closeup:focus-visible .pcb-slot__add { opacity: .85; }
+.pcb-slot--closeup .pcb-slot__add , .pcb-slot--zoom .pcb-slot__add { opacity: 0; transition: opacity .15s; }
+.pcb-slot--closeup:hover .pcb-slot__add, .pcb-slot--zoom:hover .pcb-slot__add, .pcb-slot--closeup:focus-visible .pcb-slot__add , .pcb-slot--zoom:focus-visible .pcb-slot__add { opacity: .85; }
 
 /* Filled state */
 .pcb-slot.is-filled { border-style: solid; border-color: color-mix(in srgb, var(--success) 70%, var(--slot-c));
@@ -114,4 +114,8 @@
 
 /* Small tiles: the title alone on one line ("Close-up 2" wrapped beside "Replace"). */
 .pcb-slot__caption > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pcb-slot--closeup .pcb-slot__replace { display: none; }
+.pcb-slot--closeup .pcb-slot__replace , .pcb-slot--zoom .pcb-slot__replace { display: none; }
+
+/* Zooms for counting (EDU v6): 16 tiles, 8 a row on wide screens. */
+.pcb-slots__row--zoom { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+@media (max-width: 900px) { .pcb-slots__row--zoom { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

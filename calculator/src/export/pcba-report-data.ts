@@ -47,6 +47,10 @@ export interface PcbaAnalysisLike {
   _boardFunction?: string;
   _automotiveNRE?: { ppapCost: number; fmeaCost: number; dvprCost: number; asilAuditCost: number; totalNRE: number; asilLevel: string };
   _orderQty?: number;
+  /** Stage 4's ranked dearest lines (server/utils/pcb-verify-list.ts — EDU v6). */
+  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number } | null;
+  _quantityBand?: { parts: number; partsLow: number; partsHigh: number; note: string };
+  _verifyList?: Array<{ rank: number; refDes: string; description: string; partNumber: string; qty: number; lineTotalGBP: number; share: number; status: string; why: string; customerSupplied: boolean }>;
 }
 
 export type PcbaStackKey = 'components' | 'burden' | 'fab' | 'autoFab' | 'asm' | 'test' | 'autoAsm' | 'other' | 'rounding' | 'exWorks' | 'freight' | 'duty' | 'delivered';
@@ -78,6 +82,18 @@ export interface PcbaReport {
   boardRows: Array<[string, string]>;
   countries: PcbaCountryRow[];
   confidence: { label: string; low: number; high: number; verifyCount: number; verifyValue: number } | null;
+  /** The dearest lines, ranked, with what stands behind each price (EDU v6) — the screen's list. */
+  verifyFirst: Array<{ rank: number; part: string; qty: number; amount: number; share: number; status: string; why: string; customerSupplied: boolean }>;
+  /** The EMS invoice when the customer supplies parts: the delivered cost less them. */
+  emsInvoice: { amount: number; customerSupplied: number } | null;
+  /** How the parts were counted and the range they can be defended in (EDU v6). */
+  quantity: { parts: number; low: number; high: number; note: string } | null;
+  /** Components at the build country's market, when chosen (EDU v6). */
+  componentMarket: { market: string; source: string; components: number; global: number } | null;
+  /** The board with the automotive programme NRE spread over the programme (EDU v6). */
+  fullEconomic: { amount: number; nrePerBoard: number } | null;
+  /** Operations beyond placement and inspection, inside assembly (EDU v6), £ a board. */
+  operations: number;
   safety: { costed: string; claimed: string | null; notes: string[]; rationale: string; functions: string[]; qualityGrade: string } | null;
   nre: Array<[string, number]>;
   nreTotal: number;
@@ -231,6 +247,17 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const toVerify = bom.filter(l => l.verify);
   const cb = a._confidenceBand;
   const confidence = cb ? { label: cb.overallLabel, low: cb.totalLow, high: cb.totalHigh, verifyCount: toVerify.length, verifyValue: toVerify.reduce((t, l) => t + l.ext, 0) } : null;
+  const verifyFirst = (a._verifyList ?? []).map(v => ({ rank: v.rank, part: [v.refDes, v.partNumber || v.description].filter(Boolean).join(' — '),
+    qty: v.qty, amount: v.lineTotalGBP, share: v.share, status: v.status, why: v.why, customerSupplied: v.customerSupplied }));
+  const csGbp = num((b as Record<string, unknown>).customerSupplied);
+  const fe = bd as { fullEconomicPerBoard?: number; nrePerBoard?: number };
+  const fullEconomic = num(fe.fullEconomicPerBoard) > 0 ? { amount: num(fe.fullEconomicPerBoard), nrePerBoard: num(fe.nrePerBoard) } : null;
+  const operations = num((b as Record<string, unknown>).operations);
+  const cm = a._componentMarket;
+  const componentMarket = cm ? { market: cm.market === 'cn' ? 'China' : cm.market, source: cm.source, components: cm.componentsGBP, global: cm.globalComponentsGBP } : null;
+  const qb = a._quantityBand;
+  const quantity = qb && qb.parts > 0 ? { parts: qb.parts, low: qb.partsLow, high: qb.partsHigh, note: qb.note } : null;
+  const emsInvoice = csGbp > 0 ? { amount: num((bd as { emsInvoicePerBoard?: number }).emsInvoicePerBoard) || r2(bd.totalPerBoard - csGbp), customerSupplied: csGbp } : null;
 
   // ── Functional safety: the level the costing used, what was claimed, why they differ.
   // The costed level is the engineer's (EDU audit G-15); with none, "Not confirmed" is printed beside what the photos suggested.
@@ -286,7 +313,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       { label: 'Freight & duty', amount: bd.logisticsPerBoard, pct: bd.logisticsPerBoard / bd.totalPerBoard * 100 },
     ],
     stack, bom, bomPieces, bomTotal, componentsAtCost, sourcingFactor, bomReconciliation, sourceKey,
-    boardRows, countries, confidence, safety, nre, nreTotal: n?.totalNRE ?? 0,
+    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, safety, nre, nreTotal: n?.totalNRE ?? 0,
     drivers, warnings,
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
     // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM

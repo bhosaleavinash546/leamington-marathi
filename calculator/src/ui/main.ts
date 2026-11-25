@@ -38,6 +38,7 @@ import { formWeights } from '../export/form-weights.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
 import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot, isReadablePcbPhoto } from './pcb/photo-slots.js';
+import { buildVerifyListSection, countEvidenceHtml } from './pcb/verify-panel.js';
 import { analysisStackInput, snapshotFields, editedFields, boardSpecPatch } from './pcb/analysis-link.js';
 import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
@@ -521,8 +522,14 @@ let pcbImageDataURL: string | null = null;
 let pcbUploadedImages: { label: string; dataUrl: string; w: number; h: number }[] = [];
 let pcbNREEnabled = false;
 // Slot 0=Top (primary), 1=Bottom, 2-7=Close-up 1-6
-const PCB_IMAGE_MAX = 8;
-const PCB_SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3', 'Close-up 4', 'Close-up 5', 'Close-up 6'];
+// 2 sides + 6 chip close-ups (slots 0–7, unchanged) + 16 zooms of an area (slots 8–23) — EDU v6: the EDU control board
+// needed 22 photos to count its parts; the screen took 8. Zooms are for COUNTING (which footprints are fitted), close-ups
+// for reading chip markings.
+const PCB_IMAGE_MAX = 24;
+const PCB_SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3', 'Close-up 4', 'Close-up 5', 'Close-up 6',
+  ...Array.from({ length: 8 }, (_, i) => `Zoom of top side ${i + 1}`), ...Array.from({ length: 8 }, (_, i) => `Zoom of bottom side ${i + 1}`)];
+/** Multi-photo drop order: the two sides, then the zooms, then the chip close-ups (a bulk drop is mostly area zooms). */
+const PCB_DROP_ORDER = [0, 1, ...Array.from({ length: 16 }, (_, i) => 8 + i), 2, 3, 4, 5, 6, 7];
 let pcbImageFiles: (File | null)[] = Array(PCB_IMAGE_MAX).fill(null);
 /** Slot photos as data URLs, for the PDF. Files cannot be embedded directly and
  *  an object URL is revoked long before the report is generated. */
@@ -5246,6 +5253,14 @@ function renderPCBFabForm(): string {
       <div class="field-group"><label>Class-3 coupon sampling</label><select id="pcbf-sampling" title="Per the customer's control plan: microsection and coupons per panel, or per production lot"><option value="panel">Per panel</option><option value="lot">Per production lot</option></select></div>
       <div class="field-group"><label>ASIL (from the safety concept)</label><select id="pcbf-asil" title="Set from the hazard analysis, never from a photograph — until set, nothing ASIL-dependent is costed"><option value="">Not confirmed</option><option value="QM">QM</option><option value="ASIL-A">ASIL-A</option><option value="ASIL-B">ASIL-B</option><option value="ASIL-C">ASIL-C</option><option value="ASIL-D">ASIL-D</option></select></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Operations and component prices</div>
+    <div class="field-row">
+      <div class="field-group"><label>Conformal-coated sides</label><input type="number" id="pcbf-coat-sides" step="1" min="0" max="2" placeholder="auto" title="0, 1 or 2 — blank: one side when the board is coated"/></div>
+      <div class="field-group"><label>Press-fit connectors</label><input type="number" id="pcbf-press-fit" step="1" min="0" placeholder="from the BOM" title="Connectors pressed in (TE: 3–5 s each) — blank: counted from the BOM's press-fit lines"/></div>
+      <div class="field-group"><label>Programming time (s a board)</label><input type="number" id="pcbf-prog-sec" step="1" min="0" placeholder="from the MCU flash" title="Blank: each MCU's flash × 2 s/MB (write + erase, AURIX data sheet) + 10 s handling"/></div>
+      <div class="field-group"><label>Functional test time (s a board)</label><input type="number" id="pcbf-fct-sec" step="1" min="0" placeholder="60 s (automotive)" title="End-of-line functional test — blank: 60 s on an automotive board (an engineering estimate, no published figure found)"/></div>
+      <div class="field-group"><label>Component prices</label><select id="pcbf-component-market" title="Global: franchised-distributor prices (default). Build country's market: an EMS buying locally — China: szlcsc own-stock reel prices, 379 sourced parts in 26 classes"><option value="global">Global distributors (default)</option><option value="local">Build country's market (China sourced)</option></select></div>
+    </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Panel Width (mm)</label><input type="number" id="pcbf-panel-w" step="50" min="100" value="500"/></div>
       <div class="field-group"><label>Panel Height (mm)</label><input type="number" id="pcbf-panel-h" step="50" min="100" value="600"/></div>
@@ -8672,8 +8687,8 @@ function wirePCBImageZone(): void {
     const dropped = all.filter(isReadablePcbPhoto).slice(0, PCB_IMAGE_MAX);
     if (dropped.length < all.length) showToast(`${all.length - dropped.length} photo(s) not added — use JPEG, PNG or WebP (at most ${PCB_IMAGE_MAX}).`, 'warning');
     dropped.forEach(f => {
-      const emptySlot = pcbImageFiles.findIndex(s => s === null);
-      if (emptySlot !== -1) setSlot(emptySlot, f);
+      const emptySlot = PCB_DROP_ORDER.find(i => pcbImageFiles[i] === null);
+      if (emptySlot !== undefined) setSlot(emptySlot, f);
     });
   });
 
@@ -8833,13 +8848,19 @@ async function analyzePCBImages(): Promise<void> {
   // Close-ups (slots 3–8 on screen, index ≥ 2) exist to read chip markings: always at full resolution
   // (PCB review, Oct 2026). Top and bottom stay balanced unless Deep analysis is on.
   // By SLOT, as /reanalyze does: the list position moved a close-up to 1600 px when the bottom slot was empty.
-  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file, x.slot >= 2 ? 2576 : uploadMaxEdge)));
+  // Zooms (slots 8–23) are for counting: balanced, like the sides — 16 at full size would not fit the request.
+  // The two whole-board photos go up at 3,264 px (4,096 under Deep analysis): the server cuts them into full-resolution
+  // tiles for the chip-marking read (pcb-ocr-tiles.ts — EDU v6); every stage sees an image at ≤ ~1,568 px anyway.
+  const sideEdge = deepHiRes ? 4096 : 3264;
+  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file, x.slot <= 1 ? sideEdge : x.slot <= 7 ? 2576 : uploadMaxEdge)));
   uploadFiles.forEach(file => formData.append('pcbImages', file));
   formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
 
-  // Retain every uploaded (downscaled) image so all export reports can embed them.
+  // Retain every uploaded (downscaled) image so all export reports can embed them — the side photos at the balanced size
+  // (they go up larger for the marking tiles; a report needs no 3,264 px photo).
+  const retainFiles = await Promise.all(selectedFiles.map((x, i) => x.slot <= 1 ? downscaleImageForUpload(x.file, uploadMaxEdge) : Promise.resolve(uploadFiles[i])));
   try {
-    pcbUploadedImages = await Promise.all(uploadFiles.map(async (file, i) => {
+    pcbUploadedImages = await Promise.all(retainFiles.map(async (file, i) => {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const rd = new FileReader();
         rd.onload = () => resolve(rd.result as string);
@@ -9043,8 +9064,8 @@ function injectPCBImagePanel(): void {
     if (!files.length || !_pcbSetSlot) return;
     const placed: string[] = [];
     for (const f of files) {
-      let idx = pcbImageFiles.findIndex((s, i) => i >= 2 && s === null);
-      if (idx === -1) idx = PCB_IMAGE_MAX - 1;
+      let idx = pcbImageFiles.findIndex((s, i) => i >= 2 && i <= 7 && s === null);
+      if (idx === -1) idx = 7;
       _pcbSetSlot(idx, f);
       placed.push(`Close-up ${idx - 1}`);
     }
@@ -9381,8 +9402,12 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     const prior = item as { userCorrected?: boolean; priceSource?: string; qtyUserCorrected?: boolean };
     const earlier = prior.userCorrected === true || prior.priceSource === 'user' || prior.qtyUserCorrected === true;
     const priceEdited = Math.abs(unitPriceGBP - item.unitPriceGBP) > 0.0005 || pcbPinnedPrices.has(i) || prior.priceSource === 'user';
-    const changed = qty !== item.qty || priceEdited || earlier;
-    return changed ? [{ ...item, qty, unitPriceGBP, priceEdited }] : [];
+    // Customer-supplied (directed buy / consignment — EDU v6): no EMS burden on the line, and it leaves the EMS invoice.
+    const csBox = document.querySelector<HTMLInputElement>(`.pcb-edit-bom-cs[data-bom-idx="${i}"]`);
+    const wasCs = (item as { customerSupplied?: boolean }).customerSupplied === true;
+    const customerSupplied = csBox ? csBox.checked : wasCs;
+    const changed = qty !== item.qty || priceEdited || earlier || customerSupplied !== wasCs;
+    return changed ? [{ ...item, qty, unitPriceGBP, priceEdited, customerSupplied }] : [];
   });
 
   return { correctedSpec, correctedAssembly, correctedBOM };
@@ -9408,7 +9433,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   const deepHiRes = (document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
   const activeSlots = pcbImageFiles.map((f, slot) => ({ f, slot })).filter((x): x is { f: File; slot: number } => x.f !== null);
   // Close-ups (slots 3–8) at full resolution — they are there for the markings.
-  const uploadFiles = await Promise.all(activeSlots.map(({ f, slot }) => downscaleImageForUpload(f, slot >= 2 || deepHiRes ? 2576 : 1600)));
+  const uploadFiles = await Promise.all(activeSlots.map(({ f, slot }) => downscaleImageForUpload(f, slot <= 1 ? (deepHiRes ? 4096 : 3264) : (slot <= 7 || deepHiRes) ? 2576 : 1600)));
   uploadFiles.forEach(f => formData.append('pcbImages', f));
   if (activeSlots.length > 0) {
     formData.append('pcbImageLabels', JSON.stringify(
@@ -9584,7 +9609,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
     <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}" data-bom-idx="${i}">
       <td>${i + 1}</td>
       <td>${item.refDes}</td>
-      <td>${item.description}${pcbSpecLine(item)}</td>
+      <td>${item.description}${pcbSpecLine(item)}${countEvidenceHtml(item)}</td>
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
@@ -9592,7 +9617,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${pcbUnitFmt(item.unitPriceGBP)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem"></span>' : ''}`}</td>
       <td>&#163;${pcbLineFmt(Number((item as unknown as { lineTotalGBP?: number }).lineTotalGBP ?? item.qty * item.unitPriceGBP))}</td>
-      <td>${pcbPriceBasisBadge(item)}${(item as unknown as { ocrCheck?: string }).ocrCheck ? `<span class="pcb-badge" style="background:#b45309;color:#fff" title="${escHtml(String((item as unknown as { ocrCheck?: string }).ocrCheck))}">CHECK</span>` : ''}${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Priced by a distributor during this analysis">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
+      <td>${pcbPriceBasisBadge(item)}${pcbEditMode
+        ? `<label class="pcb-cs-toggle" title="The customer buys this part and supplies it (directed buy / consignment): no EMS burden on it, and it leaves the EMS invoice"><input type="checkbox" class="pcb-edit-bom-cs" data-bom-idx="${i}"${(item as { customerSupplied?: boolean }).customerSupplied ? ' checked' : ''}/> Customer-supplied</label>`
+        : (item as { customerSupplied?: boolean }).customerSupplied ? '<span class="pcb-badge" title="Supplied by the customer (directed buy / consignment)">CUST</span>' : ''}${(item as unknown as { ocrCheck?: string }).ocrCheck ? `<span class="pcb-badge" style="background:#b45309;color:#fff" title="${escHtml(String((item as unknown as { ocrCheck?: string }).ocrCheck))}">CHECK</span>` : ''}${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Priced by a distributor during this analysis">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
@@ -9786,6 +9813,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       ${buildNPISection(r)}
       ${buildConfidenceRoadmap(r)}
       ${buildSanityWarningsBanner(r)}
+      ${buildVerifyListSection(r)}
       ${buildAutomotiveNRESection(r)}
       ${buildAutomotiveAssemblySection(r)}
       ${buildAutomotiveFabSection(r)}
@@ -10007,6 +10035,9 @@ function wireScenarioBuilder(r: PCBImageAnalysis): void {
       analysedQty: r._orderQty ?? qty,
       domain: r.stage1Classification?.domain ?? 'general', asilLevel: r._asilLevel ?? 'Unknown',
       boardSpec: b, assembly: a,
+      // The operations and customer-supplied parts the headline was costed with (EDU v6).
+      operations: (r as unknown as { operationsCosted?: unknown }).operationsCosted,
+      customerSuppliedGBP: r._selectedCountryBreakdown?.breakdown?.customerSupplied,
     };
     try {
       const resp = await fetch('/api/pcb/scenario', {
@@ -10891,6 +10922,11 @@ function fillFabFormFromAnalysis(): void {
   setF('pcbf-programme-years', Number(b.programmeYears) > 0 ? Number(b.programmeYears) : '');
   setSelectSafe('pcbf-sampling', String(b.samplingCadence ?? 'panel'), 'panel');
   setSelectSafe('pcbf-asil', String(b.asilConfirmed ?? ''), '');
+  setF('pcbf-coat-sides', b.conformalCoatSides !== undefined && b.conformalCoatSides !== '' ? Number(b.conformalCoatSides) : '');
+  setF('pcbf-press-fit', b.pressFitConnectors !== undefined && b.pressFitConnectors !== '' ? Number(b.pressFitConnectors) : '');
+  setF('pcbf-prog-sec', b.programmingSec !== undefined && b.programmingSec !== '' ? Number(b.programmingSec) : '');
+  setF('pcbf-fct-sec', b.functionalTestSec !== undefined && b.functionalTestSec !== '' ? Number(b.functionalTestSec) : '');
+  setSelectSafe('pcbf-component-market', String(b.componentMarket ?? 'global'), 'global');
   setF('pcbf-panel-util', b.panelUtilisation);
   setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
   setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');

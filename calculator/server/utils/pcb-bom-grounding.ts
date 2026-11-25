@@ -16,6 +16,7 @@
 import type { LivePriceResult } from './pcb-live-pricing.js';
 import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch, packagePinsConflict } from './pcb-price-catalogue.js';
 import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
+import { marketPart } from '../data/pcb-component-market.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -189,12 +190,25 @@ export function groundingCandidates(bom: BomLine[], cap = 20): string[] {
  * (and everywhere a live provider key isn't configured). Returns LivePriceResult[]
  * so it feeds reconcileBomWithCatalogue exactly like a live provider would.
  */
-export function offlineCataloguePrices(partNumbers: string[], qty: number): LivePriceResult[] {
+export function offlineCataloguePrices(partNumbers: string[], qty: number, market?: string): LivePriceResult[] {
   const out: LivePriceResult[] = [];
   for (const pn of partNumbers) {
     const e = catalogueEntry(pn);
-    const price = cataloguePriceAt(pn, qty);
-    if (!e || price == null) continue;
+    const price0 = cataloguePriceAt(pn, qty);
+    if (!e || price0 == null) continue;
+    // A named part on a build in a sourced market (EDU v6): its own reel price there, when lower — flat at the reel price
+    // (no volume discount is derived beyond it). The franchised figure stays in the note.
+    const mp = marketPart(market, e.mpn) ?? marketPart(market, pn);
+    if (mp && mp.gbp < price0) {
+      out.push({
+        mpn: pn, description: e.desc, manufacturer: e.mfr,
+        unitPriceGBP: Math.round(mp.gbp * 100000) / 100000, priceBreakQty: mp.reelQty, stockQty: 0, leadTimeWeeks: null,
+        provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn, rawCurrency: 'GBP', rawUnitPrice: mp.gbp,
+        sourceNote: `${market === 'cn' ? 'China' : market} market: ${mp.part} own-stock whole reel (${mp.reelQty.toLocaleString('en-GB')}) £${mp.gbp.toFixed(4)} ex-VAT, read ${mp.date} (${mp.url}) — below the catalogue's £${price0.toFixed(4)} at ${qty.toLocaleString('en-GB')}; held flat at the reel price`,
+      });
+      continue;
+    }
+    const price = price0;
     out.push({
       mpn: pn, description: e.desc, manufacturer: e.mfr,
       unitPriceGBP: price, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
@@ -233,6 +247,8 @@ export interface CapOptions {
    *  getVolumeMultiplier, TABLE_BASIS_QTY). Model estimates arrive already scaled by it; the table
    *  must be too, or a 100-board order is clamped back to table prices. Default 1. */
   volumeMultiplier?: number;
+  /** The build country's component market (pcb-component-market.ts — EDU v6); undefined = global prices. */
+  market?: string;
 }
 
 export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, opts: CapOptions = {}): { bom: BomLine[]; capped: number } {
@@ -308,7 +324,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     // A catalogue-identified imager carries the catalogue's description, so the imager class row applies even when the
     // BOM line names only the part number ("AR0233AT").
     const cls0 = classRange({ ...line, ...(imager ? { componentType: 'ic_bga' } : {}),
-      description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}${imager ? ' image sensor' : ''}${line.imagerVolumeRule === true ? ` ${String(line.catalogueDesc ?? '')}` : ''}` }, opts.automotive === true);
+      description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}${imager ? ' image sensor' : ''}${line.imagerVolumeRule === true ? ` ${String(line.catalogueDesc ?? '')}` : ''}` }, opts.automotive === true, opts.market);
     const cls = k === 1 ? cls0 : { ...cls0, lo: round(cls0.lo * k, 5), hi: round(cls0.hi * k, 5) };
     const dCap = descriptionCap(String(line.description ?? ''));
     // The class median is a guard for an UNIDENTIFIED part ("some BGA"); a line

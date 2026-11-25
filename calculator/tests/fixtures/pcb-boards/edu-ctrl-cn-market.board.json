@@ -1,0 +1,22 @@
+{
+ "board": "EDU control board PCBA — Dana TM4 Gemini CTRL C-Sample (395 × 215 mm, 552 g, conformal coating) — components at the China market (the engineer's choice)",
+ "analysis": {
+  "file": "tests/fixtures/pcb-boards/edu-ctrl.analysis.json",
+  "kind": "analysis"
+ },
+ "country": "cn",
+ "annualVolume": 10000,
+ "domain": "automotive_adas",
+ "asil": "Unknown",
+ "pricePaid": null,
+ "reference": {
+  "gbp": 150.56,
+  "basis": "ex-works",
+  "kind": "manual should-cost v4 (25 Nov 2026) — NOT a price paid; it never counts as accuracy",
+  "source": "scripts/edu-ctrl-2026-11-25/ (manual.py, corrections-v4.json)"
+ },
+ "notes": "The same reading with \"Component prices: build country's market\" — szlcsc own-stock reel prices (the manual's basis).",
+ "boardSpecPatch": {
+  "componentMarket": "local"
+ }
+}

@@ -46,8 +46,15 @@ export const PCB_ANALYSIS_JSON_SCHEMA = {
           refDes: str, componentType: str, description: str, pkg: str, value: str, voltage: str,
           qty: num, unitPriceGBP: num, moq: num, automotive: bool, highCost: bool, partNumber: str,
           lineConf: num, ocrExtracted: bool,
+          // How the quantity was got (EDU v6 — the EDU board's count was 10 % high: a channel copied by symmetry, empty
+          // footprints counted): counted one by one, from printed designator ranges, or estimated; the range it can be
+          // defended in; the side; the photos it was counted in.
+          side: { type: 'string', enum: ['top', 'bottom', 'both', 'unknown'] },
+          countMethod: { type: 'string', enum: ['counted', 'designator-range', 'estimated'] },
+          qtyMin: num, qtyMax: num, seenIn: strs,
         },
-        required: ['refDes', 'componentType', 'description', 'pkg', 'value', 'voltage', 'qty', 'unitPriceGBP', 'moq', 'automotive', 'highCost', 'partNumber', 'lineConf', 'ocrExtracted'],
+        required: ['refDes', 'componentType', 'description', 'pkg', 'value', 'voltage', 'qty', 'unitPriceGBP', 'moq', 'automotive', 'highCost', 'partNumber', 'lineConf', 'ocrExtracted',
+          'side', 'countMethod', 'qtyMin', 'qtyMax', 'seenIn'],
         additionalProperties: false,
       },
     },
@@ -56,8 +63,10 @@ export const PCB_ANALYSIS_JSON_SCHEMA = {
       properties: {
         smtPlacements: num, throughHoleJoints: num, manualJoints: num, bgaCount: num,
         complexity: str, reflowSides: num, aoiRequired: bool, ictTimeSec: num,
+        /** Bare footprints seen (pads with no part — not fitted, never costed). */
+        emptyFootprints: num,
       },
-      required: ['smtPlacements', 'throughHoleJoints', 'manualJoints', 'bgaCount', 'complexity', 'reflowSides', 'aoiRequired', 'ictTimeSec'],
+      required: ['smtPlacements', 'throughHoleJoints', 'manualJoints', 'bgaCount', 'complexity', 'reflowSides', 'aoiRequired', 'ictTimeSec', 'emptyFootprints'],
       additionalProperties: false,
     },
     aiInsights: strs, dfmIssues: strs, highCostComponents: strs, optimisationSuggestions: strs,

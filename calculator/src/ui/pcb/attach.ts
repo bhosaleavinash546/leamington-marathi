@@ -38,6 +38,9 @@ export function attachPcbPayload(target: PCBImageAnalysis, data: Payload, fallba
   set('_automotiveFabAdjustment', d.automotiveFabAdjustment);
   set('_bomCompleteness', d.bomCompleteness);
   set('_programPricing', d.programPricing);
+  set('_verifyList', d.verifyList);
+  set('_quantityBand', d.quantityBand);
+  set('_componentMarket', d.componentMarket);
   set('_orderQty', d.orderQty);
   target._costingFailed = d.costingFailed === true;
   // From the server, not the model: what Stage 1 classified and what OCR read.

@@ -1,0 +1,19 @@
+{
+ "board": "360° surround-view camera board (20 × 20 mm, 8 layers, DS90UB935 + CMOS imager)",
+ "analysis": {
+  "file": "e2e/fixtures/pcb-camera-replies.json",
+  "kind": "replies",
+  "useBomImage": true
+ },
+ "country": "cn",
+ "annualVolume": 250000,
+ "domain": "automotive_adas",
+ "asil": "Unknown",
+ "pricePaid": {
+  "gbp": 17.0,
+  "basis": "delivered-uk",
+  "date": "2026-10-06",
+  "source": "engineer: supplier purchase price, delivered UK, 250k a year (docs/pcb/camera-board-360-2026-10.md §6; scripts/actuals/pcb-actuals.csv)"
+ },
+ "notes": "The supplier may be a Tier-1 or distributor (its margin is in the £17.00). The image sensor part number is unknown."
+}

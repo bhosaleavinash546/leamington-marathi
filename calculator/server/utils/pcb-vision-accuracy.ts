@@ -26,6 +26,9 @@ export interface BomScore {
   partNumberAccuracy: number; // of matched components, fraction with the correct MPN
   priceMAPE:          number; // mean abs % price error over matched priced items (0..1+)
   totalCostError:     number; // |Σpred − Σtruth| / Σtruth
+  /** Signed part-count error, Σ predicted qty ÷ Σ true qty − 1 (EDU v6: the photo reading costed 2,080 parts where
+   *  the recount found 1,896 — a counting error the per-designator scores do not show on grouped lines). */
+  partsCountError:    number;
 }
 
 const norm = (s: unknown) => String(s ?? '').trim().toUpperCase();
@@ -92,6 +95,8 @@ export function scoreBom(predicted: BomItem[], truth: BomItem[]): BomScore {
   const recall    = truthByRef.size ? tp / truthByRef.size : 0;
   const f1 = precision + recall ? (2 * precision * recall) / (precision + recall) : 0;
 
+  const qtyOf = (l: BomItem[]) => l.reduce((s, i) => s + (Number(i.qty) || 0), 0);
+  const partsCountError = qtyOf(truth) > 0 ? qtyOf(predicted) / qtyOf(truth) - 1 : 0;
   const truthTotal = truth.reduce((s, i) => s + lineTotal(i), 0);
   const predTotal  = predicted.reduce((s, i) => s + lineTotal(i), 0);
   const totalCostError = truthTotal > 0 ? Math.abs(predTotal - truthTotal) / truthTotal : 0;
@@ -101,7 +106,7 @@ export function scoreBom(predicted: BomItem[], truth: BomItem[]): BomScore {
     componentPrecision: precision, componentRecall: recall, componentF1: f1,
     partNumberAccuracy: pnComparable ? pnCorrect / pnComparable : 0,
     priceMAPE: mape.length ? mape.reduce((a, b) => a + b, 0) / mape.length : 0,
-    totalCostError,
+    totalCostError, partsCountError,
   };
 }
 
@@ -120,5 +125,6 @@ export function aggregateScores(scores: BomScore[]): BomScore {
     partNumberAccuracy: avg(s => s.partNumberAccuracy),
     priceMAPE: avg(s => s.priceMAPE),
     totalCostError: avg(s => s.totalCostError),
+    partsCountError: avg(s => s.partsCountError),
   };
 }

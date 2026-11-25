@@ -13,7 +13,7 @@
  */
 import '../styles/pcb-photo-slots.css';
 
-type Kind = 'top' | 'bottom' | 'closeup';
+type Kind = 'top' | 'bottom' | 'closeup' | 'zoom';
 interface SlotDef { idx: number; kind: Kind; title: string; hint: string; badge: string; icon: string }
 
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
@@ -24,11 +24,14 @@ function defs(labels: string[]): SlotDef[] {
     ? { idx, kind: 'top', title: label, hint: 'Component side — the main photo', badge: 'Required', icon: 'i-camera' }
     : idx === 1
       ? { idx, kind: 'bottom', title: label, hint: 'Flip the board over', badge: 'Recommended', icon: 'i-layers' }
-      : { idx, kind: 'closeup', title: label, hint: 'IC markings, sharp', badge: String(idx - 1), icon: 'i-cpu' });
+      : idx >= 8
+        ? { idx, kind: 'zoom', title: label, hint: 'One area, close enough to see which footprints are fitted', badge: String(idx - 7), icon: 'i-search' }
+        : { idx, kind: 'closeup', title: label, hint: 'IC markings, sharp', badge: String(idx - 1), icon: 'i-cpu' });
 }
 
 function tile(d: SlotDef): string {
-  const what = d.kind === 'closeup' ? `${d.title} (optional) — a sharp photo of one chip's markings` : `${d.title} (${d.badge.toLowerCase()})`;
+  const what = d.kind === 'closeup' ? `${d.title} (optional) — a sharp photo of one chip's markings`
+    : d.kind === 'zoom' ? `${d.title} (optional) — one area of the board, to count which footprints are fitted` : `${d.title} (${d.badge.toLowerCase()})`;
   return `
   <div id="pcb-img-slot-${d.idx}" class="pcb-slot pcb-slot--${d.kind}" data-kind="${d.kind}"
        role="button" tabindex="0" aria-label="Add ${esc(what)} photo" title="Click or drop a photo: ${esc(what)}">
@@ -37,8 +40,8 @@ function tile(d: SlotDef): string {
       <span class="pcb-slot__badge">${esc(d.badge)}</span>
       <span class="pcb-slot__icon">${icon(d.icon)}</span>
       <span class="pcb-slot__title">${esc(d.title)}</span>
-      ${d.kind === 'closeup' ? '' : `<span class="pcb-slot__hint">${esc(d.hint)}</span>`}
-      <span class="pcb-slot__add">${icon('i-plus')}<span>${d.kind === 'closeup' ? 'Add' : 'Add photo'}</span></span>
+      ${d.kind === 'closeup' || d.kind === 'zoom' ? '' : `<span class="pcb-slot__hint">${esc(d.hint)}</span>`}
+      <span class="pcb-slot__add">${icon('i-plus')}<span>${d.kind === 'closeup' || d.kind === 'zoom' ? 'Add' : 'Add photo'}</span></span>
     </div>
     <div id="pcb-img-slot-filled-${d.idx}" class="pcb-slot__filled" style="display:none">
       <img id="pcb-img-thumb-${d.idx}" alt="${esc(d.title)} photo" class="pcb-slot__thumb"/>
@@ -52,8 +55,9 @@ function tile(d: SlotDef): string {
 /** The slot groups. `labels` is PCB_SLOT_LABELS (slot 0 = top, 1 = bottom, 2–7 = close-ups). */
 export function photoSlotsHtml(labels: string[]): string {
   const all = defs(labels);
-  const sides = all.filter(d => d.kind !== 'closeup');
+  const sides = all.filter(d => d.kind === 'top' || d.kind === 'bottom');
   const close = all.filter(d => d.kind === 'closeup');
+  const zooms = all.filter(d => d.kind === 'zoom');
   return `
   <div class="pcb-slots">
     <div role="group" class="pcb-slots__group" aria-labelledby="pcb-slots-sides-h">
@@ -69,7 +73,14 @@ export function photoSlotsHtml(labels: string[]): string {
         <span class="pcb-slots__sub">One chip per photo — readable part markings raise accuracy</span>
       </div>
       <div class="pcb-slots__row pcb-slots__row--close">${close.map(tile).join('')}</div>
-    </div>
+    </div>${zooms.length ? `
+    <div role="group" class="pcb-slots__group" aria-labelledby="pcb-slots-zoom-h">
+      <div class="pcb-slots__head">
+        <span id="pcb-slots-zoom-h" class="pcb-slots__label">Zooms for counting <em>optional</em></span>
+        <span class="pcb-slots__sub">Area by area, close enough to see which footprints are fitted — each part is counted once, on its side photo; zooms only confirm it</span>
+      </div>
+      <div class="pcb-slots__row pcb-slots__row--close pcb-slots__row--zoom">${zooms.map(tile).join('')}</div>
+    </div>` : ''}
   </div>`;
 }
 

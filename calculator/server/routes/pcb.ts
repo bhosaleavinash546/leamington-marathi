@@ -21,8 +21,13 @@ import {
   PCB_BASIS_SOURCE,
   getActivePCBCountryOverrides,
 } from '../data/pcb-country-rates.js';
-import { CNY_PER_GBP_2026_09, lotBoards, programmeBoards } from '../data/pcb-country-rates.js';
-import { marketAspClass } from '../data/pcb-market-evidence.js';
+import { lotBoards, programmeBoards } from '../data/pcb-country-rates.js';
+import { marketAspClass, marketLocalPerGbp, marketSymbol, PCB_FAB_MARKET } from '../data/pcb-market-evidence.js';
+import { verifyList, customerSuppliedGBP, type VerifyLine } from '../utils/pcb-verify-list.js';
+import { normaliseCount, quantityBand, symmetryLines, type QuantityBand } from '../utils/pcb-counting.js';
+import { ocrTiles } from '../utils/pcb-ocr-tiles.js';
+import { operationsFromBom, programmingSecFor } from '../data/pcb-operations.js';
+import { componentMarketFor, COMPONENT_MARKET_SOURCE } from '../data/pcb-component-market.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
@@ -370,6 +375,9 @@ export function derivePlacementsFromBOM(bom: Array<Record<string, unknown>>, ass
  * the premiums are folded into the breakdown (fab and assembly), duty is
  * re-based on the graded value, and the panels report what was added.
  */
+/** What a country's bare-board market price is, for the basis line (pcb-market-evidence.ts). */
+const PCB_MARKET_LABEL = (cc: string) => cc === 'cn' ? ': prospectus ASP, trade-press price rise, PCBasic class-3 extras' : PCB_FAB_MARKET[cc]?.basisLabel ? `: ${PCB_FAB_MARKET[cc]!.basisLabel}` : '';
+
 export function applyAutomotiveGrade(
   bd: PCBCountryCostBreakdown,
   boardSpec: Record<string, unknown>,
@@ -394,6 +402,7 @@ export function applyAutomotiveGrade(
   bd.assemblyPerBoard = r(bd.assemblyPerBoard + asmPremium);
   bd.logisticsPerBoard = r(bd.logisticsPerBoard + dutyDelta);
   bd.totalPerBoard = r(bd.totalPerBoard + fabPremium + asmPremium + dutyDelta);
+  bd.emsInvoicePerBoard = r(bd.totalPerBoard - (bd.breakdown.customerSupplied ?? 0));
   bd.breakdown.automotiveFab = r(fabPremium);
   bd.breakdown.automotiveAssembly = r(asmPremium);
   bd.breakdown.importDuty = r(bd.breakdown.importDuty + dutyDelta);
@@ -406,7 +415,7 @@ export function applyAutomotiveGrade(
     const burnShifts = asil === 'ASIL-D' ? 6 : asil === 'ASIL-C' ? 4 : 0;
     const per = fab.sampling === 'lot' ? `${fab.samplingDivisor} boards a lot (sampled per lot)` : `${fab.samplingDivisor ?? bd.panelInfo?.boardsPerPanel ?? 1} boards a panel`;
     bd.basis.push(fab.basis === 'market'
-      ? { item: 'Automotive fab grade', gbp: fabPremium, source: `the country's automotive bare-board selling price per m² (server/data/pcb-market-evidence.ts: prospectus ASP, trade-press price rise, PCBasic class-3 extras) — it holds panel yield, drilling, finish, test and the automotive grade, so no IATF / laminate / microsection / coupon adder is added`,
+      ? { item: 'Automotive fab grade', gbp: fabPremium, source: `the country's bare-board selling price per m² (server/data/pcb-market-evidence.ts${PCB_MARKET_LABEL(bd.countryId)}) — it holds panel yield, drilling, finish, test and the fab's grade, so no IATF / laminate / microsection / coupon adder is added`,
           formula: `market board ${fab.marketFormula} = ${g(fab.totalAutomotiveFabGBP)}; less the table's standard board ${g(fab.standardFabGBP)} = ${g(fabPremium)}` }
       : { item: 'Automotive fab grade', gbp: fabPremium, source: `${E}; UK lab £ figures × the country's inspection factor ${insp.toFixed(3)}`,
         formula: `IATF 18 % × ${g(fab.standardFabGBP)} = ${g(fab.iatfFabPremiumGBP)}; laminate: fab × 40 % (laminate share) × ${layers >= 8 ? 50 : 35} % (automotive v standard FR4) = ${g(fab.automotiveLaminatePremiumGBP)}; `
@@ -1027,11 +1036,12 @@ export function computeAutomotiveFabAdjustment(
       const shapeOf = (L: number) => row.baseCostPerDm2_2L + row.layerAdderPerDm2 * Math.max(0, L - 2);
       const shape = shapeOf(layersM) / shapeOf(m.cls.anchorLayers);
       const perM2 = m.cls.aspLocalPerM2 * (1 + m.ev.rise.used) * shape + m.ev.class3ExtrasPerM2.value;
-      const core = m2 * perM2 / CNY_PER_GBP_2026_09;
+      const perGbp = marketLocalPerGbp(m.ev.currency), sym = marketSymbol(m.ev.currency);
+      const core = m2 * perM2 / perGbp;
       const x = opts.extras ?? {};
       const notInAsp = (x.pcbVias ?? 0) + (x.pcbHDI ?? 0) + (x.pcbCopper ?? 0) + (x.pcbSetup ?? 0);
       const total = core + notInAsp;
-      const marketFormula = `${m2.toFixed(6)} m² × (¥${m.cls.aspLocalPerM2.toLocaleString('en-GB')}/m² (${m.cls.minLayers}–${m.cls.maxLayers === 99 ? '' : m.cls.maxLayers}${m.cls.maxLayers === 99 ? '+' : ''}-layer automotive ASP ${m.cls.baseYear}) × ${(1 + m.ev.rise.used).toFixed(3)} (2026 rise) × ${shape.toFixed(4)} (${layersM} v ${m.cls.anchorLayers} layers, the table's shape) + ¥${m.ev.class3ExtrasPerM2.value}/m² class-3 extras) ÷ ${CNY_PER_GBP_2026_09} ¥/£ = £${core.toFixed(4)}; + not in an ASP (holes above the allowance, blind / micro vias, HDI, heavy copper, tooling set-up) £${notInAsp.toFixed(4)}`;
+      const marketFormula = `${m2.toFixed(6)} m² × (${sym}${m.cls.aspLocalPerM2.toLocaleString('en-GB')}/m² (${m.cls.maxLayers === 99 ? `${m.cls.minLayers}+` : `${m.cls.minLayers}–${m.cls.maxLayers}`}-layer ASP ${m.cls.baseYear}) × ${(1 + m.ev.rise.used).toFixed(3)} (rise to 2026) × ${shape.toFixed(4)} (${layersM} v ${m.cls.anchorLayers} layers, the table's shape) + ${sym}${m.ev.class3ExtrasPerM2.value}/m² class-3 extras) ÷ ${perGbp.toFixed(perGbp >= 100 ? 2 : 4)} ${m.ev.currency}/£ = £${core.toFixed(4)}; + not in an ASP (holes above the allowance, blind / micro vias, HDI, heavy copper, tooling set-up) £${notInAsp.toFixed(4)}`;
       return { standardFabGBP: rr(fabCostMid), iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0,
         totalAutomotiveFabGBP: rr(total), premiumPctOverStandard: Math.round((total / fabCostMid - 1) * 100), basis: 'market',
         marketCoreGBP: rr(core), notInAspGBP: rr(notInAsp), marketFormula };
@@ -1155,9 +1165,11 @@ const upload = multer({
 });
 
 // Slot labels sent from the frontend (Top side, Bottom side, Additional 1…6)
-const DEFAULT_IMAGE_LABELS = ['Top side', 'Bottom side', 'Additional 1', 'Additional 2', 'Additional 3', 'Additional 4', 'Additional 5', 'Additional 6'];
-// Max PCB photos accepted per analysis (top + bottom + up to 6 close-ups).
-const PCB_MAX_IMAGES = 8;
+const DEFAULT_IMAGE_LABELS = ['Top side', 'Bottom side', 'Additional 1', 'Additional 2', 'Additional 3', 'Additional 4', 'Additional 5', 'Additional 6',
+  ...Array.from({ length: 16 }, (_, i) => `Additional ${i + 7}`)];
+// Max PCB photos accepted per analysis: top + bottom + 6 chip close-ups + 16 zooms of an area for counting (EDU v6 — the
+// EDU control board needed 22 photos to count; 8 were accepted).
+const PCB_MAX_IMAGES = 24;
 
 /** Build Claude content blocks for one or more PCB images, with optional label text prefixes. */
 function buildImageContentBlocks(
@@ -1178,7 +1190,12 @@ function buildImageContentBlocks(
       `You are given ${sent} views of the SAME board (e.g. top, bottom, angled, or a close-up). ` +
       `Combine them: a component visible in ANY view counts once — do not double-count a part seen in two views, ` +
       `and do not miss parts that appear only on one side. If a ruler, coin or known connector provides scale, ` +
-      `use it to measure board dimensions rather than estimating. Note each component's side (top/bottom) where discernible.`,
+      `use it to measure board dimensions rather than estimating. Note each component's side (top/bottom) where discernible.` +
+      // Photo roles (EDU v6): the whole-side photos are the count; zooms and close-ups confirm, they never add.
+      ` PHOTO ROLES: "Top side" / "Bottom side" are the whole board — count every part on them. "Zoom of top side N" / ` +
+      `"Zoom of bottom side N" are areas of those sides: use them to see WHICH footprints are fitted and to tell parts apart — ` +
+      `a part in a zoom is the SAME part as on its side photo, never an extra one. "Close-up N" is for reading one chip's ` +
+      `markings. Zooms may overlap each other: a part in two zooms is still one part.`,
     });
   }
   // Server-side safety net for the Anthropic 32 MB per-request limit. The web
@@ -1200,6 +1217,30 @@ function buildImageContentBlocks(
   }
   return out;
 }
+
+/**
+ * The OCR stage's images (EDU v6): the photos as every stage gets them, then the whole-board photos again as
+ * full-resolution tiles (pcb-ocr-tiles.ts) — as many as the request budget still holds. Returns the tile count too.
+ */
+async function ocrImageBlocks(files: Express.Multer.File[], labels: string[], includeLabels: boolean) {
+  const blocks = buildImageContentBlocks(files, labels, includeLabels);
+  const skip = new Set(photosOverBudget(files));
+  const MAX_TOTAL_BASE64_BYTES = 24 * 1024 * 1024;
+  let used = files.reduce((t, f, i) => skip.has(i) ? t : t + Math.ceil(f.buffer.length / 3) * 4, 0);
+  const tiles = await ocrTiles(files.filter((_, i) => !skip.has(i)), labels.filter((_, i) => !skip.has(i)));
+  let added = 0;
+  for (const t of tiles) {
+    const len = Math.ceil(t.buffer.length / 3) * 4;
+    if (used + len > MAX_TOTAL_BASE64_BYTES) break;
+    used += len; added++;
+    blocks.push({ type: 'text', text: `**${t.label}:**` });
+    blocks.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: t.buffer.toString('base64') } });
+  }
+  return { blocks, tiles: added };
+}
+const OCR_TILE_NOTE = (n: number) => n > 0
+  ? `\n\nThe whole-board photos are ALSO given as ${n} full-resolution tiles (labelled "… full-resolution tile r.c"): read chip markings on the tiles — they keep the pixels the whole photo loses. A chip seen on a tile and on its whole photo is ONE chip; tiles overlap, so a chip on two tiles is one chip.`
+  : '';
 
 /** The labels of the photos the model actually receives (the over-budget ones are left out). */
 function sentPhotoLabels(files: Express.Multer.File[], labels: string[]): string[] {
@@ -1520,7 +1561,12 @@ Analyse the photos of this PCB thoroughly (all are views of the same board). Gro
       "highCost": false,
       "partNumber": "",
       "lineConf": 0.9,
-      "ocrExtracted": false
+      "ocrExtracted": false,
+      "side": "top",
+      "countMethod": "counted",
+      "qtyMin": 10,
+      "qtyMax": 10,
+      "seenIn": ["Top side", "Zoom of top side 2"]
     }
   ],
   "assembly": {
@@ -1531,7 +1577,8 @@ Analyse the photos of this PCB thoroughly (all are views of the same board). Gro
     "complexity": "medium",
     "reflowSides": 1,
     "aoiRequired": true,
-    "ictTimeSec": 60
+    "ictTimeSec": 60,
+    "emptyFootprints": 0
   },
   "aiInsights": ["Insight 1", "Insight 2", "Insight 3"],
   "dfmIssues": ["DFM issue 1", "DFM issue 2"],
@@ -1553,6 +1600,15 @@ INSTRUCTIONS:
 - For every other component, partNumber is ONLY a part number you can read on the package in the photos. If you cannot read it, leave partNumber EMPTY and say what the part is in description (function, value, package) — the tool prices an unread part from its class table, and an invented part number is worse than none. Never infer a part number from the board's function, the package or what such boards usually carry. ocrExtracted false; lineConf = how sure you are of what the part IS (0–1)
 - refDes: write the designators as printed (\"R1-R10\" or \"R1, R2, R5\") — the tool counts them against qty
 - Each physical part once: the photos are views of the SAME board; a part seen in the top photo and in a close-up is ONE part
+- COUNT ONLY FITTED PARTS. A footprint with bare pads and no part (not fitted / DNP) is NOT a part: leave it out of qty and
+  add it to assembly.emptyFootprints. Designators printed on the silkscreen include unfitted positions — a range "R1-R100" is
+  NOT 100 fitted resistors unless you can see them
+- NEVER COUNT BY SYMMETRY: a second channel, a mirrored half or a repeated block is counted from its OWN photos, part by part.
+  Repeated circuits on real boards differ (parts left off, different ICs). If a region cannot be seen, say so in
+  analysisLimitations and mark its lines countMethod "estimated" with a qtyMin / qtyMax you can defend
+- countMethod per line: "counted" = each part seen and counted (qtyMin = qtyMax = qty); "designator-range" = qty taken from a
+  printed designator range (give qtyMin as the fitted count you can defend, qtyMax as the range); "estimated" = not countable
+  from the photos (give the range). side = top / bottom / both. seenIn = the photo labels the line was counted in
 - smtPlacements = total qty of all SMT components
 - throughHoleJoints = sum of qty x pins for through_hole components
 - Estimate board dimensions from component sizes, connector pitch, or visible rulers
@@ -1683,6 +1739,12 @@ interface Stage4Output {
   programPricing: ProgramPricingResult | null;
   /** The ASIL as claimed, as costed, and why they differ (pcb-asil-guard.ts). */
   asil: AsilGuardResult | null;
+  /** The ten dearest lines, ranked, with what stands behind each price (EDU v6). */
+  verifyList: VerifyLine[];
+  /** How the quantities were counted and the range they can be defended in (pcb-counting.ts — EDU v6). */
+  quantityBand: QuantityBand | null;
+  /** The build country's component market when used (pcb-component-market.ts — EDU v6): components there v global. */
+  componentMarket: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
   failed: boolean;
 }
 
@@ -1700,7 +1762,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     complexityScore: null, confidenceBand: null, sanityWarnings: [], npiBreakdown: null, livePriceHits: 0,
     catalogueVerifiedCount: 0, needsVerificationCount: 0, automotiveNRE: null, automotiveGradeEnforcedCount: 0,
     singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
-    bomCompleteness: null, programPricing: null, failed: false, domain: inp.domain,
+    bomCompleteness: null, programPricing: null, verifyList: [], quantityBand: null, componentMarket: null, failed: false, domain: inp.domain,
     // Unchanged until the parts list is known (a failed Stage 4 still reports what was claimed).
     asil: guardAsil({ asil: inp.asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: [], confirmed: (inp.analysis?.boardSpec as Record<string, unknown> | undefined)?.asilConfirmed }),
   };
@@ -1833,7 +1895,8 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
         // engineer's and took the line out of "to verify" — 360 review). Older clients send no flag: as before.
         if (c.priceEdited === false && Object.keys(base).length) {
           const k = inp.orderQty > 0 ? getVolumeMultiplier(qty * inp.orderQty) : Number(base.volumeMultiplier) || 1;
-          return { ...base, qty, qtyUserCorrected: true, volumeMultiplier: k, partsBought: inp.orderQty > 0 ? qty * inp.orderQty : base.partsBought };
+          return { ...base, qty, qtyUserCorrected: true, volumeMultiplier: k, partsBought: inp.orderQty > 0 ? qty * inp.orderQty : base.partsBought,
+            ...(typeof c.customerSupplied === 'boolean' ? { customerSupplied: c.customerSupplied } : {}) };
         }
         if (!Number.isFinite(price) || price < 0) return null;
         return { ...base, ...c, qty, unitPriceGBP: Math.round(price * 100000) / 100000, lineTotalGBP: Math.round(price * qty * 10000) / 10000,
@@ -1858,6 +1921,8 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const editable = bom.filter(l => l.userCorrected !== true);
     const candidates = groundingCandidates(editable, 500);
     let prices: LivePriceResult[] = [];
+    const market = componentMarketFor(boardSpec, selectedCountry);
+    const pricesGlobal: LivePriceResult[] = [];
     if (candidates.length) {
       const octoKey = inp.live ? '' : await resolveNexarAccessToken();
       const rsKey = inp.live ? '' : process.env.RS_API_KEY ?? '';
@@ -1874,10 +1939,17 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       for (const pn of candidates) {
         if (hit.has(pn.toUpperCase())) continue;
         const parts = Math.max(...editable.filter(l => String(l.partNumber ?? '').trim() === pn).map(l => Number(l.partsBought) || orderQty));
-        prices.push(...offlineCataloguePrices([pn], parts));
+        prices.push(...offlineCataloguePrices([pn], parts, market));
+        if (market) pricesGlobal.push(...offlineCataloguePrices([pn], parts));
       }
     }
-    const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier });
+    // The build country's component market (EDU v6): its own sourced reel prices for class rows and named parts. The
+    // other countries in the comparison keep the global prices (pricesGlobal / globalBomTotal below).
+    const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier, market });
+    const userKept = (lines: Array<Record<string, unknown>>) => lines.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user' } : l));
+    const globalLines = market
+      ? userKept(groundAndSplit(bom, [...prices.filter(p => p.provider !== 'catalogue'), ...pricesGlobal], knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier }).bom as Array<Record<string, unknown>>)
+      : null;
     bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false }
       : l.qtyUnverified === true ? { ...l, needsVerification: true,
         priceNote: `${l.priceNote ? `${String(l.priceNote)} · ` : ''}Quantity ${String(l.qty)} is the AI's count — no designators or chip markings show it; confirm` } : l)) as Array<Record<string, unknown>>;
@@ -1903,6 +1975,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     a.bom = bom;
     const sum = (f: (l: Record<string, unknown>) => boolean) => Math.round(bom.filter(f).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100;
     const bomTotal = sum(() => true);
+    const globalBomTotal = globalLines ? Math.round(globalLines.reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100 : bomTotal;
+    out.componentMarket = market ? { market, source: COMPONENT_MARKET_SOURCE, componentsGBP: bomTotal, globalComponentsGBP: globalBomTotal,
+      linesAtMarket: bom.filter(l => String(l.priceBasis ?? '').includes(`@${market}`) || /market: .* own-stock/.test(String(l.priceNote ?? ''))).length } : null;
     costEst.totalBOMCostGBP = bomTotal;
     costEst.confirmedBOMCostGBP = sum(l => l.needsVerification !== true);
     // The remainder, so "priced" + "to verify" always equals the BOM total on screen
@@ -1943,14 +2018,54 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       // The engineer's lot size and programme life (PCB form; EDU audit G-08): set-ups per lot, one-offs over the programme.
       lotSize: Number(boardSpec.lotSize) > 0 ? Number(boardSpec.lotSize) : undefined,
       programmeYears: Number(boardSpec.programmeYears) > 0 ? Number(boardSpec.programmeYears) : undefined,
+      // Parts the customer supplies (the engineer's flag on a BOM line, kept on userCorrections — EDU v6).
+      customerSuppliedGBP: customerSuppliedGBP(bom),
+      // Operations beyond placement and inspection (EDU v6 — package B): read off the BOM, or typed on the PCB form.
+      operations: (() => {
+        const ob = operationsFromBom(bom);
+        const typed = (k: string) => boardSpec[k] !== undefined && boardSpec[k] !== null && boardSpec[k] !== '' && Number(boardSpec[k]) >= 0 ? Number(boardSpec[k]) : undefined;
+        const coated = out.conformalCoatingCost > 0;
+        return {
+          reflowSides: Number(assemblyData.reflowSides) || 1,
+          coatSides: typed('conformalCoatSides') ?? (coated ? 1 : 0),
+          pressFitConnectors: typed('pressFitConnectors') ?? ob.pressFitConnectors,
+          pressFitPins: ob.pressFitPins, pressFitLines: typed('pressFitConnectors') !== undefined ? Math.min(ob.pressFitLines || 1, typed('pressFitConnectors')!) : ob.pressFitLines,
+          programmingSec: typed('programmingSec') ?? programmingSecFor(ob.mcuFlashMB),
+          functionalTestSec: typed('functionalTestSec') ?? (auto ? 60 : 0),
+          hvTest: ob.hv,
+        };
+      })(),
     };
-    out.countryComparison = computeAllCountryCosts(costInput);
+    // The operations as costed (counts and seconds), on the analysis: the reports and the shadow model read them.
+    (a as Record<string, unknown>).operationsCosted = costInput.operations;
+    out.verifyList = verifyList(bom);
+    // How each quantity was counted (EDU v6): the range a line can be defended in, and a count copied by symmetry.
+    for (const l of bom) normaliseCount(l);
+    out.quantityBand = quantityBand(bom, Number(assemblyData.emptyFootprints) || 0);
+    {
+      const sym = symmetryLines(bom, Array.isArray(a.analysisLimitations) ? a.analysisLimitations : []);
+      if (sym.lines.length || sym.limitation) warnings.push({ code: 'COUNT_BY_SYMMETRY', severity: 'warn',
+        message: `A count was copied from another circuit (by symmetry)${sym.lines.length ? `: ${sym.lines.join(', ')}` : ''}. On the EDU control board the second channel was not a copy of the first — parts differ and footprints are empty. Count it from its own photos, or attach the BOM.` });
+      const qb = out.quantityBand;
+      if (qb.partsHigh - qb.partsLow > 0.04 * Math.max(1, qb.parts)) warnings.push({ code: 'COUNT_RANGE', severity: 'warn',
+        message: `Quantities are not all counted one by one: ${qb.note} Zoom photos of each area, or the BOM file, close this range.` });
+    }
+    // The other build countries buy on the global market (EDU v6): only the market's own country takes its prices.
+    out.countryComparison = computeAllCountryCosts(costInput).map(c => market && c.countryId !== market
+      ? computePCBCountryCost({ ...costInput, totalBOMCostGBP: globalBomTotal }, c.countryId) : c);
     const resolved = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     const bd = computePCBCountryCost(costInput, resolved);
     for (const c of out.countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, asilLevel, orderQty, domain);
     const graded = applyAutomotiveGrade(bd, boardSpec, assemblyData, asilLevel, orderQty, domain);
     if (graded) { out.automotiveAssemblyCost = graded.assembly; out.automotiveFabAdjustment = graded.fab; }
     out.selectedCountryBreakdown = bd;
+    // Full-economic (EDU v6): the board with the automotive programme NRE (PPAP, FMEA, DV/PV, audit) spread over the
+    // programme's boards — the unit cost leaves it out, a programme decision needs it.
+    if (out.automotiveNRE && out.automotiveNRE.totalNRE > 0) {
+      const progBoards = programmeBoards({ orderQuantity: orderQty, programmeYears: Number(boardSpec.programmeYears) || undefined });
+      bd.nrePerBoard = Math.round(out.automotiveNRE.totalNRE / progBoards * 100) / 100;
+      bd.fullEconomicPerBoard = Math.round((bd.totalPerBoard + out.automotiveNRE.totalNRE / progBoards) * 100) / 100;
+    }
     // Board figures no photo can show — they price fab and test but sat outside the "to verify" list, which is BOM
     // lines only (360 review, Oct 2026). Named with the £ each drives, so the engineer knows what to confirm.
     {
@@ -1983,6 +2098,14 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // the band's RATIOS survive anchoring, so the country's own fab + assembly is the mid when there is no other.
     out.confidenceBand = computeConfidenceBand(bom as unknown as BOMLineForBand[], fabCostMid > 0 ? fabCostMid : bd.pcbFabPerBoard + bd.assemblyPerBoard, ocrResult.extractionQuality, volumeMultiplier);
     out.confidenceBand = anchorBandToHeadline(out.confidenceBand, bd) ?? out.confidenceBand;
+    // The quantity range moves the components (with the EMS burden on them) — the band carries it (EDU v6).
+    if (out.confidenceBand && out.quantityBand && (out.quantityBand.gbpLow < 0 || out.quantityBand.gbpHigh > 0)) {
+      const cb = out.confidenceBand, k = 1 + (Number(bd.breakdown.materialBurdenPct) || 0), r2 = (v: number) => Math.round(v * 100) / 100;
+      const dLo = r2(out.quantityBand.gbpLow * k), dHi = r2(out.quantityBand.gbpHigh * k);
+      cb.bomCostLow = r2(cb.bomCostLow + dLo); cb.totalLow = r2(cb.totalLow + dLo);
+      cb.bomCostHigh = r2(cb.bomCostHigh + dHi); cb.totalHigh = r2(cb.totalHigh + dHi);
+      cb.basis = `${cb.basis ?? ''} Quantity range: ${out.quantityBand.partsLow.toLocaleString('en-GB')}–${out.quantityBand.partsHigh.toLocaleString('en-GB')} parts moves the components by £${dLo.toFixed(2)} / +£${dHi.toFixed(2)} (with the EMS burden).`.trim();
+    }
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
     out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
@@ -1994,8 +2117,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const bpp = bd.panelInfo?.boardsPerPanel ?? 1;
     // Component prices follow each point's quantity (parts bought per line); edited lines stay as typed.
     const bomAt = (q: number) => bomAtQty(bom, q, orderQty);
+    const bomAtGlobal = (q: number) => bomAtQty(globalLines ?? bom, q, orderQty);
     const extrasOf = (id: string) => { const row = id === bd.countryId ? bd : out.countryComparison.find(c => c.countryId === id); const b = (row?.breakdown ?? {}) as unknown as Record<string, number>; return { pcbVias: b.pcbVias, pcbHDI: b.pcbHDI, pcbCopper: b.pcbCopper }; };
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, qtys, bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id, extrasOf(id));
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(market && id !== market ? { ...costInput, totalBOMCostGBP: globalBomTotal } : costInput, id, qtys, market && id !== market ? bomAtGlobal : bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id, extrasOf(id));
     // The NPI run is the same costing at NPI_RUN_QTY boards (the volume curve's arithmetic), not the headline × 1.38.
     const npiPoint = gradeVolumeCurve(computeVolumeCurve(costInput, resolved, [NPI_RUN_QTY], bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, resolved, extrasOf(resolved))[0];
     out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard, npiPoint?.totalPerBoard);
@@ -2074,7 +2198,7 @@ function stage4Payload(s4: Stage4Output) {
     automotiveNRE: s4.automotiveNRE, automotiveGradeEnforcedCount: s4.automotiveGradeEnforcedCount,
     singleSourceWarnings: s4.singleSourceWarnings, conformalCoatingCost: s4.conformalCoatingCost,
     automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
-    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing,
+    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing, verifyList: s4.verifyList, quantityBand: s4.quantityBand, componentMarket: s4.componentMarket,
     orderQty: s4.orderQty, costingFailed: s4.failed, boardDomain: s4.domain,
     // The ASIL the costing used (the guard's), what the classifier claimed, and why they differ.
     ...(s4.asil ? { asilLevel: s4.asil.costed, asilClaimed: s4.asil.claimed, asilRationale: s4.asil.rationale,
@@ -2182,6 +2306,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     const s2MultiNote = multiImage
       ? `\n\nNOTE: ${sentPhotoLabels(imageFiles, imageLabels).length} PCB photos provided (${sentPhotoLabels(imageFiles, imageLabels).join(', ')}). Extract text from ALL images — the bottom side and additional photos often expose component markings not visible from the top.`
       : '';
+    const ocrImgs = await ocrImageBlocks(imageFiles, imageLabels, multiImage || imageFiles.length > 0);
     const s2Msg = await anthropic.messages.create({
       model: OCR_MODEL,
       max_tokens: OCR_MAX_TOKENS,
@@ -2189,8 +2314,8 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
       messages: [{
         role: 'user',
         content: [
-          ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
-          { type: 'text', text: stage2Prompt + s2MultiNote },
+          ...ocrImgs.blocks,
+          { type: 'text', text: stage2Prompt + s2MultiNote + OCR_TILE_NOTE(ocrImgs.tiles) },
         ],
       }],
     });
@@ -2772,6 +2897,9 @@ router.post('/scenario', (req, res): void => {
     weightKg:             Number(b.weightKg) > 0 ? Number(b.weightKg) : undefined,
     lotSize:              Number(b.boardSpec?.lotSize) > 0 ? Number(b.boardSpec?.lotSize) : undefined,
     programmeYears:       Number(b.boardSpec?.programmeYears) > 0 ? Number(b.boardSpec?.programmeYears) : undefined,
+    // The operations and customer-supplied parts the headline was costed with (EDU v6): an unchanged scenario is £0.
+    operations:           b.operations && typeof b.operations === 'object' ? b.operations : undefined,
+    customerSuppliedGBP:  Number(b.customerSuppliedGBP) > 0 ? Number(b.customerSuppliedGBP) : undefined,
   };
 
   // Copper and weight exactly as the headline derives them from the board spec.
@@ -2878,12 +3006,13 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     emit('progress', { stage: 2, label: 'Stage 2 — OCR text extraction', pct: 35 });
     const sentLabels = sentPhotoLabels(imageFiles, imageLabels);
     const s2Note = multiImage ? `\n\nNOTE: ${sentLabels.length} photos provided (${sentLabels.join(', ')}). Extract from ALL images.` : '';
+    const ocrImgs = await ocrImageBlocks(imageFiles, imageLabels, multiImage || imageFiles.length > 0);
     const s2Msg = await anthropic.messages.create({
       model: OCR_MODEL, max_tokens: OCR_MAX_TOKENS,
       system: 'You are an expert at reading PCB text. Return ONLY JSON.',
       messages: [{ role: 'user', content: [
-        ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
-        { type: 'text', text: stage2Prompt + s2Note },
+        ...ocrImgs.blocks,
+        { type: 'text', text: stage2Prompt + s2Note + OCR_TILE_NOTE(ocrImgs.tiles) },
       ]}],
     });
     const s2Raw = textOf(s2Msg);

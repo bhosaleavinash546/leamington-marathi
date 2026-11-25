@@ -1,0 +1,3068 @@
+{
+ "about": "China component market (EDU v6, Nov 2026): szlcsc own-stock whole-reel prices ex-VAT, page-read 25 Nov 2026 (scripts/pcb-research/2026-11-25-v6/), at ¥8.88 / £. Written by scripts/pcb-market-rows.mts — never by hand. Class rows: p10–p90 + median of ≥ 8 automotive parts; parts more than 3× from their class median dropped.",
+ "asOf": "2026-11-25",
+ "source": "szlcsc.com (立创商城) own stock, whole reel, ex-VAT (÷ 1.13)",
+ "cnyPerGbp": 8.88,
+ "markets": {
+  "cn": {
+   "rows": {
+    "passive_0402.cap": {
+     "lo": 0.00231,
+     "hi": 0.0096,
+     "p50": 0.00366,
+     "n": 14,
+     "makers": [
+      "muRata",
+      "TDK",
+      "YAGEO"
+     ]
+    },
+    "passive_0603.cap": {
+     "lo": 0.00277,
+     "hi": 0.0131,
+     "p50": 0.00572,
+     "n": 13,
+     "makers": [
+      "TDK",
+      "muRata"
+     ]
+    },
+    "passive_0805.cap": {
+     "lo": 0.0134,
+     "hi": 0.0404,
+     "p50": 0.0327,
+     "n": 13,
+     "makers": [
+      "muRata",
+      "TDK"
+     ]
+    },
+    "passive_1206.cap": {
+     "lo": 0.0432,
+     "hi": 0.155,
+     "p50": 0.0748,
+     "n": 18,
+     "makers": [
+      "muRata",
+      "TDK"
+     ]
+    },
+    "passive_0402.res": {
+     "lo": 0.000622,
+     "hi": 0.00162,
+     "p50": 0.000997,
+     "n": 15,
+     "makers": [
+      "YAGEO",
+      "VISHAY"
+     ]
+    },
+    "passive_0603.res": {
+     "lo": 0.000933,
+     "hi": 0.002,
+     "p50": 0.00175,
+     "n": 12,
+     "makers": [
+      "YAGEO",
+      "VISHAY"
+     ]
+    },
+    "passive_0805.res": {
+     "lo": 0.0019,
+     "hi": 0.00417,
+     "p50": 0.00362,
+     "n": 12,
+     "makers": [
+      "YAGEO"
+     ]
+    },
+    "passive_1206.res": {
+     "lo": 0.00381,
+     "hi": 0.00673,
+     "p50": 0.00641,
+     "n": 12,
+     "makers": [
+      "YAGEO"
+     ]
+    },
+    "passive_1206.res_pwr": {
+     "lo": 0.0129,
+     "hi": 0.0355,
+     "p50": 0.0196,
+     "n": 14,
+     "makers": [
+      "YAGEO"
+     ]
+    },
+    "passive_0603.ind": {
+     "lo": 0.00998,
+     "hi": 0.0195,
+     "p50": 0.0132,
+     "n": 11,
+     "makers": [
+      "muRata"
+     ]
+    },
+    "passive_1206.ind": {
+     "lo": 0.152,
+     "hi": 0.453,
+     "p50": 0.22,
+     "n": 29,
+     "makers": [
+      "TDK",
+      "BOURNS"
+     ]
+    },
+    "transformer.cmc": {
+     "lo": 0.0874,
+     "hi": 0.244,
+     "p50": 0.141,
+     "n": 13,
+     "makers": [
+      "TDK",
+      "muRata"
+     ]
+    },
+    "passive_1206.alu": {
+     "lo": 0.107,
+     "hi": 0.427,
+     "p50": 0.238,
+     "n": 18,
+     "makers": [
+      "PANASONIC",
+      "Nichicon"
+     ]
+    },
+    "discrete.SOT-23 / SOD-123 discrete": {
+     "lo": 0.00959,
+     "hi": 0.0772,
+     "p50": 0.0182,
+     "n": 27,
+     "makers": [
+      "Nexperia",
+      "DIODES",
+      "onsemi",
+      "YANGJIE",
+      "BLUE ROCKET"
+     ]
+    },
+    "fuse_tvs.tvs": {
+     "lo": 0.0352,
+     "hi": 0.207,
+     "p50": 0.0652,
+     "n": 10,
+     "makers": [
+      "BOURNS",
+      "DIODES",
+      "Littelfuse",
+      "VISHAY",
+      "YANGJIE",
+      "MCC"
+     ]
+    },
+    "discrete.ESD / TVS protection SOT-23": {
+     "lo": 0.023,
+     "hi": 0.0858,
+     "p50": 0.0375,
+     "n": 11,
+     "makers": [
+      "onsemi",
+      "Nexperia",
+      "TI",
+      "ST",
+      "YANGJIE"
+     ]
+    },
+    "fuse_tvs.rect": {
+     "lo": 0.0408,
+     "hi": 0.219,
+     "p50": 0.0817,
+     "n": 9,
+     "makers": [
+      "onsemi",
+      "ST",
+      "YANGJIE"
+     ]
+    },
+    "led.ind": {
+     "lo": 0.0649,
+     "hi": 0.124,
+     "p50": 0.0818,
+     "n": 9,
+     "makers": [
+      "ROHM",
+      "OSRAM"
+     ]
+    },
+    "crystal_osc.xtal": {
+     "lo": 0.094,
+     "hi": 0.373,
+     "p50": 0.167,
+     "n": 12,
+     "makers": [
+      "TXC",
+      "ABRACON",
+      "TKD"
+     ]
+    },
+    "ic_soic.sot": {
+     "lo": 0.13,
+     "hi": 0.591,
+     "p50": 0.179,
+     "n": 19,
+     "makers": [
+      "TI",
+      "onsemi"
+     ]
+    },
+    "ic_soic.opamp": {
+     "lo": 0.047,
+     "hi": 0.42,
+     "p50": 0.143,
+     "n": 9,
+     "makers": [
+      "TI",
+      "onsemi",
+      "ST"
+     ]
+    },
+    "ic_soic.logic": {
+     "lo": 0.0567,
+     "hi": 0.116,
+     "p50": 0.0767,
+     "n": 10,
+     "makers": [
+      "Nexperia",
+      "TI"
+     ]
+    },
+    "ic_soic.eeprom": {
+     "lo": 0.15,
+     "hi": 0.56,
+     "p50": 0.322,
+     "n": 11,
+     "makers": [
+      "ST",
+      "onsemi"
+     ]
+    },
+    "ic_soic.can": {
+     "lo": 0.143,
+     "hi": 0.52,
+     "p50": 0.194,
+     "n": 15,
+     "makers": [
+      "NXP",
+      "TI",
+      "Infineon",
+      "onsemi",
+      "Chipanalog",
+      "SIT"
+     ]
+    },
+    "testpoint.any": {
+     "lo": 0.0322,
+     "hi": 0.129,
+     "p50": 0.0759,
+     "n": 10,
+     "makers": [
+      "Keystone",
+      "荣和",
+      "TE Connectivity"
+     ]
+    },
+    "through_hole.header": {
+     "lo": 0.0118,
+     "hi": 0.297,
+     "p50": 0.0319,
+     "n": 15,
+     "makers": [
+      "JST",
+      "MOLEX",
+      "CJT",
+      "XKB Connection",
+      "HCTL",
+      "Wurth",
+      "XFCN",
+      "BOOMELE"
+     ]
+    }
+   },
+   "parts": {
+    "5015": {
+     "part": "5015",
+     "gbp": 0.080583,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/3179846.html",
+     "date": "2026-11-25"
+    },
+    "5016": {
+     "part": "5016",
+     "gbp": 0.071165,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/237377.html",
+     "date": "2026-11-25"
+    },
+    "5017": {
+     "part": "5017",
+     "gbp": 0.123575,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/237378.html",
+     "date": "2026-11-25"
+    },
+    "5019": {
+     "part": "5019",
+     "gbp": 0.0958,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/237379.html",
+     "date": "2026-11-25"
+    },
+    "22272021": {
+     "part": "22272021",
+     "gbp": 0.05225,
+     "reelQty": 2850,
+     "url": "https://item.szlcsc.com/278232.html",
+     "date": "2026-11-25"
+    },
+    "22272041": {
+     "part": "22272041",
+     "gbp": 0.07556,
+     "reelQty": 1425,
+     "url": "https://item.szlcsc.com/517971.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71H102KA37D": {
+     "part": "GCM155R71H102KA37D",
+     "gbp": 0.00288,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137812.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71H222KA37D": {
+     "part": "GCM155R71H222KA37D",
+     "gbp": 0.002013,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137814.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71H472KA37D": {
+     "part": "GCM155R71H472KA37D",
+     "gbp": 0.003627,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/87036.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71E103KA37D": {
+     "part": "GCM155R71E103KA37D",
+     "gbp": 0.00289,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137806.html",
+     "date": "2026-11-25"
+    },
+    "CGA2B3X7R1H103KT0Y0F": {
+     "part": "CGA2B3X7R1H103KT0Y0F",
+     "gbp": 0.003996,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/77832.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71H223KA55D": {
+     "part": "GCM155R71H223KA55D",
+     "gbp": 0.003687,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/172548.html",
+     "date": "2026-11-25"
+    },
+    "CGA2B3X7R1H473KT0Y0F": {
+     "part": "CGA2B3X7R1H473KT0Y0F",
+     "gbp": 0.003797,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/319901.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71H104KE02D": {
+     "part": "GCM155R71H104KE02D",
+     "gbp": 0.002591,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/87034.html",
+     "date": "2026-11-25"
+    },
+    "CGA2B3X7R1H104KT0Y0F": {
+     "part": "CGA2B3X7R1H104KT0Y0F",
+     "gbp": 0.003917,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/319892.html",
+     "date": "2026-11-25"
+    },
+    "AC0402KRX7R9BB104": {
+     "part": "AC0402KRX7R9BB104",
+     "gbp": 0.002192,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/3108046.html",
+     "date": "2026-11-25"
+    },
+    "AC0402KRX7R7BB104": {
+     "part": "AC0402KRX7R7BB104",
+     "gbp": 0.002641,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/261271.html",
+     "date": "2026-11-25"
+    },
+    "GCM155R71C224KE02D": {
+     "part": "GCM155R71C224KE02D",
+     "gbp": 0.006478,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137804.html",
+     "date": "2026-11-25"
+    },
+    "GCM155C71A474KE36D": {
+     "part": "GCM155C71A474KE36D",
+     "gbp": 0.010942,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137802.html",
+     "date": "2026-11-25"
+    },
+    "GCM155C71A105KE38D": {
+     "part": "GCM155C71A105KE38D",
+     "gbp": 0.011052,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/137801.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E2X7R1H102KT0Y0N": {
+     "part": "CGA3E2X7R1H102KT0Y0N",
+     "gbp": 0.00572,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/319750.html",
+     "date": "2026-11-25"
+    },
+    "GCM188R71H103KA37D": {
+     "part": "GCM188R71H103KA37D",
+     "gbp": 0.005033,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/87039.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E2X7R1H103KT0Y0N": {
+     "part": "CGA3E2X7R1H103KT0Y0N",
+     "gbp": 0.00304,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/319751.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E2X7R1H223KT0Y0N": {
+     "part": "CGA3E2X7R1H223KT0Y0N",
+     "gbp": 0.002173,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/319753.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E2X7R1H473KT0Y0N": {
+     "part": "CGA3E2X7R1H473KT0Y0N",
+     "gbp": 0.004176,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/77839.html",
+     "date": "2026-11-25"
+    },
+    "GCM188R71H104KA57D": {
+     "part": "GCM188R71H104KA57D",
+     "gbp": 0.00287,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/87040.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E2X7R1H104KT0Y0N": {
+     "part": "CGA3E2X7R1H104KT0Y0N",
+     "gbp": 0.002751,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/77838.html",
+     "date": "2026-11-25"
+    },
+    "GCM188R71E104KA57D": {
+     "part": "GCM188R71E104KA57D",
+     "gbp": 0.013773,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/87037.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E1X7R1C105KT0Y0N": {
+     "part": "CGA3E1X7R1C105KT0Y0N",
+     "gbp": 0.005969,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/77833.html",
+     "date": "2026-11-25"
+    },
+    "GCM188R71E105KA64D": {
+     "part": "GCM188R71E105KA64D",
+     "gbp": 0.010434,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/87038.html",
+     "date": "2026-11-25"
+    },
+    "CGA3E1X7R1E105KT0Y0E": {
+     "part": "CGA3E1X7R1E105KT0Y0E",
+     "gbp": 0.013165,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/77835.html",
+     "date": "2026-11-25"
+    },
+    "GCM188R70J225KE22D": {
+     "part": "GCM188R70J225KE22D",
+     "gbp": 0.012995,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/137862.html",
+     "date": "2026-11-25"
+    },
+    "GCM188L81H104KA57D": {
+     "part": "GCM188L81H104KA57D",
+     "gbp": 0.011052,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/172562.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR72A104KA37L": {
+     "part": "GCM21BR72A104KA37L",
+     "gbp": 0.010643,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/87042.html",
+     "date": "2026-11-25"
+    },
+    "CGA4J2X7R2A104KT0Y0U": {
+     "part": "CGA4J2X7R2A104KT0Y0U",
+     "gbp": 0.020888,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/319769.html",
+     "date": "2026-11-25"
+    },
+    "CGA4J3X7R1E105KT0Y0N": {
+     "part": "CGA4J3X7R1E105KT0Y0N",
+     "gbp": 0.014101,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/319777.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71E105KA56L": {
+     "part": "GCM21BR71E105KA56L",
+     "gbp": 0.015347,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/87041.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71H105KA03L": {
+     "part": "GCM21BR71H105KA03L",
+     "gbp": 0.032717,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137872.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71C225KA64L": {
+     "part": "GCM21BR71C225KA64L",
+     "gbp": 0.013215,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137869.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71E225KA73L": {
+     "part": "GCM21BR71E225KA73L",
+     "gbp": 0.019682,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137871.html",
+     "date": "2026-11-25"
+    },
+    "CGA4J3X7R1E225KT0Y0N": {
+     "part": "CGA4J3X7R1E225KT0Y0N",
+     "gbp": 0.039185,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/77841.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71C475KA67L": {
+     "part": "GCM21BR71C475KA67L",
+     "gbp": 0.035667,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137870.html",
+     "date": "2026-11-25"
+    },
+    "CGA4J1X7R1E475KT0Y0E": {
+     "part": "CGA4J1X7R1E475KT0Y0E",
+     "gbp": 0.036594,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/77840.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BR71A106KE22L": {
+     "part": "GCM21BR71A106KE22L",
+     "gbp": 0.032857,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137866.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BC71C106KE36L": {
+     "part": "GCM21BC71C106KE36L",
+     "gbp": 0.04075,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137864.html",
+     "date": "2026-11-25"
+    },
+    "GCM21BC72A105KE36L": {
+     "part": "GCM21BC72A105KE36L",
+     "gbp": 0.05826,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137865.html",
+     "date": "2026-11-25"
+    },
+    "GCM31MR71H105KA55L": {
+     "part": "GCM31MR71H105KA55L",
+     "gbp": 0.049181,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/87043.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CR71H225KA55L": {
+     "part": "GCM31CR71H225KA55L",
+     "gbp": 0.026319,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137884.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CC71H475KA03L": {
+     "part": "GCM31CC71H475KA03L",
+     "gbp": 0.072331,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137875.html",
+     "date": "2026-11-25"
+    },
+    "CGA5L1X7R1V475KT0Y0E": {
+     "part": "CGA5L1X7R1V475KT0Y0E",
+     "gbp": 0.119628,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/77843.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CR71C106KA64L": {
+     "part": "GCM31CR71C106KA64L",
+     "gbp": 0.07842,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137880.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CC71E106KA03L": {
+     "part": "GCM31CC71E106KA03L",
+     "gbp": 0.056416,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137874.html",
+     "date": "2026-11-25"
+    },
+    "CGA5L1X7R1E106KT0Y0E": {
+     "part": "CGA5L1X7R1E106KT0Y0E",
+     "gbp": 0.077733,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/77842.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CR71A226KE02L": {
+     "part": "GCM31CR71A226KE02L",
+     "gbp": 0.108477,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137878.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CR70J226ME23L": {
+     "part": "GCM31CR70J226ME23L",
+     "gbp": 0.077085,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137877.html",
+     "date": "2026-11-25"
+    },
+    "GCM31CL81H105KA55L": {
+     "part": "GCM31CL81H105KA55L",
+     "gbp": 0.072501,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/137876.html",
+     "date": "2026-11-25"
+    },
+    "GCM31MR71E225KA57L": {
+     "part": "GCM31MR71E225KA57L",
+     "gbp": 0.029289,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/137889.html",
+     "date": "2026-11-25"
+    },
+    "GCM32ER71H475KA55L": {
+     "part": "GCM32ER71H475KA55L",
+     "gbp": 0.061688,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/137898.html",
+     "date": "2026-11-25"
+    },
+    "GCM32EC71H106KA03L": {
+     "part": "GCM32EC71H106KA03L",
+     "gbp": 0.098571,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/137892.html",
+     "date": "2026-11-25"
+    },
+    "GCM32ER71E106KA57L": {
+     "part": "GCM32ER71E106KA57L",
+     "gbp": 0.061618,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/137897.html",
+     "date": "2026-11-25"
+    },
+    "GCM32ER71C226KE19L": {
+     "part": "GCM32ER71C226KE19L",
+     "gbp": 0.155465,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/137894.html",
+     "date": "2026-11-25"
+    },
+    "CGA6P3X7R1E226MT000N": {
+     "part": "CGA6P3X7R1E226MT000N",
+     "gbp": 0.377701,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/727468.html",
+     "date": "2026-11-25"
+    },
+    "CGA6M3X7S2A475KT0Y0N": {
+     "part": "CGA6M3X7S2A475KT0Y0N",
+     "gbp": 0.155465,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/309686.html",
+     "date": "2026-11-25"
+    },
+    "CGA6P3X7S1H685K250AB": {
+     "part": "CGA6P3X7S1H685K250AB",
+     "gbp": 0.059655,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/4462030.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR0710KL": {
+     "part": "AC0402FR-0710KL",
+     "gbp": 0.000538,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156139.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR071KL": {
+     "part": "AC0402FR-071KL",
+     "gbp": 0.002123,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156121.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR07100KL": {
+     "part": "AC0402FR-07100KL",
+     "gbp": 0.000847,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156141.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR07100RL": {
+     "part": "AC0402FR-07100RL",
+     "gbp": 0.001026,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156140.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR0710RL": {
+     "part": "AC0402FR-0710RL",
+     "gbp": 0.001515,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156137.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR0720KL": {
+     "part": "AC0402FR-0720KL",
+     "gbp": 0.000718,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156115.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR071K5L": {
+     "part": "AC0402FR-071K5L",
+     "gbp": 0.001056,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156124.html",
+     "date": "2026-11-25"
+    },
+    "AC0402FR071ML": {
+     "part": "AC0402FR-071ML",
+     "gbp": 0.000558,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156119.html",
+     "date": "2026-11-25"
+    },
+    "AC0402JR074K7L": {
+     "part": "AC0402JR-074K7L",
+     "gbp": 0.000947,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156041.html",
+     "date": "2026-11-25"
+    },
+    "AC0402JR0722RL": {
+     "part": "AC0402JR-0722RL",
+     "gbp": 0.000777,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/156054.html",
+     "date": "2026-11-25"
+    },
+    "CRCW040210K0FKED": {
+     "part": "CRCW040210K0FKED",
+     "gbp": 0.000997,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/72725.html",
+     "date": "2026-11-25"
+    },
+    "CRCW04021K00FKED": {
+     "part": "CRCW04021K00FKED",
+     "gbp": 0.000997,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/72731.html",
+     "date": "2026-11-25"
+    },
+    "CRCW04021K50FKED": {
+     "part": "CRCW04021K50FKED",
+     "gbp": 0.001694,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/72730.html",
+     "date": "2026-11-25"
+    },
+    "CRCW0402330RFKED": {
+     "part": "CRCW0402330RFKED",
+     "gbp": 0.001196,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/72734.html",
+     "date": "2026-11-25"
+    },
+    "CRCW0402100KFKED": {
+     "part": "CRCW0402100KFKED",
+     "gbp": 0.000897,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/489944.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR07100KL": {
+     "part": "AC0603FR-07100KL",
+     "gbp": 0.002003,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117928.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR0710KL": {
+     "part": "AC0603FR-0710KL",
+     "gbp": 0.000747,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117931.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR071ML": {
+     "part": "AC0603FR-071ML",
+     "gbp": 0.001146,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117932.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR0727KL": {
+     "part": "AC0603FR-0727KL",
+     "gbp": 0.001654,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117945.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR071KL": {
+     "part": "AC0603FR-071KL",
+     "gbp": 0.000927,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117946.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR074K7L": {
+     "part": "AC0603FR-074K7L",
+     "gbp": 0.001943,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/117951.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR0712KL": {
+     "part": "AC0603FR-0712KL",
+     "gbp": 0.001844,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/156034.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR0768KL": {
+     "part": "AC0603FR-0768KL",
+     "gbp": 0.001963,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155973.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR0756KL": {
+     "part": "AC0603FR-0756KL",
+     "gbp": 0.001983,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155979.html",
+     "date": "2026-11-25"
+    },
+    "AC0603FR07560RL": {
+     "part": "AC0603FR-07560RL",
+     "gbp": 0.002083,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155980.html",
+     "date": "2026-11-25"
+    },
+    "CRCW060310K0FKEA": {
+     "part": "CRCW060310K0FKEA",
+     "gbp": 0.000987,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/904492.html",
+     "date": "2026-11-25"
+    },
+    "CRCW060322R0FKEA": {
+     "part": "CRCW060322R0FKEA",
+     "gbp": 0.000997,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/72726.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR0710KL": {
+     "part": "AC0805FR-0710KL",
+     "gbp": 0.001854,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/152196.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR074K7L": {
+     "part": "AC0805FR-074K7L",
+     "gbp": 0.001345,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/152197.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR071KL": {
+     "part": "AC0805FR-071KL",
+     "gbp": 0.002342,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/152198.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR0720KL": {
+     "part": "AC0805FR-0720KL",
+     "gbp": 0.004076,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/149587.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR0710RL": {
+     "part": "AC0805FR-0710RL",
+     "gbp": 0.003528,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/149589.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR07100RL": {
+     "part": "AC0805FR-07100RL",
+     "gbp": 0.003408,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/149590.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR07220RL": {
+     "part": "AC0805FR-07220RL",
+     "gbp": 0.002711,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/149586.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR07100KL": {
+     "part": "AC0805FR-07100KL",
+     "gbp": 0.003707,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155919.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR0747KL": {
+     "part": "AC0805FR-0747KL",
+     "gbp": 0.004166,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155890.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR075K1L": {
+     "part": "AC0805FR-075K1L",
+     "gbp": 0.004355,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155885.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR071RL": {
+     "part": "AC0805FR-071RL",
+     "gbp": 0.004166,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155911.html",
+     "date": "2026-11-25"
+    },
+    "AC0805FR076K8L": {
+     "part": "AC0805FR-076K8L",
+     "gbp": 0.004076,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155879.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR0710KL": {
+     "part": "AC1206FR-0710KL",
+     "gbp": 0.004843,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155852.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR07100RL": {
+     "part": "AC1206FR-07100RL",
+     "gbp": 0.006817,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155853.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR07100KL": {
+     "part": "AC1206FR-07100KL",
+     "gbp": 0.004465,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155854.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR074K7L": {
+     "part": "AC1206FR-074K7L",
+     "gbp": 0.006677,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155818.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR0747KL": {
+     "part": "AC1206FR-0747KL",
+     "gbp": 0.006577,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155822.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR0715KL": {
+     "part": "AC1206FR-0715KL",
+     "gbp": 0.003737,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155847.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR0715RL": {
+     "part": "AC1206FR-0715RL",
+     "gbp": 0.006627,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155846.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR07510RL": {
+     "part": "AC1206FR-07510RL",
+     "gbp": 0.003498,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155817.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR07330RL": {
+     "part": "AC1206FR-07330RL",
+     "gbp": 0.006398,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155828.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR0733RL": {
+     "part": "AC1206FR-0733RL",
+     "gbp": 0.006737,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155827.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR075R1L": {
+     "part": "AC1206FR-075R1L",
+     "gbp": 0.005162,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155814.html",
+     "date": "2026-11-25"
+    },
+    "AC1206FR071K2L": {
+     "part": "AC1206FR-071K2L",
+     "gbp": 0.006418,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/155843.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK0720KL": {
+     "part": "AC2512FK-0720KL",
+     "gbp": 0.019612,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775465.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK07220RL": {
+     "part": "AC2512FK-07220RL",
+     "gbp": 0.019612,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775467.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK07270RL": {
+     "part": "AC2512FK-07270RL",
+     "gbp": 0.019612,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775473.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK072K4L": {
+     "part": "AC2512FK-072K4L",
+     "gbp": 0.023101,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775477.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK072RL": {
+     "part": "AC2512FK-072RL",
+     "gbp": 0.028303,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775486.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK072R2L": {
+     "part": "AC2512FK-072R2L",
+     "gbp": 0.054991,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775483.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK07300KL": {
+     "part": "AC2512FK-07300KL",
+     "gbp": 0.038547,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775487.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK07300RL": {
+     "part": "AC2512FK-07300RL",
+     "gbp": 0.019612,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/775488.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK0720RL": {
+     "part": "AC2512FK-0720RL",
+     "gbp": 0.019612,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/155764.html",
+     "date": "2026-11-25"
+    },
+    "AC2512FK07150RL": {
+     "part": "AC2512FK-07150RL",
+     "gbp": 0.023101,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/293060.html",
+     "date": "2026-11-25"
+    },
+    "AC2512JK0739KL": {
+     "part": "AC2512JK-0739KL",
+     "gbp": 0.012128,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/155756.html",
+     "date": "2026-11-25"
+    },
+    "AC2010FK075R1L": {
+     "part": "AC2010FK-075R1L",
+     "gbp": 0.016922,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/155767.html",
+     "date": "2026-11-25"
+    },
+    "AC2010FK07180RL": {
+     "part": "AC2010FK-07180RL",
+     "gbp": 0.009617,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/155771.html",
+     "date": "2026-11-25"
+    },
+    "AC2010FK0712KL": {
+     "part": "AC2010FK-0712KL",
+     "gbp": 0.01463,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/155774.html",
+     "date": "2026-11-25"
+    },
+    "BLM15AG102SH1D": {
+     "part": "BLM15AG102SH1D",
+     "gbp": 0.009388,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/172348.html",
+     "date": "2026-11-25"
+    },
+    "BLM15PD800SZ1D": {
+     "part": "BLM15PD800SZ1D",
+     "gbp": 0.003059,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/172353.html",
+     "date": "2026-11-25"
+    },
+    "BLM15PX601SZ1D": {
+     "part": "BLM15PX601SZ1D",
+     "gbp": 0.020838,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/748719.html",
+     "date": "2026-11-25"
+    },
+    "BLM15PX601SH1D": {
+     "part": "BLM15PX601SH1D",
+     "gbp": 0.056625,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/8602405.html",
+     "date": "2026-11-25"
+    },
+    "MMZ1005S102CTD25": {
+     "part": "MMZ1005S102CTD25",
+     "gbp": 0.006378,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/335503.html",
+     "date": "2026-11-25"
+    },
+    "BLM18KG601SH1D": {
+     "part": "BLM18KG601SH1D",
+     "gbp": 0.019533,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748751.html",
+     "date": "2026-11-25"
+    },
+    "BLM18KG601SZ1D": {
+     "part": "BLM18KG601SZ1D",
+     "gbp": 0.013215,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748752.html",
+     "date": "2026-11-25"
+    },
+    "BLM18KG101TH1D": {
+     "part": "BLM18KG101TH1D",
+     "gbp": 0.013244,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748742.html",
+     "date": "2026-11-25"
+    },
+    "BLM18KG300TH1D": {
+     "part": "BLM18KG300TH1D",
+     "gbp": 0.014271,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748746.html",
+     "date": "2026-11-25"
+    },
+    "BLM18KG331SH1D": {
+     "part": "BLM18KG331SH1D",
+     "gbp": 0.009976,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748748.html",
+     "date": "2026-11-25"
+    },
+    "BLM18PG181SH1D": {
+     "part": "BLM18PG181SH1D",
+     "gbp": 0.01169,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748755.html",
+     "date": "2026-11-25"
+    },
+    "BLM18PG331SH1D": {
+     "part": "BLM18PG331SH1D",
+     "gbp": 0.011251,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/748758.html",
+     "date": "2026-11-25"
+    },
+    "BLM18PG600SH1D": {
+     "part": "BLM18PG600SH1D",
+     "gbp": 0.01744,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/90165.html",
+     "date": "2026-11-25"
+    },
+    "BLM18SG121TZ1D": {
+     "part": "BLM18SG121TZ1D",
+     "gbp": 0.045424,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/748762.html",
+     "date": "2026-11-25"
+    },
+    "BLM18PG121SZ1D": {
+     "part": "BLM18PG121SZ1D",
+     "gbp": 0.010663,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/172364.html",
+     "date": "2026-11-25"
+    },
+    "BLM18PG471SH1D": {
+     "part": "BLM18PG471SH1D",
+     "gbp": 0.006548,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/172366.html",
+     "date": "2026-11-25"
+    },
+    "NCU15XH103F6SRC": {
+     "part": "NCU15XH103F6SRC",
+     "gbp": 0.01455,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/312670.html",
+     "date": "2026-11-25"
+    },
+    "NCU15XH103F60RC": {
+     "part": "NCU15XH103F60RC",
+     "gbp": 0.007125,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/236770.html",
+     "date": "2026-11-25"
+    },
+    "NCU15WF104D60RC": {
+     "part": "NCU15WF104D60RC",
+     "gbp": 0.032169,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/420707.html",
+     "date": "2026-11-25"
+    },
+    "NCU15WB473F6SRC": {
+     "part": "NCU15WB473F6SRC",
+     "gbp": 0.015776,
+     "reelQty": 10000,
+     "url": "https://item.szlcsc.com/3733969.html",
+     "date": "2026-11-25"
+    },
+    "NCU18XH103F6SRB": {
+     "part": "NCU18XH103F6SRB",
+     "gbp": 0.019922,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/174051.html",
+     "date": "2026-11-25"
+    },
+    "NCU18XH103F60RB": {
+     "part": "NCU18XH103F60RB",
+     "gbp": 0.016115,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/439621.html",
+     "date": "2026-11-25"
+    },
+    "NCU18WF104F6SRB": {
+     "part": "NCU18WF104F6SRB",
+     "gbp": 0.021705,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/406186.html",
+     "date": "2026-11-25"
+    },
+    "NCU18WF104J6SRB": {
+     "part": "NCU18WF104J6SRB",
+     "gbp": 0.035518,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/3715827.html",
+     "date": "2026-11-25"
+    },
+    "NCU18WB473D6SRB": {
+     "part": "NCU18WB473D6SRB",
+     "gbp": 0.06971,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/6240855.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT100MD": {
+     "part": "CLF6045NIT-100M-D",
+     "gbp": 0.149486,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/943270.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT150MD": {
+     "part": "CLF6045NIT-150M-D",
+     "gbp": 0.1744,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/149929.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT220MD": {
+     "part": "CLF6045NIT-220M-D",
+     "gbp": 0.195328,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/149930.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT470MD": {
+     "part": "CLF6045NIT-470M-D",
+     "gbp": 0.152475,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/149932.html",
+     "date": "2026-11-25"
+    },
+    "CLF5030NIT2R2ND": {
+     "part": "CLF5030NIT-2R2N-D",
+     "gbp": 0.220242,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/335477.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT101MD": {
+     "part": "CLF6045NIT-101M-D",
+     "gbp": 0.158455,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335478.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045NIT4R7ND": {
+     "part": "CLF6045NIT-4R7N-D",
+     "gbp": 0.151479,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335482.html",
+     "date": "2026-11-25"
+    },
+    "CLF6045T470MD": {
+     "part": "CLF6045T-470M-D",
+     "gbp": 0.152475,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335486.html",
+     "date": "2026-11-25"
+    },
+    "SRP4020TA1R0M": {
+     "part": "SRP4020TA-1R0M",
+     "gbp": 0.120585,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/983466.html",
+     "date": "2026-11-25"
+    },
+    "SRP4020TA2R2M": {
+     "part": "SRP4020TA-2R2M",
+     "gbp": 0.183369,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/762161.html",
+     "date": "2026-11-25"
+    },
+    "SRP4020TA5R6M": {
+     "part": "SRP4020TA-5R6M",
+     "gbp": 0.4943,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/207446.html",
+     "date": "2026-11-25"
+    },
+    "SRP4020TA100M": {
+     "part": "SRP4020TA-100M",
+     "gbp": 0.172407,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/207458.html",
+     "date": "2026-11-25"
+    },
+    "SRP4020TA4R7M": {
+     "part": "SRP4020TA-4R7M",
+     "gbp": 0.288009,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2133186.html",
+     "date": "2026-11-25"
+    },
+    "CLF7045NIT4R7ND": {
+     "part": "CLF7045NIT-4R7N-D",
+     "gbp": 0.190345,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335487.html",
+     "date": "2026-11-25"
+    },
+    "CLF7045T100MD": {
+     "part": "CLF7045T-100M-D",
+     "gbp": 0.246153,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335488.html",
+     "date": "2026-11-25"
+    },
+    "CLF7045T4R7ND": {
+     "part": "CLF7045T-4R7N-D",
+     "gbp": 0.158455,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/335489.html",
+     "date": "2026-11-25"
+    },
+    "SRP1265A100M": {
+     "part": "SRP1265A-100M",
+     "gbp": 0.442478,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/897033.html",
+     "date": "2026-11-25"
+    },
+    "SRP1265A150M": {
+     "part": "SRP1265A-150M",
+     "gbp": 0.408594,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/207271.html",
+     "date": "2026-11-25"
+    },
+    "SRP1265A220M": {
+     "part": "SRP1265A-220M",
+     "gbp": 0.398629,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/2133028.html",
+     "date": "2026-11-25"
+    },
+    "SRP1265A4R7M": {
+     "part": "SRP1265A-4R7M",
+     "gbp": 0.322889,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/832172.html",
+     "date": "2026-11-25"
+    },
+    "SRP1265A470M": {
+     "part": "SRP1265A-470M",
+     "gbp": 0.371721,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/897032.html",
+     "date": "2026-11-25"
+    },
+    "SPM10065VT2R2MD": {
+     "part": "SPM10065VT-2R2M-D",
+     "gbp": 0.338834,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/1107118.html",
+     "date": "2026-11-25"
+    },
+    "SPM10065VT3R3MD": {
+     "part": "SPM10065VT-3R3M-D",
+     "gbp": 0.417564,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/450775.html",
+     "date": "2026-11-25"
+    },
+    "SPM10065VT4R7MD": {
+     "part": "SPM10065VT-4R7M-D",
+     "gbp": 0.408594,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/514471.html",
+     "date": "2026-11-25"
+    },
+    "SPM10065VT6R8MD": {
+     "part": "SPM10065VT-6R8M-D",
+     "gbp": 0.498286,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/2139399.html",
+     "date": "2026-11-25"
+    },
+    "SPM10065VT470MD": {
+     "part": "SPM10065VT-470M-D",
+     "gbp": 0.397632,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/335513.html",
+     "date": "2026-11-25"
+    },
+    "CLF10060NIT101MD": {
+     "part": "CLF10060NIT-101M-D",
+     "gbp": 0.198318,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/149969.html",
+     "date": "2026-11-25"
+    },
+    "CLF10060NIT220MD": {
+     "part": "CLF10060NIT-220M-D",
+     "gbp": 0.190345,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/149965.html",
+     "date": "2026-11-25"
+    },
+    "CLF10060NIT680MD": {
+     "part": "CLF10060NIT-680M-D",
+     "gbp": 0.573029,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/149968.html",
+     "date": "2026-11-25"
+    },
+    "ACT45B1102PTL003": {
+     "part": "ACT45B-110-2P-TL003",
+     "gbp": 0.140835,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/77710.html",
+     "date": "2026-11-25"
+    },
+    "ACT45B5102PTL003": {
+     "part": "ACT45B-510-2P-TL003",
+     "gbp": 0.17141,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/77711.html",
+     "date": "2026-11-25"
+    },
+    "ACT45B2202PTL003": {
+     "part": "ACT45B-220-2P-TL003",
+     "gbp": 0.127561,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/89233.html",
+     "date": "2026-11-25"
+    },
+    "ACT45B1012PTL003": {
+     "part": "ACT45B-101-2P-TL003",
+     "gbp": 0.116599,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/89234.html",
+     "date": "2026-11-25"
+    },
+    "ACT12105102PTL00": {
+     "part": "ACT1210-510-2P-TL00",
+     "gbp": 0.182373,
+     "reelQty": 6000,
+     "url": "https://item.szlcsc.com/96776.html",
+     "date": "2026-11-25"
+    },
+    "ACT45R1012PTL001": {
+     "part": "ACT45R-101-2P-TL001",
+     "gbp": 0.312924,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/391894.html",
+     "date": "2026-11-25"
+    },
+    "ACT45C5102PTL000": {
+     "part": "ACT45C-510-2P-TL000",
+     "gbp": 0.084748,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/391895.html",
+     "date": "2026-11-25"
+    },
+    "ACT45C1012PTL000": {
+     "part": "ACT45C-101-2P-TL000",
+     "gbp": 0.098242,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/391898.html",
+     "date": "2026-11-25"
+    },
+    "ACM70V7012PLTL00": {
+     "part": "ACM70V-701-2PL-TL00",
+     "gbp": 0.257116,
+     "reelQty": 1500,
+     "url": "https://item.szlcsc.com/77709.html",
+     "date": "2026-11-25"
+    },
+    "DLW43SH510XK2L": {
+     "part": "DLW43SH510XK2L",
+     "gbp": 0.076487,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/92784.html",
+     "date": "2026-11-25"
+    },
+    "DLW32SH510XK2L": {
+     "part": "DLW32SH510XK2L",
+     "gbp": 0.192338,
+     "reelQty": 1500,
+     "url": "https://item.szlcsc.com/182391.html",
+     "date": "2026-11-25"
+    },
+    "DLW43SH110XK2L": {
+     "part": "DLW43SH110XK2L",
+     "gbp": 0.137617,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/367930.html",
+     "date": "2026-11-25"
+    },
+    "DLW43SH220XK2L": {
+     "part": "DLW43SH220XK2L",
+     "gbp": 0.161445,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/312610.html",
+     "date": "2026-11-25"
+    },
+    "EEHZC1V101V": {
+     "part": "EEHZC1V101V",
+     "gbp": 0.619868,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/456437.html",
+     "date": "2026-11-25"
+    },
+    "EEHZC1H101V": {
+     "part": "EEHZC1H101V",
+     "gbp": 0.24715,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/456452.html",
+     "date": "2026-11-25"
+    },
+    "EEHZK1V101XP": {
+     "part": "EEHZK1V101XP",
+     "gbp": 0.287013,
+     "reelQty": 900,
+     "url": "https://item.szlcsc.com/456465.html",
+     "date": "2026-11-25"
+    },
+    "EEHZE1H101P": {
+     "part": "EEHZE1H101P",
+     "gbp": 0.359762,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/456445.html",
+     "date": "2026-11-25"
+    },
+    "EEHZC1K470P": {
+     "part": "EEHZC1K470P",
+     "gbp": 0.20629,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/190041.html",
+     "date": "2026-11-25"
+    },
+    "EEHZC1V470V": {
+     "part": "EEHZC1V470V",
+     "gbp": 0.444471,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/456464.html",
+     "date": "2026-11-25"
+    },
+    "EEHZC1K470V": {
+     "part": "EEHZC1K470V",
+     "gbp": 0.419557,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/456435.html",
+     "date": "2026-11-25"
+    },
+    "UCZ1V101MCL1GS": {
+     "part": "UCZ1V101MCL1GS",
+     "gbp": 0.102727,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/526025.html",
+     "date": "2026-11-25"
+    },
+    "EEHZK1V331P": {
+     "part": "EEHZK1V331P",
+     "gbp": 0.243164,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/265683.html",
+     "date": "2026-11-25"
+    },
+    "GYE1V331MCQ1GS": {
+     "part": "GYE1V331MCQ1GS",
+     "gbp": 0.41557,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/7836352.html",
+     "date": "2026-11-25"
+    },
+    "EEHZA1V101P": {
+     "part": "EEHZA1V101P",
+     "gbp": 0.307941,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/456444.html",
+     "date": "2026-11-25"
+    },
+    "EEHZA1E331P": {
+     "part": "EEHZA1E331P",
+     "gbp": 0.221239,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/235924.html",
+     "date": "2026-11-25"
+    },
+    "EEEFN1V101XV": {
+     "part": "EEEFN1V101XV",
+     "gbp": 0.223232,
+     "reelQty": 900,
+     "url": "https://item.szlcsc.com/509127.html",
+     "date": "2026-11-25"
+    },
+    "EEEFT1V101AP": {
+     "part": "EEEFT1V101AP",
+     "gbp": 0.073268,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/139749.html",
+     "date": "2026-11-25"
+    },
+    "EEEFK1E331P": {
+     "part": "EEEFK1E331P",
+     "gbp": 0.12494,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/189936.html",
+     "date": "2026-11-25"
+    },
+    "EEEFK1V101AP": {
+     "part": "EEEFK1V101AP",
+     "gbp": 0.123575,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/189952.html",
+     "date": "2026-11-25"
+    },
+    "EEEFK1H470P": {
+     "part": "EEEFK1H470P",
+     "gbp": 0.108716,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/265667.html",
+     "date": "2026-11-25"
+    },
+    "EEEFT1E101AP": {
+     "part": "EEEFT1E101AP",
+     "gbp": 0.232201,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/189983.html",
+     "date": "2026-11-25"
+    },
+    "BC847BQR": {
+     "part": "BC847B-QR",
+     "gbp": 0.025203,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8598755.html",
+     "date": "2026-11-25"
+    },
+    "BC847BWQX": {
+     "part": "BC847BW-QX",
+     "gbp": 0.050566,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8598761.html",
+     "date": "2026-11-25"
+    },
+    "BAS16QR": {
+     "part": "BAS16-QR",
+     "gbp": 0.009906,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8598572.html",
+     "date": "2026-11-25"
+    },
+    "BAT54QR": {
+     "part": "BAT54-QR",
+     "gbp": 0.103145,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8598636.html",
+     "date": "2026-11-25"
+    },
+    "BAT54SQR": {
+     "part": "BAT54S-QR",
+     "gbp": 0.016234,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8598638.html",
+     "date": "2026-11-25"
+    },
+    "BSS138Q7F": {
+     "part": "BSS138Q-7-F",
+     "gbp": 0.032329,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/181551.html",
+     "date": "2026-11-25"
+    },
+    "2N7002Q7F": {
+     "part": "2N7002Q-7-F",
+     "gbp": 0.022423,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/521782.html",
+     "date": "2026-11-25"
+    },
+    "MMBT3904Q7F": {
+     "part": "MMBT3904Q-7-F",
+     "gbp": 0.009149,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/741712.html",
+     "date": "2026-11-25"
+    },
+    "BAV99Q7F": {
+     "part": "BAV99Q-7-F",
+     "gbp": 0.075829,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/443277.html",
+     "date": "2026-11-25"
+    },
+    "BC847BQ7F": {
+     "part": "BC847BQ-7-F",
+     "gbp": 0.018177,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3232174.html",
+     "date": "2026-11-25"
+    },
+    "SBAV99LT1G": {
+     "part": "SBAV99LT1G",
+     "gbp": 0.015317,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/163821.html",
+     "date": "2026-11-25"
+    },
+    "SBAV99WT1G": {
+     "part": "SBAV99WT1G",
+     "gbp": 0.012955,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/307664.html",
+     "date": "2026-11-25"
+    },
+    "SMMBT3904LT1G": {
+     "part": "SMMBT3904LT1G",
+     "gbp": 0.012049,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/85725.html",
+     "date": "2026-11-25"
+    },
+    "NSVMMBTA05LT1G": {
+     "part": "NSVMMBTA05LT1G",
+     "gbp": 0.196325,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/499711.html",
+     "date": "2026-11-25"
+    },
+    "BC847BQ": {
+     "part": "BC847BQ",
+     "gbp": 0.008909,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323162.html",
+     "date": "2026-11-25"
+    },
+    "BRBAT54Q": {
+     "part": "BRBAT54Q",
+     "gbp": 0.00578,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/38221446.html",
+     "date": "2026-11-25"
+    },
+    "SZMMSZ15T1G": {
+     "part": "SZMMSZ15T1G",
+     "gbp": 0.079227,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/467817.html",
+     "date": "2026-11-25"
+    },
+    "SZMMSZ10T1G": {
+     "part": "SZMMSZ10T1G",
+     "gbp": 0.027077,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/469122.html",
+     "date": "2026-11-25"
+    },
+    "SZBZX84C15LT1G": {
+     "part": "SZBZX84C15LT1G",
+     "gbp": 0.014949,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/196955.html",
+     "date": "2026-11-25"
+    },
+    "SZBZX84C10LT1G": {
+     "part": "SZBZX84C10LT1G",
+     "gbp": 0.069979,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/235837.html",
+     "date": "2026-11-25"
+    },
+    "BZX84C5V1Q7F": {
+     "part": "BZX84C5V1Q-7-F",
+     "gbp": 0.038029,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/703277.html",
+     "date": "2026-11-25"
+    },
+    "BZT52C5V1Q7F": {
+     "part": "BZT52C5V1Q-7-F",
+     "gbp": 0.018805,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/709518.html",
+     "date": "2026-11-25"
+    },
+    "MMSZ5231BQ7F": {
+     "part": "MMSZ5231BQ-7-F",
+     "gbp": 0.015078,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/834730.html",
+     "date": "2026-11-25"
+    },
+    "BZX84C5V1QR": {
+     "part": "BZX84-C5V1-QR",
+     "gbp": 0.01151,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8599363.html",
+     "date": "2026-11-25"
+    },
+    "BZT52C5V1QX": {
+     "part": "BZT52-C5V1-QX",
+     "gbp": 0.020091,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/21561602.html",
+     "date": "2026-11-25"
+    },
+    "BZT52C5V1Q": {
+     "part": "BZT52C5V1Q",
+     "gbp": 0.009876,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323201.html",
+     "date": "2026-11-25"
+    },
+    "BZX84C12Q": {
+     "part": "BZX84C12Q",
+     "gbp": 0.011002,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323215.html",
+     "date": "2026-11-25"
+    },
+    "SMAJ24AQ": {
+     "part": "SMAJ24A-Q",
+     "gbp": 0.096907,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/4270423.html",
+     "date": "2026-11-25"
+    },
+    "SMBJ33AQ13F": {
+     "part": "SMBJ33AQ-13-F",
+     "gbp": 0.159292,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2066383.html",
+     "date": "2026-11-25"
+    },
+    "SMAJ24AQ13F": {
+     "part": "SMAJ24AQ-13-F",
+     "gbp": 0.101222,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/2066017.html",
+     "date": "2026-11-25"
+    },
+    "SMCJ24AQ13F": {
+     "part": "SMCJ24AQ-13-F",
+     "gbp": 0.637806,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2068184.html",
+     "date": "2026-11-25"
+    },
+    "SZ1SMB24AT3G": {
+     "part": "SZ1SMB24AT3G",
+     "gbp": 0.071873,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/346098.html",
+     "date": "2026-11-25"
+    },
+    "SZ1SMA33AT3G": {
+     "part": "SZ1SMA33AT3G",
+     "gbp": 0.058539,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/2067188.html",
+     "date": "2026-11-25"
+    },
+    "SMBJ33AHE3AI": {
+     "part": "SMBJ33AHE3_A/I",
+     "gbp": 0.054712,
+     "reelQty": 3200,
+     "url": "https://item.szlcsc.com/2072830.html",
+     "date": "2026-11-25"
+    },
+    "SMAJ24AHE3AI": {
+     "part": "SMAJ24AHE3_A/I",
+     "gbp": 0.032179,
+     "reelQty": 7500,
+     "url": "https://item.szlcsc.com/1756865.html",
+     "date": "2026-11-25"
+    },
+    "SMBJ24CAQ": {
+     "part": "SMBJ24CAQ",
+     "gbp": 0.035588,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/733698.html",
+     "date": "2026-11-25"
+    },
+    "SMBJ36CAQTP": {
+     "part": "SMBJ36CAQ-TP",
+     "gbp": 0.038747,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/28533383.html",
+     "date": "2026-11-25"
+    },
+    "SZNUP2105LT1G": {
+     "part": "SZNUP2105LT1G",
+     "gbp": 0.02046,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/233258.html",
+     "date": "2026-11-25"
+    },
+    "PESD2CANFD24LTQR": {
+     "part": "PESD2CANFD24LT-QR",
+     "gbp": 0.082247,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/7918269.html",
+     "date": "2026-11-25"
+    },
+    "PESD2CANFD36UTQR": {
+     "part": "PESD2CANFD36UT-QR",
+     "gbp": 0.030415,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/8599826.html",
+     "date": "2026-11-25"
+    },
+    "PESD2CAN24TQR": {
+     "part": "PESD2CAN24T-QR",
+     "gbp": 0.031701,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/30660607.html",
+     "date": "2026-11-25"
+    },
+    "PESD2IVN24TQR": {
+     "part": "PESD2IVN24T-QR",
+     "gbp": 0.022971,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/7693074.html",
+     "date": "2026-11-25"
+    },
+    "ESD2CAN24DBZRQ1": {
+     "part": "ESD2CAN24DBZRQ1",
+     "gbp": 0.085775,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/6661704.html",
+     "date": "2026-11-25"
+    },
+    "ESDCAN242BLY": {
+     "part": "ESDCAN24-2BLY",
+     "gbp": 0.078809,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/244817.html",
+     "date": "2026-11-25"
+    },
+    "ESDCAN012BLY": {
+     "part": "ESDCAN01-2BLY",
+     "gbp": 0.037541,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2068144.html",
+     "date": "2026-11-25"
+    },
+    "ESDCAN032BWY": {
+     "part": "ESDCAN03-2BWY",
+     "gbp": 0.091914,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2065371.html",
+     "date": "2026-11-25"
+    },
+    "ESD2CAN24T2Q": {
+     "part": "ESD2CAN24T2Q",
+     "gbp": 0.040032,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323237.html",
+     "date": "2026-11-25"
+    },
+    "ESD1CAN24T2Q": {
+     "part": "ESD1CAN24T2Q",
+     "gbp": 0.03488,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323236.html",
+     "date": "2026-11-25"
+    },
+    "NRVBA1H100NT3G": {
+     "part": "NRVBA1H100NT3G",
+     "gbp": 0.060512,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/961250.html",
+     "date": "2026-11-25"
+    },
+    "NRVB120VLSFT1G": {
+     "part": "NRVB120VLSFT1G",
+     "gbp": 0.14251,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/633692.html",
+     "date": "2026-11-25"
+    },
+    "NRVBS540T3G": {
+     "part": "NRVBS540T3G",
+     "gbp": 0.127561,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/467787.html",
+     "date": "2026-11-25"
+    },
+    "NRVBAF360T3G": {
+     "part": "NRVBAF360T3G",
+     "gbp": 0.213266,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/961254.html",
+     "date": "2026-11-25"
+    },
+    "NRVBA340NT3G": {
+     "part": "NRVBA340NT3G",
+     "gbp": 0.081719,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/635924.html",
+     "date": "2026-11-25"
+    },
+    "NRVBS3100T3G": {
+     "part": "NRVBS3100T3G",
+     "gbp": 0.24416,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/970438.html",
+     "date": "2026-11-25"
+    },
+    "STPS1L40AY": {
+     "part": "STPS1L40AY",
+     "gbp": 0.070627,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/177324.html",
+     "date": "2026-11-25"
+    },
+    "SS34Q": {
+     "part": "SS34Q",
+     "gbp": 0.047656,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3323335.html",
+     "date": "2026-11-25"
+    },
+    "GS1MQ": {
+     "part": "GS1MQ",
+     "gbp": 0.013454,
+     "reelQty": 7500,
+     "url": "https://item.szlcsc.com/733306.html",
+     "date": "2026-11-25"
+    },
+    "SMLD12U8WT86C": {
+     "part": "SML-D12U8WT86C",
+     "gbp": 0.070149,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3041309.html",
+     "date": "2026-11-25"
+    },
+    "SMLD12D8WT86C": {
+     "part": "SML-D12D8WT86C",
+     "gbp": 0.06692,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3244331.html",
+     "date": "2026-11-25"
+    },
+    "SMLH12U8TT86C": {
+     "part": "SML-H12U8TT86C",
+     "gbp": 0.057004,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/6102073.html",
+     "date": "2026-11-25"
+    },
+    "SMLH12V8TT86C": {
+     "part": "SML-H12V8TT86C",
+     "gbp": 0.068564,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/6031017.html",
+     "date": "2026-11-25"
+    },
+    "SMLH12M8TT86C": {
+     "part": "SML-H12M8TT86C",
+     "gbp": 0.112613,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/6102040.html",
+     "date": "2026-11-25"
+    },
+    "LSL29KG1J21Z": {
+     "part": "LS L29K-G1J2-1-Z",
+     "gbp": 0.123944,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/8508333.html",
+     "date": "2026-11-25"
+    },
+    "LSL29KH1J21Z": {
+     "part": "LS L29K-H1J2-1-Z",
+     "gbp": 0.123575,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/6232305.html",
+     "date": "2026-11-25"
+    },
+    "LYL29KJ1K226Z": {
+     "part": "LY L29K-J1K2-26-Z",
+     "gbp": 0.081839,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/7164156.html",
+     "date": "2026-11-25"
+    },
+    "LYL296P1R226020R18Z": {
+     "part": "LY L296-P1R2-26-0-20-R18-Z",
+     "gbp": 0.112413,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/2982335.html",
+     "date": "2026-11-25"
+    },
+    "AM16000602": {
+     "part": "AM16000602",
+     "gbp": 0.116599,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3276811.html",
+     "date": "2026-11-25"
+    },
+    "AM10000301": {
+     "part": "AM10000301",
+     "gbp": 0.129554,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/399384.html",
+     "date": "2026-11-25"
+    },
+    "AV08000004": {
+     "part": "AV08000004",
+     "gbp": 0.196325,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/5743443.html",
+     "date": "2026-11-25"
+    },
+    "AV36800003": {
+     "part": "AV36800003",
+     "gbp": 0.079626,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/23793426.html",
+     "date": "2026-11-25"
+    },
+    "AM24000318": {
+     "part": "AM24000318",
+     "gbp": 0.103384,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/24178161.html",
+     "date": "2026-11-25"
+    },
+    "A308000001": {
+     "part": "A308000001",
+     "gbp": 0.137527,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/5958951.html",
+     "date": "2026-11-25"
+    },
+    "ABM8AIG8000MHZ1ZT": {
+     "part": "ABM8AIG-8.000MHZ-1Z-T",
+     "gbp": 0.339831,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/5754309.html",
+     "date": "2026-11-25"
+    },
+    "ABM8AIG16000MHZ122ZT3": {
+     "part": "ABM8AIG-16.000MHZ-12-2Z-T3",
+     "gbp": 0.376704,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/625519.html",
+     "date": "2026-11-25"
+    },
+    "ABM8AIG25000MHZ122ZT3": {
+     "part": "ABM8AIG-25.000MHZ-12-2Z-T3",
+     "gbp": 0.326876,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2076956.html",
+     "date": "2026-11-25"
+    },
+    "ABM10AIG24000MHZ4ZT3": {
+     "part": "ABM10AIG-24.000MHZ-4Z-T3",
+     "gbp": 0.390656,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2077099.html",
+     "date": "2026-11-25"
+    },
+    "ABM10AIG25000MHZ4ZT3": {
+     "part": "ABM10AIG-25.000MHZ-4Z-T3",
+     "gbp": 0.204297,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2076991.html",
+     "date": "2026-11-25"
+    },
+    "SX32C008000DK1T003": {
+     "part": "SX32C008000DK1T003",
+     "gbp": 0.09291,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/57931443.html",
+     "date": "2026-11-25"
+    },
+    "TLV73333PQDBVRQ1": {
+     "part": "TLV73333PQDBVRQ1",
+     "gbp": 0.179383,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3067227.html",
+     "date": "2026-11-25"
+    },
+    "TLV73312PQDBVRQ1": {
+     "part": "TLV73312PQDBVRQ1",
+     "gbp": 0.135534,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3072474.html",
+     "date": "2026-11-25"
+    },
+    "LP5907QMFX33Q1": {
+     "part": "LP5907QMFX-3.3Q1",
+     "gbp": 0.214263,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/141292.html",
+     "date": "2026-11-25"
+    },
+    "LP5907QMFX18Q1": {
+     "part": "LP5907QMFX-1.8Q1",
+     "gbp": 0.134537,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3321880.html",
+     "date": "2026-11-25"
+    },
+    "TPS7B6933QDBVRQ1": {
+     "part": "TPS7B6933QDBVRQ1",
+     "gbp": 0.588974,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/834275.html",
+     "date": "2026-11-25"
+    },
+    "NCV8114ASN330T1G": {
+     "part": "NCV8114ASN330T1G",
+     "gbp": 0.121522,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/633448.html",
+     "date": "2026-11-25"
+    },
+    "TLV9001QDBVRQ1": {
+     "part": "TLV9001QDBVRQ1",
+     "gbp": 0.131548,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/20931160.html",
+     "date": "2026-11-25"
+    },
+    "TLV9061QDBVRQ1": {
+     "part": "TLV9061QDBVRQ1",
+     "gbp": 0.204297,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/24084702.html",
+     "date": "2026-11-25"
+    },
+    "LMV321AQDBVRQ1": {
+     "part": "LMV321AQDBVRQ1",
+     "gbp": 0.150482,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/21671060.html",
+     "date": "2026-11-25"
+    },
+    "TL431AQDBZRQ1": {
+     "part": "TL431AQDBZRQ1",
+     "gbp": 0.088007,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/98949.html",
+     "date": "2026-11-25"
+    },
+    "TL431BQDBZRQ1": {
+     "part": "TL431BQDBZRQ1",
+     "gbp": 1.071315,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/98955.html",
+     "date": "2026-11-25"
+    },
+    "TL432AQDBZRQ1": {
+     "part": "TL432AQDBZRQ1",
+     "gbp": 0.147493,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/98948.html",
+     "date": "2026-11-25"
+    },
+    "TLV431BQDBZRQ1": {
+     "part": "TLV431BQDBZRQ1",
+     "gbp": 0.597943,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2248619.html",
+     "date": "2026-11-25"
+    },
+    "TLV431AQDBVRQ1": {
+     "part": "TLV431AQDBVRQ1",
+     "gbp": 0.138523,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/388632.html",
+     "date": "2026-11-25"
+    },
+    "TLVH431BQDBZRQ1": {
+     "part": "TLVH431BQDBZRQ1",
+     "gbp": 0.154469,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/2248625.html",
+     "date": "2026-11-25"
+    },
+    "TLVH431AQDBVRQ1": {
+     "part": "TLVH431AQDBVRQ1",
+     "gbp": 0.42155,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/542834.html",
+     "date": "2026-11-25"
+    },
+    "ATL431LIAQDBZRQ1": {
+     "part": "ATL431LIAQDBZRQ1",
+     "gbp": 0.326876,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/1942942.html",
+     "date": "2026-11-25"
+    },
+    "ATL431LIBQDBZRQ1": {
+     "part": "ATL431LIBQDBZRQ1",
+     "gbp": 0.501276,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3072631.html",
+     "date": "2026-11-25"
+    },
+    "NCV431BSNT1G": {
+     "part": "NCV431BSNT1G",
+     "gbp": 0.285019,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/633371.html",
+     "date": "2026-11-25"
+    },
+    "NCV1117ST33T3G": {
+     "part": "NCV1117ST33T3G",
+     "gbp": 0.068345,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/115977.html",
+     "date": "2026-11-25"
+    },
+    "NCV1117ST50T3G": {
+     "part": "NCV1117ST50T3G",
+     "gbp": 0.107719,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/167540.html",
+     "date": "2026-11-25"
+    },
+    "NCV42642ST50T3G": {
+     "part": "NCV4264-2ST50T3G",
+     "gbp": 0.160448,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/74228.html",
+     "date": "2026-11-25"
+    },
+    "NCV42642CST33T3G": {
+     "part": "NCV4264-2CST33T3G",
+     "gbp": 0.337838,
+     "reelQty": 4000,
+     "url": "https://item.szlcsc.com/578260.html",
+     "date": "2026-11-25"
+    },
+    "LM2904QDRQ1": {
+     "part": "LM2904QDRQ1",
+     "gbp": 0.157458,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/2149229.html",
+     "date": "2026-11-25"
+    },
+    "LM2903QDRQ1": {
+     "part": "LM2903QDRQ1",
+     "gbp": 0.14251,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/482376.html",
+     "date": "2026-11-25"
+    },
+    "LM2904BQDRQ1": {
+     "part": "LM2904BQDRQ1",
+     "gbp": 0.11322,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/1946598.html",
+     "date": "2026-11-25"
+    },
+    "LM2903BQDRQ1": {
+     "part": "LM2903BQDRQ1",
+     "gbp": 0.119589,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/4226854.html",
+     "date": "2026-11-25"
+    },
+    "TLV9002QDRQ1": {
+     "part": "TLV9002QDRQ1",
+     "gbp": 0.325879,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3065599.html",
+     "date": "2026-11-25"
+    },
+    "TLV9062QDRQ1": {
+     "part": "TLV9062QDRQ1",
+     "gbp": 0.798254,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3074562.html",
+     "date": "2026-11-25"
+    },
+    "NCV2904DR2G": {
+     "part": "NCV2904DR2G",
+     "gbp": 0.050347,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/163635.html",
+     "date": "2026-11-25"
+    },
+    "NCV2903DR2G": {
+     "part": "NCV2903DR2G",
+     "gbp": 0.033455,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/231665.html",
+     "date": "2026-11-25"
+    },
+    "LM2904WYDT": {
+     "part": "LM2904WYDT",
+     "gbp": 0.178386,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/106625.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G14GWQ1001": {
+     "part": "74LVC1G14GW-Q100,1",
+     "gbp": 0.057124,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/6102165.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G04GVQ100H": {
+     "part": "74LVC1G04GV-Q100H",
+     "gbp": 0.068943,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/569269.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G32GWQ100H": {
+     "part": "74LVC1G32GW-Q100H",
+     "gbp": 0.113988,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/569402.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G04GWQ100H": {
+     "part": "74LVC1G04GW-Q100H",
+     "gbp": 0.077653,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/516126.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G125GWQ100": {
+     "part": "74LVC1G125GW-Q100,",
+     "gbp": 0.07566,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/569324.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G00GWQ100H": {
+     "part": "74LVC1G00GW-Q100H",
+     "gbp": 0.053247,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/569255.html",
+     "date": "2026-11-25"
+    },
+    "74LVC1G74DPQ100H": {
+     "part": "74LVC1G74DP-Q100H",
+     "gbp": 0.135534,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/569477.html",
+     "date": "2026-11-25"
+    },
+    "SN74LVC1G08QDBVRQ1": {
+     "part": "SN74LVC1G08QDBVRQ1",
+     "gbp": 0.078928,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/896074.html",
+     "date": "2026-11-25"
+    },
+    "SN74LVC1G04QDBVRQ1": {
+     "part": "SN74LVC1G04QDBVRQ1",
+     "gbp": 0.078291,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/3065004.html",
+     "date": "2026-11-25"
+    },
+    "SN74LVC1G17QDCKRQ1": {
+     "part": "SN74LVC1G17QDCKRQ1",
+     "gbp": 0.071624,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/206898.html",
+     "date": "2026-11-25"
+    },
+    "M24C02DRMN3TPK": {
+     "part": "M24C02-DRMN3TP/K",
+     "gbp": 0.111616,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/2152818.html",
+     "date": "2026-11-25"
+    },
+    "M24C16DRMN3TPK": {
+     "part": "M24C16-DRMN3TP/K",
+     "gbp": 0.150482,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/2152612.html",
+     "date": "2026-11-25"
+    },
+    "M24C64DRMN3TPK": {
+     "part": "M24C64-DRMN3TP/K",
+     "gbp": 0.254126,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/350489.html",
+     "date": "2026-11-25"
+    },
+    "M24256DRMN3TPK": {
+     "part": "M24256-DRMN3TP/K",
+     "gbp": 0.560073,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3357266.html",
+     "date": "2026-11-25"
+    },
+    "M24512DRMN3TPK": {
+     "part": "M24512-DRMN3TP/K",
+     "gbp": 0.599936,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/2153045.html",
+     "date": "2026-11-25"
+    },
+    "M95160DRMN3TPK": {
+     "part": "M95160-DRMN3TP/K",
+     "gbp": 0.183369,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/2153105.html",
+     "date": "2026-11-25"
+    },
+    "M95256DRMN3TPK": {
+     "part": "M95256-DRMN3TP/K",
+     "gbp": 0.245157,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/168800.html",
+     "date": "2026-11-25"
+    },
+    "NV25160DWHFT3G": {
+     "part": "NV25160DWHFT3G",
+     "gbp": 0.396636,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/959573.html",
+     "date": "2026-11-25"
+    },
+    "NV25640DWHFT3G": {
+     "part": "NV25640DWHFT3G",
+     "gbp": 0.501276,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/635942.html",
+     "date": "2026-11-25"
+    },
+    "NV25080DWHFT3G": {
+     "part": "NV25080DWHFT3G",
+     "gbp": 0.321893,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/633941.html",
+     "date": "2026-11-25"
+    },
+    "NV25320DTHFT3G": {
+     "part": "NV25320DTHFT3G",
+     "gbp": 0.549111,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/959574.html",
+     "date": "2026-11-25"
+    },
+    "TJA1042T31J": {
+     "part": "TJA1042T/3/1J",
+     "gbp": 0.144503,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/143526.html",
+     "date": "2026-11-25"
+    },
+    "TJA1043T1J": {
+     "part": "TJA1043T/1J",
+     "gbp": 0.191342,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/152153.html",
+     "date": "2026-11-25"
+    },
+    "TJA1044GT3Z": {
+     "part": "TJA1044GT/3Z",
+     "gbp": 0.140517,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/1041150.html",
+     "date": "2026-11-25"
+    },
+    "TJA1051T31J": {
+     "part": "TJA1051T/3/1J",
+     "gbp": 0.184366,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/39678.html",
+     "date": "2026-11-25"
+    },
+    "TJA1462AT0Z": {
+     "part": "TJA1462AT/0Z",
+     "gbp": 0.305948,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3797116.html",
+     "date": "2026-11-25"
+    },
+    "TJA1463AT0Z": {
+     "part": "TJA1463AT/0Z",
+     "gbp": 0.38966,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3796842.html",
+     "date": "2026-11-25"
+    },
+    "TCAN1042HGVDRQ1": {
+     "part": "TCAN1042HGVDRQ1",
+     "gbp": 0.857052,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/143849.html",
+     "date": "2026-11-25"
+    },
+    "TCAN1044AVDRQ1": {
+     "part": "TCAN1044AVDRQ1",
+     "gbp": 0.346807,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/3798014.html",
+     "date": "2026-11-25"
+    },
+    "TCAN1042VDRQ1": {
+     "part": "TCAN1042VDRQ1",
+     "gbp": 0.263095,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/494300.html",
+     "date": "2026-11-25"
+    },
+    "TLIN1029DRQ1": {
+     "part": "TLIN1029DRQ1",
+     "gbp": 0.606912,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/211070.html",
+     "date": "2026-11-25"
+    },
+    "TLE9251VSJ": {
+     "part": "TLE9251VSJ",
+     "gbp": 0.275054,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/207466.html",
+     "date": "2026-11-25"
+    },
+    "NCV7344D10R2G": {
+     "part": "NCV7344D10R2G",
+     "gbp": 0.189349,
+     "reelQty": 3000,
+     "url": "https://item.szlcsc.com/208968.html",
+     "date": "2026-11-25"
+    },
+    "CAIF1042VSQ1": {
+     "part": "CA-IF1042VS-Q1",
+     "gbp": 0.194332,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/5860760.html",
+     "date": "2026-11-25"
+    },
+    "CAIF1044VSQ1": {
+     "part": "CA-IF1044VS-Q1",
+     "gbp": 0.141513,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/5988245.html",
+     "date": "2026-11-25"
+    },
+    "SIT1042AQT3": {
+     "part": "SIT1042AQT/3",
+     "gbp": 0.191342,
+     "reelQty": 2500,
+     "url": "https://item.szlcsc.com/6255016.html",
+     "date": "2026-11-25"
+    },
+    "RH5015": {
+     "part": "RH-5015",
+     "gbp": 0.032209,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/5885634.html",
+     "date": "2026-11-25"
+    },
+    "RH5016": {
+     "part": "RH-5016",
+     "gbp": 0.032269,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/5885635.html",
+     "date": "2026-11-25"
+    },
+    "RH5017": {
+     "part": "RH-5017",
+     "gbp": 0.035717,
+     "reelQty": 5000,
+     "url": "https://item.szlcsc.com/8710696.html",
+     "date": "2026-11-25"
+    },
+    "RH5019": {
+     "part": "RH-5019",
+     "gbp": 0.032119,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/5885636.html",
+     "date": "2026-11-25"
+    },
+    "RCU0C": {
+     "part": "RCU-0C",
+     "gbp": 0.08727,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/472376.html",
+     "date": "2026-11-25"
+    },
+    "5191TR": {
+     "part": "5191TR",
+     "gbp": 0.18038,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/23955590.html",
+     "date": "2026-11-25"
+    },
+    "B2BXHALFSN": {
+     "part": "B2B-XH-A(LF)(SN)",
+     "gbp": 0.012437,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/169360.html",
+     "date": "2026-11-25"
+    },
+    "B4BXHALFSN": {
+     "part": "B4B-XH-A(LF)(SN)",
+     "gbp": 0.018297,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/155727.html",
+     "date": "2026-11-25"
+    },
+    "B6BXHALFSN": {
+     "part": "B6B-XH-A(LF)(SN)",
+     "gbp": 0.03188,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/155729.html",
+     "date": "2026-11-25"
+    },
+    "A2541WV2P": {
+     "part": "A2541WV-2P",
+     "gbp": 0.011979,
+     "reelQty": 2000,
+     "url": "https://item.szlcsc.com/225760.html",
+     "date": "2026-11-25"
+    },
+    "A2541WV8P": {
+     "part": "A2541WV-8P",
+     "gbp": 0.044457,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/225766.html",
+     "date": "2026-11-25"
+    },
+    "A2543WV4P": {
+     "part": "A2543WV-4P",
+     "gbp": 0.043291,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/238468.html",
+     "date": "2026-11-25"
+    },
+    "X2510WV04N0SN": {
+     "part": "X2510WV-04-N0SN",
+     "gbp": 0.01163,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/902335.html",
+     "date": "2026-11-25"
+    },
+    "XH4A": {
+     "part": "XH-4A",
+     "gbp": 0.009308,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/3184373.html",
+     "date": "2026-11-25"
+    },
+    "61301011121": {
+     "part": "61301011121",
+     "gbp": 0.505262,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/7654587.html",
+     "date": "2026-11-25"
+    },
+    "61302021121": {
+     "part": "61302021121",
+     "gbp": 0.444471,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/7414738.html",
+     "date": "2026-11-25"
+    },
+    "PZ254V1110P": {
+     "part": "PZ254V-11-10P",
+     "gbp": 0.018108,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/502965.html",
+     "date": "2026-11-25"
+    },
+    "PZ254V1220P": {
+     "part": "PZ254V-12-20P",
+     "gbp": 0.036584,
+     "reelQty": 500,
+     "url": "https://item.szlcsc.com/502983.html",
+     "date": "2026-11-25"
+    },
+    "254110P": {
+     "part": "2.54-1*10P针",
+     "gbp": 0.022054,
+     "reelQty": 1000,
+     "url": "https://item.szlcsc.com/58403.html",
+     "date": "2026-11-25"
+    }
+   }
+  }
+ },
+ "dropped": [
+  {
+   "key": "passive_0603.cap",
+   "part": "CGA3E3X7S1A225K080AE",
+   "gbp": 0.0563,
+   "classMedianOfOthers": 0.00572,
+   "stock": 12,
+   "url": "https://item.szlcsc.com/2261831.html"
+  },
+  {
+   "key": "passive_1206.cap",
+   "part": "GCM32DR71E475KA55L",
+   "gbp": 0.251,
+   "classMedianOfOthers": 0.0777,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/87045.html"
+  },
+  {
+   "key": "passive_1206.cap",
+   "part": "GCM32DR71C106KA37L",
+   "gbp": 1.41,
+   "classMedianOfOthers": 0.0777,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/87044.html"
+  },
+  {
+   "key": "passive_1206.cap",
+   "part": "GCM32EC71E226ME36L",
+   "gbp": 0.39,
+   "classMedianOfOthers": 0.0777,
+   "stock": 9,
+   "url": "https://item.szlcsc.com/137891.html"
+  },
+  {
+   "key": "passive_1206.cap",
+   "part": "CGA6M3X7S2A475KT0Y3S",
+   "gbp": 0.241,
+   "classMedianOfOthers": 0.0777,
+   "stock": 20,
+   "url": "https://item.szlcsc.com/315881.html"
+  },
+  {
+   "key": "passive_0603.ntc",
+   "part": "NCU18XH103D60RB",
+   "gbp": 0.263,
+   "classMedianOfOthers": 0.0217,
+   "stock": 5,
+   "url": "https://item.szlcsc.com/3716597.html"
+  },
+  {
+   "key": "passive_1206.alu",
+   "part": "EEE-FT1V101AV",
+   "gbp": 0.0572,
+   "classMedianOfOthers": 0.238,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/2256500.html"
+  },
+  {
+   "key": "discrete.SOT-23 / SOD-123 discrete",
+   "part": "BRBZX84C5V1Q",
+   "gbp": 0.00578,
+   "classMedianOfOthers": 0.0182,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/38221422.html"
+  },
+  {
+   "key": "fuse_tvs.tvs",
+   "part": "SMCJ24A-Q",
+   "gbp": 0.331,
+   "classMedianOfOthers": 0.0652,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/2067092.html"
+  },
+  {
+   "key": "crystal_osc.xtal",
+   "part": "ABM8AAIG-8.000MHz-V2R-T3",
+   "gbp": 0.618,
+   "classMedianOfOthers": 0.167,
+   "stock": 4,
+   "url": "https://item.szlcsc.com/25802328.html"
+  },
+  {
+   "key": "ic_soic.sot",
+   "part": "LM4041QCEM3X-1.2NO",
+   "gbp": 1.06,
+   "classMedianOfOthers": 0.179,
+   "stock": 22,
+   "url": "https://item.szlcsc.com/2248901.html"
+  },
+  {
+   "key": "ic_soic.opamp",
+   "part": "TSV912IYST",
+   "gbp": 0.95,
+   "classMedianOfOthers": 0.143,
+   "stock": 34,
+   "url": "https://item.szlcsc.com/2150932.html"
+  },
+  {
+   "key": "ic_soic.logic",
+   "part": "74LVC1G08GW-Q100",
+   "gbp": 0.0192,
+   "classMedianOfOthers": 0.0777,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/23962015.html"
+  },
+  {
+   "key": "ic_soic.logic",
+   "part": "74LVC1G17GW-Q100",
+   "gbp": 0.565,
+   "classMedianOfOthers": 0.0757,
+   "stock": 0,
+   "url": "https://item.szlcsc.com/569368.html"
+  }
+ ],
+ "thin": [
+  "passive_0402.ind (5)",
+  "passive_0402.ntc (4)",
+  "passive_0603.ntc (5)",
+  "ic_soic.ldo (4)"
+ ]
+}

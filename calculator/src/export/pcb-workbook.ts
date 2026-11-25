@@ -577,6 +577,11 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   const verify = rep.confidence
     ? [`${rep.confidence.label} confidence — likely ${fmtMoney(rep.confidence.low)} to ${fmtMoney(rep.confidence.high)} per board.`,
        rep.confidence.verifyCount ? `${rep.confidence.verifyCount} line${rep.confidence.verifyCount === 1 ? '' : 's'} of ${fmtMoney(1)}+ to verify (${fmtMoney(rep.confidence.verifyValue)}): ${rep.bom.filter(l => l.verify).map(l => `${l.partNumber || l.description} — ${l.verifyWhy ?? 'priced from a range'}`).join('; ')}. See "Quote" on Bill of Materials.` : `Every line of ${fmtMoney(1)}+ has a catalogue price for the exact part behind it.`,
+       ...(rep.quantity ? [`Count: ${rep.quantity.parts.toLocaleString('en-GB')} parts${rep.quantity.low !== rep.quantity.high ? ` (likely ${rep.quantity.low.toLocaleString('en-GB')}–${rep.quantity.high.toLocaleString('en-GB')})` : ''} — ${rep.quantity.note}`] : []),
+       ...(rep.verifyFirst.length ? [`Verify these first (the ${rep.verifyFirst.length} dearest lines): ${rep.verifyFirst.map(v => `${v.rank}. ${v.part} ${fmtMoney(v.amount)} (${v.status})`).join('; ')}.`] : []),
+       ...(rep.componentMarket ? [`Components at the ${rep.componentMarket.market} market (${rep.componentMarket.source}): ${fmtMoney(rep.componentMarket.components)} a board, against ${fmtMoney(rep.componentMarket.global)} at global distributor prices.`] : []),
+       ...(rep.fullEconomic ? [`Full-economic ${fmtMoney(rep.fullEconomic.amount)} a board — with the programme NRE (${fmtMoney(rep.fullEconomic.nrePerBoard)} a board) spread over the programme.`] : []),
+       ...(rep.emsInvoice ? [`EMS invoice ${fmtMoney(rep.emsInvoice.amount)} a board — the delivered cost less ${fmtMoney(rep.emsInvoice.customerSupplied)} of customer-supplied parts.`] : []),
        rep.accuracyNote]
     : ['No confidence band was computed for this analysis.'];
   // Each verify bullet is a block of rows beside the facts (merged H:M), sized to its text.

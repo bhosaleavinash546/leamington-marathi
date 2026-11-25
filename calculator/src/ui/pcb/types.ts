@@ -48,6 +48,10 @@ export interface PCBBOMItem {
   volumeAdjusted?: boolean;
   lineTotalGBP?: number;
   livePriced?: boolean;
+  /** The customer buys and supplies this part (directed buy / consignment — EDU v6). */
+  customerSupplied?: boolean;
+  /** How the quantity was counted, its range, side and the photos it was counted in (EDU v6). */
+  countMethod?: string; qtyMin?: number; qtyMax?: number; side?: string; seenIn?: string[];
 }
 export interface PCBCountryBreakdown {
   /** Present when IATF / class 3 / burn-in / laminate premiums are in the totals. */
@@ -60,6 +64,8 @@ export interface PCBCountryBreakdown {
   logisticsPerBoard: number;
   bomCostPerBoard: number;
   totalPerBoard: number;
+  /** The EMS invoice: the board less the parts the customer supplies (EDU v6). */
+  emsInvoicePerBoard?: number;
   leadTimeWeeks: number;
   qualityIndex: number;
   certifications: string[];
@@ -70,6 +76,7 @@ export interface PCBCountryBreakdown {
     automotiveFab?: number; automotiveAssembly?: number; energy?: number; packaging?: number; yieldLoss?: number;
     smtAssembly: number; thAssembly: number; aoi: number;
     logistics: number; importDuty: number;
+    materialBurden?: number; materialBurdenPct?: number; customerSupplied?: number;
   };
   panelInfo?: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
 }
@@ -120,6 +127,8 @@ export interface PCBImageAnalysis {
     boardWeightG?: number;
     /** The engineer's production and safety inputs (PCB form; EDU audit, Nov 2026). */
     lotSize?: number; programmeYears?: number; samplingCadence?: string; asilConfirmed?: string;
+    /** Operations and component market typed on the PCB form (EDU v6); '' = the tool's own figure. */
+    conformalCoatSides?: number | ''; pressFitConnectors?: number | ''; programmingSec?: number | ''; functionalTestSec?: number | ''; componentMarket?: string;
   };
   bom: PCBBOMItem[];
   assembly: {
@@ -179,6 +188,12 @@ export interface PCBImageAnalysis {
   _automotiveFabAdjustment?: AutomotiveFabAdjustment;
   _bomCompleteness?: BOMCompletenessResult;
   _programPricing?: ProgramPricingResult;
+  /** The ten dearest lines, ranked, with what stands behind each price (server: pcb-verify-list.ts — EDU v6). */
+  _verifyList?: VerifyLine[];
+  /** How the quantities were counted and their range (server: pcb-counting.ts — EDU v6). */
+  /** The build country's component market, when the engineer chose it (EDU v6). */
+  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
+  _quantityBand?: { parts: number; partsLow: number; partsHigh: number; gbpLow: number; gbpHigh: number; emptyFootprints: number; note: string };
   /** The order quantity the server costed at (the page field can change afterwards). */
   _orderQty?: number;
   /** Stage 4 did not complete: the figures are incomplete. */
@@ -245,4 +260,10 @@ export interface ProgramPricingResult {
   annualProgramVolume: number;
   pricingTier: 'distributor_spot' | 'blanket_order' | 'direct_contract' | 'tier1_contract';
   multiplier: number;
+}
+
+/** One line of the verify-first list (server/utils/pcb-verify-list.ts). */
+export interface VerifyLine {
+  rank: number; refDes: string; description: string; partNumber: string; qty: number; unitPriceGBP: number; lineTotalGBP: number;
+  share: number; priceSource: string; status: 'confirmed' | 'to verify'; why: string; customerSupplied: boolean;
 }

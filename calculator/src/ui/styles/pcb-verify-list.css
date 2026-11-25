@@ -1,0 +1,18 @@
+/* "Verify these first" (src/ui/pcb/verify-panel.ts) — theme tokens only, both themes. */
+.pcb-vl { margin-top: 10px; padding: 10px 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; }
+.pcb-vl__h { margin: 0 0 4px; font-size: 0.78rem; font-weight: 600; color: var(--text-primary); }
+.pcb-vl__lead, .pcb-vl__inv { margin: 0 0 6px; font-size: 0.68rem; color: var(--text-secondary); }
+.pcb-vl__inv { margin: 8px 0 0; }
+.pcb-vl__wrap { overflow-x: auto; }
+.pcb-vl__t { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
+.pcb-vl__t th { text-align: left; padding: 3px 6px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+.pcb-vl__t td { padding: 3px 6px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-primary); }
+.pcb-vl__num, .pcb-vl__t th.pcb-vl__num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pcb-vl__n, .pcb-vl__ref, .pcb-vl__pn { font-family: ui-monospace, monospace; }
+.pcb-vl__pn, .pcb-vl__why { color: var(--text-muted); }
+.pcb-vl__status { display: inline-block; padding: 0 5px; border-radius: 4px; font-weight: 600; border: 1px solid currentColor; }
+.pcb-vl__status--ok { color: var(--success); }
+.pcb-vl__status--check { color: var(--danger); }
+.pcb-vl__count { margin: 0 0 6px; font-size: 0.7rem; color: var(--text-secondary); }
+.pcb-count-ev { margin-top: 2px; font-size: 0.6rem; color: var(--text-muted); }
+.pcb-count-ev--range { color: var(--danger); }

@@ -32,8 +32,10 @@ export interface MarketFabEvidence {
   currency: string;
   /** The price rise from the base year to the costing year applied to every class (mid of the reported band). */
   rise: { lo: number; hi: number; used: number; source: string; url: string };
-  /** Class-3 extras a fab prices separately, local currency per m². */
+  /** Class-3 extras a fab prices separately, local currency per m² (0 where no fab lists them separately). */
   class3ExtrasPerM2: { value: number; parts: string; source: string; url: string };
+  /** One line on what the ASP is (printed on the basis). */
+  basisLabel?: string;
   classes: MarketAspClass[];
   asOf: string;
 }
@@ -60,7 +62,46 @@ export const PCB_FAB_MARKET: Record<string, MarketFabEvidence> = {
         url: 'https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf', quote: '"八层及以上板 2,362.21 6.51% 2,217.87 -4.56% 2,323.92"' },
     ],
   },
+  // EDU v6 (Nov 2026; research scripts/pcb-research/2026-11-25-v6/bare-board-asp.json). Thailand: KCE Electronics, an
+  // automotive-led fab (Lat Krabang + Ayutthaya), its own sales at factory price ÷ area shipped by layer class, 9 months to
+  // Q3 2026 — the 2026 price rises are inside, so no rise is added. 6-layer-and-up is one class in the filing (6–12+ layers):
+  // anchored at 6 layers, so 8-layer boards and up price on the high side.
+  th: {
+    currency: 'USD', asOf: '2026-11-25', basisLabel: 'KCE Electronics (Thailand, automotive-led) — sales at factory price ÷ area shipped, by layer class, 9M 2026',
+    rise: { lo: 0, hi: 0, used: 0, source: 'none added — the 2026 figures already carry the year\'s price rises', url: 'https://kce.listedcompany.com/newsroom/0122NWS051120261830475310E.pdf' },
+    class3ExtrasPerM2: { value: 0, parts: 'none listed separately', source: 'KCE does not list class-3 extras apart from its prices', url: '' },
+    classes: [
+      { minLayers: 1, maxLayers: 2, anchorLayers: 2, aspLocalPerM2: 116.7, baseYear: 2026, source: 'KCE Electronics MD&A Q3 2026, table 5: 2-layer sales ÷ area shipped', url: 'https://kce.listedcompany.com/newsroom/0122NWS051120261830475310E.pdf', quote: '02 Layer — 9M 2026: USD 116.7 / m² (sales value ÷ sq ft shipped, converted at 10.764 sq ft / m²)' },
+      { minLayers: 3, maxLayers: 5, anchorLayers: 4, aspLocalPerM2: 133.7, baseYear: 2026, source: 'KCE Electronics MD&A Q3 2026, table 5: 4-layer', url: 'https://kce.listedcompany.com/newsroom/0122NWS051120261830475310E.pdf', quote: '04 Layer — 9M 2026: USD 133.7 / m²' },
+      { minLayers: 6, maxLayers: 99, anchorLayers: 6, aspLocalPerM2: 181.9, baseYear: 2026, source: 'KCE Electronics MD&A Q3 2026, table 5: 6-layer and up (HDI "special grade" is a separate class, USD 218.1 / m²)', url: 'https://kce.listedcompany.com/newsroom/0122NWS051120261830475310E.pdf', quote: '06 + Layer — 9M 2026: USD 181.9 / m²' },
+    ],
+  },
+  // Japan: METI production statistics yearbook 2025 — value ÷ area of all rigid boards made in Japan, by layer class
+  // (production value, not invoiced prices; Japanese output is small-lot, high-reliability work). No 2026 rise sourced.
+  jp: {
+    currency: 'JPY', asOf: '2026-11-25', basisLabel: 'METI production statistics 2025 — production value ÷ area of rigid boards made in Japan, by layer class',
+    rise: { lo: 0, hi: 0, used: 0, source: 'none added — no 2026 price change for Japanese boards was found', url: 'https://www.e-stat.go.jp/stat-search/file-download?statInfId=000040475' },
+    class3ExtrasPerM2: { value: 0, parts: 'none listed separately', source: 'a national statistic has no extras line', url: '' },
+    classes: [
+      { minLayers: 1, maxLayers: 2, anchorLayers: 2, aspLocalPerM2: 27358, baseYear: 2025, source: 'METI yearbook 2025: rigid double-sided', url: 'https://www.e-stat.go.jp/stat-search/file-download?statInfId=000040475', quote: 'Rigid double-sided: ¥27,358 / m² (value ÷ area)' },
+      { minLayers: 3, maxLayers: 5, anchorLayers: 4, aspLocalPerM2: 39063, baseYear: 2025, source: 'METI yearbook 2025: rigid multilayer 4 layers', url: 'https://www.e-stat.go.jp/stat-search/file-download?statInfId=000040475', quote: 'Rigid multilayer 4 layers: ¥39,063 / m²' },
+      { minLayers: 6, maxLayers: 8, anchorLayers: 7, aspLocalPerM2: 110711, baseYear: 2025, source: 'METI yearbook 2025: rigid multilayer 6–8 layers', url: 'https://www.e-stat.go.jp/stat-search/file-download?statInfId=000040475', quote: 'Rigid multilayer 6–8 layers: ¥110,711 / m²' },
+      { minLayers: 9, maxLayers: 99, anchorLayers: 10, aspLocalPerM2: 339547, baseYear: 2025, source: 'METI yearbook 2025: rigid multilayer 10 layers and up', url: 'https://www.e-stat.go.jp/stat-search/file-download?statInfId=000040475', quote: 'Rigid multilayer 10+ layers: ¥339,547 / m²' },
+    ],
+  },
 };
+
+import { FX_TO_GBP_TABLE, CURRENCY_SYMBOL } from '../../src/engine/insights.js';
+
+/** Local currency per £ for a market's evidence: China keeps the 29 Sep 2026 ¥8.88 the tool's China figures use; the
+ *  others the catalogue's FX snapshot (FX_TO_GBP_TABLE, 29 Sep 2026). */
+export function marketLocalPerGbp(currency: string): number {
+  if (currency === 'CNY') return 8.88;
+  const g = FX_TO_GBP_TABLE[currency];
+  if (!(g > 0)) throw new Error(`No FX for ${currency}`);
+  return 1 / g;
+}
+export const marketSymbol = (currency: string) => CURRENCY_SYMBOL[currency] ?? `${currency} `;
 
 /** The ASP class for a layer count in a country, or null (no market evidence: use the table + premium). */
 export function marketAspClass(countryId: string, layers: number): { ev: MarketFabEvidence; cls: MarketAspClass } | null {

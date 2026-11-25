@@ -108,7 +108,7 @@ describe('G-06 — a China automotive board at the market price per m²', () => 
     const bd = computePCBCountryCost({ ...EDU, programmeYears: 6 }, 'cn');
     applyAutomotiveGrade(bd, SPEC, {}, 'Unknown' as never, 10_000, 'automotive_adas');
     const line = bd.basis!.find(b => b.item === 'Automotive fab grade')!;
-    expect(line.formula).toMatch(/automotive ASP 2024/);
+    expect(line.formula).toMatch(/3–7-layer ASP 2024/);   // "automotive" dropped (EDU v6): not every country's ASP is automotive (Japan: METI, all boards)
     expect(bd.pcbFabPerBoard).toBeLessThan(17);
   });
 });

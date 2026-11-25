@@ -62,7 +62,9 @@ describe('radar board, China, 250k, ASIL-C — every figure from the headline', 
       smtPlacements: Number(as.smtPlacements), throughHoleJoints: Number(as.throughHoleJoints) || 0, manualJoints: Number(as.manualJoints) || 0,
       bgaCount: Number(as.bgaCount) || 0, aoiRequired: Boolean(as.aoiRequired), ictTimeSec: Number(as.ictTimeSec) || 0,
       conformalCoatAreaCm2: s4.conformalCoatingCost > 0 ? Number(bs.widthMm) * Number(bs.heightMm) / 100 : 0,
-      totalBOMCostGBP: bomAtQty(bom(), QTY, QTY), orderQuantity: QTY };
+      totalBOMCostGBP: bomAtQty(bom(), QTY, QTY), orderQuantity: QTY,
+      // EDU v6: the operations the headline was costed with ride on the analysis; the screen sends them with a scenario.
+      operations: (a as Record<string, unknown>).operationsCosted as never };
     const sc = computePCBCountryCost(input, 'cn');
     applyAutomotiveGrade(sc, bs, as, (s4.asil?.costed ?? 'ASIL-B') as never, QTY, 'automotive_adas');   // the level the costing used (F22: no named safety PMIC → ASIL-B)
     expect(sc.totalPerBoard).toBeCloseTo(bd0.totalPerBoard, 2);
