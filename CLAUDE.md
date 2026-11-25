@@ -1133,6 +1133,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   (the old home tiles own `.kpi-*`); never put `<header>` / `<footer>` in it (the app styles them as the top bar).
   Chart configs stay loosely typed (a strictly typed second Chart.js user broke main.ts's chart types). Live:
   `npm run test:e2e:kpi`. `/api/quotes` is owner-only (admin sees all).
+  Decisions applied 25 Nov 2026 (`calculator/docs/dashboard-audit/decisions-2026-11-25.md`): sign-up only for domains in
+  `CV_SIGNUP_DOMAINS` or addresses in `ADMIN_EMAILS` (first account on an empty DB from the same machine) — D-8; part numbers
+  fold case and punctuation, programmes do not (their variants are a data-quality count) — A-11 option 2; an owner withdraws
+  or deletes a reviewed / approved costing only with a reason, recorded in the audit log — D-4.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

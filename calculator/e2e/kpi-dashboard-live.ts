@@ -230,9 +230,9 @@ async function main(): Promise<void> {
       await page.click('[data-drill-key="L460"]');
       await page.waitForSelector('[data-drill-key="BEV"]'); await page.click('[data-drill-key="BEV"]');
       await page.waitForSelector('[data-drill-key="2027"]'); await page.click('[data-drill-key="2027"]');
-      await page.waitForSelector('[data-drill-key="LR-KNK-100"]');
+      await page.waitForSelector('[data-drill-key="LRKNK100"]');
       check('drill: commodity → programme → powertrain → model year → component', true, (await page.textContent('.kd-crumbs'))?.replace(/\s+/g, ' ') ?? '');
-      await page.click('[data-drill-key="LR-KNK-100"]');
+      await page.click('[data-drill-key="LRKNK100"]');
       await page.waitForFunction(() => document.querySelectorAll('#kd-records tbody tr').length === 1);
       check('drill to component lists its current costing record', true);
       await page.click('[data-drill-to="-1"]');

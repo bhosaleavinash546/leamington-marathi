@@ -68,7 +68,7 @@ const dqRows = (s: DashboardSummary): [string, number][] => {
     ['Financially eligible', q.financiallyEligible], ['Missing should-cost', q.missingShouldCost], ['Missing current cost', q.missingCurrentCost],
     ['Missing FX rate', q.missingFx], ['Different cost basis', q.basisMismatch], ['Reference FX (not approved)', q.unapprovedFx],
     ['Should-cost total only, not re-added', q.shouldBasis.totalOnly], ['Should-cost does not re-add', q.shouldBasis.notReAdded],
-    ['Duplicate candidates', q.duplicateCandidates], ['Older revisions', q.supersededRevisions], ['No part number', m.partNumber],
+    ['Duplicate candidates', q.duplicateCandidates], ['Older revisions', q.supersededRevisions], ['Programme spelling variants', q.programmeSpellingVariants ?? 0], ['No part number', m.partNumber],
     ['No commodity', m.commodity], ['No programme', m.programme], ['No model year', m.modelYear], ['No powertrain', m.powertrain]];
 };
 

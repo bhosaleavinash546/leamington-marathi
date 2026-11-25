@@ -209,17 +209,17 @@ export function currencySymbol(code: string): string {
   } catch { return code; }
 }
 
+/** The part-number key (A-11, option 2 approved Nov 2026): case, spaces, hyphens, underscores, full stops and slashes
+ *  are folded, so LR-VAR-100, LRVAR100 and LR_VAR_100 are one component. The programme is NOT folded — its spelling
+ *  variants are counted in the data quality (`programmeSpellingVariants`) for a person to correct. */
 export function normalisePartNumber(pn: string | null | undefined): string | null {
-  if (typeof pn !== 'string') return null;
-  const k = pn.toUpperCase().replace(/\s+/g, '').trim();
-  return k.length ? k : null;
+  return foldIdentityCode(pn);
 }
 
 /**
- * A-11 (Phase 2): fold a part number or programme code to one key — upper case, with spaces, hyphens,
- * underscores, full stops and slashes removed — so LR-VAR-100, LRVAR100 and LR_VAR_100 are one key and
- * Q900 / q900 are one key. NOT USED for grouping, identity or KPIs: switching it on needs the user's
- * approval (see scripts/kpi-identity-dry-run.ts for what it would merge). Null when nothing is left.
+ * A-11: fold a code to one key — upper case, with spaces, hyphens, underscores, full stops and slashes removed —
+ * so LR-VAR-100, LRVAR100 and LR_VAR_100 are one key. Used for the PART NUMBER (normalisePartNumber); for the
+ * programme only to find spelling variants (Q900 / q900), which are listed, not merged. Null when nothing is left.
  */
 export function foldIdentityCode(code: string | null | undefined): string | null {
   if (typeof code !== 'string') return null;
@@ -551,6 +551,9 @@ export interface DataQuality {
   unapprovedFx: number;
   duplicateCandidates: number;
   supersededRevisions: number;
+  /** A-11 option 2: groups of current records for one part, model year and powertrain whose programme codes differ only
+   *  in case or punctuation (Q900 / q900) — not merged; listed for a person to correct. */
+  programmeSpellingVariants: number;
   missingClassification: { partNumber: number; commodity: number; programme: number; modelYear: number; powertrain: number };
   /** A-04: current records with a should-cost, by whether it re-adds from its breakdown. */
   shouldBasis: { reAdded: number; notReAdded: number; totalOnly: number };
@@ -735,6 +738,15 @@ export function dataQuality(all: ClassifiedRecord[], filtered: ClassifiedRecord[
     unapprovedFx: cur.filter(usesUnapproved).length,
     duplicateCandidates: filtered.filter(r => r.role === 'duplicate').length,
     supersededRevisions: filtered.filter(r => r.role === 'superseded').length,
+    programmeSpellingVariants: (() => {
+      const g = new Map<string, Set<string>>();
+      for (const r of cur) {
+        if (!r.partKey || !r.programme) continue;
+        const k = [r.partKey, foldIdentityCode(r.programme) ?? '', r.modelYear ?? '—', r.powertrain ?? '—'].join('|');
+        const s = g.get(k) ?? new Set<string>(); s.add(r.programme.trim()); g.set(k, s);
+      }
+      return [...g.values()].filter(s => s.size > 1).length;
+    })(),
     missingClassification: {
       partNumber: cur.filter(r => !r.partKey).length,
       commodity: cur.filter(r => !r.commodity).length,

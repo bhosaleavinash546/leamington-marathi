@@ -236,6 +236,7 @@ export function dataQualityHtml(s: DashboardSummary, isAdmin: boolean): string {
     ${row('Should-cost does not re-add', q.shouldBasis.notReAdded, 'The saved total differs from its breakdown by more than rounding (saved before the re-add check)')}
     ${row('Duplicate candidates', q.duplicateCandidates, 'Another user’s costing of the same part, programme, model year and powertrain', ' <button type="button" class="kd-link" data-scope="all">View all revisions</button>')}
     ${row('Older revisions', q.supersededRevisions, 'Kept for activity, not in financial KPIs')}
+    ${row('Programme spelling variants', q.programmeSpellingVariants ?? 0, 'One part and model year under programme codes that differ only in case or punctuation (e.g. Q900 / q900) — counted separately, not merged; correct the programme')}
     ${row('No part number', mc.partNumber, 'Cannot be de-duplicated — counted on its own')}
     ${row('No programme', mc.programme)}${row('No model year', mc.modelYear)}${row('No powertrain', mc.powertrain)}${row('No commodity', mc.commodity)}
     </tbody></table></div>`;

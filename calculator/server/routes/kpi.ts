@@ -327,7 +327,13 @@ const patchSchema = z.object({
   savingCcy: ccy.nullable().optional(),
   isTest: z.boolean().optional(),
   notes: shortText(1000).optional(),
+  /** D-4: the owner's reason for withdrawing a reviewed / approved costing — recorded in the audit log, not on the record. */
+  reason: shortText(500).optional(),
 }).strict();
+
+/** D-4 (approved Nov 2026): an owner may withdraw, downgrade or delete a reviewed / approved costing with a reason. */
+const MIN_REASON = 5;
+const reasonOf = (body: unknown): string => { const r = (body as { reason?: unknown } | undefined)?.reason; return typeof r === 'string' ? r.trim() : ''; };
 
 // A-05: the test flag, commodity and country are admin-only as well.
 const ADMIN_ONLY_FIELDS = ['volumeValidated', 'savingStatus', 'savingPerPiece', 'savingCcy', 'isTest', 'commodity', 'country'] as const;
@@ -343,7 +349,10 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   if (!admin && row.ownerId !== req.user!.userId) { res.status(403).json({ error: 'Only the record owner or an admin can edit it' }); return; }
   const parsed = patchSchema.safeParse(req.body);
   if (!parsed.success) { const i = parsed.error.issues[0]; res.status(400).json({ error: `${i.path.join('.') || 'body'}: ${i.message}` }); return; }
-  const p = parsed.data as Partial<RecordInput> & { status?: RecordStatus };
+  const { reason: rawReason, ...pData } = parsed.data as Partial<RecordInput> & { status?: RecordStatus; reason?: string };
+  const p = pData as Partial<RecordInput> & { status?: RecordStatus };
+  const reason = (rawReason ?? '').trim();
+  let withdrawal: { from: RecordStatus; to: RecordStatus; reason: string } | null = null;
   // The edit form sends every field (the current status included), so "changed" is a value comparison.
   const changed = (k: keyof RecordInput) => k in p && ((p as Record<string, unknown>)[k] ?? null) !== ((row as unknown as Record<string, unknown>)[k] ?? null);
   const statusChanged = p.status !== undefined && p.status !== row.status;
@@ -355,8 +364,12 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
     const bad = ADMIN_ONLY_FIELDS.filter(k => k in p);
     if (bad.length) { res.status(403).json({ error: `Only an admin can set ${bad.join(', ')}` }); return; }
     if (statusChanged && p.status && ADMIN_STATUSES.includes(p.status)) { res.status(403).json({ error: 'Only an admin can mark a costing reviewed or approved' }); return; }
-    // An owner cannot change a status an admin set — except to "completed" with a change that resets it anyway.
-    if (adminSet && statusChanged && !(p.status === 'completed' && resetting.length)) { res.status(403).json({ error: 'Only an admin can change the status of a reviewed or approved costing' }); return; }
+    // An owner cannot change a status an admin set — except to "completed" with a change that resets it anyway, or (D-4)
+    // a withdrawal to Completed / Draft WITH A REASON, which the audit log records.
+    if (adminSet && statusChanged && !(p.status === 'completed' && resetting.length)) {
+      if ((p.status === 'completed' || p.status === 'draft') && reason.length >= MIN_REASON) withdrawal = { from: row.status, to: p.status, reason };
+      else { res.status(403).json({ error: `To withdraw a ${row.status} costing, give a reason (at least ${MIN_REASON} characters) — it is recorded in the audit log. An admin can also change its status.` }); return; }
+    }
   }
   if (adminSet && resetting.length) {
     if (p.status && ADMIN_STATUSES.includes(p.status)) {
@@ -382,6 +395,7 @@ router.patch('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   try {
     updateRecord(db, row.id, p, fxContext(db));
     audit(db, req.user!.userId, 'record.edit', row.id, p);
+    if (withdrawal) audit(db, req.user!.userId, 'record.withdraw', row.id, withdrawal);
     invalidateKpiCache();
     res.json({ record: publicRow(loadClassified().find(r => r.id === row.id)!, admin) });
   } catch (e) { log(e, 'patch'); res.status(500).json({ error: 'The record could not be updated.' }); }
@@ -391,8 +405,14 @@ router.delete('/records/:id', (req: AuthenticatedRequest, res: Response) => {
   const row = getRecordRow(db, String(req.params.id));
   if (!row || row.deleted) { res.status(404).json({ error: 'Record not found' }); return; }
   if (!isAdmin(req) && row.ownerId !== req.user!.userId) { res.status(403).json({ error: 'Only the record owner or an admin can delete it' }); return; }
+  // D-4: the owner deletes a reviewed / approved costing only with a reason; the audit log records it (an admin's too, if given).
+  const reason = reasonOf(req.body);
+  if (!isAdmin(req) && ADMIN_STATUSES.includes(row.status) && reason.length < MIN_REASON) {
+    res.status(400).json({ error: `To delete a ${row.status} costing, give a reason (at least ${MIN_REASON} characters) — it is recorded in the audit log.` }); return;
+  }
+  if (reason.length > 500) { res.status(400).json({ error: 'reason: at most 500 characters' }); return; }
   softDelete(db, row.id, new Date().toISOString());
-  audit(db, req.user!.userId, 'record.delete', row.id);
+  audit(db, req.user!.userId, 'record.delete', row.id, { status: row.status, ...(reason ? { reason } : {}) });
   invalidateKpiCache();
   res.json({ ok: true });
 });

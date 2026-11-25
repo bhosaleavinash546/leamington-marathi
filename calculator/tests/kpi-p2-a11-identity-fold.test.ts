@@ -1,7 +1,8 @@
 /**
- * Phase 2 · A-11 (P1, part): the part-number / programme-code folding function and the read-only dry
- * run of what it would group. The folded key is NOT switched on (grouping, identity and KPIs are
- * unchanged) — switching it on needs the user's approval (Stop 2).
+ * Phase 2 · A-11: the part-number / programme-code folding function and the read-only dry run.
+ * Option 2 approved (Nov 2026): the fold is ON for the part number; programme spelling variants are not merged —
+ * they are counted in the data quality (programmeSpellingVariants). The dry run now shows what folding the
+ * programme too (option 1) would add.
  */
 import { describe, it, expect } from 'vitest';
 import { mkdtempSync, statSync, readFileSync } from 'node:fs';
@@ -40,12 +41,13 @@ describe('A-11 foldIdentityCode', () => {
     expect(foldIdentityCode(null)).toBeNull();
     expect(foldIdentityCode(undefined)).toBeNull();
   });
-  it('is NOT switched on: normalisePartNumber and the application grouping are unchanged', () => {
-    expect(normalisePartNumber('LR-VAR-100')).toBe('LR-VAR-100');
+  it('option 2: part-number variants are one component; programme variants stay apart', () => {
+    expect(normalisePartNumber('LR-VAR-100')).toBe('LRVAR100');
     expect(normalisePartNumber('lr var 100')).toBe('LRVAR100');
-    const rs = classifyRecords([rec('a', { partNumber: 'LR-VAR-100' }), rec('b', { partNumber: 'LRVAR100' }), rec('c', { partNumber: 'LR_VAR_100' }),
+    const rs = classifyRecords([rec('a', { partNumber: 'LR-VAR-100', costingDate: '2026-10-01' }), rec('b', { partNumber: 'LRVAR100', costingDate: '2026-10-02' }),
+      rec('c', { partNumber: 'LR_VAR_100', costingDate: '2026-10-03' }),
       rec('d', { partNumber: 'P16', programme: 'Q900' }), rec('e', { partNumber: 'P16', programme: 'q900', ownerId: 'u2' })]);
-    expect(rs.map(r => r.role)).toEqual(['current', 'current', 'current', 'current', 'current']);
+    expect(rs.map(r => r.role)).toEqual(['superseded', 'superseded', 'current', 'current', 'current']);
   });
 });
 
@@ -61,11 +63,9 @@ describe('A-11 dry run', () => {
       rec('gone', { partNumber: 'LR.VAR.100', deleted: true }),
     ];
     const d = identityDryRun(recs);
-    expect(d.summary).toMatchObject({ records: 7, includedRecords: 6, applicationsNow: 6, applicationsFolded: 3, mergingGroups: 2, recordsInMergingGroups: 5, currentRecordsNow: 6, currentRecordsFolded: 3 });
-    const g = d.groups.find(x => x.foldedKey.startsWith('LRVAR100|'))!;
-    expect(g.records.map(r => [r.id, r.partNumber, r.roleNow, r.roleFolded])).toEqual([
-      ['v1', 'LR-VAR-100', 'current', 'superseded'], ['v2', 'LRVAR100', 'current', 'superseded'], ['v3', 'LR_VAR_100', 'current', 'current'],
-    ]);
+    // Part numbers are already folded (option 2): only the programme variant Q900 / q900 would still merge under option 1.
+    expect(d.summary).toMatchObject({ records: 7, includedRecords: 6, applicationsNow: 4, applicationsFolded: 3, mergingGroups: 1, recordsInMergingGroups: 2, currentRecordsNow: 4, currentRecordsFolded: 3 });
+    expect(d.groups.find(x => x.foldedKey.startsWith('LRVAR100|'))).toBeUndefined();
     expect(d.groups.find(x => x.foldedKey.startsWith('P16CASE|Q900|'))!.records.map(r => r.programme)).toEqual(['Q900', 'q900']);
     // an excluded (deleted / test / invalid) record is listed apart, never grouped
     expect(d.excludedRecordsWithFoldedMatch.map(r => r.id)).toEqual(['gone']);
@@ -80,7 +80,7 @@ describe('A-11 dry run', () => {
     const base: RecordInput = { sourceTool: 'CSS System', sourceRef: 'x', ownerId: 'u1', ownerLabel: 'U', partNumber: 'LR-VAR-100', componentName: 'P', commodity: 'Casting', programme: 'L460', modelYear: 2027, powertrain: 'BEV', country: 'GB', status: 'completed', costingDate: '2026-10-01', shouldCost: 5, shouldCcy: 'GBP', shouldTerms: 'DAP', currentCost: 6, currentCcy: 'GBP', currentTerms: 'DAP', currentSource: null, annualVolume: null, volumeValidated: false, savingStatus: null, savingPerPiece: null, savingCcy: null, isTest: false, notes: '' };
     const ctx = fxContext(db, '2026-11-17T00:00:00Z');
     insertRecord(db, base, ctx, 'r1');
-    insertRecord(db, { ...base, sourceRef: 'y', partNumber: 'LRVAR100' }, ctx, 'r2');
+    insertRecord(db, { ...base, sourceRef: 'y', programme: 'l460' }, ctx, 'r2');
     db.close();
     const before = { size: statSync(path).size, mtime: statSync(path).mtimeMs, bytes: readFileSync(path) };
     const out = await runDryRun(path);

@@ -382,7 +382,7 @@ async function copyRecordLink(): Promise<void> {
 export function editFormNote(isAdmin: boolean, status: string): string {
   const base = 'Changing a money value re-freezes only that value’s FX at the current policy; the others keep their snapshot.';
   return !isAdmin && (status === 'reviewed' || status === 'approved')
-    ? `${base} To change the current cost, a part detail or the annual volume, set the status to Completed: an admin then approves the costing again.`
+    ? `${base} To change the current cost, a part detail or the annual volume, set the status to Completed: an admin then approves the costing again. To withdraw or delete this ${status} costing, give a reason below — it is recorded in the audit log.`
     : base;
 }
 
@@ -409,6 +409,7 @@ function editFormHtml(d: Detail): string {
         <div class="kd-field"><label for="kd-e-sp">Saving per piece</label><input id="kd-e-sp" class="kd-input" name="savingPerPiece" type="number" min="0" step="any" value="${n(r.savingPerPiece)}"></div>
         <div class="kd-field"><label for="kd-e-sc">Saving currency</label><select id="kd-e-sc" class="kd-select hdr-select" name="savingCcy">${ccyOpts(r.savingCcy)}</select></div>
         <div class="kd-field"><label class="kd-check"><input type="checkbox" name="isTest"${r.isTest ? ' checked' : ''}> Test record (exclude)</label></div>` : ''}
+        ${!a && (r.status === 'reviewed' || r.status === 'approved') ? `<div class="kd-field kd-field-wide"><label for="kd-e-reason">Reason to withdraw or delete (recorded in the audit log)</label><input id="kd-e-reason" class="kd-input" name="reason" maxlength="500" placeholder="e.g. supplier quote superseded"></div>` : ''}
         <div class="kd-field kd-field-wide"><label for="kd-e-notes">Notes</label><textarea id="kd-e-notes" class="kd-input" name="notes" rows="2" maxlength="1000">${esc(r.notes ?? '')}</textarea></div>
       </div>
       <p class="kd-muted">${esc(editFormNote(a, r.status))}</p>
@@ -430,6 +431,8 @@ async function submitEdit(form: HTMLFormElement): Promise<void> {
   body.status = (v('status') as unknown as HTMLSelectElement).value;
   str('partNumber'); str('programme'); str('powertrain'); num('modelYear', true); num('currentCost'); str('currentCcy'); str('currentTerms'); num('annualVolume', true);
   body.notes = (v('notes') as unknown as HTMLTextAreaElement).value.trim();
+  const reason = v('reason')?.value.trim();
+  if (reason) body.reason = reason;
   if (S.meta?.isAdmin) {
     body.volumeValidated = !!v('volumeValidated')?.checked; body.isTest = !!v('isTest')?.checked;
     str('savingStatus'); num('savingPerPiece'); str('savingCcy');
@@ -659,7 +662,8 @@ function onClick(e: MouseEvent): void {
     if (act === 'delete-no') { x.closest<HTMLElement>('.kd-del-confirm')!.hidden = true; return; }
     if (act === 'delete-yes') {
       const dlg = S.root!.querySelector<HTMLDialogElement>('#kd-drawer')!;
-      void api(`/records/${encodeURIComponent(dlg.dataset.id!)}`, { method: 'DELETE' }).then(() => { dlg.close(); showToast('Record deleted from the dashboard.', 'info'); void loadAll({ quiet: true }); }).catch(err => showToast((err as Error).message, 'error'));
+      const reason = dlg.querySelector<HTMLInputElement>('#kd-e-reason')?.value.trim();
+      void api(`/records/${encodeURIComponent(dlg.dataset.id!)}`, { method: 'DELETE', ...(reason ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason }) } : {}) }).then(() => { dlg.close(); showToast('Record deleted from the dashboard.', 'info'); void loadAll({ quiet: true }); }).catch(err => showToast((err as Error).message, 'error'));
       return;
     }
     if (act === 'template') e.preventDefault();

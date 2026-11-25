@@ -157,8 +157,36 @@ describe('A-05 identity or volume change on an approved / reviewed costing → c
     expect((await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { currentCost: 51 })).json.record.status).toBe('completed');
   });
 
-  it('delete is unchanged (D-4 open): the owner can still delete an approved costing', async () => {
+  it('D-4: the owner deletes an approved costing only with a reason, which the audit log records', async () => {
     const id = await adminSet();
+    expect((await call(OWNER, 'DELETE', `/api/kpi/records/${id}`)).status).toBe(400);
+    expect((await call(OWNER, 'DELETE', `/api/kpi/records/${id}`, { reason: 'no' })).status).toBe(400);   // too short
+    expect((await call(OWNER, 'DELETE', `/api/kpi/records/${id}`, { reason: 'supplier quote superseded' })).status).toBe(200);
+    const audit = await call(ADMIN, 'GET', '/api/kpi/audit');
+    const row = audit.json.rows.find((r: any) => r.action === 'record.delete' && r.target === id);
+    expect(JSON.parse(row.detail)).toMatchObject({ status: 'approved', reason: 'supplier quote superseded' });
+  });
+
+  it('D-4: a completed costing is deleted by its owner without a reason, as before', async () => {
+    const id = await adminSet('completed');
     expect((await call(OWNER, 'DELETE', `/api/kpi/records/${id}`)).status).toBe(200);
+  });
+
+  it('D-4: the owner withdraws an approved costing to Completed or Draft with a reason (audited); without one, 403', async () => {
+    const id = await adminSet();
+    expect((await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { status: 'completed' })).status).toBe(403);
+    const w = await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { status: 'draft', reason: 'programme cancelled' });
+    expect(w.status).toBe(200);
+    expect(w.json.record.status).toBe('draft');
+    const audit = await call(ADMIN, 'GET', '/api/kpi/audit');
+    const row = audit.json.rows.find((r: any) => r.action === 'record.withdraw' && r.target === id);
+    expect(JSON.parse(row.detail)).toEqual({ from: 'approved', to: 'draft', reason: 'programme cancelled' });
+    // the reason is not stored on the record
+    expect(w.json.record.notes ?? '').not.toMatch(/programme cancelled/);
+  });
+
+  it('D-4: a reason never lets the owner raise a status', async () => {
+    const id = await adminSet('completed');
+    expect((await call(OWNER, 'PATCH', `/api/kpi/records/${id}`, { status: 'approved', reason: 'please approve this' })).status).toBe(403);
   });
 });

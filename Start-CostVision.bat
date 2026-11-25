@@ -100,6 +100,11 @@ if not exist "%ENV_FILE%" (
   rem (every model call then refuses, even with a key).
   >> "%ENV_FILE%" echo # ANTHROPIC_API_KEY=
   >> "%ENV_FILE%" echo # AIR_GAPPED=1
+  rem Sign-up is closed: only listed email domains may create an account, plus
+  rem the addresses in ADMIN_EMAILS (comma-separated). The first account on a
+  rem new install may always register from this machine.
+  >> "%ENV_FILE%" echo # CV_SIGNUP_DOMAINS=example.com
+  >> "%ENV_FILE%" echo # ADMIN_EMAILS=you@example.com
   >> "%ENV_FILE%" echo PORT=3002
   echo   [ok] First run - settings written to %ENV_FILE%
 )

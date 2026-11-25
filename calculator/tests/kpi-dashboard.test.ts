@@ -120,8 +120,8 @@ describe('classification', () => {
     expect(r.find(x => x.id === 'done')!.role).toBe('current');
     expect(r.find(x => x.id === 'wip')!.role).toBe('superseded');
   });
-  it('part numbers normalise case and spaces only', () => {
-    expect(normalisePartNumber(' ab 12-c ')).toBe('AB12-C');
+  it('part numbers fold case, spaces and punctuation (A-11 option 2)', () => {
+    expect(normalisePartNumber(' ab 12-c ')).toBe('AB12C');   // A-11 option 2: punctuation folded too
     expect(normalisePartNumber('')).toBeNull();
   });
 });
@@ -307,7 +307,8 @@ describe('filters, table, drill, CSV', () => {
     expect(l2.groups.map(g => g.key).sort()).toEqual(['L461', 'L663']);
     const l5 = drillGroups(all, DEFAULT_FILTERS, { commodity: 'Machining', programme: 'L461', powertrain: 'MHEV', modelYear: '2027' }, TODAY);
     expect(l5.level).toBe('component');
-    expect(l5.groups[0]).toMatchObject({ key: 'P-200', count: 1 });
+    expect(l5.groups[0]).toMatchObject({ key: 'P200', count: 1 });   // the key is folded (A-11); the label keeps P-200
+    expect(l5.groups[0].label).toMatch(/^P-200 · /);
   });
   it('CSV escapes formula injection and quotes', () => {
     const r = classifyRecords([rec({ id: 'c1', componentName: '=HYPERLINK("x")', partNumber: 'A,1', shouldCost: 1 })]);

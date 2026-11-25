@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import db, { promoteAdminIfListed } from '../db.js';
 import { sendOTPEmail, SMTP_CONFIGURED } from '../utils/email.js';
 import { signToken } from '../middleware/auth-middleware.js';
+import { signupAllowed, SIGNUP_CLOSED_MESSAGE } from '../utils/signup-policy.js';
 
 const router = Router();
 
@@ -48,6 +49,13 @@ const LOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutes
  * It used to be returned whenever SMTP was unset — on a public deployment that handed anyone the
  * reset code for any account (360 review, Oct 2026). A request forwarded by a proxy is never local.
  */
+/** A request from this machine (loopback, not through a proxy). */
+function isLoopback(req: Request): boolean {
+  const addr = req.socket?.remoteAddress ?? '';
+  return (addr === '127.0.0.1' || addr === '::1' || addr === '::ffff:127.0.0.1') && !req.headers['x-forwarded-for'];
+}
+const userCount = (): number => (db.prepare('SELECT COUNT(*) AS n FROM users').get() as { n: number }).n;
+
 function devOtpAllowed(req: Request): boolean {
   if (SMTP_CONFIGURED) return false;
   if (process.env.CV_SHOW_DEV_OTP === '1') return true;
@@ -135,6 +143,14 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
 
   if (!isValidEmail(email)) {
     res.status(400).json({ error: 'Please enter a valid email address.' });
+    return;
+  }
+
+  // D-8: only listed domains (CV_SIGNUP_DOMAINS) or a listed administrator may create an account — checked before any
+  // account lookup, so a refused address learns nothing about who is registered.
+  // The FIRST account on an empty database may register from the same machine (a fresh laptop install), whatever its domain.
+  if (!signupAllowed(email) && !(isLoopback(req) && userCount() === 0)) {
+    res.status(403).json({ error: SIGNUP_CLOSED_MESSAGE });
     return;
   }
 

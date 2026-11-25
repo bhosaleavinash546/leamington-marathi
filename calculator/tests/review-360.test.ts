@@ -120,7 +120,7 @@ describe('security (live server)', () => {
     port = await freePort();
     dir = mkdtempSync(join(tmpdir(), 'cv-360-'));
     const env = { ...process.env, CV_DATA_DIR: dir, PORT: String(port), HOST: '127.0.0.1', NODE_ENV: 'production', JWT_SECRET: 'review-360-' + 'x'.repeat(40),
-      SMTP_HOST: '', SMTP_USER: '', SMTP_PASS: '', CV_SHOW_DEV_OTP: '', ANTHROPIC_API_KEY: '', ADMIN_EMAILS: '',
+      SMTP_HOST: '', SMTP_USER: '', SMTP_PASS: '', CV_SHOW_DEV_OTP: '', ANTHROPIC_API_KEY: '', ADMIN_EMAILS: '', CV_SIGNUP_DOMAINS: 'test.dev',
       // Rate limits key on the client IP: each proxied call below is its own client (the limiter is 3 / 10 min).
       CV_TRUST_PROXY: '1' };
     srv = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'server/index.ts')], { cwd: ROOT, env, stdio: 'ignore', detached: true });
@@ -151,6 +151,12 @@ describe('security (live server)', () => {
 
   it('mixed-case sign-up of an existing address is a clean 409, not a crash', async () => {
     expect((await api('/api/auth/signup', json({ email: 'LOCAL@test.dev', password: 'Aa1!aaaaaa', fullName: 'L' }, { 'X-Forwarded-For': '203.0.113.4' }))).status).toBe(409);
+  });
+
+  it('D-8: sign-up from a domain not in CV_SIGNUP_DOMAINS is refused (403), before any account lookup', async () => {
+    const r = await api('/api/auth/signup', json({ email: 'someone@other.example', password: 'Aa1!aaaaaa', fullName: 'X' }, { 'X-Forwarded-For': '203.0.113.5' }));
+    expect(r.status).toBe(403);
+    expect(((await r.json()) as { error: string }).error).toMatch(/not open for this email address/);
   });
 
   it('CAD tessellation needs a session', async () => {
