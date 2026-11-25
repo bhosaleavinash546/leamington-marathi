@@ -1020,6 +1020,12 @@ export interface PCBCostInput {
   /** Operations beyond placement and inspection (EDU v6 — package B): second reflow side, second coated side, coating
    *  inspection / masking, press-fit, programming, functional + HV test (server/data/pcb-operations.ts). Absent = none. */
   operations?: OperationsInput;
+  /** Delivery terms (EDU audit G-10, Nov 2026): 'DAP' = delivered to the UK, import duty paid (the default, as before);
+   *  'EXW' = at the factory gate — no freight, no UK duty. */
+  deliveryTerms?: 'DAP' | 'EXW';
+  /** First-pass yield 0.5–0.999 (EDU audit G-11): the share of boards that pass first time. When given, the boards reworked
+   *  are 1 − FPY instead of placements × the country's dppm (an unsourced table figure, capped at 30 %). */
+  firstPassYield?: number;
 }
 
 /** Boards in a production lot, never more than the order. */
@@ -1062,6 +1068,8 @@ export interface PCBCountryCostBreakdown {
   totalPerBoard: number;
   /** What the EMS invoices: the board less the parts the customer supplies (EDU v6). Equals totalPerBoard when none. */
   emsInvoicePerBoard?: number;
+  /** The delivery terms this breakdown is on (EDU audit G-10). */
+  deliveryTerms?: 'DAP' | 'EXW';
   /** The board with the automotive programme NRE spread over annual × years (EDU v6), and that NRE a board. */
   fullEconomicPerBoard?: number;
   nrePerBoard?: number;
@@ -1296,13 +1304,14 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const estWeightKg = input.weightKg && input.weightKg > 0 ? input.weightKg : Math.max(0.02, boardAreaDm2 * input.layers * 0.028);
   const useSea = input.orderQuantity >= 2500 && l.seaFreightPerKgGBP > 0;
   const freightRate = useSea ? l.seaFreightPerKgGBP : l.airFreightPerKgGBP;
-  const freight = Math.max(l.minAirFreightGBP / Math.max(input.orderQuantity, 1),
+  const exw = input.deliveryTerms === 'EXW';
+  const freight = exw ? 0 : Math.max(l.minAirFreightGBP / Math.max(input.orderQuantity, 1),
     estWeightKg * freightRate);
   // Duty base includes the BOM (audit fix): customs value of a populated
   // assembly = components + fab + assembly, not fab + assembly alone. The UK customs value is CIF — the goods AND the
   // freight to the UK border (arith audit, Oct 2026; 360 review open item: "the base leaves out freight").
   const dutiableValue = pcbFabPerBoard + assemblyPerBoard + bomSourced + freight;
-  const importDuty = dutiableValue * l.importDutyFraction;
+  const importDuty = exw ? 0 : dutiableValue * l.importDutyFraction;
   const logisticsPerBoard = freight + importDuty;
 
   // Energy (audit fix): explicit element at the country's ACTUAL industrial
@@ -1321,7 +1330,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // λ = placements × dppm/1e6 (capped 0.30); 95% of defects are AOI/ICT-caught
   // touch-ups (rework ≈ 20% of assembly + half an ICT retest), 5% true scrap
   // losing fab + assembly + components.
-  const lambda = Math.min(0.30, input.smtPlacements * a.dppm / 1_000_000);
+  const fpy = Number(input.firstPassYield);
+  const fpyGiven = fpy >= 0.5 && fpy <= 0.999;
+  const lambda = fpyGiven ? 1 - fpy : Math.min(0.30, input.smtPlacements * a.dppm / 1_000_000);
   const reworkCost = 0.2 * assemblyPerBoard + 0.5 * ictCost;
   const scrapCost = pcbFabPerBoard + assemblyPerBoard + bomSourced;
   const yieldLossCost = lambda * (0.95 * reworkCost + 0.05 * scrapCost);
@@ -1364,15 +1375,17 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
         ? `(${f(bomAtCost)} − customer-supplied ${f(customerSupplied)}) × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}`
         : `${f(bomAtCost)} × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}` },
 
-    { item: `Freight (${useSea ? 'sea' : 'air'})`, gbp: freight, source: `freight rates: ${T.table}; ${input.weightKg && input.weightKg > 0 ? 'weight measured' : `weight estimated as area × layers × 28 g/dm² (at least 20 g) — ${T.engineering}; it over-states a bare board, which is about 30 g/dm² at 1.6 mm whatever the layer count`}; sea at ≥ 2,500 boards: ${T.engineering}`,
-      formula: `max(${f(l.minAirFreightGBP, 2)} minimum ÷ ${q.toLocaleString('en-GB')}, ${estWeightKg.toFixed(4)} kg × ${f(freightRate, 2)}/kg) = ${f(freight)}` },
-    { item: 'UK import duty', gbp: importDuty, source: `duty rate: ${T.table} — an assumption, the HS line for this assembly is not confirmed; customs value = CIF (goods + freight)`,
-      formula: `(fab ${f(pcbFabPerBoard)} + assembly ${f(assemblyPerBoard)} + components ${f(bomSourced)} + freight ${f(freight)}) × ${(l.importDutyFraction * 100).toFixed(1)} % = ${f(importDuty)}` },
+    ...(exw ? [{ item: 'Freight and UK duty', gbp: 0, source: 'ex-works (EXW): the buyer collects at the factory gate — no freight, no UK import duty in this figure', formula: 'EXW = £0.0000' }] : []),
+    ...(exw ? [] : [{ item: `Freight (${useSea ? 'sea' : 'air'})`, gbp: freight, source: `freight rates: ${T.table}; ${input.weightKg && input.weightKg > 0 ? 'weight measured' : `weight estimated as area × layers × 28 g/dm² (at least 20 g) — ${T.engineering}; it over-states a bare board, which is about 30 g/dm² at 1.6 mm whatever the layer count`}; sea at ≥ 2,500 boards: ${T.engineering}`,
+      formula: `max(${f(l.minAirFreightGBP, 2)} minimum ÷ ${q.toLocaleString('en-GB')}, ${estWeightKg.toFixed(4)} kg × ${f(freightRate, 2)}/kg) = ${f(freight)}` }]),
+    ...(exw ? [] : [{ item: 'Not in the freight (delivered terms)', gbp: 0, source: 'line-haul only (EDU audit G-10): inland transport to the port, export clearance, terminal handling at both ends, the UK customs broker and the delivery to site are not costed', formula: 'not costed = £0.0000' }]),
+    ...(exw ? [] : [{ item: 'UK import duty', gbp: importDuty, source: `duty rate: ${T.table} — an assumption, the HS line for this assembly is not confirmed; customs value = CIF (goods + freight)`,
+      formula: `(fab ${f(pcbFabPerBoard)} + assembly ${f(assemblyPerBoard)} + components ${f(bomSourced)} + freight ${f(freight)}) × ${(l.importDutyFraction * 100).toFixed(1)} % = ${f(importDuty)}` }]),
     { item: 'Energy', gbp: energyCost, source: `tariff: ${T.regional}; 0.9 kWh/dm² (2 layers) + 0.15 kWh/dm² a further layer, 0.06 kWh a board + 0.0008 kWh a placement: ${T.engineering}`,
       formula: `(${boardAreaDm2.toFixed(4)} × (0.9 + 0.15 × ${extraLayers}) + 0.06 + 0.0008 × ${input.smtPlacements}) kWh = ${(fabKWh + asmKWh).toFixed(4)} kWh × ${f(rate.energyCostPerKWh ?? 0.15, 3)}/kWh = ${f(energyCost)}` },
     { item: 'ESD packaging', gbp: packagingCost, source: `${T.engineering} (country figure per board, no citation)`, formula: `${f(packagingCost)} a board` },
-    { item: 'Cost of quality', gbp: yieldLossCost, source: `dppm: ${T.table}; λ capped at 0.30, 95 % of defects reworked at 20 % of assembly + half an ICT, 5 % scrapped at fab + assembly + components: ${T.engineering}`,
-      formula: `λ = min(0.30, ${input.smtPlacements} × ${a.dppm}/10⁶) = ${lambda.toFixed(4)}; ${lambda.toFixed(4)} × (0.95 × ${f(reworkCost)} + 0.05 × ${f(scrapCost)}) = ${f(yieldLossCost)}` },
+    { item: 'Cost of quality', gbp: yieldLossCost, source: `${fpyGiven ? 'first-pass yield: the engineer\'s figure' : `dppm: ${T.table} (no source — type a first-pass yield on the PCB form)`}; λ capped at 0.30, 95 % of defects reworked at 20 % of assembly + half an ICT, 5 % scrapped at fab + assembly + components: ${T.engineering}`,
+      formula: `λ = ${fpyGiven ? `1 − FPY ${fpy}` : `min(0.30, ${input.smtPlacements} × ${a.dppm}/10⁶)`} = ${lambda.toFixed(4)}; ${lambda.toFixed(4)} × (0.95 × ${f(reworkCost)} + 0.05 × ${f(scrapCost)}) = ${f(yieldLossCost)}` },
   ];
 
   return {
@@ -1385,6 +1398,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     bomCostPerBoard: Math.round(bomSourced * 100) / 100,
     totalPerBoard: Math.round(totalPerBoard * 100) / 100,
     emsInvoicePerBoard: Math.round((totalPerBoard - customerSupplied) * 100) / 100,
+    deliveryTerms: exw ? 'EXW' : 'DAP',
     leadTimeWeeks: rate.leadTimeWeeks.production,
     qualityIndex: rate.qualityIndex,
     certifications: rate.certifications,

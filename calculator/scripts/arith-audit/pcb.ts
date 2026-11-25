@@ -122,7 +122,9 @@ interface Board { w: number; h: number; layers: number; finish: string; through:
   /** Boards a lot (set-ups) and programme years (one-off tooling, fixtures, programmes) — EDU audit G-08. */
   lot?: number; years?: number;
   /** The operations as costed (counts and seconds — analysis.operationsCosted), EDU v6. */
-  ops?: { reflowSides?: number; coatSides?: number; pressFitConnectors?: number; pressFitPins?: number; pressFitLines?: number; programmingSec?: number; functionalTestSec?: number; hvTest?: boolean } }
+  ops?: { reflowSides?: number; coatSides?: number; pressFitConnectors?: number; pressFitPins?: number; pressFitLines?: number; programmingSec?: number; functionalTestSec?: number; hvTest?: boolean };
+  /** EDU audit G-10 / G-11: ex-works (no freight, no duty) and a typed first-pass yield. */
+  exw?: boolean; fpy?: number }
 function shadowCountry(b: Board, cc: string) {
   const r = PCB_COUNTRY_RATES[cc];
   const rd = REGIONAL_DATA[(cc === 'gb' ? 'UK' : cc.toUpperCase()) as ManufacturingRegion];
@@ -164,11 +166,11 @@ function shadowCountry(b: Board, cc: string) {
   const bom = b.bom * (1 + burdenPct);
   const kg = b.weightKg ?? Math.max(0.02, A * b.layers * 0.028);
   const rate = b.qty >= 2500 && r.logistics.seaFreightPerKgGBP > 0 ? r.logistics.seaFreightPerKgGBP : r.logistics.airFreightPerKgGBP;
-  const freight = Math.max(r.logistics.minAirFreightGBP / b.qty, kg * rate);
-  const duty = (fab + asm + bom + freight) * r.logistics.importDutyFraction;   // CIF customs value
+  const freight = b.exw ? 0 : Math.max(r.logistics.minAirFreightGBP / b.qty, kg * rate);
+  const duty = b.exw ? 0 : (fab + asm + bom + freight) * r.logistics.importDutyFraction;   // CIF customs value; none ex-works
   const energy = (A * (0.9 + 0.15 * x) + 0.06 + 0.0008 * b.smt) * tariff;
   const pack = r.packagingCostPerBoard ?? 0.12;
-  const lambda = Math.min(0.3, b.smt * r.assembly.dppm / 1e6);
+  const lambda = b.fpy && b.fpy >= 0.5 && b.fpy <= 0.999 ? 1 - b.fpy : Math.min(0.3, b.smt * r.assembly.dppm / 1e6);
   const yieldLoss = lambda * (0.95 * (0.2 * asm + 0.5 * ict) + 0.05 * (fab + asm + bom));
   return { fab, asm, bom, burden: b.bom * burdenPct, freight, duty, energy, pack, yieldLoss, test: aoi + xray + ict, ict,
     total: fab + asm + freight + duty + bom + energy + pack + yieldLoss, panel: p, notInAsp: vias + hdi + setup };   // heavy copper: not on these boards (1 oz)
@@ -201,9 +203,10 @@ function shadowAuto(fabStd: number, asmStd: number, b: Board, cc: string, asil: 
 }
 
 // ── A board through the product's Stage 4, then re-added ──────────────────────────────────────────────────────────
-async function board(name: string, fixture: string, cc: string, qty: number) {
+async function board(name: string, fixture: string, cc: string, qty: number, specPatch: Record<string, unknown> = {}) {
   const R = JSON.parse(readFileSync(new URL(`../../e2e/fixtures/${fixture}`, import.meta.url), 'utf8'));
   const a = JSON.parse(JSON.stringify(R.analysis));
+  a.boardSpec = { ...(a.boardSpec ?? {}), ...specPatch };
   const s4 = await runStage4({ analysis: a, domain: R.stage1?.domain ?? 'general', asilLevel: R.asil?.asilLevel ?? 'Unknown',
     ocrResult: { ...R.ocr, refDesGroups: R.ocr.refDesGroups ?? [], connectors: R.ocr.connectors ?? [], boardText: R.ocr.boardText ?? [] },
     country: cc, orderQty: qty, tag: '/arith' });
@@ -235,7 +238,8 @@ async function board(name: string, fixture: string, cc: string, qty: number) {
     through: n(bs.throughVias), blind: n(bs.blindVias), micro: n(bs.microVias), hdi: String(bs.hdiStructure || 'none') !== 'none', imp: Boolean(bs.impedanceControlRequired),
     smt: n(as.smtPlacements), th: n(as.throughHoleJoints), manual: n(as.manualJoints), bga: n(as.bgaCount), aoi: Boolean(as.aoiRequired), ict: n(as.ictTimeSec),
     coatCm2: 0, bom: ce.totalBOMCostGBP, qty, weightKg: n(bs.boardWeightG) > 0 ? n(bs.boardWeightG) / 1000 : undefined,
-    lot: n(bs.lotSize) || undefined, years: n(bs.programmeYears) || undefined, ops: a.operationsCosted };
+    lot: n(bs.lotSize) || undefined, years: n(bs.programmeYears) || undefined, ops: a.operationsCosted,
+    exw: String(bs.deliveryTerms ?? '').toUpperCase() === 'EXW', fpy: n(bs.firstPassYield) || undefined };
   const S = shadowCountry(B, s4.selectedCountry);
   checkTrue(`${tag}: panel ${S.panel.n}-up on ${S.panel.pw}×${S.panel.ph}`, S.panel.n === bd.panelInfo.boardsPerPanel && S.panel.pw === bd.panelInfo.panelW);
   let fab = S.fab, asm = S.asm;
@@ -244,8 +248,9 @@ async function board(name: string, fixture: string, cc: string, qty: number) {
     fab += P.fabP; asm += P.asmP;
     check(`${tag}: automotive fab premium`, P.fabP, bd.breakdown.automotiveFab ?? 0, 0.006);
     check(`${tag}: automotive assembly premium`, P.asmP, bd.breakdown.automotiveAssembly ?? 0, 0.006);
-    S.duty += (P.fabP + P.asmP) * PCB_COUNTRY_RATES[s4.selectedCountry].logistics.importDutyFraction;
-    S.total += (P.fabP + P.asmP) * (1 + PCB_COUNTRY_RATES[s4.selectedCountry].logistics.importDutyFraction);
+    const dutyF = B.exw ? 0 : PCB_COUNTRY_RATES[s4.selectedCountry].logistics.importDutyFraction;
+    S.duty += (P.fabP + P.asmP) * dutyF;
+    S.total += (P.fabP + P.asmP) * (1 + dutyF);
   }
   check(`${tag}: bare board (graded)`, fab, bd.pcbFabPerBoard, 0.011);
   check(`${tag}: assembly & test (graded)`, asm, bd.assemblyPerBoard, 0.011);
@@ -346,6 +351,8 @@ await board('radar', 'pcb-radar-replies.json', 'cn', 250_000);
 await board('camera', 'pcb-camera-replies.json', 'cn', 250_000);
 await board('radar', 'pcb-radar-replies.json', 'gb', 1_000);
 await board('radar', 'pcb-radar-replies.json', 'pl', 25_000);
+// EDU audit G-10 / G-11: ex-works terms and a typed first-pass yield, re-added.
+await board('radar EXW FPY 0.97', 'pcb-radar-replies.json', 'cn', 250_000, { deliveryTerms: 'EXW', firstPassYield: 0.97 });
 // ASIL-C (burn-in): the guard costs the radar at ASIL-B (no safety PMIC named), so the ASIL-C premiums are checked on
 // the product's own functions directly, on the radar figures of tests/pcb-headline-trace.test.ts.
 {

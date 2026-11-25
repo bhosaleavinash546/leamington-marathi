@@ -27,7 +27,8 @@ import { verifyList, customerSuppliedGBP, type VerifyLine } from '../utils/pcb-v
 import { normaliseCount, quantityBand, symmetryLines, type QuantityBand } from '../utils/pcb-counting.js';
 import { ocrTiles } from '../utils/pcb-ocr-tiles.js';
 import { operationsFromBom, programmingSecFor } from '../data/pcb-operations.js';
-import { componentMarketFor, COMPONENT_MARKET_SOURCE } from '../data/pcb-component-market.js';
+import { componentMarketFor, hasComponentMarket, COMPONENT_MARKET_SOURCE } from '../data/pcb-component-market.js';
+import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
@@ -97,6 +98,10 @@ interface PCBConfidenceBand {
   volumeMultiplier: number;
   /** How the band is built, as done — its ratios are CostVision engineering figures (arith audit, Oct 2026). */
   basis?: string;
+  /** EDU audit G-16 / M-06: the range from SOURCED alternatives only (the quantity range the reading states; the other
+   *  component basis — global distributors v the build country's market — both priced from sourced data), apart from
+   *  the judgement corridor above (identity and scope ratios). Each item says what moves and by how much. */
+  conditional?: { low: number; high: number; items: Array<{ label: string; low: number; high: number; source: string }> };
 }
 
 // Widened (accuracy pass): reading the exact MPN of an unconfirmed high-value IC is
@@ -395,7 +400,8 @@ export function applyAutomotiveGrade(
   // On the market basis the "premium" is the ASP-based board less the table's standard board, and may be negative: the
   // table's standard build-up is not the market (EDU audit G-06). On the table basis it is never negative.
   const fabPremium = fab.basis === 'market' ? fab.totalAutomotiveFabGBP - fab.standardFabGBP : Math.max(0, fab.totalAutomotiveFabGBP - fab.standardFabGBP);
-  const duty = PCB_COUNTRY_RATES[bd.countryId]?.logistics.importDutyFraction ?? 0;
+  // Ex-works (EDU audit G-10): no UK duty on the grade either.
+  const duty = bd.deliveryTerms === 'EXW' ? 0 : PCB_COUNTRY_RATES[bd.countryId]?.logistics.importDutyFraction ?? 0;
   const dutyDelta = (asmPremium + fabPremium) * duty;
   const r = (n: number) => Math.round(n * 100) / 100;
   bd.pcbFabPerBoard = r(bd.pcbFabPerBoard + fabPremium);
@@ -433,6 +439,7 @@ export function applyAutomotiveGrade(
 
 /** The same premiums on a volume-curve point (which carries no breakdown). */
 export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number, countryId = 'gb', extras?: FabExtras): VolumeCurvePoint[] {
+  const exw = String(boardSpec.deliveryTerms ?? '').toUpperCase() === 'EXW';
   if (domain !== 'automotive_adas') return points;
   const r = (n: number) => Math.round(n * 100) / 100;
   return points.map(pt => {
@@ -445,7 +452,7 @@ export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<s
     const fabP = f.basis === 'market' ? f.totalAutomotiveFabGBP - f.standardFabGBP : Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
     // Duty on the premiums, as the headline charges it (applyAutomotiveGrade) — the
     // curve was £0.10 under the headline at its own quantity.
-    const dutyP = (asmP + fabP) * (PCB_COUNTRY_RATES[countryId]?.logistics.importDutyFraction ?? 0);
+    const dutyP = exw ? 0 : (asmP + fabP) * (PCB_COUNTRY_RATES[countryId]?.logistics.importDutyFraction ?? 0);
     return { ...pt, assemblyPerBoard: r(pt.assemblyPerBoard + asmP), pcbFabPerBoard: r(pt.pcbFabPerBoard + fabP),
       logisticsPerBoard: r(pt.logisticsPerBoard + dutyP), totalPerBoard: r(pt.totalPerBoard + asmP + fabP + dutyP) };
   });
@@ -1745,6 +1752,8 @@ interface Stage4Output {
   quantityBand: QuantityBand | null;
   /** The build country's component market when used (pcb-component-market.ts — EDU v6): components there v global. */
   componentMarket: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
+  /** A typed contract US$ / £ and the factor it put on catalogue / class prices (EDU audit G-19). */
+  contractFx: { usdPerGbp: number; factor: number } | null;
   failed: boolean;
 }
 
@@ -1762,7 +1771,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     complexityScore: null, confidenceBand: null, sanityWarnings: [], npiBreakdown: null, livePriceHits: 0,
     catalogueVerifiedCount: 0, needsVerificationCount: 0, automotiveNRE: null, automotiveGradeEnforcedCount: 0,
     singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
-    bomCompleteness: null, programPricing: null, verifyList: [], quantityBand: null, componentMarket: null, failed: false, domain: inp.domain,
+    bomCompleteness: null, programPricing: null, verifyList: [], quantityBand: null, componentMarket: null, contractFx: null, failed: false, domain: inp.domain,
     // Unchanged until the parts list is known (a failed Stage 4 still reports what was claimed).
     asil: guardAsil({ asil: inp.asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: [], confirmed: (inp.analysis?.boardSpec as Record<string, unknown> | undefined)?.asilConfirmed }),
   };
@@ -1923,6 +1932,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     let prices: LivePriceResult[] = [];
     const market = componentMarketFor(boardSpec, selectedCountry);
     const pricesGlobal: LivePriceResult[] = [];
+    // The other component basis, for the sourced (conditional) range (EDU audit G-16): the build country's market when the
+    // costing is on global prices, and global when it is on the market.
+    const pricesLocalAlt: LivePriceResult[] = [];
     if (candidates.length) {
       const octoKey = inp.live ? '' : await resolveNexarAccessToken();
       const rsKey = inp.live ? '' : process.env.RS_API_KEY ?? '';
@@ -1941,6 +1953,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
         const parts = Math.max(...editable.filter(l => String(l.partNumber ?? '').trim() === pn).map(l => Number(l.partsBought) || orderQty));
         prices.push(...offlineCataloguePrices([pn], parts, market));
         if (market) pricesGlobal.push(...offlineCataloguePrices([pn], parts));
+        else if (hasComponentMarket(selectedCountry)) pricesLocalAlt.push(...offlineCataloguePrices([pn], parts, selectedCountry));
       }
     }
     // The build country's component market (EDU v6): its own sourced reel prices for class rows and named parts. The
@@ -1950,9 +1963,24 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const globalLines = market
       ? userKept(groundAndSplit(bom, [...prices.filter(p => p.provider !== 'catalogue'), ...pricesGlobal], knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier }).bom as Array<Record<string, unknown>>)
       : null;
+    const marketAltLines = !market && hasComponentMarket(selectedCountry)
+      ? userKept(groundAndSplit(bom, [...prices.filter(p => p.provider !== 'catalogue'), ...pricesLocalAlt], knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier, market: selectedCountry }).bom as Array<Record<string, unknown>>)
+      : null;
+    // A contract exchange rate (EDU audit G-19): catalogue and class-range prices are US$ distributor listings held in £ at the
+    // catalogue's 29 Sep 2026 snapshot; a typed contract US$ / £ re-prices them. China-market (CNY) and engineer prices keep theirs.
+    const contractUsd = Number(boardSpec.contractUsdPerGbp);
+    const fxFactor = contractUsd >= 0.8 && contractUsd <= 2.5 ? (1 / contractUsd) / FX_TO_GBP_TABLE.USD : 1;
+    const applyFx = (lines: Array<Record<string, unknown>>) => fxFactor === 1 ? lines : lines.map(l => {
+      const src = String(l.priceSource ?? ''), basis = String(l.priceBasis ?? ''), note = String(l.priceNote ?? '');
+      if (l.userCorrected === true || src === 'user' || src === 'not-fitted' || basis.includes('@') || /market: .* own-stock/.test(note)) return l;
+      const u = Math.round(Number(l.unitPriceGBP) * fxFactor * 100000) / 100000;
+      return { ...l, unitPriceGBP: u, lineTotalGBP: Math.round(u * (Number(l.qty) || 0) * 10000) / 10000,
+        priceNote: `${note ? `${note} · ` : ''}× ${fxFactor.toFixed(4)} contract FX (US$${contractUsd} / £ v the catalogue's US$${(1 / FX_TO_GBP_TABLE.USD).toFixed(4)} / £)` };
+    });
     bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false }
       : l.qtyUnverified === true ? { ...l, needsVerification: true,
         priceNote: `${l.priceNote ? `${String(l.priceNote)} · ` : ''}Quantity ${String(l.qty)} is the AI's count — no designators or chip markings show it; confirm` } : l)) as Array<Record<string, unknown>>;
+    bom = applyFx(bom);
     // A part the catalogue lists as NOT AEC-Q qualified on an automotive board: said, never re-priced (BQ24025DRCR on the
     // camera board carried the "AEC" badge — 360 review, Oct 2026).
     if (auto) {
@@ -1975,7 +2003,11 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     a.bom = bom;
     const sum = (f: (l: Record<string, unknown>) => boolean) => Math.round(bom.filter(f).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100;
     const bomTotal = sum(() => true);
-    const globalBomTotal = globalLines ? Math.round(globalLines.reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100 : bomTotal;
+    const globalLinesFx = globalLines ? applyFx(globalLines) : null;
+    const globalBomTotal = globalLinesFx ? Math.round(globalLinesFx.reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100 : bomTotal;
+    // The other basis's components (sourced both ways) for the conditional range — G-16.
+    const altBomTotal = market ? globalBomTotal : marketAltLines ? Math.round(applyFx(marketAltLines).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100 : null;
+    out.contractFx = fxFactor === 1 ? null : { usdPerGbp: contractUsd, factor: Math.round(fxFactor * 10000) / 10000 };
     out.componentMarket = market ? { market, source: COMPONENT_MARKET_SOURCE, componentsGBP: bomTotal, globalComponentsGBP: globalBomTotal,
       linesAtMarket: bom.filter(l => String(l.priceBasis ?? '').includes(`@${market}`) || /market: .* own-stock/.test(String(l.priceNote ?? ''))).length } : null;
     costEst.totalBOMCostGBP = bomTotal;
@@ -2020,6 +2052,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       programmeYears: Number(boardSpec.programmeYears) > 0 ? Number(boardSpec.programmeYears) : undefined,
       // Parts the customer supplies (the engineer's flag on a BOM line, kept on userCorrections — EDU v6).
       customerSuppliedGBP: customerSuppliedGBP(bom),
+      // Delivery terms and first-pass yield, from the PCB form (EDU audit G-10 / G-11).
+      deliveryTerms: String(boardSpec.deliveryTerms ?? '').toUpperCase() === 'EXW' ? 'EXW' : 'DAP',
+      ...(Number(boardSpec.firstPassYield) >= 0.5 && Number(boardSpec.firstPassYield) <= 0.999 ? { firstPassYield: Number(boardSpec.firstPassYield) } : {}),
       // Operations beyond placement and inspection (EDU v6 — package B): read off the BOM, or typed on the PCB form.
       operations: (() => {
         const ob = operationsFromBom(bom);
@@ -2106,6 +2141,20 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       cb.bomCostHigh = r2(cb.bomCostHigh + dHi); cb.totalHigh = r2(cb.totalHigh + dHi);
       cb.basis = `${cb.basis ?? ''} Quantity range: ${out.quantityBand.partsLow.toLocaleString('en-GB')}–${out.quantityBand.partsHigh.toLocaleString('en-GB')} parts moves the components by £${dLo.toFixed(2)} / +£${dHi.toFixed(2)} (with the EMS burden).`.trim();
     }
+    // The conditional range (G-16 / M-06): sourced alternatives only — before UK duty on the change.
+    if (out.confidenceBand) {
+      const k = 1 + (Number(bd.breakdown.materialBurdenPct) || 0), r2 = (v: number) => Math.round(v * 100) / 100;
+      const items: Array<{ label: string; low: number; high: number; source: string }> = [];
+      const qb = out.quantityBand;
+      if (qb && (qb.gbpLow < 0 || qb.gbpHigh > 0)) items.push({ label: `Quantity ${qb.partsLow.toLocaleString('en-GB')}–${qb.partsHigh.toLocaleString('en-GB')} parts`, low: r2(qb.gbpLow * k), high: r2(qb.gbpHigh * k), source: 'the reading\'s own count ranges (designator ranges, estimated areas)' });
+      if (altBomTotal != null && Math.abs(altBomTotal - bomTotal) >= 0.005) {
+        const d = r2((altBomTotal - bomTotal) * k);
+        items.push({ label: market ? 'Components at global distributor prices' : `Components at the ${selectedCountry === 'cn' ? 'China' : selectedCountry} market`, low: Math.min(0, d), high: Math.max(0, d),
+          source: market ? 'the catalogue\'s franchised-distributor prices' : COMPONENT_MARKET_SOURCE });
+      }
+      const h = bd.totalPerBoard;
+      out.confidenceBand.conditional = { low: r2(h + items.reduce((t, i) => t + i.low, 0)), high: r2(h + items.reduce((t, i) => t + i.high, 0)), items };
+    }
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
     out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
@@ -2117,7 +2166,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const bpp = bd.panelInfo?.boardsPerPanel ?? 1;
     // Component prices follow each point's quantity (parts bought per line); edited lines stay as typed.
     const bomAt = (q: number) => bomAtQty(bom, q, orderQty);
-    const bomAtGlobal = (q: number) => bomAtQty(globalLines ?? bom, q, orderQty);
+    const bomAtGlobal = (q: number) => bomAtQty(globalLinesFx ?? bom, q, orderQty);
     const extrasOf = (id: string) => { const row = id === bd.countryId ? bd : out.countryComparison.find(c => c.countryId === id); const b = (row?.breakdown ?? {}) as unknown as Record<string, number>; return { pcbVias: b.pcbVias, pcbHDI: b.pcbHDI, pcbCopper: b.pcbCopper }; };
     const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(market && id !== market ? { ...costInput, totalBOMCostGBP: globalBomTotal } : costInput, id, qtys, market && id !== market ? bomAtGlobal : bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id, extrasOf(id));
     // The NPI run is the same costing at NPI_RUN_QTY boards (the volume curve's arithmetic), not the headline × 1.38.
@@ -2198,7 +2247,7 @@ function stage4Payload(s4: Stage4Output) {
     automotiveNRE: s4.automotiveNRE, automotiveGradeEnforcedCount: s4.automotiveGradeEnforcedCount,
     singleSourceWarnings: s4.singleSourceWarnings, conformalCoatingCost: s4.conformalCoatingCost,
     automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
-    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing, verifyList: s4.verifyList, quantityBand: s4.quantityBand, componentMarket: s4.componentMarket,
+    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing, verifyList: s4.verifyList, quantityBand: s4.quantityBand, componentMarket: s4.componentMarket, contractFx: s4.contractFx,
     orderQty: s4.orderQty, costingFailed: s4.failed, boardDomain: s4.domain,
     // The ASIL the costing used (the guard's), what the classifier claimed, and why they differ.
     ...(s4.asil ? { asilLevel: s4.asil.costed, asilClaimed: s4.asil.claimed, asilRationale: s4.asil.rationale,
@@ -2900,6 +2949,8 @@ router.post('/scenario', (req, res): void => {
     // The operations and customer-supplied parts the headline was costed with (EDU v6): an unchanged scenario is £0.
     operations:           b.operations && typeof b.operations === 'object' ? b.operations : undefined,
     customerSuppliedGBP:  Number(b.customerSuppliedGBP) > 0 ? Number(b.customerSuppliedGBP) : undefined,
+    deliveryTerms:        String(b.boardSpec?.deliveryTerms ?? '').toUpperCase() === 'EXW' ? 'EXW' : 'DAP',
+    ...(Number(b.boardSpec?.firstPassYield) >= 0.5 && Number(b.boardSpec?.firstPassYield) <= 0.999 ? { firstPassYield: Number(b.boardSpec?.firstPassYield) } : {}),
   };
 
   // Copper and weight exactly as the headline derives them from the board spec.

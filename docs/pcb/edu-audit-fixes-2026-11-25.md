@@ -59,11 +59,27 @@ price paid.
 - **G-13.** `TLF35584QVVS2` (stored £2.47, below every listing seen) is queued for a re-read in
   `scripts/pcb-research/queue.json` — a catalogue price moves only through the research merge.
 
+## Closed later (25 Nov 2026)
+- **EDU v6** (`docs/pcb/edu-v6-accuracy-programme-2026-11-25.md`): G-07 operations (second reflow side, second coated
+  side, inspection / masking, press-fit, programming, functional + HV test), G-09 full-economic / EMS invoice /
+  customer-supplied parts, G-12 class rows and the China market option.
+- **Quick closes** (`tests/pcb-audit-quick-closes.test.ts`):
+  - G-10 delivery terms: PCB form "Delivery terms" — delivered UK, duty paid (default) or ex-works (no freight, no UK duty,
+    no duty on the grade); delivered costings list the legs the line-haul freight does not hold (inland, export
+    clearance, terminal handling, broker, delivery to site); reports follow the terms.
+  - G-11 first-pass yield: typed FPY replaces the dppm table's rework rate (which says it is unsourced).
+  - G-16 / M-06: the band carries a SOURCED range (the quantity ranges the reading states; the other component basis —
+    global v the build country's market) apart from the judgement corridor (identity / scope ratios, with its basis) —
+    screen, PDF, workbook.
+  - G-18: a ten-item information request ticked from what the costing holds (`src/export/pcb-info-request.ts`) —
+    screen, PDF, workbook.
+  - G-19: a contract US$ / £ re-prices catalogue and class-range prices (US$ listings at the 29 Sep 2026 snapshot);
+    China-market and engineer prices keep theirs.
+
 ## Not done
-- Package B: functional / HV test, programming, press-fit, second coated face and second reflow as operations;
-  recurring / full-economic / EMS-invoice lines with a customer-supplied flag; delivery terms; FPY input (the rework
-  rate is still placements × 800 dppm, capped at 30 %).
-- Package D: the band's basis printed; fab inputs for thickness, inner copper, Tg/CTI.
+- Package B remainder: staking / potting and a selective-solder line as operations.
+- Package D: fab inputs for thickness, inner copper, Tg/CTI, via fill, ENIG thickness, impedance tolerance (G-17).
+- G-13: TLF35584QVVS2 catalogue price (queued for re-read, round 6).
 - Class rows with too few catalogue parts keep their hand-set ranges (pin headers, hybrid capacitors, large
   electrolytics, logic); the China SMT rate per placement was not changed (the EDU assembly gap is missing operations,
   not the rate).

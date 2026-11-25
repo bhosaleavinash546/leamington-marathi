@@ -2405,7 +2405,7 @@ function renderPcbaSections(
 
   // §1 — Cost breakdown: the analysis's own stack, rows summing to the headline.
   y = chk(doc, y, 90);
-  y = secBar(doc, y, '§1 — Cost Breakdown per Board', `${rep.country}  ·  delivered UK, duty paid`);
+  y = secBar(doc, y, '§1 — Cost Breakdown per Board', `${rep.country}  ·  ${rep.termsLabel}`);
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['Element', `Amount`, '% of total', 'Basis']],
@@ -2439,7 +2439,7 @@ function renderPcbaSections(
   y = secBar(doc, y, '§2 — Basis & Confidence');
   const basisRows: string[][] = [
     ['Build country', rep.country, 'Annual volume', rep.annualVolume ? `${rep.annualVolume.toLocaleString('en-GB')} boards` : '—'],
-    ['Delivery', 'UK, import duty paid', 'Board type', rep.domainLabel],
+    ['Delivery', rep.termsLabel.replace(/^./, ch => ch.toUpperCase()), 'Board type', rep.domainLabel],
     ['Parts list from', rep.bomOrigin, 'Lines · parts', `${rep.bom.length} lines · ${rep.bomPieces} parts${rep.quantity && rep.quantity.low !== rep.quantity.high ? ` (likely ${rep.quantity.low}–${rep.quantity.high})` : ''}`],
   ];
   if (rep.confidence) basisRows.push(
@@ -2471,10 +2471,19 @@ function renderPcbaSections(
     y = lastFinalY(doc) + 4;
   }
   if (rep.quantity) { para(`Count: ${rep.quantity.note}`); y += 1; }
+  if (rep.ranges) {
+    const cr = rep.ranges.conditional;
+    para(`Sourced range ${cr ? `${c(cr.low)} – ${c(cr.high)}` : '—'}: only what sourced alternatives move${cr && cr.items.length ? ` (${cr.items.map(i => `${i.label}: ${i.low < 0 ? `−${c(-i.low)}` : c(i.low)} / +${c(i.high)}`).join('; ')})` : ' (none on this costing)'}. Judgement corridor ${c(rep.ranges.judgementLow)} – ${c(rep.ranges.judgementHigh)}: part identity and scope by CostVision engineering ratios, not a measured accuracy${rep.ranges.basis ? ` — ${rep.ranges.basis}` : ''}.`); y += 1;
+  }
+  if (rep.contractFx) { para(`Catalogue and class prices at the contract rate US$${rep.contractFx.usdPerGbp} / £ (× ${rep.contractFx.factor.toFixed(4)} on the catalogue's 29 Sep 2026 rate).`); y += 1; }
+  if (rep.infoRequest.length) {
+    const miss = rep.infoRequest.filter(i => !i.have);
+    para(`Information request — ${miss.length ? `${miss.length} of 10 items to ask for: ${miss.map(i => `${i.n}. ${i.item} (${i.why})`).join('; ')}` : 'all 10 items in hand'}.`); y += 1;
+  }
   if (rep.componentMarket) { para(`Components priced at the ${rep.componentMarket.market} market (${rep.componentMarket.source}): ${c(rep.componentMarket.components)} a board, against ${c(rep.componentMarket.global)} at global distributor prices — the engineer's choice; other countries stay at global prices.`); y += 1; }
   if (rep.operations > 0) { para(`Assembly includes ${c(rep.operations)} of operations beyond placement and inspection (second reflow side, coating sides / inspection / masking, press-fit, programming, functional and HV test) — each priced on the basis lines.`); y += 1; }
-  if (rep.fullEconomic) { para(`Full-economic ${c(rep.fullEconomic.amount)} a board — the delivered cost with the automotive programme NRE (${c(rep.fullEconomic.nrePerBoard)} a board) spread over the programme.`); y += 1; }
-  if (rep.emsInvoice) { para(`EMS invoice ${c(rep.emsInvoice.amount)} a board — the delivered cost less ${c(rep.emsInvoice.customerSupplied)} of parts the customer supplies (directed buy / consignment; no EMS burden on them).`); y += 2; }
+  if (rep.fullEconomic) { para(`Full-economic ${c(rep.fullEconomic.amount)} a board — the ${rep.termsLabel.startsWith('ex-works') ? 'ex-works' : 'delivered'} cost with the automotive programme NRE (${c(rep.fullEconomic.nrePerBoard)} a board) spread over the programme.`); y += 1; }
+  if (rep.emsInvoice) { para(`EMS invoice ${c(rep.emsInvoice.amount)} a board — the ${rep.termsLabel.startsWith('ex-works') ? 'ex-works' : 'delivered'} cost less ${c(rep.emsInvoice.customerSupplied)} of parts the customer supplies (directed buy / consignment; no EMS burden on them).`); y += 2; }
   if (rep.safety) {
     const sf = rep.safety;
     const lines = [
@@ -2542,7 +2551,7 @@ function renderPcbaSections(
   // §5 — Country comparison: the board costed in each country, delivered UK.
   if (rep.countries.length > 1) {
     y = chk(doc, y, 24 + rep.countries.length * 7.6);   // keep the table on one page (a lone row spilled over)
-    y = secBar(doc, y, '§5 — Build-Country Comparison', 'each row: this board built there — ex-works, and delivered UK duty paid');
+    y = secBar(doc, y, '§5 — Build-Country Comparison', rep.termsLabel.startsWith('ex-works') ? 'each row: this board built there — ex-works at the factory gate (no freight, no UK duty)' : `each row: this board built there — ex-works, and ${rep.termsLabel}`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['Country', 'Components', 'Bare board', 'Assembly', 'Other', 'Ex-works', 'Freight + duty', 'Delivered', `vs ${rep.country.split(' (')[0]}`, 'Lead']],
@@ -2750,7 +2759,7 @@ export function printPDF(
   const meta = pcba ? [
     'Populated PCB (PCBA) · from photo analysis',
     `Built in: ${pcba.country}`,
-    'Delivered: UK, duty paid',
+    `Terms: ${pcba.termsLabel}`,
     `Currency: ${currency}`,
   ].join('   ·   ') : [
     `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
@@ -2956,7 +2965,7 @@ export function printPDF(
   if (pcba) {
     y = calloutBox(doc, y, 'Key Assumptions', [
       pcba.basis + '.',
-      `Ex-works ${money(pcba.exWorks)} is the board built, tested and packed at the ${pcba.country.split(' (')[0]} factory gate; delivered ${money(pcba.total)} adds freight to the UK and UK import duty (${money(pcba.total - pcba.exWorks)}).`,
+      `Ex-works ${money(pcba.exWorks)} is the board built, tested and packed at the ${pcba.country.split(' (')[0]} factory gate${pcba.termsLabel.startsWith('ex-works') ? ' — the costing is quoted ex-works: no freight, no UK import duty' : `; delivered ${money(pcba.total)} adds freight to the UK and UK import duty (${money(pcba.total - pcba.exWorks)})`}.`,
       `Board: ${pcba.domainLabel}${pcba.safety ? (pcba.safety.costed === 'Not confirmed' ? ' · ASIL not confirmed' : ` · costed at ${pcba.safety.costed}`) : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
       'Component prices follow the parts bought (qty per board × boards); fabricator and EMS prices carry their own overhead and margin — none is added on top.',
     ], NAVY, HDR);

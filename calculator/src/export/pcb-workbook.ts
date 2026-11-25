@@ -97,7 +97,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   const date = (inp.generatedAt ?? new Date()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const countryShort = rep.country.split(' (')[0];
   const meta = [`Build: ${countryShort}`, rep.annualVolume ? `Volume: ${rep.annualVolume.toLocaleString('en-GB')} boards/yr` : null,
-    'Basis: delivered UK, duty paid', `Prepared: ${date}`, `Currency: ${cur.code} (${sym})`, rep.domainLabel].filter(Boolean).join('   ·   ');
+    `Basis: ${rep.termsLabel}`, `Prepared: ${date}`, `Currency: ${cur.code} (${sym})`, rep.domainLabel].filter(Boolean).join('   ·   ');
 
   const wb = new ExcelJS.Workbook();
   wb.creator = 'CostVision'; wb.title = `${rep.partName} — PCB should-cost`; wb.company = 'CostVision';
@@ -194,7 +194,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
 
   // ═══ 2. Cost Breakdown ═══════════════════════════════════════════════════
   const cb = CB.ws;
-  bar(cb, 7, 2, 8, 'Cost stack per board', `${rep.country} build · delivered UK, duty paid`);
+  bar(cb, 7, 2, 8, 'Cost stack per board', `${rep.country} build · ${rep.termsLabel}`);
   header(cb, 8, [[2, '#'], [3, 'Line item'], [4, `${sym}/board`, true], [5, '% of delivered', true], [6, 'Share', false], [7, `${sym}/year`, true], [8, 'Basis']]);
   const cbRow = new Map<PcbaStackKey, number>();
   const first = 9;
@@ -235,7 +235,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   val(cb, volRow, 4, rep.annualVolume ?? 0, NF.vol, font(10, '0000FF'));
   val(cb, volRow, 8, `${sym}/year scales the per-board cost by this volume (blue = an input you can change). The per-board cost itself was priced at this volume — re-run the analysis to price another volume.`, undefined, font(9, C.muted), 'left');
   cb.getRow(volRow).height = 30;
-  note(cb, volRow + 2, 2, 8, 'Components, bare board and assembly are supplier prices: the fabricator\'s and the EMS\'s overhead and margin are inside them, so no further overhead or margin is added. Ex-works = built, tested and packed at the factory gate; delivered adds freight to the UK and UK import duty.');
+  note(cb, volRow + 2, 2, 8, 'Components, bare board and assembly are supplier prices: the fabricator\'s and the EMS\'s overhead and margin are inside them, so no further overhead or margin is added. Ex-works = built, tested and packed at the factory gate' + (rep.termsLabel.startsWith('ex-works') ? ' — this costing is quoted ex-works (no freight, no UK duty).' : '; delivered adds freight to the UK and UK import duty.'));
   const cbRef = (k: PcbaStackKey) => cbRow.get(k);
 
   // ═══ 3. Bill of Materials ════════════════════════════════════════════════
@@ -361,7 +361,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
 
   // ═══ 5. Countries ════════════════════════════════════════════════════════
   const co = CO.ws;
-  bar(co, 7, 2, 14, 'Build-country comparison', 'each row: this board built there, delivered UK, duty paid');
+  bar(co, 7, 2, 14, 'Build-country comparison', `each row: this board built there, ${rep.termsLabel}`);
   header(co, 8, [[2, 'Rank', true], [3, 'Country'], [4, 'Components + EMS burden', true], [5, 'Bare board', true], [6, 'Assembly & test', true], [7, 'Other', true], [8, 'Ex-works', true], [9, 'Freight & duty', true], [10, 'Delivered', true], [11, `Δ vs ${countryShort}`, true], [12, 'Δ %', true], [13, 'Change'], [14, 'Lead']]);
   co.getCell(8, 14).alignment = { vertical: 'middle', horizontal: 'center' };
   const c0 = 9, cN = c0 + rep.countries.length - 1;
@@ -406,7 +406,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   const others = rep.countries.filter(c => !c.selected).map(c => c.id);
   const ids = [selId, others[0], curves.gb && selId !== 'gb' && others[0] !== 'gb' ? 'gb' : undefined].filter((x): x is string => !!x && Array.isArray(curves[x]) && curves[x].length > 0);
   const nameOf = (id: string) => `${rep.countries.find(c => c.id === id)?.name ?? id.toUpperCase()}${id === selId ? ' (costed)' : id === 'gb' ? ' (onshore reference)' : ' (next cheapest)'}`;
-  bar(vn, r6, 2, 13, 'Volume curve', ids.length ? 'delivered cost per board at each annual volume' : undefined); r6++;
+  bar(vn, r6, 2, 13, 'Volume curve', ids.length ? `${rep.termsLabel.startsWith('ex-works') ? 'ex-works' : 'delivered'} cost per board at each annual volume` : undefined); r6++;
   if (ids.length) {
     const qtys = curves[ids[0]].map(p => p.qty);
     header(vn, r6, [[2, 'Boards / year', true], ...ids.map((id, k) => [3 + k, nameOf(id), true] as [number, string, boolean])]);
@@ -481,7 +481,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   // ═══ 1. Summary ══════════════════════════════════════════════════════════
   const s = S.ws;
   const tiles: Array<{ c: number; label: string; v: ExcelJSType.CellValue; fmtS?: string; cap: string; color: string }> = [
-    { c: 2, label: 'DELIVERED / BOARD', v: formula(`'Cost Breakdown'!D${totalRow}`, m(rep.total)), fmtS: NF.money, cap: `${countryShort} build · UK, duty paid`, color: C.navy },
+    { c: 2, label: 'DELIVERED / BOARD', v: formula(`'Cost Breakdown'!D${totalRow}`, m(rep.total)), fmtS: NF.money, cap: `${countryShort} build · ${rep.termsLabel}`, color: C.navy },
     { c: 5, label: 'EX-WORKS / BOARD', v: formula(`'Cost Breakdown'!D${exwRow}`, m(rep.exWorks)), fmtS: NF.money, cap: `${countryShort} factory gate, packed`, color: C.navy },
     { c: 8, label: 'LIKELY RANGE', v: rep.confidence ? formula(`"${sym}"&TEXT(O9,"0.00")&" – ${sym}"&TEXT(P9,"0.00")`, `${fmtMoney(rep.confidence.low)} – ${fmtMoney(rep.confidence.high)}`) : 'n/a',
       cap: rep.confidence ? `${rep.confidence.label} confidence · see To verify` : 'band not computed', color: C.amber },
@@ -579,9 +579,12 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
        rep.confidence.verifyCount ? `${rep.confidence.verifyCount} line${rep.confidence.verifyCount === 1 ? '' : 's'} of ${fmtMoney(1)}+ to verify (${fmtMoney(rep.confidence.verifyValue)}): ${rep.bom.filter(l => l.verify).map(l => `${l.partNumber || l.description} — ${l.verifyWhy ?? 'priced from a range'}`).join('; ')}. See "Quote" on Bill of Materials.` : `Every line of ${fmtMoney(1)}+ has a catalogue price for the exact part behind it.`,
        ...(rep.quantity ? [`Count: ${rep.quantity.parts.toLocaleString('en-GB')} parts${rep.quantity.low !== rep.quantity.high ? ` (likely ${rep.quantity.low.toLocaleString('en-GB')}–${rep.quantity.high.toLocaleString('en-GB')})` : ''} — ${rep.quantity.note}`] : []),
        ...(rep.verifyFirst.length ? [`Verify these first (the ${rep.verifyFirst.length} dearest lines): ${rep.verifyFirst.map(v => `${v.rank}. ${v.part} ${fmtMoney(v.amount)} (${v.status})`).join('; ')}.`] : []),
+       ...(rep.ranges ? [`Sourced range ${rep.ranges.conditional ? `${fmtMoney(rep.ranges.conditional.low)} – ${fmtMoney(rep.ranges.conditional.high)}` : '—'} (sourced alternatives only${rep.ranges.conditional && rep.ranges.conditional.items.length ? `: ${rep.ranges.conditional.items.map(i => i.label).join('; ')}` : ''}); judgement corridor ${fmtMoney(rep.ranges.judgementLow)} – ${fmtMoney(rep.ranges.judgementHigh)} (identity and scope, engineering ratios).`] : []),
+       ...(rep.contractFx ? [`Contract rate US$${rep.contractFx.usdPerGbp} / £ on catalogue and class prices (× ${rep.contractFx.factor.toFixed(4)}).`] : []),
+       ...(rep.infoRequest.some(i => !i.have) ? [`Information request — ask for: ${rep.infoRequest.filter(i => !i.have).map(i => `${i.n}. ${i.item}`).join('; ')}.`] : []),
        ...(rep.componentMarket ? [`Components at the ${rep.componentMarket.market} market (${rep.componentMarket.source}): ${fmtMoney(rep.componentMarket.components)} a board, against ${fmtMoney(rep.componentMarket.global)} at global distributor prices.`] : []),
        ...(rep.fullEconomic ? [`Full-economic ${fmtMoney(rep.fullEconomic.amount)} a board — with the programme NRE (${fmtMoney(rep.fullEconomic.nrePerBoard)} a board) spread over the programme.`] : []),
-       ...(rep.emsInvoice ? [`EMS invoice ${fmtMoney(rep.emsInvoice.amount)} a board — the delivered cost less ${fmtMoney(rep.emsInvoice.customerSupplied)} of customer-supplied parts.`] : []),
+       ...(rep.emsInvoice ? [`EMS invoice ${fmtMoney(rep.emsInvoice.amount)} a board — the ${rep.termsLabel.startsWith('ex-works') ? 'ex-works' : 'delivered'} cost less ${fmtMoney(rep.emsInvoice.customerSupplied)} of customer-supplied parts.`] : []),
        rep.accuracyNote]
     : ['No confidence band was computed for this analysis.'];
   // Each verify bullet is a block of rows beside the facts (merged H:M), sized to its text.

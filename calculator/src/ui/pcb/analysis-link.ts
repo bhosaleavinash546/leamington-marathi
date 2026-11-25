@@ -29,6 +29,10 @@ export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' |
   { id: 'pcbf-prog-sec', key: 'programmingSec', kind: 'num' },
   { id: 'pcbf-fct-sec', key: 'functionalTestSec', kind: 'num' },
   { id: 'pcbf-component-market', key: 'componentMarket', kind: 'text' },
+  // EDU audit quick closes (G-10, G-11, G-19).
+  { id: 'pcbf-delivery-terms', key: 'deliveryTerms', kind: 'text' },
+  { id: 'pcbf-fpy', key: 'firstPassYield', kind: 'num' },
+  { id: 'pcbf-contract-usd', key: 'contractUsdPerGbp', kind: 'num' },
   { id: 'pcbf-layers', key: 'estimatedLayers', kind: 'num' },
   { id: 'pcbf-vias', key: 'throughVias', kind: 'num' },
   { id: 'pcbf-blind-vias', key: 'blindVias', kind: 'num' },
@@ -70,7 +74,7 @@ export function editedFields(snapshot: Record<string, string>, doc: Document = d
  * A quality grade picks the costing: an automotive grade costs the board as automotive.
  */
 /** Number fields whose blank means "the tool's own figure", not 0 (EDU v6 operations). */
-const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec']);
+const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec', 'firstPassYield', 'contractUsdPerGbp']);
 
 export function boardSpecPatch(edited: string[], doc: Document = document): { spec: Record<string, unknown>; domain?: string; notes: string[] } {
   const spec: Record<string, unknown> = {};

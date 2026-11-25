@@ -6,6 +6,7 @@
  */
 import type { PCBImageAnalysis, PCBBOMItem } from './types.js';
 import { escHtml } from '../toast.js';
+import { pcbInfoRequest } from '../../export/pcb-info-request.js';
 import '../styles/pcb-verify-list.css';
 
 const money = (v: number, dp = 2) => `£${(Number(v) || 0).toFixed(dp)}`;
@@ -56,4 +57,29 @@ export function buildQuantityBandLine(r: PCBImageAnalysis): string {
   if (!q || !(q.parts > 0)) return '';
   const range = q.partsLow !== q.partsHigh ? ` — likely ${q.partsLow.toLocaleString('en-GB')} to ${q.partsHigh.toLocaleString('en-GB')} (${money(q.gbpLow)} / +${money(q.gbpHigh)} on the components)` : '';
   return `<p class="pcb-vl__count"><strong>${q.parts.toLocaleString('en-GB')} parts</strong>${range}. ${escHtml(q.note)}</p>`;
+}
+
+/** The two ranges, apart (EDU audit G-16 / M-06): sourced alternatives, and the judgement corridor with its basis. */
+export function buildRangesSection(r: PCBImageAnalysis): string {
+  const cb = r._confidenceBand;
+  if (!cb) return '';
+  const c = cb.conditional;
+  const items = (c?.items ?? []).map(i => `<li>${escHtml(i.label)}: ${money(i.low)} / +${money(i.high)} <span class="pcb-vl__why">(${escHtml(i.source)})</span></li>`).join('');
+  return `<section class="pcb-vl" aria-labelledby="pcb-rng-h">
+    <h4 id="pcb-rng-h" class="pcb-vl__h">How far the figure can move</h4>
+    <p class="pcb-vl__lead"><strong>Sourced range ${c ? `${money(c.low)} – ${money(c.high)}` : '—'}</strong>: only what sourced alternatives move${items ? '' : ' (none on this costing — counts stated exact, one component basis)'}.</p>
+    ${items ? `<ul class="pcb-vl__list">${items}</ul>` : ''}
+    <p class="pcb-vl__lead"><strong>Judgement corridor ${money(cb.totalLow)} – ${money(cb.totalHigh)}</strong>: part identity and scope, by CostVision engineering ratios — not a measured accuracy. ${cb.basis ? `<span class="pcb-vl__why">${escHtml(cb.basis)}</span>` : ''}</p>
+    ${r._contractFx ? `<p class="pcb-vl__lead">Catalogue and class prices at the contract rate US$${r._contractFx.usdPerGbp} / £ (× ${r._contractFx.factor.toFixed(4)}).</p>` : ''}
+  </section>`;
+}
+
+/** What to ask for (EDU audit G-18): ten items, ticked from what this costing holds. */
+export function buildInfoRequestSection(r: PCBImageAnalysis): string {
+  const items = pcbInfoRequest(r as never);
+  const missing = items.filter(i => !i.have).length;
+  return `<section class="pcb-vl" aria-labelledby="pcb-ir-h">
+    <h4 id="pcb-ir-h" class="pcb-vl__h">Information request — ${missing ? `${missing} of 10 items to ask for` : 'all 10 items in hand'}</h4>
+    <ul class="pcb-vl__list">${items.map(i => `<li><span class="pcb-vl__status pcb-vl__status--${i.have ? 'ok' : 'check'}">${i.have ? 'Have' : 'Ask'}</span> ${escHtml(i.item)} <span class="pcb-vl__why">— ${escHtml(i.why)}</span></li>`).join('')}</ul>
+  </section>`;
 }

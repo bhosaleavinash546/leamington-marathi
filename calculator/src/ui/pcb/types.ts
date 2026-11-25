@@ -16,6 +16,10 @@ export interface PCBConfidenceBand {
   fabConfidenceLabel: 'High' | 'Medium' | 'Low';
   overallLabel: 'High' | 'Medium' | 'Low';
   volumeMultiplier: number;
+  /** How the band is built (its ratios are CostVision engineering figures). */
+  basis?: string;
+  /** The range from sourced alternatives only (EDU audit G-16 / M-06). */
+  conditional?: { low: number; high: number; items: Array<{ label: string; low: number; high: number; source: string }> };
 }
 
 export interface NPIBreakdown {
@@ -66,6 +70,8 @@ export interface PCBCountryBreakdown {
   totalPerBoard: number;
   /** The EMS invoice: the board less the parts the customer supplies (EDU v6). */
   emsInvoicePerBoard?: number;
+  /** Delivery terms the breakdown is on (EDU audit G-10). */
+  deliveryTerms?: 'DAP' | 'EXW';
   leadTimeWeeks: number;
   qualityIndex: number;
   certifications: string[];
@@ -129,6 +135,8 @@ export interface PCBImageAnalysis {
     lotSize?: number; programmeYears?: number; samplingCadence?: string; asilConfirmed?: string;
     /** Operations and component market typed on the PCB form (EDU v6); '' = the tool's own figure. */
     conformalCoatSides?: number | ''; pressFitConnectors?: number | ''; programmingSec?: number | ''; functionalTestSec?: number | ''; componentMarket?: string;
+    /** EDU audit quick closes: delivery terms, first-pass yield, contract US$ / £. */
+    deliveryTerms?: string; firstPassYield?: number | ''; contractUsdPerGbp?: number | '';
   };
   bom: PCBBOMItem[];
   assembly: {
@@ -192,6 +200,8 @@ export interface PCBImageAnalysis {
   _verifyList?: VerifyLine[];
   /** How the quantities were counted and their range (server: pcb-counting.ts — EDU v6). */
   /** The build country's component market, when the engineer chose it (EDU v6). */
+  /** A typed contract US$ / £ and its factor (EDU audit G-19). */
+  _contractFx?: { usdPerGbp: number; factor: number } | null;
   _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
   _quantityBand?: { parts: number; partsLow: number; partsHigh: number; gbpLow: number; gbpHigh: number; emptyFootprints: number; note: string };
   /** The order quantity the server costed at (the page field can change afterwards). */

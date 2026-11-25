@@ -13,6 +13,7 @@
  * into the report's content. It computes no price: it moves the analysis's figures into
  * rows and states where each came from. Pure (no DOM, no jsPDF) so it is tested directly.
  */
+import { pcbInfoRequest, type InfoItem } from './pcb-info-request.js';
 
 export interface PcbaLineLike {
   refDes?: string; componentType?: string; description?: string; partNumber?: string; pkg?: string; value?: string;
@@ -41,7 +42,8 @@ export interface PcbaAnalysisLike {
   stage1Classification?: { domain?: string; classifierDomain?: string };
   _selectedCountryBreakdown?: PcbaBreakdownLike;
   _countryComparison?: PcbaBreakdownLike[];
-  _confidenceBand?: { totalLow: number; totalMid: number; totalHigh: number; overallLabel: string; unconfirmedHighValueCount?: number };
+  _confidenceBand?: { totalLow: number; totalMid: number; totalHigh: number; overallLabel: string; unconfirmedHighValueCount?: number;
+    basis?: string; conditional?: { low: number; high: number; items: Array<{ label: string; low: number; high: number; source: string }> } };
   _sanityWarnings?: Array<{ code: string; message: string; severity: string }>;
   _asilLevel?: string; _asilClaimed?: string; _asilNotes?: string[]; _asilRationale?: string; _asilSafetyFunctions?: string[];
   _boardFunction?: string;
@@ -50,6 +52,7 @@ export interface PcbaAnalysisLike {
   /** Stage 4's ranked dearest lines (server/utils/pcb-verify-list.ts — EDU v6). */
   _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number } | null;
   _quantityBand?: { parts: number; partsLow: number; partsHigh: number; note: string };
+  _contractFx?: { usdPerGbp: number; factor: number } | null;
   _verifyList?: Array<{ rank: number; refDes: string; description: string; partNumber: string; qty: number; lineTotalGBP: number; share: number; status: string; why: string; customerSupplied: boolean }>;
 }
 
@@ -88,6 +91,14 @@ export interface PcbaReport {
   emsInvoice: { amount: number; customerSupplied: number } | null;
   /** How the parts were counted and the range they can be defended in (EDU v6). */
   quantity: { parts: number; low: number; high: number; note: string } | null;
+  /** The delivery terms, in words (EDU audit G-10): 'delivered UK, duty paid' or 'ex-works at the factory gate'. */
+  termsLabel: string;
+  /** The two ranges apart (G-16 / M-06): sourced alternatives, and the judgement corridor with its basis. */
+  ranges: { conditional: { low: number; high: number; items: Array<{ label: string; low: number; high: number; source: string }> } | null; judgementLow: number; judgementHigh: number; basis: string } | null;
+  /** The ten-item information request, ticked from this costing (G-18). */
+  infoRequest: InfoItem[];
+  /** A typed contract US$ / £ (G-19). */
+  contractFx: { usdPerGbp: number; factor: number } | null;
   /** Components at the build country's market, when chosen (EDU v6). */
   componentMarket: { market: string; source: string; components: number; global: number } | null;
   /** The board with the automotive programme NRE spread over the programme (EDU v6). */
@@ -173,12 +184,13 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const rounding = r2(exWorks - sum);
   if (Math.abs(rounding) >= 0.005) stack.push({ key: 'rounding', label: 'Rounding (to the penny)', amount: rounding, basis: `Every figure is rounded to ${money(0.01)}; this is the residual` });
   stack.push({ key: 'exWorks', label: `Ex-works cost (${country.split(' (')[0]} factory gate)`, amount: exWorks, basis: 'Built, tested and packed — before freight and import duty', kind: 'sub' });
-  // Freight is what the logistics figure holds beyond the duty, so the two rows sum to it exactly.
-  stack.push(
+  // Freight is what the logistics figure holds beyond the duty, so the two rows sum to it exactly. Ex-works (G-10): no
+  // freight, no duty, and the ex-works line is the figure.
+  if ((bd as { deliveryTerms?: string }).deliveryTerms !== 'EXW') stack.push(
     { key: 'freight', label: 'Freight to the UK', amount: r2(bd.logisticsPerBoard - duty), basis: `Sea at volume, air below 2,500 boards${r2(bd.logisticsPerBoard - duty) < 0.005 && (qty ?? 0) >= 2500 ? ' — under a penny a board by sea at this size and volume' : ''}` },
     { key: 'duty', label: 'UK import duty', amount: duty, basis: 'On components + board + assembly (customs value)' },
   );
-  stack.push({ key: 'delivered', label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
+  if ((bd as { deliveryTerms?: string }).deliveryTerms !== 'EXW') stack.push({ key: 'delivered', label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
 
   // ── BOM: the analysis's lines at their OWN price (they were scaled × 0.9997 to hit the rounded components row, so a
   // catalogue £2.1315 printed as £2.1308 and screen, PDF and Excel disagreed by a penny — 360 review). The penny of
@@ -255,6 +267,12 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const operations = num((b as Record<string, unknown>).operations);
   const cm = a._componentMarket;
   const componentMarket = cm ? { market: cm.market === 'cn' ? 'China' : cm.market, source: cm.source, components: cm.componentsGBP, global: cm.globalComponentsGBP } : null;
+  const exw = (bd as { deliveryTerms?: string }).deliveryTerms === 'EXW';
+  const termsLabel = exw ? 'ex-works at the factory gate (no freight, no UK duty)' : 'delivered UK, duty paid';
+  const cbx = a._confidenceBand;
+  const ranges = cbx ? { conditional: cbx.conditional ?? null, judgementLow: cbx.totalLow, judgementHigh: cbx.totalHigh, basis: cbx.basis ?? '' } : null;
+  const infoRequest = pcbInfoRequest(a as never);
+  const contractFx = a._contractFx ?? null;
   const qb = a._quantityBand;
   const quantity = qb && qb.parts > 0 ? { parts: qb.parts, low: qb.partsLow, high: qb.partsHigh, note: qb.note } : null;
   const emsInvoice = csGbp > 0 ? { amount: num((bd as { emsInvoicePerBoard?: number }).emsInvoicePerBoard) || r2(bd.totalPerBoard - csGbp), customerSupplied: csGbp } : null;
@@ -286,7 +304,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   drivers.push(`Components are ${pc(componentsAtCost)}% of the board${burden > 0 ? ` (${pc(componentsAtCost + burden)}% with the EMS material burden)` : ''}; bare board ${pc(bd.pcbFabPerBoard)}%, assembly and test ${pc(bd.assemblyPerBoard)}% (each with its automotive grade). A should-cost discussion on this board is a component-price discussion.`);
   const cheapest = countries[0];
   if (cheapest && !cheapest.selected && cheapest.delta < -0.005) drivers.push(`${cheapest.name} costs this board ${money(-cheapest.delta)} less delivered (${money(cheapest.total)}) — before qualification, lead time and supply-chain risk.`);
-  else if (cheapest?.selected) drivers.push(`${country} is the lowest delivered cost of the ${countries.length} countries compared.`);
+  else if (cheapest?.selected) drivers.push(`${country} is the lowest ${exw ? 'ex-works' : 'delivered'} cost of the ${countries.length} countries compared.`);
   if (toVerify.length) drivers.push(`${toVerify.length} line${toVerify.length === 1 ? '' : 's'} of ${money(1)}+ (${money(toVerify.reduce((t, l) => t + l.ext, 0))}) to verify: ${toVerify.slice(0, 4).map(l => `${l.description}${l.partNumber ? ` (${l.partNumber})` : ''} ${money(l.ext)} — ${l.verifyWhy ?? 'priced from a range, not a quote'}`).join('; ')}.`);
 
   // ── Warnings: the analysis's own, de-duplicated. Limitations as the analysis states them.
@@ -304,7 +322,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   return {
     partName: named || a.partName || 'PCB assembly',
     country, countryId: bd.countryId, annualVolume: qty, total: bd.totalPerBoard, exWorks,
-    basis: `Populated board built in ${country}, delivered to the UK, import duty paid${qty ? `, at ${qty.toLocaleString('en-GB')} boards a year` : ''}`,
+    basis: `Populated board built in ${country}, ${(bd as { deliveryTerms?: string }).deliveryTerms === 'EXW' ? 'ex-works at the factory gate (no freight, no UK duty)' : 'delivered to the UK, import duty paid'}${qty ? `, at ${qty.toLocaleString('en-GB')} boards a year` : ''}`,
     domainLabel,
     shares: [
       { label: 'Components', amount: bd.bomCostPerBoard, pct: bd.bomCostPerBoard / bd.totalPerBoard * 100 },
@@ -313,7 +331,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       { label: 'Freight & duty', amount: bd.logisticsPerBoard, pct: bd.logisticsPerBoard / bd.totalPerBoard * 100 },
     ],
     stack, bom, bomPieces, bomTotal, componentsAtCost, sourcingFactor, bomReconciliation, sourceKey,
-    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, safety, nre, nreTotal: n?.totalNRE ?? 0,
+    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, termsLabel, ranges, infoRequest, contractFx, safety, nre, nreTotal: n?.totalNRE ?? 0,
     drivers, warnings,
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
     // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM

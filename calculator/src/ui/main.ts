@@ -38,7 +38,7 @@ import { formWeights } from '../export/form-weights.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
 import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot, isReadablePcbPhoto } from './pcb/photo-slots.js';
-import { buildVerifyListSection, countEvidenceHtml } from './pcb/verify-panel.js';
+import { buildVerifyListSection, countEvidenceHtml, buildRangesSection, buildInfoRequestSection } from './pcb/verify-panel.js';
 import { analysisStackInput, snapshotFields, editedFields, boardSpecPatch } from './pcb/analysis-link.js';
 import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
@@ -5259,6 +5259,9 @@ function renderPCBFabForm(): string {
       <div class="field-group"><label>Press-fit connectors</label><input type="number" id="pcbf-press-fit" step="1" min="0" placeholder="from the BOM" title="Connectors pressed in (TE: 3–5 s each) — blank: counted from the BOM's press-fit lines"/></div>
       <div class="field-group"><label>Programming time (s a board)</label><input type="number" id="pcbf-prog-sec" step="1" min="0" placeholder="from the MCU flash" title="Blank: each MCU's flash × 2 s/MB (write + erase, AURIX data sheet) + 10 s handling"/></div>
       <div class="field-group"><label>Functional test time (s a board)</label><input type="number" id="pcbf-fct-sec" step="1" min="0" placeholder="60 s (automotive)" title="End-of-line functional test — blank: 60 s on an automotive board (an engineering estimate, no published figure found)"/></div>
+      <div class="field-group"><label>Delivery terms</label><select id="pcbf-delivery-terms" title="Delivered UK, duty paid (the default) or ex-works at the factory gate — no freight, no UK duty"><option value="DAP">Delivered UK, duty paid</option><option value="EXW">Ex-works (factory gate)</option></select></div>
+      <div class="field-group"><label>First-pass yield (0.5–0.999)</label><input type="number" id="pcbf-fpy" step="0.001" min="0.5" max="0.999" placeholder="from the dppm table" title="Share of boards passing first time — replaces the rework from an unsourced dppm table"/></div>
+      <div class="field-group"><label>Contract rate (US$ per GBP)</label><input type="number" id="pcbf-contract-usd" step="0.0001" min="0.8" max="2.5" placeholder="catalogue 1.3240" title="Re-prices the catalogue and class-range prices (US$ listings held at the 29 Sep 2026 rate); China-market and your own prices are not changed"/></div>
       <div class="field-group"><label>Component prices</label><select id="pcbf-component-market" title="Global: franchised-distributor prices (default). Build country's market: an EMS buying locally — China: szlcsc own-stock reel prices, 379 sourced parts in 26 classes"><option value="global">Global distributors (default)</option><option value="local">Build country's market (China sourced)</option></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -9814,6 +9817,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       ${buildConfidenceRoadmap(r)}
       ${buildSanityWarningsBanner(r)}
       ${buildVerifyListSection(r)}
+      ${buildRangesSection(r)}
+      ${buildInfoRequestSection(r)}
       ${buildAutomotiveNRESection(r)}
       ${buildAutomotiveAssemblySection(r)}
       ${buildAutomotiveFabSection(r)}
@@ -10927,6 +10932,9 @@ function fillFabFormFromAnalysis(): void {
   setF('pcbf-prog-sec', b.programmingSec !== undefined && b.programmingSec !== '' ? Number(b.programmingSec) : '');
   setF('pcbf-fct-sec', b.functionalTestSec !== undefined && b.functionalTestSec !== '' ? Number(b.functionalTestSec) : '');
   setSelectSafe('pcbf-component-market', String(b.componentMarket ?? 'global'), 'global');
+  setSelectSafe('pcbf-delivery-terms', String(b.deliveryTerms ?? 'DAP'), 'DAP');
+  setF('pcbf-fpy', b.firstPassYield !== undefined && b.firstPassYield !== '' ? Number(b.firstPassYield) : '');
+  setF('pcbf-contract-usd', b.contractUsdPerGbp !== undefined && b.contractUsdPerGbp !== '' ? Number(b.contractUsdPerGbp) : '');
   setF('pcbf-panel-util', b.panelUtilisation);
   setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
   setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');
