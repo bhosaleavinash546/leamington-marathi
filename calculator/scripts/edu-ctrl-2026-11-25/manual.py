@@ -17,6 +17,27 @@ from openpyxl.utils import get_column_letter
 H = os.path.dirname(os.path.abspath(__file__))
 tool = json.load(open(sys.argv[1])); OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 lines = json.load(open(os.path.join(H, 'manual-prices.json')))
+# v2 (cross-check, 25 Nov 2026): a corrections file re-prices lines, the board and assembly from page-read market prices.
+CORR = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else None
+V2 = CORR is not None
+if V2:
+    for l in lines:
+        c = CORR['lines'].get(l['refDes'])
+        if c:
+            l['v1UnitGBP'] = l['unitGBP']; l['v1LineGBP'] = l['lineGBP']
+            l['unitGBP'] = c['unitGBP']; l['lineGBP'] = round(l['qty'] * c['unitGBP'], 6)
+            l['priceKind'] = 'market (page-read)'; l['priceNote'] = c['note']; l['priceSource'] = c['url']
+
+# SMT solder joints (pads) from the reading: the unit the Chinese assembly prices use.
+PADS = [('LFBGA-292', 292), ('VQFN-48', 49), ('QFN-20', 21), ('QFN-16', 17), ('TSSOP-20', 20), ('TSSOP-14', 14), ('SOIC-8', 8), ('TO-263-7', 8),
+        ('SOT-23-5', 5), ('SC-70-5', 5), ('SOP-4', 4), ('3225', 4), ('4.5x3.2', 4), ('7x7', 4), ('~30-way', 30), ('DPAK', 3), ('TO-263', 3), ('SOT-23', 3)]
+def pads_of(l):
+    if l['componentType'] in ('through_hole', 'mechanical') or str(l['pkg']).startswith(('THT', 'press', 'radial')): return 0
+    if l['componentType'] == 'testpoint': return 1
+    if l['componentType'] == 'switch': return 4
+    for k, n in PADS:
+        if k in str(l['pkg']): return n
+    return 2
 reading = json.load(open(os.path.join(H, 'reading.json')))
 
 # ── Inputs (value, unit, class, basis) ─────────────────────────────────────────────────────────────────────────────
@@ -87,6 +108,19 @@ inp('boardKg', 0.552, 'kg / board', 'given', 'User: weighed populated board, 552
 inp('packKg', 0.12, 'kg / board', 'estimate', 'Engineering: share of ESD tray + carton a board')
 inp('seaKg', 0.40, '£ / kg', 'table', 'CostVision PCB country table, China: sea freight')
 inp('duty', 0.037, 'fraction', 'table', 'CostVision PCB country table, China → UK: import duty (an assumption, HS line not confirmed)')
+if V2:
+    a = CORR['assembly']; b = CORR['board']
+    reading_lines = json.load(open(os.path.join(H, 'reading.json')))['lines']
+    inp('usd', CORR['usdPerGbp'], 'US$ per £', 'market', 'FX used to convert US$ prices read on the pages')
+    inp('joints', sum(l['qty'] * pads_of(l) for l in reading_lines), 'SMT joints', 'reading', 'Reading: every SMD pad (2 a passive, BGA balls, IC pins), the unit the Chinese price lists use')
+    inp('smtUsdJ', a['smtUsdPerJoint'], 'US$ / joint', 'market', a['smtNote'] + ' — ' + a['smtUrl'])
+    inp('thtUsdJ', a['thtUsdPerJoint'], 'US$ / joint', 'market', a['thtNote'] + ' — ' + a['smtUrl'])
+    inp('xrayUsdC', a['xrayUsdPerComponent'], 'US$ / component', 'market', a['xrayNote'] + ' — ' + a['smtUrl'])
+    inp('xrayComps', 2, 'components', 'reading', 'Reading: the two BGA MCUs')
+    inp('depanelGBP', a['depanelGBP'], '£', 'market', a['depanelNote'] + ' — https://smt.hqchip.com/online/valuation.html')
+    I['pack'] = dict(v=a['packGBP'], unit='£', cls='market', basis=a['packNote'] + ' — https://m.jlc.com/portal/server_guide_40512.html')
+    inp('aspCny', b['aspCnyPerM2'], '¥ / m² sold', 'market', b['note'] + ' — ' + ' ; '.join(b['urls']))
+    inp('class3Cny', b['class3ExtrasCnyPerM2'], '¥ / m²', 'market', 'PCBasic: 25 µm hole copper +¥25/m², 4-wire test +¥80/m² — https://www.pcbasic.com/standard_pcb.html')
 v = {k: d['v'] for k, d in I.items()}
 
 # ── Computation (Python mirror of the workbook formulas) ───────────────────────────────────────────────────────────
@@ -104,6 +138,9 @@ C['fabImp'] = (C['fabBase'] + C['fabLayers']) * v['imped']
 C['fabStd'] = C['fabBase'] + C['fabLayers'] + C['fabFinish'] + C['fabVias'] + C['fabImp']
 C['fabAuto'] = C['fabStd'] * v['autoFab']
 C['fab'] = C['fabStd'] + C['fabAuto']
+if V2:
+    C['v1Fab'] = C['fab']
+    C['fab'] = area / 100 * (v['aspCny'] + v['class3Cny']) / v['fx']; C['fabStd'] = C['fab']; C['fabAuto'] = 0.0
 op, tech = v['opRate'], v['techRate']
 A = {}
 A['SMT placement (both sides)'] = v['placements'] / v['cph'] * (v['smtHS'] + v['smtCrew'] * op)
@@ -123,6 +160,19 @@ A['Functional + HV insulation test'] = v['fctSec'] / 3600 * (v['ict'] + tech)
 A['Depanel (router)'] = v['routerSec'] / 3600 * (v['routerRate'] + op)
 A['Final inspection + serial label'] = v['finalSec'] / 3600 * op + v['label']
 A['Packaging (ESD tray, carton)'] = v['pack']
+if V2:
+    C['v1AssemblyItems'] = dict(A)
+    A = {'SMT assembly incl. paste and AOI (per joint)': v['joints'] * v['smtUsdJ'] / v['usd'],
+         'Through-hole soldering (per joint)': v['thtJoints'] * v['thtUsdJ'] / v['usd'],
+         'Press-fit (3 connectors, 2 nuts)': A['Press-fit (3 connectors, 2 nuts)'],
+         'Conformal coating (both sides)': A['Conformal coating (both sides)'],
+         'Coating masking + UV inspection': A['Coating masking + UV inspection'],
+         'Staking / potting': A['Staking / potting'],
+         'X-ray (2 BGA)': v['xrayComps'] * v['xrayUsdC'] / v['usd'],
+         'ICT': A['ICT'], 'Programming (2 MCU + EEPROM)': A['Programming (2 MCU + EEPROM)'],
+         'Functional + HV insulation test': A['Functional + HV insulation test'],
+         'Depanel': v['depanelGBP'], 'Final inspection + serial label': A['Final inspection + serial label'],
+         'Packaging (ESD bag + divider)': v['pack']}
 C['assemblyItems'] = A
 C['conversion'] = sum(A.values())
 C['sgaGBP'] = C['conversion'] * v['sga']
@@ -156,7 +206,7 @@ for l in lines:
     REC.append(dict(refDes=l['refDes'], description=l['description'], qty=l['qty'], manualUnit=l['unitGBP'], manualLine=l['lineGBP'], manualKind=l['priceKind'],
                     manualNote=l['priceNote'], toolQty=tq, toolUnit=tu, toolLine=tl, toolClass=str(t.get('priceBasis') or t.get('classLabel') or t.get('priceSource') or ''), delta=round(tl - l['lineGBP'], 4)))
 REC.sort(key=lambda r: -abs(r['delta']))
-json.dump(dict(inputs=I, computed=C, tool=T, reconciliation=REC, lines=lines), open(os.path.join(OUT, 'manual.json'), 'w'), indent=1, ensure_ascii=False)
+json.dump(dict(inputs=I, computed=C, tool=T, reconciliation=REC, lines=lines, v2=V2, corrections=CORR), open(os.path.join(OUT, 'manual.json'), 'w'), indent=1, ensure_ascii=False)
 
 # ── Workbook with live formulas ────────────────────────────────────────────────────────────────────────────────────
 wb = Workbook()
@@ -176,7 +226,7 @@ head(wsI, 4, ['Key', 'Value', 'Unit', 'Class', 'Basis'])
 ref = {}
 for r, (k, d) in enumerate(I.items(), 5):
     wsI.cell(r, 1, k); c = wsI.cell(r, 2, d['v']); wsI.cell(r, 3, d['unit']); wsI.cell(r, 4, d['cls']); wsI.cell(r, 5, d['basis'])
-    c.fill = GIV if d['cls'] in ('given',) else TAB if d['cls'] in ('table', 'rate book', 'tool') else EST if d['cls'] == 'estimate' else PatternFill()
+    c.fill = GIV if d['cls'] in ('given',) else TAB if d['cls'] in ('table', 'rate book', 'tool', 'market') else EST if d['cls'] == 'estimate' else PatternFill()
     ref[k] = f"Inputs!$B${r}"
 widths(wsI, [14, 12, 16, 11, 110])
 
@@ -207,6 +257,13 @@ for r, (lab, f, kind) in enumerate(P, 2):
     if kind == 2: wsP.cell(r, 1).font = BOLD; c.font = BOLD
 widths(wsP, [44, 70, 14])
 fabCell = 'PCB!$C$12'
+if V2:
+    r0 = len(P) + 4
+    wsP.cell(r0 - 1, 1, 'v2 — market price per m² sold (replaces the build-up above)').font = BOLD
+    wsP.cell(r0, 1, 'Board area (m²)'); wsP.cell(r0, 3, '=C2/100').number_format = '0.000000'
+    wsP.cell(r0 + 1, 1, '6-layer automotive ASP + class-3 extras (¥/m²)'); wsP.cell(r0 + 1, 3, f"={ref['aspCny']}+{ref['class3Cny']}")
+    wsP.cell(r0 + 2, 1, 'Bare board, v2 (£)').font = BOLD; c = wsP.cell(r0 + 2, 3, f"=C{r0}*C{r0+1}/{ref['fx']}"); c.number_format = '£#,##0.0000'; c.font = BOLD
+    fabCell = f'PCB!$C${r0 + 2}'
 
 # Assembly
 wsA = wb.create_sheet('Assembly')
@@ -228,6 +285,14 @@ AF = [('SMT placement (both sides)', f"={ref['placements']}/{ref['cph']}*({ref['
       ('Depanel (router)', f"={ref['routerSec']}/3600*({ref['routerRate']}+{ref['opRate']})"),
       ('Final inspection + serial label', f"={ref['finalSec']}/3600*{ref['opRate']}+{ref['label']}"),
       ('Packaging (ESD tray, carton)', f"={ref['pack']}")]
+if V2:
+    keep = {k: f for k, f in AF}
+    AF = [('SMT assembly incl. paste and AOI (per joint)', f"={ref['joints']}*{ref['smtUsdJ']}/{ref['usd']}"),
+          ('Through-hole soldering (per joint)', f"={ref['thtJoints']}*{ref['thtUsdJ']}/{ref['usd']}")] + \
+         [(k, keep[k]) for k in ('Press-fit (3 connectors, 2 nuts)', 'Conformal coating (both sides)', 'Coating masking + UV inspection', 'Staking / potting')] + \
+         [('X-ray (2 BGA)', f"={ref['xrayComps']}*{ref['xrayUsdC']}/{ref['usd']}")] + \
+         [(k, keep[k]) for k in ('ICT', 'Programming (2 MCU + EEPROM)', 'Functional + HV insulation test')] + \
+         [('Depanel', f"={ref['depanelGBP']}"), ('Final inspection + serial label', keep['Final inspection + serial label']), ('Packaging (ESD bag + divider)', f"={ref['pack']}")]
 for r, (lab, f) in enumerate(AF, 2):
     wsA.cell(r, 1, lab); wsA.cell(r, 2, f[1:]); wsA.cell(r, 3, f).number_format = '£#,##0.0000'
 nA = len(AF) + 1
@@ -240,13 +305,13 @@ convCell = f"Assembly!$C${nA + 4}"
 
 # Summary
 wsS = wb.create_sheet('Summary', 0)
-wsS['A1'] = 'EDU control board PCBA (Dana TM4 Gemini CTRL, PC-10465018-D) — manual should-cost and the tool, per board'; wsS['A1'].font = Font(bold=True, size=13)
+wsS['A1'] = 'EDU control board PCBA (Dana TM4 Gemini CTRL, PC-10465018-D) — manual should-cost' + (' v2 (cross-checked against market prices, 25 Nov 2026)' if V2 else '') + ' and the tool, per board'; wsS['A1'].font = Font(bold=True, size=13)
 wsS['A2'] = 'China build, 10,000 boards a year, 6-year programme (60,000 boards). £ per board. Manual = this workbook (live formulas); Tool = CostVision live run, 25 Nov 2026.'
 head(wsS, 4, ['Element', 'Manual £', 'Tool £', 'Tool − manual £', 'Manual basis'])
-S = [('Components', f"={compTotal}", T['components'], 'Named catalogue analogues at the parts bought a year; engineering estimates where none (Components sheet)'),
+S = [('Components', f"={compTotal}", T['components'], ('v2: 6 lines re-priced at the lowest page-read market price (maker / franchised / China distributor own stock); the rest catalogue analogues or engineering estimates (Components sheet)' if V2 else 'Named catalogue analogues at the parts bought a year; engineering estimates where none (Components sheet)')),
      ('EMS material burden', f"=B5*{ref['burden']}", T['burden'], 'Manual 6 %; tool 7 % at 10,000 boards'),
-     ('Bare board', f"={fabCell}", T['fab'], 'China PCB table on an 18×24 in 2-up panel + 30 % automotive grade (PCB sheet)'),
-     ('Assembly, test, coating (EMS price)', f"={convCell}", T['assembly'], 'Time × China rate-book rates + 10 % SG&A + 8 % profit (Assembly sheet)'),
+     ('Bare board', f"={fabCell}", T['fab'], ('v2: ¥/m² sold by an automotive 4–6-layer fab (Chaoying 2024, +12–17 % to 2026) + class-3 extras (PCB sheet)' if V2 else 'China PCB table on an 18×24 in 2-up panel + 30 % automotive grade (PCB sheet)')),
+     ('Assembly, test, coating (EMS price)', f"={convCell}", T['assembly'], ('v2: Chinese list prices per joint / component where read; test, coating, press-fit unchanged; + 10 % SG&A + 8 % profit (Assembly sheet)' if V2 else 'Time × China rate-book rates + 10 % SG&A + 8 % profit (Assembly sheet)')),
      ('Rework, scrap (cost of quality)', f"={ref['fpyRework']}*({ref['reworkMin']}/60*{ref['techRate']}+({ref['ictSec']}+{ref['fctSec']})/3600*({ref['ict']}+{ref['techRate']}))+{ref['scrap']}*(B5+B6+B7+B8)", None, 'FPY 97 %, 0.3 % scrap'),
      ('Energy, packaging, cost of quality (tool)', None, T['other'], 'Tool only: energy, ESD pack, rework / scrap (manual carries these in assembly and the line above)'),
      ('One-off tooling and fixtures ÷ programme', f"={ref['nre']}/({ref['boards']}*{ref['years']})", None, '£31,400 over 60,000 boards (tool spreads its fixtures over the 10,000-board order inside assembly)'),

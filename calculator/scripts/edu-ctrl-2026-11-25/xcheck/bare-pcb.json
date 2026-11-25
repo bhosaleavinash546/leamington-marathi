@@ -1,0 +1,226 @@
+{
+  "items": [
+    {
+      "topic": "Price-per-m2 benchmark, 6-layer FR-4, ENIG, China (sourcing-guide, unsourced)",
+      "figure": "0.09-0.13 (Guangdong); 0.07-0.11 (Zhejiang) = about 139.5-201.5 USD/m2 (Guangdong) on 1 m2 = 1,550 sq in, my conversion",
+      "unit": "USD per sq.in",
+      "currency": "USD",
+      "conditions": "6-layer FR-4, 100 x 150 mm, ENIG, 1,000 pcs, Q1 2026. The page does not say what is included (tooling, test, impedance, drilling) and gives no source for the price. Small board at 1k pcs, so it is NOT a 10k/yr automotive contract price.",
+      "url": "https://www.sourcifychina.com/circuit-boards-manufacturers/",
+      "pageDate": "Posted December 10, 2025 (table labelled Q1 2026)",
+      "quote": "Price (USD per sq.in, 6-layer standard FR-4): Guangdong \"$0.09 – $0.13\"; Zhejiang \"$0.07 – $0.11\" ... \"Pricing based on benchmark 6-layer FR-4 PCB, 100 x 150 mm, ENIG finish, 1,000 pcs, Q1 2026.\"",
+      "readOnPage": true
+    },
+    {
+      "topic": "Drilling / hole-density surcharge threshold (PCBasic, Shenzhen fab)",
+      "figure": "Price is based on 100,000 holes per m2 for 4-layer and above; +4 RMB per 10,000 holes per m2 above that",
+      "unit": "holes per m2 / RMB per 10,000 holes per m2",
+      "currency": "CNY",
+      "conditions": "Standard rigid PCB process page. Our board: 4,500 vias / 0.0849 m2 = about 53,000 holes/m2, i.e. about half the density already in the base price, so NO drilling surcharge applies.",
+      "url": "https://www.pcbasic.com/standard_pcb.html",
+      "pageDate": "no date (footer (c)2012-2026)",
+      "quote": "For double-sided PCBs, pricing is based on 80,000 holes per square meter. For 4-layer and above, pricing is based on 100,000 holes per square meter. An additional charge of 4 RMB per 10,000 holes per square meter will apply.",
+      "readOnPage": true
+    },
+    {
+      "topic": "Drilling / hole-density surcharge threshold (JLCPCB)",
+      "figure": "Extra cost only above 150,000 drill holes per m2",
+      "unit": "holes per m2",
+      "currency": "USD",
+      "conditions": "JLCPCB help page on extra charges (batch and prototype). The rate schedule is in an image that is not in the page text. Our 53,000 holes/m2 is far below the threshold.",
+      "url": "https://jlcpcb.com/help/article/in-what-cases-will-there-be-charged-extra",
+      "pageDate": "Last updated Nov 10, 2026",
+      "quote": "for orders with over 150,000 drill holes per square meter, an extra cost will be applied.",
+      "readOnPage": true
+    },
+    {
+      "topic": "ENIG adder (JLCPCB)",
+      "figure": "No charge up to 30% gold area; above that 0.8992 USD/m2 per 1% over 30% (1u\" gold), 1.7985 USD/m2 per 1% (2u\")",
+      "unit": "USD per m2 per 1% of area",
+      "currency": "USD",
+      "conditions": "JLCPCB; ENIG is charged only on exposed-gold area above 30% of the board. Prototype or small-batch pricing, not an automotive contract.",
+      "url": "https://jlcpcb.com/help/article/in-what-cases-will-there-be-charged-extra",
+      "pageDate": "Last updated Nov 10, 2026",
+      "quote": "When the ENIG area is over 30% of the total PCB dimension.",
+      "readOnPage": true
+    },
+    {
+      "topic": "6-layer inclusions (JLCPCB 6-layer page)",
+      "figure": "ENIG free of charge; controlled-impedance stack-up offered; every board 4-wire tested",
+      "unit": "n/a",
+      "currency": "USD",
+      "conditions": "Prototype/small-batch offer (5 pcs from $2). This shows that for 6-layer, at least one large Chinese fab includes ENIG and impedance in the base price. It is not a volume price.",
+      "url": "https://jlcpcb.com/events/6-layer-pcb",
+      "pageDate": "no date",
+      "quote": "Surface finish: \"ENIG (Free of charge)\" ... Controlled impedance: \"Yes, Controlled impedance PCB layer stackup\" ... \"Each 6-layer PCB is 4-wire tested for quality assurance.\"",
+      "readOnPage": true
+    },
+    {
+      "topic": "Class-3-type adders: hole-wall copper and 4-wire test (PCBasic)",
+      "figure": "PTH copper 20um: 50 RMB/design + 10 RMB/m2; 25um: 100 RMB/design + 25 RMB/m2; 30um: 150 + 50 RMB/m2; 35um: 200 + 100 RMB/m2; 4-wire via testing +80 RMB/m2",
+      "unit": "RMB per m2 (+ setup per design)",
+      "currency": "CNY",
+      "conditions": "Adders over the standard process. IPC class 3 needs 25 um average hole copper, so about 25 RMB/m2 (0.0849 m2 means about 2.1 RMB a board). Adding 4-wire test makes about 105 RMB/m2 in total, about 8.9 RMB = GBP 1.00 a board.",
+      "url": "https://www.pcbasic.com/standard_pcb.html",
+      "pageDate": "no date (footer (c)2012-2026)",
+      "quote": "PTH copper 25μm: \"Setup fee 100 RMB/design + 25 RMB/m²\" ... 4-wire via testing: \"An additional 80 RMB per square meter applies.\" ... \"Default stack-up is free of charge, but custom stack-up will incur additional cost.\"",
+      "readOnPage": true
+    },
+    {
+      "topic": "2026 price movement: automotive PCB and FR-4 laminate",
+      "figure": "Automotive electronics PCB +12% to 17% as of Q1 2026; Kingboard FR-4 CCL cumulative >100% in 2026 (7 increases); Aug 2026 +10% CCL, prepreg +10/20%; Panasonic +30% from 1 Sep; Nan Ya +20-25%",
+      "unit": "%",
+      "currency": "n/a",
+      "conditions": "Trade-press article (Electronic Products World via Sina Tech). Use it to roll 2024 ASPs forward to 2026.",
+      "url": "https://finance.sina.com.cn/tech/roll/2026-09-17/doc-inisayan9407392.shtml",
+      "pageDate": "2026-09-17",
+      "quote": "截至2026年第一季度，汽车电子PCB已上涨12%-17% ... 以全球最大覆铜板厂商建滔积层板为风向标，其年内已发布七次涨价函，仅FR-4覆铜板按复利测算，年内累计涨幅已超100%。",
+      "readOnPage": true
+    },
+    {
+      "topic": "JLCPCB 2026 material price notice",
+      "figure": "FR4 and other substrate price adjustments from 26 June 2026; progressive surcharges on large orders (no rates stated)",
+      "unit": "n/a",
+      "currency": "USD",
+      "conditions": "Notice gives no % or per-m2 figures.",
+      "url": "https://jlcpcb.com/news/jlcpcb-pcb-pricing-notice",
+      "pageDate": "Jun 13, 2026",
+      "quote": "Due to exceptional conditions in the PCB materials market ... price adjustments for substrates such as FR4, FPC, Aluminum, Copper, Rogers, and Teflon ... starting June 26, 2026.",
+      "readOnPage": true
+    },
+    {
+      "topic": "Raw material purchase prices of an automotive PCB maker (Chaoying / Dynamic)",
+      "figure": "CCL 84.32 CNY/m2 (2024), prepreg 12.22 CNY/m2, gold salt 335.85 CNY/g, dry film 4.11 CNY/m2; direct material 53.85% of main-business cost",
+      "unit": "CNY per m2 / per g",
+      "currency": "CNY",
+      "conditions": "Prospectus 1-1-151 and cost structure. CCL prices since rose >100% in 2026 (see Sina item).",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf",
+      "pageDate": "Prospectus (申报稿), financials to 31 Dec 2024; dfcfw ID dated 2025-03-31",
+      "quote": "覆铜板 元/平方米 84.32 1.76% 82.87 -20.65% 104.43 ... 金盐 元/克 335.85 ... 直接材料 172,366.68 53.85%",
+      "readOnPage": true
+    },
+    {
+      "topic": "Production panel size (US practice; no Chinese source read)",
+      "figure": "18x24 in most common; also 16x21, 12x18. Edges and routing channels are not usable.",
+      "unit": "inch",
+      "currency": "n/a",
+      "conditions": "US fabricator blog. Our 395x215 board 2-up on 18x24 = 61% use (my arithmetic). No Chinese source for 20x24 or 21x24 working-panel sizes was read.",
+      "url": "https://blog.epectec.com/controlling-pcb-costs-part-2",
+      "pageDate": "2015-06-19 (modified 2025-09-16)",
+      "quote": "In the USA, the most common size by far is 18x24, with some also employing 16x21 or 12x18 plates.",
+      "readOnPage": true
+    },
+    {
+      "topic": "MCU (motor controller) PCB area per vehicle",
+      "figure": "about 0.15 m2 control-circuit PCB for the MCU",
+      "unit": "m2 per vehicle",
+      "currency": "n/a",
+      "conditions": "Chaoying prospectus industry section (area, not price).",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf",
+      "pageDate": "Prospectus (申报稿), FY2024 data",
+      "quote": "MCU 根据 VCU 发出的决策指令控制电机运行 控制电路 PCB 用量约为 0.15 平方米",
+      "readOnPage": true
+    }
+  ],
+  "asp": [
+    {
+      "company": "超颖电子 Chaoying (Dynamic Electronics, mainland arm) — 68.61% of revenue automotive in 2024; customers Continental, Valeo, Bosch, Tesla; IATF 16949",
+      "year": 2024,
+      "segment": "4- and 6-layer boards (四、六层板), stated to be mainly automotive electronics, display and storage",
+      "revenue": "161,098.19 万元 (CNY 1,610.98 m)",
+      "area": "161.86 万平方米 (1.6186 m m2)",
+      "aspPerM2": "995.31 stated (995.29 computed) CNY/m2 = GBP 112.08/m2; unit cost 836.66 CNY/m2, gross margin 15.94%. 2023: 995.92; 2022: 1,005.22",
+      "currency": "CNY",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf",
+      "quote": "p.1-1-229: \"四、六层板 995.31 -0.06% 995.92 -0.93% 1,005.22\"; p.1-1-228 sales volume \"四、六层板 161.86 -7.46% 174.91\" (万平方米); revenue by layer \"四、六层板 161,098.19 40.83%\" (万元); p.1-1-235: \"报告期，公司四、六层板主要应用于汽车电子、显示及储存等领域\"; \"汽车电子 270,709.91 68.61%\""
+    },
+    {
+      "company": "超颖电子 Chaoying",
+      "year": 2024,
+      "segment": "8 layers and above (incl. HDI, automotive ADAS); for reference",
+      "revenue": "207,131.62 万元",
+      "area": "87.69 万平方米",
+      "aspPerM2": "2,362.21 CNY/m2 stated (= GBP 266/m2); HDI share rising",
+      "currency": "CNY",
+      "url": "https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf",
+      "quote": "\"八层及以上板 2,362.21 6.51% 2,217.87 -4.56% 2,323.92\"; \"合计 1,343.11\""
+    },
+    {
+      "company": "定颖电子 Dynamic (Taiwan parent, external sales) — from Chaoying 2nd-round inquiry reply",
+      "year": 2022,
+      "segment": "4- and 6-layer boards",
+      "revenue": "not stated (stated ASP)",
+      "area": "not stated",
+      "aspPerM2": "975.78 CNY/m2 (2022), 946.34 (2021); 8L+ 2,630.07 (2022); double-sided 656.90",
+      "currency": "CNY",
+      "url": "http://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=603175&id=11198102",
+      "quote": "单位：元/平方米 ... 四、六层板 | 定颖电子对外销售 | 975.78 | 946.34 ... 八层及以上板 | 定颖电子对外销售 | 2,630.07 | 2,330.65"
+    },
+    {
+      "company": "世运电路 Olympic Circuit (automotive the largest application)",
+      "year": 2024,
+      "segment": "All PCB (rigid 4,474.09 m CNY + rigid-flex 250.03 m CNY; double-sided, multilayer, HDI)",
+      "revenue": "4,724,120,952.91 CNY",
+      "area": "452.81 万平方米",
+      "aspPerM2": "1,043.29 CNY/m2 computed (= GBP 117.49/m2); gross margin 18.24%",
+      "currency": "CNY",
+      "url": "http://static.cninfo.com.cn/finalpage/2025-04-16/1223102435.PDF",
+      "quote": "主营业务分行业: \"印制电路板 4,724,120,952.91 3,862,546,505.20 18.24\"; 产销量: \"印制电路板 万平方米 469.05 452.81 26.75\"; p.19: \"目前，公司产品下游应用领域中，汽车电子份额占比最高\""
+    },
+    {
+      "company": "依顿电子 Yiding (states focus on automotive electronics as core business; Continental, Valeo, BYD)",
+      "year": 2024,
+      "segment": "All PCB",
+      "revenue": "3,206,196,533.57 CNY",
+      "area": "3,654,091.65 平方米",
+      "aspPerM2": "877.43 CNY/m2 computed (= GBP 98.81/m2); gross margin 14.65%",
+      "currency": "CNY",
+      "url": "http://static.cninfo.com.cn/finalpage/2025-03-29/1222944687.PDF",
+      "quote": "p.15: \"印刷线路板 3,206,196,533.57 2,736,563,227.12 14.65\"; 产销量: \"印刷线路板 平方米 3,720,497.49 3,654,091.65 308,229.20\"; \"坚定聚焦汽车电子核心主业\""
+    },
+    {
+      "company": "博敏电子 Bomin",
+      "year": 2024,
+      "segment": "All PCB (incl. HDI)",
+      "revenue": "2,420,636,095.24 CNY",
+      "area": "2,554,971.03 平方米",
+      "aspPerM2": "947.42 CNY/m2 computed (= GBP 106.69/m2); gross margin 0.82%",
+      "currency": "CNY",
+      "url": "http://static.cninfo.com.cn/finalpage/2025-04-26/1223322160.PDF",
+      "quote": "\"印制电路板 2,420,636,095.24 2,400,689,124.67 0.82\"; \"印制电路板 平方米 2,721,690.72 2,554,971.03 192,575.77\""
+    },
+    {
+      "company": "奥士康 Aoshikang",
+      "year": 2024,
+      "segment": "All PCB (single/double 855.96 m CNY + 4-layer and above 3,371.88 m CNY)",
+      "revenue": "4,227,833,941.24 CNY",
+      "area": "6,676,018.88 平方米",
+      "aspPerM2": "633.29 CNY/m2 computed (= GBP 71.32/m2); gross margin 17.10%",
+      "currency": "CNY",
+      "url": "http://static.cninfo.com.cn/finalpage/2025-04-25/1223279323.PDF",
+      "quote": "\"PCB 4,227,833,941.24 92.60%\"; \"四层板及以上板 3,371,877,559.12 73.85%\"; \"销售量 平方米 6,676,018.88 6,304,564.80 5.89%\""
+    },
+    {
+      "company": "景旺电子 Kinwong",
+      "year": 2024,
+      "segment": "All PCB (rigid, FPC, metal-base, HDI mix)",
+      "revenue": "11,984,837,392.98 CNY",
+      "area": "1,076.14 万㎡",
+      "aspPerM2": "1,113.69 CNY/m2 computed (= GBP 125.42/m2); gross margin 18.78%",
+      "currency": "CNY",
+      "url": "http://static.cninfo.com.cn/finalpage/2025-04-29/1223377812.PDF",
+      "quote": "\"印制电路板 11,984,837,392.98 9,734,232,348.60 18.78\"; \"印制电路板 万㎡ 1,106.26 1076.14 98.29\""
+    }
+  ],
+  "notFound": [
+    "沪电股份 WUS 2024: automotive-board revenue 2,408,446,928 CNY (gross margin 24.45%; 37.68% of it radar/HDI/ADAS/P2Pack). Sales volume is measured in CNY ('销售量、生产量按照售价计量'), so no area and no automotive ASP. Source: http://static.cninfo.com.cn/finalpage/2025-03-26/1222896592.PDF",
+    "崇达技术 Chongda 2024 and 满坤科技 Mankun 2024: sales volume reported in CNY, not m2. 四会富仕 Sihui Fushi 2024: same. No ASP.",
+    "胜宏科技 and 生益电子 annual reports: not read (budget).",
+    "No 2025 annual report data (FY2025 reports are not out until spring 2026; not searched).",
+    "No source states a separate automotive (IATF / 车规) premium in %. No sourced high-Tg (TG170) adder in %. No sourced impedance-control adder in % (PCBasic: default stack-up free, custom stack-up extra, no amount).",
+    "No Chinese source for working-panel sizes (20x24 / 21x24 / 20.5x24.5 in) or utilisation was read.",
+    "No published bare-PCB price for a specific automotive ECU / inverter control board. A Huawei-chain broker report snippet ('主控板单价最高可达20000 元/平方米') and a Tesla Model 3 PCB value ('超过 2,500 元') were seen only in search snippets, not read.",
+    "Firecrawl credits ran out mid-task. Annual reports were then fetched directly from cninfo with curl and read with pdftotext; other pages via WebFetch."
+  ],
+  "notes": "ASP = revenue / sold area, the fab's average over its mix. Sold area is delivered board/array area, so the fab's panel-utilisation scrap is already inside the CNY/m2. The best single anchor is Chaoying's 4/6-layer ASP, 995.31 CNY/m2 in 2024 (GBP 112.08/m2 at 8.88). That segment is stated to be mainly automotive, sold to Tier-1s (Continental, Valeo, Bosch) under IATF 16949; it mixes 4- and 6-layer and the split is not given. Other automotive-heavy makers agree: Dynamic's own 4/6-layer 975.78 (2022), Olympic all-PCB 1,043, Yiding all-PCB 877. To roll forward to 2026, use the stated +12-17% on automotive PCB (Sina, Q1 2026): 1,115-1,165 CNY/m2 (GBP 125.5-131.1/m2). A 6-layer premium over the 4/6 mix (not sourced; my judgement +10-20%) gives about 1,100-1,400 CNY/m2 = GBP 124-158/m2. Per board (0.0849 m2) that is CNY 94-119 = GBP 10.6-13.4. If a fab prices the poor 61% use of 2-up on 18x24 above its average (judgement, +15-25%), the figure is about GBP 12-17. The SourcifyChina 6-layer ENIG 1k-pc benchmark (USD 139-202/m2 = GBP 110-159/m2) is consistent. VIAS: 4,500 vias on 0.0849 m2 = 53,000 holes/m2, well inside the base density (PCBasic: base 100,000/m2 for 4L+; JLCPCB: surcharge only above 150,000/m2). The GBP 8.54 via line therefore double-counts drilling. Remove it: (16.56 - 8.54) x 1.30 = GBP 10.43 = GBP 122.8/m2 = 1,090 CNY/m2, which sits inside the sourced band. Our GBP 21.53 (GBP 254/m2, 2,252 CNY/m2) is 2.26x the 2024 automotive 4/6-layer ASP, about 1.9-2.0x after 2026 increases, and close to Chaoying's 8L+/HDI ASP (2,362). The tool's GBP 44.25 (GBP 521/m2, 4,628 CNY/m2) is about 2x the 8L+/HDI ASP, so not credible for a 6-layer through-hole board. Its GBP 15.16 a board class-3 microsection is unsourced here: microsection coupons are cut per production panel/lot, not per board. The only sourced class-3-type adders found are PCBasic's 25 um hole copper (+25 CNY/m2) and 4-wire test (+80 CNY/m2), about GBP 1 a board together. A 30% automotive premium on a base that already reflects automotive ASPs would double-count; the ASP evidence already includes IATF/automotive. FX: GBP1 = CNY 8.88 as instructed."
+}

@@ -1,0 +1,28 @@
+{
+ "_about": "Cross-check v2 (25 Nov 2026), after the engineers said the should-cost is above what is paid. Rule: the LOWEST price read on a page from the maker, a franchised distributor, or a China distributor's own stock (brokers / partner stock excluded); a topic with no page-read price is unchanged and listed as unverified. Research: scratchpad edu-xcheck/{components,bare-pcb,ems-conversion}.json. FX £1 = $1.27 = ¥8.8799; szlcsc prices ÷ 1.13 to remove 13 % VAT (recoverable by a China EMS).",
+ "usdPerGbp": 1.27,
+ "lines": {
+  "AURIX pair": {"unitGBP": 8.9392, "note": "szlcsc (立创商城) own stock ¥89.70 incl. VAT at 100+ = ¥79.38 ex-VAT = £8.94; LCSC own stock $14.817 at 100+ = £11.67; franchised listings mirrored on szlcsc ¥229–266 ex-VAT at 1,000 (the dear end, our old £22.64)", "url": "https://so.szlcsc.com/global.html?k=TC387QP", "range": [8.94, 11.67]},
+  "U39, U40": {"unitGBP": 7.6756, "note": "LCSC own stock $9.748 at 100+ = £7.68 (the only non-broker reading; Unikey $7.429 at 2,500 is a broker). Our catalogue £2.47 is below every listing read — the catalogue entry needs review", "url": "https://www.digipart.com/part/TLF35584QVVS2", "range": [5.85, 7.68]},
+  "U8, U15, U61": {"unitGBP": 2.1157, "note": "TI.com $2.687 at 1,000 = £2.12 (LCSC own stock $5.45 dearer)", "url": "https://www.ti.com/product/AMC1311-Q1"},
+  "U35, U36": {"unitGBP": 1.5183, "note": "LCSC own stock $1.9283 at 1,000 = £1.52 (0 in stock at reading); TI.com $2.146 = £1.69", "url": "https://www.lcsc.com/search?q=ISO7741QDWRQ1", "range": [1.52, 1.69]},
+  "DC-DC group": {"unitGBP": 1.7165, "note": "TI.com $2.18 at 1,000 = £1.72 (LCSC own stock $3.15 dearer); our derived £0.79 was below the maker's own list", "url": "https://www.ti.com/product/LMR33630-Q1/part-details/LMR33630BQRNXRQ1"},
+  "TP group": {"unitGBP": 0.1417, "note": "Keystone 5015 Digi-Key $0.18 at 5,000 = £0.142 (no Chinese equivalent read; likely the dear end — a China loop terminal would be less)", "url": "https://www.digikey.com/en/products/detail/keystone-electronics/5015/278886", "range": [0.06, 0.142]}
+ },
+ "linesChecked": {
+  "J12 CUSTOMER": "776087-1 is a 23-way AMPSEAL (Master Electronics $5.72 at 1,000 = £4.50); our £5.52 is that part scaled × 1.4 for 34 ways — kept; the real 34-way part number is needed"
+ },
+ "board": {
+  "aspCnyPerM2": 1165, "aspRange": [1115, 1400], "class3ExtrasCnyPerM2": 105,
+  "note": "Chaoying (超颖) prospectus: 4–6-layer boards, mainly automotive (68.6 % automotive, IATF 16949; customers Continental, Valeo, Bosch), 2024 ASP ¥995.31/m² (revenue ¥1,610.98 m ÷ 161.86 万 m²); rolled to 2026 by the +12–17 % automotive PCB price rise reported by Sina (17 Sep 2026) → ¥1,115–1,165; the top of that band is taken for a 6-layer board in a 4/6-layer mix. Class-3 extras PCBasic: 25 µm hole copper +¥25/m², 4-wire test +¥80/m². ASP is per m² sold, so drilling at normal density (PCBasic: included up to 100,000 holes/m²; ours 53,000), ENIG, utilisation and the automotive premium are inside it. Cross-check: Olympic (世运) all boards ¥1,043/m², Kinwong ¥1,114/m² (2024).",
+  "urls": ["https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf", "https://finance.sina.com.cn/tech/roll/2026-09-17/doc-inisayan9407392.shtml", "https://www.pcbasic.com/standard_pcb.html", "http://static.cninfo.com.cn/finalpage/2025-04-16/1223102435.PDF"]
+ },
+ "assembly": {
+  "smtUsdPerJoint": 0.0012, "smtNote": "JLCPCB Standard PCBA, more than 100,000 joints an order: $0.0012 per SMT joint (page updated 22 Oct 2026) — a list price including paste and AOI on the same line in the Chinese per-point market (Sohu 13 Nov 2026: ¥0.006–0.02 a point incl. paste + AOI); Huaqiu list ¥0.01 a pad (dearer)", "smtUrl": "https://jlcpcb.com/help/article/pcb-assembly-price",
+  "thtUsdPerJoint": 0.012, "thtNote": "JLCPCB manual / wave THT joint at its top tier $0.012 (Huaqiu ¥0.10)",
+  "xrayUsdPerComponent": 0.082, "xrayNote": "JLCPCB X-ray $0.082 per inspected component at 3,001–99,999 a year (Huaqiu ¥3)",
+  "depanelGBP": 0.0563, "depanelNote": "Huaqiu 拆板费 ¥0.50 a board",
+  "packGBP": 0.3041, "packNote": "JLC ESD bag ¥1 + divider ¥0.002/cm² × 849 cm² = ¥2.70",
+  "unchanged": "Conformal coating (JLC prototype ¥0.03/cm² a face is above ours), press-fit, staking, masking, ICT, programming, functional / HV test and final inspection: no page-read volume price found — kept, unverified"
+ }
+}
