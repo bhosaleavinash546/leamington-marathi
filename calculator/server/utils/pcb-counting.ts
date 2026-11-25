@@ -61,7 +61,7 @@ export function quantityBand(bom: Line[], emptyFootprints = 0): QuantityBand {
   const stated = parts - byMethod.unstated;
   const note = stated === 0
     ? 'The reading did not say how its quantities were counted — they are taken as exact. A BOM file counts the board exactly.'
-    : `${pc(byMethod.counted + byMethod.bom)} % of the parts counted one by one or from the BOM, ${pc(byMethod['designator-range'])} % from printed designator ranges, ${pc(byMethod.estimated)} % estimated; the count is ${lo === hi ? 'exact' : `${lo.toLocaleString('en-GB')}–${hi.toLocaleString('en-GB')} parts`}${emptyFootprints > 0 ? `; ${emptyFootprints.toLocaleString('en-GB')} bare footprints were seen and are not costed` : ''}.`;
+    : `${pc(byMethod.counted + byMethod.bom)} % of the parts counted one by one or from the BOM / your edits, ${pc(byMethod['designator-range'])} % from printed designator ranges, ${pc(byMethod.estimated)} % estimated${byMethod.unstated > 0 ? `, ${pc(byMethod.unstated)} % with no count method stated (taken as exact)` : ''}; the count is ${lo === hi ? 'exact' : `${lo.toLocaleString('en-GB')}–${hi.toLocaleString('en-GB')} parts`}${emptyFootprints > 0 ? `; ${emptyFootprints.toLocaleString('en-GB')} bare footprints were seen and are not costed` : ''}.`;
   return { parts, partsLow: lo, partsHigh: hi, gbpLow: r4(gLo), gbpHigh: r4(gHi), byMethod, emptyFootprints, note };
 }
 

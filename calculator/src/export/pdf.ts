@@ -2462,11 +2462,11 @@ function renderPcbaSections(
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'plain',
       head: [['#', 'Part', 'Qty', 'A board', 'Share', 'Price basis']],
-      body: rep.verifyFirst.map(v => [String(v.rank), v.part.slice(0, 70) + (v.customerSupplied ? ' (customer-supplied)' : ''), String(v.qty), c(v.amount), `${(v.share * 100).toFixed(1)} %`,
+      body: rep.verifyFirst.map(v => [String(v.rank), (v.part.length > 72 ? `${v.part.slice(0, 72).replace(/\s+\S*$/, '')}…` : v.part) + (v.customerSupplied ? ' (customer-supplied)' : ''), String(v.qty), c(v.amount), `${(v.share * 100).toFixed(1)} %`,
         `${v.status === 'confirmed' ? 'Confirmed' : 'To verify'} — ${v.why}`]),
       headStyles: { fontSize: 7.5, textColor: GREY, fontStyle: 'bold' }, bodyStyles: { fontSize: 7.5, cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 } },
       alternateRowStyles: { fillColor: LIGHT },
-      columnStyles: { 0: { cellWidth: 8 }, 2: { cellWidth: 12, halign: 'right' }, 3: { cellWidth: 20, halign: 'right' }, 4: { cellWidth: 15, halign: 'right' }, 5: { cellWidth: 62 } },
+      columnStyles: { 0: { cellWidth: 10 }, 2: { cellWidth: 12, halign: 'right' }, 3: { cellWidth: 20, halign: 'right' }, 4: { cellWidth: 15, halign: 'right' }, 5: { cellWidth: 62 } },
     });
     y = lastFinalY(doc) + 4;
   }

@@ -91,7 +91,7 @@ const partIndex = Object.fromEntries(kept.map(p => [norm(p.part), { part: p.part
 
 const out = {
   about: 'China component market (EDU v6, Nov 2026): szlcsc own-stock whole-reel prices ex-VAT, page-read 25 Nov 2026 (scripts/pcb-research/2026-11-25-v6/), at ¥8.88 / £. Written by scripts/pcb-market-rows.mts — never by hand. Class rows: p10–p90 + median of ≥ 8 automotive parts; parts more than 3× from their class median dropped.',
-  asOf: '2026-11-25', source: 'szlcsc.com (立创商城) own stock, whole reel, ex-VAT (÷ 1.13)', cnyPerGbp: CNY_PER_GBP,
+  asOf: '2026-11-25', source: "szlcsc.com (LCSC's China store) own stock, whole reel, ex-VAT (÷ 1.13)", cnyPerGbp: CNY_PER_GBP,
   markets: { cn: { rows, parts: partIndex } }, dropped, thin,
 };
 console.log(`rows ${Object.keys(rows).length}: ${Object.entries(rows).map(([k, v]) => `${k} n=${(v as { n: number }).n}`).join('; ')}`);

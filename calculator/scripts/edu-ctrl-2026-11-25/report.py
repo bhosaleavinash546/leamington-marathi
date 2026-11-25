@@ -148,6 +148,13 @@ if V2 and CORR.get('version') in ('v3', 'v4'):
                'the ASIL is the engineer\'s; drilling inside the per-area price; a China automotive board at the market ASP per m²; 34 AEC-Q class ranges from the catalogue\'s own prices. This board: £284.76 → £241.54 delivered (bare board £44.25 → £14.29); with the lot, programme and the AURIX at £13.40: '
                f'{gbp(T["delivered"])} delivered, {gbp(T["exWorks"])} ex-works.</li>')
     OPENLIST = '<li><b>Still open in the tool (package B / D, not approved yet):</b> functional / HV test, programming, press-fit, second coated face and second reflow as operations; full-economic and EMS-invoice lines with a customer-supplied flag; delivery terms; an FPY input (the rework rate is placements × 800 dppm, capped at 30 %); the band\'s basis; fab spec inputs. The should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
+# Tool v6 (EDU accuracy programme): the operations, full-economic, EMS invoice and customer-supplied flag are in the tool.
+if V2 and float((sb.get('breakdown') or {}).get('operations') or 0) > 0:
+    THREE = ' (§6): the bare board and the operations are now costed alike in both; the difference is the components — the 70 parts lines no photo identifies, which the tool prices inside its class ranges at global distributor prices and the manual at named parts at China reel prices. A BOM file, or the tool\'s China-market option, closes most of it.'
+    TOOLFIX += ('<li><b>Tool v6 (25 Nov 2026, the accuracy programme):</b> second reflow side, second coated side with inspection and masking, press-fit, programming and functional + HV test costed as operations '
+                f'({gbp(float(sb["breakdown"]["operations"]))} a board); full-economic and EMS-invoice lines with a customer-supplied flag; the ten dearest lines ranked to verify; up to 24 photos with zooms for counting, count method and range per line; '
+                'chip markings read on full-resolution tiles; the China component market as an option (379 sourced parts); bare-board market prices for Thailand and Japan.</li>')
+    OPENLIST = '<li><b>Still open in the tool:</b> delivery terms and an FPY input (package B remainder); package D (reporting); functional-test time, masking time and press / coater capex are engineering estimates (typed overrides on the form); accuracy against prices paid needs five or more boards.</li>'
 if V2 and V1 and VER == 'v4':
     c1 = V1['computed']; RENAME = {'U8, U61': 'U8, U15, U61', 'U20, U22': 'U20, U22, U43'}
     prev = {l['refDes']: l for l in V1['lines']}; now = {l['refDes']: l for l in L}
