@@ -1,0 +1,152 @@
+[
+ {
+  "refDes": "Quad op-amp group",
+  "was": 4,
+  "now": 0,
+  "why": "the two 14-pin ICs beside J2 MOTOR are NXP TJA1463A CAN transceivers (marking read, photo 2 / tile); the \"x2 channels\" copy has no parts beside J3"
+ },
+ {
+  "refDes": "Dual op-amp group, channel two",
+  "was": 3,
+  "now": 0,
+  "why": "not fitted: the UC2 side beside J3 has U14 (SSOP-24), U11 (MSOP-8) and empty pads \u2014 no SO-8 op-amp row (whole-top tile 7)"
+ },
+ {
+  "refDes": "CAN group",
+  "was": 4,
+  "now": 0,
+  "why": "replaced by the two TJA1463A read beside J2 (the four TJA1044 were an estimate)"
+ },
+ {
+  "refDes": "U5, U6",
+  "was": 0,
+  "now": 2,
+  "why": "READ: marking TJA1463A on both parts (photo 2 close-up)"
+ },
+ {
+  "refDes": "U8, U15, U61",
+  "was": 3,
+  "now": 2,
+  "why": "U8 (SO-8 wide, \"U8 OR U50\") on top and U61 between the slots on the bottom; U15 is a 6-pin SOT, not an isolated amplifier"
+ },
+ {
+  "refDes": "U20, U22, U43",
+  "was": 3,
+  "now": 2,
+  "why": "U43 is an EMPTY QFN footprint (four bare pads, tile below UC1); U20 and U22 fitted"
+ },
+ {
+  "refDes": "U20, U22",
+  "was": "QFN-20",
+  "now": "MSOP-8 / TSSOP-16",
+  "why": "package seen on the full-resolution tiles (U22 MSOP-8 beside L21; U20 TSSOP)"
+ },
+ {
+  "refDes": "U3",
+  "was": 0,
+  "now": 1,
+  "why": "COUNTED (tile 6)"
+ },
+ {
+  "refDes": "U14",
+  "was": 0,
+  "now": 1,
+  "why": "COUNTED (tiles 6-7)"
+ },
+ {
+  "refDes": "U41, U44",
+  "was": 0,
+  "now": 2,
+  "why": "COUNTED (tile 9)"
+ },
+ {
+  "refDes": "U11, U19, U21, U24",
+  "was": 0,
+  "now": 4,
+  "why": "COUNTED (tiles 5-7, photo 5)"
+ },
+ {
+  "refDes": "Coupled choke group",
+  "was": 6,
+  "now": 5,
+  "why": "five \"701\" chokes on the top (L8, L16, L19, L22, L25 \u2014 photo 2 and tile 0/4), not six"
+ },
+ {
+  "refDes": "R 0402 group",
+  "was": 540,
+  "now": 474,
+  "why": "resistors: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 860 in all (v1 980, \"less 10 %\")"
+ },
+ {
+  "refDes": "R 0603 group",
+  "was": 345,
+  "now": 303,
+  "why": "resistors: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 860 in all (v1 980, \"less 10 %\")"
+ },
+ {
+  "refDes": "R 0805 group",
+  "was": 40,
+  "now": 35,
+  "why": "resistors: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 860 in all (v1 980, \"less 10 %\")"
+ },
+ {
+  "refDes": "R 1206 group",
+  "was": 40,
+  "now": 35,
+  "why": "resistors: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 860 in all (v1 980, \"less 10 %\")"
+ },
+ {
+  "refDes": "R 2512 group",
+  "was": 15,
+  "now": 13,
+  "why": "resistors: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 860 in all (v1 980, \"less 10 %\")"
+ },
+ {
+  "refDes": "C 0402 group",
+  "was": 300,
+  "now": 274,
+  "why": "MLCCs: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 509 in all (v1 557, \"less 10 %\")"
+ },
+ {
+  "refDes": "C 0603 group",
+  "was": 150,
+  "now": 137,
+  "why": "MLCCs: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 509 in all (v1 557, \"less 10 %\")"
+ },
+ {
+  "refDes": "C 0805 group",
+  "was": 50,
+  "now": 46,
+  "why": "MLCCs: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 509 in all (v1 557, \"less 10 %\")"
+ },
+ {
+  "refDes": "C 1206 group",
+  "was": 35,
+  "now": 32,
+  "why": "MLCCs: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 509 in all (v1 557, \"less 10 %\")"
+ },
+ {
+  "refDes": "C 1210 group",
+  "was": 22,
+  "now": 20,
+  "why": "MLCCs: bottom counted, top = designator range less 20 % not fitted (measured on 9 tiles) \u2014 509 in all (v1 557, \"less 10 %\")"
+ },
+ {
+  "refDes": "Q small-signal group",
+  "was": 58,
+  "now": 52,
+  "why": "Q1\u2013Q72: top less 20 % not fitted (Q66, Q67 empty on the bottom), bottom Q65 / Q68 / Q69 / Q72 counted"
+ },
+ {
+  "refDes": "D small-signal group",
+  "was": 44,
+  "now": 41,
+  "why": "D1\u2013D70: top less 20 % (D9, D10 empty), bottom D62 / D63 / D66 counted"
+ },
+ {
+  "refDes": "Zener group",
+  "was": 24,
+  "now": 21,
+  "why": "Z1\u2013Z37 less the six seen empty (Z26\u2013Z29, Z33, Z34) and the 10 TVS on their own lines"
+ }
+]

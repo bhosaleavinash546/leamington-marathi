@@ -24,6 +24,9 @@ if CORR and CORR.get('basedOnFile'):   # a later version keeps the earlier one's
     CORR['lines'] = {**_base.get('lines', {}), **CORR['lines']}
     CORR['inherited'] = sorted(set(_base.get('lines', {})) - set(json.load(open(sys.argv[3]))['lines']))
 V2 = CORR is not None
+READING_FILE = 'reading.json'
+if CORR and CORR.get('pricesFile'):   # v4: the recount's own line list and quantities
+    lines = json.load(open(os.path.join(H, CORR['pricesFile']))); READING_FILE = CORR.get('readingFile', READING_FILE)
 if V2:
     for l in lines:
         c = CORR['lines'].get(l['refDes'])
@@ -33,7 +36,7 @@ if V2:
             l['priceKind'] = 'market (page-read)'; l['priceNote'] = c['note']; l['priceSource'] = c['url']
 
 # SMT solder joints (pads) from the reading: the unit the Chinese assembly prices use.
-PADS = [('LFBGA-292', 292), ('VQFN-48', 49), ('QFN-20', 21), ('QFN-16', 17), ('TSSOP-20', 20), ('TSSOP-14', 14), ('SOIC-8', 8), ('TO-263-7', 8),
+PADS = [('HTSSOP-28', 29), ('SSOP-24', 24), ('MSOP-8 / TSSOP-16', 12), ('TSSOP-16', 16), ('SO-14', 14), ('MSOP-8', 8), ('LFBGA-292', 292), ('VQFN-48', 49), ('QFN-20', 21), ('QFN-16', 17), ('TSSOP-20', 20), ('TSSOP-14', 14), ('SOIC-8', 8), ('TO-263-7', 8),
         ('SOT-23-5', 5), ('SC-70-5', 5), ('SOP-4', 4), ('3225', 4), ('4.5x3.2', 4), ('7x7', 4), ('~30-way', 30), ('DPAK', 3), ('TO-263', 3), ('SOT-23', 3)]
 def pads_of(l):
     if l['componentType'] in ('through_hole', 'mechanical') or str(l['pkg']).startswith(('THT', 'press', 'radial')): return 0
@@ -42,7 +45,7 @@ def pads_of(l):
     for k, n in PADS:
         if k in str(l['pkg']): return n
     return 2
-reading = json.load(open(os.path.join(H, 'reading.json')))
+reading = json.load(open(os.path.join(H, READING_FILE)))
 
 # ── Inputs (value, unit, class, basis) ─────────────────────────────────────────────────────────────────────────────
 I = {}
@@ -74,7 +77,7 @@ inp('aoiRate', 20, '£ / h', 'estimate', 'Engineering: in-line AOI machine (not 
 inp('pressRate', 12, '£ / h', 'estimate', 'Engineering: servo press-fit cell (not in the rate book)')
 inp('progRate', 8, '£ / h', 'estimate', 'Engineering: gang programmer station')
 inp('routerRate', 10, '£ / h', 'estimate', 'Engineering: depanel router')
-inp('placements', 2054, 'placements', 'reading', 'Reading: SMT parts incl. 50 test loops (both sides)')
+inp('placements', reading.get('assembly', {}).get('smtPlacements', 2054), 'placements', 'reading', 'Reading: SMT parts incl. the test loops (both sides)')
 inp('cph', 20000, 'placements / h', 'estimate', 'Engineering: effective rate on a high-speed line for a mixed automotive build (~1/3 of nominal)')
 inp('smtCrew', 2, 'operators', 'estimate', 'Engineering: 2 operators on the line')
 inp('lot', 1000, 'boards / lot', 'estimate', 'Engineering: ~1 month of demand per lot')
@@ -114,7 +117,7 @@ inp('seaKg', 0.40, '£ / kg', 'table', 'CostVision PCB country table, China: sea
 inp('duty', 0.037, 'fraction', 'table', 'CostVision PCB country table, China → UK: import duty (an assumption, HS line not confirmed)')
 if V2:
     a = CORR['assembly']; b = CORR['board']
-    reading_lines = json.load(open(os.path.join(H, 'reading.json')))['lines']
+    reading_lines = json.load(open(os.path.join(H, READING_FILE)))['lines']
     inp('usd', CORR['usdPerGbp'], 'US$ per £', 'market', 'FX used to convert US$ prices read on the pages')
     inp('joints', sum(l['qty'] * pads_of(l) for l in reading_lines), 'SMT joints', 'reading', 'Reading: every SMD pad (2 a passive, BGA balls, IC pins), the unit the Chinese price lists use')
     inp('smtUsdJ', a['smtUsdPerJoint'], 'US$ / joint', 'market', a['smtNote'] + ' — ' + a['smtUrl'])

@@ -9,6 +9,9 @@ I = {k: d['v'] for k, d in M['inputs'].items()}; C = M['computed']; T = M['tool'
 FX = I['fx']; sb = tool['selectedCountryBreakdown']; b = sb['breakdown']
 V2 = bool(M.get('v2')); CORR = M.get('corrections') or {}
 V1 = json.load(open(sys.argv[3])) if V2 and len(sys.argv) > 3 else None   # the v1 manual.json, for the v1 → v2 bridge
+VER = CORR.get('version', 'v2') if V2 else 'v1'
+_RL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), CORR.get('readingFile', 'reading.json') if V2 else 'reading.json')))
+_RL_n = len(_RL['lines']); _RL_q = sum(l['qty'] for l in _RL['lines']); _RL_smt = _RL['assembly']['smtPlacements']
 e = lambda s: html.escape(str(s))
 def gbp(x, d=2): return f"£{x:,.{d}f}"
 def cny(x): return f"¥{x * FX:,.2f}"
@@ -38,7 +41,7 @@ scale = max(T['exWorks'], C['exWorks']) * 1.02
 legend = ''.join(f"<span><i style='background:{c}'></i>{n}</span>" for c, n in zip(['#2f5d8a', '#6c9bc6', '#7a8f3a', '#b7c96b', '#c2703a', '#e3b28c', '#8c6bb1'], ['Components', 'Burden', 'Board', 'Board automotive', 'Assembly & test', 'Energy / pack / quality', 'One-off ÷ programme']))
 
 # bridge tool → manual
-V3 = V2 and CORR.get('version') == 'v3'
+V3 = V2 and CORR.get('version') in ('v3', 'v4')
 bridge = [('Tool ex-works', T['exWorks'], True),
           ('Components: 70 lines priced at automotive class ranges in the tool, at named analogues here' + (' (the AURIX at £13.40 in both)' if V3 else ''), C['components'] - T['components'], False),
           (f"Material burden 7 % → {I['burden'] * 100:.0f} % on the lower parts total", C['burdenGBP'] - T['burden'], False),
@@ -136,15 +139,59 @@ app = ''.join(f"<tr><td>{e(r['refDes'])}</td><td>{e(r['description'][:70])}</td>
 inputs = ''.join(f"<tr><td>{e(k)}</td><td class=n>{e(d['v'])}</td><td>{e(d['unit'])}</td><td><span class='tag {e(d['cls']).replace(' ', '')}'>{e(d['cls'])}</span></td><td class=sm>{e(d['basis'])}</td></tr>" for k, d in M['inputs'].items())
 
 THREE = ', for three reasons shown in §6: it prices 70 of 71 parts lines at the top of an automotive class range because only the AURIX was read off a chip, it charges an IPC class-3 microsection on every board, and it leaves out functional test, programming, press-fit and the second coated face — which the manual adds back.'
-if V3: THREE = ' (§6): after its fixes the bare board is the same in both; the difference is the 70 parts lines no photo identifies, which the tool prices inside their catalogue class ranges and the manual at named typical parts, less the operations the tool still leaves out (functional / HV test, programming, press-fit, second coated face). A BOM file closes most of it.'
+if V2 and CORR.get('version') in ('v3', 'v4'): THREE = ' (§6): after its fixes the bare board is the same in both; the difference is the 70 parts lines no photo identifies, which the tool prices inside their catalogue class ranges and the manual at named typical parts, less the operations the tool still leaves out (functional / HV test, programming, press-fit, second coated face). A BOM file closes most of it.'
 TOOLFIX = ''
 OPENOLD = ''
 OPENLIST = '<li><b>Open (not changed):</b> panel list stops at 480 × 350 mm; class-3 microsection charged per panel, so per board on a large board; conformal coating one face only; no functional test, programming, press-fit or selective-solder line; a description containing "test points" or "probe pads" makes a part not fitted (£0); "CAN common-mode choke" falls into the shield-can (mechanical) class; one-off fixtures spread over the annual order, not the programme; the should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
-if V2 and CORR.get('version') == 'v3':
+if V2 and CORR.get('version') in ('v3', 'v4'):
     TOOLFIX = ('<li><b>Fixed after the audit (packages A and C, 25 Nov 2026):</b> fitted test points priced; class collisions (test-point words, "CAN" choke, mm bodies, group labels, logic, shunts); the 18 × 24 in panel — this board 2-up at 61 %; coupon sampling per panel or per lot; lot size and programme life as inputs; a family price in another package refused; '
                'the ASIL is the engineer\'s; drilling inside the per-area price; a China automotive board at the market ASP per m²; 34 AEC-Q class ranges from the catalogue\'s own prices. This board: £284.76 → £241.54 delivered (bare board £44.25 → £14.29); with the lot, programme and the AURIX at £13.40: '
                f'{gbp(T["delivered"])} delivered, {gbp(T["exWorks"])} ex-works.</li>')
     OPENLIST = '<li><b>Still open in the tool (package B / D, not approved yet):</b> functional / HV test, programming, press-fit, second coated face and second reflow as operations; full-economic and EMS-invoice lines with a customer-supplied flag; delivery terms; an FPY input (the rework rate is placements × 800 dppm, capped at 30 %); the band\'s basis; fab spec inputs. The should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
+if V2 and V1 and VER == 'v4':
+    c1 = V1['computed']; RENAME = {'U8, U61': 'U8, U15, U61', 'U20, U22': 'U20, U22, U43'}
+    prev = {l['refDes']: l for l in V1['lines']}; now = {l['refDes']: l for l in L}
+    qtyEff = priceEff = 0.0; rowsQ = []; rowsP = []; added = []; removed = []
+    for l in L:
+        p0 = prev.get(RENAME.get(l['refDes'], l['refDes']))
+        if not p0: added.append(l); continue
+        dq = (l['qty'] - p0['qty']) * p0['unitGBP']; dp = l['qty'] * (l['unitGBP'] - p0['unitGBP'])
+        qtyEff += dq; priceEff += dp
+        if abs(dq) > 0.005: rowsQ.append((l['refDes'], p0['qty'], l['qty'], dq))
+        if abs(dp) > 0.005: rowsP.append((l['refDes'], l['qty'], p0['unitGBP'], l['unitGBP'], dp, l.get('priceNote', ''), l.get('priceSource', '')))
+    mapped = {RENAME.get(r, r) for r in now}
+    for r, p0 in prev.items():
+        if r not in mapped: removed.append(p0)
+    addE = sum(l['lineGBP'] for l in added); remE = -sum(p0['lineGBP'] for p0 in removed)
+    assert abs(c1['components'] + qtyEff + priceEff + addE + remE - C['components']) < 0.02
+    br4 = [('Manual v3, ex-works', c1['exWorks'], True),
+          (f'Recount — lines not on the board ({", ".join(p0["refDes"] for p0 in removed)})', remE, False),
+          (f'Recount — lines found ({", ".join(l["refDes"] for l in added)})', addE, False),
+          ('Recount — quantities (passives and discretes: bottom counted, top less 20 % not fitted; 701 chokes 6 → 5)', qtyEff, False),
+          ('China volume prices (szlcsc own-stock whole reels, ex-VAT): passives, discretes, magnetics, test loops, headers', priceEff, False),
+          ('EMS material burden 7 % on the lower parts total', C['burdenGBP'] - c1['burdenGBP'], False),
+          (f"Assembly: {I['joints']:,} SMT joints (v3 {V1['inputs']['joints']['v']:,})", C['conversionOHP'] - c1['conversionOHP'], False),
+          ('Rework and scrap (scrap follows the value)', C['quality'] - c1['quality'], False),
+          ('Manual v4, ex-works', C['exWorks'], True)]
+    assert abs(sum(x[1] for x in br4[:-1]) - C['exWorks']) < 0.02, sum(x[1] for x in br4[:-1])
+    b12 = ''.join(f"<tr class='{'tot' if t else ''}'><td>{e(lab)}</td><td class=n>{gbp(v)}</td></tr>" for lab, v, t in br4)
+    chg = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reading-v4-changes.json')))
+    cnt = ''.join(f"<tr><td>{e(c['refDes'])}</td><td class=n>{e(c['was'])}</td><td class=n>{e(c['now'])}</td><td class=sm>{e(c['why'])}</td></tr>" for c in chg)
+    pr = ''.join(f"<tr><td>{e(r[0])}</td><td class=n>{r[1]}</td><td class=n>{r[2]:.4f}</td><td class=n>{r[3]:.4f}</td><td class=n>{gbp(r[4])}</td><td class=sm>{e(str(r[5])[:170])}</td></tr>" for r in sorted(rowsP, key=lambda r: r[4]))
+    tot0 = sum(p0['qty'] for p0 in V1['lines']); tot1 = sum(l['qty'] for l in L)
+    full = C['exWorks'] + C['autoNrePerBoard']
+    inv = C['exWorks'] - C['nrePerBoard'] - sum(l['lineGBP'] for l in L if l['refDes'] in ('AURIX pair', 'U39, U40')) * (1 + I['burden'])
+    v2sec = f"""
+<h2>0. What changed in v4 (25 Nov 2026) — the recount from all 22 photos, and China volume prices</h2>
+<p>The engineers said the quantities did not match. Every photo was reviewed again, the zoomed ones matched to their area of the whole-board views so that no part is counted twice. Three things were wrong in v1–v3: <b>(1)</b> the second channel (UC2, beside J3) was costed "by symmetry" with the first — it is not: beside J3 there are U14, U11 and empty pads, no op-amp row and no CAN pair; <b>(2)</b> the two 14-pin ICs beside J2 read <b>NXP TJA1463A</b> (CAN transceivers), not quad op-amps; <b>(3)</b> far more footprints are empty than the 10 % assumed — U26, U42, U43, U62, U69, Q66, Q67, Z26–Z29, Z33, Z34, R313 / R322–R324, R1134 / R1135, R1215 / R1229 / R1242, R1253 / R1254, D9, D10 and more. Measured on nine full-resolution tiles: about 5–15 % in the UC cores, 30 % near the motor connector and the resolver boost, 55 % below UC1 — 20 % taken overall (range 10–30 %). The bottom side is counted part by part. <b>Parts: {tot0:,} → {tot1:,}; SMT placements {V1['inputs']['placements']['v']:,} → {I['placements']:,}.</b></p>
+<table><tr><th>Step, v3 → v4</th><th>£ a board</th></tr>{b12}</table>
+<h3>The recount, line by line</h3>
+<table><tr><th>Line</th><th>v1–v3</th><th>v4</th><th>Evidence</th></tr>{cnt}</table>
+<h3>China volume prices applied (lowest sourced price at volume; an engineering estimate is replaced whichever way it moves)</h3>
+<table><tr><th>Line</th><th>Qty</th><th>v3 £</th><th>v4 £</th><th>Effect £</th><th>Source</th></tr>{pr}</table>
+<p class=sm>Not lowered: 0402 / 0805 MLCCs, ferrite beads, the crystal, LDO, comparator, flyback controller, AMC1311 and TLF35584 — the China reel price read is dearer than v3's sourced figure (TLF35584 £5.88 a reel part at szlcsc against £3.07 franchised; AMC1311 £3.29 against TI.com £2.12). ICs bought at 20k–30k a year on contract would be at or below v3's figures, which are kept.</p>
+<p><b>Full-economic</b> (with the £15,500 programme NRE over 60,000 boards): {gbp(full)}. <b>EMS invoice if Dana supplies the AURIX and the PMIC</b>: about {gbp(inv)}.</p>"""
+    rec2 = f"<p><b>Updated (v4).</b> All 22 photos re-read part by part: the second channel is not a copy of the first, two CAN transceivers (TJA1463A) were read, about 20 % of the top-side footprints are empty — <b>{tot1:,} parts, {I['placements']:,} SMT placements</b> (v3 {tot0:,}). Passives, discretes, magnetics, test loops and headers re-priced at China volume (szlcsc reels). Manual should-cost <b>{gbp(C['exWorks'])} ex-works</b> ({cny(C['exWorks'])}), full-economic {gbp(full)}, delivered UK {gbp(C['delivered'])}. The tool on the same reading: {gbp(T['exWorks'])} ex-works.</p>"
 css = """
 @page{size:A4;margin:14mm 12mm 16mm}
 :root{--ink:#1c2430;--mute:#5b6675;--line:#d7dde5;--band:#eef2f7;--acc:#1f3a5f}
@@ -164,7 +211,7 @@ gap = T['exWorks'] - C['exWorks']
 _aur = next((l for l in L if l['refDes'] == 'AURIX pair'), None)
 AUR = _aur['lineGBP'] if _aur else 0.0
 AURNOTE = 'the same engineer\'s price, £13.40 each, in the tool and the manual' if abs((_aur or {}).get('unitGBP', 0) - 13.40) < 1e-6 else ('China distributor own stock' if V2 else 'tool and manual price them alike: CostVision catalogue, TC387 family')
-v2sec = ''; rec2 = ''
+if VER != 'v4': v2sec = ''; rec2 = ''
 if V2 and V1 and CORR.get('version', 'v2') == 'v2':
     c1 = V1['computed']; rows = []
     for l in L:
@@ -298,7 +345,7 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 
 <h2>2. Scope and inputs</h2>
 <ul><li><b>Given:</b> annual volume 10,000, programme 6 years, China, board 395 × 215 mm, weight 552 g populated, conformal coating both sides.</li>
-<li><b>Read off the photos</b> (71 BOM lines, 2,080 parts, 2,054 SMT placements incl. 50 test loops, 68 through-hole joints, 3 press-fit connectors + 2 press-in nuts): dual AURIX TC387, two safety PMICs (VQFN-48), 180 × 1206 discharge resistors (10 × 18 grid, marking 4642 = 46.4 kΩ), isolated HV sensing, flyback, hybrid polymer capacitors, a sealed 34-way customer connector and two 20-way press-fit headers.</li>
+<li><b>Read off the photos</b> ({_RL_n} BOM lines, {_RL_q:,} parts, {_RL_smt:,} SMT placements incl. 50 test loops, 68 through-hole joints, 3 press-fit connectors + 2 press-in nuts): dual AURIX TC387, two safety PMICs (VQFN-48), 180 × 1206 discharge resistors (10 × 18 grid, marking 4642 = 46.4 kΩ), isolated HV sensing, flyback, hybrid polymer capacitors, a sealed 34-way customer connector and two 20-way press-fit headers.</li>
 <li><b>Estimated:</b> 6 layers, 4,500 through vias, 1 oz copper, ENIG, controlled impedance, automotive grade 2; every rate not in the CostVision rate book (labelled amber in the workbook).</li>
 <li><b>Rates:</b> CostVision rate book China (SMT high-speed line £{I['smtHS']:.2f}/h, SMT line £{I['smtStd']:.2f}/h, X-ray £{I['xray']:.2f}/h, ICT £{I['ict']:.2f}/h, operator £{I['opRate']:.2f}/h, technician £{I['techRate']:.2f}/h) and the CostVision PCB country table for China (board £/dm², ENIG, vias, impedance, coating £{I['coatRate']}/cm², freight).</li>
 <li><b>Prices:</b> each part at a named catalogue analogue (CostVision catalogue, round 6) at the parts bought a year (qty × 10,000), or a stated engineering estimate where no analogue exists.</li></ul>

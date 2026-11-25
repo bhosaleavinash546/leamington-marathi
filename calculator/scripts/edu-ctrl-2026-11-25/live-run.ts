@@ -49,7 +49,7 @@ async function main(): Promise<void> {
   const standInPort = await freePort(), port = await freePort();
   const dir = mkdtempSync(join(tmpdir(), 'cv-pcb-review-'));
   // the live run's classifier output (6 Oct 2026), as e2e/pcb-camera-live.ts replays it
-  const replies = JSON.parse(readFileSync(join(ROOT, 'scripts/edu-ctrl-2026-11-25/replies.json'), 'utf8'));
+  const replies = JSON.parse(readFileSync(join(ROOT, 'scripts/edu-ctrl-2026-11-25', process.env.CV_REPLIES ?? 'replies.json'), 'utf8'));
   const repliesPath = join(dir, 'replies.json');
   writeFileSync(repliesPath, JSON.stringify(replies));
   const secret = 'e2e-' + Math.random().toString(36).slice(2);
