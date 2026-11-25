@@ -7,7 +7,7 @@ report-pdf.mjs) and a clean workbook with live formulas.
 
 Usage: python3 final-report.py <manual.json> <out-dir> [<tool-global-reprice.json> <tool-china-reprice.json>]
 """
-import json, os, re, sys, html
+import json, os, re, sys, html, base64
 from collections import OrderedDict
 
 M = json.load(open(sys.argv[1])); OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
@@ -240,6 +240,13 @@ if XC:
 {row(['Tool, components at global distributor prices', (gbp(XC['gx']), 'n'), (gbp(XC['gd']), 'n'), (f"{(XC['gx'] / exw - 1) * 100:+.1f} %", 'n')])}</table>
 <p>On the same China-market basis the CostVision tool lands {(XC['cx'] / exw - 1) * 100:.1f} % above this should-cost; the difference is the parts no photo identifies, which it prices inside class ranges. At global distributor prices (the price a buyer without a China supply chain sees) the board is {gbp(XC['gx'])} ex-works — the upper bound for the negotiation.</p>"""
 
+# Board photos (CV_PHOTOS: JSON list of {"path", "caption"}; JPEGs, embedded so the report is one file)
+PHOTOS = json.loads(os.environ.get('CV_PHOTOS', '[]'))
+def _fig(ph, n):
+    b64 = base64.b64encode(open(ph['path'], 'rb').read()).decode()
+    return f"<figure><img src='data:image/jpeg;base64,{b64}' alt='{e(ph['caption'])}'><figcaption><b>Figure {n}.</b> {e(ph['caption'])}</figcaption></figure>"
+FIGS = ("<h3>The board</h3><div class=figs>" + ''.join(_fig(ph, i + 1) for i, ph in enumerate(PHOTOS)) + "</div>") if PHOTOS else ''
+
 CSS = """
 body{font-family:'Segoe UI',Arial,sans-serif;font-size:9.6pt;color:#1b2430;line-height:1.42;margin:0}
 h1{font-size:19pt;margin:0 0 4px;color:#12324f;letter-spacing:-.2px}
@@ -270,6 +277,10 @@ ul{margin:4px 0 4px 18px;padding:0} li{margin:2px 0}
 h2,h3{break-after:avoid;page-break-after:avoid} tr{break-inside:avoid;page-break-inside:avoid} .box,.kpis{break-inside:avoid}
 table.parts{table-layout:fixed} table.parts td{word-wrap:break-word}
 .cols{display:flex;gap:16px}.cols>div{flex:1;min-width:0}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:4px}
+figure{margin:0;break-inside:avoid}
+figure img{width:100%;height:auto;display:block;border:1px solid #c9d4df;border-radius:3px}
+figcaption{font-size:7.6pt;color:#4a5868;margin-top:3px;line-height:1.35}
 """
 
 HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control board PCBA should-cost</title><style>{CSS}</style></head><body>
@@ -309,6 +320,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boa
 {row(['Terms', 'Ex-works China; delivered UK duty paid shown alongside'])}
 {row(['Currency', f"£; CNY {FX} per £, US$ {USD} per £"])}
 </table></div></div>
+{FIGS}
 
 <h2>3. Components — {gbp(comp)} a board, plus {gbp(burden)} EMS burden</h2>
 <div class=cols><div><h3>By kind of part</h3>
