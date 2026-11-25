@@ -1,0 +1,82 @@
+{
+ "_about": "v3 (25 Nov 2026): v2 plus the corrections accepted from the independent audit review (audit-review/) and the AURIX re-verified on the live pages (xcheck/aurix-reverify.json). Rule unchanged: page-read prices; a figure no page gives is labelled.",
+ "version": "v3",
+ "basedOn": "v2",
+ "usdPerGbp": 1.27,
+ "lines": {
+  "AURIX pair": {
+   "unitGBP": 13.4,
+   "note": "Re-verified 25 Nov 2026: authorised list ceiling $31.56 at 1,000 (Infineon shop = Digi-Key, KXUMA2, one reel); China distributor own stock $14.82 at 100+ (LCSC) and ¥79.38 ex-VAT (szlcsc) — a market floor, not a traceable Tier-1 channel; Infineon: automotive annual pricing 'low single-digit price declines' (Q2 FY26). Range $15–21 for a 20,000-a-year buyer; point $17 = £13.40. Not a contract price — replace with Dana's.",
+   "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC387QP160F300SAEKXUMA2",
+   "range": [
+    11.81,
+    16.54
+   ]
+  },
+  "U39, U40": {
+   "unitGBP": 3.07,
+   "note": "Audit: Newark $3.99 / $3.90 / $3.82 at 1,000 / 2,500 / 5,000; Digi-Key $4.11898 at 2,500 (zero stock) — $3.90 ÷ 1.27 = £3.07. Our re-read could not confirm it (Newark 503). v2's £7.68 (LCSC own stock at 100+) was a small-quantity listing. Identity (TLF35584) assumed from the silkscreen, not read.",
+   "url": "https://www.findchips.com/search/TLF35584QVVS2",
+   "range": [
+    3.01,
+    3.24
+   ]
+  },
+  "DC-DC group": {
+   "unitGBP": 1.73877,
+   "note": "LMR33630 analogue rejected: TI's page shows LMR33630-Q1 only as VQFN-HR 12-pin; the board shows a QFN-16. Priced at the tool's class point (DC-DC converter QFN, catalogue p10–p90 of 52 AEC-Q parts) until the part is read.",
+   "url": "https://www.ti.com/product/LMR33630-Q1"
+  },
+  "U35, U36": {
+   "unitGBP": 0.57754,
+   "note": "ISO7741 analogue rejected: TI's page shows ISO7741QDWRQ1 as wide SOIC-16; the board shows a TSSOP-20. Priced at the tool's class point (interface transceiver, catalogue p10–p90 of 55 AEC-Q parts) until the part is read.",
+   "url": "https://www.ti.com/product/ISO7741-Q1"
+  }
+ },
+ "linesChecked": {
+  "J12 CUSTOMER": "776087-1 is a 23-way AMPSEAL (Master Electronics $5.72 at 1,000 = £4.50); our £5.52 is that part scaled × 1.4 for 34 ways — kept; the real 34-way part number is needed"
+ },
+ "burden": {
+  "value": 0.07,
+  "note": "The tool's sourced EMS material burden at 10,000 boards (cost-plus EMS practice: 10 % at 1k, 7 % at 10k, 5 % at 100k+ boards); the audit's 5 % applies at 100k+, v2's 6 % was unsourced."
+ },
+ "board": {
+  "method": "asp-shape",
+  "aspCnyPerM2": 995.31,
+  "rise": 0.145,
+  "anchorLayers": 5,
+  "class3ExtrasCnyPerM2": 105,
+  "note": "The tool's market basis (server/data/pcb-market-evidence.ts): Chaoying (超颖) 4–6-layer automotive ASP ¥995.31/m² (2024) × 1.145 (mid of the +12–17 % automotive PCB rise to Q1 2026) × the China table's 6-v-5-layer shape + ¥105/m² class-3 extras (PCBasic). v2 took the top of the rise band and no layer shape; the audit's £16 (range £12–22) was a judgement.",
+  "urls": [
+   "https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf",
+   "https://finance.sina.com.cn/tech/roll/2026-09-17/doc-inisayan9407392.shtml",
+   "https://www.pcbasic.com/standard_pcb.html"
+  ]
+ },
+ "assembly": {
+  "smtUsdPerJoint": 0.0012,
+  "smtNote": "JLCPCB Standard PCBA, more than 100,000 joints an order: $0.0012 per SMT joint (page updated 22 Oct 2026), paste and AOI inside",
+  "smtUrl": "https://jlcpcb.com/help/article/pcb-assembly-price",
+  "thtUsdPerJoint": 0.012,
+  "thtNote": "JLCPCB manual / wave THT joint at its top tier $0.012 (Huaqiu ¥0.10)",
+  "xrayUsdPerComponent": 0.16,
+  "xrayNote": "JLCPCB X-ray $0.16 per component at 1,001–3,000 — the tier a 1,000-board lot (2,000 BGAs) reaches (audit P6; v2 took the annual tier $0.082)",
+  "depanelGBP": 0.0563,
+  "depanelNote": "Huaqiu 拆板费 ¥0.50 a board",
+  "packGBP": 0.3041,
+  "packNote": "JLC ESD bag ¥1 + divider ¥0.002/cm² × 849 cm² = ¥2.70",
+  "markup": "listed-none",
+  "listed": [
+   "SMT assembly incl. paste and AOI (per joint)",
+   "Through-hole soldering (per joint)",
+   "X-ray (2 BGA)",
+   "Depanel",
+   "Packaging (ESD bag + divider)"
+  ],
+  "unquotedOverhead": 0.1,
+  "setupGBP": 0.14,
+  "markupNote": "List prices are selling prices — they carry the seller's margin, so no SG&A or profit is added on them (audit P2 / P5; v2 added 10 % + 8 %). Operations priced from rate-book time × rate carry 10 % overhead; £0.14 a board set-up / handling allowance (the audit's).",
+  "unchanged": "Conformal coating, press-fit, staking, masking, ICT, programming, functional / HV test and final inspection: no page-read volume price — rate-book time × rate, unverified"
+ },
+ "basedOnFile": "corrections-v2.json"
+}

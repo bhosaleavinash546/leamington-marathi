@@ -19,6 +19,10 @@ tool = json.load(open(sys.argv[1])); OUT = sys.argv[2]; os.makedirs(OUT, exist_o
 lines = json.load(open(os.path.join(H, 'manual-prices.json')))
 # v2 (cross-check, 25 Nov 2026): a corrections file re-prices lines, the board and assembly from page-read market prices.
 CORR = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else None
+if CORR and CORR.get('basedOnFile'):   # a later version keeps the earlier one's line corrections unless it replaces them
+    _base = json.load(open(os.path.join(H, CORR['basedOnFile'])))
+    CORR['lines'] = {**_base.get('lines', {}), **CORR['lines']}
+    CORR['inherited'] = sorted(set(_base.get('lines', {})) - set(json.load(open(sys.argv[3]))['lines']))
 V2 = CORR is not None
 if V2:
     for l in lines:
@@ -121,7 +125,19 @@ if V2:
     I['pack'] = dict(v=a['packGBP'], unit='£', cls='market', basis=a['packNote'] + ' — https://m.jlc.com/portal/server_guide_40512.html')
     inp('aspCny', b['aspCnyPerM2'], '¥ / m² sold', 'market', b['note'] + ' — ' + ' ; '.join(b['urls']))
     inp('class3Cny', b['class3ExtrasCnyPerM2'], '¥ / m²', 'market', 'PCBasic: 25 µm hole copper +¥25/m², 4-wire test +¥80/m² — https://www.pcbasic.com/standard_pcb.html')
+    if b.get('method') == 'asp-shape':   # v3: the tool's market basis — mid of the rise, the China table's layer shape
+        inp('aspRise', b['rise'], 'fraction', 'market', 'Mid of the +12–17 % automotive PCB price rise to Q1 2026 (Sina, 17 Sep 2026)')
+        inp('aspAnchor', b['anchorLayers'], 'layers', 'market', 'The 4–6-layer ASP is a 4 / 6 mix: anchored at 5 layers')
+    if CORR.get('burden'):
+        I['burden'] = dict(v=CORR['burden']['value'], unit='fraction', cls='tool', basis=CORR['burden']['note'])
+    m = a.get('markup')
+    if m == 'listed-none':
+        inp('unquotedOH', a['unquotedOverhead'], 'fraction', 'estimate', a['markupNote'])
+        inp('setupAllow', a['setupGBP'], '£ / board', 'estimate', 'Audit: set-up / handling allowance on the listed operations')
 v = {k: d['v'] for k, d in I.items()}
+VER = (CORR or {}).get('version', 'v2' if V2 else 'v1')
+ASP_SHAPE = V2 and CORR['board'].get('method') == 'asp-shape'
+LISTED = set(CORR['assembly'].get('listed', [])) if V2 and CORR['assembly'].get('markup') == 'listed-none' else None
 
 # ── Computation (Python mirror of the workbook formulas) ───────────────────────────────────────────────────────────
 C = {}
@@ -140,7 +156,12 @@ C['fabAuto'] = C['fabStd'] * v['autoFab']
 C['fab'] = C['fabStd'] + C['fabAuto']
 if V2:
     C['v1Fab'] = C['fab']
-    C['fab'] = area / 100 * (v['aspCny'] + v['class3Cny']) / v['fx']; C['fabStd'] = C['fab']; C['fabAuto'] = 0.0
+    if ASP_SHAPE:
+        C['aspShape'] = (v['base2L'] + v['layerAdd'] * (v['layers'] - 2)) / (v['base2L'] + v['layerAdd'] * (v['aspAnchor'] - 2))
+        C['fab'] = area / 100 * (v['aspCny'] * (1 + v['aspRise']) * C['aspShape'] + v['class3Cny']) / v['fx']
+    else:
+        C['fab'] = area / 100 * (v['aspCny'] + v['class3Cny']) / v['fx']
+    C['fabStd'] = C['fab']; C['fabAuto'] = 0.0
 op, tech = v['opRate'], v['techRate']
 A = {}
 A['SMT placement (both sides)'] = v['placements'] / v['cph'] * (v['smtHS'] + v['smtCrew'] * op)
@@ -178,6 +199,11 @@ C['conversion'] = sum(A.values())
 C['sgaGBP'] = C['conversion'] * v['sga']
 C['profitGBP'] = (C['conversion'] + C['sgaGBP']) * v['profit']
 C['conversionOHP'] = C['conversion'] + C['sgaGBP'] + C['profitGBP']
+if LISTED is not None:   # v3: no mark-up on list (selling) prices; rate-book operations carry 10 % overhead
+    C['listedGBP'] = sum(x for k, x in A.items() if k in LISTED)
+    C['unquotedGBP'] = sum(x for k, x in A.items() if k not in LISTED)
+    C['sgaGBP'] = C['unquotedGBP'] * v['unquotedOH']; C['profitGBP'] = 0.0; C['setupAllowGBP'] = v['setupAllow']
+    C['conversionOHP'] = C['listedGBP'] + C['unquotedGBP'] + C['sgaGBP'] + v['setupAllow']
 C['rework'] = v['fpyRework'] * (v['reworkMin'] / 60 * tech + (v['ictSec'] + v['fctSec']) / 3600 * (v['ict'] + tech))
 C['scrapGBP'] = v['scrap'] * (C['components'] + C['burdenGBP'] + C['fab'] + C['conversionOHP'])
 C['quality'] = C['rework'] + C['scrapGBP']
@@ -187,6 +213,7 @@ C['freight'] = (v['boardKg'] + v['packKg']) * v['seaKg']
 C['dutyGBP'] = (C['exWorks'] + C['freight']) * v['duty']
 C['delivered'] = C['exWorks'] + C['freight'] + C['dutyGBP']
 C['autoNrePerBoard'] = v['autoNre'] / C['programme']
+C['fullEconomic'] = C['exWorks'] + C['autoNrePerBoard']   # recurring + tooling + programme NRE, all over 60,000 boards
 
 # ── The tool's live figures ────────────────────────────────────────────────────────────────────────────────────────
 bd = tool['selectedCountryBreakdown']; b = bd['breakdown']
@@ -261,8 +288,13 @@ if V2:
     r0 = len(P) + 4
     wsP.cell(r0 - 1, 1, 'v2 — market price per m² sold (replaces the build-up above)').font = BOLD
     wsP.cell(r0, 1, 'Board area (m²)'); wsP.cell(r0, 3, '=C2/100').number_format = '0.000000'
-    wsP.cell(r0 + 1, 1, '6-layer automotive ASP + class-3 extras (¥/m²)'); wsP.cell(r0 + 1, 3, f"={ref['aspCny']}+{ref['class3Cny']}")
-    wsP.cell(r0 + 2, 1, 'Bare board, v2 (£)').font = BOLD; c = wsP.cell(r0 + 2, 3, f"=C{r0}*C{r0+1}/{ref['fx']}"); c.number_format = '£#,##0.0000'; c.font = BOLD
+    if ASP_SHAPE:
+        wsP.cell(r0 - 1, 1, f'{VER} — automotive ASP per m² sold, the tool\'s market basis (replaces the build-up above)').font = BOLD
+        wsP.cell(r0 + 1, 1, '¥/m²: ASP × (1 + rise) × layer shape + class-3 extras')
+        wsP.cell(r0 + 1, 3, f"={ref['aspCny']}*(1+{ref['aspRise']})*(({ref['base2L']}+{ref['layerAdd']}*({ref['layers']}-2))/({ref['base2L']}+{ref['layerAdd']}*({ref['aspAnchor']}-2)))+{ref['class3Cny']}")
+    else:
+        wsP.cell(r0 + 1, 1, '6-layer automotive ASP + class-3 extras (¥/m²)'); wsP.cell(r0 + 1, 3, f"={ref['aspCny']}+{ref['class3Cny']}")
+    wsP.cell(r0 + 2, 1, f'Bare board, {VER} (£)').font = BOLD; c = wsP.cell(r0 + 2, 3, f"=C{r0}*C{r0+1}/{ref['fx']}"); c.number_format = '£#,##0.0000'; c.font = BOLD
     fabCell = f'PCB!$C${r0 + 2}'
 
 # Assembly
@@ -298,20 +330,26 @@ for r, (lab, f) in enumerate(AF, 2):
 nA = len(AF) + 1
 rows = [('Conversion (direct)', f"=SUM(C2:C{nA})"), ('EMS SG&A / quality / engineering', f"=C{nA+1}*{ref['sga']}"),
         ('EMS profit', f"=(C{nA+1}+C{nA+2})*{ref['profit']}"), ('Assembly & test, EMS price', f"=SUM(C{nA+1}:C{nA+3})")]
+if LISTED is not None:   # v3: list (selling) prices carry no mark-up; rate-book operations + 10 % overhead; set-up allowance
+    lst = '+'.join(f"C{r}" for r, (lab, _) in enumerate(AF, 2) if lab in LISTED)
+    unq = '+'.join(f"C{r}" for r, (lab, _) in enumerate(AF, 2) if lab not in LISTED)
+    rows = [('Listed-price operations (seller\'s margin inside)', f"={lst}"), ('Rate-book operations', f"={unq}"),
+            ('Overhead on rate-book operations', f"=C{nA+2}*{ref['unquotedOH']}"), ('Set-up / handling allowance', f"={ref['setupAllow']}"),
+            ('Assembly & test, EMS price', f"=SUM(C{nA+1}:C{nA+4})")]
 for k, (lab, f) in enumerate(rows):
     r = nA + 1 + k; wsA.cell(r, 1, lab).font = BOLD; wsA.cell(r, 2, f[1:]); c = wsA.cell(r, 3, f); c.number_format = '£#,##0.0000'; c.font = BOLD
 widths(wsA, [40, 92, 14])
-convCell = f"Assembly!$C${nA + 4}"
+convCell = f"Assembly!$C${nA + len(rows)}"
 
 # Summary
 wsS = wb.create_sheet('Summary', 0)
 wsS['A1'] = 'EDU control board PCBA (Dana TM4 Gemini CTRL, PC-10465018-D) — manual should-cost' + (' v2 (cross-checked against market prices, 25 Nov 2026)' if V2 else '') + ' and the tool, per board'; wsS['A1'].font = Font(bold=True, size=13)
 wsS['A2'] = 'China build, 10,000 boards a year, 6-year programme (60,000 boards). £ per board. Manual = this workbook (live formulas); Tool = CostVision live run, 25 Nov 2026.'
 head(wsS, 4, ['Element', 'Manual £', 'Tool £', 'Tool − manual £', 'Manual basis'])
-S = [('Components', f"={compTotal}", T['components'], ('v2: 6 lines re-priced at the lowest page-read market price (maker / franchised / China distributor own stock); the rest catalogue analogues or engineering estimates (Components sheet)' if V2 else 'Named catalogue analogues at the parts bought a year; engineering estimates where none (Components sheet)')),
-     ('EMS material burden', f"=B5*{ref['burden']}", T['burden'], 'Manual 6 %; tool 7 % at 10,000 boards'),
-     ('Bare board', f"={fabCell}", T['fab'], ('v2: ¥/m² sold by an automotive 4–6-layer fab (Chaoying 2024, +12–17 % to 2026) + class-3 extras (PCB sheet)' if V2 else 'China PCB table on an 18×24 in 2-up panel + 30 % automotive grade (PCB sheet)')),
-     ('Assembly, test, coating (EMS price)', f"={convCell}", T['assembly'], ('v2: Chinese list prices per joint / component where read; test, coating, press-fit unchanged; + 10 % SG&A + 8 % profit (Assembly sheet)' if V2 else 'Time × China rate-book rates + 10 % SG&A + 8 % profit (Assembly sheet)')),
+S = [('Components', f"={compTotal}", T['components'], (('v3: AURIX re-verified (£13.40, market-derived, not a contract price); PMIC at the franchised volume tier; two mismatched analogues replaced by the tool\'s class point; ' if VER == 'v3' else 'v2: ') + 'lines re-priced at page-read market prices; the rest catalogue analogues or engineering estimates (Components sheet)' if V2 else 'Named catalogue analogues at the parts bought a year; engineering estimates where none (Components sheet)')),
+     ('EMS material burden', f"=B5*{ref['burden']}", T['burden'], f"Manual {v['burden'] * 100:.0f} %; tool 7 % at 10,000 boards"),
+     ('Bare board', f"={fabCell}", T['fab'], (('v3: the tool\'s market basis — Chaoying 4–6-layer automotive ASP × 1.145 × the 6-v-5-layer shape + class-3 extras (PCB sheet)') if ASP_SHAPE else 'v2: ¥/m² sold by an automotive 4–6-layer fab (Chaoying 2024, +12–17 % to 2026) + class-3 extras (PCB sheet)' if V2 else 'China PCB table on an 18×24 in 2-up panel + 30 % automotive grade (PCB sheet)')),
+     ('Assembly, test, coating (EMS price)', f"={convCell}", T['assembly'], ('v3: Chinese list prices per joint / component (no mark-up on them); rate-book operations + 10 % overhead; £0.14 set-up allowance (Assembly sheet)' if LISTED is not None else 'v2: Chinese list prices per joint / component where read; test, coating, press-fit unchanged; + 10 % SG&A + 8 % profit (Assembly sheet)' if V2 else 'Time × China rate-book rates + 10 % SG&A + 8 % profit (Assembly sheet)')),
      ('Rework, scrap (cost of quality)', f"={ref['fpyRework']}*({ref['reworkMin']}/60*{ref['techRate']}+({ref['ictSec']}+{ref['fctSec']})/3600*({ref['ict']}+{ref['techRate']}))+{ref['scrap']}*(B5+B6+B7+B8)", None, 'FPY 97 %, 0.3 % scrap'),
      ('Energy, packaging, cost of quality (tool)', None, T['other'], 'Tool only: energy, ESD pack, rework / scrap (manual carries these in assembly and the line above)'),
      ('One-off tooling and fixtures ÷ programme', f"={ref['nre']}/({ref['boards']}*{ref['years']})", None, '£31,400 over 60,000 boards (tool spreads its fixtures over the 10,000-board order inside assembly)'),

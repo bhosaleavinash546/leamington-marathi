@@ -152,6 +152,20 @@ async function main(): Promise<void> {
         await page.evaluate(([fid, val]) => { const f = document.getElementById(fid) as HTMLInputElement | HTMLSelectElement | null;
           if (f) { f.value = val; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); } }, [id, v]);
       }
+      // CV_BOM_EDITS = {"<refDes>": {"unitPriceGBP": n, "priceNote": "..."}}: the engineer's price on a BOM line, sent as a
+      // correction on the re-price request (what the screen's BOM edit sends). The server keeps it on the analysis
+      // (userCorrections) and re-applies it on every later re-price.
+      const BOM_EDITS = JSON.parse(process.env.CV_BOM_EDITS ?? '{}') as Record<string, { unitPriceGBP: number; priceNote?: string }>;
+      if (Object.keys(BOM_EDITS).length) {
+        await page.route('**/api/pcb/reprice', async route => {
+          const body = JSON.parse(route.request().postData() ?? '{}');
+          const lines = (body.analysis?.bom ?? []) as Array<Record<string, unknown>>;
+          body.analysis.userCorrections = lines.filter(l => BOM_EDITS[String(l.refDes)])
+            .map(l => ({ ...l, ...BOM_EDITS[String(l.refDes)], priceEdited: true }));
+          log(`BOM corrections sent: ${JSON.stringify(body.analysis.userCorrections.map((l: Record<string, unknown>) => [l.refDes, l.unitPriceGBP]))}`);
+          await route.continue({ postData: JSON.stringify(body) });
+        });
+      }
       const rp = page.waitForResponse(r => r.url().includes('/api/pcb/reprice'), { timeout: 60_000 });
       await page.click('#calc-btn', { timeout: 15_000 });
       const rr = await rp;

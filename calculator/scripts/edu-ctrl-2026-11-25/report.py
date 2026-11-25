@@ -19,7 +19,7 @@ man_rows = [('Components (parts list)', C['components'], T['components']),
             ('Bare board' + (' (market ¥/m², automotive inside)' if V2 else ', standard'), C['fabStd'], T['fabStd']),
             ('Bare board, automotive grade', C['fabAuto'], T['fabAuto']),
             ('Assembly, test and coating (EMS price)', C['conversionOHP'], T['assembly']),
-            ('Energy, packaging, cost of quality', C['quality'], T['other']),
+            ('Rework and scrap (manual) · energy, packaging, cost of quality (tool)', C['quality'], T['other']),
             ('One-off tooling ÷ programme (60,000)', C['nrePerBoard'], 0.0),
             ('Ex-works China', C['exWorks'], T['exWorks']),
             ('Freight to UK (sea)', C['freight'], T['freight']),
@@ -38,14 +38,15 @@ scale = max(T['exWorks'], C['exWorks']) * 1.02
 legend = ''.join(f"<span><i style='background:{c}'></i>{n}</span>" for c, n in zip(['#2f5d8a', '#6c9bc6', '#7a8f3a', '#b7c96b', '#c2703a', '#e3b28c', '#8c6bb1'], ['Components', 'Burden', 'Board', 'Board automotive', 'Assembly & test', 'Energy / pack / quality', 'One-off ÷ programme']))
 
 # bridge tool → manual
+V3 = V2 and CORR.get('version') == 'v3'
 bridge = [('Tool ex-works', T['exWorks'], True),
-          ('Components: 70 lines priced at automotive class ranges in the tool, at named analogues here', C['components'] - T['components'], False),
-          ('Material burden 7 % → 6 % on the lower parts total', C['burdenGBP'] - T['burden'], False),
-          (('Bare board: tool build-up (1-up, vias charged on top) → ¥/m² sold by an automotive 4–6-layer fab' if V2 else 'Bare board, standard: 1-up on 480×350 mm (51 %) → 2-up on 18×24 in (61 %)'), C['fabStd'] - T['fabStd'], False),
-          ('Automotive board grade: tool £15.16 microsection a panel + IATF + laminate + coupons → ' + ('inside the market ¥/m²' if V2 else '30 %'), C['fabAuto'] - T['fabAuto'], False),
-          ('Assembly & test: functional / HV test, programming, selective solder, press-fit, coating both sides, staking added; effective line rate', C['conversionOHP'] - T['assembly'], False),
+          ('Components: 70 lines priced at automotive class ranges in the tool, at named analogues here' + (' (the AURIX at £13.40 in both)' if V3 else ''), C['components'] - T['components'], False),
+          (f"Material burden 7 % → {I['burden'] * 100:.0f} % on the lower parts total", C['burdenGBP'] - T['burden'], False),
+          (('Bare board: the same market ¥/m² in both — the tool shows it as its table board …' if V3 else 'Bare board: tool build-up (1-up, vias charged on top) → ¥/m² sold by an automotive 4–6-layer fab' if V2 else 'Bare board, standard: 1-up on 480×350 mm (51 %) → 2-up on 18×24 in (61 %)'), C['fabStd'] - T['fabStd'], False),
+          (('… plus its market adjustment (the two lines net to zero)' if V3 else 'Automotive board grade: tool £15.16 microsection a panel + IATF + laminate + coupons → ' + ('inside the market ¥/m²' if V2 else '30 %')), C['fabAuto'] - T['fabAuto'], False),
+          ('Assembly & test: functional / HV test, programming, press-fit, the second coated face and staking are in the manual, not the tool' + ('; Chinese list prices per joint' if V3 else '; effective line rate'), C['conversionOHP'] - T['assembly'], False),
           ('Energy, packaging, cost of quality: tool rework rate capped at 30 % → FPY 97 %', C['quality'] - T['other'], False),
-          ('One-off tooling and fixtures over 60,000 boards (tool: fixtures over the 10,000 order, inside assembly)', C['nrePerBoard'], False),
+          ('One-off tooling and fixtures over 60,000 boards (' + ('the tool spreads its own fixtures over the programme too, inside assembly' if V3 else 'tool: fixtures over the 10,000 order, inside assembly') + ')', C['nrePerBoard'], False),
           ('Manual ex-works', C['exWorks'], True)]
 chk = T['exWorks'] + sum(x[1] for x in bridge[1:-1])
 assert abs(chk - C['exWorks']) < 0.02, (chk, C['exWorks'])
@@ -72,7 +73,17 @@ pcb = [('Board area', f"{I['w']} × {I['h']} mm = {area:.4f} dm² (given)", None
        ('Bare board, automotive', '', C['fab'])]
 if V2:
     m2 = area / 100; bd = CORR['board']
-    pcb = [('Board area', f"{I['w']} × {I['h']} mm = {m2:.6f} m² (given)", None),
+    if 'aspShape' in C:
+        pm2 = I['aspCny'] * (1 + I['aspRise']) * C['aspShape'] + I['class3Cny']
+        pcb = [('Board area', f"{I['w']} × {I['h']} mm = {m2:.6f} m² (given)", None),
+               ('Automotive 4–6-layer ASP, 2024', f"¥{I['aspCny']:,}/m² sold (Chaoying prospectus; 68.6 % automotive)", None),
+               ('Rise to 2026', f"× {1 + I['aspRise']:.3f} (mid of +12–17 %)", None),
+               ('6 v 5 layers', f"× {C['aspShape']:.4f} (the China table's layer shape)", None),
+               ('Class-3 extras', f"+ ¥{I['class3Cny']}/m² (25 µm hole copper, 4-wire test)", None),
+               (f'Bare board, {CORR.get("version", "v2")}', f"{m2:.6f} m² × ¥{pm2:,.1f}/m² ÷ {FX} — the same basis the tool now uses", C['fab']),
+               ('v1 build-up, replaced', f"China PCB table + 4,500 vias charged on top (£8.54) + 30 % automotive = £{C['v1Fab']:.2f}", None)]
+    else:
+     pcb = [('Board area', f"{I['w']} × {I['h']} mm = {m2:.6f} m² (given)", None),
            ('Automotive 4–6-layer ASP, 2026', f"¥{I['aspCny']:,}/m² sold (Chaoying 2024 ¥995.31 × 1.12–1.17; top of band for 6 layers; range ¥{bd['aspRange'][0]:,}–{bd['aspRange'][1]:,})", None),
            ('Class-3 extras', f"+¥{I['class3Cny']}/m² (25 µm hole copper, 4-wire test)", None),
            ('Bare board, v2', f"{m2:.6f} m² × ¥{I['aspCny'] + I['class3Cny']:,}/m² ÷ {FX}", C['fab']),
@@ -103,9 +114,15 @@ AF = {'SMT placement (both sides)': f"{I['placements']:,} ÷ {I['cph']:,}/h × (
       'Packaging (ESD tray, carton)': 'engineering'}
 AF.update(AF2)
 asm = ''.join(f"<tr><td>{e(k)}</td><td class=sm>{e(AF[k] + ('' if k in AF2 or not V2 else ' — unchanged, no market price read'))}</td><td class=n>{gbp(v, 3)}</td></tr>" for k, v in C['assemblyItems'].items())
-asm += f"<tr class=tot><td>Conversion, direct</td><td></td><td class=n>{gbp(C['conversion'], 3)}</td></tr>"
-asm += f"<tr><td>EMS SG&amp;A / engineering / quality</td><td class=sm>{I['sga'] * 100:.0f} % of conversion</td><td class=n>{gbp(C['sgaGBP'], 3)}</td></tr>"
-asm += f"<tr><td>EMS profit</td><td class=sm>{I['profit'] * 100:.0f} % of conversion + SG&amp;A</td><td class=n>{gbp(C['profitGBP'], 3)}</td></tr>"
+if 'listedGBP' in C:   # v3: no mark-up on list (selling) prices
+    asm += f"<tr class=tot><td>Listed-price operations (the seller's margin is inside)</td><td></td><td class=n>{gbp(C['listedGBP'], 3)}</td></tr>"
+    asm += f"<tr class=tot><td>Rate-book operations</td><td></td><td class=n>{gbp(C['unquotedGBP'], 3)}</td></tr>"
+    asm += f"<tr><td>Overhead on rate-book operations</td><td class=sm>{I['unquotedOH'] * 100:.0f} % of {gbp(C['unquotedGBP'])}</td><td class=n>{gbp(C['sgaGBP'], 3)}</td></tr>"
+    asm += f"<tr><td>Set-up / handling allowance</td><td class=sm>the audit's</td><td class=n>{gbp(C['setupAllowGBP'], 3)}</td></tr>"
+else:
+    asm += f"<tr class=tot><td>Conversion, direct</td><td></td><td class=n>{gbp(C['conversion'], 3)}</td></tr>"
+    asm += f"<tr><td>EMS SG&amp;A / engineering / quality</td><td class=sm>{I['sga'] * 100:.0f} % of conversion</td><td class=n>{gbp(C['sgaGBP'], 3)}</td></tr>"
+    asm += f"<tr><td>EMS profit</td><td class=sm>{I['profit'] * 100:.0f} % of conversion + SG&amp;A</td><td class=n>{gbp(C['profitGBP'], 3)}</td></tr>"
 asm += f"<tr class=tot><td>Assembly, test and coating — EMS price</td><td></td><td class=n>{gbp(C['conversionOHP'], 3)}</td></tr>"
 toolasm = ''.join(f"<tr><td>{e(x['item'])}</td><td class=sm>{e(x['formula'][:200])}</td><td class=n>{gbp(x['gbp'])}</td></tr>" for x in sb['basis'] if x['item'] in ('SMT placement', 'Through-hole and hand-soldered joints', 'AOI', 'X-ray (BGA / CSP)', 'In-circuit test', 'Conformal coating', 'Energy', 'ESD packaging', 'Cost of quality', 'Automotive assembly grade'))
 
@@ -118,6 +135,16 @@ app = ''.join(f"<tr><td>{e(r['refDes'])}</td><td>{e(r['description'][:70])}</td>
 
 inputs = ''.join(f"<tr><td>{e(k)}</td><td class=n>{e(d['v'])}</td><td>{e(d['unit'])}</td><td><span class='tag {e(d['cls']).replace(' ', '')}'>{e(d['cls'])}</span></td><td class=sm>{e(d['basis'])}</td></tr>" for k, d in M['inputs'].items())
 
+THREE = ', for three reasons shown in §6: it prices 70 of 71 parts lines at the top of an automotive class range because only the AURIX was read off a chip, it charges an IPC class-3 microsection on every board, and it leaves out functional test, programming, press-fit and the second coated face — which the manual adds back.'
+if V3: THREE = ' (§6): after its fixes the bare board is the same in both; the difference is the 70 parts lines no photo identifies, which the tool prices inside their catalogue class ranges and the manual at named typical parts, less the operations the tool still leaves out (functional / HV test, programming, press-fit, second coated face). A BOM file closes most of it.'
+TOOLFIX = ''
+OPENOLD = ''
+OPENLIST = '<li><b>Open (not changed):</b> panel list stops at 480 × 350 mm; class-3 microsection charged per panel, so per board on a large board; conformal coating one face only; no functional test, programming, press-fit or selective-solder line; a description containing "test points" or "probe pads" makes a part not fitted (£0); "CAN common-mode choke" falls into the shield-can (mechanical) class; one-off fixtures spread over the annual order, not the programme; the should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
+if V2 and CORR.get('version') == 'v3':
+    TOOLFIX = ('<li><b>Fixed after the audit (packages A and C, 25 Nov 2026):</b> fitted test points priced; class collisions (test-point words, "CAN" choke, mm bodies, group labels, logic, shunts); the 18 × 24 in panel — this board 2-up at 61 %; coupon sampling per panel or per lot; lot size and programme life as inputs; a family price in another package refused; '
+               'the ASIL is the engineer\'s; drilling inside the per-area price; a China automotive board at the market ASP per m²; 34 AEC-Q class ranges from the catalogue\'s own prices. This board: £284.76 → £241.54 delivered (bare board £44.25 → £14.29); with the lot, programme and the AURIX at £13.40: '
+               f'{gbp(T["delivered"])} delivered, {gbp(T["exWorks"])} ex-works.</li>')
+    OPENLIST = '<li><b>Still open in the tool (package B / D, not approved yet):</b> functional / HV test, programming, press-fit, second coated face and second reflow as operations; full-economic and EMS-invoice lines with a customer-supplied flag; delivery terms; an FPY input (the rework rate is placements × 800 dppm, capped at 30 %); the band\'s basis; fab spec inputs. The should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li>'
 css = """
 @page{size:A4;margin:14mm 12mm 16mm}
 :root{--ink:#1c2430;--mute:#5b6675;--line:#d7dde5;--band:#eef2f7;--acc:#1f3a5f}
@@ -134,8 +161,11 @@ tr.tot td{font-weight:700;background:var(--band)} .ccy{color:var(--mute);font-si
 .pb{break-before:page} ul{margin:4px 0 8px 18px;padding:0} li{margin:2px 0}
 """
 gap = T['exWorks'] - C['exWorks']
+_aur = next((l for l in L if l['refDes'] == 'AURIX pair'), None)
+AUR = _aur['lineGBP'] if _aur else 0.0
+AURNOTE = 'the same engineer\'s price, £13.40 each, in the tool and the manual' if abs((_aur or {}).get('unitGBP', 0) - 13.40) < 1e-6 else ('China distributor own stock' if V2 else 'tool and manual price them alike: CostVision catalogue, TC387 family')
 v2sec = ''; rec2 = ''
-if V2 and V1:
+if V2 and V1 and CORR.get('version', 'v2') == 'v2':
     c1 = V1['computed']; rows = []
     for l in L:
         if 'v1UnitGBP' in l:
@@ -189,20 +219,72 @@ if V2 and V1:
 <h3>Sources of every change</h3>
 <table><tr><th>Item</th><th>What was read, and where</th></tr>{ev}</table>"""
     rec2 = f"<p><b>Cross-checked (v2).</b> After the engineers' review every block was re-checked against prices read on a page (§0). The manual should-cost is now <b>{gbp(C['exWorks'])} ex-works</b> ({cny(C['exWorks'])}), down from {gbp(c1['exWorks'])} in v1, with a sourced range of {gbp(C['exWorks'] + lo)}–{gbp(C['exWorks'] + hi)}. The largest correction is the AURIX (£22.64 → £8.94 each, China distributor stock); the board (−{gbp(c1['fab'] - C['fab'])}) and assembly (−{gbp(c1['conversionOHP'] - C['conversionOHP'])}) follow Chinese market prices. Three chips came out dearer than v1. If the price paid is still below this, the likely reasons are listed in §0 — directed-buy MCUs above all — and need the price paid and its terms to settle.</p>"
+
+VER = CORR.get('version', 'v2') if V2 else 'v1'
+if V2 and V1 and VER == 'v3':
+    c1 = V1['computed']; prev = {l['refDes']: l for l in V1['lines']}
+    rows = [(l['refDes'], l['description'][:60], l['qty'], prev[l['refDes']]['unitGBP'], l['unitGBP'], l['lineGBP'] - prev[l['refDes']]['lineGBP'], l.get('priceNote', ''), l.get('priceSource', ''))
+            for l in L if l['refDes'] in prev and abs(l['unitGBP'] - prev[l['refDes']]['unitGBP']) > 1e-6]
+    br = [('Manual v2, ex-works', c1['exWorks'], True)]
+    br += [(f"{r[0]} — {r[1]}: {r[2]} × £{r[3]:.2f} → £{r[4]:.2f}", r[5], False) for r in rows]
+    br += [(f"EMS material burden {c1['burdenGBP'] / c1['components'] * 100:.0f} % → {I['burden'] * 100:.0f} % (the tool's sourced rate at 10,000 boards)", C['burdenGBP'] - c1['burdenGBP'], False),
+           ('Bare board: top of the price-rise band, no layer shape → the tool\'s market basis (mid of the rise, 6-v-5-layer shape)', C['fab'] - c1['fab'], False),
+           ('Assembly: no mark-up on list (selling) prices; rate-book operations + 10 %; X-ray at the lot tier; £0.14 set-up', C['conversionOHP'] - c1['conversionOHP'], False),
+           ('Rework and scrap (scrap follows the value)', C['quality'] - c1['quality'], False),
+           ('Manual v3, ex-works (recurring + tooling over 60,000)', C['exWorks'], True)]
+    assert abs(c1['exWorks'] + sum(x[1] for x in br[1:-1]) - C['exWorks']) < 0.01
+    b12 = ''.join(f"<tr class='{'tot' if t else ''}'><td>{e(lab)}</td><td class=n>{gbp(v)}</td></tr>" for lab, v, t in br)
+    a1 = c1['assemblyItems']; a2 = C['assemblyItems']
+    at = ''.join(f"<tr><td>{e(k)}</td><td class=n>{gbp(a1.get(k, 0), 3)}</td><td class=n>{gbp(x, 3)}</td></tr>" for k, x in a2.items())
+    at += f"<tr><td>v2: 10 % SG&amp;A + 8 % profit on everything</td><td class=n>{gbp(c1['sgaGBP'] + c1['profitGBP'], 3)}</td><td class=n>—</td></tr>"
+    at += f"<tr><td>v3: 10 % overhead on rate-book operations only ({gbp(C['unquotedGBP'])}) + set-up allowance</td><td class=n>—</td><td class=n>{gbp(C['sgaGBP'] + C['setupAllowGBP'], 3)}</td></tr>"
+    at += f"<tr class=tot><td>Assembly, test and coating — EMS price</td><td class=n>{gbp(c1['conversionOHP'])}</td><td class=n>{gbp(C['conversionOHP'])}</td></tr>"
+    ev = ''.join(f"<tr><td>{e(r[0])}</td><td class=sm>{e(r[6])}<br>{e(r[7])}</td></tr>" for r in rows)
+    ev += f"<tr><td>Material burden</td><td class=sm>{e(CORR['burden']['note'])}</td></tr>"
+    ev += f"<tr><td>Bare board</td><td class=sm>{e(CORR['board']['note'])}<br>{e(' ; '.join(CORR['board']['urls']))}</td></tr>"
+    ev += f"<tr><td>Assembly</td><td class=sm>{e(CORR['assembly']['markupNote'])} {e(CORR['assembly']['xrayNote'])}.</td></tr>"
+    lo = hi = 0.0
+    for l in L:
+        c = CORR['lines'].get(l['refDes'])
+        if c and c.get('range'):
+            lo += l['qty'] * (min(c['range']) - l['unitGBP']) * (1 + I['burden']); hi += l['qty'] * (max(c['range']) - l['unitGBP']) * (1 + I['burden'])
+    full = C['exWorks'] + C['autoNrePerBoard']
+    westGBP = sum(l['lineGBP'] for l in L if l['priceKind'] not in ('market (page-read)', 'engineering estimate')); engGBP = sum(l['lineGBP'] for l in L if l['priceKind'] == 'engineering estimate')
+    inv = C['exWorks'] - C['nrePerBoard'] - sum(l['lineGBP'] for l in L if l['refDes'] in ('AURIX pair', 'U39, U40')) * (1 + I['burden'])
+    v2sec = f"""
+<h2>0. What changed in v3 (25 Nov 2026)</h2>
+<p>v3 takes the corrections accepted from the independent audit (the audit review, 53 lines) and the AURIX TC387QP re-verified on the live pages. The rule is unchanged: a price read on a page, the source named; a figure no page gives is labelled.</p>
+<table><tr><th>Step, v2 → v3</th><th>£ a board</th></tr>{b12}</table>
+<h3>The AURIX TC387QP, re-verified</h3>
+<table><tr><th>Source (read 25 Nov 2026)</th><th>Price</th><th>What it is</th></tr>
+<tr><td>Infineon's own shop = Digi-Key (TC387QP160F300SAEKXUMA2)</td><td class=n>$31.56 at 1,000 (£24.85)</td><td>List price of one reel — the ceiling, the largest break published</td></tr>
+<tr><td>The tool's catalogue (before)</td><td class=n>£22.64 at 20,000</td><td>Western listings derived along the franchise curve — 9 % under the one-reel list. Too high</td></tr>
+<tr><td>The audit</td><td class=n>$21.04 at 1,000 (£16.56)</td><td>Not reproduced by its own account — the top of the range</td></tr>
+<tr><td>LCSC own stock</td><td class=n>$14.82 at 100+ (£11.67)</td><td>China distributor stock, no authorisation or date code shown</td></tr>
+<tr><td>szlcsc own stock (v2)</td><td class=n>¥79.38 ex-VAT (£8.94)</td><td>The same stock — a market floor, not a traceable Tier-1 channel</td></tr>
+<tr><td>Infineon, Q2 FY26 analyst call (6 May 2026)</td><td>—</td><td>Automotive annual pricing: "low single-digit price declines"; the 2026 price rises name power parts, not MCUs</td></tr>
+<tr class=tot><td>v3: market-derived estimate for a 20,000-a-year buyer</td><td class=n>$17 = £13.40 (range £11.81–16.54)</td><td>Not a contract price — Dana's own price replaces it</td></tr></table>
+<h3>Assembly and test, v2 → v3</h3>
+<table><tr><th>Item</th><th>v2 £</th><th>v3 £</th></tr>{at}</table>
+<p><b>Range.</b> AURIX £11.81–16.54 and the PMIC's franchised tiers £3.01–3.24 give <b>{gbp(C['exWorks'] + lo)}–{gbp(C['exWorks'] + hi)} ex-works</b>; the bare board's band (¥1,115–1,400/m² before the layer shape) adds about ±£1.5. <b>Full-economic</b> (with the £15,500 programme NRE over 60,000 boards): {gbp(full)}. <b>EMS invoice if Dana supplies the AURIX and the PMIC</b> (no material burden on them, no tooling): about {gbp(inv)}.</p>
+<p><b>Still open:</b> {gbp(westGBP)} of lines priced from Western distributor listings, {gbp(engGBP)} engineering estimates, and test / coating ({gbp(a2['ICT'] + a2['Programming (2 MCU + EEPROM)'] + a2['Functional + HV insulation test'] + a2['Conformal coating (both sides)'] + a2['Coating masking + UV inspection'])}) on rate-book time × rate. The BOM, Dana's AURIX / PMIC contract prices and a fab quote close them.</p>
+<h3>Sources of every change</h3>
+<table><tr><th>Item</th><th>What was read, and where</th></tr>{ev}</table>"""
+    rec2 = f"<p><b>Updated (v3).</b> The audit's accepted corrections and the AURIX re-verified on the live pages (£13.40 a chip, market-derived — not a contract price) give <b>{gbp(C['exWorks'])} ex-works</b> ({cny(C['exWorks'])}), range {gbp(C['exWorks'] + lo)}–{gbp(C['exWorks'] + hi)}; full-economic {gbp(full)}; delivered UK {gbp(C['delivered'])}. The tool, after its own fixes and with the AURIX entered as the engineer's price, gives {gbp(T['exWorks'])} ex-works — the gap is the 70 parts no photo identifies, which the tool prices inside their class ranges.</p>"
 doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control board should-cost</title><style>{css}</style></head><body>
 <div class=cover>
 <div class=sm>CostVision · PCB Image to BOM should-cost · 25 Nov 2026</div>
-<h1>EDU control board PCBA — should-cost report{' (v2, cross-checked)' if V2 else ''}</h1>
+<h1>EDU control board PCBA — should-cost report{f' ({VER})' if V2 else ''}</h1>
 <div>Dana TM4 Gemini CTRL board, PC-10465018-D (read off the photos) · 395 × 215 mm · 552 g · conformal coating on the entire board</div>
 <div>Build in <b>China</b> · <b>10,000 boards a year</b> · <b>6-year programme</b> (60,000 boards) · £ per board, ¥ at {FX} CNY per £ (CostVision PCB table)</div>
 <div class=kpis>
-<div class=kpi><span>Manual should-cost{' v2' if V2 else ''}, ex-works China</span><b>{gbp(C['exWorks'])}</b><span>{cny(C['exWorks'])}</span></div>
-<div class=kpi><span>Manual{' v2' if V2 else ''}, delivered UK duty paid</span><b>{gbp(C['delivered'])}</b><span>{cny(C['delivered'])}</span></div>
+<div class=kpi><span>Manual should-cost{f' {VER}' if V2 else ''}, ex-works China</span><b>{gbp(C['exWorks'])}</b><span>{cny(C['exWorks'])}</span></div>
+<div class=kpi><span>Manual{f' {VER}' if V2 else ''}, delivered UK duty paid</span><b>{gbp(C['delivered'])}</b><span>{cny(C['delivered'])}</span></div>
 <div class=kpi><span>Tool (live run), ex-works China</span><b>{gbp(T['exWorks'])}</b><span>{cny(T['exWorks'])}</span></div>
 <div class=kpi><span>Tool, delivered UK duty paid</span><b>{gbp(T['delivered'])}</b><span>{cny(T['delivered'])} · tool range £225.25–£413.70</span></div>
 </div>
 {rec2}
-<p><b>{'Against the tool' if V2 else 'Recommendation'}.</b> Use the manual figure, <b>{gbp(C['exWorks'])} ex-works</b>, as the should-cost target for a supplier discussion and the tool's {gbp(T['exWorks'])} as the upper bound until the board is confirmed. The tool is {gbp(gap)} ({gap / C['exWorks'] * 100:.0f} %) higher, for three reasons shown in §6: it prices 70 of 71 parts lines at the top of an automotive class range because only the AURIX was read off a chip, it charges an IPC class-3 microsection on every board, and it leaves out functional test, programming, press-fit and the second coated face — which the manual adds back.</p>
+<p><b>{'Against the tool' if V2 else 'Recommendation'}.</b> Use the manual figure, <b>{gbp(C['exWorks'])} ex-works</b>, as the should-cost target for a supplier discussion and the tool's {gbp(T['exWorks'])} as the upper bound until the board is confirmed. The tool is {gbp(gap)} ({gap / C['exWorks'] * 100:.0f} %) higher{THREE}</p>
 <p class=note><b>What this rests on.</b> Eight photos and the size you gave. One part number was read off a chip (2 × Infineon AURIX SAK-TC387QP-160F300S AE). Every other identity is a description and a package read from the photos; layer count (6) and via count (4,500) cannot be seen and are estimates. No BOM, drawing, Gerber or quote was supplied. Accuracy against a price paid is not measured.</p>
 </div>
 
@@ -225,7 +307,7 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <table><tr><th>Price basis</th><th>Lines</th><th>Parts</th><th>£ a board</th><th>Share</th></tr>{kindrows}</table>
 <h3>The 25 largest lines (manual)</h3>
 <table><tr><th>RefDes</th><th>Description (as read)</th><th>Qty</th><th>Unit £</th><th>Line £</th><th>Price basis</th></tr>{comp}</table>
-<p class=sm>The two AURIX MCUs are {gbp(45.29)} — {45.29 / C['components'] * 100:.0f} % of the parts. Tool and manual price them alike (CostVision catalogue, TC387 family). The full list, manual against tool, is in the appendix and the workbook.</p>
+<p class=sm>The two AURIX MCUs are {gbp(AUR)} — {AUR / C['components'] * 100:.0f} % of the parts ({AURNOTE}). The full list, manual against tool, is in the appendix and the workbook.</p>
 
 <h2 class=pb>4. Bare board — {gbp(C['fab'])} a board</h2>
 <table><tr><th>Item</th><th>Build-up (manual)</th><th>£</th></tr>{pcbt}</table>
@@ -246,17 +328,19 @@ doc = f"""<!doctype html><html><head><meta charset=utf-8><title>EDU control boar
 <table><tr><th>Step</th><th>£ a board</th></tr>{br}</table>
 <p>The bridge closes to the penny (checked in the script that wrote this page). The component step is the largest: the tool prices every line without a part number from its automotive class range (median-to-upper end for "unread" ICs), where the manual names a typical automotive part for the function and takes its catalogue price at the parts bought a year. Neither is a quote: the manual is the cheaper reading of the same photos; a BOM file would settle it.</p>
 
-<h2>7. What the live run found in the tool</h2>
+<h2>7. What the live runs found in the tool</h2>
 <ul>
+{TOOLFIX}
 <li><b>Fixed in this run:</b> a typed board size larger than 600 cm² was treated as an estimate and clamped to 332 × 181 mm. Measured / typed sizes are now kept up to 4,800 cm² (a production panel); estimated sizes are still bounded at 600 cm². With the fix the tool went £278.89 → £285.13 delivered. Test: <code>tests/pcb-measured-size-large-board.test.ts</code>.</li>
 <li><b>Added in this run:</b> the PCB form had no board-weight field, so a weight could not be typed and freight used area × layers × 28 g/dm² = 1.43 kg. A "Board Weight, populated (g)" field now carries the weighed board to the costing (user evidence, kept by the evidence gate); 552 g took freight from £0.57 to £0.22 and the delivered figure to £284.76. Test: <code>tests/pcb-board-weight.test.ts</code>.</li>
-<li><b>Open (not changed):</b> panel list stops at 480 × 350 mm; class-3 microsection charged per panel, so per board on a large board; conformal coating one face only; no functional test, programming, press-fit or selective-solder line; a description containing "test points" or "probe pads" makes a part not fitted (£0); "CAN common-mode choke" falls into the shield-can (mechanical) class; one-off fixtures spread over the annual order, not the programme; the should-cost PDF via Calculate embeds full-resolution photos (42 MB).</li></ul>
+{OPENOLD}{OPENLIST}</ul>
 
 <h2>8. To confirm before using the figure</h2>
 <ul><li><b>BOM file</b> (or a picture of it) — the largest open item: it replaces 70 estimated identities.</li>
 <li>Close-ups of chip markings on the PMICs (U39/U40), isolation amplifiers, gate drivers and DC-DC controllers.</li>
 <li>Layer count, via count and laminate (Gerber / drill files or the fab drawing).</li>
-<li>The ASIL level (photos suggest ASIL-D; the tool costs ASIL-B until a safety PMIC is named by part number).</li>
+<li>The ASIL level from the safety concept (photos suggest ASIL-D; the tool now costs nothing ASIL-dependent until the engineer sets it).</li>
+<li>Dana's contract prices for the AURIX TC387QP and the safety PMIC — the two largest lines.</li>
 <li>The test strategy (ICT + FCT + HV insulation) and who owns the fixtures; coating material and keep-out areas.</li></ul>
 
 <h2 class=pb>Appendix A — every line, manual against tool</h2>
