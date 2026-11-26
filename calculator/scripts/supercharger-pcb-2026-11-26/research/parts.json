@@ -1,0 +1,313 @@
+{
+  "readOn": "2026-11-26",
+  "board": "Valeo 48 V electric supercharger (eSC) control board, marked VALEO B112235-B, laminate dynamic KM1-V0 94V-0; 100k boards/yr, built in China",
+  "notes": [
+    "Prices are those read on the page on 2026-11-26 (Digi-Key UK pages, GBP ex VAT, unless stated). No szlcsc / LCSC reel price could be read: the LCSC and JLCPCB product pages render prices by script (no ladder in the fetched page) and a direct LCSC API call was not permitted in this session.",
+    "Firecrawl was out of credits; research used web search + page fetches.",
+    "Correction applied (coordinator, close-up photo): SC667506WKK / 1N00R / ZRAA2635A are three lines on ONE NXP chip — part number / mask set / trace-lot code. ZRAA2635A is not a part."
+  ],
+  "items": [
+    {
+      "item": "NXP SC667506WKK (main MCU; second line 1N00R, third line ZRAA2635A)",
+      "identity": "NXP customer-specific ('SC' = custom build) S12 MagniV S12ZVMC256 — 16-bit S12Z motor-control MCU with integrated 6-channel MOSFET gate-driver unit (GDU), CAN PHY, 256 KB flash. Base orderable device: S912ZVMC25F1WKK. Evidence: (1) mask set 1N00R — NXP's errata S12ZVMC256_1N00R 'applies to mask 1N00R for these products: S912ZVMC256'; (2) suffix W = -40 to +150 °C and KK = 80 LQFP-EP, the same suffix as the standard S912ZVMC25F1WKK; (3) NXP's S12ZVM fact sheet lists 'Superchargers' as a target application.",
+      "package": "80-pin LQFP with exposed pad, 12 × 12 mm body (≈14 × 14 mm over the leads, 20 pins a side). NOT LQFP-100: the S12ZVMC256 is offered only in 80 LQFP-EP (NXP fact sheet). If the chip really has 25 pins a side, re-count — the mask set says S12ZVMC256, which has no 100-pin package.",
+      "findings": [
+        {
+          "price": null,
+          "currency": null,
+          "qty": null,
+          "source": "NXP mask-set errata S12ZVMC256_1N00R, Rev. 1 July 2016",
+          "url": "https://www.nxp.com/docs/en/errata/S12ZVMC256_1N00R.pdf",
+          "quote": "Mask Set Errata for Mask 1N00R. This report applies to mask 1N00R for these products: • S912ZVMC256",
+          "kind": "secondary"
+        },
+        {
+          "price": null,
+          "currency": null,
+          "qty": null,
+          "source": "NXP S12ZVM fact sheet (S12ZVMFS, Sep 2016) — orderable part table",
+          "url": "https://www.nxp.com/docs/en/fact-sheet/S12ZVMFS.pdf",
+          "quote": "S912ZVMC25F1WKK 256 KB -40 °C to 150 °C 80 LQFP-EP ... Target Applications ... Superchargers",
+          "kind": "secondary"
+        },
+        {
+          "price": null,
+          "currency": null,
+          "qty": null,
+          "source": "Freescale automotive MCU part-number guide (16-bit decoder)",
+          "url": "https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/8bit/22691/1/MCU_AUTOPART_NUMBER_GUIDE.pdf",
+          "quote": "SC = custom build ... Temperature Options ... W = -40◦C to +150◦C",
+          "kind": "secondary"
+        },
+        {
+          "price": 8.72738,
+          "currency": "GBP",
+          "qty": 480,
+          "source": "Digi-Key UK, S912ZVMC25F1WKK (tray), largest break shown",
+          "url": "https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
+          "quote": "S12Z S12 MagniV Microcontroller IC 16-Bit 50MHz 256KB (256K x 8) FLASH 80-TQFP-EP (12x12) ... Operating Temperature -40°C ~ 150°C (TA) ... 480 £8.72738 £4,189.14",
+          "kind": "distributor"
+        },
+        {
+          "price": 8.74,
+          "currency": "USD",
+          "qty": 1000,
+          "source": "Future Electronics, S912ZVMC25F1WKKR (reel) — figure from the search engine's extract of the page; the page itself refused a direct fetch (HTTP 403), so treat as unverified",
+          "url": "https://www.futureelectronics.com/p/semiconductors--microcontrollers--16-bit-general-purpose/s912zvmc25f1wkkr-nxp-4090488",
+          "quote": "$8.74 per unit at 1,000+ ... Factory Lead Time: 16 Weeks (search-result extract)",
+          "kind": "secondary"
+        }
+      ],
+      "notFound": "No listing or price for SC667506WKK itself (customer part, not sold). No 10k+ distributor break found; no LCSC/szlcsc price readable (LCSC C1344916 = S912ZVMC25F1MKK, JLCPCB C1345291 = S912ZVMC25F1WKK, both pages showed no price ladder). A 100k/yr Valeo contract price will be well below the £8.73 (480-pc tray) distributor figure, but no source for it was found."
+    },
+    {
+      "item": "ZRAA2635A",
+      "identity": "Not a part: third marking line (trace / lot code) on the NXP SC667506WKK MCU, per the coordinator's close-up photo. Searches for it as a part number returned nothing.",
+      "package": "n/a (same package as the MCU)",
+      "findings": [],
+      "notFound": "No part exists under this number; it is not costed."
+    },
+    {
+      "item": "TDK/EPCOS SMD transformer marked 'A2363 26110C' (10-pin, ~10 × 8 mm)",
+      "identity": "TDK/EPCOS SMD transformer ordering code B78xxxA2363A003 (exact family not found). TDK's SMD-transformer datasheets state the marking is the MIDDLE BLOCK of the ordering code plus a date / plant code, so 'A2363' = B78xxxA2363A003 and '26110C' is most likely the date + production-place code. The code is not in any distributor or TDK public listing found → most likely a customer-specific (Valeo) design. Priced by proxy: nearest catalogue AEC-Q200 TDK SMD transformers.",
+      "package": "SMD, ~10 × 8 mm, 10 pins (as observed)",
+      "findings": [
+        {
+          "price": null,
+          "currency": null,
+          "qty": null,
+          "source": "TDK datasheet B78308*A003 (E13 EMHV), May 2022 — marking rule",
+          "url": "https://www.tdk-electronics.tdk.com/inf/85/ds/b78308a.pdf",
+          "quote": "Marking: Product brand, middle block of ordering code, date code, pin 1 marker, production place identification code",
+          "kind": "secondary"
+        },
+        {
+          "price": 4.24294,
+          "currency": "EUR",
+          "qty": 1960,
+          "source": "Digi-Key Finland, PROXY B78307A2338A003 (TDK E10 EM flyback, AEC-Q200, 11.70 × 9.33 mm, 2 µH) — same ordering-code pattern, slightly larger",
+          "url": "https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824",
+          "quote": "Flyback Converters For For DC/DC Converters SMPS Transformer Isolation 100 ~ 500kHz Surface Mount ... Series E10 EM ... AEC-Q200 ... Tape & Reel 1,960 €4.24294",
+          "kind": "distributor"
+        },
+        {
+          "price": 3.28811,
+          "currency": "GBP",
+          "qty": 1800,
+          "source": "Digi-Key UK, PROXY B82805A0363A250 (TDK push-pull SMD transformer 8.00 × 6.00 × 5.7 mm; qualification not stated — not confirmed automotive)",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=B82805A0363A250",
+          "quote": "Forward, Push-Pull Converters For For DC/DC Converters SMPS Transformer 500VAC Isolation 250kHz Surface Mount ... Tape & Reel 1,800 £3.28811",
+          "kind": "distributor"
+        },
+        {
+          "price": 1.8011,
+          "currency": "USD",
+          "qty": 1000,
+          "source": "Search-engine extract of a distributor listing for B78416A2360A003 (TDK EP6 SMT transformer for automotive ultrasonic sensors, 5 terminals) — nearby code A2360, different function; page not opened, unverified",
+          "url": "https://octopart.com/part/tdk/B78416A2360A003",
+          "quote": "$1.80110 at a 1,000 quantity (search-result extract)",
+          "kind": "secondary"
+        }
+      ],
+      "notFound": "B78xxxA2363A003 not found on TDK, Digi-Key, Mouser, Farnell, RS or aggregators; the family prefix (B78304 / B78307 / B78416 / B78541 …) could not be determined. No China (szlcsc) price. Proxy range at ~2k: €4.24 (E10 EM AEC-Q200) / £3.29 (push-pull 8×6); a smaller custom part at 100k/yr would plausibly be lower — no source."
+    },
+    {
+      "item": "Aluminium electrolytic caps '22 JZC 6X6' (×2)",
+      "identity": "Marking not decoded with a source. Reading: 22 µF; 'ZC' matches Panasonic's hybrid polymer-aluminium EEH-ZC series code; the voltage letter could not be confirmed (Panasonic 'V' = 35 V; 'J' is 6.3 V or 63 V depending on the maker's table). Priced by proxy: Panasonic EEH-ZC1V220R (22 µF 35 V hybrid, AEC-Q200). NB the proxy is a 5 mm can; a 6.3 mm can of 22 µF would be a higher-voltage rating.",
+      "package": "SMD V-chip can, ~6.3 × 5.8 mm (observed '6X6')",
+      "findings": [
+        {
+          "price": 0.15573,
+          "currency": "GBP",
+          "qty": 10000,
+          "source": "Digi-Key UK, PROXY Panasonic EEH-ZC1V220R (tape & reel)",
+          "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V220R/3088094",
+          "quote": "22 µF 35 V Aluminum - Polymer Capacitors Radial, Can - SMD 100mOhm 4000 Hrs @ 125°C ... AEC-Q200 ... 1,000 £0.19314 ... 10,000 £0.15573",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No marking table found for 'JZC'; exact series/voltage unconfirmed. No szlcsc price."
+    },
+    {
+      "item": "Aluminium electrolytic cap 'hJ 100 VHJ' (×1, ~8 mm)",
+      "identity": "Marking not decoded with a source. Panasonic prints the value in µF, so '100' = 100 µF (on an EIA 3-digit reading it would be 10 µF). Priced by proxy at 100 µF 35 V, 8 mm hybrid AEC-Q200 (Panasonic EEH-ZC1V101P); a 10 µF 63 V AEC-Q200 standard electrolytic (EEE-FK1J100P) is also given in case the 3-digit reading is right.",
+      "package": "SMD V-chip can, ~8 mm diameter",
+      "findings": [
+        {
+          "price": 0.24258,
+          "currency": "GBP",
+          "qty": 5000,
+          "source": "Digi-Key UK, PROXY Panasonic EEH-ZC1V101P (100 µF 35 V hybrid, 8 × 10.5 mm, tape & reel)",
+          "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V101P/10292389",
+          "quote": "CAP ALUMHYB 100UF 20% 35V SMD ... 0.315\" Dia (8.00mm) ... AEC-Q200 ... 1,000 £0.28070 ... 5,000 £0.24258",
+          "kind": "distributor"
+        },
+        {
+          "price": 0.10666,
+          "currency": "GBP",
+          "qty": 10000,
+          "source": "Digi-Key UK, ALTERNATIVE PROXY Panasonic EEE-FK1J100P (10 µF 63 V, 6.3 mm, tape & reel)",
+          "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEE-FK1J100P/765987",
+          "quote": "CAP ALUM 10UF 20% 63V SMD ... AEC-Q200 ... 1,000 £0.13480 ... 10,000 £0.10666",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No marking table found for 'VHJ' / 'hJ'; maker, series and voltage unconfirmed. No szlcsc price."
+    },
+    {
+      "item": "CAN transceiver SO-8 (automotive)",
+      "identity": "NXP TJA1044GT/3Z — high-speed CAN transceiver with standby, SO-8, AEC-Q100",
+      "package": "SO-8",
+      "findings": [
+        {
+          "price": 0.4847,
+          "currency": "GBP",
+          "qty": 5000,
+          "source": "Digi-Key UK, TJA1044GT/3Z tape & reel (568-TJA1044GT/3ZTR-ND)",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=TJA1044GT%2F3Z",
+          "quote": "2,500 £0.49624 ... 5,000 £0.48470 ... 12,500 £0.47252",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No szlcsc price read."
+    },
+    {
+      "item": "Dual op-amp SO-8 (automotive)",
+      "identity": "TI LM2904BQDRQ1 — dual op-amp, AEC-Q100",
+      "package": "SO-8 (8-SOIC 3.9 mm)",
+      "findings": [
+        {
+          "price": 0.18062,
+          "currency": "GBP",
+          "qty": 5000,
+          "source": "Digi-Key UK, LM2904BQDRQ1 tape & reel (out of stock on the read date)",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=LM2904BQDRQ1",
+          "quote": "IC OP AMP 2CH 8-SOIC ... AEC-Q100 ... 2,500 £0.18574 ... 5,000 £0.18062 ... 12,500 £0.17521",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No szlcsc price read."
+    },
+    {
+      "item": "LDO / linear regulator SOT-223 (automotive)",
+      "identity": "TI TPS7B6933QDCYRQ1 — 3.3 V 150 mA high-voltage (40 V) LDO, AEC-Q100",
+      "package": "SOT-223-4",
+      "findings": [
+        {
+          "price": 0.71664,
+          "currency": "GBP",
+          "qty": 5000,
+          "source": "Digi-Key UK, TPS7B6933QDCYRQ1 tape & reel",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=TPS7B6933QDCYRQ1",
+          "quote": "IC REG LIN 3.3V 150MA SOT-223-4 ... AEC-Q100 ... 2,500 £0.73245 ... 5,000 £0.71664 ... 7,500 £0.70872",
+          "kind": "distributor"
+        },
+        {
+          "price": 0.5,
+          "currency": "GBP",
+          "qty": null,
+          "source": "Digi-Key UK search result, onsemi NCV1117ST33T3G (3.3 V 1 A, SOT-223; NCV = automotive prefix, qualification not shown on the page; quantity of the price not shown)",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=NCV1117ST33T3G",
+          "quote": "IC REG LINEAR 3.3V 1A SOT-223 ... £0.50000",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No reel break read for NCV1117ST33T3G; no szlcsc price."
+    },
+    {
+      "item": "40–60 V buck controller / SBC in TSSOP-20 (automotive)",
+      "identity": "TI LM25117QPMHX/NOPB — 42 V synchronous buck controller, HTSSOP-20, AEC-Q100 (LM5146-Q1 is offered only in VQFN-20 at Digi-Key). SBC reference: TI TPS65381AQDAPRQ1, HTSSOP-32, AEC-Q100.",
+      "package": "HTSSOP-20 (LM25117-Q1); HTSSOP-32 (TPS65381A-Q1)",
+      "findings": [
+        {
+          "price": 2.99524,
+          "currency": "GBP",
+          "qty": 2500,
+          "source": "Digi-Key UK, LM25117QPMHX/NOPB tape & reel",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=LM25117QPMHX",
+          "quote": "20-PowerTSSOP (0.173\", 4.40mm Width) ... AEC-Q100 ... Automotive ... 2,500 £2.99524",
+          "kind": "distributor"
+        },
+        {
+          "price": 2.90507,
+          "currency": "GBP",
+          "qty": 2000,
+          "source": "Digi-Key UK, TPS65381AQDAPRQ1 tape & reel (SBC reference)",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=TPS65381AQDAPRQ1",
+          "quote": "IC REG AUTOMOTIVE 5OUT 32HTSSOP ... AEC-Q100 ... 2,000 £2.90507",
+          "kind": "distributor"
+        },
+        {
+          "price": 4.74,
+          "currency": "GBP",
+          "qty": 1,
+          "source": "Digi-Key UK, LM5146QRGYRQ1 (VQFN-20, not TSSOP) — single-unit price only",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=LM5146-Q1",
+          "quote": "LM5146QRGYRQ1 IC POWER REGULATOR £4.74000",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "LM5146-Q1 has no TSSOP-20 orderable at Digi-Key; LM5116-Q1 not found. No szlcsc price. The actual TSSOP-20 device on the board is unidentified."
+    },
+    {
+      "item": "N-MOSFET 40–80 V, LFPAK56 (automotive)",
+      "identity": "Nexperia BUK7Y4R8-60EX — 60 V 100 A N-channel, LFPAK56 (SOT-669), AEC-Q101",
+      "package": "LFPAK56 / Power-SO8",
+      "findings": [
+        {
+          "price": 0.56662,
+          "currency": "GBP",
+          "qty": 4500,
+          "source": "Digi-Key UK, BUK7Y4R8-60EX tape & reel",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=BUK7Y4R8-60EX",
+          "quote": "MOSFET N-CH 60V 100A LFPAK56 ... AEC-Q101 ... 1,500 £0.63249 ... 4,500 £0.56662",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No szlcsc price read."
+    },
+    {
+      "item": "TVS diode SMB 58 V (automotive)",
+      "identity": "Bourns SMBJ58A-Q — 58 V stand-off, 93.6 V clamp, SMB (DO-214AA), AEC-Q101",
+      "package": "SMB / DO-214AA",
+      "findings": [
+        {
+          "price": 0.10491,
+          "currency": "GBP",
+          "qty": 9000,
+          "source": "Digi-Key UK, SMBJ58A-Q tape & reel",
+          "url": "https://www.digikey.co.uk/en/products/detail/bourns-inc/SMBJ58A-Q/8276025",
+          "quote": "TVS DIODE 58VWM 93.6VC DO214AA ... AEC-Q101 ... 3,000 £0.12065 ... 9,000 £0.10491",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No szlcsc price read."
+    },
+    {
+      "item": "Power inductor ~6 × 6 mm shielded (automotive)",
+      "identity": "TDK CLF6045NIT-100M-D — 10 µH 2.1 A 42 mΩ, 6.3 × 6.0 × 4.5 mm shielded, AEC-Q200",
+      "package": "SMD 6.3 × 6.0 mm",
+      "findings": [
+        {
+          "price": 0.28275,
+          "currency": "GBP",
+          "qty": 10000,
+          "source": "Digi-Key UK, CLF6045NIT-100M-D tape & reel",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=CLF6045NIT-100M-D",
+          "quote": "FIXED IND 10UH 2.1A 42 MOHM SMD ... 6.30mm x 6.00mm ... AEC-Q200 ... 1,000 £0.34350 ... 10,000 £0.28275",
+          "kind": "distributor"
+        },
+        {
+          "price": 0.24565,
+          "currency": "GBP",
+          "qty": 5000,
+          "source": "Digi-Key UK, Bourns SRR6028-100Y (10 µH 2 A, 6.8 × 6.8 × 3.0 mm) — AEC-Q200 NOT shown on the page",
+          "url": "https://www.digikey.co.uk/en/products/result?keywords=SRR6028-100Y",
+          "quote": "FIXED IND 10UH 2A 65 MOHM SMD ... 1,000 £0.28150 ... 5,000 £0.24565",
+          "kind": "distributor"
+        }
+      ],
+      "notFound": "No szlcsc price read."
+    }
+  ]
+}

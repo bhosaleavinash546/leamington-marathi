@@ -1,0 +1,657 @@
+{
+ "inputs": {
+  "boards": {
+   "v": 100000,
+   "unit": "boards / year",
+   "cls": "given",
+   "basis": "Given: annual volume"
+  },
+  "years": {
+   "v": 6,
+   "unit": "years",
+   "cls": "given",
+   "basis": "Given: programme life"
+  },
+  "w": {
+   "v": 120,
+   "unit": "mm",
+   "cls": "given",
+   "basis": "Given: board width"
+  },
+  "h": {
+   "v": 100,
+   "unit": "mm",
+   "cls": "given",
+   "basis": "Given: board height"
+  },
+  "layers": {
+   "v": 4,
+   "unit": "layers",
+   "cls": "estimate",
+   "basis": "Estimate: a single-MCU logic board, both sides populated, many vias; not visible in a photo"
+  },
+  "burden": {
+   "v": 0.05,
+   "unit": "fraction",
+   "cls": "tool",
+   "basis": "EMS material burden at 100k+ boards (cost-plus EMS practice: 10 % at 1k, 7 % at 10k, 5 % at 100k+), the tool's stated rate"
+  },
+  "fx": {
+   "v": 8.88,
+   "unit": "CNY per £",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China (Sep 2026)"
+  },
+  "usd": {
+   "v": 1.27,
+   "unit": "US$ per £",
+   "cls": "market",
+   "basis": "FX used for US$ list prices"
+  },
+  "aspCny": {
+   "v": 995.31,
+   "unit": "¥ / m² sold",
+   "cls": "market",
+   "basis": "Chaoying (超颖) 4–6-layer board ASP 2024, prospectus p.1-1-229 (automotive is its main use) — https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf"
+  },
+  "aspRise": {
+   "v": 0.145,
+   "unit": "fraction",
+   "cls": "market",
+   "basis": "Mid of the +12–17 % automotive PCB price rise to Q1 2026 (Sina, 17 Sep 2026)"
+  },
+  "base2L": {
+   "v": 0.116,
+   "unit": "£ / dm²",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: 2-layer base (used only for the layer shape)"
+  },
+  "layerAdd": {
+   "v": 0.07379,
+   "unit": "£ / dm² / layer",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: per layer above 2 (layer shape)"
+  },
+  "aspAnchor": {
+   "v": 5,
+   "unit": "layers",
+   "cls": "market",
+   "basis": "The 4–6-layer ASP is a 4 / 6 mix: anchored at 5 layers"
+  },
+  "class3Cny": {
+   "v": 105,
+   "unit": "¥ / m²",
+   "cls": "market",
+   "basis": "PCBasic: 25 µm hole copper +¥25/m², 4-wire test +¥80/m² — https://www.pcbasic.com/standard_pcb.html"
+  },
+  "joints": {
+   "v": 802,
+   "unit": "SMT joints",
+   "cls": "reading",
+   "basis": "Reading: every SMD pad (2 a two-terminal part, IC pins) — the unit the Chinese price lists use"
+  },
+  "smtUsdJ": {
+   "v": 0.0012,
+   "unit": "US$ / joint",
+   "cls": "market",
+   "basis": "JLCPCB Standard PCBA, > 100,000 joints an order: $0.0012 per SMT joint, paste and AOI inside (page 22 Oct 2026) — https://jlcpcb.com/help/article/pcb-assembly-price"
+  },
+  "lot": {
+   "v": 8333,
+   "unit": "boards / lot",
+   "cls": "estimate",
+   "basis": "Estimate: one lot a month (100,000 ÷ 12)"
+  },
+  "changeH": {
+   "v": 1.0,
+   "unit": "h / side / lot",
+   "cls": "estimate",
+   "basis": "Estimate: line changeover per side per lot (feeder kit pre-set off line)"
+  },
+  "smtHS": {
+   "v": 77.1852,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: high-speed SMT line"
+  },
+  "opRate": {
+   "v": 3.7523,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: electronics assembly operator, fully loaded"
+  },
+  "techRate": {
+   "v": 4.4583,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: technician, fully loaded"
+  },
+  "ict": {
+   "v": 54.9548,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: ICT bed-of-nails test system (also the functional-tester proxy)"
+  },
+  "progRate": {
+   "v": 8,
+   "unit": "£ / h",
+   "cls": "estimate",
+   "basis": "Estimate: programming station"
+  },
+  "coatRate": {
+   "v": 0.002635,
+   "unit": "£ / cm²",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: conformal coating (material + machine)"
+  },
+  "coatCm2": {
+   "v": 63,
+   "unit": "cm² / side",
+   "cls": "estimate",
+   "basis": "Reading: board net of the shaft opening and window ≈ 90 cm²; the component areas ≈ 70 % of it (given: coating on the component areas)"
+  },
+  "coatSides": {
+   "v": 2,
+   "unit": "sides",
+   "cls": "reading",
+   "basis": "Reading: coating visible on the component areas of both sides"
+  },
+  "uvSec": {
+   "v": 15,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Estimate: UV inspection of the coating (selective robot coating — no masking; the program skips pads and pin holes)"
+  },
+  "ictSec": {
+   "v": 25,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Estimate: bed-of-nails ICT on the bottom test pads (322 parts)"
+  },
+  "progSec": {
+   "v": 30,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Estimate: flash the MCU (one device)"
+  },
+  "fctSec": {
+   "v": 45,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Estimate: board functional test (supplies, CAN, sense channels, gate-drive supply)"
+  },
+  "finalSec": {
+   "v": 20,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Estimate: final visual inspection and 2D-code read"
+  },
+  "depanelGBP": {
+   "v": 0.0563,
+   "unit": "£",
+   "cls": "market",
+   "basis": "Huaqiu 拆板费 ¥0.50 a board — https://smt.hqchip.com/online/valuation.html"
+  },
+  "packCny": {
+   "v": 1.24,
+   "unit": "¥",
+   "cls": "market",
+   "basis": "JLC ESD bag ¥1 + divider ¥0.002/cm² × 120 cm² — https://m.jlc.com/portal/server_guide_40512.html"
+  },
+  "unquotedOH": {
+   "v": 0.1,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Overhead on the rate-book operations (list prices carry the seller's margin; none is added on them)"
+  },
+  "fpyRework": {
+   "v": 0.03,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Boards reworked (FPY 97 %)"
+  },
+  "reworkMin": {
+   "v": 10,
+   "unit": "min",
+   "cls": "estimate",
+   "basis": "Rework per failed board (technician) + a re-test"
+  },
+  "scrap": {
+   "v": 0.003,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Boards scrapped"
+  },
+  "nre": {
+   "v": 15400,
+   "unit": "£ one-off",
+   "cls": "estimate",
+   "basis": "Stencils 2 × £150, ICT fixture £5,000, FCT fixture £8,000, coating program £800, programming set-up £500, bare-board E-test / route tooling £800"
+  },
+  "boardKg": {
+   "v": 0.04,
+   "unit": "kg / board",
+   "cls": "given",
+   "basis": "Given in the form: 40 g populated (estimate — board 1.6 mm FR-4 net of the cut-outs ≈ 28 g + parts)"
+  },
+  "packKg": {
+   "v": 0.03,
+   "unit": "kg / board",
+   "cls": "estimate",
+   "basis": "Share of ESD bag + divider + carton"
+  },
+  "seaKg": {
+   "v": 0.4,
+   "unit": "£ / kg",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: sea freight"
+  },
+  "duty": {
+   "v": 0.037,
+   "unit": "fraction",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China → UK: import duty (assumption, HS line not confirmed)"
+  }
+ },
+ "lines": [
+  {
+   "refDes": "U1",
+   "description": "NXP S12 MagniV motor-control MCU with integrated gate-drive unit and CAN physical layer — customer build SC667506WKK of the S12ZVMC256 (mask set 1N00R, trace code ZRAA2635A), the board controller",
+   "pkg": "LQFP-80 EP 12x12",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 5.98659,
+   "kind": "distributor + curve",
+   "basis": "SC667506WKK = NXP customer build (\"SC\") of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP. Standard twin S912ZVMC25F1WKK GBP 8.72738 at 480 (tray), Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3) = GBP 5.9866. Range GBP 4.97 (Future Electronics US$8.74 at 1k reel, search extract, unverified, same curve) to GBP 8.73 (the list at 480). Not a contract price.",
+   "url": "https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
+   "lineGBP": 5.98659
+  },
+  {
+   "refDes": "U2",
+   "description": "IC in SO-16 beside transformer T1 — transformer / isolated-supply driver for the gate-drive rails, marking removed",
+   "pkg": "SO-16",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 1.113,
+   "kind": "class-point",
+   "basis": "de-marked SO-16 driver IC: CostVision class range \"driver IC SOIC, AEC-Q\" (114 catalogue parts), lower-half midpoint",
+   "url": "",
+   "lineGBP": 1.113
+  },
+  {
+   "refDes": "U3",
+   "description": "SO-8 signal IC at the top-right corner beside the connector pins (op-amp / comparator / driver), marking removed — not a CAN transceiver: the MCU carries its own CAN physical layer",
+   "pkg": "SO-8",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.11322,
+   "kind": "china-reel",
+   "basis": "LM2904BQDRQ1 TI dual op-amp (analogue: de-marked SO-8; the MCU has its own CAN physical layer) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/1946598.html",
+   "lineGBP": 0.11322
+  },
+  {
+   "refDes": "U4, U5",
+   "description": "SO-8 signal ICs in the sensing area (current / voltage sense amplifier or dual op-amp), marking removed",
+   "pkg": "SO-8",
+   "qty": 2,
+   "qtyLow": 2,
+   "qtyHigh": 2,
+   "countMethod": "counted",
+   "unitGBP": 0.11322,
+   "kind": "china-reel",
+   "basis": "LM2904BQDRQ1 TI dual op-amp (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/1946598.html",
+   "lineGBP": 0.22644
+  },
+  {
+   "refDes": "U6",
+   "description": "Small IC in MSOP-10 on the bottom beside the shaft opening (sensor interface / amplifier), marking not read",
+   "pkg": "MSOP-10",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.119,
+   "kind": "class-point",
+   "basis": "MSOP-10 signal IC: CostVision class range \"op-amp / comparator\", lower-half midpoint",
+   "url": "",
+   "lineGBP": 0.119
+  },
+  {
+   "refDes": "U7, U8",
+   "description": "Linear voltage regulator (LDO), automotive, SOT-223 with tab (one beside T1, one beside the MCU)",
+   "pkg": "SOT-223",
+   "qty": 2,
+   "qtyLow": 2,
+   "qtyHigh": 2,
+   "countMethod": "counted",
+   "unitGBP": 0.55233,
+   "kind": "distributor + curve",
+   "basis": "De-marked SOT-223 regulator. Analogue TPS7B6933QDCYRQ1 TI 40 V 150 mA LDO, AEC-Q100: GBP 0.71664 at 5,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3)",
+   "url": "https://www.digikey.co.uk/en/products/result?keywords=TPS7B6933QDCYRQ1",
+   "lineGBP": 1.10466
+  },
+  {
+   "refDes": "Q1",
+   "description": "Power MOSFET in a 5x5 mm leadless power package (reverse-battery / supply switch) beside the bulk MLCCs",
+   "pkg": "LFPAK56 / PowerPAK SO-8",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.45521,
+   "kind": "distributor + curve",
+   "basis": "De-marked LFPAK56 MOSFET on a 48 V board. Analogue BUK7Y4R8-60EX Nexperia 60 V, AEC-Q101: GBP 0.56662 at 4,500, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3)",
+   "url": "https://www.digikey.co.uk/en/products/result?keywords=BUK7Y4R8-60EX",
+   "lineGBP": 0.45521
+  },
+  {
+   "refDes": "Q small-signal group",
+   "description": "Small-signal MOSFET / BJT",
+   "pkg": "SOT-23",
+   "qty": 17,
+   "qtyLow": 14,
+   "qtyHigh": 20,
+   "countMethod": "counted",
+   "unitGBP": 0.00445,
+   "kind": "china-reel",
+   "basis": "mean of 2N7002,215 and BC847C,215 Nexperia — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/66260.html",
+   "lineGBP": 0.07565
+  },
+  {
+   "refDes": "D small-signal group",
+   "description": "Small-signal / Schottky diode",
+   "pkg": "SOD-323 / SOD-123",
+   "qty": 9,
+   "qtyLow": 7,
+   "qtyHigh": 12,
+   "countMethod": "counted",
+   "unitGBP": 0.00329,
+   "kind": "china-reel",
+   "basis": "BAV99,215 Nexperia — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/2877.html",
+   "lineGBP": 0.02961
+  },
+  {
+   "refDes": "Zener group",
+   "description": "Zener diode",
+   "pkg": "SOD-123",
+   "qty": 4,
+   "qtyLow": 3,
+   "qtyHigh": 6,
+   "countMethod": "counted",
+   "unitGBP": 0.01881,
+   "kind": "china-reel",
+   "basis": "BZT52C5V1Q-7-F Diodes — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/709518.html",
+   "lineGBP": 0.07524
+  },
+  {
+   "refDes": "D rectifier group",
+   "description": "Rectifier / Schottky diode (three stacked on the bottom-left supply path, one beside them)",
+   "pkg": "SMA",
+   "qty": 4,
+   "qtyLow": 4,
+   "qtyHigh": 4,
+   "countMethod": "counted",
+   "unitGBP": 0.10309,
+   "kind": "china-reel",
+   "basis": "PMEG6030ELPX Nexperia 60 V 3 A Schottky (SMA-class) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/3184868.html",
+   "lineGBP": 0.41236
+  },
+  {
+   "refDes": "TVS SMB group",
+   "description": "TVS diode on the supply input (load-dump / transient protection)",
+   "pkg": "SMB",
+   "qty": 2,
+   "qtyLow": 2,
+   "qtyHigh": 2,
+   "countMethod": "counted",
+   "unitGBP": 0.04339,
+   "kind": "china-reel",
+   "basis": "SMBJ24CA Littelfuse 600 W — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/84432.html",
+   "lineGBP": 0.08678
+  },
+  {
+   "refDes": "T1",
+   "description": "SMD transformer, EPCOS (TDK) marked, 10-pin gull-wing — isolated auxiliary / gate-drive supply",
+   "pkg": "SMD 10-pin ~13x7",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 2.6865,
+   "kind": "distributor + curve",
+   "basis": "TDK/EPCOS ordering code B78xxxA2363A003 is in no public listing (customer part). Stand-in B78307A2338A003, TDK E10 EM SMD flyback transformer, AEC-Q200: EUR 4.24294 at 1,960 (Digi-Key Finland, 26 Nov 2026) at EUR 1.1965/GBP, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3) = GBP 2.6865",
+   "url": "https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824",
+   "lineGBP": 2.6865
+  },
+  {
+   "refDes": "L1",
+   "description": "Shielded power inductor ~6x6 mm (supply filter / buck)",
+   "pkg": "SMD 6x6 (larger than 1210 case)",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.15148,
+   "kind": "china-reel",
+   "basis": "CLF6045NIT-4R7N-D TDK 6x6 shielded (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/335482.html",
+   "lineGBP": 0.15148
+  },
+  {
+   "refDes": "L2",
+   "description": "Common-mode choke for the CAN bus lines (small wound choke, bottom)",
+   "pkg": "SMD 4.5x3.2",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.07649,
+   "kind": "china-reel",
+   "basis": "DLW43SH510XK2L Murata CAN CMC (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/92784.html",
+   "lineGBP": 0.07649
+  },
+  {
+   "refDes": "C bulk 100 uF",
+   "description": "Aluminium electrolytic SMD 100 uF (marking \"hJ 100 VHJ\"), 125 C automotive",
+   "pkg": "SMD 6.3x7.7",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.19634,
+   "kind": "distributor + curve",
+   "basis": "Marking \"hJ 100 VHJ\" not decoded. Stand-in EEH-ZC1V101P Panasonic 100 uF 35 V hybrid, 8 mm, AEC-Q200: GBP 0.24258 at 5,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3)",
+   "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V101P/10292389",
+   "lineGBP": 0.19634
+  },
+  {
+   "refDes": "C bulk 22 uF pair",
+   "description": "Aluminium electrolytic SMD 22 uF (marking \"22 JZC 6X6\"), 125 C automotive",
+   "pkg": "SMD 6.3x5.8",
+   "qty": 2,
+   "qtyLow": 2,
+   "qtyHigh": 2,
+   "countMethod": "counted",
+   "unitGBP": 0.12604,
+   "kind": "distributor + curve",
+   "basis": "Marking \"22 JZC 6X6\" not decoded (\"ZC\" matches Panasonic EEH-ZC). Stand-in EEH-ZC1V220R 22 uF 35 V hybrid, AEC-Q200: GBP 0.15573 at 10,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see §3)",
+   "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V220R/3088094",
+   "lineGBP": 0.25208
+  },
+  {
+   "refDes": "Y1",
+   "description": "Quartz crystal / resonator for the MCU clock (beside U1)",
+   "pkg": "SMD 5x3.2",
+   "qty": 1,
+   "qtyLow": 1,
+   "qtyHigh": 1,
+   "countMethod": "counted",
+   "unitGBP": 0.16643,
+   "kind": "china-reel",
+   "basis": "NX3225SA-25.000MHz NDK automotive crystal (analogue; the board part is ~5x3.2) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "",
+   "lineGBP": 0.16643
+  },
+  {
+   "refDes": "R 0603 group",
+   "description": "Thick-film chip resistor 1%",
+   "pkg": "0603",
+   "qty": 85,
+   "qtyLow": 72,
+   "qtyHigh": 98,
+   "countMethod": "estimated",
+   "unitGBP": 0.00075,
+   "kind": "china-reel",
+   "basis": "AC0603FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/117931.html",
+   "lineGBP": 0.06375
+  },
+  {
+   "refDes": "R 0805 group",
+   "description": "Thick-film chip resistor (marked values 4R7, 6R8, 2R2, 104 legible)",
+   "pkg": "0805",
+   "qty": 35,
+   "qtyLow": 28,
+   "qtyHigh": 42,
+   "countMethod": "estimated",
+   "unitGBP": 0.00185,
+   "kind": "china-reel",
+   "basis": "AC0805FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/152196.html",
+   "lineGBP": 0.06475
+  },
+  {
+   "refDes": "R 1206 group",
+   "description": "Thick-film chip resistor (marked values 270, 102, 1003, 2R2 legible)",
+   "pkg": "1206",
+   "qty": 24,
+   "qtyLow": 20,
+   "qtyHigh": 28,
+   "countMethod": "estimated",
+   "unitGBP": 0.00484,
+   "kind": "china-reel",
+   "basis": "AC1206FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/155852.html",
+   "lineGBP": 0.11616
+  },
+  {
+   "refDes": "R 2512 group",
+   "description": "Power / pulse chip resistor (2R20 x3, 270 x2, 2700 on the bottom)",
+   "pkg": "2512",
+   "qty": 6,
+   "qtyLow": 6,
+   "qtyHigh": 6,
+   "countMethod": "counted",
+   "unitGBP": 0.06194,
+   "kind": "china-reel",
+   "basis": "AC2512FK-0710RL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/476216.html",
+   "lineGBP": 0.37164
+  },
+  {
+   "refDes": "C 0603 group",
+   "description": "MLCC X7R",
+   "pkg": "0603",
+   "qty": 60,
+   "qtyLow": 50,
+   "qtyHigh": 70,
+   "countMethod": "estimated",
+   "unitGBP": 0.00287,
+   "kind": "china-reel",
+   "basis": "GCM188R71H104KA57D Murata 100 nF 50 V X7R — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/87040.html",
+   "lineGBP": 0.1722
+  },
+  {
+   "refDes": "C 0805 group",
+   "description": "MLCC X7R",
+   "pkg": "0805",
+   "qty": 34,
+   "qtyLow": 28,
+   "qtyHigh": 40,
+   "countMethod": "estimated",
+   "unitGBP": 0.0214,
+   "kind": "distributor",
+   "basis": "GCM21BR71H105KA03L Murata 1 µF 50 V X7R, distributor 6 Oct 2026 (the China reel £0.0302 is dearer)",
+   "url": "",
+   "lineGBP": 0.7276
+  },
+  {
+   "refDes": "C 1206 group",
+   "description": "MLCC X7R",
+   "pkg": "1206",
+   "qty": 14,
+   "qtyLow": 12,
+   "qtyHigh": 16,
+   "countMethod": "counted",
+   "unitGBP": 0.06766,
+   "kind": "china-reel",
+   "basis": "CGA5L1X7R1H475KT0Y0N TDK 4.7 µF 50 V X7R — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/370048.html",
+   "lineGBP": 0.94724
+  },
+  {
+   "refDes": "C 1210 group",
+   "description": "MLCC X7R, bulk / supply (the large brown parts beside Q1, L1 and the 22 uF pair)",
+   "pkg": "1210",
+   "qty": 12,
+   "qtyLow": 10,
+   "qtyHigh": 14,
+   "countMethod": "counted",
+   "unitGBP": 0.09857,
+   "kind": "china-reel",
+   "basis": "GCM32EC71H106KA03L Murata 10 µF 50 V X7S — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026",
+   "url": "https://item.szlcsc.com/137892.html",
+   "lineGBP": 1.18284
+  }
+ ],
+ "C": {
+  "programme": 600000,
+  "components": 16.97326,
+  "burdenGBP": 0.8486630000000001,
+  "aspShape": 0.7812787147642054,
+  "boardCnyM2": 995.3686226427957,
+  "fab": 1.3450927333010751,
+  "assemblyItems": {
+   "SMT assembly incl. paste, reflow and AOI (per joint, both sides)": 0.7577952755905512,
+   "Line changeover (2 sides, per lot)": 0.020326365054602183,
+   "Conformal coating, selective (component areas, 2 sides)": 0.33201,
+   "Coating UV inspection": 0.015634583333333334,
+   "ICT": 0.4076881944444444,
+   "MCU programming": 0.09793583333333333,
+   "Functional test": 0.7426637500000001,
+   "Depanel": 0.0563,
+   "Final inspection": 0.02084611111111111,
+   "Packaging (ESD bag + divider)": 0.13963963963963963
+  },
+  "listedGBP": 0.9537349152301908,
+  "rateGBP": 1.6371048372768244,
+  "ohGBP": 0.16371048372768246,
+  "assembly": 2.7545502362346976,
+  "rework": 0.05694914166666667,
+  "scrapGBP": 0.06576469790860731,
+  "quality": 0.12271383957527399,
+  "nrePerBoard": 0.025666666666666667,
+  "exWorks": 22.06994647577771,
+  "freight": 0.028000000000000004,
+  "dutyGBP": 0.8176240196037752,
+  "delivered": 22.915570495381484,
+  "componentsLow": 16.4029,
+  "componentsHigh": 17.565719999999995
+ },
+ "generated": "26 Nov 2026"
+}
