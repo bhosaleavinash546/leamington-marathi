@@ -41,7 +41,8 @@ for l in rd['lines']:
     step = f"£{s['base']:.5f} at {s['brk']:,} → {min(pa, cap):,} parts a year = £{u:.5f}" if s['brk'] and pa > s['brk'] else ''
     lines.append(dict(refDes=l['refDes'], bomRow=l['bomRow'], manufacturer=l['manufacturer'], partNumber=l['partNumber'], description=l['description'],
                       pkg=l['pkg'], qty=l['qty'], padsEach=l['padsEach'], unitGBP=u, base=s['base'], brk=s['brk'], kind=s['kind'], sources=s['sources'],
-                      basis='; '.join(x for x in [s.get('note', ''), step] if x), passive=passive, lineGBP=round(l['qty'] * u, 6)))
+                      basis='; '.join(x for x in [s.get('note', ''), step] if x), passive=passive, lineGBP=round(l['qty'] * u, 6),
+                      cnFactor=s.get('cnFactor'), cnLow=s.get('cnLow'), cnHigh=s.get('cnHigh')))
 
 I = {}
 def inp(k, v, unit, cls, basis): I[k] = dict(v=v, unit=unit, cls=cls, basis=basis)
@@ -105,6 +106,9 @@ v = {k: d['v'] for k, d in I.items()}
 C = {}
 C['programme'] = v['boards'] * v['years']
 C['components'] = round(sum(l['lineGBP'] for l in lines), 6)
+C['componentsNoChinaFactor'] = sum(l['lineGBP'] / (l['cnFactor'] or 1) for l in lines)
+C['componentsChinaLow'] = sum(l['lineGBP'] * ((l['cnLow'] / l['cnFactor']) if l['cnFactor'] else 1) for l in lines)
+C['componentsChinaHigh'] = sum(l['lineGBP'] * ((l['cnHigh'] / l['cnFactor']) if l['cnFactor'] else 1) for l in lines)
 C['componentsFlat300k'] = sum(l['qty'] * at_volume(l['base'], l['brk'], l['qty'] * BOARDS, False, cap=FLAT) for l in lines)
 C['burdenGBP'] = C['components'] * v['burden']
 m2 = v['w'] * v['h'] / 1e6

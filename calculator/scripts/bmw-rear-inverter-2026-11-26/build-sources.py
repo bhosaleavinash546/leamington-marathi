@@ -131,6 +131,21 @@ for ref, pn in [('Diode 4', 'SZ1SMA5936BT3G'), ('Diode 5', 'SZ1SMA5934BT3G')]:
     old = L[ref]
     L[ref] = dict(base=0.0848 / USD, brk=1000, kind='maker', sources=[s('1SMA59xxBT3G family', 'onsemi', 'commercial twin of the SZ automotive part', 'onsemi.com (maker)', 'US$0.0848 reference price (basis not stated; taken at 1,000)', '26 Nov 2026', 'https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59')] + old['sources'],
                   note='maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium')
+
+# ── China-market factor (research/china-ratio.json): the board is built in China and its EMS buys on the China market.
+# Measured on automotive parts priced BOTH on szlcsc's own stock and at a franchised distributor at the same quantity
+# (25 Nov 2026): non-TI ICs median 0.606 (n 15, quartiles 0.36–0.95), discretes / magnetics / passives median 0.429
+# (n 38, 0.30–0.82); TI ICs 0.956 (n 11) — so TI lines keep TI's own price. Applied ONLY to lines with no China price of
+# their own; crystals (China ≈ distributor) and the onsemi maker price (already ~⅓ of the distributor's) are left as they are.
+CR = json.load(open(os.path.join(H, 'research', 'china-ratio.json')))['groups']
+CN_IC = ['Integrated Circuit 1', 'Integrated Circuit 2', 'Integrated Circuit 8', 'Integrated Circuit 10', 'Sensor 1', 'Sensor 2']
+CN_DISC = ['Diode 2', 'Diode 6', 'Inductor 1', 'Inductor 2', 'Inductor 3', 'Inductor 4', 'Inductor 5', 'Capacitor 1', 'Resistor 1', 'Transistor 1', 'Transistor 2']
+for refs, g in [(CN_IC, 'ic-other'), (CN_DISC, 'discrete-magnetic-passive')]:
+    f = CR[g]
+    for ref in refs:
+        v = L[ref]; v['baseBeforeChina'] = v['base']; v['base'] = v['base'] * f['median']
+        v['cnFactor'] = f['median']; v['cnLow'] = f['q1']; v['cnHigh'] = f['q3']; v['cnGroup'] = g
+        v['note'] = ((v.get('note') or '') + f"; × {f['median']} China-market factor (median China own-stock ÷ distributor price of {f['n']} automotive {'ICs (non-TI)' if g == 'ic-other' else 'discretes, magnetics and passives'} priced both ways, 25 Nov 2026)").lstrip('; ')
 # A catalogue figure is the catalogue's 300k break: carried on from there to the parts bought a year.
 for v in L.values():
     if v['brk'] is None: v['brk'] = 300000

@@ -154,9 +154,9 @@ oth_rows = ''.join(row(r) for r in [
 def at(dcomp=0.0, dfab=0.0, dasm=0.0):
     c2 = comp + dcomp; b2 = c2 * I['burden']; f2 = fab + dfab; a2 = assembly + dasm
     return c2 + b2 + f2 + a2 + rework + I['scrap'] * (c2 + b2 + f2 + a2) + nre_pb
-tc = next(l for l in L if l['refDes'] == 'Integrated Circuit 1'); tc_list = tc['base']
-s_tc = at(dcomp=tc_list - tc['unitGBP'])
-xf = next(l for l in L if l['refDes'] == 'Inductor 2'); s_xf_lo, s_xf_hi = at(dcomp=8 * (0.931 - xf['unitGBP'])), at(dcomp=8 * (1.855 - xf['unitGBP']))
+tc = next(l for l in L if l['refDes'] == 'Integrated Circuit 1')
+xf = next(l for l in L if l['refDes'] == 'Inductor 2'); xff = xf.get('cnFactor') or 1
+s_xf_lo, s_xf_hi = at(dcomp=8 * (0.931 * xff - xf['unitGBP'])), at(dcomp=8 * (1.855 * xff - xf['unitGBP']))
 s_sz_lo, s_sz_hi = at(dfab=fab * (0.95 ** 2 - 1), dasm=-ASM['Conformal coating: material'][0] * (1 - 0.95 ** 2)), at(dfab=fab * (1.05 ** 2 - 1), dasm=ASM['Conformal coating: material'][0] * (1.05 ** 2 - 1))
 
 def tool_rows(t): return [t['components'] + t['burden'], t['fab'] + t['fabAuto'], t['smt'] + t['test'] + t['asmAuto'], t['other'], t['exw'], t['freight'] + t['duty'], t['delivered']]
@@ -192,7 +192,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <div class=box><b>What drives the cost.</b><ul>
 <li><b>Components are {(comp + burden) / exw * 100:.0f} % of the ex-works cost</b>: {len(L)} BOM lines, {n_parts:,} parts a board, every identity and quantity from the bill of materials.</li>
 <li><b>The six-channel gate drive is the largest group ({gbp(g_gate)})</b>: six UCC5880-Q1 functional-safety isolated drivers ({gbp(grp({'Integrated Circuit 11'}))}), three ADuM4135 ({gbp(grp({'Integrated Circuit 10'}))}), eight isolated-supply transformers ({gbp(grp({'Inductor 2'}))}), eleven TPS7B84-Q1 LDOs ({gbp(grp({'Integrated Circuit 5'}))}).</li>
-<li><b>The AURIX TC389 is the largest single part: {gbp(tc['unitGBP'])}</b> — Digi-Key's US$30.30 at 500 carried to 400,000 a year (Infineon's own page shows no price); with the TLF35584 safety supply the controller block is {gbp(g_ctrl)}.</li>
+<li><b>The AURIX TC389 is the largest single part: {gbp(tc['unitGBP'])}</b> — Digi-Key's US$30.30 at 500 × the China-market factor 0.606, carried to 400,000 a year (Infineon's own page shows no price); with the TLF35584 safety supply the controller block is {gbp(g_ctrl)}.</li>
 <li><b>The bare board is {gbp(fab)}</b>: {I['w']} × {I['h']} mm, 6 layers with 2 oz outer copper, at the China automotive market price a m².</li>
 <li><b>Assembly, test and coating are {gbp(assembly)}</b>; the 3,510 SMT joints at the Chinese list price are {gbp(ASM['SMT assembly, paste, reflow and AOI (both sides)'][0])}.</li></ul></div>
 <div class=box><b>The CostVision tool on the same BOM and photos</b> (live run, real server and browser): <b>{gbp(TC['exw'])} ex-works / {gbp(TC['delivered'])} delivered</b> with components at China market prices, {gbp(TG['exw'])} / {gbp(TG['delivered'])} at global distributor prices — {(TC['exw'] / exw - 1) * 100:+.1f} % and {(TG['exw'] / exw - 1) * 100:+.1f} % against this should-cost (§6).</div>
@@ -228,6 +228,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <li><b>Every BOM part with a part number is priced as itself</b> (or its orderable reel / family code where the exact code is not listed, stated on the line). Each line's seller, price, quantity break, date and source page are in §8.</li>
 <li><b>Lowest sourced price first:</b> the eight Texas Instruments parts take TI's own store price at 1,000+ (TI.com) and the two onsemi Zeners onsemi's own reference price — both below the distributors' at their largest breaks; two discretes take the China own-stock reel of the same function and grade (szlcsc). The distributor figure stays on each line as a reference.</li>
 <li><b>Volume:</b> every price is carried from its break to the parts bought a year (quantity a board × {I['boards']:,}) on P(Q) = P(break) × (Q / break)<sup>−0.0706</sup> (the CostVision catalogue's slope), up to 10,000,000 a year — as given for resistors and capacitors, and at 400,000 boards most other lines are bought in millions too. Holding every non-passive line flat above 300,000 a year (the CostVision catalogue rule) puts components at {gbp(C['componentsFlat300k'])} (+{gbp(C['componentsFlat300k'] - comp)}).</li>
+<li><b>China-market factor:</b> the board is built in China, where the EMS buys on the China market. On automotive parts priced both on szlcsc's own stock and at a franchised distributor at the same quantity (25 Nov 2026), China sits at a median <b>0.606</b> of the distributor price for non-TI ICs (15 parts, quartiles 0.36–0.95) and <b>0.429</b> for discretes, magnetics and passives (38 parts, 0.30–0.82); TI parts sit at 0.956 (11 parts), so the TI lines keep TI's own price. The factor is applied only to lines with no China price of their own (stated on each line in §8); an AURIX cross-check agrees — the TC387 at US$14.82 China own stock against US$31.56 authorized (0.47).</li>
 <li><b>China reel prices</b> are szlcsc's own-stock whole-reel prices, ex-VAT (page price ÷ 1.13). <b>Capacitor groups</b> 0805 / 1206 are a value mix (judgement): half 100 nF, half 1 µF / 4.7 µF.</li></ul>
 
 <h2>4. Bare board — {gbp(fab)}</h2>
@@ -244,14 +245,15 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <p>The bill of materials (as a file) and eight photos went through CostVision's PCB screen on a real server and browser, with the board data typed in as an engineer would: China, 400,000 a year, 6 years, 6 layers, 2 oz outer / 1 oz inner copper, 1.6 mm, 210 g, coating on one side, 24 staking dots, programming 60 s, functional test 90 s, first-pass yield 0.97, a lot a month, and the TC389 at £{tc['unitGBP']:.2f}. Two runs: components at China market prices and at global distributor prices; 0 page errors.</p>
 <table><tr><th>£ a board</th><th class=n>This should-cost</th><th class=n>Tool, China market</th><th class=n>Tool, global distributors</th></tr>{xc_rows}</table>
 <ul class=sm>
-<li><b>Components — the main difference.</b> The tool holds every price flat above 300,000 parts a year and prices from distributor listings (its catalogue) or class ranges; this should-cost takes the maker's own price where it is published (the eight TI parts, TI.com 1,000+) and carries every line to the parts bought a year — at 400,000 boards most lines are bought in millions. The tool's likely range: {TC['band']} (China market), {TG['band']} (global).</li>
+<li><b>Components — the main difference.</b> The tool holds every price flat above 300,000 parts a year, prices from distributor listings (its catalogue) or class ranges, and applies no China-market factor to ICs; this should-cost takes the maker's own price where it is published (the eight TI parts, TI.com 1,000+) and carries every line to the parts bought a year — at 400,000 boards most lines are bought in millions. The tool's likely range: {TC['band']} (China market), {TG['band']} (global).</li>
 <li><b>Where the tool's class prices differ most:</b> the two PWR221T power resistors and the film capacitors (priced by the tool as chip parts), the PANJIT MOSFETs and TI parts not in its catalogue (priced on IC class ranges) and 1210 capacitors (priced on its 1206 row).</li>
 <li><b>Assembly.</b> The tool costs placements at the China line rate, test as station time, coating on the full side and an automotive assembly grade; this should-cost uses the Chinese per-joint list prices and named operation times. The tool has no immersion-tin finish; immersion silver was entered (the market board price does not depend on the finish).</li></ul>
 
 <h2>7. What is not yet confirmed</h2>
 <table><tr><th>Item</th><th>Status</th><th>Ex-works if</th></tr>
-{row(['TC389 price', f"Digi-Key US$30.30 at 500 carried to volume — BMW's contract price may differ; at the 500 price itself (£{tc_list:.2f})", (gbp(s_tc), 'n')])}
-{row(['Gate-drive transformers', 'Customer part (XFMRS BMW-8-15T), no public price: three catalogued equivalents give £0.93 – £1.86', (f"{gbp(s_xf_lo)} – {gbp(s_xf_hi)}", 'n')])}
+{row(['China-market factor', f"Interquartile range of the measured China ÷ distributor ratios (non-TI ICs 0.36–0.95, discretes 0.30–0.82); without the factor", (f"{gbp(at(dcomp=C['componentsChinaLow'] - comp))} – {gbp(at(dcomp=C['componentsChinaHigh'] - comp))}; {gbp(at(dcomp=C['componentsNoChinaFactor'] - comp))}", 'n')])}
+{row(['TC389 price', "Digi-Key US$30.30 at 500 × 0.606 carried to volume — BMW's contract price may differ", ('', 'n')])}
+{row(['Gate-drive transformers', f"Customer part (XFMRS BMW-8-15T), no public price: three catalogued equivalents give £{0.931 * xff:.2f} – £{1.855 * xff:.2f} with the China-market factor", (f"{gbp(s_xf_lo)} – {gbp(s_xf_hi)}", 'n')])}
 {row(['Volume rule', 'Non-passive lines held flat above 300,000 a year (CostVision catalogue rule) instead of carried to the parts bought', (gbp(at(dcomp=C['componentsFlat300k'] - comp)), 'n')])}
 {row(['Board size', 'Measured off a photo (±5 %): board and coating', (f"{gbp(s_sz_lo)} – {gbp(s_sz_hi)}", 'n')])}
 {row(['Unnamed BOM groups', '437 capacitors, 551 resistors, 69 diodes, 37 transistors: case sizes read off the photos, values not in the BOM', ('', 'n')])}

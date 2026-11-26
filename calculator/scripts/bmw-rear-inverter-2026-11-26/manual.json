@@ -341,8 +341,8 @@
    "pkg": "LFBGA-516 (25 × 25 mm)",
    "qty": 1,
    "padsEach": 516,
-   "unitGBP": 14.883688,
-   "base": 23.859905511811025,
+   "unitGBP": 9.019515,
+   "base": 14.459102740157482,
    "brk": 500,
    "kind": "distributor",
    "sources": [
@@ -365,9 +365,12 @@
      "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
     }
    ],
-   "basis": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; £23.85991 at 500 → 400,000 parts a year = £14.88369",
+   "basis": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £14.45910 at 500 → 400,000 parts a year = £9.01952",
    "passive": false,
-   "lineGBP": 14.883688
+   "lineGBP": 9.019515,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Integrated Circuit 2",
@@ -378,8 +381,8 @@
    "pkg": "VQFN-48",
    "qty": 1,
    "padsEach": 49,
-   "unitGBP": 2.007118,
-   "base": 2.0483,
+   "unitGBP": 1.216313,
+   "base": 1.2412697999999998,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -393,9 +396,12 @@
      "url": "https://www.mouser.com/c/?q=TLF35584QVVS2"
     }
    ],
-   "basis": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue); £2.04830 at 300,000 → 400,000 parts a year = £2.00712",
+   "basis": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £1.24127 at 300,000 → 400,000 parts a year = £1.21631",
    "passive": false,
-   "lineGBP": 2.007118
+   "lineGBP": 1.216313,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Integrated Circuit 3",
@@ -432,7 +438,10 @@
    ],
    "basis": "£1.00551 at 1,000 → 400,000 parts a year = £0.65869",
    "passive": false,
-   "lineGBP": 0.658691
+   "lineGBP": 0.658691,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 4",
@@ -469,7 +478,10 @@
    ],
    "basis": "£0.36378 at 1,000 → 1,200,000 parts a year = £0.22052",
    "passive": false,
-   "lineGBP": 0.66156
+   "lineGBP": 0.66156,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 5",
@@ -506,7 +518,10 @@
    ],
    "basis": "£0.74016 at 1,000 → 4,400,000 parts a year = £0.40935",
    "passive": false,
-   "lineGBP": 4.502861
+   "lineGBP": 4.502861,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 6",
@@ -543,7 +558,10 @@
    ],
    "basis": "£1.50394 at 1,000 → 800,000 parts a year = £0.93815",
    "passive": false,
-   "lineGBP": 1.876296
+   "lineGBP": 1.876296,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 7",
@@ -580,7 +598,10 @@
    ],
    "basis": "£0.40472 at 1,000 → 1,200,000 parts a year = £0.24534",
    "passive": false,
-   "lineGBP": 0.73602
+   "lineGBP": 0.73602,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 8",
@@ -591,8 +612,8 @@
    "pkg": "TSSOP-14",
    "qty": 2,
    "padsEach": 14,
-   "unitGBP": 0.106619,
-   "base": 0.16021259842519686,
+   "unitGBP": 0.064611,
+   "base": 0.0970888346456693,
    "brk": 2500,
    "kind": "distributor",
    "sources": [
@@ -606,9 +627,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW"
     }
    ],
-   "basis": "£0.16021 at 2,500 → 800,000 parts a year = £0.10662",
+   "basis": "× 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £0.09709 at 2,500 → 800,000 parts a year = £0.06461",
    "passive": false,
-   "lineGBP": 0.213238
+   "lineGBP": 0.129222,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Integrated Circuit 9",
@@ -645,7 +669,10 @@
    ],
    "basis": "reel code of the BOM's tube code; £2.40945 at 1,000 → 400,000 parts a year = £1.57838",
    "passive": false,
-   "lineGBP": 1.578383
+   "lineGBP": 1.578383,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 10",
@@ -656,8 +683,8 @@
    "pkg": "SOIC-16 wide",
    "qty": 3,
    "padsEach": 16,
-   "unitGBP": 2.304089,
-   "base": 2.541,
+   "unitGBP": 1.396278,
+   "base": 1.5398459999999998,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -671,9 +698,12 @@
      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084"
     }
    ],
-   "basis": "£2.541 at 300k (catalogue); £2.54100 at 300,000 → 1,200,000 parts a year = £2.30409",
+   "basis": "£2.541 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £1.53985 at 300,000 → 1,200,000 parts a year = £1.39628",
    "passive": false,
-   "lineGBP": 6.912267
+   "lineGBP": 4.188834,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Integrated Circuit 11",
@@ -710,7 +740,10 @@
    ],
    "basis": "£4.04803 at 1,000 → 2,400,000 parts a year = £2.33669",
    "passive": false,
-   "lineGBP": 14.020134
+   "lineGBP": 14.020134,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 12",
@@ -738,7 +771,10 @@
    ],
    "basis": "the -Q1 dual comparator; £0.11959 at 2,500 → 400,000 parts a year = £0.08358",
    "passive": false,
-   "lineGBP": 0.083576
+   "lineGBP": 0.083576,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Integrated Circuit 13",
@@ -775,7 +811,10 @@
    ],
    "basis": "£0.93622 at 1,000 → 400,000 parts a year = £0.61330",
    "passive": false,
-   "lineGBP": 0.6133
+   "lineGBP": 0.6133,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Sensor 1",
@@ -786,8 +825,8 @@
    "pkg": "SOIC-16 wide",
    "qty": 2,
    "padsEach": 16,
-   "unitGBP": 1.656153,
-   "base": 1.7749,
+   "unitGBP": 1.003629,
+   "base": 1.0755894,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -801,9 +840,12 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511"
     }
    ],
-   "basis": "£1.7749 at 300k (catalogue); £1.77490 at 300,000 → 800,000 parts a year = £1.65615",
+   "basis": "£1.7749 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £1.07559 at 300,000 → 800,000 parts a year = £1.00363",
    "passive": false,
-   "lineGBP": 3.312306
+   "lineGBP": 2.007258,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Sensor 2",
@@ -814,8 +856,8 @@
    "pkg": "SIP-4 (through-hole)",
    "qty": 2,
    "padsEach": 0,
-   "unitGBP": 1.211439,
-   "base": 1.2983,
+   "unitGBP": 0.734132,
+   "base": 0.7867698,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -829,9 +871,12 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37612LLUATR-015B5/12093264"
     }
    ],
-   "basis": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue); £1.29830 at 300,000 → 800,000 parts a year = £1.21144",
+   "basis": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026); £0.78677 at 300,000 → 800,000 parts a year = £0.73413",
    "passive": false,
-   "lineGBP": 2.422878
+   "lineGBP": 1.468264,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95
   },
   {
    "refDes": "Transistor 1",
@@ -842,8 +887,8 @@
    "pkg": "DFN3333-8",
    "qty": 1,
    "padsEach": 8,
-   "unitGBP": 0.116273,
-   "base": 0.1466062992125984,
+   "unitGBP": 0.049881,
+   "base": 0.06289410236220472,
    "brk": 15000,
    "kind": "distributor",
    "sources": [
@@ -857,9 +902,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU"
     }
    ],
-   "basis": "£0.14661 at 15,000 → 400,000 parts a year = £0.11627",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.06289 at 15,000 → 400,000 parts a year = £0.04988",
    "passive": false,
-   "lineGBP": 0.116273
+   "lineGBP": 0.049881,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Transistor 2",
@@ -870,8 +918,8 @@
    "pkg": "DFN5060-8",
    "qty": 2,
    "padsEach": 8,
-   "unitGBP": 0.189626,
-   "base": 0.26786614173228346,
+   "unitGBP": 0.081349,
+   "base": 0.11491457480314961,
    "brk": 6000,
    "kind": "distributor",
    "sources": [
@@ -885,9 +933,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU"
     }
    ],
-   "basis": "£0.26787 at 6,000 → 800,000 parts a year = £0.18963",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.11491 at 6,000 → 800,000 parts a year = £0.08135",
    "passive": false,
-   "lineGBP": 0.379252
+   "lineGBP": 0.162698,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Crystal 1",
@@ -915,7 +966,10 @@
    ],
    "basis": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue); £0.06420 at 300,000 → 400,000 parts a year = £0.06291",
    "passive": false,
-   "lineGBP": 0.062909
+   "lineGBP": 0.062909,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 1",
@@ -952,7 +1006,10 @@
    ],
    "basis": "China own-stock reel of the same Vishay SMBJ automotive (HE3) series; the BOM's SMBJ15A HE3 at Digi-Key kept as reference; £0.05471 at 3,200 → 400,000 parts a year = £0.03891",
    "passive": false,
-   "lineGBP": 0.038908
+   "lineGBP": 0.038908,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 2",
@@ -963,8 +1020,8 @@
    "pkg": "SMC",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.167608,
-   "base": 0.21909448818897637,
+   "unitGBP": 0.071904,
+   "base": 0.09399153543307086,
    "brk": 9000,
    "kind": "distributor",
    "sources": [
@@ -978,9 +1035,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A"
     }
    ],
-   "basis": "£0.21909 at 9,000 → 400,000 parts a year = £0.16761",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.09399 at 9,000 → 400,000 parts a year = £0.07190",
    "passive": false,
-   "lineGBP": 0.167608
+   "lineGBP": 0.071904,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Diode 3",
@@ -1017,7 +1077,10 @@
    ],
    "basis": "China own-stock reel of an automotive 3 A 40 V Schottky, SMA; the BOM's VSSAF3L45 HM3 at Digi-Key kept as reference; £0.08172 at 5,000 → 400,000 parts a year = £0.05997",
    "passive": false,
-   "lineGBP": 0.059974
+   "lineGBP": 0.059974,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 4",
@@ -1054,7 +1117,10 @@
    ],
    "basis": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium; £0.06677 at 1,000 → 2,400,000 parts a year = £0.03854",
    "passive": false,
-   "lineGBP": 0.231258
+   "lineGBP": 0.231258,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 5",
@@ -1091,7 +1157,10 @@
    ],
    "basis": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium; £0.06677 at 1,000 → 1,200,000 parts a year = £0.04048",
    "passive": false,
-   "lineGBP": 0.121428
+   "lineGBP": 0.121428,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 6",
@@ -1102,8 +1171,8 @@
    "pkg": "SMBflat",
    "qty": 16,
    "padsEach": 2,
-   "unitGBP": 0.124012,
-   "base": 0.1901732283464567,
+   "unitGBP": 0.053201,
+   "base": 0.08158431496062993,
    "brk": 15000,
    "kind": "distributor",
    "sources": [
@@ -1117,9 +1186,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY"
     }
    ],
-   "basis": "£0.19017 at 15,000 → 6,400,000 parts a year = £0.12401",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.08158 at 15,000 → 6,400,000 parts a year = £0.05320",
    "passive": false,
-   "lineGBP": 1.984192
+   "lineGBP": 0.851216,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Inductor 1",
@@ -1130,8 +1202,8 @@
    "pkg": "SMD 10x10 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.370618,
-   "base": 0.504992125984252,
+   "unitGBP": 0.158995,
+   "base": 0.2166416220472441,
    "brk": 5000,
    "kind": "distributor",
    "sources": [
@@ -1145,9 +1217,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A"
     }
    ],
-   "basis": "£0.50499 at 5,000 → 400,000 parts a year = £0.37062",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.21664 at 5,000 → 400,000 parts a year = £0.15899",
    "passive": false,
-   "lineGBP": 0.370618
+   "lineGBP": 0.158995,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Inductor 2",
@@ -1158,8 +1233,8 @@
    "pkg": "SMD 8-pin ~12x10",
    "qty": 8,
    "padsEach": 8,
-   "unitGBP": 0.816253,
-   "base": 1.2899133858267717,
+   "unitGBP": 0.350173,
+   "base": 0.5533728425196851,
    "brk": 4900,
    "kind": "distributor",
    "sources": [
@@ -1191,9 +1266,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8"
     }
    ],
-   "basis": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); £1.28991 at 4,900 → 3,200,000 parts a year = £0.81625",
+   "basis": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.55337 at 4,900 → 3,200,000 parts a year = £0.35017",
    "passive": false,
-   "lineGBP": 6.530024
+   "lineGBP": 2.801384,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Inductor 3",
@@ -1204,8 +1282,8 @@
    "pkg": "SMD 6x6 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.398801,
-   "base": 0.5093543307086614,
+   "unitGBP": 0.171086,
+   "base": 0.21851300787401576,
    "brk": 12500,
    "kind": "distributor",
    "sources": [
@@ -1219,9 +1297,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000"
     }
    ],
-   "basis": "£0.50935 at 12,500 → 400,000 parts a year = £0.39880",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.21851 at 12,500 → 400,000 parts a year = £0.17109",
    "passive": false,
-   "lineGBP": 0.398801
+   "lineGBP": 0.171086,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Inductor 4",
@@ -1232,8 +1313,8 @@
    "pkg": "SMD 4x4 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.539334,
-   "base": 0.5504,
+   "unitGBP": 0.231374,
+   "base": 0.2361216,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -1247,9 +1328,12 @@
      "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC"
     }
    ],
-   "basis": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue); £0.55040 at 300,000 → 400,000 parts a year = £0.53933",
+   "basis": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.23612 at 300,000 → 400,000 parts a year = £0.23137",
    "passive": false,
-   "lineGBP": 0.539334
+   "lineGBP": 0.231374,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Capacitor 1",
@@ -1260,8 +1344,8 @@
    "pkg": "SMD can 8 mm",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.116506,
-   "base": 0.15116535433070866,
+   "unitGBP": 0.049981,
+   "base": 0.06484993700787402,
    "brk": 10000,
    "kind": "distributor",
    "sources": [
@@ -1275,9 +1359,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036"
     }
    ],
-   "basis": "£0.15117 at 10,000 → 400,000 parts a year = £0.11651",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.06485 at 10,000 → 400,000 parts a year = £0.04998",
    "passive": false,
-   "lineGBP": 0.116506
+   "lineGBP": 0.049981,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Capacitor 2",
@@ -1305,7 +1392,10 @@
    ],
    "basis": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified; £0.06299 at 5,000 → 1,600,000 parts a year = £0.04192",
    "passive": false,
-   "lineGBP": 0.16768
+   "lineGBP": 0.16768,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 1",
@@ -1316,8 +1406,8 @@
    "pkg": "TO-220 full pack (through-hole)",
    "qty": 2,
    "padsEach": 0,
-   "unitGBP": 1.490619,
-   "base": 2.3895984251968505,
+   "unitGBP": 0.639476,
+   "base": 1.0251377244094488,
    "brk": 1000,
    "kind": "distributor",
    "sources": [
@@ -1331,9 +1421,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F"
     }
    ],
-   "basis": "£2.38960 at 1,000 → 800,000 parts a year = £1.49062",
+   "basis": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £1.02514 at 1,000 → 800,000 parts a year = £0.63948",
    "passive": false,
-   "lineGBP": 2.981238
+   "lineGBP": 1.278952,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   },
   {
    "refDes": "Capacitor 3 (0402)",
@@ -1361,7 +1454,10 @@
    ],
    "basis": "100 nF X7R; £0.00448 at 10,000 → 10,000,000 parts a year = £0.00275",
    "passive": true,
-   "lineGBP": 0.60522
+   "lineGBP": 0.60522,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Capacitor 3 (0603)",
@@ -1389,7 +1485,10 @@
    ],
    "basis": "100 nF 50 V X7R; £0.00287 at 4,000 → 10,000,000 parts a year = £0.00165",
    "passive": true,
-   "lineGBP": 0.23128
+   "lineGBP": 0.23128,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Capacitor 3 (0805)",
@@ -1426,7 +1525,10 @@
    ],
    "basis": "value mix (judgement): half 100 nF, half 1 µF, 50 V — £0.0152 and £0.0214 at 300k (catalogue); £0.01830 at 300,000 → 10,000,000 parts a year = £0.01429",
    "passive": true,
-   "lineGBP": 0.642915
+   "lineGBP": 0.642915,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Capacitor 3 (1206)",
@@ -1463,7 +1565,10 @@
    ],
    "basis": "value mix (judgement): half 100 nF (£0.0197 at 300k), half 4.7 µF 50 V (£0.06766 a reel of 2,000 → 300k = £0.0475); £0.03360 at 300,000 → 8,800,000 parts a year = £0.02647",
    "passive": true,
-   "lineGBP": 0.58234
+   "lineGBP": 0.58234,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Capacitor 3 (1210)",
@@ -1491,7 +1596,10 @@
    ],
    "basis": "10 µF 50 V bulk; £0.09857 at 1,000 → 4,000,000 parts a year = £0.05488",
    "passive": true,
-   "lineGBP": 0.54883
+   "lineGBP": 0.54883,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 2 (0402)",
@@ -1519,7 +1627,10 @@
    ],
    "basis": "£0.00054 at 10,000 → 10,000,000 parts a year = £0.00033",
    "passive": true,
-   "lineGBP": 0.09296
+   "lineGBP": 0.09296,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 2 (0603)",
@@ -1547,7 +1658,10 @@
    ],
    "basis": "£0.00075 at 5,000 → 10,000,000 parts a year = £0.00044",
    "passive": true,
-   "lineGBP": 0.08341
+   "lineGBP": 0.08341,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 2 (0805)",
@@ -1575,7 +1689,10 @@
    ],
    "basis": "£0.00185 at 5,000 → 10,000,000 parts a year = £0.00108",
    "passive": true,
-   "lineGBP": 0.044362
+   "lineGBP": 0.044362,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 3 (1206)",
@@ -1603,7 +1720,10 @@
    ],
    "basis": "£0.00484 at 5,000 → 10,000,000 parts a year = £0.00283",
    "passive": true,
-   "lineGBP": 0.09056
+   "lineGBP": 0.09056,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Resistor 3 (2512)",
@@ -1631,7 +1751,10 @@
    ],
    "basis": "£0.06194 at 4,000 → 3,200,000 parts a year = £0.03864",
    "passive": true,
-   "lineGBP": 0.309104
+   "lineGBP": 0.309104,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Diode 7",
@@ -1659,7 +1782,10 @@
    ],
    "basis": "£0.00329 at 3,000 → 10,000,000 parts a year = £0.00186",
    "passive": false,
-   "lineGBP": 0.128064
+   "lineGBP": 0.128064,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Discrete 3 Pins",
@@ -1696,7 +1822,10 @@
    ],
    "basis": "mean of the MOSFET and the BJT; £0.00445 at 3,000 → 10,000,000 parts a year = £0.00251",
    "passive": false,
-   "lineGBP": 0.0753
+   "lineGBP": 0.0753,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Discretes (4+ pins)",
@@ -1724,7 +1853,10 @@
    ],
    "basis": "dual transistor in SOT-363: two small-signal dies (2 × the SOT-23 mean) — estimate; £0.00890 at 3,000 → 2,800,000 parts a year = £0.00549",
    "passive": false,
-   "lineGBP": 0.038444
+   "lineGBP": 0.038444,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Ferrite 1",
@@ -1752,7 +1884,10 @@
    ],
    "basis": "£0.01953 at 4,000 → 800,000 parts a year = £0.01344",
    "passive": false,
-   "lineGBP": 0.02687
+   "lineGBP": 0.02687,
+   "cnFactor": null,
+   "cnLow": null,
+   "cnHigh": null
   },
   {
    "refDes": "Inductor 5",
@@ -1763,8 +1898,8 @@
    "pkg": "SMD 1210",
    "qty": 3,
    "padsEach": 2,
-   "unitGBP": 0.060209,
-   "base": 0.0664,
+   "unitGBP": 0.02583,
+   "base": 0.0284856,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -1778,16 +1913,22 @@
      "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063"
     }
    ],
-   "basis": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue); £0.06640 at 300,000 → 1,200,000 parts a year = £0.06021",
+   "basis": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026); £0.02849 at 300,000 → 1,200,000 parts a year = £0.02583",
    "passive": false,
-   "lineGBP": 0.180627
+   "lineGBP": 0.07749,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817
   }
  ],
  "C": {
   "programme": 2400000,
-  "components": 72.428605,
-  "componentsFlat300k": 80.33374264477017,
-  "burdenGBP": 3.6214302500000004,
+  "components": 52.847004,
+  "componentsNoChinaFactor": 72.42860990498282,
+  "componentsChinaLow": 43.752518574465135,
+  "componentsChinaHigh": 68.42213570495511,
+  "componentsFlat300k": 59.04784435718451,
+  "burdenGBP": 2.6423502,
   "aspShape": 1.2187212852357945,
   "boardCnyM2": 1593.8912773572042,
   "fab": 11.056723275360785,
@@ -1813,13 +1954,13 @@
   "ohGBP": 0.16304593385092392,
   "assembly": 7.591147323624025,
   "rework": 0.09780144166666666,
-  "scrapGBP": 0.28409371754695445,
-  "quality": 0.3818951592136211,
+  "scrapGBP": 0.22241167439695445,
+  "quality": 0.32021311606362113,
   "nrePerBoard": 0.019166666666666665,
-  "exWorks": 95.09896767486511,
+  "exWorks": 74.47660458171511,
   "freight": 0.10400000000000001,
-  "dutyGBP": 3.5225098039700087,
-  "delivered": 98.72547747883512
+  "dutyGBP": 2.7594823695234587,
+  "delivered": 77.34008695123856
  },
  "generated": "26 Nov 2026"
 }

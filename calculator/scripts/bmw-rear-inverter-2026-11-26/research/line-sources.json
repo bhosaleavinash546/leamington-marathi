@@ -2,7 +2,7 @@
  "readOn": "2026-11-26",
  "lines": {
   "Integrated Circuit 1": {
-   "base": 23.859905511811025,
+   "base": 14.459102740157482,
    "brk": 500,
    "kind": "distributor",
    "sources": [
@@ -25,10 +25,15 @@
      "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
     }
    ],
-   "note": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price"
+   "note": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 23.859905511811025,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Integrated Circuit 2": {
-   "base": 2.0483,
+   "base": 1.2412697999999998,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -42,7 +47,12 @@
      "url": "https://www.mouser.com/c/?q=TLF35584QVVS2"
     }
    ],
-   "note": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue)"
+   "note": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 2.0483,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Integrated Circuit 3": {
    "base": 1.0055118110236219,
@@ -201,7 +211,7 @@
    ]
   },
   "Transistor 1": {
-   "base": 0.1466062992125984,
+   "base": 0.06289410236220472,
    "brk": 15000,
    "kind": "distributor",
    "sources": [
@@ -215,10 +225,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.1466062992125984,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Transistor 2": {
-   "base": 0.26786614173228346,
+   "base": 0.11491457480314961,
    "brk": 6000,
    "kind": "distributor",
    "sources": [
@@ -232,10 +247,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.26786614173228346,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Integrated Circuit 8": {
-   "base": 0.16021259842519686,
+   "base": 0.0970888346456693,
    "brk": 2500,
    "kind": "distributor",
    "sources": [
@@ -249,7 +269,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW"
     }
    ],
-   "note": ""
+   "note": "× 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.16021259842519686,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Integrated Circuit 4": {
    "base": 0.3637795275590551,
@@ -278,7 +303,7 @@
    ]
   },
   "Integrated Circuit 10": {
-   "base": 2.541,
+   "base": 1.5398459999999998,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -292,7 +317,12 @@
      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084"
     }
    ],
-   "note": "£2.541 at 300k (catalogue)"
+   "note": "£2.541 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 2.541,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Integrated Circuit 11": {
    "base": 4.048031496062992,
@@ -338,7 +368,7 @@
    "note": "the -Q1 dual comparator"
   },
   "Sensor 1": {
-   "base": 1.7749,
+   "base": 1.0755894,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -352,10 +382,15 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511"
     }
    ],
-   "note": "£1.7749 at 300k (catalogue)"
+   "note": "£1.7749 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 1.7749,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Sensor 2": {
-   "base": 1.2983,
+   "base": 0.7867698,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -369,7 +404,12 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37612LLUATR-015B5/12093264"
     }
    ],
-   "note": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue)"
+   "note": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue); × 0.606 China-market factor (median China own-stock ÷ distributor price of 15 automotive ICs (non-TI) priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 1.2983,
+   "cnFactor": 0.606,
+   "cnLow": 0.36,
+   "cnHigh": 0.95,
+   "cnGroup": "ic-other"
   },
   "Crystal 1": {
    "base": 0.0642,
@@ -389,7 +429,7 @@
    "note": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue)"
   },
   "Capacitor 1": {
-   "base": 0.15116535433070866,
+   "base": 0.06484993700787402,
    "brk": 10000,
    "kind": "distributor",
    "sources": [
@@ -403,7 +443,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.15116535433070866,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Capacitor 2": {
    "base": 0.06299212598425197,
@@ -449,7 +494,7 @@
    "note": "China own-stock reel of the same Vishay SMBJ automotive (HE3) series; the BOM's SMBJ15A HE3 at Digi-Key kept as reference"
   },
   "Diode 2": {
-   "base": 0.21909448818897637,
+   "base": 0.09399153543307086,
    "brk": 9000,
    "kind": "distributor",
    "sources": [
@@ -463,7 +508,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.21909448818897637,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Diode 3": {
    "base": 0.08171891891891891,
@@ -544,7 +594,7 @@
    "note": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium"
   },
   "Diode 6": {
-   "base": 0.1901732283464567,
+   "base": 0.08158431496062993,
    "brk": 15000,
    "kind": "distributor",
    "sources": [
@@ -558,10 +608,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.1901732283464567,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Inductor 1": {
-   "base": 0.504992125984252,
+   "base": 0.2166416220472441,
    "brk": 5000,
    "kind": "distributor",
    "sources": [
@@ -575,10 +630,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.504992125984252,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Inductor 3": {
-   "base": 0.5093543307086614,
+   "base": 0.21851300787401576,
    "brk": 12500,
    "kind": "distributor",
    "sources": [
@@ -592,10 +652,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.5093543307086614,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Inductor 4": {
-   "base": 0.5504,
+   "base": 0.2361216,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -609,10 +674,15 @@
      "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC"
     }
    ],
-   "note": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue)"
+   "note": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.5504,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Resistor 1": {
-   "base": 2.3895984251968505,
+   "base": 1.0251377244094488,
    "brk": 1000,
    "kind": "distributor",
    "sources": [
@@ -626,10 +696,15 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F"
     }
    ],
-   "note": ""
+   "note": "× 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 2.3895984251968505,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Inductor 2": {
-   "base": 1.2899133858267717,
+   "base": 0.5533728425196851,
    "brk": 4900,
    "kind": "distributor",
    "sources": [
@@ -661,7 +736,12 @@
      "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8"
     }
    ],
-   "note": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86)"
+   "note": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 1.2899133858267717,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   },
   "Capacitor 3 (0402)": {
    "base": 0.00448,
@@ -929,7 +1009,7 @@
    "note": ""
   },
   "Inductor 5": {
-   "base": 0.0664,
+   "base": 0.0284856,
    "brk": 300000,
    "kind": "catalogue",
    "sources": [
@@ -943,7 +1023,12 @@
      "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063"
     }
    ],
-   "note": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue)"
+   "note": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue); × 0.429 China-market factor (median China own-stock ÷ distributor price of 38 automotive discretes, magnetics and passives priced both ways, 25 Nov 2026)",
+   "baseBeforeChina": 0.0664,
+   "cnFactor": 0.429,
+   "cnLow": 0.3,
+   "cnHigh": 0.817,
+   "cnGroup": "discrete-magnetic-passive"
   }
  }
 }
