@@ -66,14 +66,47 @@ with the TC389 price typed in). This page lists why, and what was changed in the
 The one board with a price paid moved 1.2 points further below it. One price paid cannot settle a rule (five are needed before
 any accuracy is claimed — `npm run accuracy:pcb`); prices paid go in `scripts/actuals/pcb-actuals.csv` and the board set.
 
+## Follow-up (27 Nov 2026)
+
+**Wider China sample, from data already held.** The China research read every part on szlcsc AND on LCSC.com: szlcsc's
+ex-VAT CNY price is 5.355 × LCSC's US$ price (median of 382 parts, range 4.83–5.87). So an LCSC.com row in the catalogue is a
+China price for that part once converted:
+- a part with an LCSC row of 1,000+ parts now takes it, converted, as its own China price (`lcscConversion`, ahead of any
+  group factor);
+- the group factor is measured on both sources against the NON-LCSC distributor price (it is applied only to parts with no
+  China or LCSC price, so its denominator holds none), `scripts/pcb-market-factors.mts`:
+
+| Group | Pairs (szlcsc + LCSC) | Median | Quartiles | szlcsc alone | LCSC alone |
+|---|---|---|---|---|---|
+| ICs (not TI) | 37 (17 + 20) | 0.618 | 0.467–0.818 | 0.606 | 0.668 |
+| TI ICs | 21 (7 + 14) | 0.679 | 0.494–0.960 | 0.797 | 0.566 |
+| Discretes, magnetics, passives | 54 (32 + 22) | 0.489 | 0.300–0.760 | 0.337 | 0.718 |
+
+The two sources agree on ICs and disagree on discretes (the szlcsc research picked commodity parts, the catalogue's LCSC rows
+are mostly branded automotive parts): the discrete factor is uncertain and its band is wide. The milder factors raise the China
+market figures: BMW £79.18 → £84.06 delivered (live, no typed price; manual £77.34), EDU £125.24 → £132.39.
+
+**Customer-specific parts.** A line whose BOM says custom / customer part / bespoke, or whose part number carries a vehicle
+maker's name (BMW-8-15T), and that has no exact catalogue code, is a placeholder price: flagged on the line, first in the
+verify list ("get a quote") and in a `CUSTOM_PART_QUOTE` warning (`server/utils/pcb-custom-parts.ts`).
+
+**Named-IC ranges.** `scripts/pcb-named-range-review.mts --write` compares every named range with the distributor-priced
+catalogue parts it matches (`server/data/pcb-named-range-evidence.json`). Most ranges sat above their own sourced parts (SPC58
+£8–40 v 7 parts £1.87–7.36; Maxim/ADI PMIC £2.50–6.50 v 6 parts £1.45–2.50; AURIX TC3xx £15–60 v 7 parts £17.72–41.75). Now:
+≥ 3 sourced parts → the range is theirs and the point never lies above their median; 1–2 → the stated range widened to take them
+in; none (14 ranges) → as stated. A named range prices only a part the catalogue does not hold, so the four boards above do not
+move; the model is shown the same ranges for the markings it reads.
+
 ## Still open
 
-- The market factor rests on 19 / 9 / 34 parts priced both ways; a research round to ≈ 40 a group would firm it. szlcsc blocked
-  automated reads during this review, so the round could not run.
+- The China discount for discretes: the two sources disagree (0.34 v 0.72); a page-read round on szlcsc for branded automotive
+  discretes would settle it. szlcsc blocked automated reads during this review.
+- 14 named ranges have no sourced part behind them (S32R4x, R-Car V4H, EyeQ, Sony / OmniVision imagers, TEF810x, …).
 - Only TI publishes a store price that could be read; other makers' direct prices are not sources yet.
 - `scaleReference` depends on the model returning pixel measurements; it is not exercised by a live model run here (the stand-in
   reply has no scale reference).
 - The power-resistor row has one sourced price.
+- Accuracy against prices paid: one board (camera). Prices paid go in `scripts/actuals/pcb-actuals.csv` and the board set.
 
 ## Proof
 

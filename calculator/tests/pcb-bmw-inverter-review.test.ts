@@ -196,5 +196,69 @@ describe('the BMW inverter board through Stage 4 — its A2Mac1 BOM file (row na
     expect(cm.factorBand!.highGBP).toBeGreaterThan(cm.componentsGBP);
     expect(cm.componentsGBP).toBeLessThan(cm.globalComponentsGBP);
     expect(s4.sanityWarnings.some(w => w.code === 'BOM_PACKAGE_CONFLICT')).toBe(false);
+    expect(xf.customPart).toBe(true);
+    expect(s4.verifyList.find(v => /transformer/i.test(v.description))?.why).toMatch(/customer-specific/);
+    expect(s4.sanityWarnings.some(w => w.code === 'CUSTOM_PART_QUOTE')).toBe(true);
   }, 120_000);
+});
+
+describe('rule 9, widened (27 Nov 2026): an LCSC.com row is the part\'s own China price; the factor is measured on both sources', () => {
+  it('the szlcsc / LCSC multiple comes from the parts the research read on both', async () => {
+    const { lcscConversion } = await import('../server/data/pcb-component-market.js');
+    const c = lcscConversion('cn')!;
+    expect(c.n).toBeGreaterThan(300);
+    expect(c.cnyExVatPerLcscUsd).toBeGreaterThan(c.min); expect(c.cnyExVatPerLcscUsd).toBeLessThan(c.max);
+    expect(c.gbpPerLcscUsd).toBeCloseTo(c.cnyExVatPerLcscUsd / c.cnyPerGbp, 4);
+  });
+  it('a part with an LCSC row at 1,000+ takes it, converted, on a China build — and no group factor', () => {
+    const e = catalogueEntry('TJA1057GT/3J')!;
+    const row = e.observations!.find(o => /^lcsc/i.test(o.distributor) && o.qty >= 1000)!;
+    const [c] = offlineCataloguePrices(['TJA1057GT/3J'], 1000, 'cn');
+    expect(c.sourceNote).toMatch(/LCSC\.com US\$/);
+    expect(c.marketFactor).toBeUndefined();
+    expect(c.unitPriceGBP).toBeLessThan(cataloguePriceAt('TJA1057GT/3J', 1000)!);
+    expect(c.unitPriceGBP).toBeCloseTo(row.price * 5.355 / 8.88, 3);
+    expect(offlineCataloguePrices(['TJA1057GT/3J'], 1000)[0].sourceNote).not.toMatch(/LCSC\.com US\$.*×/);   // global: untouched
+  });
+  it('each group says how many pairs came from each source', async () => {
+    const f = JSON.parse(readFileSync('server/data/pcb-market-factors.json', 'utf8'));
+    for (const g of Object.values<any>(f.markets.cn)) expect(Object.keys(g.bySource).length).toBeGreaterThan(0);
+    expect(f.markets.cn['ic-other'].n).toBeGreaterThanOrEqual(30);
+  });
+});
+
+import { isCustomerSpecific } from '../server/utils/pcb-custom-parts.js';
+describe('customer-specific parts are a placeholder to quote (27 Nov 2026)', () => {
+  it('BOM wording or a vehicle maker\'s name in the part number marks one; a catalogued exact code or a memory size does not', () => {
+    expect(isCustomerSpecific({ partNumber: 'XFMRS2539BMW-8-15T', description: 'transformer', priceSource: 'class-range' })).toBe(true);
+    expect(isCustomerSpecific({ partNumber: 'X1', description: 'Custom-wound choke', priceSource: 'class-range' })).toBe(true);
+    expect(isCustomerSpecific({ partNumber: 'W25Q128JV 16MB', description: 'NOR flash', priceSource: 'class-range' })).toBe(false);
+    expect(isCustomerSpecific({ partNumber: 'TJA1057GT/3J', description: 'CAN transceiver', priceSource: 'catalogue', catalogueExact: true })).toBe(false);
+  });
+});
+
+import { icKnownRange } from '../server/routes/pcb.js';
+describe('named-IC ranges follow the sourced catalogue parts they match (27 Nov 2026)', () => {
+  const ev = JSON.parse(readFileSync('server/data/pcb-named-range-evidence.json', 'utf8')).ranges;
+  it('3+ sourced parts: the range is theirs and carries their median; AURIX TC3xx is no longer £15–60', () => {
+    const r = icKnownRange({ partNumber: 'SAK-TC399XP-256F300S BD' })!;
+    const e = ev['Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)'];
+    expect(e.n).toBeGreaterThanOrEqual(3);
+    expect([r.lo, r.hi, r.p50]).toEqual([e.min, e.max, e.median]);
+    expect(r.label).toMatch(/sourced catalogue parts/);
+  });
+  it('1–2 sourced parts widen the stated range; none leave it as stated', () => {
+    const one = Object.entries<any>(ev).find(([, v]) => v.n === 1 && (v.min < v.stated[0] || v.max > v.stated[1]))!;
+    const none = Object.entries<any>(ev).find(([, v]) => v.n === 0)!;
+    expect(one).toBeTruthy(); expect(none).toBeTruthy();
+    expect(icKnownRange({ partNumber: 'MPC5748GVMN2' })!.lo).toBeLessThan(22);   // one sourced MPC574x below the stated £22
+    expect(icKnownRange({ partNumber: 'TEF8105EN' })).toMatchObject({ lo: 9, hi: 22 });   // no sourced part: as stated
+  });
+  it('a named-range line is priced at the lower-half point, never above the sourced median', () => {
+    const line = { partNumber: 'SPC584B60E3', description: 'automotive MCU', bomSource: 'file', qty: 1, componentType: 'ic_tqfp', volumeMultiplier: 1 };
+    const out = capUnconfirmedPrices([line], l => icKnownRange(l as never), { automotive: true }).bom[0];
+    const e = ev['STM SPC5xxx/SPC58x automotive MCU'];
+    expect(Number(out.unitPriceGBP)).toBeLessThanOrEqual(e.median + 1e-6);
+    expect(out.priceSource).toBe('known-range');
+  });
 });

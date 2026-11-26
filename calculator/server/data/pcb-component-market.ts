@@ -55,7 +55,8 @@ export const hasComponentMarket = (country: string) => Boolean(DATA?.markets[cou
 export type MarketFactorGroup = 'ic-TI' | 'ic-other' | 'discrete-magnetic-passive';
 export interface MarketFactor { group: MarketFactorGroup; n: number; median: number; q1: number; q3: number }
 const FACTORS_FILE = resolve(dirname(fileURLToPath(import.meta.url)), 'pcb-market-factors.json');
-const FACTORS: { asOf: string; method: string; markets: Record<string, Record<MarketFactorGroup, MarketFactor>> } | null =
+export interface MarketConversion { cnyExVatPerLcscUsd: number; n: number; min: number; max: number; cnyPerGbp: number; gbpPerLcscUsd: number; basis: string }
+const FACTORS: { asOf: string; method: string; markets: Record<string, Record<MarketFactorGroup, MarketFactor>>; conversion?: Record<string, MarketConversion> } | null =
   (() => { try { return JSON.parse(readFileSync(FACTORS_FILE, 'utf8')); } catch { return null; } })();
 export const MARKET_FACTOR_SOURCE = FACTORS ? `${FACTORS.method}, ${FACTORS.asOf}` : '';
 
@@ -72,4 +73,11 @@ export function marketFactor(market: string | undefined, group: MarketFactorGrou
   if (!market || !FACTORS) return null;
   const f = FACTORS.markets[market]?.[group];
   return f && f.n >= 5 ? f : null;
+}
+
+/** The market's measured LCSC.com US$ → own-stock £ conversion (27 Nov 2026: szlcsc ex-VAT CNY = 5.355 × LCSC US$ on 382
+ *  parts read on both), or null. An LCSC.com row in the catalogue is then a price in that market for that very part. */
+export function lcscConversion(market: string | undefined): MarketConversion | null {
+  if (!market || !FACTORS?.conversion) return null;
+  return FACTORS.conversion[market] ?? null;
 }

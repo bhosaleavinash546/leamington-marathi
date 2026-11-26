@@ -244,7 +244,13 @@ isolated gate-drive transformer, TO-220 power resistor, MLCC 1210. A BOM file's 
 designator — an A2Mac1 row name ("Integrated Circuit 11") is one line with the file's quantity. An exact code whose catalogued
 package states another pin count is priced and flagged (`BOM_PACKAGE_CONFLICT`). Board size may be scaled off a part in the photo
 (`scaleReference`: the model's PIXELS, the tool's body mm — `scaleBoardFromReference`); `coatedAreaPct` coats a share of a side
-(`coatedShare`, screen and server). The merge script's re-price pass keeps `packing` / `evidence` on stored observations.
+(`coatedShare`, screen and server). The merge script's re-price pass keeps `packing` / `evidence` on stored observations. Follow-up (27 Nov 2026): an LCSC.com row
+(≥ 1,000 parts) is the part's own China price, converted at the measured szlcsc / LCSC multiple (`lcscConversion`, 5.355 ¥ ex-VAT
+per US$, 382 parts); the group factor is measured on szlcsc + LCSC pairs against the NON-LCSC distributor price (`bySource` kept —
+discretes disagree 0.34 v 0.72). Customer-specific parts (BOM wording or a vehicle maker in the part number, no exact catalogue
+code) are a placeholder to quote (`pcb-custom-parts.ts`, `CUSTOM_PART_QUOTE`). Named-IC ranges follow the sourced catalogue parts
+they match (`scripts/pcb-named-range-review.mts --write` → `pcb-named-range-evidence.json`: ≥ 3 parts → their min–max, point ≤
+their median; 1–2 → widened; none → stated) — re-run it and `pcb-market-factors.mts` after every catalogue merge.
 `npm run test:e2e:pcb-camera` drives that board end to end; see `docs/pcb/camera-board-360-2026-10.md`.
 **PCB 360 review (12 Oct 2026, `docs/review/pcb-360-review-2026-10-12.md`, `tests/pcb-360-review.test.ts`):** the engineer's
 BOM corrections live ON the analysis (`userCorrections`) and are re-applied by every re-price — never rely on the request

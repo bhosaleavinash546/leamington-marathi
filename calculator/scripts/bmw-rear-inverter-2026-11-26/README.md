@@ -11,6 +11,7 @@ size (280 × 220 mm, ±5 %) is measured off the photos against the TC389's 25 mm
 | CostVision tool, China market components | 108.86 | 112.97 |
 | CostVision tool, global distributor components | 119.05 | 123.51 |
 | CostVision tool after the review fixes (26 Nov 2026), China market, no typed price | 76.30 | 79.18 |
+| CostVision tool after the follow-up (27 Nov 2026: wider China sample, LCSC rows), China market | 81.01 | 84.06 |
 | CostVision tool after the review fixes, global distributor prices | 110.35 | 114.49 |
 
 Files

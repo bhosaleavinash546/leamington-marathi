@@ -16,7 +16,7 @@
 import type { LivePriceResult } from './pcb-live-pricing.js';
 import { VOLUME_CAP_PARTS, FRANCHISE_B, carryBeyond, catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch, packagePinsConflict } from './pcb-price-catalogue.js';
 import { tableTypeOf, classRange, classDefaultPrice } from './pcb-class-pricing.js';
-import { marketPart, marketFactor, marketFactorGroup, type MarketFactor } from '../data/pcb-component-market.js';
+import { marketPart, marketFactor, marketFactorGroup, lcscConversion, type MarketFactor } from '../data/pcb-component-market.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -221,9 +221,30 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number, marke
       });
       continue;
     }
+    // An LCSC.com row in the catalogue (≥ 1,000 parts) is this part's price in the China market once converted at the
+    // measured szlcsc / LCSC multiple — the part's own evidence, ahead of any group factor (27 Nov 2026). Carried to the
+    // parts bought along the part's slope, used when lower than the catalogue price (as a market part is).
+    const conv = !mp ? lcscConversion(market) : null;
+    const lRow = conv ? [...(e.observations ?? [])].filter(o => /^lcsc/i.test(String(o.distributor)) && String(o.currency).toUpperCase() === 'USD' && Number(o.qty) >= 1000)
+      .sort((x, y) => y.qty - x.qty)[0] : undefined;
+    if (conv && lRow) {
+      const lb = e.volumeModel?.b ?? FRANCHISE_B;
+      const lAt = lRow.price * conv.gbpPerLcscUsd * (qty > lRow.qty ? Math.pow(Math.min(qty, VOLUME_CAP_PARTS) / lRow.qty, -lb) : 1);
+      if (lAt < price0) {
+        out.push({
+          mpn: pn, description: e.desc, manufacturer: e.mfr,
+          unitPriceGBP: Math.round(lAt * 1e6) / 1e6, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
+          provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn, rawCurrency: 'USD', rawUnitPrice: lRow.price,
+          sourceNote: `${mName} market: LCSC.com US$${lRow.price} @${lRow.qty.toLocaleString('en-GB')} (${lRow.url}) × ${conv.cnyExVatPerLcscUsd} (szlcsc own-stock ex-VAT ¥ per LCSC US$, ${conv.n} parts read on both, ${conv.min}–${conv.max}) ÷ ¥${conv.cnyPerGbp} / £ = £${(lRow.price * conv.gbpPerLcscUsd).toFixed(4)} — below the catalogue's £${price0.toFixed(4)} at ${qty.toLocaleString('en-GB')}`
+            + (qty > lRow.qty ? `; DERIVED to ${Math.min(qty, VOLUME_CAP_PARTS).toLocaleString('en-GB')} parts along b = ${Number(lb).toFixed(4)}, not a quote` : ''),
+        });
+        continue;
+      }
+    }
     // No price of its own in the build market: the global price × that market's measured factor for its group, unless the
     // price is the maker's own store price (a maker sells at one price everywhere) — BMW inverter review, approved rule.
-    const mf = market && !mp && !e.makerPrice && e.confidence === 'distributor' ? marketFactor(market, marketFactorGroup(e.category, e.mfr, e.mpn)) : null;
+    // (A part with an LCSC row at or above its catalogue price takes no factor: its own China evidence says it is not cheaper.)
+    const mf = market && !mp && !lRow && !e.makerPrice && e.confidence === 'distributor' ? marketFactor(market, marketFactorGroup(e.category, e.mfr, e.mpn)) : null;
     if (mf) {
       const p = Math.round(price0 * mf.median * 1e6) / 1e6;
       out.push({
@@ -280,7 +301,7 @@ function withMarketFactor<T extends Record<string, unknown>>(l: T, market: strin
 
 /** The tool's own stated price range for a part it can name (e.g. an OCR-read
  *  NXP S32R294 → £22–48, ~10k basis). Supplied by the route, which owns the ranges. */
-export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean } | null;
+export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean; p50?: number } | null;
 
 export interface CapOptions {
   automotive?: boolean;
@@ -333,7 +354,8 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       // The point inside the range is the TOOL's — its lower-half midpoint — never the model's estimate, which used
       // to choose it (pipeline review F2: one unread "ADAS processor" line moved the board from £95 to £384 with the
       // model's number alone). The estimate is kept for audit only.
-      const inRange = round(range.lo + (range.hi - range.lo) * 0.25, 4);
+      // …and never above the median of the sourced parts behind the range (named-range review, 27 Nov 2026).
+      const inRange = round(Math.min(range.lo + (range.hi - range.lo) * 0.25, range.p50 ?? Infinity), 4);
       if (Math.abs(inRange - unit) > 1e-6) capped++;
       return withMarketFactor({
         ...line,

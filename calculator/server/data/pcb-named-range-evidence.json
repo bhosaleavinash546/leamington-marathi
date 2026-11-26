@@ -1,0 +1,1522 @@
+{
+ "asOf": "2026-11-27",
+ "method": "distributor- / maker-priced catalogue parts each named range matches, their 10k price (£)",
+ "ranges": {
+  "NXP S32R294/S32R274 radar MCU (ASIL-B)": {
+   "stated": [
+    18,
+    34
+   ],
+   "n": 1,
+   "min": 19.227,
+   "median": 19.227,
+   "max": 19.227,
+   "parts": [
+    {
+     "mpn": "FS32R294KCMJD",
+     "q10k": 19.227,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP S32R45/S32R41 radar processor": {
+   "stated": [
+    45,
+    95
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)": {
+   "stated": [
+    15,
+    60
+   ],
+   "n": 7,
+   "min": 17.7204,
+   "median": 23.3266,
+   "max": 41.7471,
+   "parts": [
+    {
+     "mpn": "TC375TP96F300W",
+     "q10k": 17.7204,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC377TX-96F300S AA",
+     "q10k": 21.9405,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC387QP-160F300S AE",
+     "q10k": 23.7157,
+     "aecq": true
+    },
+    {
+     "mpn": "TC397XX256F300SBDKXUMA2",
+     "q10k": 41.7471,
+     "aecq": true
+    },
+    {
+     "mpn": "TC387QP160F300SAEKXUMA2",
+     "q10k": 23.3266,
+     "aecq": true
+    },
+    {
+     "mpn": "TC377TX96F300SABKXUMA1",
+     "q10k": 24.0321,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC389QP-160F300S AE",
+     "q10k": 21.9718,
+     "aecq": true
+    }
+   ]
+  },
+  "Infineon AURIX TC2xx (ASIL-D)": {
+   "stated": [
+    6,
+    30
+   ],
+   "n": 9,
+   "min": 4.1457,
+   "median": 8.5148,
+   "max": 19.6293,
+   "parts": [
+    {
+     "mpn": "SAK-TC234LP-32F200N",
+     "q10k": 6.2985,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC234LP-32F200F AC",
+     "q10k": 7.4601,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC264DA-40F200W BC",
+     "q10k": 8.7409,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC275TP-64F200W DC",
+     "q10k": 12.8759,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC277TP-64F200S DC",
+     "q10k": 10.6733,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC297TP-128F300S BC",
+     "q10k": 19.6293,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC233LP-32F200F AC",
+     "q10k": 6.8679,
+     "aecq": true
+    },
+    {
+     "mpn": "LTC2949HLXE#3ZZTRPBF",
+     "q10k": 8.5148,
+     "aecq": true
+    },
+    {
+     "mpn": "SAK-TC234L-32F200F AC",
+     "q10k": 4.1457,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP S32K3xx automotive MCU (ASIL-D)": {
+   "stated": [
+    6,
+    20
+   ],
+   "n": 9,
+   "min": 2.6429,
+   "median": 6.7121,
+   "max": 18.1285,
+   "parts": [
+    {
+     "mpn": "S32K344EHT1VMMST",
+     "q10k": 10.1574,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K312NHT0VPBST",
+     "q10k": 2.6429,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K314NHT0VPBST",
+     "q10k": 6.7121,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K324NHT1MPBST",
+     "q10k": 9.2049,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K342EHT0MPBST",
+     "q10k": 6.419,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K358GHT1MPCST",
+     "q10k": 13.1582,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K311NHT0MPAST",
+     "q10k": 3.8573,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K396EHT1MJBST",
+     "q10k": 18.1285,
+     "aecq": true
+    },
+    {
+     "mpn": "S32K342NHT0VPASR",
+     "q10k": 4.7861,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP S32K1xx automotive MCU (ASIL-B)": {
+   "stated": [
+    2.5,
+    9
+   ],
+   "n": 6,
+   "min": 1.6862,
+   "median": 3.338,
+   "max": 9.034,
+   "parts": [
+    {
+     "mpn": "FS32K144HAT0MLLR",
+     "q10k": 3.6097,
+     "aecq": true
+    },
+    {
+     "mpn": "FS32K116LFT0VLFT",
+     "q10k": 1.6862,
+     "aecq": true
+    },
+    {
+     "mpn": "FS32K118LAT0MLFR",
+     "q10k": 2.1313,
+     "aecq": true
+    },
+    {
+     "mpn": "FS32K142HAT0MLHT",
+     "q10k": 3.338,
+     "aecq": true
+    },
+    {
+     "mpn": "FS32K146HAT0MLLT",
+     "q10k": 3.335,
+     "aecq": true
+    },
+    {
+     "mpn": "FS32K148UAT0VLQT",
+     "q10k": 9.034,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP S32G2/G3 network SoC (ASIL-B)": {
+   "stated": [
+    40,
+    90
+   ],
+   "n": 2,
+   "min": 45.6705,
+   "median": 57.6185,
+   "max": 57.6185,
+   "parts": [
+    {
+     "mpn": "S32G399AAAK1VUCR",
+     "q10k": 57.6185,
+     "aecq": true
+    },
+    {
+     "mpn": "S32G274AABK1VUCT",
+     "q10k": 45.6705,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP MPC574x automotive MCU": {
+   "stated": [
+    22,
+    65
+   ],
+   "n": 1,
+   "min": 12.6413,
+   "median": 12.6413,
+   "max": 12.6413,
+   "parts": [
+    {
+     "mpn": "MPC5744PK1AMLQ9",
+     "q10k": 12.6413,
+     "aecq": true
+    }
+   ]
+  },
+  "STM SPC5xxx/SPC58x automotive MCU": {
+   "stated": [
+    8,
+    40
+   ],
+   "n": 7,
+   "min": 1.8655,
+   "median": 3.7193,
+   "max": 7.362,
+   "parts": [
+    {
+     "mpn": "SPC582B60E1MH00Y",
+     "q10k": 3.7193,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC584B70E3EHC0X",
+     "q10k": 7.362,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC560P50L5CEFAR",
+     "q10k": 2.6565,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC560B64L7C6E0X",
+     "q10k": 6.2278,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC560B60L3C6E0X",
+     "q10k": 5.0083,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC560C50L1B4E0X",
+     "q10k": 3.446,
+     "aecq": true
+    },
+    {
+     "mpn": "SPC560D40L1C4E0X",
+     "q10k": 1.8655,
+     "aecq": true
+    }
+   ]
+  },
+  "Renesas RH850 automotive MCU": {
+   "stated": [
+    6,
+    30
+   ],
+   "n": 9,
+   "min": 5.189,
+   "median": 6.7666,
+   "max": 32.4694,
+   "parts": [
+    {
+     "mpn": "R7F7016904AFP",
+     "q10k": 5.189,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F7016443AFP",
+     "q10k": 7.4107,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F702300BFABA-C#BC6",
+     "q10k": 32.4694,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F702002AEABA-C#BC0",
+     "q10k": 17.72,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F701382EAFP-C#KA2",
+     "q10k": 6.6319,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F7016843AFP-C#AA1",
+     "q10k": 6.3381,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F7016933AFP-C#AA1",
+     "q10k": 6.1188,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F7015813AFP-C#AA3",
+     "q10k": 6.7666,
+     "aecq": true
+    },
+    {
+     "mpn": "R7F7016453AFP-C#AA1",
+     "q10k": 7.3794,
+     "aecq": true
+    }
+   ]
+  },
+  "Renesas R-Car V4H ADAS SoC": {
+   "stated": [
+    80,
+    200
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "STM32 microcontroller": {
+   "stated": [
+    1,
+    10
+   ],
+   "n": 12,
+   "min": 0.283,
+   "median": 2.6565,
+   "max": 7.3754,
+   "parts": [
+    {
+     "mpn": "STM32H735IGK6",
+     "q10k": 6.4755,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32G474RET3",
+     "q10k": 3.9526,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32H743ZIT6",
+     "q10k": 6.0557,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32F103RET6",
+     "q10k": 4.1982,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32G431RBT3",
+     "q10k": 2.4209,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32G071RBT6",
+     "q10k": 0.9515,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32F030F4P6TR",
+     "q10k": 0.283,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32U575ZIT6Q",
+     "q10k": 7.3754,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32G070RBT6",
+     "q10k": 0.8239,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32F070RBT6TR",
+     "q10k": 1.2131,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32F031G6U7TR",
+     "q10k": 0.9638,
+     "aecq": false
+    },
+    {
+     "mpn": "STM32H563VGT6",
+     "q10k": 2.6565,
+     "aecq": false
+    }
+   ]
+  },
+  "Microchip SAM automotive MCU": {
+   "stated": [
+    3,
+    12
+   ],
+   "n": 1,
+   "min": 2.1537,
+   "median": 2.1537,
+   "max": 2.1537,
+   "parts": [
+    {
+     "mpn": "ATSAMC21J18A-AZTVAO",
+     "q10k": 2.1537,
+     "aecq": true
+    }
+   ]
+  },
+  "TI TDA4VM/AL ADAS SoC": {
+   "stated": [
+    85,
+    280
+   ],
+   "n": 2,
+   "min": 75.2707,
+   "median": 128.6681,
+   "max": 128.6681,
+   "parts": [
+    {
+     "mpn": "TDA4VM88TGCALFRQ1",
+     "q10k": 75.2707,
+     "aecq": true
+    },
+    {
+     "mpn": "TDA4VH88TGAALYRQ1",
+     "q10k": 128.6681,
+     "aecq": true
+    }
+   ]
+  },
+  "TI TDA2x ADAS SoC (older gen)": {
+   "stated": [
+    45,
+    120
+   ],
+   "n": 1,
+   "min": 61.4294,
+   "median": 61.4294,
+   "max": 61.4294,
+   "parts": [
+    {
+     "mpn": "TDA2SXBTQABCRQ1",
+     "q10k": 61.4294,
+     "aecq": true
+    }
+   ]
+  },
+  "Mobileye EyeQ ADAS processor": {
+   "stated": [
+    35,
+    180
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Sony automotive image sensor": {
+   "stated": [
+    8,
+    35
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "OmniVision automotive image sensor": {
+   "stated": [
+    3,
+    18
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "NXP TJA110x 100BASE-T1 automotive Ethernet PHY": {
+   "stated": [
+    1.2,
+    4
+   ],
+   "n": 4,
+   "min": 1.0168,
+   "median": 2.6301,
+   "max": 2.691,
+   "parts": [
+    {
+     "mpn": "TJA1103AHN/0Z",
+     "q10k": 1.0168,
+     "aecq": true
+    },
+    {
+     "mpn": "TJA1100HNZ",
+     "q10k": 2.6301,
+     "aecq": true
+    },
+    {
+     "mpn": "TJA1102HN",
+     "q10k": 2.691,
+     "aecq": true
+    },
+    {
+     "mpn": "TJA1101BHN",
+     "q10k": 1.6345,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP TJA104x CAN/CAN-FD transceiver (automotive)": {
+   "stated": [
+    0.4,
+    1.2
+   ],
+   "n": 3,
+   "min": 0.3536,
+   "median": 0.484,
+   "max": 0.8799,
+   "parts": [
+    {
+     "mpn": "TJA1044GT/3Z",
+     "q10k": 0.3536,
+     "aecq": true
+    },
+    {
+     "mpn": "TJA1042T/3,118",
+     "q10k": 0.8799,
+     "aecq": true
+    },
+    {
+     "mpn": "TJA1043T,118",
+     "q10k": 0.484,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP TJA110x automotive LIN transceiver": {
+   "stated": [
+    0.45,
+    1.6
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "NXP SJA110x 5-port automotive Ethernet switch": {
+   "stated": [
+    8,
+    40
+   ],
+   "n": 3,
+   "min": 5.9011,
+   "median": 8.2112,
+   "max": 9.9582,
+   "parts": [
+    {
+     "mpn": "SJA1110AEL/0Y",
+     "q10k": 9.9582,
+     "aecq": true
+    },
+    {
+     "mpn": "SJA1105QEL",
+     "q10k": 5.9011,
+     "aecq": true
+    },
+    {
+     "mpn": "SJA1110BEL/0Y",
+     "q10k": 8.2112,
+     "aecq": true
+    }
+   ]
+  },
+  "TI DP83 automotive Ethernet PHY": {
+   "stated": [
+    1.5,
+    5
+   ],
+   "n": 1,
+   "min": 1.7205,
+   "median": 1.7205,
+   "max": 1.7205,
+   "parts": [
+    {
+     "mpn": "DP83TC812SRHARQ1",
+     "q10k": 1.7205,
+     "aecq": true
+    }
+   ]
+  },
+  "Broadcom automotive 100BASE-T1 PHY": {
+   "stated": [
+    4,
+    15
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "TI TCAN10xx automotive CAN-FD transceiver": {
+   "stated": [
+    0.35,
+    1.2
+   ],
+   "n": 7,
+   "min": 0.2947,
+   "median": 0.6111,
+   "max": 0.8786,
+   "parts": [
+    {
+     "mpn": "TCAN1044AVDRQ1",
+     "q10k": 0.2947,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1042HGVDRQ1",
+     "q10k": 0.784,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1051HGVDRQ1",
+     "q10k": 0.6846,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1043ADRQ1",
+     "q10k": 0.6111,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "q10k": 0.2966,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1043ADYYRQ1",
+     "q10k": 0.5996,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1046AVDRQ1",
+     "q10k": 0.8786,
+     "aecq": true
+    }
+   ]
+  },
+  "TI automotive CAN/isolated transceiver": {
+   "stated": [
+    0.8,
+    4.5
+   ],
+   "n": 14,
+   "min": 0.2947,
+   "median": 0.784,
+   "max": 3.1135,
+   "parts": [
+    {
+     "mpn": "TCAN1044AVDRQ1",
+     "q10k": 0.2947,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1042HGVDRQ1",
+     "q10k": 0.784,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1051HGVDRQ1",
+     "q10k": 0.6846,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN4550RGYRQ1",
+     "q10k": 1.2703,
+     "aecq": true
+    },
+    {
+     "mpn": "ISO1042BQDWRQ1",
+     "q10k": 2.5318,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1043ADRQ1",
+     "q10k": 0.6111,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "q10k": 0.2966,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1145DMTRQ1",
+     "q10k": 0.8482,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1462VDRBRQ1",
+     "q10k": 0.4952,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1043ADYYRQ1",
+     "q10k": 0.5996,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1463DRQ1",
+     "q10k": 0.8355,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN28473RHBRQ1",
+     "q10k": 3.1135,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN3404DDFRQ1",
+     "q10k": 0.7089,
+     "aecq": true
+    },
+    {
+     "mpn": "TCAN1046AVDRQ1",
+     "q10k": 0.8786,
+     "aecq": true
+    }
+   ]
+  },
+  "Infineon TLF3558x automotive safety PMIC (ASIL-D)": {
+   "stated": [
+    2,
+    6
+   ],
+   "n": 1,
+   "min": 2.5786,
+   "median": 2.5786,
+   "max": 2.5786,
+   "parts": [
+    {
+     "mpn": "TLF35584QVVS2",
+     "q10k": 2.5786,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP FS65/FS85 System Basis Chip (safety SBC)": {
+   "stated": [
+    2.5,
+    7
+   ],
+   "n": 6,
+   "min": 3.3939,
+   "median": 3.8788,
+   "max": 4.7086,
+   "parts": [
+    {
+     "mpn": "MC33FS6500NAER2",
+     "q10k": 3.3939,
+     "aecq": true
+    },
+    {
+     "mpn": "MC33FS8530A0ES",
+     "q10k": 4.7086,
+     "aecq": true
+    },
+    {
+     "mpn": "MC33FS6522LAE",
+     "q10k": 3.8788,
+     "aecq": true
+    },
+    {
+     "mpn": "MC33FS6523CAE",
+     "q10k": 4.4222,
+     "aecq": true
+    },
+    {
+     "mpn": "MC33FS6523NAE",
+     "q10k": 3.4299,
+     "aecq": true
+    },
+    {
+     "mpn": "MC33FS6520LAER2",
+     "q10k": 3.5685,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP UJA117x Mini SBC": {
+   "stated": [
+    1.8,
+    5
+   ],
+   "n": 1,
+   "min": 1.1767,
+   "median": 1.1767,
+   "max": 1.1767,
+   "parts": [
+    {
+     "mpn": "UJA1167ATK/0Z",
+     "q10k": 1.1767,
+     "aecq": true
+    }
+   ]
+  },
+  "Rohm BD automotive PMIC": {
+   "stated": [
+    2,
+    8
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Renesas RAA/ISL automotive multi-rail PMIC": {
+   "stated": [
+    4,
+    14
+   ],
+   "n": 3,
+   "min": 2.0317,
+   "median": 2.0565,
+   "max": 6.1807,
+   "parts": [
+    {
+     "mpn": "RAA271082A4HNP#MA0",
+     "q10k": 2.0565,
+     "aecq": true
+    },
+    {
+     "mpn": "ISL78714ANZ",
+     "q10k": 6.1807,
+     "aecq": true
+    },
+    {
+     "mpn": "ISL78206AVEZ-T7A",
+     "q10k": 2.0317,
+     "aecq": true
+    }
+   ]
+  },
+  "TI TPS92x automotive LED driver": {
+   "stated": [
+    1.5,
+    6
+   ],
+   "n": 1,
+   "min": 0.8994,
+   "median": 0.8994,
+   "max": 0.8994,
+   "parts": [
+    {
+     "mpn": "TPS92830QPWRQ1",
+     "q10k": 0.8994,
+     "aecq": true
+    }
+   ]
+  },
+  "Infineon TLE/TLS automotive voltage reg / SBC": {
+   "stated": [
+    0.6,
+    4
+   ],
+   "n": 8,
+   "min": 0.4017,
+   "median": 1.5207,
+   "max": 2.0444,
+   "parts": [
+    {
+     "mpn": "TLE9261BQXV33",
+     "q10k": 1.5207,
+     "aecq": true
+    },
+    {
+     "mpn": "TLE9263BQXV33XUMA1",
+     "q10k": 1.5614,
+     "aecq": true
+    },
+    {
+     "mpn": "TLS4120D0EPV33XUMA1",
+     "q10k": 1.6895,
+     "aecq": true
+    },
+    {
+     "mpn": "TLE92633QXXUMA1",
+     "q10k": 2.0444,
+     "aecq": true
+    },
+    {
+     "mpn": "TLS850D0TAV50ATMA1",
+     "q10k": 1.411,
+     "aecq": true
+    },
+    {
+     "mpn": "TLS205B0LDV33XUMA1",
+     "q10k": 0.5439,
+     "aecq": true
+    },
+    {
+     "mpn": "TLE7259-3GE",
+     "q10k": 0.4045,
+     "aecq": true
+    },
+    {
+     "mpn": "TLS715B0EJV50XUMA1",
+     "q10k": 0.4017,
+     "aecq": true
+    }
+   ]
+  },
+  "ON Semi NCV automotive LDO/power IC": {
+   "stated": [
+    0.6,
+    3.5
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "TI UCC isolated automotive gate driver": {
+   "stated": [
+    1.8,
+    5
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "TI ISO/DRV automotive driver": {
+   "stated": [
+    2,
+    8
+   ],
+   "n": 1,
+   "min": 1.1622,
+   "median": 1.1622,
+   "max": 1.1622,
+   "parts": [
+    {
+     "mpn": "ISO7741QDWRQ1",
+     "q10k": 1.1622,
+     "aecq": true
+    }
+   ]
+  },
+  "Infineon BTS automotive smart power switch": {
+   "stated": [
+    0.5,
+    3
+   ],
+   "n": 7,
+   "min": 0.6427,
+   "median": 0.9714,
+   "max": 2.7218,
+   "parts": [
+    {
+     "mpn": "BTS70082EPAXUMA1",
+     "q10k": 0.807,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS70021EPPXUMA1",
+     "q10k": 0.9714,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS70041EPPXUMA1",
+     "q10k": 0.8048,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS70061EPPXUMA1",
+     "q10k": 0.6427,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS500151TADATMA2",
+     "q10k": 2.4078,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS700121ESPXUMA2",
+     "q10k": 1.6588,
+     "aecq": true
+    },
+    {
+     "mpn": "BTS500101TADATMA2",
+     "q10k": 2.7218,
+     "aecq": true
+    }
+   ]
+  },
+  "Infineon AUIPS automotive power switch": {
+   "stated": [
+    1.5,
+    6
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Infineon BGT60/24 77GHz/24GHz radar frontend": {
+   "stated": [
+    18,
+    80
+   ],
+   "n": 2,
+   "min": 6.4303,
+   "median": 11.9472,
+   "max": 11.9472,
+   "parts": [
+    {
+     "mpn": "BGT60ATR24CE6327XTMA1",
+     "q10k": 11.9472,
+     "aecq": true
+    },
+    {
+     "mpn": "BGT24ATR22E6433XUMA1",
+     "q10k": 6.4303,
+     "aecq": true
+    }
+   ]
+  },
+  "NXP TEF810x 77GHz radar transceiver": {
+   "stated": [
+    9,
+    22
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "TI AWR 77GHz ADAS radar SoC": {
+   "stated": [
+    14,
+    40
+   ],
+   "n": 6,
+   "min": 15.547,
+   "median": 18.4798,
+   "max": 22.1275,
+   "parts": [
+    {
+     "mpn": "AWR1843ABGABLRQ1",
+     "q10k": 19.7031,
+     "aecq": true
+    },
+    {
+     "mpn": "AWR2944ALBGALTRQ1",
+     "q10k": 18.4798,
+     "aecq": true
+    },
+    {
+     "mpn": "AWR1443FQIGABLRQ1",
+     "q10k": 15.547,
+     "aecq": true
+    },
+    {
+     "mpn": "AWR1642ABIGABLQ1",
+     "q10k": 16.1346,
+     "aecq": true
+    },
+    {
+     "mpn": "AWR2243ABGABLQ1",
+     "q10k": 17.5335,
+     "aecq": true
+    },
+    {
+     "mpn": "AWR1843ARBGALPQ1",
+     "q10k": 22.1275,
+     "aecq": true
+    }
+   ]
+  },
+  "ISSI automotive SDRAM/SRAM": {
+   "stated": [
+    1.5,
+    8
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Samsung automotive LPDDR/NAND (AEC-Q grade)": {
+   "stated": [
+    3,
+    20
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  },
+  "Micron automotive DDR/Flash": {
+   "stated": [
+    2.5,
+    15
+   ],
+   "n": 4,
+   "min": 2.3564,
+   "median": 5.782,
+   "max": 21.8964,
+   "parts": [
+    {
+     "mpn": "MT25QL256ABA1EW9",
+     "q10k": 5.782,
+     "aecq": false
+    },
+    {
+     "mpn": "MT25QL512ABB8ESF-0AUT",
+     "q10k": 5.778,
+     "aecq": true
+    },
+    {
+     "mpn": "MT25QU01GBBB8E12-0AUT",
+     "q10k": 21.8964,
+     "aecq": true
+    },
+    {
+     "mpn": "MT41K256M16TW-107 AAT:P",
+     "q10k": 2.3564,
+     "aecq": true
+    }
+   ]
+  },
+  "Kioxia automotive eMMC/NAND": {
+   "stated": [
+    3,
+    18
+   ],
+   "n": 1,
+   "min": 16.3631,
+   "median": 16.3631,
+   "max": 16.3631,
+   "parts": [
+    {
+     "mpn": "THGBMJG8C2LBAU8",
+     "q10k": 16.3631,
+     "aecq": true
+    }
+   ]
+  },
+  "Winbond SPI NOR flash (automotive)": {
+   "stated": [
+    0.4,
+    1.6
+   ],
+   "n": 4,
+   "min": 0.6743,
+   "median": 2.2392,
+   "max": 2.6563,
+   "parts": [
+    {
+     "mpn": "W25Q32JWSSIQ",
+     "q10k": 0.6743,
+     "aecq": true
+    },
+    {
+     "mpn": "W25Q128JVSIQ",
+     "q10k": 1.3247,
+     "aecq": false
+    },
+    {
+     "mpn": "W25Q256JWEIQ",
+     "q10k": 2.6563,
+     "aecq": false
+    },
+    {
+     "mpn": "W25Q256JVEIQ",
+     "q10k": 2.2392,
+     "aecq": false
+    }
+   ]
+  },
+  "SPI NOR flash (automotive)": {
+   "stated": [
+    0.3,
+    1.5
+   ],
+   "n": 9,
+   "min": 0.6627,
+   "median": 1.8292,
+   "max": 7.559,
+   "parts": [
+    {
+     "mpn": "IS25LP128-JBLA3",
+     "q10k": 1.8292,
+     "aecq": true
+    },
+    {
+     "mpn": "MX25L25645GZ2I-08G",
+     "q10k": 3.3958,
+     "aecq": false
+    },
+    {
+     "mpn": "MX25UM51245GXDR00-T",
+     "q10k": 7.559,
+     "aecq": true
+    },
+    {
+     "mpn": "MX25U25645GZ4I00",
+     "q10k": 2.0882,
+     "aecq": false
+    },
+    {
+     "mpn": "GD25Q128ESIGR",
+     "q10k": 0.6627,
+     "aecq": false
+    },
+    {
+     "mpn": "MX25L12833FM2I-10G",
+     "q10k": 1.7244,
+     "aecq": false
+    },
+    {
+     "mpn": "MX25L25645GMI-08GTR",
+     "q10k": 1.1684,
+     "aecq": false
+    },
+    {
+     "mpn": "IS25LP064A-JBLA3-TR",
+     "q10k": 0.8484,
+     "aecq": true
+    },
+    {
+     "mpn": "IS25LP512M-JLLA3",
+     "q10k": 6.0472,
+     "aecq": true
+    }
+   ]
+  },
+  "Nordic nRF MCU/SoC": {
+   "stated": [
+    0.7,
+    4.5
+   ],
+   "n": 2,
+   "min": 2.3636,
+   "median": 4.0075,
+   "max": 4.0075,
+   "parts": [
+    {
+     "mpn": "NRF52840-QIAA-R7",
+     "q10k": 2.3636,
+     "aecq": false
+    },
+    {
+     "mpn": "NRF5340-QKAA-R7",
+     "q10k": 4.0075,
+     "aecq": false
+    }
+   ]
+  },
+  "Espressif WiFi/BT SoC": {
+   "stated": [
+    0.5,
+    2.2
+   ],
+   "n": 2,
+   "min": 2.2921,
+   "median": 2.877,
+   "max": 2.877,
+   "parts": [
+    {
+     "mpn": "ESP32-C6-WROOM-1-N8",
+     "q10k": 2.2921,
+     "aecq": false
+    },
+    {
+     "mpn": "ESP32-S3-WROOM-1-N16R8",
+     "q10k": 2.877,
+     "aecq": false
+    }
+   ]
+  },
+  "Microchip LAN/KSZ Ethernet IC": {
+   "stated": [
+    0.7,
+    5
+   ],
+   "n": 11,
+   "min": 0.5545,
+   "median": 2.1347,
+   "max": 4.6305,
+   "parts": [
+    {
+     "mpn": "KSZ8081RNACA-TR",
+     "q10k": 0.5545,
+     "aecq": false
+    },
+    {
+     "mpn": "LAN9372-I/ZMX",
+     "q10k": 4.5635,
+     "aecq": true
+    },
+    {
+     "mpn": "LAN9370-V/KCXVAO",
+     "q10k": 4.6305,
+     "aecq": true
+    },
+    {
+     "mpn": "LAN9373-V/ZMXVAO",
+     "q10k": 4.5621,
+     "aecq": true
+    },
+    {
+     "mpn": "LAN8770MT-I/PRA",
+     "q10k": 2.1347,
+     "aecq": true
+    },
+    {
+     "mpn": "LAN8670C2T-E/LMX",
+     "q10k": 1.5498,
+     "aecq": true
+    },
+    {
+     "mpn": "LAN8720A-CP-TR",
+     "q10k": 0.5646,
+     "aecq": false
+    },
+    {
+     "mpn": "LAN8671B1-E/U3B",
+     "q10k": 1.5826,
+     "aecq": false
+    },
+    {
+     "mpn": "LAN8870T-I/PUA",
+     "q10k": 1.9335,
+     "aecq": false
+    },
+    {
+     "mpn": "LAN8650B1T-E/LMX",
+     "q10k": 3.3721,
+     "aecq": false
+    },
+    {
+     "mpn": "LAN8660B0T-11-00000-E/LMX",
+     "q10k": 2.1361,
+     "aecq": true
+    }
+   ]
+  },
+  "Maxim/ADI automotive multi-output PMIC": {
+   "stated": [
+    2.5,
+    6.5
+   ],
+   "n": 6,
+   "min": 1.4473,
+   "median": 2.1489,
+   "max": 2.4986,
+   "parts": [
+    {
+     "mpn": "MAX20087ATPA/V+",
+     "q10k": 2.1777,
+     "aecq": true
+    },
+    {
+     "mpn": "MAX20086ATPA/VY+",
+     "q10k": 1.4473,
+     "aecq": true
+    },
+    {
+     "mpn": "MAX20410AFOC/VY+T",
+     "q10k": 2.4986,
+     "aecq": true
+    },
+    {
+     "mpn": "MAX20089ATPA/VY+",
+     "q10k": 1.575,
+     "aecq": true
+    },
+    {
+     "mpn": "MAX20022ATIA/V+T",
+     "q10k": 2.1489,
+     "aecq": true
+    },
+    {
+     "mpn": "MAX20089ATPA/VY+T",
+     "q10k": 1.7935,
+     "aecq": true
+    }
+   ]
+  },
+  "TI TLV comparator/op-amp": {
+   "stated": [
+    0.12,
+    1.8
+   ],
+   "n": 5,
+   "min": 0.0607,
+   "median": 0.4637,
+   "max": 0.5429,
+   "parts": [
+    {
+     "mpn": "TLV3201AQDCKRQ1",
+     "q10k": 0.5429,
+     "aecq": true
+    },
+    {
+     "mpn": "TLV7031QDCKRQ1",
+     "q10k": 0.4637,
+     "aecq": true
+    },
+    {
+     "mpn": "TLV76733QWDRBRQ1",
+     "q10k": 0.5221,
+     "aecq": true
+    },
+    {
+     "mpn": "TLV70233QDSERQ1",
+     "q10k": 0.2394,
+     "aecq": true
+    },
+    {
+     "mpn": "TLV76033DBZR",
+     "q10k": 0.0607,
+     "aecq": false
+    }
+   ]
+  },
+  "TI/Fairchild classic linear IC": {
+   "stated": [
+    0.08,
+    0.8
+   ],
+   "n": 0,
+   "min": null,
+   "median": null,
+   "max": null,
+   "parts": []
+  }
+ }
+}

@@ -1,4 +1,5 @@
 
+import { readFileSync } from 'node:fs';
 import { Router } from 'express';
 import { countryFactor } from '../../src/engine/regional-services.js';
 import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
@@ -41,6 +42,7 @@ import { isNotFitted, cataloguePriceAt, VOLUME_CAP_PARTS, TOP_STORED_BREAK, FRAN
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
+import { flagCustomParts } from '../utils/pcb-custom-parts.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
 import { coatedShare } from '../../src/engine/pcb-coating.js';
 import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec, gateBoardEvidence, scaleBoardFromReference } from '../utils/pcb-boardspec-stabilise.js';
@@ -1391,7 +1393,7 @@ manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 // pcb-component-catalogue.json) carries the per-part figures and sources.
 // `generic` entries name a FUNCTION, not a part ("77 GHz radar transceiver MMIC"
 // with no marking read): they bound a price but never count as the part identified.
-const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string; generic?: boolean }> = [
+export const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string; generic?: boolean }> = [
   // ── Automotive radar MCUs (ranges as in the automotive system prompt) ─────
   { test: m => /S32R29[0-9]|S32R27[0-9]/i.test(m), label: 'NXP S32R294/S32R274 radar MCU (ASIL-B)', price: '£18–34' },   // Arrow $29, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k (2026-10-01)
   { test: m => /S32R4[0-9]/i.test(m), label: 'NXP S32R45/S32R41 radar processor', price: '£45–95' },
@@ -1463,7 +1465,12 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
 ];
 
 /** The tool's stated range (~10k basis, TABLE_BASIS_QTY) for a BOM line it can name, for the grounding cap. */
-export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean } | null {
+/** Sourced evidence behind each named range (scripts/pcb-named-range-review.mts --write, 27 Nov 2026): the catalogue parts
+ *  the range's test matches, at 10k. ≥ 3 parts → the range is theirs; 1–2 → the stated range widened to take them in. */
+const NAMED_RANGE_EVIDENCE: Record<string, { stated: [number, number]; n: number; min: number | null; median: number | null; max: number | null }> =
+  (() => { try { return JSON.parse(readFileSync(new URL('../data/pcb-named-range-evidence.json', import.meta.url), 'utf8')).ranges ?? {}; } catch { return {}; } })();
+
+export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean; p50?: number } | null {
   // A NAMED range applies to the part number only — the description is the model's prose ("…for AURIX MCUs" put a
   // TLF35585 in the £15–60 AURIX row; pipeline review F11). Only the generic function rows read the description.
   const pn = String(line.partNumber ?? '').toUpperCase();
@@ -1471,7 +1478,15 @@ export function icKnownRange(line: { partNumber?: unknown; description?: unknown
   const hit = IC_PRICE_HINTS.find(h => !(opts.specificOnly && h.generic) && (h.generic ? h.test(text) : pn.trim().length > 0 && h.test(pn)));
   if (!hit) return null;
   const m = /£\s*([0-9.]+)\s*[–-]\s*([0-9.]+)/.exec(hit.price);
-  return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label, ...(hit.generic ? { generic: true } : {}) } : null;
+  if (!m) return null;
+  const ev = NAMED_RANGE_EVIDENCE[hit.label];
+  if (ev && ev.n >= 3 && ev.min != null && ev.max != null && ev.median != null) {
+    return { lo: ev.min, hi: ev.max, p50: ev.median, label: `${hit.label} (${ev.n} sourced catalogue parts £${ev.min.toFixed(2)}–${ev.max.toFixed(2)} at 10k)`, ...(hit.generic ? { generic: true } : {}) };
+  }
+  if (ev && ev.n >= 1 && ev.min != null && ev.max != null) {
+    return { lo: Math.min(Number(m[1]), ev.min), hi: Math.max(Number(m[2]), ev.max), label: `${hit.label} (stated £${m[1]}–${m[2]}, widened to ${ev.n} sourced part${ev.n > 1 ? 's' : ''})`, ...(hit.generic ? { generic: true } : {}) };
+  }
+  return { lo: Number(m[1]), hi: Number(m[2]), label: hit.label, ...(hit.generic ? { generic: true } : {}) };
 }
 
 /** The tool's label for a chip marking it can name specifically (null = not nameable). */
@@ -1486,7 +1501,7 @@ export function knownRangeAtVolume(volumeMultiplier: number) {
     const r = icKnownRange(line);
     if (!r) return null;
     const k = Number(line.volumeMultiplier) > 0 ? Number(line.volumeMultiplier) : volumeMultiplier;
-    return { ...r, lo: Math.round(r.lo * k * 100) / 100, hi: Math.round(r.hi * k * 100) / 100 };
+    return { ...r, lo: Math.round(r.lo * k * 100) / 100, hi: Math.round(r.hi * k * 100) / 100, ...(r.p50 != null ? { p50: Math.round(r.p50 * k * 100) / 100 } : {}) };
   };
 }
 
@@ -1496,8 +1511,9 @@ function buildICPriceHints(markings: string[], domain: string): string {
     : '';
   const lines = markings.map(marking => {
     const m = marking.toUpperCase();
-    const hit = IC_PRICE_HINTS.find(h => !h.generic && h.test(m));
-    if (hit) return `${marking} — ${hit.label} — ${hit.price} at 100K volume${domain === 'automotive_adas' ? ' (AEC-Q, automotive=true)' : ''}`;
+    // The range the tool itself would price the part in (sourced evidence applied — 27 Nov 2026), at its ~10k basis.
+    const r = IC_PRICE_HINTS.some(h => !h.generic && h.test(m)) ? icKnownRange({ partNumber: m }, { specificOnly: true }) : null;
+    if (r) return `${marking} — ${r.label} — £${r.lo}–${r.hi} at ~10k volume${domain === 'automotive_adas' ? ' (AEC-Q, automotive=true)' : ''}`;
     return `${marking} — use pricing table above`;
   });
   return automotiveNote + lines.join('\n');
@@ -2024,6 +2040,11 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
           ? { ...l, needsVerification: true, ocrCheck: xc.filter(c => c.refDes === String(l.refDes ?? l.partNumber)).map(c => c.message).join(' ') } : l));
         for (const c of xc) warnings.push({ code: c.code, severity: 'warn', message: c.message });
       }
+    }
+    { // Customer-specific parts: a placeholder price, to quote (27 Nov 2026).
+      const cp = flagCustomParts(bom);
+      bom = cp.bom;
+      if (cp.names.length) warnings.push({ code: 'CUSTOM_PART_QUOTE', severity: 'warn', message: `Customer-specific part${cp.names.length > 1 ? 's' : ''} with no public price, priced as the class equivalent — get a quote: ${cp.names.slice(0, 8).join(', ')}${cp.names.length > 8 ? ', …' : ''}.` });
     }
     for (const l of bom) {
       const pc = l.packageConflict as { bom: string; catalogue: string } | undefined;

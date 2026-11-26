@@ -32,6 +32,7 @@ const num = (v: unknown) => { const n = Number(v); return Number.isFinite(n) ? n
 function statusOf(l: Line): { status: VerifyLine['status']; why: string } {
   const src = String(l.priceSource ?? '');
   if (src === 'user' || l.userCorrected === true && l.priceEdited !== false) return { status: 'confirmed', why: 'the engineer\'s price' };
+  if (l.customPart === true) return { status: 'to verify', why: 'customer-specific part — no public price; a class-equivalent placeholder: get a quote' };
   if (l.bomSource === 'file' || l.bomSource === 'image') {
     if (src === 'catalogue' && l.catalogueExact === true) return { status: 'confirmed', why: 'your BOM\'s part number, catalogue price' };
   }
