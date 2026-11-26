@@ -20,58 +20,80 @@ from openpyxl.utils import get_column_letter
 
 H = os.path.dirname(os.path.abspath(__file__))
 rd = json.load(open(os.path.join(H, 'reading.json')))
-RES = json.load(open(os.path.join(H, 'research', 'line-prices.json')))   # build-line-prices.py, from research/parts.json
+RES = json.load(open(os.path.join(H, 'research', 'line-prices.json')))   # the engineer's given prices (build-line-prices.py)
 
-# ── Line prices (£ a part at volume). Each line: a sourced BASE price at a stated BREAK quantity, carried to the parts bought a
-# year (qty a board × 100,000) on the CostVision catalogue franchise curve P(Q) = P(break) × (Q / break)^−0.0706, flat above
-# 300,000 parts (the tool's own rule) — `brk=None` = already at the parts-a-year break (catalogue q100k / q200k / q300k).
-SZ = 'szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026'
-CAT = 'CostVision component catalogue (distributor, sourced)'
+# ── Line prices. Each line: the part priced (maker, part number), the seller's own figure (price, currency, quantity, date,
+# page), and the £ base at a stated break. A break below the parts bought a year is carried to them on the CostVision catalogue
+# franchise curve P(Q) = P(break) × (Q / break)^−0.0706, flat above 300,000 parts a year; `brk=None` = the base is already at
+# the parts-a-year break (catalogue 100k / 200k / 300k). China reel = szlcsc own stock, whole reel, ex-VAT (page ÷ 1.13).
 SLOPE, FLAT = 0.0706, 300000
-P = {   # refDes: (base £, break qty or None, kind, basis, url)
- 'R 0603 group': (0.00075, 5000, 'china-reel', f'AC0603FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/117931.html'),
- 'R 0805 group': (0.00185, 5000, 'china-reel', f'AC0805FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/152196.html'),
- 'R 1206 group': (0.00484, 5000, 'china-reel', f'AC1206FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/155852.html'),
- 'R 2512 group': (0.06194, 4000, 'china-reel', f'AC2512FK-0710RL YAGEO — {SZ}', 'https://item.szlcsc.com/476216.html'),
- 'C 0603 group': (0.00287, 4000, 'china-reel', f'GCM188R71H104KA57D Murata 100 nF 50 V X7R — {SZ}', 'https://item.szlcsc.com/87040.html'),
- 'C 0805 group': ((0.0152 + 0.0214) / 2, None, 'mix', f'value mix (judgement: half 100 nF, half 1 µF): KAM21BR71H104KT 100 nF 50 V X7R AEC-Q200 £0.0152 at 300k ({CAT}) and GCM21BR71H105KA03L 1 µF 50 V £0.0214 at 500k a year (distributor, 6 Oct 2026)', ''),
- 'C 1206 group': ((0.0197 + 0.06766 * (FLAT / 2000) ** -SLOPE) / 2, None, 'mix', f'value mix (judgement: half 100 nF, half 4.7 µF): C1206C104K5RACAUTO 100 nF 50 V AEC-Q200 £0.0197 at 300k ({CAT}) and CGA5L1X7R1H475KT0Y0N TDK 4.7 µF 50 V £0.06766 at a 2,000 reel ({SZ}) carried to 300k = £{0.06766 * (FLAT / 2000) ** -SLOPE:.4f}', 'https://item.szlcsc.com/370048.html'),
- 'C 1210 group': (0.09857, 1000, 'china-reel', f'GCM32EC71H106KA03L Murata 10 µF 50 V X7S (bulk) — {SZ}', 'https://item.szlcsc.com/137892.html'),
- 'Q small-signal group': (0.00445, 3000, 'china-reel', f'mean of 2N7002,215 and BC847C,215 Nexperia — {SZ}', 'https://item.szlcsc.com/66260.html'),
- 'D small-signal group': (0.00329, 3000, 'china-reel', f'BAV99,215 Nexperia — {SZ}', 'https://item.szlcsc.com/2877.html'),
- 'Zener group': (0.00531, 3000, 'china-reel', f'BZT52C5V1Q (AEC-Q101) — {SZ} (the Diodes -7-F listing £0.0188 is dearer)', ''),
- 'D rectifier group': (0.0645, None, 'catalogue', f'STPS2H100AY ST 100 V 2 A Schottky, SMA, AEC-Q101 — £0.0645 at 300k ({CAT})', ''),
- 'TVS SMB group': (0.04339, 3000, 'china-reel', f'SMBJ24CA Littelfuse 600 W SMB (a 58 V part of the same family is the same price class) — {SZ}', 'https://item.szlcsc.com/84432.html'),
- 'U3': (0.11322, 2500, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue: de-marked SO-8; the MCU has its own CAN physical layer) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
- 'U4, U5': (0.11322, 2500, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
- 'U6': (0.119, None, 'class-point', 'MSOP-10 signal IC, not identified: CostVision class range "op-amp / comparator" at this volume, lower-half midpoint', ''),
- 'U2': (0.7679, None, 'catalogue', f'de-marked SO-16 beside T1 (transformer / gate-drive supply driver). Analogue UCC21222QDRQ1 TI dual-channel isolated gate driver, SOIC-16, AEC-Q100 — £0.7679 at 100k ({CAT})', ''),
- 'U7, U8': (0.3013, None, 'catalogue', f'de-marked SOT-223 regulator. Analogue L5150BNTR ST 40 V 150 mA LDO, AEC-Q100 — £0.3013 at 200k ({CAT})', ''),
- 'Q1': (0.2984, None, 'catalogue', f'de-marked 5×5 power MOSFET. Analogue SQJ844AEP Vishay automotive MOSFET, PowerPAK SO-8L — £0.2984 at 100k ({CAT})', ''),
- 'L1': (0.15148, 1000, 'china-reel', f'CLF6045NIT-4R7N-D TDK 6×6 shielded, AEC-Q200 (analogue) — {SZ}', 'https://item.szlcsc.com/335482.html'),
- 'L2': (0.07649, 500, 'china-reel', f'DLW43SH510XK2L Murata CAN CMC (analogue) — {SZ}', 'https://item.szlcsc.com/92784.html'),
- 'Y1': (0.0702, None, 'catalogue', f'NX3225GA-25.000M NDK automotive crystal, AEC-Q200 — £0.0702 at 100k ({CAT})', ''),
- 'C bulk 100 uF': (0.103, None, 'catalogue', f'aluminium electrolytic (marking "hJ 100 VHJ" not decoded). Analogue UCM1V101MCL1GS Nichicon 100 µF 35 V, 6.3 × 5.8 mm, AEC-Q200 — £0.1030 at 100k ({CAT})', ''),
- 'C bulk 22 uF pair': (0.0662, None, 'catalogue', f'aluminium electrolytic (marking "22 JZC 6X6" not decoded). Analogue EEE-FK Panasonic FK, 6.3 mm can, AEC-Q200 (10 µF 50 V listing) — £0.0662 at 200k ({CAT})', ''),
- 'T1': (1.36, None, 'class-point', 'TDK/EPCOS customer transformer (ordering code B78xxxA2363A003 not listed): CostVision class range "signal transformer, AEC-Q" at this volume, lower-half midpoint. Range £1.02 (TDK EP6 automotive SMD transformer B78416A2360A003, US$1.80 at 1k, unverified, carried to 100k) to £2.69 (TDK E10 EM B78307A2338A003, €4.24 at 1,960, carried to 100k)', ''),
- 'U1': (3.55, None, 'given', 'given', ''),
+SZ = 'szlcsc own stock, whole reel, ex-VAT'
+def sz(mpn, maker, cny, reel, url, grade):
+    return dict(mpn=mpn, maker=maker, grade=grade, seller='szlcsc (China)', quote=f'¥{cny:.5f} ex-VAT a part, reel of {reel:,}', date='25 Nov 2026', url=url)
+def cat(mpn, maker, grade, seller, quote, date, url):
+    return dict(mpn=mpn, maker=maker, grade=grade, seller=seller, quote=quote, date=date, url=url)
+P = {   # refDes: (base £, break qty or None, kind, [sources], note)
+ 'R 0603 group': (0.00075, 5000, 'china-reel', [sz('AC0603FR-0710KL', 'Yageo', 0.00664, 5000, 'https://item.szlcsc.com/117931.html', 'AC series, AEC-Q200')], ''),
+ 'R 0805 group': (0.00185, 5000, 'china-reel', [sz('AC0805FR-0710KL', 'Yageo', 0.01646, 5000, 'https://item.szlcsc.com/152196.html', 'AC series, AEC-Q200')], ''),
+ 'R 1206 group': (0.00484, 5000, 'china-reel', [sz('AC1206FR-0710KL', 'Yageo', 0.04301, 5000, 'https://item.szlcsc.com/155852.html', 'AC series, AEC-Q200')], ''),
+ 'R 2512 group': (0.06194, 4000, 'china-reel', [sz('AC2512FK-0710RL', 'Yageo', 0.55, 4000, 'https://item.szlcsc.com/476216.html', 'AC series, AEC-Q200')], ''),
+ 'C 0603 group': (0.00287, 4000, 'china-reel', [sz('GCM188R71H104KA57D', 'Murata', 0.02549, 4000, 'https://item.szlcsc.com/87040.html', 'GCM, automotive')], '100 nF 50 V X7R'),
+ 'C 0805 group': ((0.0152 + 0.0214) / 2, None, 'mix', [
+     cat('KAM21BR71H104KT', 'Kyocera AVX', 'AEC-Q200', 'Digi-Key', 'US$0.0289 at 12,000', '22 Nov 2026', 'https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT'),
+     cat('GCM21BR71H105KA03L', 'Murata', 'GCM, AEC-Q200', 'LCSC', 'US$0.0235 at 9,000', '6 Oct 2026', 'https://www.lcsc.com/product-detail/C126592.html')],
+     'value mix (judgement): half 100 nF 50 V (£0.0152 at 300k a year), half 1 µF 50 V (£0.0214 at 300k a year)'),
+ 'C 1206 group': ((0.0197 + 0.06766 * (FLAT / 2000) ** -SLOPE) / 2, None, 'mix', [
+     cat('C1206C104K5RACAUTO', 'KEMET', 'AEC-Q200', 'Digi-Key', 'US$0.03711 at 12,000', '22 Nov 2026', 'https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001'),
+     sz('CGA5L1X7R1H475KT0Y0N', 'TDK', 0.6008, 2000, 'https://item.szlcsc.com/370048.html', 'CGA, AEC-Q200')],
+     f'value mix (judgement): half 100 nF 50 V (£0.0197 at 300k a year), half 4.7 µF 50 V (£0.06766 a reel of 2,000 carried to 300k = £{0.06766 * (FLAT / 2000) ** -SLOPE:.4f})'),
+ 'C 1210 group': (0.09857, 1000, 'china-reel', [sz('GCM32EC71H106KA03L', 'Murata', 0.87531, 1000, 'https://item.szlcsc.com/137892.html', 'GCM, automotive')], '10 µF 50 V X7S bulk'),
+ 'Q small-signal group': (0.00445, 3000, 'china-reel', [sz('2N7002,215', 'Nexperia', 0.0477, 3000, 'https://item.szlcsc.com/66260.html', 'AEC-Q101'),
+                                                        sz('BC847C,215', 'Nexperia', 0.03142, 3000, 'https://item.szlcsc.com/9163.html', 'AEC-Q101')], 'mean of the MOSFET and the BJT'),
+ 'D small-signal group': (0.00329, 3000, 'china-reel', [sz('BAV99,215', 'Nexperia', 0.0292, 3000, 'https://item.szlcsc.com/2877.html', 'AEC-Q101')], ''),
+ 'Zener group': (0.00531, 3000, 'china-reel', [sz('BZT52C5V1Q', 'JSMSEMI', 0.04717, 3000, 'https://item.szlcsc.com/3057189.html', '-Q (automotive) suffix')], ''),
+ 'D rectifier group': (0.0645, None, 'catalogue', [cat('STPS2H100AY', 'STMicroelectronics', 'AEC-Q101', 'Digi-Key', 'US$0.10504 at 5,000', '6 Oct 2026', 'https://www.digikey.com/en/products/detail/stmicroelectronics/STPS2H100AY/2612172')],
+     '100 V 2 A Schottky, SMA; £0.0645 at 300k a year'),
+ 'TVS SMB group': (0.04339, 3000, 'china-reel', [sz('SMBJ24CA', 'Littelfuse', 0.38531, 3000, 'https://item.szlcsc.com/84432.html', 'grade not stated on the listing')], '600 W SMB TVS'),
+ 'U3': (0.11322, 2500, 'china-reel', [sz('LM2904BQDRQ1', 'Texas Instruments', 1.0054, 2500, 'https://item.szlcsc.com/1946598.html', 'AEC-Q100')], 'analogue: dual op-amp'),
+ 'U4, U5': (0.11322, 2500, 'china-reel', [sz('LM2904BQDRQ1', 'Texas Instruments', 1.0054, 2500, 'https://item.szlcsc.com/1946598.html', 'AEC-Q100')], 'analogue: dual op-amp'),
+ 'U6': (0.119, None, 'class', [], 'CostVision class price for an automotive op-amp / comparator at this volume'),
+ 'U2': (0.7679, None, 'catalogue', [cat('UCC21222QDRQ1', 'Texas Instruments', 'AEC-Q100', 'LCSC', 'US$1.4072 at 1,000', '9 Oct 2026', 'https://www.lcsc.com/product-image/C1848357.html')],
+     'analogue: dual-channel isolated gate driver, SOIC-16; £0.7679 at 100k a year'),
+ 'U7, U8': (0.3013, None, 'catalogue', [cat('L5150BNTR', 'STMicroelectronics', 'AEC-Q100', 'RS Components UK', '£0.438 at 1,000', '13 Oct 2026', 'https://uk.rs-online.com/web/p/voltage-regulators/1785072')],
+     'analogue: 40 V 150 mA LDO, SOT-223; £0.3013 at 200k a year'),
+ 'Q1': (0.2984, None, 'catalogue', [cat('SQJ844AEP-T1_GE3', 'Vishay', 'AEC-Q101', 'TTI', 'US$0.506 at 3,000', '6 Oct 2026', 'https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=SQJ844AEP-T1-GE3&mfgShortname=SLN')],
+     'analogue: automotive N-MOSFET, PowerPAK SO-8L; £0.2984 at 100k a year'),
+ 'L1': (0.15148, 1000, 'china-reel', [sz('CLF6045NIT-4R7N-D', 'TDK', 1.34513, 1000, 'https://item.szlcsc.com/335482.html', 'automotive grade')], 'analogue: 6 × 6 mm shielded'),
+ 'L2': (0.07649, 500, 'china-reel', [sz('DLW43SH510XK2L', 'Murata', 0.6792, 500, 'https://item.szlcsc.com/92784.html', 'automotive')], 'analogue: CAN common-mode choke'),
+ 'Y1': (0.0702, None, 'catalogue', [cat('NX3225GA-25.000M-STD-CRG-2', 'NDK', 'AEC-Q200', 'LCSC', 'US$0.1169 at 6,000', '9 Oct 2026', 'https://www.lcsc.com/product-image/C438901.html')],
+     'analogue: automotive crystal; £0.0702 at 100k a year'),
+ 'C bulk 100 uF': (0.103, None, 'catalogue', [cat('UCM1V101MCL1GS', 'Nichicon', 'AEC-Q200', 'Digi-Key', 'US$0.17116 at 10,000', '22 Nov 2026', 'https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS')],
+     'analogue: 100 µF 35 V, 6.3 × 5.8 mm; £0.1030 at 100k a year'),
+ 'C bulk 22 uF pair': (0.0662, None, 'catalogue', [cat('EEE-FK1H100P', 'Panasonic', 'FK, AEC-Q200', 'Digi-Key', 'US$0.1366 at 10,000', '6 Oct 2026', 'https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1H100P/765976')],
+     'analogue: FK series, 6.3 mm can; £0.0662 at 200k a year'),
+ 'T1': (1.36, None, 'class', [
+     cat('B78416A2360A003', 'TDK', 'automotive', 'Octopart (search extract, not opened)', 'US$1.80 at 1,000', '26 Nov 2026', 'https://octopart.com/part/tdk/B78416A2360A003'),
+     cat('B78307A2338A003', 'TDK', 'E10 EM, AEC-Q200', 'Digi-Key Finland', '€4.24294 at 1,960', '26 Nov 2026', 'https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824')],
+     'TDK customer part (ordering code B78xxxA2363A003, not listed): CostVision class price for an automotive SMD transformer at this volume; the two catalogued TDK parts carried to 100k a year give £1.02 and £2.69'),
+ 'U1': (3.55, None, 'given', [], ''),
 }
-# the engineer's given figures (research/line-prices.json, kind "given")
-for ref, r in RES.get('lines', {}).items():
+for ref, r in RES.get('lines', {}).items():   # the engineer's given figures (research/line-prices.json)
     if r.get('kind') == 'given':
-        P[ref] = (float(r['unitGBP']), None, 'given', r['basis'], r.get('url', ''))
+        P[ref] = (float(r['unitGBP']), None, 'given', r['sources'], r['basis'])
 
 def at_volume(base, brk, parts_a_year):
-    if brk is None: return base
-    return base * (min(parts_a_year, FLAT) / brk) ** -SLOPE if parts_a_year > brk else base
+    if brk is None or parts_a_year <= brk: return base
+    return base * (min(parts_a_year, FLAT) / brk) ** -SLOPE
 lines = []
 for l in rd['lines']:
-    base, brk, kind, basis, url = P[l['refDes']]
+    base, brk, kind, src, note = P[l['refDes']]
     pa = l['qty'] * 100000
-    u = at_volume(base, brk, pa)
-    if brk: basis += f' — £{base:.5f} at {brk:,}, carried to {min(pa, FLAT):,} parts a year: £{u:.5f}'
+    u = round(at_volume(base, brk, pa), 6)
+    step = f'£{base:.5f} at {brk:,} → {min(pa, FLAT):,} parts a year = £{u:.5f}' if brk and pa > brk else ''
+    basis = '; '.join(x for x in [note, step] if x)
     lines.append(dict(refDes=l['refDes'], description=l['description'], pkg=l['pkg'], qty=l['qty'], qtyLow=l['qtyLow'], qtyHigh=l['qtyHigh'],
-                      countMethod=l['countMethod'], unitGBP=round(u, 6), base=base, brk=brk, kind=kind, basis=basis, url=url, lineGBP=round(l['qty'] * round(u, 6), 6)))
+                      countMethod=l['countMethod'], unitGBP=u, base=base, brk=brk, kind=kind, sources=src, basis=basis,
+                      url=(src[0]['url'] if src else ''), lineGBP=round(l['qty'] * u, 6)))
 
 # ── Inputs
 I = {}
@@ -187,11 +209,17 @@ ref = {}
 for r, (k, d) in enumerate(I.items(), 2):
     for j, x in enumerate([k, d['v'], d['unit'], d['cls'], d['basis']], 1): wsI.cell(r, j, x)
     ref[k] = f'Inputs!$B${r}'
-wsB = wb.create_sheet('BOM'); head(wsB, ['RefDes', 'Description', 'Package', 'Qty', 'Qty low', 'Qty high', 'Count', 'Unit £', 'Line £', 'Price kind', 'Price basis', 'URL'],
-                                     [20, 60, 18, 7, 8, 8, 10, 10, 10, 12, 80, 40])
+wsB = wb.create_sheet('BOM'); head(wsB, ['RefDes', 'Description', 'Package', 'Qty', 'Qty low', 'Qty high', 'Count', 'Unit £ at volume', 'Line £', 'Price kind', 'Part priced', 'Seller · price quoted · date', 'Volume step / note', 'Source page'],
+                                     [20, 55, 16, 6, 8, 8, 10, 12, 10, 12, 34, 44, 60, 60])
 for r, l in enumerate(lines, 2):
-    for j, x in enumerate([l['refDes'], l['description'], l['pkg'], l['qty'], l['qtyLow'], l['qtyHigh'], l['countMethod'], l['unitGBP'], f'=D{r}*H{r}', l['kind'], l['basis'], l['url']], 1):
+    srcs = l['sources']
+    part = ' + '.join(f"{x['maker']} {x['mpn']} ({x['grade']})" for x in srcs) or 'not identified — class price'
+    quote = ' ; '.join(f"{x['seller']}: {x['quote']}, {x['date']}" for x in srcs)
+    for j, x in enumerate([l['refDes'], l['description'], l['pkg'], l['qty'], l['qtyLow'], l['qtyHigh'], l['countMethod'], l['unitGBP'], f'=D{r}*H{r}', l['kind'], part, quote, l['basis'], ''], 1):
         wsB.cell(r, j, x)
+    if srcs:
+        c = wsB.cell(r, 14, srcs[0]['url']); c.hyperlink = srcs[0]['url']; c.font = Font(color='0563C1', underline='single')
+        for k, x in enumerate(srcs[1:], 1): wsB.cell(r, 14).value = ' ; '.join(y['url'] for y in srcs)
 nB = len(lines) + 1
 wsB.cell(nB + 1, 2, 'Components a board').font = Font(bold=True); wsB.cell(nB + 1, 9, f'=SUM(I2:I{nB})').font = Font(bold=True)
 COMP = f'BOM!$I${nB + 1}'

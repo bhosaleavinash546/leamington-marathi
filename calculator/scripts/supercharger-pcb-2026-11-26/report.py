@@ -14,7 +14,7 @@ from openpyxl.utils import get_column_letter
 H = os.path.dirname(os.path.abspath(__file__))
 TG_DIR, TC_DIR, OUT = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(OUT, exist_ok=True)
 M = json.load(open(os.path.join(H, 'manual.json'))); I = {k: d['v'] for k, d in M['inputs'].items()}; C = M['C']; L = M['lines']
-RD = json.load(open(os.path.join(H, 'reading.json'))); LP = json.load(open(os.path.join(H, 'research', 'line-prices.json')))['lines']
+RD = json.load(open(os.path.join(H, 'reading.json'))); 
 FX, USD = I['fx'], I['usd']
 e = lambda s: html.escape(str(s))
 def gbp(x, d=2): return ('−' if x < 0 else '') + f"£{abs(x):,.{d}f}"
@@ -78,16 +78,27 @@ summ += row(['<b>Ex-works China (built, tested, coated, packed)</b>', (f"<b>{gbp
 summ += row(['Sea freight to the UK', (gbp(freight), 'n'), (cny(freight), 'n'), ('', 'n')]) + row(['UK import duty (3.7 %, HS line to confirm)', (gbp(duty), 'n'), (cny(duty), 'n'), ('', 'n')])
 summ += row(['<b>Delivered UK, duty paid</b>', (f"<b>{gbp(delivered)}</b>", 'n'), (f"<b>{cny(delivered)}</b>", 'n'), ('', 'n')], 'tot')
 
-KIND = {'given': 'Given by the engineer', 'catalogue': 'Catalogue price at volume (analogue)', 'mix': 'Value mix of catalogue / reel prices', 'china-reel': 'China reel price carried to volume', 'distributor': 'Distributor price (analogue)', 'distributor + curve': 'Distributor price carried to volume',
-        'class-point': 'Class price (part not identified)'}
+KIND = {'given': 'Given by the engineer (100k-a-year price)', 'catalogue': 'Named automotive part, distributor price at volume',
+        'mix': 'Value mix of named automotive parts', 'china-reel': 'Named part, China distributor reel carried to volume',
+        'class': 'Class price (part not identified)'}
+def src_html(l):
+    if not l['sources']: return '<span class=sm>No marking read: class price</span>'
+    out = []
+    for x in l['sources']:
+        host = re.sub(r'^https?://(www[.])?', '', x['url']).split('/')[0]
+        out.append(f"<b>{e(x['maker'])} {e(x['mpn'])}</b> <span class=sm>({e(x['grade'])})</span><br><span class=sm>{e(x['seller'])}: {e(x['quote'])}, {e(x['date'])} — "
+                   f"<a href='{e(x['url'])}'>{e(host)}</a></span>")
+    return '<br>'.join(out)
 top = sorted(L, key=lambda l: -l['lineGBP'])
-top_rows = ''.join(row([(i + 1, 'n'), e(l['refDes']), f"{e(l['description'])}<br><span class=sm>{e(l['basis'])}</span>", (l['qty'], 'n'), (gbp(l['unitGBP'], 4), 'n'),
-                        (gbp(l['lineGBP']), 'n'), (f"{l['lineGBP'] / comp * 100:.1f} %", 'n')]) for i, l in enumerate(top[:8]))
+SHORT = lambda l: re.split(r' — |\(|, customer', l['description'])[0].strip()
+top_rows = ''.join(row([(i + 1, 'n'), e(l['refDes']), e(SHORT(l)), (e(' + '.join(f"{x['maker']} {x['mpn']}" for x in l['sources']) or 'class price'), 'sm'), (l['qty'], 'n'), (gbp(l['unitGBP'], 4), 'n'),
+                        (gbp(l['lineGBP']), 'n'), (f"{l['lineGBP'] / comp * 100:.1f} %", 'n')]) for i, l in enumerate(top[:10]))
 kinds = OrderedDict()
 for l in L: k = KIND.get(l['kind'], l['kind']); kinds.setdefault(k, [0, 0, 0.0]); kinds[k][0] += 1; kinds[k][1] += l['qty']; kinds[k][2] += l['lineGBP']
 kind_rows = ''.join(row([e(k), (a, 'n'), (b, 'n'), (gbp(c), 'n'), (f"{c / comp * 100:.0f} %", 'n')]) for k, (a, b, c) in kinds.items())
-all_rows = ''.join(row([e(l['refDes']), e(l['description']), e(l['pkg']), (l['qty'], 'n'), (f"{l['qtyLow']}–{l['qtyHigh']}" if l['qtyLow'] != l['qtyHigh'] else '', 'n'),
-                        (f"{l['unitGBP']:.4f}", 'n'), (f"{l['lineGBP']:.2f}", 'n'), (f"<span class=sm><b>{e(KIND.get(l['kind'], l['kind']))}.</b> {e(l['basis'])}</span>", '')]) for l in top)
+all_rows = ''.join(row([e(l['refDes']), f"{e(l['description'])}<br><span class=sm>{e(l['pkg'])} · {e(l['countMethod'])}{(' ' + str(l['qtyLow']) + '–' + str(l['qtyHigh'])) if l['qtyLow'] != l['qtyHigh'] else ''}</span>", (l['qty'], 'n'),
+                        f"{src_html(l)}<br><span class=sm><i>{e(KIND.get(l['kind'], l['kind']))}{('. ' + e(l['basis'])) if l['basis'] and l['kind'] != 'given' else ''}</i></span>",
+                        (f"{l['unitGBP']:.4f}", 'n'), (f"{l['lineGBP']:.2f}", 'n')]) for l in top)
 
 asm_rows = ''.join(row([e(k), (f"<span class=sm>{e(f)}</span>", ''), ('Price list' if t == 'listed' else 'Rate book × time', 'sm'), (gbp(v, 3), 'n')]) for k, (v, f, t) in ASM.items())
 asm_rows += row(['Overhead on the rate-book operations', (f"<span class=sm>{I['unquotedOH'] * 100:.0f} % × {gbp(rated, 3)}</span>", ''), ('', ''), (gbp(oh, 3), 'n')])
@@ -109,11 +120,7 @@ oth_rows = ''.join(row(r) for r in [
  ['UK import duty', f"{I['duty'] * 100:.1f} % × (ex-works + freight) {gbp(exw + freight)} — HS line to be confirmed", (gbp(duty, 3), 'n')]])
 
 # MCU sensitivity (the one line that moves the board)
-u1 = next(l for l in L if l['refDes'] == 'U1'); lo, hi = LP['U1']['rangeLow'], LP['U1']['rangeHigh']
-def at_mcu(p):
-    c2 = comp + (p - u1['unitGBP']); b2 = c2 * I['burden']; s2 = I['scrap'] * (c2 + b2 + fab + assembly)
-    return c2 + b2 + fab + assembly + rework + s2 + nre_pb
-mcu_lo, mcu_hi = at_mcu(lo), at_mcu(hi)
+u1 = next(l for l in L if l['refDes'] == 'U1')
 compL, compH = C['componentsLow'], C['componentsHigh']
 def at_comp(c2):
     b2 = c2 * I['burden']; return c2 + b2 + fab + assembly + rework + I['scrap'] * (c2 + b2 + fab + assembly) + nre_pb
@@ -152,8 +159,8 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 <table><tr><th>Cost element</th><th class=n>£ a board</th><th class=n>¥ a board</th><th class=n>Share of ex-works</th></tr>{summ}</table>
 <div class=box><b>What drives the cost.</b><ul>
 <li><b>Components are {(comp + burden) / exw * 100:.0f} % of the ex-works cost</b> ({gbp(comp + burden)} with the EMS burden): {len(L)} lines, {n_parts} parts a board.</li>
-<li><b>The controller is the largest line: {gbp(u1['lineGBP'])}, {u1['lineGBP'] / comp * 100:.0f} % of the components.</b> SC667506WKK is NXP's customer build of the S12ZVMC256 — an S12 MagniV motor-control MCU with its own gate-drive unit and CAN physical layer (§2). Priced at £3.55, the 100,000-a-year price given by the engineer (Mouser UK, Digi-Key); at the distributor's 480-unit price carried to volume (£{hi:.2f}) the board would be {gbp(mcu_hi)} ex-works.</li>
-<li><b>Transformer T1 is second ({gbp(next(l['lineGBP'] for l in L if l['refDes'] == 'T1'))})</b>: a TDK/EPCOS customer part (not listed), priced at the median of its class; catalogued TDK transformers put it between £1.02 and £2.69.</li>
+<li><b>The controller is the largest line: {gbp(u1['lineGBP'])}, {u1['lineGBP'] / comp * 100:.0f} % of the components.</b> SC667506WKK is NXP's customer build of the S12ZVMC256 — an S12 MagniV motor-control MCU with its own gate-drive unit and CAN physical layer (§2). Priced at £3.55 a part at 100,000 a year (S912ZVMC25F1WKK, Mouser UK / Digi-Key).</li>
+<li><b>Transformer T1 is second ({gbp(next(l['lineGBP'] for l in L if l['refDes'] == 'T1'))})</b>: a TDK/EPCOS customer part (not listed), priced at the class price for an automotive SMD transformer; two catalogued TDK transformers put it between £1.02 and £2.69 (§8).</li>
 <li><b>The other {len(L) - 2} lines are {gbp(comp - sum(l['lineGBP'] for l in L if l['refDes'] in ('U1', 'T1')))}</b>: China reel prices carried to the parts bought a year, catalogue prices at volume for the analogues, MLCC groups priced as a value mix.</li>
 <li><b>Assembly, test and coating are {gbp(assembly)}</b>; the bare board is {gbp(fab)} at the China automotive market price a m².</li></ul></div>
 <div class=box><b>The CostVision tool on the same photos and inputs</b> (live run, real server and browser): <b>{gbp(TC['exw'])} ex-works / {gbp(TC['delivered'])} delivered</b> with components at China market prices, {gbp(TG['exw'])} / {gbp(TG['delivered'])} at global distributor prices — {(TC['exw'] / exw - 1) * 100:+.1f} % and {(TG['exw'] / exw - 1) * 100:+.1f} % against this should-cost (§6).</div>
@@ -181,9 +188,13 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 
 <h2 class=pb>3. Components — {gbp(comp)} a board, plus {gbp(burden)} EMS burden</h2>
 <table><tr><th>Price basis</th><th class=n>Lines</th><th class=n>Parts</th><th class=n>£ a board</th><th class=n>Share</th></tr>{kind_rows}</table>
-<h3>The eight largest lines ({sum(l['lineGBP'] for l in top[:8]) / comp * 100:.0f} % of the components)</h3>
-<table><tr><th class=n>#</th><th>Ref</th><th>Part and price basis</th><th class=n>Qty</th><th class=n>Unit</th><th class=n>A board</th><th class=n>Share</th></tr>{top_rows}</table>
-<p class=sm>Volume rule: a distributor price at a stated break is carried to the parts bought a year on the franchise curve P(Q) = P(break) × (Q/break)^−0.0706 — the CostVision component catalogue's default slope. China reel prices (szlcsc own stock, whole reel, ex-VAT) are carried the same way from their reel quantity; catalogue prices are read at the 100k / 200k / 300k break matching the parts bought. Flat above 300,000 parts a year (the tool's rule). MLCC groups are a value mix (judgement): 0805 and 1206 half 100 nF, half 1 µF / 4.7 µF; 1210 all 10 µF bulk.</p>
+<h3>The ten largest lines ({sum(l['lineGBP'] for l in top[:10]) / comp * 100:.0f} % of the components)</h3>
+<table><tr><th class=n>#</th><th>Ref</th><th>Part on the board</th><th>Part priced</th><th class=n>Qty</th><th class=n>Unit</th><th class=n>A board</th><th class=n>Share</th></tr>{top_rows}</table>
+<h3>How the part prices are set</h3><ul class=sm>
+<li><b>Every line is priced as a named automotive part</b> — the part itself where it is read (the controller), otherwise a named analogue of the same package and function. Each line's part, seller, price, quantity break, date and source page are listed in §8.</li>
+<li><b>China reel prices</b> are szlcsc's own-stock whole-reel prices, ex-VAT (page price ÷ 1.13), at ¥{FX} per £.</li>
+<li><b>Volume:</b> a price at a smaller break is carried to the parts bought a year (quantity a board × 100,000) on P(Q) = P(break) × (Q / break)<sup>−0.0706</sup>, flat above 300,000 parts a year; catalogue prices are read at the 100k / 200k / 300k break that matches.</li>
+<li><b>Capacitor groups</b> are a value mix (judgement): 0805 and 1206 half 100 nF, half 1 µF / 4.7 µF; 1210 all 10 µF bulk.</li></ul>
 
 <h2>4. Bare board — {gbp(fab)}</h2>
 <table><tr><th>Step</th><th>Figure</th></tr>{board_rows}</table>
@@ -206,7 +217,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 
 <h2>7. What is not yet confirmed</h2>
 <table><tr><th>Item</th><th>Status</th><th>Effect, ex-works</th></tr>
-{row(['Controller price', f"£3.55 at 100,000 a year, given (Mouser UK, Digi-Key) — not Valeo's contract price; at the 480-unit list carried to volume (£{hi:.2f})", (f"{gbp(mcu_lo)} – {gbp(mcu_hi)}", 'n')])}
+{row(['Controller price', "£3.55 at 100,000 a year (Mouser UK, Digi-Key) — Valeo's contract price may differ", ('', 'n')])}
 {row(['Passive count', 'Resistors and MLCCs estimated from the zooms (range per line, §8)', (f"{gbp(q_lo)} – {gbp(q_hi)}", 'n')])}
 {row(['De-marked ICs', 'SO-16 driver, SO-8 × 3, MSOP-10, SOT-223 × 2: priced as analogues / class', ('', 'n')])}
 {row(['Transformer T1, electrolytics', 'Customer / undecoded parts: class price and catalogued analogues', (f"{gbp(exw - 0.34 * (1 + I['burden']))} – {gbp(exw + 1.33 * (1 + I['burden']))}", 'n')])}
@@ -217,10 +228,11 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 </table>
 <p><b>Ask the supplier for:</b> the BOM with part numbers; Gerber and drill files (layer stack, vias); the test plan; the controller's and transformer's contract prices; the coating specification and area. Accuracy is not measured: no costing has been compared with a price paid for this board.</p>
 
-<h2 class=pb>8. Bill of materials</h2>
-<table class=parts><colgroup><col style='width:11%'><col style='width:25%'><col style='width:10%'><col style='width:5%'><col style='width:7%'><col style='width:7%'><col style='width:6%'><col style='width:29%'></colgroup>
-<tr><th>Ref</th><th>Description</th><th>Package</th><th class=n>Qty</th><th class=n>Range</th><th class=n>Unit £</th><th class=n>Line £</th><th>Price basis</th></tr>{all_rows}
-{row(['', '<b>Components a board</b>', '', (f"<b>{n_parts}</b>", 'n'), '', '', (f"<b>{comp:.2f}</b>", 'n'), ''], 'tot')}</table>
+<h2 class=pb>8. Parts list with price sources</h2>
+<p class=sm>Largest line first. Each source link opens the seller's page for the part priced; prices as read on the date shown.</p>
+<table class=parts><colgroup><col style='width:9%'><col style='width:28%'><col style='width:5%'><col style='width:44%'><col style='width:7%'><col style='width:7%'></colgroup>
+<tr><th>Ref</th><th>Part on the board</th><th class=n>Qty</th><th>Part priced, seller's price and source</th><th class=n>Unit £</th><th class=n>Line £</th></tr>{all_rows}
+{row(['', '<b>Components a board</b>', (f"<b>{n_parts}</b>", 'n'), '', '', (f"<b>{comp:.2f}</b>", 'n')], 'tot')}</table>
 </body></html>"""
 open(os.path.join(OUT, 'report.html'), 'w').write(HTML)
 
@@ -236,4 +248,4 @@ for r, (lab, a, b, c) in enumerate(zip(XL, mine, tool_rows(TC), tool_rows(TG)), 
     for j in (2, 3, 4): ws.cell(r, j).number_format = '£0.00'
 ws.cell(10, 1, 'Tool: CostVision live run 26 Nov 2026 (PCB screen, real server and browser), the engineer\'s inputs typed in; this should-cost: Summary sheet.')
 wb.save(os.path.join(OUT, 'supercharger-pcb-should-cost.xlsx'))
-print(f"ex-works {gbp(exw, 4)} delivered {gbp(delivered, 4)} | tool China {gbp(TC['exw'])}/{gbp(TC['delivered'])} global {gbp(TG['exw'])}/{gbp(TG['delivered'])} | MCU range {gbp(mcu_lo)}–{gbp(mcu_hi)} qty range {gbp(q_lo)}–{gbp(q_hi)}")
+print(f"ex-works {gbp(exw, 4)} delivered {gbp(delivered, 4)} | tool China {gbp(TC['exw'])}/{gbp(TC['delivered'])} global {gbp(TG['exw'])}/{gbp(TG['delivered'])} | qty range {gbp(q_lo)}–{gbp(q_hi)}")

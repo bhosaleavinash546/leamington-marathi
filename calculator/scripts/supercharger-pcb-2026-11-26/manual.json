@@ -266,8 +266,28 @@
    "base": 3.55,
    "brk": null,
    "kind": "given",
-   "basis": "Given by the engineer (26 Nov 2026): GBP 3.55 at 100,000 a year for S912ZVMC25F1WKK, the standard twin of SC667506WKK (NXP customer build of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP), with reference to Mouser UK and Digi-Key. For comparison: Digi-Key UK GBP 8.72738 at 480 (tray), carried to 100,000 on the catalogue curve = GBP 5.99. Not Valeo's contract price.",
-   "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D ; https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
+   "sources": [
+    {
+     "mpn": "S912ZVMC25F1WKK",
+     "maker": "NXP",
+     "grade": "−40 to 150 °C, AEC-Q100",
+     "seller": "Mouser UK",
+     "quote": "volume pricing",
+     "date": "26 Nov 2026",
+     "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D"
+    },
+    {
+     "mpn": "S912ZVMC25F1WKK",
+     "maker": "NXP",
+     "grade": "−40 to 150 °C, AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "volume pricing",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971"
+    }
+   ],
+   "basis": "£3.55 a part at 100,000 a year, given by the engineer for S912ZVMC25F1WKK — the standard NXP part of which SC667506WKK is the customer build (S12ZVMC256, mask set 1N00R, 80 LQFP-EP, −40 to 150 °C). Not Valeo's contract price.",
+   "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D",
    "lineGBP": 3.55
   },
   {
@@ -282,8 +302,19 @@
    "base": 0.7679,
    "brk": null,
    "kind": "catalogue",
-   "basis": "de-marked SO-16 beside T1 (transformer / gate-drive supply driver). Analogue UCC21222QDRQ1 TI dual-channel isolated gate driver, SOIC-16, AEC-Q100 — £0.7679 at 100k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "UCC21222QDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "LCSC",
+     "quote": "US$1.4072 at 1,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.lcsc.com/product-image/C1848357.html"
+    }
+   ],
+   "basis": "analogue: dual-channel isolated gate driver, SOIC-16; £0.7679 at 100k a year",
+   "url": "https://www.lcsc.com/product-image/C1848357.html",
    "lineGBP": 0.7679
   },
   {
@@ -298,7 +329,18 @@
    "base": 0.11322,
    "brk": 2500,
    "kind": "china-reel",
-   "basis": "LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue: de-marked SO-8; the MCU has its own CAN physical layer) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.11322 at 2,500, carried to 100,000 parts a year: £0.08726",
+   "sources": [
+    {
+     "mpn": "LM2904BQDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "szlcsc (China)",
+     "quote": "¥1.00540 ex-VAT a part, reel of 2,500",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/1946598.html"
+    }
+   ],
+   "basis": "analogue: dual op-amp; £0.11322 at 2,500 → 100,000 parts a year = £0.08726",
    "url": "https://item.szlcsc.com/1946598.html",
    "lineGBP": 0.087261
   },
@@ -314,7 +356,18 @@
    "base": 0.11322,
    "brk": 2500,
    "kind": "china-reel",
-   "basis": "LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.11322 at 2,500, carried to 200,000 parts a year: £0.08309",
+   "sources": [
+    {
+     "mpn": "LM2904BQDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "szlcsc (China)",
+     "quote": "¥1.00540 ex-VAT a part, reel of 2,500",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/1946598.html"
+    }
+   ],
+   "basis": "analogue: dual op-amp; £0.11322 at 2,500 → 200,000 parts a year = £0.08309",
    "url": "https://item.szlcsc.com/1946598.html",
    "lineGBP": 0.166186
   },
@@ -329,8 +382,9 @@
    "unitGBP": 0.119,
    "base": 0.119,
    "brk": null,
-   "kind": "class-point",
-   "basis": "MSOP-10 signal IC, not identified: CostVision class range \"op-amp / comparator\" at this volume, lower-half midpoint",
+   "kind": "class",
+   "sources": [],
+   "basis": "CostVision class price for an automotive op-amp / comparator at this volume",
    "url": "",
    "lineGBP": 0.119
   },
@@ -346,8 +400,19 @@
    "base": 0.3013,
    "brk": null,
    "kind": "catalogue",
-   "basis": "de-marked SOT-223 regulator. Analogue L5150BNTR ST 40 V 150 mA LDO, AEC-Q100 — £0.3013 at 200k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "L5150BNTR",
+     "maker": "STMicroelectronics",
+     "grade": "AEC-Q100",
+     "seller": "RS Components UK",
+     "quote": "£0.438 at 1,000",
+     "date": "13 Oct 2026",
+     "url": "https://uk.rs-online.com/web/p/voltage-regulators/1785072"
+    }
+   ],
+   "basis": "analogue: 40 V 150 mA LDO, SOT-223; £0.3013 at 200k a year",
+   "url": "https://uk.rs-online.com/web/p/voltage-regulators/1785072",
    "lineGBP": 0.6026
   },
   {
@@ -362,8 +427,19 @@
    "base": 0.2984,
    "brk": null,
    "kind": "catalogue",
-   "basis": "de-marked 5×5 power MOSFET. Analogue SQJ844AEP Vishay automotive MOSFET, PowerPAK SO-8L — £0.2984 at 100k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "SQJ844AEP-T1_GE3",
+     "maker": "Vishay",
+     "grade": "AEC-Q101",
+     "seller": "TTI",
+     "quote": "US$0.506 at 3,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=SQJ844AEP-T1-GE3&mfgShortname=SLN"
+    }
+   ],
+   "basis": "analogue: automotive N-MOSFET, PowerPAK SO-8L; £0.2984 at 100k a year",
+   "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=SQJ844AEP-T1-GE3&mfgShortname=SLN",
    "lineGBP": 0.2984
   },
   {
@@ -378,7 +454,27 @@
    "base": 0.00445,
    "brk": 3000,
    "kind": "china-reel",
-   "basis": "mean of 2N7002,215 and BC847C,215 Nexperia — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00445 at 3,000, carried to 300,000 parts a year: £0.00321",
+   "sources": [
+    {
+     "mpn": "2N7002,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04770 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/66260.html"
+    },
+    {
+     "mpn": "BC847C,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.03142 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/9163.html"
+    }
+   ],
+   "basis": "mean of the MOSFET and the BJT; £0.00445 at 3,000 → 300,000 parts a year = £0.00321",
    "url": "https://item.szlcsc.com/66260.html",
    "lineGBP": 0.054655
   },
@@ -394,7 +490,18 @@
    "base": 0.00329,
    "brk": 3000,
    "kind": "china-reel",
-   "basis": "BAV99,215 Nexperia — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00329 at 3,000, carried to 300,000 parts a year: £0.00238",
+   "sources": [
+    {
+     "mpn": "BAV99,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02920 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/2877.html"
+    }
+   ],
+   "basis": "£0.00329 at 3,000 → 300,000 parts a year = £0.00238",
    "url": "https://item.szlcsc.com/2877.html",
    "lineGBP": 0.021393
   },
@@ -410,8 +517,19 @@
    "base": 0.00531,
    "brk": 3000,
    "kind": "china-reel",
-   "basis": "BZT52C5V1Q (AEC-Q101) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 (the Diodes -7-F listing £0.0188 is dearer) — £0.00531 at 3,000, carried to 300,000 parts a year: £0.00384",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "BZT52C5V1Q",
+     "maker": "JSMSEMI",
+     "grade": "-Q (automotive) suffix",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04717 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/3057189.html"
+    }
+   ],
+   "basis": "£0.00531 at 3,000 → 300,000 parts a year = £0.00384",
+   "url": "https://item.szlcsc.com/3057189.html",
    "lineGBP": 0.015344
   },
   {
@@ -426,8 +544,19 @@
    "base": 0.0645,
    "brk": null,
    "kind": "catalogue",
-   "basis": "STPS2H100AY ST 100 V 2 A Schottky, SMA, AEC-Q101 — £0.0645 at 300k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "STPS2H100AY",
+     "maker": "STMicroelectronics",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.10504 at 5,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STPS2H100AY/2612172"
+    }
+   ],
+   "basis": "100 V 2 A Schottky, SMA; £0.0645 at 300k a year",
+   "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STPS2H100AY/2612172",
    "lineGBP": 0.258
   },
   {
@@ -442,7 +571,18 @@
    "base": 0.04339,
    "brk": 3000,
    "kind": "china-reel",
-   "basis": "SMBJ24CA Littelfuse 600 W SMB (a 58 V part of the same family is the same price class) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.04339 at 3,000, carried to 200,000 parts a year: £0.03226",
+   "sources": [
+    {
+     "mpn": "SMBJ24CA",
+     "maker": "Littelfuse",
+     "grade": "grade not stated on the listing",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.38531 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/84432.html"
+    }
+   ],
+   "basis": "600 W SMB TVS; £0.04339 at 3,000 → 200,000 parts a year = £0.03226",
    "url": "https://item.szlcsc.com/84432.html",
    "lineGBP": 0.064514
   },
@@ -457,9 +597,29 @@
    "unitGBP": 1.36,
    "base": 1.36,
    "brk": null,
-   "kind": "class-point",
-   "basis": "TDK/EPCOS customer transformer (ordering code B78xxxA2363A003 not listed): CostVision class range \"signal transformer, AEC-Q\" at this volume, lower-half midpoint. Range £1.02 (TDK EP6 automotive SMD transformer B78416A2360A003, US$1.80 at 1k, unverified, carried to 100k) to £2.69 (TDK E10 EM B78307A2338A003, €4.24 at 1,960, carried to 100k)",
-   "url": "",
+   "kind": "class",
+   "sources": [
+    {
+     "mpn": "B78416A2360A003",
+     "maker": "TDK",
+     "grade": "automotive",
+     "seller": "Octopart (search extract, not opened)",
+     "quote": "US$1.80 at 1,000",
+     "date": "26 Nov 2026",
+     "url": "https://octopart.com/part/tdk/B78416A2360A003"
+    },
+    {
+     "mpn": "B78307A2338A003",
+     "maker": "TDK",
+     "grade": "E10 EM, AEC-Q200",
+     "seller": "Digi-Key Finland",
+     "quote": "€4.24294 at 1,960",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824"
+    }
+   ],
+   "basis": "TDK customer part (ordering code B78xxxA2363A003, not listed): CostVision class price for an automotive SMD transformer at this volume; the two catalogued TDK parts carried to 100k a year give £1.02 and £2.69",
+   "url": "https://octopart.com/part/tdk/B78416A2360A003",
    "lineGBP": 1.36
   },
   {
@@ -474,7 +634,18 @@
    "base": 0.15148,
    "brk": 1000,
    "kind": "china-reel",
-   "basis": "CLF6045NIT-4R7N-D TDK 6×6 shielded, AEC-Q200 (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.15148 at 1,000, carried to 100,000 parts a year: £0.10943",
+   "sources": [
+    {
+     "mpn": "CLF6045NIT-4R7N-D",
+     "maker": "TDK",
+     "grade": "automotive grade",
+     "seller": "szlcsc (China)",
+     "quote": "¥1.34513 ex-VAT a part, reel of 1,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/335482.html"
+    }
+   ],
+   "basis": "analogue: 6 × 6 mm shielded; £0.15148 at 1,000 → 100,000 parts a year = £0.10944",
    "url": "https://item.szlcsc.com/335482.html",
    "lineGBP": 0.109435
   },
@@ -490,7 +661,18 @@
    "base": 0.07649,
    "brk": 500,
    "kind": "china-reel",
-   "basis": "DLW43SH510XK2L Murata CAN CMC (analogue) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.07649 at 500, carried to 100,000 parts a year: £0.05262",
+   "sources": [
+    {
+     "mpn": "DLW43SH510XK2L",
+     "maker": "Murata",
+     "grade": "automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.67920 ex-VAT a part, reel of 500",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/92784.html"
+    }
+   ],
+   "basis": "analogue: CAN common-mode choke; £0.07649 at 500 → 100,000 parts a year = £0.05262",
    "url": "https://item.szlcsc.com/92784.html",
    "lineGBP": 0.05262
   },
@@ -506,8 +688,19 @@
    "base": 0.103,
    "brk": null,
    "kind": "catalogue",
-   "basis": "aluminium electrolytic (marking \"hJ 100 VHJ\" not decoded). Analogue UCM1V101MCL1GS Nichicon 100 µF 35 V, 6.3 × 5.8 mm, AEC-Q200 — £0.1030 at 100k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "UCM1V101MCL1GS",
+     "maker": "Nichicon",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.17116 at 10,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS"
+    }
+   ],
+   "basis": "analogue: 100 µF 35 V, 6.3 × 5.8 mm; £0.1030 at 100k a year",
+   "url": "https://www.digikey.com/en/products/result?keywords=UCM1V101MCL1GS",
    "lineGBP": 0.103
   },
   {
@@ -522,8 +715,19 @@
    "base": 0.0662,
    "brk": null,
    "kind": "catalogue",
-   "basis": "aluminium electrolytic (marking \"22 JZC 6X6\" not decoded). Analogue EEE-FK Panasonic FK, 6.3 mm can, AEC-Q200 (10 µF 50 V listing) — £0.0662 at 200k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "EEE-FK1H100P",
+     "maker": "Panasonic",
+     "grade": "FK, AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.1366 at 10,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1H100P/765976"
+    }
+   ],
+   "basis": "analogue: FK series, 6.3 mm can; £0.0662 at 200k a year",
+   "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1H100P/765976",
    "lineGBP": 0.1324
   },
   {
@@ -538,8 +742,19 @@
    "base": 0.0702,
    "brk": null,
    "kind": "catalogue",
-   "basis": "NX3225GA-25.000M NDK automotive crystal, AEC-Q200 — £0.0702 at 100k (CostVision component catalogue (distributor, sourced))",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "NX3225GA-25.000M-STD-CRG-2",
+     "maker": "NDK",
+     "grade": "AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.1169 at 6,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.lcsc.com/product-image/C438901.html"
+    }
+   ],
+   "basis": "analogue: automotive crystal; £0.0702 at 100k a year",
+   "url": "https://www.lcsc.com/product-image/C438901.html",
    "lineGBP": 0.0702
   },
   {
@@ -554,7 +769,18 @@
    "base": 0.00075,
    "brk": 5000,
    "kind": "china-reel",
-   "basis": "AC0603FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00075 at 5,000, carried to 300,000 parts a year: £0.00056",
+   "sources": [
+    {
+     "mpn": "AC0603FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.00664 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/117931.html"
+    }
+   ],
+   "basis": "£0.00075 at 5,000 → 300,000 parts a year = £0.00056",
    "url": "https://item.szlcsc.com/117931.html",
    "lineGBP": 0.04777
   },
@@ -570,7 +796,18 @@
    "base": 0.00185,
    "brk": 5000,
    "kind": "china-reel",
-   "basis": "AC0805FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00185 at 5,000, carried to 300,000 parts a year: £0.00139",
+   "sources": [
+    {
+     "mpn": "AC0805FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.01646 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/152196.html"
+    }
+   ],
+   "basis": "£0.00185 at 5,000 → 300,000 parts a year = £0.00139",
    "url": "https://item.szlcsc.com/152196.html",
    "lineGBP": 0.04851
   },
@@ -586,7 +823,18 @@
    "base": 0.00484,
    "brk": 5000,
    "kind": "china-reel",
-   "basis": "AC1206FR-0710KL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00484 at 5,000, carried to 300,000 parts a year: £0.00362",
+   "sources": [
+    {
+     "mpn": "AC1206FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04301 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/155852.html"
+    }
+   ],
+   "basis": "£0.00484 at 5,000 → 300,000 parts a year = £0.00363",
    "url": "https://item.szlcsc.com/155852.html",
    "lineGBP": 0.087
   },
@@ -602,7 +850,18 @@
    "base": 0.06194,
    "brk": 4000,
    "kind": "china-reel",
-   "basis": "AC2512FK-0710RL YAGEO — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.06194 at 4,000, carried to 300,000 parts a year: £0.04567",
+   "sources": [
+    {
+     "mpn": "AC2512FK-0710RL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.55000 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/476216.html"
+    }
+   ],
+   "basis": "£0.06194 at 4,000 → 300,000 parts a year = £0.04567",
    "url": "https://item.szlcsc.com/476216.html",
    "lineGBP": 0.273996
   },
@@ -618,7 +877,18 @@
    "base": 0.00287,
    "brk": 4000,
    "kind": "china-reel",
-   "basis": "GCM188R71H104KA57D Murata 100 nF 50 V X7R — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.00287 at 4,000, carried to 300,000 parts a year: £0.00212",
+   "sources": [
+    {
+     "mpn": "GCM188R71H104KA57D",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02549 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/87040.html"
+    }
+   ],
+   "basis": "100 nF 50 V X7R; £0.00287 at 4,000 → 300,000 parts a year = £0.00212",
    "url": "https://item.szlcsc.com/87040.html",
    "lineGBP": 0.12696
   },
@@ -634,8 +904,28 @@
    "base": 0.0183,
    "brk": null,
    "kind": "mix",
-   "basis": "value mix (judgement: half 100 nF, half 1 µF): KAM21BR71H104KT 100 nF 50 V X7R AEC-Q200 £0.0152 at 300k (CostVision component catalogue (distributor, sourced)) and GCM21BR71H105KA03L 1 µF 50 V £0.0214 at 500k a year (distributor, 6 Oct 2026)",
-   "url": "",
+   "sources": [
+    {
+     "mpn": "KAM21BR71H104KT",
+     "maker": "Kyocera AVX",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.0289 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT"
+    },
+    {
+     "mpn": "GCM21BR71H105KA03L",
+     "maker": "Murata",
+     "grade": "GCM, AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.0235 at 9,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.lcsc.com/product-detail/C126592.html"
+    }
+   ],
+   "basis": "value mix (judgement): half 100 nF 50 V (£0.0152 at 300k a year), half 1 µF 50 V (£0.0214 at 300k a year)",
+   "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT",
    "lineGBP": 0.6222
   },
   {
@@ -650,8 +940,28 @@
    "base": 0.033600346765564795,
    "brk": null,
    "kind": "mix",
-   "basis": "value mix (judgement: half 100 nF, half 4.7 µF): C1206C104K5RACAUTO 100 nF 50 V AEC-Q200 £0.0197 at 300k (CostVision component catalogue (distributor, sourced)) and CGA5L1X7R1H475KT0Y0N TDK 4.7 µF 50 V £0.06766 at a 2,000 reel (szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026) carried to 300k = £0.0475",
-   "url": "https://item.szlcsc.com/370048.html",
+   "sources": [
+    {
+     "mpn": "C1206C104K5RACAUTO",
+     "maker": "KEMET",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.03711 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001"
+    },
+    {
+     "mpn": "CGA5L1X7R1H475KT0Y0N",
+     "maker": "TDK",
+     "grade": "CGA, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.60080 ex-VAT a part, reel of 2,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/370048.html"
+    }
+   ],
+   "basis": "value mix (judgement): half 100 nF 50 V (£0.0197 at 300k a year), half 4.7 µF 50 V (£0.06766 a reel of 2,000 carried to 300k = £0.0475)",
+   "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001",
    "lineGBP": 0.4704
   },
   {
@@ -666,7 +976,18 @@
    "base": 0.09857,
    "brk": 1000,
    "kind": "china-reel",
-   "basis": "GCM32EC71H106KA03L Murata 10 µF 50 V X7S (bulk) — szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026 — £0.09857 at 1,000, carried to 300,000 parts a year: £0.06590",
+   "sources": [
+    {
+     "mpn": "GCM32EC71H106KA03L",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.87531 ex-VAT a part, reel of 1,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/137892.html"
+    }
+   ],
+   "basis": "10 µF 50 V X7S bulk; £0.09857 at 1,000 → 300,000 parts a year = £0.06590",
    "url": "https://item.szlcsc.com/137892.html",
    "lineGBP": 0.790752
   }

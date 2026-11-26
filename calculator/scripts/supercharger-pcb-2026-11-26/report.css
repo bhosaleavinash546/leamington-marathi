@@ -33,3 +33,4 @@ figure{margin:0;break-inside:avoid}
 figure img{width:100%;height:auto;display:block;border:1px solid #c9d4df;border-radius:3px}
 figcaption{font-size:7.6pt;color:#4a5868;margin-top:3px;line-height:1.35}
 .figs{grid-template-columns:repeat(4,1fr)}
+a{color:#1a5fa8;text-decoration:none}

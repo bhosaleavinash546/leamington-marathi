@@ -1,15 +1,30 @@
 {
  "readOn": "2026-11-26",
- "slope": 0.0706,
- "eurPerGbp": 1.1965,
  "lines": {
   "U1": {
    "unitGBP": 3.55,
    "kind": "given",
-   "basis": "Given by the engineer (26 Nov 2026): GBP 3.55 at 100,000 a year for S912ZVMC25F1WKK, the standard twin of SC667506WKK (NXP customer build of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP), with reference to Mouser UK and Digi-Key. For comparison: Digi-Key UK GBP 8.72738 at 480 (tray), carried to 100,000 on the catalogue curve = GBP 5.99. Not Valeo's contract price.",
-   "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D ; https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
-   "rangeLow": 3.55,
-   "rangeHigh": 5.9866
+   "basis": "£3.55 a part at 100,000 a year, given by the engineer for S912ZVMC25F1WKK — the standard NXP part of which SC667506WKK is the customer build (S12ZVMC256, mask set 1N00R, 80 LQFP-EP, −40 to 150 °C). Not Valeo's contract price.",
+   "sources": [
+    {
+     "mpn": "S912ZVMC25F1WKK",
+     "maker": "NXP",
+     "grade": "−40 to 150 °C, AEC-Q100",
+     "seller": "Mouser UK",
+     "quote": "volume pricing",
+     "date": "26 Nov 2026",
+     "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D"
+    },
+    {
+     "mpn": "S912ZVMC25F1WKK",
+     "maker": "NXP",
+     "grade": "−40 to 150 °C, AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "volume pricing",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971"
+    }
+   ]
   }
  }
 }
