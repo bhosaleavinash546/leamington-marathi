@@ -97,7 +97,9 @@ jobs:
       # they are mounted at the path the script resolves (/app/.. = /).
       - name: Real-parts baseline — measure and cost the production parts
         run: |
-          docker run --rm -v "$PWD/cad-audit:/cad-audit:ro" costvision-cad:ci \
+          # The image runs as production, where the server refuses to start without a login secret; the baseline
+          # imports server code, so it gets a throwaway one (it never serves a request).
+          docker run --rm -e JWT_SECRET="$(openssl rand -hex 32)" -v "$PWD/cad-audit:/cad-audit:ro" costvision-cad:ci \
             npx tsx scripts/real-parts-baseline.ts
 
       # A geometric DFM finding names the B-rep faces that triggered it, and the
