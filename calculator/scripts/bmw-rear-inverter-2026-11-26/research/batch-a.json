@@ -1,0 +1,139 @@
+{
+  "readOn": "2026-11-26",
+  "method": "Pages read with WebFetch on 2026-11-26. Digi-Key (digikey.com, digikey.cn) rendered price tables. Mouser, Farnell / element14, Arrow and RS returned 503 or 403, and Future returned 403. LCSC product pages loaded, but their price tables are drawn by script and did not appear in the fetched content. No szlcsc item page was found by search. Firecrawl had no credits. No price was estimated or taken from a search snippet.",
+  "items": [
+    {
+      "bomPn": "SAK-TC389QP-160F300S AE",
+      "found": "TC389QP160F300SAEKXUMA2",
+      "maker": "Infineon",
+      "pkg": "516-FBGA (PG-FBGA-516-1). NOTE: the BOM note says LFBGA-292; every listing for TC389QP is FBGA-516. The 292-ball package is the TC387QP.",
+      "grade": "not stated on page (Digi-Key: -40~125C TA)",
+      "orderableCodes": {
+        "TC389QP160F300SAEKXUMA2": "Digi-Key TR 500: USD 30.30208, 847 in stock, the only code in stock",
+        "TC389QP160F300SAELXUMA2": "Digi-Key TR 500: USD 34.15180, 0 stock",
+        "TC389QP160F300SAESXUMA1": "Digi-Key TR 500: USD 34.47074, 0 stock (listed as AURIX 2G-PSE)",
+        "TC389QP160F300SAEKXUMA1": "Digi-Key discontinued, no price",
+        "TC389QP160F300SAELXUMA1": "Digi-Key discontinued, no price",
+        "tray": "No tray orderable code was found. Every Digi-Key code is XUMA, tape and reel."
+      },
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 500, "price": 30.30208, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832", "quote": "Tape & Reel (TR) 500 $30.30208 $15,151.04; CT 1 $44.48, 10 $36.30100, 50 $33.02880, 100 $32.01590; In-Stock: 847"},
+        {"distributor": "Digi-Key", "qty": 100, "price": 32.0159, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832", "quote": "Cut Tape 100 $32.01590"},
+        {"distributor": "Digi-Key China (digikey.cn)", "qty": 500, "price": 250.5962, "currency": "CNY incl 13% VAT (221.766 ex VAT)", "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832", "quote": "Tape & Reel (TR) 500 ¥250.59620 ¥125,298.10; unit prices include 13% VAT; lead time 33 Weeks"},
+        {"distributor": "Digi-Key", "qty": 500, "price": 34.1518, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAELXUMA2/20841847", "quote": "TC389QP160F300SAELXUMA2 Tape & Reel 500 $34.15180 (0 stock)"}
+      ],
+      "chinaOwnStock": "LCSC lists SAK-TC389QP-160F300S AE as C538874 (FBGA-516, pre-ordered). The page at https://www.lcsc.com/product-detail/C538874.html loaded, but its price table did not render in the fetch, so no LCSC price was read. No szlcsc item page was found. The Digi-Key China CNY price above is the only China-market figure read.",
+      "notFound": "Mouser, Farnell / element14 (uk / cn), Arrow and RS: the fetches were refused (503 / 403). Future: 403."
+    },
+    {
+      "bomPn": "LM74202QPWPRQ1",
+      "found": "LM74202QPWPRQ1",
+      "maker": "Texas Instruments",
+      "pkg": "16-HTSSOP (16-PowerTSSOP 4.40mm)",
+      "grade": "Q1 suffix; qualification not quoted on the page read",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 4000, "price": 1.77678, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541", "quote": "Tape & Reel (TR) 2,000 $1.81383; 4,000 $1.77678; In-Stock: 0; 2,000 expected 10-Jun-2027"}
+      ],
+      "notFound": "LCSC C2866128 exists, but its price did not render in the fetch. Mouser was refused."
+    },
+    {
+      "bomPn": "UCC27282QDRCRQ1",
+      "found": "UCC27282QDRCRQ1",
+      "maker": "Texas Instruments",
+      "pkg": "10-VSON (3x3), 10-VFDFN exposed pad",
+      "grade": "AEC-Q100, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 3000, "price": 2.05462, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1", "quote": "Tape & Reel (TR) 296-UCC27282QDRCRQ1TR-ND 3,000 $2.05462 $6,163.86; In-Stock: 0"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "TLV9004QPWRQ1",
+      "found": "TLV9004QPWRQ1",
+      "maker": "Texas Instruments",
+      "pkg": "14-TSSOP (4.40mm)",
+      "grade": "AEC-Q100, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 15000, "price": 0.54288, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1", "quote": "Tape & Reel 3,000 $0.56951; 6,000 $0.55656; 9,000 $0.55007; 15,000 $0.54288 $8,143.20; In-Stock: 3,061"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "74HC4075PW",
+      "found": "74HC4075PW-Q100J",
+      "maker": "Nexperia",
+      "pkg": "14-TSSOP (4.40mm)",
+      "grade": "AEC-Q100, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 25000, "price": 0.23419, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW-Q100J", "quote": "Tape & Reel 2,500 $0.25282; 5,000 $0.24590; 7,500 $0.24243; 12,500 $0.23859; 17,500 $0.23635; 25,000 $0.23419 $5,854.75; In-Stock: 0, lead time 24 Weeks"},
+        {"distributor": "Digi-Key", "qty": 2500, "price": 0.20347, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW", "quote": "74HC4075PWJ (Nexperia, non-Q100, OBSOLETE) Tape & Reel 2,500 $0.20347; for reference only"}
+      ],
+      "notFound": "There is no orderable code without a suffix: 74HC4075PWJ is obsolete, so 74HC4075PW-Q100J is the -Q100 orderable."
+    },
+    {
+      "bomPn": "AMC1211AQDWVQ1",
+      "found": "AMC1211AQDWVRQ1 (reel variant of the BOM's tube code AMC1211AQDWVQ1)",
+      "maker": "Texas Instruments",
+      "pkg": "8-SOIC wide (7.50mm)",
+      "grade": "AEC-Q100",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 2000, "price": 4.26528, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVRQ1", "quote": "AMC1211AQDWVRQ1 Tape & Reel 1,000 $4.35570; 2,000 $4.26528 $8,530.56; In-Stock: 14"},
+        {"distributor": "Digi-Key", "qty": 1024, "price": 6.03553, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVQ1", "quote": "AMC1211AQDWVQ1 (exact BOM code, Tube) 512 $6.17809; 1,024 $6.03553 $6,180.38; In-Stock: 0"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "LM5155QDSSRQ1",
+      "found": "LM5155QDSSRQ1",
+      "maker": "Texas Instruments",
+      "pkg": "12-WSON (3x2)",
+      "grade": "AEC-Q100, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 6000, "price": 1.63914, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1", "quote": "Tape & Reel 296-LM5155QDSSRQ1TR-ND 3,000 $1.67037; 6,000 $1.63914 $9,834.84; In-Stock: 0"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "ACS37601",
+      "found": "ACS37601LKTATN-001B5-C / ACS37601LKTATN-0P5B5-C (Allegro orderable codes; there is no LLUATR TSSOP code)",
+      "maker": "Allegro MicroSystems",
+      "pkg": "4-pin SIP (TN straight leads; the brochure also names a TH lead-formed option)",
+      "grade": "not stated on the Allegro page (-40 to 150C)",
+      "observations": [],
+      "notFound": "No distributor price was found. Allegro's product page lists both codes as 'Request Samples' with no distributor or buy link (https://www.allegromicro.com/en/products/sense/current-sensor-ics/field-current-sensors/acs37601). Digi-Key searches for 'ACS37601' and 'ACS37601LKTATN' returned no results. Mouser was refused. A web search found no listing."
+    },
+    {
+      "bomPn": "PJQ4548P-AU",
+      "found": "PJQ4548P-AU_R2_002A1",
+      "maker": "PANJIT",
+      "pkg": "DFN3333-8 (8-PowerVDFN)",
+      "grade": "AEC-Q101, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 15000, "price": 0.18619, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU", "quote": "Tape & Reel 5,000 $0.21028; 15,000 $0.18619 $2,792.85; In-Stock: 543"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "PJQ5948-AU",
+      "found": "PJQ5948-AU_R2_002A1",
+      "maker": "PANJIT",
+      "pkg": "DFN5060B-8 (8-PowerTDFN)",
+      "grade": "AEC-Q101, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 6000, "price": 0.34019, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU", "quote": "Tape & Reel 6,000 $0.34019 $2,041.14; In-Stock: 2,704"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "TPS7B8401QWDRBRQ1",
+      "found": "TPS7B8401QWDRBRQ1 (exact code exists; adjustable, 150 mA. The catalogue's TPS7B8450QDGNRQ1 is a different fixed-5 V MSOP orderable)",
+      "maker": "Texas Instruments",
+      "pkg": "8-SON (3x3) wettable flank, 8-VDFN exposed pad",
+      "grade": "AEC-Q100, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 6000, "price": 1.13416, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8401QWDRBRQ1", "quote": "Tape & Reel 296-TPS7B8401QWDRBRQ1TR-ND 3,000 $1.15730; 6,000 $1.13416 $6,804.96; In-Stock: 0; lead time 26 Weeks"}
+      ],
+      "notFound": null
+    }
+  ]
+}

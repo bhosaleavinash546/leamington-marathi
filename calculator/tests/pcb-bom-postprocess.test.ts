@@ -154,3 +154,18 @@ describe('PCB-C — mergeBomExtractions', () => {
     expect(c9.confidence).toBeLessThan(0.5);       // only 1 of 3 runs → low-confidence
   });
 });
+
+describe('inferComponentType — a BOM file without designators (BMW inverter BOM, Nov 2026)', () => {
+  it('a transistor or MOSFET named as one is a transistor, whatever its SOT / DFN package', () => {
+    expect(inferComponentType({ description: 'Small-signal MOSFET / BJT transistor', pkg: 'SOT-23' })).toBe('transistor');
+    expect(inferComponentType({ description: 'Dual small-signal transistor', pkg: 'SOT-363' })).toBe('transistor');
+    expect(inferComponentType({ description: 'Automotive N-channel MOSFET', pkg: 'DFN 3.3x3.3' })).toBe('transistor');
+  });
+  it('a transformer named as one is a transformer, not a driver IC', () => {
+    expect(inferComponentType({ description: 'Isolated gate-driver supply transformer', pkg: 'SMD 8-pin' })).toBe('transformer');
+  });
+  it('an IC named by its function stays an IC', () => {
+    expect(inferComponentType({ description: 'Isolated gate driver', pkg: 'SOIC-16 wide' })).toBe('ic');
+    expect(inferComponentType({ description: 'MOSFET gate driver', pkg: 'SOIC-8' })).toBe('ic');
+  });
+});

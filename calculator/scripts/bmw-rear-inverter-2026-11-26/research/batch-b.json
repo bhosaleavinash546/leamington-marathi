@@ -1,0 +1,161 @@
+{
+  "readOn": "2026-11-26",
+  "method": "Prices read with a page fetch of Digi-Key US search/product pages (the search redirects to the product page for an exact code). Mouser, Farnell, Arrow, RS, TTI, Coilcraft and Octopart refused the fetch (HTTP 503 / 403). LCSC and szlcsc product pages load prices client-side, so the fetched text has no price ladder. Every price below is USD, ex-tax, the largest break shown on the page.",
+  "items": [
+    {
+      "bomPn": "KEMET A768KE107M1VLAS036",
+      "found": "A768KE107M1VLAS036",
+      "maker": "KEMET",
+      "pkg": "Radial can - SMD (polymer aluminium, 100 uF 35 V)",
+      "grade": "not stated on the Digi-Key page",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 10000, "price": 0.19198, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036", "quote": "Tape & Reel 1,000 $0.23960; 2,000 $0.22208; 3,000 $0.21324; 5,000 $0.20338; 7,000 $0.19758; 10,000 $0.19198"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "Xiamen Faratronic C47S1222K60",
+      "found": "C47S1222K60C000 (LCSC C5452141)",
+      "maker": "Xiamen Faratronic",
+      "pkg": "THROUGH-HOLE radial box, MKP67 series, pitch 15 mm, body W 17.5 x H 12.0 x T 6.0 mm, lead 0.6 mm (MKP67 datasheet dimension row 0.0022 uF C47S1222-60****)",
+      "grade": "No AEC-Q200 / automotive statement on the LCSC page or the MKP67 datasheet. Class is Y1 440 Vac / 500 Vac (not Y2), 40/110/56/B, -40 to +110 C, CQC / ENEC / UL",
+      "observations": [],
+      "notFound": "No price read. LCSC product page https://www.lcsc.com/product-detail/C5452141.html was fetched (MPN, 'Through Hole,P=15mm', Y1 confirmed) but the price ladder is rendered client-side and is not in the page text; the LCSC search API returned 403; szlcsc search returned an empty page. Not on Digi-Key (no results). Two search-engine snapshots of the LCSC page (undated, not read live, they disagree) gave about USD 0.079-0.082 at 5,000+ and about USD 0.09 at 500+; recorded here only as a lead, not as a price.",
+      "unverifiedSnapshots": [
+        {"distributor": "LCSC (search-engine snapshot, not read live)", "qty": 5000, "price": 0.0791, "currency": "USD", "url": "https://lcsc.com/product-detail/Safety-Capacitors_XIAMEN-FARATRONIC-C47S1222K60C000_C5452141.html"},
+        {"distributor": "LCSC (search-engine snapshot, not read live)", "qty": 5000, "price": 0.0819, "currency": "USD", "url": "https://www.lcsc.com/product-detail/C5452141.html"}
+      ],
+      "datasheet": "https://atta.szlcsc.com/upload/public/pdf/source/20250423/465A3AE11FE873E413953D0DE9F362B2.pdf"
+    },
+    {
+      "bomPn": "Vishay SMBJ15A",
+      "found": "SMBJ15AHE3_B/I (automotive, nearest active orderable of the HE3 family); commercial SMBJ15A-E3/5B also read",
+      "maker": "Vishay General Semiconductor",
+      "pkg": "DO-214AA (SMB)",
+      "grade": "SMBJ15AHE3_B/I and _B/H: AEC-Q101, Automotive. SMBJ15A-E3/52 and -E3/5B: no qualification listed (General Purpose)",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 9600, "price": 0.17956, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I", "quote": "SMBJ15AHE3_B/I Tape & Reel 9,600 $0.17956 (only break; not normally stocked, 16 wk)"},
+        {"distributor": "Digi-Key", "qty": 2250, "price": 0.22401, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/H", "quote": "SMBJ15AHE3_B/H Tape & Reel 750 $0.26203; 2,250 $0.22401"},
+        {"distributor": "Digi-Key", "qty": 9600, "price": 0.10770, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/5B", "quote": "SMBJ15A-E3/5B (commercial) Tape & Reel 3,200 $0.12460; 9,600 $0.10770"},
+        {"distributor": "Digi-Key", "qty": 2250, "price": 0.11603, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/52", "quote": "SMBJ15A-E3/52 (commercial) Tape & Reel 750 $0.13792; 2,250 $0.11603"}
+      ],
+      "notFound": "SMBJ15AHE3_A/I (9,600 $0.14955) and _A/H (7,500 $0.15338) are listed Obsolete; SMBJ15AHE3/52 and /5B discontinued at Digi-Key"
+    },
+    {
+      "bomPn": "Littelfuse TPSMC33A",
+      "found": "TPSMC33A",
+      "maker": "Littelfuse",
+      "pkg": "DO-214AB (SMC)",
+      "grade": "AEC-Q101",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 9000, "price": 0.27825, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A", "quote": "Tape & Reel 3,000 $0.29345; 9,000 $0.27825 (Cut Tape F6533CT-ND 500 $0.44568)"},
+        {"distributor": "Digi-Key", "qty": 3500, "price": 0.32248, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=TPSMC33AHE3", "quote": "Vishay second source TPSMC33AHE3_B/I (AEC-Q101, active) Tape & Reel 3,500 $0.32248; TPSMC33AHE3_B/H 850 $0.38920"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "Vishay VSSAF3L45",
+      "found": "VSSAF3L45HM3_A/I (automotive)",
+      "maker": "Vishay General Semiconductor",
+      "pkg": "DO-221AC SlimSMA (SMA flat leads)",
+      "grade": "AEC-Q101",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 42000, "price": 0.15663, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I", "quote": "Tape & Reel 14,000 $0.17426; 42,000 $0.15663"},
+        {"distributor": "Digi-Key", "qty": 3500, "price": 0.20468, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45", "quote": "VSSAF3L45HM3_A/H (AEC-Q101) Tape & Reel 3,500 $0.20468; commercial VSSAF3L45-M3/6B 14,000 $0.15323"}
+      ],
+      "notFound": "No '-M3/I' code as such; the automotive codes are HM3_A/I and HM3_A/H"
+    },
+    {
+      "bomPn": "onsemi SZ1SMA5936BT3G",
+      "found": "SZ1SMA5936BT3G",
+      "maker": "onsemi",
+      "pkg": "DO-214AC (SMA)",
+      "grade": "AEC-Q101",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 10000, "price": 0.25033, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G", "quote": "Tape & Reel 5,000 $0.26978; 10,000 $0.25033"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "onsemi SZ1SMA5934BT3G",
+      "found": "SZ1SMA5934BT3G",
+      "maker": "onsemi",
+      "pkg": "DO-214AC (SMA)",
+      "grade": "AEC-Q101, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 10000, "price": 0.25033, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G", "quote": "Tape & Reel 5,000 $0.26978; 10,000 $0.25033"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "ST STTH112UFY",
+      "found": "STTH112UFY",
+      "maker": "STMicroelectronics",
+      "pkg": "DO-221AA SMBflat",
+      "grade": "AEC-Q101, Automotive",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 15000, "price": 0.24152, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY", "quote": "Tape & Reel 497-14814-2-ND 5,000 $0.27144; 15,000 $0.24152 (in stock 0, 5,000 due 07-Jun-2027)"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "Vishay IHLP4040DZER220M",
+      "found": "IHLP4040DZER220M1A (automotive; 5A and 8A also read)",
+      "maker": "Vishay Dale",
+      "pkg": "IHLP 4040, 10.80 x 10.16 x 4.00 mm, 22 uH, molded shielded",
+      "grade": "AEC-Q200 (1A, 5A, 8A); the 11 and 51 suffixes list no AEC-Q200",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 5000, "price": 0.64134, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A", "quote": "IHLP4040DZER220M1A Tape & Reel 500 $0.77918; 1,000 $0.73475; 1,500 $0.70997; 2,500 $0.67998; 3,500 $0.66093; 5,000 $0.64134"},
+        {"distributor": "Digi-Key", "qty": 5000, "price": 0.65749, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M5A", "quote": "IHLP4040DZER220M5A Tape & Reel 500 $0.79878 ... 3,500 $0.67757; 5,000 $0.65749"},
+        {"distributor": "Digi-Key", "qty": 2500, "price": 0.76908, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M8A", "quote": "IHLP4040DZER220M8A Tape & Reel 500 $0.82504; 1,000 $0.81522; 2,500 $0.76908"}
+      ],
+      "notFound": "The '01' suffix was not listed; the AEC-Q200 suffixes listed are 1A, 5A, 8A"
+    },
+    {
+      "bomPn": "TDK B82462G4332M000",
+      "found": "B82462G4332M000",
+      "maker": "TDK",
+      "pkg": "6.30 x 6.30 x 3.00 mm shielded drum-core SMD. NOTE: Digi-Key lists it as 3.3 uH, not 3.3 mH as the BOM note says",
+      "grade": "AEC-Q200",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 12500, "price": 0.64688, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000", "quote": "Tape & Reel 495-1994-2-ND 2,500 $0.72200; 5,000 $0.68098; 7,500 $0.65811; 12,500 $0.64688"}
+      ],
+      "notFound": null
+    },
+    {
+      "bomPn": "Coilcraft XEL4030V-472ME",
+      "found": null,
+      "maker": "Coilcraft",
+      "pkg": "XEL4030V family, 4.7 uH (Coilcraft page per search listing; orderable code needs a termination/packaging suffix, e.g. XEL4030V-472MEC)",
+      "grade": "not read",
+      "observations": [],
+      "notFound": "No price read. Coilcraft product pages returned HTTP 403; Mouser, Farnell (2836831RL, XEL4030-472MEB), Arrow, TTI, RS and Octopart refused the fetch (503/403); Digi-Key has no XEL4030-472ME*, XEL4030V-472MEC or XAL4030-472MEC listing (only XEL4030-471MEC / -901MEC marketplace, 1 pc $3.47). Needs a manual Coilcraft / Mouser lookup."
+    },
+    {
+      "bomPn": "Bourns PWR221T-30",
+      "found": "PWR221T-30-1000F (100 ohm) read in full; resistance not given in the BOM",
+      "maker": "Bourns",
+      "pkg": "TO-220-2 Full Pack, THROUGH-HOLE (Digi-Key category 'Through Hole Resistors'), tube, 30 W thick film. Not an SMD part",
+      "grade": "AEC-Q200 (all variants shown)",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 1000, "price": 3.03479, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F", "quote": "Tube 1 $5.11; 10 $3.881; 25 $3.5984; 50 $3.435; 100 $3.3048; 250 $3.1726; 500 $3.0959; 1,000 $3.03479"}
+      ],
+      "variants": "Digi-Key lists 106 PWR221T-30 codes; read (1-pc price): R050J 50 mohm $7.23, R250F 0.25 ohm $5.97, R750F 0.75 ohm $6.73, 3R00F $5.93, 5R00F $5.84, 8R00F $5.45, 8R20F $5.45, 12R0F $5.39, 15R0F $5.31, 20R0F $5.25, 22R0F $5.55, 24R0J $5.53, 30R0F $5.21, 40R0F $5.17, 50R0F $5.46, 56R0F $5.15, 1000F 100 ohm $5.11, 1200F 120 ohm $5.06, 2500F 250 ohm $5.09, 1001F 1 k $5.11, 1002F 10 k $5.49, 2002F 20 k $5.28, 3002F 30 k $4.98, 4002F 40 k $4.98, 5002F 50 k $5.28",
+      "notFound": "Only the 100 ohm code was read to 1,000; other values read at 1 pc only"
+    },
+    {
+      "bomPn": "XFMRS 2539 BMW-8-15T (custom, x8 per board)",
+      "found": "No XFMRS catalogue part found at Digi-Key (no XFMRS rows). Nearest catalogued SMD gate-drive / isolated-supply transformers read instead",
+      "maker": "Wurth Elektronik / Pulse Electronics / Bourns (proxies)",
+      "pkg": "see each observation",
+      "grade": "see each observation",
+      "observations": [
+        {"distributor": "Digi-Key", "qty": 500, "price": 1.85600, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=750319835", "quote": "Wurth 750319835 WE-AGDT auxiliary gate drive transformer, AEC-Q200, 4000 V isolation, 11.30 x 10.95 x 11.94 mm SMD, intended chipset UCC25800 (LLC, not push-pull); Tape & Reel 250 $2.06152; 500 $1.85600"},
+        {"distributor": "Digi-Key", "qty": 500, "price": 2.61000, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=750319832", "quote": "Wurth 750319832 WE-AGDT, AEC-Q200, 4000 V, 11.30 x 10.95 mm, UCC25800; Tape & Reel 250 $2.90700; 500 $2.61000"},
+        {"distributor": "Digi-Key", "qty": 4900, "price": 1.63819, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=PM2180.034NLT", "quote": "Pulse PM2180.034NLT gate-drive push-pull 3CT:4CT, 8.10 x 7.10 x 5.08 mm SMD (series stated IATF / AEC-Q200 on the Digi-Key PM21xx highlight page; not on the part page); Tape & Reel 700 $1.79097; 1,400 $1.73521; 2,100 $1.70329; 3,500 $1.66378; 4,900 $1.63819"},
+        {"distributor": "Digi-Key", "qty": 2500, "price": 3.30422, "currency": "USD", "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8", "quote": "Bourns HCTSM8 push-pull 'XFMR 3.3-5V/3.3-15V,350MA PK', 12.30 x 10.80 x 6.50 mm SMD (for SN6505-class drivers); e.g. HCTSM80803AAL-E / 80308BAL-E 2,500 $3.30422; HCTSM80101AAL-E (Automotive, AEC-Q200) 500 $3.55890"}
+      ],
+      "notFound": "Custom XFMRS code has no public price (as expected). Best like-for-like proxy: Pulse PM2180.034NLT USD 1.638 @ 4,900 (push-pull, SMD, smaller than 10x10); Wurth WE-AGDT 750319835 USD 1.856 @ 500 (AEC-Q200 per part, ~11x11 mm, but LLC topology)."
+    }
+  ]
+}

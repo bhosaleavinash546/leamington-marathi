@@ -1,0 +1,841 @@
+{
+ "readOn": "2026-11-26",
+ "lines": {
+  "Integrated Circuit 1": {
+   "base": 23.859905511811025,
+   "brk": 500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TC389QP160F300SAEKXUMA2",
+     "maker": "Infineon",
+     "grade": "not stated on page (Digi-Key: -40~125C TA)",
+     "seller": "Digi-Key",
+     "quote": "US$30.30208 at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
+    },
+    {
+     "mpn": "TC389QP160F300SAEKXUMA2",
+     "maker": "Infineon",
+     "grade": "AURIX, −40 to 125 °C",
+     "seller": "Digi-Key China",
+     "quote": "¥221.77 ex-VAT at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
+    }
+   ],
+   "note": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price"
+  },
+  "Integrated Circuit 2": {
+   "base": 2.0483,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "TLF35584QVVS2XUMA2",
+     "maker": "Infineon",
+     "grade": "AEC-Q100",
+     "seller": "Mouser",
+     "quote": "US$3.75 at 2,500",
+     "date": "6 Oct 2026",
+     "url": "https://www.mouser.com/c/?q=TLF35584QVVS2"
+    }
+   ],
+   "note": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue)"
+  },
+  "Integrated Circuit 3": {
+   "base": 1.3990393700787402,
+   "brk": 4000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "LM74202QPWPRQ1",
+     "maker": "Texas Instruments",
+     "grade": "Q1 suffix; qualification not quoted on the page read",
+     "seller": "Digi-Key",
+     "quote": "US$1.77678 at 4,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 5": {
+   "base": 0.8930393700787402,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TPS7B8401QWDRBRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$1.13416 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8401QWDRBRQ1"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 6": {
+   "base": 1.617811023622047,
+   "brk": 3000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "UCC27282QDRCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$2.05462 at 3,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 7": {
+   "base": 0.42746456692913387,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TLV9004QPWRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.54288 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 9": {
+   "base": 3.3584881889763776,
+   "brk": 2000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "AMC1211AQDWVRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$4.26528 at 2,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVRQ1"
+    }
+   ],
+   "note": "reel code of the BOM's tube code"
+  },
+  "Integrated Circuit 13": {
+   "base": 1.2906614173228346,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "LM5155QDSSRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$1.63914 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1"
+    }
+   ],
+   "note": ""
+  },
+  "Transistor 1": {
+   "base": 0.1466062992125984,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PJQ4548P-AU_R2_002A1",
+     "maker": "PANJIT",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.18619 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU"
+    }
+   ],
+   "note": ""
+  },
+  "Transistor 2": {
+   "base": 0.26786614173228346,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PJQ5948-AU_R2_002A1",
+     "maker": "PANJIT",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.34019 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 8": {
+   "base": 0.16021259842519686,
+   "brk": 2500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "74HC4075PW",
+     "maker": "Nexperia",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.20347 at 2,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW"
+    }
+   ],
+   "note": ""
+  },
+  "Integrated Circuit 4": {
+   "base": 0.2442,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$0.4316 at 5,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088"
+    }
+   ],
+   "note": "£0.2442 at 300k (catalogue)"
+  },
+  "Integrated Circuit 10": {
+   "base": 2.541,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ADUM4135WBRWZ",
+     "maker": "Analog Devices",
+     "grade": "automotive (W)",
+     "seller": "Digi-Key",
+     "quote": "US$5.02 at 1,034",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084"
+    }
+   ],
+   "note": "£2.541 at 300k (catalogue)"
+  },
+  "Integrated Circuit 11": {
+   "base": 3.1819,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "UCC5880QDFCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$6.00 at 2,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588"
+    }
+   ],
+   "note": "£3.1819 at 300k (catalogue)"
+  },
+  "Integrated Circuit 12": {
+   "base": 0.11959,
+   "brk": 2500,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "LM2903BQDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "szlcsc (China)",
+     "quote": "¥1.06195 ex-VAT a part, reel of 2,500",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/4226854.html"
+    }
+   ],
+   "note": "the -Q1 dual comparator"
+  },
+  "Sensor 1": {
+   "base": 1.7749,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ACS37002LMABTR-050B5",
+     "maker": "Allegro",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$3.5148 at 1,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511"
+    }
+   ],
+   "note": "£1.7749 at 300k (catalogue)"
+  },
+  "Sensor 2": {
+   "base": 1.2983,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ACS37612LLUATR-015B5",
+     "maker": "Allegro",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$2.64278 at 4,000",
+     "date": "13 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37612LLUATR-015B5/12093264"
+    }
+   ],
+   "note": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue)"
+  },
+  "Crystal 1": {
+   "base": 0.0642,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "NX3225GA-25.000M-STD-CRG-2",
+     "maker": "NDK",
+     "grade": "AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.1169 at 6,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.lcsc.com/product-image/C438901.html"
+    }
+   ],
+   "note": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue)"
+  },
+  "Capacitor 1": {
+   "base": 0.15116535433070866,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "A768KE107M1VLAS036",
+     "maker": "KEMET",
+     "grade": "not stated on the Digi-Key page",
+     "seller": "Digi-Key",
+     "quote": "US$0.19198 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036"
+    }
+   ],
+   "note": ""
+  },
+  "Capacitor 2": {
+   "base": 0.06299212598425197,
+   "brk": 5000,
+   "kind": "estimate",
+   "sources": [
+    {
+     "mpn": "C47S1222K60C000",
+     "maker": "Xiamen Faratronic",
+     "grade": "Y1 440 VAC, MKP, through-hole",
+     "seller": "LCSC (search snapshot — page price not read)",
+     "quote": "about US$0.08 at 5,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.lcsc.com/product-detail/C5452141.html"
+    }
+   ],
+   "note": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified"
+  },
+  "Diode 1": {
+   "base": 0.14138582677165354,
+   "brk": 9600,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SMBJ15AHE3_B/I (automotive, nearest active orderable of the HE3 family); commercial SMBJ15A-E3/5B also read",
+     "maker": "Vishay General Semiconductor",
+     "grade": "SMBJ15AHE3_B/I and _B/H: AEC-Q101, Automotive. SMBJ15A-E3/52 and -E3/5B: no qualification listed (General Purpose)",
+     "seller": "Digi-Key",
+     "quote": "US$0.17956 at 9,600",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 2": {
+   "base": 0.21909448818897637,
+   "brk": 9000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TPSMC33A",
+     "maker": "Littelfuse",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.27825 at 9,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 3": {
+   "base": 0.12333070866141732,
+   "brk": 42000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "VSSAF3L45HM3_A/I (automotive)",
+     "maker": "Vishay General Semiconductor",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.15663 at 42,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 4": {
+   "base": 0.19711023622047244,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SZ1SMA5936BT3G",
+     "maker": "onsemi",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.25033 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 5": {
+   "base": 0.19711023622047244,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SZ1SMA5934BT3G",
+     "maker": "onsemi",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.25033 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 6": {
+   "base": 0.1901732283464567,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "STTH112UFY",
+     "maker": "STMicroelectronics",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.24152 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY"
+    }
+   ],
+   "note": ""
+  },
+  "Inductor 1": {
+   "base": 0.504992125984252,
+   "brk": 5000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "IHLP4040DZER220M1A (automotive; 5A and 8A also read)",
+     "maker": "Vishay Dale",
+     "grade": "AEC-Q200 (1A, 5A, 8A); the 11 and 51 suffixes list no AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.64134 at 5,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A"
+    }
+   ],
+   "note": ""
+  },
+  "Inductor 3": {
+   "base": 0.5093543307086614,
+   "brk": 12500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "B82462G4332M000",
+     "maker": "TDK",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.64688 at 12,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000"
+    }
+   ],
+   "note": ""
+  },
+  "Inductor 4": {
+   "base": 0.5504,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "XEL4030-102MEB",
+     "maker": "Coilcraft",
+     "grade": "XEL4030 family",
+     "seller": "Mouser",
+     "quote": "US$1.09 at 1,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC"
+    }
+   ],
+   "note": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue)"
+  },
+  "Resistor 1": {
+   "base": 2.3895984251968505,
+   "brk": 1000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PWR221T-30-1000F (100 ohm) read in full; resistance not given in the BOM",
+     "maker": "Bourns",
+     "grade": "AEC-Q200 (all variants shown)",
+     "seller": "Digi-Key",
+     "quote": "US$3.03479 at 1,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F"
+    }
+   ],
+   "note": ""
+  },
+  "Inductor 2": {
+   "base": 1.2899133858267717,
+   "brk": 4900,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PM2180.034NLT",
+     "maker": "Pulse",
+     "grade": "push-pull, 8.1 × 7.1 mm, AEC-Q200 series",
+     "seller": "Digi-Key",
+     "quote": "US$1.63819 at 4,900",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PM2180.034NLT"
+    },
+    {
+     "mpn": "750319835",
+     "maker": "Würth",
+     "grade": "WE-AGDT, AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$1.856 at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=750319835"
+    },
+    {
+     "mpn": "HCTSM8",
+     "maker": "Bourns",
+     "grade": "push-pull, 12.3 × 10.8 mm",
+     "seller": "Digi-Key",
+     "quote": "US$3.30422 at 2,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8"
+    }
+   ],
+   "note": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86)"
+  },
+  "Capacitor 3 (0402)": {
+   "base": 0.00448,
+   "brk": 10000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM155R71C104KA55D",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.03982 ex-VAT a part, reel of 10,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/87033.html"
+    }
+   ],
+   "note": "100 nF X7R"
+  },
+  "Capacitor 3 (0603)": {
+   "base": 0.00287,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM188R71H104KA57D",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02549 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/87040.html"
+    }
+   ],
+   "note": "100 nF 50 V X7R"
+  },
+  "Capacitor 3 (0805)": {
+   "base": 0.0183,
+   "brk": 300000,
+   "kind": "mix",
+   "sources": [
+    {
+     "mpn": "KAM21BR71H104KT",
+     "maker": "Kyocera AVX",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.0289 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT"
+    },
+    {
+     "mpn": "GCM21BR71H105KA03L",
+     "maker": "Murata",
+     "grade": "GCM, AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.0235 at 9,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.lcsc.com/product-detail/C126592.html"
+    }
+   ],
+   "note": "value mix (judgement): half 100 nF, half 1 µF, 50 V — £0.0152 and £0.0214 at 300k (catalogue)"
+  },
+  "Capacitor 3 (1206)": {
+   "base": 0.033600346765564795,
+   "brk": 300000,
+   "kind": "mix",
+   "sources": [
+    {
+     "mpn": "C1206C104K5RACAUTO",
+     "maker": "KEMET",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.03711 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001"
+    },
+    {
+     "mpn": "CGA5L1X7R1H475KT0Y0N",
+     "maker": "TDK",
+     "grade": "CGA, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.60080 ex-VAT a part, reel of 2,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/370048.html"
+    }
+   ],
+   "note": "value mix (judgement): half 100 nF (£0.0197 at 300k), half 4.7 µF 50 V (£0.06766 a reel of 2,000 → 300k = £0.0475)"
+  },
+  "Capacitor 3 (1210)": {
+   "base": 0.09857,
+   "brk": 1000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM32EC71H106KA03L",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.87531 ex-VAT a part, reel of 1,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/137892.html"
+    }
+   ],
+   "note": "10 µF 50 V bulk"
+  },
+  "Resistor 2 (0402)": {
+   "base": 0.00054,
+   "brk": 10000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0402FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.00478 ex-VAT a part, reel of 10,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/156139.html"
+    }
+   ],
+   "note": ""
+  },
+  "Resistor 2 (0603)": {
+   "base": 0.00075,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0603FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.00664 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/117931.html"
+    }
+   ],
+   "note": ""
+  },
+  "Resistor 2 (0805)": {
+   "base": 0.00185,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0805FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.01646 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/152196.html"
+    }
+   ],
+   "note": ""
+  },
+  "Resistor 3 (1206)": {
+   "base": 0.00484,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC1206FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04301 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/155852.html"
+    }
+   ],
+   "note": ""
+  },
+  "Resistor 3 (2512)": {
+   "base": 0.06194,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC2512FK-0710RL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.55000 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/476216.html"
+    }
+   ],
+   "note": ""
+  },
+  "Diode 7": {
+   "base": 0.00329,
+   "brk": 3000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "BAV99,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02920 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/2877.html"
+    }
+   ],
+   "note": ""
+  },
+  "Discrete 3 Pins": {
+   "base": 0.00445,
+   "brk": 3000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "2N7002,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04770 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/66260.html"
+    },
+    {
+     "mpn": "BC847C,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.03142 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/9163.html"
+    }
+   ],
+   "note": "mean of the MOSFET and the BJT"
+  },
+  "Discretes (4+ pins)": {
+   "base": 0.0089,
+   "brk": 3000,
+   "kind": "estimate",
+   "sources": [
+    {
+     "mpn": "2N7002,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04770 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/66260.html"
+    }
+   ],
+   "note": "dual transistor in SOT-363: two small-signal dies (2 × the SOT-23 mean) — estimate"
+  },
+  "Ferrite 1": {
+   "base": 0.01953,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "BLM18KG601SH1D",
+     "maker": "Murata",
+     "grade": "automotive (SH1)",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.17345 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/748751.html"
+    }
+   ],
+   "note": ""
+  },
+  "Inductor 5": {
+   "base": 0.0664,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "VLS252012HBX-1R0M-1",
+     "maker": "TDK",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.10906 at 14,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063"
+    }
+   ],
+   "note": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue)"
+  }
+ }
+}

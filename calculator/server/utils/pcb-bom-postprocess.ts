@@ -61,7 +61,11 @@ export function inferComponentType(input: {
     // (a ferrite bead at £0.45, an image sensor at £0.45 — a camera-board BOM, Oct 2026).
     if (/ferrite|\bbead\b/.test(desc)) cls = 'ferrite';
     else if (/common[- ]?mode|\bchoke\b/.test(desc)) cls = 'transformer';
+    else if (/transformer/.test(desc)) cls = 'transformer';
     else if (/inductor/.test(desc)) cls = 'inductor';
+    // A transistor named as one in a BOM file: its SOT-23 / DFN package used to make it an IC (BMW inverter BOM, Nov 2026 —
+    // 37 small-signal transistors and 3 MOSFETs priced on the SOIC IC range, ~£0.90 each).
+    else if (/\b(mosfet|transistor|bjt|igbt|jfet)s?\b/.test(desc) && !/driver|controller|regulator|amplifier|converter|switch ic/.test(desc)) cls = 'transistor';
     else if (/image sensor|cmos sensor|camera sensor|imager\b/.test(desc)) cls = 'ic';
     else if (/conn|header|socket|receptacle|usb|rj45|smd_conn/.test(pkg + desc)) cls = 'connector';
     else if (/qfn|qfp|bga|soic|sot|tssop|dfn|son|lga|dpak/.test(pkg)) cls = 'ic';

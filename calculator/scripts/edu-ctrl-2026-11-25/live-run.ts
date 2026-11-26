@@ -107,7 +107,7 @@ async function main(): Promise<void> {
       const nm = PHOTO_FILES[i] ? PHOTO_FILES[i].split('/').pop()! : `camera-photo-${i + 1}.jpg`;
       await page.setInputFiles(`#pcb-img-input-${i}`, { name: nm, mimeType: /\.webp$/i.test(nm) ? 'image/webp' : /\.png$/i.test(nm) ? 'image/png' : 'image/jpeg', buffer: photos[i] });
     }
-    if (BOM_FILE) await page.setInputFiles('#pcb-bom-input', { name: BOM_FILE.split('/').pop()!, mimeType: 'image/jpeg', buffer: readFileSync(BOM_FILE) });
+    if (BOM_FILE) await page.setInputFiles('#pcb-bom-input', { name: BOM_FILE.split('/').pop()!, mimeType: /\.csv$/i.test(BOM_FILE) ? 'text/csv' : /\.png$/i.test(BOM_FILE) ? 'image/png' : 'image/jpeg', buffer: readFileSync(BOM_FILE) });
     await page.fill('#pcb-order-qty', process.env.CV_QTY ?? '10000');
     await page.evaluate((v: string) => { const f = document.getElementById('annual-volume') as HTMLInputElement | null; if (f) { f.value = v; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); } }, process.env.CV_QTY ?? '10000');
     await page.selectOption('#pcb-mfg-country', 'cn');
@@ -160,8 +160,9 @@ async function main(): Promise<void> {
         await page.route('**/api/pcb/reprice', async route => {
           const body = JSON.parse(route.request().postData() ?? '{}');
           const lines = (body.analysis?.bom ?? []) as Array<Record<string, unknown>>;
-          body.analysis.userCorrections = lines.filter(l => BOM_EDITS[String(l.refDes)])
-            .map(l => ({ ...l, ...BOM_EDITS[String(l.refDes)], priceEdited: true }));
+          // Keyed by designator, or — for a BOM without designators — by the part number (spaces ignored).
+          const edit = (l: Record<string, unknown>) => BOM_EDITS[String(l.refDes)] ?? BOM_EDITS[String(l.partNumber ?? '').replace(/\s+/g, '')];
+          body.analysis.userCorrections = lines.filter(l => edit(l)).map(l => ({ ...l, ...edit(l), priceEdited: true }));
           log(`BOM corrections sent: ${JSON.stringify(body.analysis.userCorrections.map((l: Record<string, unknown>) => [l.refDes, l.unitPriceGBP]))}`);
           await route.continue({ postData: JSON.stringify(body) });
         });

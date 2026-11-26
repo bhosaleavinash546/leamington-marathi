@@ -1,0 +1,47 @@
+Description,Manufacturer,MPN,Package,Quantity
+"Integrated Circuit 1: AURIX TC389 32-bit TriCore lockstep MCU, AE step (marking read; TC38x data sheet)",Infineon,SAK-TC389QP-160F300S AE,LFBGA-516 (25 × 25 mm),1
+Integrated Circuit 2: Safety power-supply / system basis chip for AURIX (ASIL-D),Infineon,TLF35584QVVS1,VQFN-48,1
+"Integrated Circuit 3: Ideal-diode / eFuse controller, reverse-battery protection",Texas Instruments,LM74202QPWPRQ1,HTSSOP-16,1
+Integrated Circuit 4: CAN FD transceiver,Texas Instruments,TCAN1057AVDRQ1,SOIC-8,3
+Integrated Circuit 5: 40 V LDO (gate-driver and sensor supplies),Texas Instruments,TPS7B8401QWDRBRQ1,VSON-8 (DRB),11
+Integrated Circuit 6: Half-bridge gate driver (isolated-supply push-pull),Texas Instruments,UCC27282QDRCRQ1,VSON-10 (DRC),2
+Integrated Circuit 7: Quad op-amp,Texas Instruments,TLV9004QPWRQ1,TSSOP-14,3
+Integrated Circuit 8: Triple 3-input OR gate (marking HC4075 read),NXP,74HC4075PW,TSSOP-14,2
+Integrated Circuit 9: Isolated amplifier (HV DC-link voltage sense),Texas Instruments,AMC1211AQDWVQ1,SOIC-8 wide,1
+"Integrated Circuit 10: Isolated gate driver (single channel, desat)",Analog Devices,ADuM4135,SOIC-16 wide,3
+"Integrated Circuit 11: Isolated functional-safety SiC / IGBT gate driver (one per switch: HU/HV/HW, LU/LV/LW silkscreen)",Texas Instruments,UCC5880QDFCRQ1,SSOP-32,6
+Integrated Circuit 12: Dual comparator,Texas Instruments,LM2903-Q1,SO-8,1
+Integrated Circuit 13: Boost / flyback controller (gate-driver supply),Texas Instruments,LM5155QDSSRQ1,WSON-12,1
+Sensor 1: Hall-effect current sensor,Allegro,ACS37002,SOIC-16 wide,2
+"Sensor 2: Hall-effect current sensor, through-hole (4 leads)",Allegro,ACS37601,SIP-4 (through-hole),2
+Transistor 1: Automotive N-channel MOSFET,PANJIT,PJQ4548P-AU,DFN3333-8,1
+Transistor 2: Automotive dual N-channel MOSFET,PANJIT,PJQ5948-AU,DFN5060-8,2
+Crystal 1: Quartz crystal 20 MHz for the AURIX,NDK,NX3225GA 20MHz,SMD 3225,1
+Diode 1: TVS diode 600 W 15 V,Vishay,SMBJ15A,SMB,1
+"Diode 2: TVS diode 1500 W 33 V, automotive",Littelfuse,TPSMC33A,SMC,1
+Diode 3: Schottky rectifier 3 A 45 V,Vishay,VSSAF3L45,SMPA (DO-221BC),1
+"Diode 4: Zener diode 30 V 1.5 W, automotive",onsemi,SZ1SMA5936BT3G,SMA,6
+"Diode 5: Zener diode 24 V 1.5 W, automotive",onsemi,SZ1SMA5934BT3G,SMA,3
+"Diode 6: Ultrafast rectifier 1 A 1200 V, automotive (gate-driver bootstrap / desat)",STMicroelectronics,STTH112UFY,SMBflat,16
+"Inductor 1: Power inductor 22 µH, 10 × 10 mm",Vishay,IHLP4040DZER220M,SMD 10x10 (larger than 1210 case),1
+"Inductor 2: Isolated gate-driver supply transformer, 8 pins (customer part, marking read)",XFMRS,XFMRS 2539 BMW-8-15T,SMD 8-pin ~12x10,8
+"Inductor 3: SMD inductor 3.3 mH, 6.3 × 6 mm",TDK,B82462G4332M000,SMD 6x6 (larger than 1210 case),1
+"Inductor 4: Power inductor 4.7 µH, automotive",Coilcraft,XEL4030V-472ME,SMD 4x4 (larger than 1210 case),1
+Capacitor 1: Polymer aluminium capacitor 100 µF 35 V (marking K 768 35Y06 100 read),KEMET,A768KE107M1VLAS036,SMD can 8 mm,1
+"Capacitor 2: MKP film safety capacitor 2.2 nF Y1 440 VAC (marking MKP 222K 440~ read), silicone-staked",Xiamen Faratronic,C47S1222K60,"THT box 17.5×12 mm, 15 mm pitch",4
+"Resistor 1: Power resistor (active-discharge / bleed), through-hole",Bourns,PWR221T-30,TO-220 full pack (through-hole),2
+"Capacitor 3 (0402): MLCC X7R (BOM ""Capacitor 3"", 437 in all) — logic and decoupling",,,0402,220
+"Capacitor 3 (0603): MLCC X7R (BOM ""Capacitor 3"")",,,0603,140
+"Capacitor 3 (0805): MLCC X7R (BOM ""Capacitor 3"")",,,0805,45
+"Capacitor 3 (1206): MLCC X7R, gate-driver supply arrays (BOM ""Capacitor 3"")",,,1206,22
+"Capacitor 3 (1210): MLCC X7R bulk (BOM ""Capacitor 3"")",,,1210,10
+"Resistor 2 (0402): Thick-film chip resistor 1 % (BOM ""Resistor 2"", 511 in all)",,,0402,280
+"Resistor 2 (0603): Thick-film chip resistor 1 % (BOM ""Resistor 2"")",,,0603,190
+"Resistor 2 (0805): Thick-film chip resistor 1 % (BOM ""Resistor 2"")",,,0805,41
+"Resistor 3 (1206): Thick-film chip resistor, HV divider chain (markings 1153, 1151, E511 read) (BOM ""Resistor 3"", 40 in all)",,,1206,32
+"Resistor 3 (2512): Power / pulse chip resistor (BOM ""Resistor 3"")",,,2512,8
+"Diode 7: Small-signal / Schottky diode (BOM ""Diode 7"")",,,SOD-323,69
+"Discrete 3 Pins: Small-signal transistor, MOSFET / BJT (BOM ""Discrete 3 Pins"")",,,SOT-23,30
+"Discretes (4+ pins): Dual small-signal transistor (BOM ""Discretes (4+ pins)"")",,,SOT-363,7
+"Ferrite 1: Ferrite bead (BOM ""Ferrite 1"")",,,0603,2
+"Inductor 5: Small SMD inductor (BOM ""Inductor 5"")",,,SMD 1210,3

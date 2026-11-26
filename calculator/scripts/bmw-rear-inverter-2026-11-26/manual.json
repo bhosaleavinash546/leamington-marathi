@@ -1,0 +1,1690 @@
+{
+ "inputs": {
+  "boards": {
+   "v": 400000,
+   "unit": "boards / year",
+   "cls": "given",
+   "basis": "Given: annual volume"
+  },
+  "years": {
+   "v": 6,
+   "unit": "years",
+   "cls": "given",
+   "basis": "Given: programme life"
+  },
+  "w": {
+   "v": 280,
+   "unit": "mm",
+   "cls": "reading",
+   "basis": "Measured off the top view: TC389 LFBGA-516 body (25 mm) as the scale, checked on the SOIC-8 CAN transceivers (±5 %)"
+  },
+  "h": {
+   "v": 220,
+   "unit": "mm",
+   "cls": "reading",
+   "basis": "Measured off the top view (±5 %)"
+  },
+  "layers": {
+   "v": 6,
+   "unit": "layers",
+   "cls": "given",
+   "basis": "A2Mac1 PCB characteristics: 6 layers"
+  },
+  "outerCuSteps": {
+   "v": 4,
+   "unit": "½ oz steps",
+   "cls": "given",
+   "basis": "Copper 70/35/35/35/35/70 µm: the two 2 oz outer layers are 2 steps of ½ oz above 1 oz each"
+  },
+  "heavyCuCny": {
+   "v": 25,
+   "unit": "¥ / m² / layer / ½ oz",
+   "cls": "market",
+   "basis": "Chinese fabricators' heavy-copper adder (Queen EMS / AIVON 2026 copper-weight guides; CostVision HEAVY_CU_CNY_PER_M2_PER_HALF_OZ)"
+  },
+  "burden": {
+   "v": 0.05,
+   "unit": "fraction",
+   "cls": "tool",
+   "basis": "EMS material burden at 100k+ boards (cost-plus EMS practice), the tool's stated rate"
+  },
+  "fx": {
+   "v": 8.88,
+   "unit": "CNY per £",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China (Sep 2026)"
+  },
+  "usd": {
+   "v": 1.27,
+   "unit": "US$ per £",
+   "cls": "market",
+   "basis": "FX used for US$ prices"
+  },
+  "aspCny": {
+   "v": 995.31,
+   "unit": "¥ / m² sold",
+   "cls": "market",
+   "basis": "Chaoying (超颖) 4–6-layer board ASP 2024, prospectus p.1-1-229 (automotive is its main use) — https://pdf.dfcfw.com/pdf/H2_AN202503311649612309_1.pdf"
+  },
+  "aspRise": {
+   "v": 0.145,
+   "unit": "fraction",
+   "cls": "market",
+   "basis": "Mid of the +12–17 % automotive PCB price rise to Q1 2026 (Sina, 17 Sep 2026)"
+  },
+  "base2L": {
+   "v": 0.116,
+   "unit": "£ / dm²",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: 2-layer base (layer shape only)"
+  },
+  "layerAdd": {
+   "v": 0.07379,
+   "unit": "£ / dm² / layer",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: per layer above 2 (layer shape only)"
+  },
+  "aspAnchor": {
+   "v": 5,
+   "unit": "layers",
+   "cls": "market",
+   "basis": "The 4–6-layer ASP is a 4 / 6 mix: anchored at 5 layers"
+  },
+  "class3Cny": {
+   "v": 105,
+   "unit": "¥ / m²",
+   "cls": "market",
+   "basis": "PCBasic: 25 µm hole copper +¥25/m², 4-wire test +¥80/m² — https://www.pcbasic.com/standard_pcb.html"
+  },
+  "joints": {
+   "v": 3510,
+   "unit": "SMT joints",
+   "cls": "reading",
+   "basis": "Every SMD pad: 2 a two-terminal part, the package's pins for ICs (BGA 292 balls), from the BOM quantities"
+  },
+  "smtUsdJ": {
+   "v": 0.0012,
+   "unit": "US$ / joint",
+   "cls": "market",
+   "basis": "JLCPCB Standard PCBA, > 100,000 joints an order: $0.0012 per SMT joint, paste and AOI inside (22 Oct 2026) — https://jlcpcb.com/help/article/pcb-assembly-price"
+  },
+  "thtJoints": {
+   "v": 20,
+   "unit": "joints",
+   "cls": "reading",
+   "basis": "Through-hole parts: ACS37601 × 2 (4 leads), film capacitors × 4 (2 leads), PWR221T × 2 (2 leads)"
+  },
+  "thtUsdJ": {
+   "v": 0.012,
+   "unit": "US$ / joint",
+   "cls": "market",
+   "basis": "JLCPCB through-hole (wave / selective) joint at its top tier — https://jlcpcb.com/help/article/pcb-assembly-price"
+  },
+  "lot": {
+   "v": 33333,
+   "unit": "boards / lot",
+   "cls": "estimate",
+   "basis": "One lot a month (400,000 ÷ 12)"
+  },
+  "changeH": {
+   "v": 1.0,
+   "unit": "h / side / lot",
+   "cls": "estimate",
+   "basis": "Line changeover per side per lot"
+  },
+  "smtHS": {
+   "v": 77.1852,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: high-speed SMT line"
+  },
+  "opRate": {
+   "v": 3.7523,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: electronics assembly operator, fully loaded"
+  },
+  "techRate": {
+   "v": 4.4583,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: technician, fully loaded"
+  },
+  "xray": {
+   "v": 45.8755,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: X-ray BGA inspection cell"
+  },
+  "ict": {
+   "v": 54.9548,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: ICT bed-of-nails test system (also the functional-tester proxy)"
+  },
+  "progRate": {
+   "v": 8,
+   "unit": "£ / h",
+   "cls": "estimate",
+   "basis": "Programming station"
+  },
+  "xraySec": {
+   "v": 15,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "100 % X-ray of the TC389 BGA (one device), in line"
+  },
+  "coatRate": {
+   "v": 0.002635,
+   "unit": "£ / cm²",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: conformal coating (material + machine)"
+  },
+  "coatCm2": {
+   "v": 431,
+   "unit": "cm²",
+   "cls": "estimate",
+   "basis": "Partial coating (A2Mac1): the top side's component areas, ≈ 70 % of 280 × 220 mm (UV photo shows the top coated)"
+  },
+  "uvSec": {
+   "v": 15,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "UV inspection of the coating"
+  },
+  "stakeDots": {
+   "v": 24,
+   "unit": "dots",
+   "cls": "reading",
+   "basis": "Silicone staking seen on the 8 gate-drive transformers and the 4 film capacitors: 2 dots a part"
+  },
+  "stakeSec": {
+   "v": 3,
+   "unit": "s / dot",
+   "cls": "tool",
+   "basis": "CostVision staking rule: 3 s a dot (dispensing cell)"
+  },
+  "stakeG": {
+   "v": 0.05,
+   "unit": "g / dot",
+   "cls": "tool",
+   "basis": "CostVision staking rule: 0.05 g silicone a dot"
+  },
+  "siliconeGBPg": {
+   "v": 0.28875093244923333,
+   "unit": "£ / g",
+   "cls": "tool",
+   "basis": "DOWSIL 3-1953-type silicone, US$6,967.56 for 19 kg (CostVision staking rule)"
+  },
+  "ictSec": {
+   "v": 40,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Bed-of-nails ICT (1,189 parts, test pads on both sides)"
+  },
+  "progSec": {
+   "v": 60,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Flash the TC389 (up to 10 MB) and the safety configuration"
+  },
+  "fctSec": {
+   "v": 90,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Board functional test incl. gate-driver supplies and isolation (hipot) of the six driver channels"
+  },
+  "finalSec": {
+   "v": 20,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Final inspection and 2D-code read"
+  },
+  "depanelGBP": {
+   "v": 0.0563,
+   "unit": "£",
+   "cls": "market",
+   "basis": "Huaqiu 拆板费 ¥0.50 a board — https://smt.hqchip.com/online/valuation.html"
+  },
+  "packCny": {
+   "v": 2.232,
+   "unit": "¥",
+   "cls": "market",
+   "basis": "JLC ESD bag ¥1 + divider ¥0.002/cm² × 616 cm² — https://m.jlc.com/portal/server_guide_40512.html"
+  },
+  "unquotedOH": {
+   "v": 0.1,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Overhead on the rate-book operations (list prices carry the seller's margin)"
+  },
+  "fpyRework": {
+   "v": 0.03,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Boards reworked (FPY 97 %)"
+  },
+  "reworkMin": {
+   "v": 15,
+   "unit": "min",
+   "cls": "estimate",
+   "basis": "Rework per failed board (technician; BGA board) + a re-test"
+  },
+  "scrap": {
+   "v": 0.003,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Boards scrapped"
+  },
+  "nre": {
+   "v": 46000,
+   "unit": "£ one-off",
+   "cls": "estimate",
+   "basis": "Stencils 2 × £300, ICT fixture £12,000, FCT / hipot fixture £25,000, coating program £1,500, staking program £1,000, programming set-up £1,500, X-ray program £1,000, bare-board E-test / route tooling £3,400"
+  },
+  "boardKg": {
+   "v": 0.21,
+   "unit": "kg / board",
+   "cls": "estimate",
+   "basis": "Populated board: 6-layer 1.6 mm FR-4 280 × 220 mm net of the outline cut-outs ≈ 170 g + parts ≈ 40 g"
+  },
+  "packKg": {
+   "v": 0.05,
+   "unit": "kg / board",
+   "cls": "estimate",
+   "basis": "Share of ESD bag + divider + carton"
+  },
+  "seaKg": {
+   "v": 0.4,
+   "unit": "£ / kg",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China: sea freight"
+  },
+  "duty": {
+   "v": 0.037,
+   "unit": "fraction",
+   "cls": "table",
+   "basis": "CostVision PCB country table, China → UK import duty (assumption, HS line not confirmed)"
+  }
+ },
+ "lines": [
+  {
+   "refDes": "Integrated Circuit 1",
+   "bomRow": "Integrated Circuit 1",
+   "manufacturer": "Infineon",
+   "partNumber": "SAK-TC389QP-160F300S AE",
+   "description": "AURIX TC389 32-bit TriCore lockstep MCU, AE step (marking read; TC38x data sheet)",
+   "pkg": "LFBGA-516 (25 × 25 mm)",
+   "qty": 1,
+   "padsEach": 516,
+   "unitGBP": 15.189072,
+   "base": 23.859905511811025,
+   "brk": 500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TC389QP160F300SAEKXUMA2",
+     "maker": "Infineon",
+     "grade": "not stated on page (Digi-Key: -40~125C TA)",
+     "seller": "Digi-Key",
+     "quote": "US$30.30208 at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
+    },
+    {
+     "mpn": "TC389QP160F300SAEKXUMA2",
+     "maker": "Infineon",
+     "grade": "AURIX, −40 to 125 °C",
+     "seller": "Digi-Key China",
+     "quote": "¥221.77 ex-VAT at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
+    }
+   ],
+   "basis": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; £23.85991 at 500 → 300,000 parts a year = £15.18907",
+   "passive": false,
+   "lineGBP": 15.189072
+  },
+  {
+   "refDes": "Integrated Circuit 2",
+   "bomRow": "Integrated Circuit 2",
+   "manufacturer": "Infineon",
+   "partNumber": "TLF35584QVVS1",
+   "description": "Safety power-supply / system basis chip for AURIX (ASIL-D)",
+   "pkg": "VQFN-48",
+   "qty": 1,
+   "padsEach": 49,
+   "unitGBP": 2.0483,
+   "base": 2.0483,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "TLF35584QVVS2XUMA2",
+     "maker": "Infineon",
+     "grade": "AEC-Q100",
+     "seller": "Mouser",
+     "quote": "US$3.75 at 2,500",
+     "date": "6 Oct 2026",
+     "url": "https://www.mouser.com/c/?q=TLF35584QVVS2"
+    }
+   ],
+   "basis": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 2.0483
+  },
+  {
+   "refDes": "Integrated Circuit 3",
+   "bomRow": "Integrated Circuit 3",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "LM74202QPWPRQ1",
+   "description": "Ideal-diode / eFuse controller, reverse-battery protection",
+   "pkg": "HTSSOP-16",
+   "qty": 1,
+   "padsEach": 17,
+   "unitGBP": 1.031456,
+   "base": 1.3990393700787402,
+   "brk": 4000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "LM74202QPWPRQ1",
+     "maker": "Texas Instruments",
+     "grade": "Q1 suffix; qualification not quoted on the page read",
+     "seller": "Digi-Key",
+     "quote": "US$1.77678 at 4,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541"
+    }
+   ],
+   "basis": "£1.39904 at 4,000 → 300,000 parts a year = £1.03146",
+   "passive": false,
+   "lineGBP": 1.031456
+  },
+  {
+   "refDes": "Integrated Circuit 4",
+   "bomRow": "Integrated Circuit 4",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "TCAN1057AVDRQ1",
+   "description": "CAN FD transceiver",
+   "pkg": "SOIC-8",
+   "qty": 3,
+   "padsEach": 8,
+   "unitGBP": 0.2442,
+   "base": 0.2442,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$0.4316 at 5,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088"
+    }
+   ],
+   "basis": "£0.2442 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 0.7326
+  },
+  {
+   "refDes": "Integrated Circuit 5",
+   "bomRow": "Integrated Circuit 5",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "TPS7B8401QWDRBRQ1",
+   "description": "40 V LDO (gate-driver and sensor supplies)",
+   "pkg": "VSON-8 (DRB)",
+   "qty": 11,
+   "padsEach": 9,
+   "unitGBP": 0.677522,
+   "base": 0.8930393700787402,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TPS7B8401QWDRBRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$1.13416 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8401QWDRBRQ1"
+    }
+   ],
+   "basis": "£0.89304 at 6,000 → 300,000 parts a year = £0.67752",
+   "passive": false,
+   "lineGBP": 7.452742
+  },
+  {
+   "refDes": "Integrated Circuit 6",
+   "bomRow": "Integrated Circuit 6",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "UCC27282QDRCRQ1",
+   "description": "Half-bridge gate driver (isolated-supply push-pull)",
+   "pkg": "VSON-10 (DRC)",
+   "qty": 2,
+   "padsEach": 11,
+   "unitGBP": 1.168767,
+   "base": 1.617811023622047,
+   "brk": 3000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "UCC27282QDRCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$2.05462 at 3,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1"
+    }
+   ],
+   "basis": "£1.61781 at 3,000 → 300,000 parts a year = £1.16877",
+   "passive": false,
+   "lineGBP": 2.337534
+  },
+  {
+   "refDes": "Integrated Circuit 7",
+   "bomRow": "Integrated Circuit 7",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "TLV9004QPWRQ1",
+   "description": "Quad op-amp",
+   "pkg": "TSSOP-14",
+   "qty": 3,
+   "padsEach": 14,
+   "unitGBP": 0.345977,
+   "base": 0.42746456692913387,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TLV9004QPWRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.54288 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1"
+    }
+   ],
+   "basis": "£0.42746 at 15,000 → 300,000 parts a year = £0.34598",
+   "passive": false,
+   "lineGBP": 1.037931
+  },
+  {
+   "refDes": "Integrated Circuit 8",
+   "bomRow": "Integrated Circuit 8",
+   "manufacturer": "NXP",
+   "partNumber": "74HC4075PW",
+   "description": "Triple 3-input OR gate (marking HC4075 read)",
+   "pkg": "TSSOP-14",
+   "qty": 2,
+   "padsEach": 14,
+   "unitGBP": 0.114263,
+   "base": 0.16021259842519686,
+   "brk": 2500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "74HC4075PW",
+     "maker": "Nexperia",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.20347 at 2,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW"
+    }
+   ],
+   "basis": "£0.16021 at 2,500 → 300,000 parts a year = £0.11426",
+   "passive": false,
+   "lineGBP": 0.228526
+  },
+  {
+   "refDes": "Integrated Circuit 9",
+   "bomRow": "Integrated Circuit 9",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "AMC1211AQDWVQ1",
+   "description": "Isolated amplifier (HV DC-link voltage sense)",
+   "pkg": "SOIC-8 wide",
+   "qty": 1,
+   "padsEach": 8,
+   "unitGBP": 2.357826,
+   "base": 3.3584881889763776,
+   "brk": 2000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "AMC1211AQDWVRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$4.26528 at 2,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVRQ1"
+    }
+   ],
+   "basis": "reel code of the BOM's tube code; £3.35849 at 2,000 → 300,000 parts a year = £2.35783",
+   "passive": false,
+   "lineGBP": 2.357826
+  },
+  {
+   "refDes": "Integrated Circuit 10",
+   "bomRow": "Integrated Circuit 10",
+   "manufacturer": "Analog Devices",
+   "partNumber": "ADuM4135",
+   "description": "Isolated gate driver (single channel, desat)",
+   "pkg": "SOIC-16 wide",
+   "qty": 3,
+   "padsEach": 16,
+   "unitGBP": 2.541,
+   "base": 2.541,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ADUM4135WBRWZ",
+     "maker": "Analog Devices",
+     "grade": "automotive (W)",
+     "seller": "Digi-Key",
+     "quote": "US$5.02 at 1,034",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084"
+    }
+   ],
+   "basis": "£2.541 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 7.623
+  },
+  {
+   "refDes": "Integrated Circuit 11",
+   "bomRow": "Integrated Circuit 11",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "UCC5880QDFCRQ1",
+   "description": "Isolated functional-safety SiC / IGBT gate driver (one per switch: HU/HV/HW, LU/LV/LW silkscreen)",
+   "pkg": "SSOP-32",
+   "qty": 6,
+   "padsEach": 32,
+   "unitGBP": 3.1819,
+   "base": 3.1819,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "UCC5880QDFCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$6.00 at 2,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588"
+    }
+   ],
+   "basis": "£3.1819 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 19.0914
+  },
+  {
+   "refDes": "Integrated Circuit 12",
+   "bomRow": "Integrated Circuit 12",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "LM2903-Q1",
+   "description": "Dual comparator",
+   "pkg": "SO-8",
+   "qty": 1,
+   "padsEach": 8,
+   "unitGBP": 0.085291,
+   "base": 0.11959,
+   "brk": 2500,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "LM2903BQDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "szlcsc (China)",
+     "quote": "¥1.06195 ex-VAT a part, reel of 2,500",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/4226854.html"
+    }
+   ],
+   "basis": "the -Q1 dual comparator; £0.11959 at 2,500 → 300,000 parts a year = £0.08529",
+   "passive": false,
+   "lineGBP": 0.085291
+  },
+  {
+   "refDes": "Integrated Circuit 13",
+   "bomRow": "Integrated Circuit 13",
+   "manufacturer": "Texas Instruments",
+   "partNumber": "LM5155QDSSRQ1",
+   "description": "Boost / flyback controller (gate-driver supply)",
+   "pkg": "WSON-12",
+   "qty": 1,
+   "padsEach": 13,
+   "unitGBP": 0.979186,
+   "base": 1.2906614173228346,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "LM5155QDSSRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$1.63914 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1"
+    }
+   ],
+   "basis": "£1.29066 at 6,000 → 300,000 parts a year = £0.97919",
+   "passive": false,
+   "lineGBP": 0.979186
+  },
+  {
+   "refDes": "Sensor 1",
+   "bomRow": "Sensor 1",
+   "manufacturer": "Allegro",
+   "partNumber": "ACS37002",
+   "description": "Hall-effect current sensor",
+   "pkg": "SOIC-16 wide",
+   "qty": 2,
+   "padsEach": 16,
+   "unitGBP": 1.7749,
+   "base": 1.7749,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ACS37002LMABTR-050B5",
+     "maker": "Allegro",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$3.5148 at 1,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511"
+    }
+   ],
+   "basis": "£1.7749 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 3.5498
+  },
+  {
+   "refDes": "Sensor 2",
+   "bomRow": "Sensor 2",
+   "manufacturer": "Allegro",
+   "partNumber": "ACS37601",
+   "description": "Hall-effect current sensor, through-hole (4 leads)",
+   "pkg": "SIP-4 (through-hole)",
+   "qty": 2,
+   "padsEach": 0,
+   "unitGBP": 1.2983,
+   "base": 1.2983,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "ACS37612LLUATR-015B5",
+     "maker": "Allegro",
+     "grade": "AEC-Q100",
+     "seller": "Digi-Key",
+     "quote": "US$2.64278 at 4,000",
+     "date": "13 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37612LLUATR-015B5/12093264"
+    }
+   ],
+   "basis": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 2.5966
+  },
+  {
+   "refDes": "Transistor 1",
+   "bomRow": "Transistor 1",
+   "manufacturer": "PANJIT",
+   "partNumber": "PJQ4548P-AU",
+   "description": "Automotive N-channel MOSFET",
+   "pkg": "DFN3333-8",
+   "qty": 1,
+   "padsEach": 8,
+   "unitGBP": 0.118659,
+   "base": 0.1466062992125984,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PJQ4548P-AU_R2_002A1",
+     "maker": "PANJIT",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.18619 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU"
+    }
+   ],
+   "basis": "£0.14661 at 15,000 → 300,000 parts a year = £0.11866",
+   "passive": false,
+   "lineGBP": 0.118659
+  },
+  {
+   "refDes": "Transistor 2",
+   "bomRow": "Transistor 2",
+   "manufacturer": "PANJIT",
+   "partNumber": "PJQ5948-AU",
+   "description": "Automotive dual N-channel MOSFET",
+   "pkg": "DFN5060-8",
+   "qty": 2,
+   "padsEach": 8,
+   "unitGBP": 0.203222,
+   "base": 0.26786614173228346,
+   "brk": 6000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PJQ5948-AU_R2_002A1",
+     "maker": "PANJIT",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.34019 at 6,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU"
+    }
+   ],
+   "basis": "£0.26787 at 6,000 → 300,000 parts a year = £0.20322",
+   "passive": false,
+   "lineGBP": 0.406444
+  },
+  {
+   "refDes": "Crystal 1",
+   "bomRow": "Crystal 1",
+   "manufacturer": "NDK",
+   "partNumber": "NX3225GA 20MHz",
+   "description": "Quartz crystal 20 MHz for the AURIX",
+   "pkg": "SMD 3225",
+   "qty": 1,
+   "padsEach": 4,
+   "unitGBP": 0.0642,
+   "base": 0.0642,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "NX3225GA-25.000M-STD-CRG-2",
+     "maker": "NDK",
+     "grade": "AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.1169 at 6,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.lcsc.com/product-image/C438901.html"
+    }
+   ],
+   "basis": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 0.0642
+  },
+  {
+   "refDes": "Diode 1",
+   "bomRow": "Diode 1",
+   "manufacturer": "Vishay",
+   "partNumber": "SMBJ15A",
+   "description": "TVS diode 600 W 15 V",
+   "pkg": "SMB",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.110884,
+   "base": 0.14138582677165354,
+   "brk": 9600,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SMBJ15AHE3_B/I (automotive, nearest active orderable of the HE3 family); commercial SMBJ15A-E3/5B also read",
+     "maker": "Vishay General Semiconductor",
+     "grade": "SMBJ15AHE3_B/I and _B/H: AEC-Q101, Automotive. SMBJ15A-E3/52 and -E3/5B: no qualification listed (General Purpose)",
+     "seller": "Digi-Key",
+     "quote": "US$0.17956 at 9,600",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I"
+    }
+   ],
+   "basis": "£0.14139 at 9,600 → 300,000 parts a year = £0.11088",
+   "passive": false,
+   "lineGBP": 0.110884
+  },
+  {
+   "refDes": "Diode 2",
+   "bomRow": "Diode 2",
+   "manufacturer": "Littelfuse",
+   "partNumber": "TPSMC33A",
+   "description": "TVS diode 1500 W 33 V, automotive",
+   "pkg": "SMC",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.171047,
+   "base": 0.21909448818897637,
+   "brk": 9000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "TPSMC33A",
+     "maker": "Littelfuse",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.27825 at 9,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A"
+    }
+   ],
+   "basis": "£0.21909 at 9,000 → 300,000 parts a year = £0.17105",
+   "passive": false,
+   "lineGBP": 0.171047
+  },
+  {
+   "refDes": "Diode 3",
+   "bomRow": "Diode 3",
+   "manufacturer": "Vishay",
+   "partNumber": "VSSAF3L45",
+   "description": "Schottky rectifier 3 A 45 V",
+   "pkg": "SMPA (DO-221BC)",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.107346,
+   "base": 0.12333070866141732,
+   "brk": 42000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "VSSAF3L45HM3_A/I (automotive)",
+     "maker": "Vishay General Semiconductor",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.15663 at 42,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I"
+    }
+   ],
+   "basis": "£0.12333 at 42,000 → 300,000 parts a year = £0.10735",
+   "passive": false,
+   "lineGBP": 0.107346
+  },
+  {
+   "refDes": "Diode 4",
+   "bomRow": "Diode 4",
+   "manufacturer": "onsemi",
+   "partNumber": "SZ1SMA5936BT3G",
+   "description": "Zener diode 30 V 1.5 W, automotive",
+   "pkg": "SMA",
+   "qty": 6,
+   "padsEach": 2,
+   "unitGBP": 0.155033,
+   "base": 0.19711023622047244,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SZ1SMA5936BT3G",
+     "maker": "onsemi",
+     "grade": "AEC-Q101",
+     "seller": "Digi-Key",
+     "quote": "US$0.25033 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G"
+    }
+   ],
+   "basis": "£0.19711 at 10,000 → 300,000 parts a year = £0.15503",
+   "passive": false,
+   "lineGBP": 0.930198
+  },
+  {
+   "refDes": "Diode 5",
+   "bomRow": "Diode 5",
+   "manufacturer": "onsemi",
+   "partNumber": "SZ1SMA5934BT3G",
+   "description": "Zener diode 24 V 1.5 W, automotive",
+   "pkg": "SMA",
+   "qty": 3,
+   "padsEach": 2,
+   "unitGBP": 0.155033,
+   "base": 0.19711023622047244,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "SZ1SMA5934BT3G",
+     "maker": "onsemi",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.25033 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G"
+    }
+   ],
+   "basis": "£0.19711 at 10,000 → 300,000 parts a year = £0.15503",
+   "passive": false,
+   "lineGBP": 0.465099
+  },
+  {
+   "refDes": "Diode 6",
+   "bomRow": "Diode 6",
+   "manufacturer": "STMicroelectronics",
+   "partNumber": "STTH112UFY",
+   "description": "Ultrafast rectifier 1 A 1200 V, automotive (gate-driver bootstrap / desat)",
+   "pkg": "SMBflat",
+   "qty": 16,
+   "padsEach": 2,
+   "unitGBP": 0.153921,
+   "base": 0.1901732283464567,
+   "brk": 15000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "STTH112UFY",
+     "maker": "STMicroelectronics",
+     "grade": "AEC-Q101, Automotive",
+     "seller": "Digi-Key",
+     "quote": "US$0.24152 at 15,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY"
+    }
+   ],
+   "basis": "£0.19017 at 15,000 → 300,000 parts a year = £0.15392",
+   "passive": false,
+   "lineGBP": 2.462736
+  },
+  {
+   "refDes": "Inductor 1",
+   "bomRow": "Inductor 1",
+   "manufacturer": "Vishay",
+   "partNumber": "IHLP4040DZER220M",
+   "description": "Power inductor 22 µH, 10 × 10 mm",
+   "pkg": "SMD 10x10 (larger than 1210 case)",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.378222,
+   "base": 0.504992125984252,
+   "brk": 5000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "IHLP4040DZER220M1A (automotive; 5A and 8A also read)",
+     "maker": "Vishay Dale",
+     "grade": "AEC-Q200 (1A, 5A, 8A); the 11 and 51 suffixes list no AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.64134 at 5,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A"
+    }
+   ],
+   "basis": "£0.50499 at 5,000 → 300,000 parts a year = £0.37822",
+   "passive": false,
+   "lineGBP": 0.378222
+  },
+  {
+   "refDes": "Inductor 2",
+   "bomRow": "Inductor 2",
+   "manufacturer": "XFMRS",
+   "partNumber": "XFMRS 2539 BMW-8-15T",
+   "description": "Isolated gate-driver supply transformer, 8 pins (customer part, marking read)",
+   "pkg": "SMD 8-pin ~12x10",
+   "qty": 8,
+   "padsEach": 8,
+   "unitGBP": 0.964725,
+   "base": 1.2899133858267717,
+   "brk": 4900,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PM2180.034NLT",
+     "maker": "Pulse",
+     "grade": "push-pull, 8.1 × 7.1 mm, AEC-Q200 series",
+     "seller": "Digi-Key",
+     "quote": "US$1.63819 at 4,900",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PM2180.034NLT"
+    },
+    {
+     "mpn": "750319835",
+     "maker": "Würth",
+     "grade": "WE-AGDT, AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$1.856 at 500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=750319835"
+    },
+    {
+     "mpn": "HCTSM8",
+     "maker": "Bourns",
+     "grade": "push-pull, 12.3 × 10.8 mm",
+     "seller": "Digi-Key",
+     "quote": "US$3.30422 at 2,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8"
+    }
+   ],
+   "basis": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); £1.28991 at 4,900 → 300,000 parts a year = £0.96473",
+   "passive": false,
+   "lineGBP": 7.7178
+  },
+  {
+   "refDes": "Inductor 3",
+   "bomRow": "Inductor 3",
+   "manufacturer": "TDK",
+   "partNumber": "B82462G4332M000",
+   "description": "SMD inductor 3.3 mH, 6.3 × 6 mm",
+   "pkg": "SMD 6x6 (larger than 1210 case)",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.406984,
+   "base": 0.5093543307086614,
+   "brk": 12500,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "B82462G4332M000",
+     "maker": "TDK",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.64688 at 12,500",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000"
+    }
+   ],
+   "basis": "£0.50935 at 12,500 → 300,000 parts a year = £0.40698",
+   "passive": false,
+   "lineGBP": 0.406984
+  },
+  {
+   "refDes": "Inductor 4",
+   "bomRow": "Inductor 4",
+   "manufacturer": "Coilcraft",
+   "partNumber": "XEL4030V-472ME",
+   "description": "Power inductor 4.7 µH, automotive",
+   "pkg": "SMD 4x4 (larger than 1210 case)",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.5504,
+   "base": 0.5504,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "XEL4030-102MEB",
+     "maker": "Coilcraft",
+     "grade": "XEL4030 family",
+     "seller": "Mouser",
+     "quote": "US$1.09 at 1,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC"
+    }
+   ],
+   "basis": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 0.5504
+  },
+  {
+   "refDes": "Capacitor 1",
+   "bomRow": "Capacitor 1",
+   "manufacturer": "KEMET",
+   "partNumber": "A768KE107M1VLAS036",
+   "description": "Polymer aluminium capacitor 100 µF 35 V (marking K 768 35Y06 100 read)",
+   "pkg": "SMD can 8 mm",
+   "qty": 1,
+   "padsEach": 2,
+   "unitGBP": 0.118896,
+   "base": 0.15116535433070866,
+   "brk": 10000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "A768KE107M1VLAS036",
+     "maker": "KEMET",
+     "grade": "not stated on the Digi-Key page",
+     "seller": "Digi-Key",
+     "quote": "US$0.19198 at 10,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036"
+    }
+   ],
+   "basis": "£0.15117 at 10,000 → 300,000 parts a year = £0.11890",
+   "passive": false,
+   "lineGBP": 0.118896
+  },
+  {
+   "refDes": "Capacitor 2",
+   "bomRow": "Capacitor 2",
+   "manufacturer": "Xiamen Faratronic",
+   "partNumber": "C47S1222K60",
+   "description": "MKP film safety capacitor 2.2 nF Y1 440 VAC (marking MKP 222K 440~ read), silicone-staked",
+   "pkg": "THT box 17.5×12 mm, 15 mm pitch",
+   "qty": 4,
+   "padsEach": 0,
+   "unitGBP": 0.047179,
+   "base": 0.06299212598425197,
+   "brk": 5000,
+   "kind": "estimate",
+   "sources": [
+    {
+     "mpn": "C47S1222K60C000",
+     "maker": "Xiamen Faratronic",
+     "grade": "Y1 440 VAC, MKP, through-hole",
+     "seller": "LCSC (search snapshot — page price not read)",
+     "quote": "about US$0.08 at 5,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.lcsc.com/product-detail/C5452141.html"
+    }
+   ],
+   "basis": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified; £0.06299 at 5,000 → 300,000 parts a year = £0.04718",
+   "passive": false,
+   "lineGBP": 0.188716
+  },
+  {
+   "refDes": "Resistor 1",
+   "bomRow": "Resistor 1",
+   "manufacturer": "Bourns",
+   "partNumber": "PWR221T-30",
+   "description": "Power resistor (active-discharge / bleed), through-hole",
+   "pkg": "TO-220 full pack (through-hole)",
+   "qty": 2,
+   "padsEach": 0,
+   "unitGBP": 1.597497,
+   "base": 2.3895984251968505,
+   "brk": 1000,
+   "kind": "distributor",
+   "sources": [
+    {
+     "mpn": "PWR221T-30-1000F (100 ohm) read in full; resistance not given in the BOM",
+     "maker": "Bourns",
+     "grade": "AEC-Q200 (all variants shown)",
+     "seller": "Digi-Key",
+     "quote": "US$3.03479 at 1,000",
+     "date": "26 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F"
+    }
+   ],
+   "basis": "£2.38960 at 1,000 → 300,000 parts a year = £1.59750",
+   "passive": false,
+   "lineGBP": 3.194994
+  },
+  {
+   "refDes": "Capacitor 3 (0402)",
+   "bomRow": "Capacitor 3 (0402)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "MLCC X7R (BOM \"Capacitor 3\", 437 in all) — logic and decoupling",
+   "pkg": "0402",
+   "qty": 220,
+   "padsEach": 2,
+   "unitGBP": 0.002751,
+   "base": 0.00448,
+   "brk": 10000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM155R71C104KA55D",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.03982 ex-VAT a part, reel of 10,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/87033.html"
+    }
+   ],
+   "basis": "100 nF X7R; £0.00448 at 10,000 → 10,000,000 parts a year = £0.00275",
+   "passive": true,
+   "lineGBP": 0.60522
+  },
+  {
+   "refDes": "Capacitor 3 (0603)",
+   "bomRow": "Capacitor 3 (0603)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "MLCC X7R (BOM \"Capacitor 3\")",
+   "pkg": "0603",
+   "qty": 140,
+   "padsEach": 2,
+   "unitGBP": 0.001652,
+   "base": 0.00287,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM188R71H104KA57D",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02549 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/87040.html"
+    }
+   ],
+   "basis": "100 nF 50 V X7R; £0.00287 at 4,000 → 10,000,000 parts a year = £0.00165",
+   "passive": true,
+   "lineGBP": 0.23128
+  },
+  {
+   "refDes": "Capacitor 3 (0805)",
+   "bomRow": "Capacitor 3 (0805)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "MLCC X7R (BOM \"Capacitor 3\")",
+   "pkg": "0805",
+   "qty": 45,
+   "padsEach": 2,
+   "unitGBP": 0.014287,
+   "base": 0.0183,
+   "brk": 300000,
+   "kind": "mix",
+   "sources": [
+    {
+     "mpn": "KAM21BR71H104KT",
+     "maker": "Kyocera AVX",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.0289 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/result?keywords=KAM21BR71H104KT"
+    },
+    {
+     "mpn": "GCM21BR71H105KA03L",
+     "maker": "Murata",
+     "grade": "GCM, AEC-Q200",
+     "seller": "LCSC",
+     "quote": "US$0.0235 at 9,000",
+     "date": "6 Oct 2026",
+     "url": "https://www.lcsc.com/product-detail/C126592.html"
+    }
+   ],
+   "basis": "value mix (judgement): half 100 nF, half 1 µF, 50 V — £0.0152 and £0.0214 at 300k (catalogue); £0.01830 at 300,000 → 10,000,000 parts a year = £0.01429",
+   "passive": true,
+   "lineGBP": 0.642915
+  },
+  {
+   "refDes": "Capacitor 3 (1206)",
+   "bomRow": "Capacitor 3 (1206)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "MLCC X7R, gate-driver supply arrays (BOM \"Capacitor 3\")",
+   "pkg": "1206",
+   "qty": 22,
+   "padsEach": 2,
+   "unitGBP": 0.02647,
+   "base": 0.033600346765564795,
+   "brk": 300000,
+   "kind": "mix",
+   "sources": [
+    {
+     "mpn": "C1206C104K5RACAUTO",
+     "maker": "KEMET",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.03711 at 12,000",
+     "date": "22 Nov 2026",
+     "url": "https://www.digikey.com/en/products/detail/kemet/C1206C104K5RACAUTO/3315001"
+    },
+    {
+     "mpn": "CGA5L1X7R1H475KT0Y0N",
+     "maker": "TDK",
+     "grade": "CGA, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.60080 ex-VAT a part, reel of 2,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/370048.html"
+    }
+   ],
+   "basis": "value mix (judgement): half 100 nF (£0.0197 at 300k), half 4.7 µF 50 V (£0.06766 a reel of 2,000 → 300k = £0.0475); £0.03360 at 300,000 → 8,800,000 parts a year = £0.02647",
+   "passive": true,
+   "lineGBP": 0.58234
+  },
+  {
+   "refDes": "Capacitor 3 (1210)",
+   "bomRow": "Capacitor 3 (1210)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "MLCC X7R bulk (BOM \"Capacitor 3\")",
+   "pkg": "1210",
+   "qty": 10,
+   "padsEach": 2,
+   "unitGBP": 0.054883,
+   "base": 0.09857,
+   "brk": 1000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "GCM32EC71H106KA03L",
+     "maker": "Murata",
+     "grade": "GCM, automotive",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.87531 ex-VAT a part, reel of 1,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/137892.html"
+    }
+   ],
+   "basis": "10 µF 50 V bulk; £0.09857 at 1,000 → 4,000,000 parts a year = £0.05488",
+   "passive": true,
+   "lineGBP": 0.54883
+  },
+  {
+   "refDes": "Resistor 2 (0402)",
+   "bomRow": "Resistor 2 (0402)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Thick-film chip resistor 1 % (BOM \"Resistor 2\", 511 in all)",
+   "pkg": "0402",
+   "qty": 280,
+   "padsEach": 2,
+   "unitGBP": 0.000332,
+   "base": 0.00054,
+   "brk": 10000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0402FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.00478 ex-VAT a part, reel of 10,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/156139.html"
+    }
+   ],
+   "basis": "£0.00054 at 10,000 → 10,000,000 parts a year = £0.00033",
+   "passive": true,
+   "lineGBP": 0.09296
+  },
+  {
+   "refDes": "Resistor 2 (0603)",
+   "bomRow": "Resistor 2 (0603)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Thick-film chip resistor 1 % (BOM \"Resistor 2\")",
+   "pkg": "0603",
+   "qty": 190,
+   "padsEach": 2,
+   "unitGBP": 0.000439,
+   "base": 0.00075,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0603FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.00664 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/117931.html"
+    }
+   ],
+   "basis": "£0.00075 at 5,000 → 10,000,000 parts a year = £0.00044",
+   "passive": true,
+   "lineGBP": 0.08341
+  },
+  {
+   "refDes": "Resistor 2 (0805)",
+   "bomRow": "Resistor 2 (0805)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Thick-film chip resistor 1 % (BOM \"Resistor 2\")",
+   "pkg": "0805",
+   "qty": 41,
+   "padsEach": 2,
+   "unitGBP": 0.001082,
+   "base": 0.00185,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC0805FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.01646 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/152196.html"
+    }
+   ],
+   "basis": "£0.00185 at 5,000 → 10,000,000 parts a year = £0.00108",
+   "passive": true,
+   "lineGBP": 0.044362
+  },
+  {
+   "refDes": "Resistor 3 (1206)",
+   "bomRow": "Resistor 3 (1206)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Thick-film chip resistor, HV divider chain (markings 1153, 1151, E511 read) (BOM \"Resistor 3\", 40 in all)",
+   "pkg": "1206",
+   "qty": 32,
+   "padsEach": 2,
+   "unitGBP": 0.00283,
+   "base": 0.00484,
+   "brk": 5000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC1206FR-0710KL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04301 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/155852.html"
+    }
+   ],
+   "basis": "£0.00484 at 5,000 → 10,000,000 parts a year = £0.00283",
+   "passive": true,
+   "lineGBP": 0.09056
+  },
+  {
+   "refDes": "Resistor 3 (2512)",
+   "bomRow": "Resistor 3 (2512)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Power / pulse chip resistor (BOM \"Resistor 3\")",
+   "pkg": "2512",
+   "qty": 8,
+   "padsEach": 2,
+   "unitGBP": 0.038638,
+   "base": 0.06194,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "AC2512FK-0710RL",
+     "maker": "Yageo",
+     "grade": "AC series, AEC-Q200",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.55000 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/476216.html"
+    }
+   ],
+   "basis": "£0.06194 at 4,000 → 3,200,000 parts a year = £0.03864",
+   "passive": true,
+   "lineGBP": 0.309104
+  },
+  {
+   "refDes": "Diode 7",
+   "bomRow": "Diode 7",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Small-signal / Schottky diode (BOM \"Diode 7\")",
+   "pkg": "SOD-323",
+   "qty": 69,
+   "padsEach": 2,
+   "unitGBP": 0.002377,
+   "base": 0.00329,
+   "brk": 3000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "BAV99,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.02920 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/2877.html"
+    }
+   ],
+   "basis": "£0.00329 at 3,000 → 300,000 parts a year = £0.00238",
+   "passive": false,
+   "lineGBP": 0.164013
+  },
+  {
+   "refDes": "Discrete 3 Pins",
+   "bomRow": "Discrete 3 Pins",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Small-signal transistor, MOSFET / BJT (BOM \"Discrete 3 Pins\")",
+   "pkg": "SOT-23",
+   "qty": 30,
+   "padsEach": 3,
+   "unitGBP": 0.003215,
+   "base": 0.00445,
+   "brk": 3000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "2N7002,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04770 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/66260.html"
+    },
+    {
+     "mpn": "BC847C,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.03142 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/9163.html"
+    }
+   ],
+   "basis": "mean of the MOSFET and the BJT; £0.00445 at 3,000 → 300,000 parts a year = £0.00321",
+   "passive": false,
+   "lineGBP": 0.09645
+  },
+  {
+   "refDes": "Discretes (4+ pins)",
+   "bomRow": "Discretes (4+ pins)",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Dual small-signal transistor (BOM \"Discretes (4+ pins)\")",
+   "pkg": "SOT-363",
+   "qty": 7,
+   "padsEach": 6,
+   "unitGBP": 0.00643,
+   "base": 0.0089,
+   "brk": 3000,
+   "kind": "estimate",
+   "sources": [
+    {
+     "mpn": "2N7002,215",
+     "maker": "Nexperia",
+     "grade": "AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.04770 ex-VAT a part, reel of 3,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/66260.html"
+    }
+   ],
+   "basis": "dual transistor in SOT-363: two small-signal dies (2 × the SOT-23 mean) — estimate; £0.00890 at 3,000 → 300,000 parts a year = £0.00643",
+   "passive": false,
+   "lineGBP": 0.04501
+  },
+  {
+   "refDes": "Ferrite 1",
+   "bomRow": "Ferrite 1",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Ferrite bead (BOM \"Ferrite 1\")",
+   "pkg": "0603",
+   "qty": 2,
+   "padsEach": 2,
+   "unitGBP": 0.014399,
+   "base": 0.01953,
+   "brk": 4000,
+   "kind": "china-reel",
+   "sources": [
+    {
+     "mpn": "BLM18KG601SH1D",
+     "maker": "Murata",
+     "grade": "automotive (SH1)",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.17345 ex-VAT a part, reel of 4,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/748751.html"
+    }
+   ],
+   "basis": "£0.01953 at 4,000 → 300,000 parts a year = £0.01440",
+   "passive": false,
+   "lineGBP": 0.028798
+  },
+  {
+   "refDes": "Inductor 5",
+   "bomRow": "Inductor 5",
+   "manufacturer": "",
+   "partNumber": "",
+   "description": "Small SMD inductor (BOM \"Inductor 5\")",
+   "pkg": "SMD 1210",
+   "qty": 3,
+   "padsEach": 2,
+   "unitGBP": 0.0664,
+   "base": 0.0664,
+   "brk": null,
+   "kind": "catalogue",
+   "sources": [
+    {
+     "mpn": "VLS252012HBX-1R0M-1",
+     "maker": "TDK",
+     "grade": "AEC-Q200",
+     "seller": "Digi-Key",
+     "quote": "US$0.10906 at 14,000",
+     "date": "9 Oct 2026",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063"
+    }
+   ],
+   "basis": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue)",
+   "passive": false,
+   "lineGBP": 0.1992
+  }
+ ],
+ "C": {
+  "programme": 2400000,
+  "components": 87.498341,
+  "burdenGBP": 4.37491705,
+  "aspShape": 1.2187212852357945,
+  "boardCnyM2": 1593.8912773572042,
+  "fab": 11.056723275360785,
+  "assemblyItems": {
+   "SMT assembly incl. paste, reflow and AOI (per joint, both sides)": 3.316535433070866,
+   "Through-hole soldering (20 joints)": 0.1889763779527559,
+   "Line changeover (2 sides, per lot)": 0.0050814388143881435,
+   "X-ray of the BGA": 0.2067825,
+   "Conformal coating, selective (top side)": 1.135685,
+   "Coating UV inspection": 0.015634583333333334,
+   "Silicone staking (transformers, film capacitors)": 0.42154711893908003,
+   "ICT": 0.6523011111111111,
+   "MCU programming": 0.19587166666666667,
+   "Functional and isolation test": 1.4853275000000001,
+   "Depanel": 0.0563,
+   "Final inspection": 0.02084611111111111,
+   "Packaging (ESD bag + divider)": 0.25135135135135134
+  },
+  "listedGBP": 3.813163162374973,
+  "rateGBP": 4.139077029975691,
+  "ohGBP": 0.41390770299756907,
+  "assembly": 8.366147895348233,
+  "rework": 0.09780144166666666,
+  "scrapGBP": 0.33388838766212703,
+  "quality": 0.4316898293287937,
+  "nrePerBoard": 0.019166666666666665,
+  "exWorks": 111.74698571670446,
+  "freight": 0.10400000000000001,
+  "dutyGBP": 4.138486471518065,
+  "delivered": 115.98947218822252
+ },
+ "generated": "26 Nov 2026"
+}
