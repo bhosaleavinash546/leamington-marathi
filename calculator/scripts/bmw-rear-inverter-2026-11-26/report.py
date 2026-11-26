@@ -111,7 +111,7 @@ summ += row(['<b>Ex-works China (built, tested, coated, packed)</b>', (f"<b>{gbp
 summ += row(['Sea freight to the UK', (gbp(freight), 'n'), (cny(freight), 'n'), ('', 'n')]) + row(['UK import duty (3.7 %, HS line to confirm)', (gbp(duty), 'n'), (cny(duty), 'n'), ('', 'n')])
 summ += row(['<b>Delivered UK, duty paid</b>', (f"<b>{gbp(delivered)}</b>", 'n'), (f"<b>{cny(delivered)}</b>", 'n'), ('', 'n')], 'tot')
 
-KIND = {'maker': 'BOM part, maker\'s price (TI.com) carried to volume', 'distributor': 'BOM part, distributor price carried to volume', 'catalogue': 'BOM part or family member, catalogue price carried to volume',
+KIND = {'maker': 'BOM part, maker\'s own price (TI.com, onsemi.com) carried to volume', 'distributor': 'BOM part, distributor price carried to volume', 'catalogue': 'BOM part or family member, catalogue price carried to volume',
         'china-reel': 'Named part, China distributor reel carried to volume', 'mix': 'Value mix of named automotive parts', 'estimate': 'Estimate (stated)'}
 def src_html(l):
     out = []
@@ -173,7 +173,7 @@ def fig(f, cap, n):
     return f"<figure><img src='data:image/jpeg;base64,{b}' alt='{e(cap)}'><figcaption><b>Figure {n}.</b> {e(cap)}</figcaption></figure>"
 FIGS = "<div class=figs2>" + ''.join(fig(f, c, i + 1) for i, (f, c) in enumerate(PHOTOS)) + "</div>"
 
-CSS = open(os.path.join(H, 'report.css')).read() + ".figs2{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:6px}"
+CSS = open(os.path.join(H, 'report.css')).read() + ".figs2{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 12px;margin-top:6px}"
 HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear inverter control board PCBA should-cost</title><style>{CSS}</style></head><body>
 <div class=eyebrow>CostVision · PCBA should-cost · 26 November 2026</div>
 <h1>BMW rear inverter control board — PCBA should-cost</h1>
@@ -226,7 +226,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <table><tr><th class=n>#</th><th>BOM row</th><th>Part</th><th>Part number</th><th class=n>Qty</th><th class=n>Unit</th><th class=n>A board</th><th class=n>Share</th></tr>{top_rows}</table>
 <h3>How the part prices are set</h3><ul class=sm>
 <li><b>Every BOM part with a part number is priced as itself</b> (or its orderable reel / family code where the exact code is not listed, stated on the line). Each line's seller, price, quantity break, date and source page are in §8.</li>
-<li><b>Maker's price first:</b> the eight Texas Instruments parts take TI's own store price at 1,000+ (TI.com), below the distributors' at their largest breaks; the distributor figure stays on the line.</li>
+<li><b>Lowest sourced price first:</b> the eight Texas Instruments parts take TI's own store price at 1,000+ (TI.com) and the two onsemi Zeners onsemi's own reference price — both below the distributors' at their largest breaks; two discretes take the China own-stock reel of the same function and grade (szlcsc). The distributor figure stays on each line as a reference.</li>
 <li><b>Volume:</b> every price is carried from its break to the parts bought a year (quantity a board × {I['boards']:,}) on P(Q) = P(break) × (Q / break)<sup>−0.0706</sup> (the CostVision catalogue's slope), up to 10,000,000 a year — as given for resistors and capacitors, and at 400,000 boards most other lines are bought in millions too. Holding every non-passive line flat above 300,000 a year (the CostVision catalogue rule) puts components at {gbp(C['componentsFlat300k'])} (+{gbp(C['componentsFlat300k'] - comp)}).</li>
 <li><b>China reel prices</b> are szlcsc's own-stock whole-reel prices, ex-VAT (page price ÷ 1.13). <b>Capacitor groups</b> 0805 / 1206 are a value mix (judgement): half 100 nF, half 1 µF / 4.7 µF.</li></ul>
 
@@ -261,7 +261,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 </table>
 <p><b>Ask the supplier for:</b> contract prices for the TC389, UCC5880-Q1, ADuM4135 and the XFMRS transformers; the Gerber outline (size); the test plan; the coating specification. Accuracy is not measured: no costing has been compared with a price paid for this board.</p>
 
-<h2 class=pb>8. Parts list with price sources</h2>
+<h2>8. Parts list with price sources</h2>
 <p class=sm>Largest line first. Each link opens the seller's page for the part priced; prices as read on the date shown.</p>
 <table class=parts><colgroup><col style='width:10%'><col style='width:28%'><col style='width:5%'><col style='width:43%'><col style='width:7%'><col style='width:7%'></colgroup>
 <tr><th>BOM row</th><th>Part on the board</th><th class=n>Qty</th><th>Part priced, seller's price and source</th><th class=n>Unit £</th><th class=n>Line £</th></tr>{all_rows}

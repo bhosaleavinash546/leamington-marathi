@@ -926,11 +926,20 @@
    "pkg": "SMB",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.108655,
-   "base": 0.14138582677165354,
-   "brk": 9600,
-   "kind": "distributor",
+   "unitGBP": 0.038908,
+   "base": 0.054711824324324324,
+   "brk": 3200,
+   "kind": "china-reel",
    "sources": [
+    {
+     "mpn": "SMBJ33AHE3_A/I",
+     "maker": "Vishay",
+     "grade": "HE3, AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.48584 ex-VAT a part, reel of 3,200",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/2072830.html"
+    },
     {
      "mpn": "SMBJ15AHE3_B/I (automotive, nearest active orderable of the HE3 family); commercial SMBJ15A-E3/5B also read",
      "maker": "Vishay General Semiconductor",
@@ -941,9 +950,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I"
     }
    ],
-   "basis": "£0.14139 at 9,600 → 400,000 parts a year = £0.10866",
+   "basis": "China own-stock reel of the same Vishay SMBJ automotive (HE3) series; the BOM's SMBJ15A HE3 at Digi-Key kept as reference; £0.05471 at 3,200 → 400,000 parts a year = £0.03891",
    "passive": false,
-   "lineGBP": 0.108655
+   "lineGBP": 0.038908
   },
   {
    "refDes": "Diode 2",
@@ -982,11 +991,20 @@
    "pkg": "SMPA (DO-221BC)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.105188,
-   "base": 0.12333070866141732,
-   "brk": 42000,
-   "kind": "distributor",
+   "unitGBP": 0.059974,
+   "base": 0.08171891891891891,
+   "brk": 5000,
+   "kind": "china-reel",
    "sources": [
+    {
+     "mpn": "NRVBA340NT3G",
+     "maker": "onsemi",
+     "grade": "NRVB, AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.72566 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/635924.html"
+    },
     {
      "mpn": "VSSAF3L45HM3_A/I (automotive)",
      "maker": "Vishay General Semiconductor",
@@ -997,9 +1015,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I"
     }
    ],
-   "basis": "£0.12333 at 42,000 → 400,000 parts a year = £0.10519",
+   "basis": "China own-stock reel of an automotive 3 A 40 V Schottky, SMA; the BOM's VSSAF3L45 HM3 at Digi-Key kept as reference; £0.08172 at 5,000 → 400,000 parts a year = £0.05997",
    "passive": false,
-   "lineGBP": 0.105188
+   "lineGBP": 0.059974
   },
   {
    "refDes": "Diode 4",
@@ -1010,11 +1028,20 @@
    "pkg": "SMA",
    "qty": 6,
    "padsEach": 2,
-   "unitGBP": 0.133865,
-   "base": 0.19711023622047244,
-   "brk": 10000,
-   "kind": "distributor",
+   "unitGBP": 0.038543,
+   "base": 0.06677165354330708,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "1SMA59xxBT3G family",
+     "maker": "onsemi",
+     "grade": "commercial twin of the SZ automotive part",
+     "seller": "onsemi.com (maker)",
+     "quote": "US$0.0848 reference price (basis not stated; taken at 1,000)",
+     "date": "26 Nov 2026",
+     "url": "https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59"
+    },
     {
      "mpn": "SZ1SMA5936BT3G",
      "maker": "onsemi",
@@ -1025,9 +1052,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G"
     }
    ],
-   "basis": "£0.19711 at 10,000 → 2,400,000 parts a year = £0.13387",
+   "basis": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium; £0.06677 at 1,000 → 2,400,000 parts a year = £0.03854",
    "passive": false,
-   "lineGBP": 0.80319
+   "lineGBP": 0.231258
   },
   {
    "refDes": "Diode 5",
@@ -1038,11 +1065,20 @@
    "pkg": "SMA",
    "qty": 3,
    "padsEach": 2,
-   "unitGBP": 0.140579,
-   "base": 0.19711023622047244,
-   "brk": 10000,
-   "kind": "distributor",
+   "unitGBP": 0.040476,
+   "base": 0.06677165354330708,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "1SMA59xxBT3G family",
+     "maker": "onsemi",
+     "grade": "commercial twin of the SZ automotive part",
+     "seller": "onsemi.com (maker)",
+     "quote": "US$0.0848 reference price (basis not stated; taken at 1,000)",
+     "date": "26 Nov 2026",
+     "url": "https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59"
+    },
     {
      "mpn": "SZ1SMA5934BT3G",
      "maker": "onsemi",
@@ -1053,9 +1089,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G"
     }
    ],
-   "basis": "£0.19711 at 10,000 → 1,200,000 parts a year = £0.14058",
+   "basis": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium; £0.06677 at 1,000 → 1,200,000 parts a year = £0.04048",
    "passive": false,
-   "lineGBP": 0.421737
+   "lineGBP": 0.121428
   },
   {
    "refDes": "Diode 6",
@@ -1749,9 +1785,9 @@
  ],
  "C": {
   "programme": 2400000,
-  "components": 73.415807,
-  "componentsFlat300k": 81.44461559354814,
-  "burdenGBP": 3.6707903500000003,
+  "components": 72.428605,
+  "componentsFlat300k": 80.33374264477017,
+  "burdenGBP": 3.6214302500000004,
   "aspShape": 1.2187212852357945,
   "boardCnyM2": 1593.8912773572042,
   "fab": 11.056723275360785,
@@ -1777,13 +1813,13 @@
   "ohGBP": 0.16304593385092392,
   "assembly": 7.591147323624025,
   "rework": 0.09780144166666666,
-  "scrapGBP": 0.2872034038469545,
-  "quality": 0.38500484551362113,
+  "scrapGBP": 0.28409371754695445,
+  "quality": 0.3818951592136211,
   "nrePerBoard": 0.019166666666666665,
-  "exWorks": 96.1386394611651,
+  "exWorks": 95.09896767486511,
   "freight": 0.10400000000000001,
-  "dutyGBP": 3.5609776600631085,
-  "delivered": 99.8036171212282
+  "dutyGBP": 3.5225098039700087,
+  "delivered": 98.72547747883512
  },
  "generated": "26 Nov 2026"
 }

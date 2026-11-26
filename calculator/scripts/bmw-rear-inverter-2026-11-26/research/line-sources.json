@@ -423,10 +423,19 @@
    "note": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified"
   },
   "Diode 1": {
-   "base": 0.14138582677165354,
-   "brk": 9600,
-   "kind": "distributor",
+   "base": 0.054711824324324324,
+   "brk": 3200,
+   "kind": "china-reel",
    "sources": [
+    {
+     "mpn": "SMBJ33AHE3_A/I",
+     "maker": "Vishay",
+     "grade": "HE3, AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.48584 ex-VAT a part, reel of 3,200",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/2072830.html"
+    },
     {
      "mpn": "SMBJ15AHE3_B/I (automotive, nearest active orderable of the HE3 family); commercial SMBJ15A-E3/5B also read",
      "maker": "Vishay General Semiconductor",
@@ -437,7 +446,7 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I"
     }
    ],
-   "note": ""
+   "note": "China own-stock reel of the same Vishay SMBJ automotive (HE3) series; the BOM's SMBJ15A HE3 at Digi-Key kept as reference"
   },
   "Diode 2": {
    "base": 0.21909448818897637,
@@ -457,10 +466,19 @@
    "note": ""
   },
   "Diode 3": {
-   "base": 0.12333070866141732,
-   "brk": 42000,
-   "kind": "distributor",
+   "base": 0.08171891891891891,
+   "brk": 5000,
+   "kind": "china-reel",
    "sources": [
+    {
+     "mpn": "NRVBA340NT3G",
+     "maker": "onsemi",
+     "grade": "NRVB, AEC-Q101",
+     "seller": "szlcsc (China)",
+     "quote": "¥0.72566 ex-VAT a part, reel of 5,000",
+     "date": "25 Nov 2026",
+     "url": "https://item.szlcsc.com/635924.html"
+    },
     {
      "mpn": "VSSAF3L45HM3_A/I (automotive)",
      "maker": "Vishay General Semiconductor",
@@ -471,13 +489,22 @@
      "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I"
     }
    ],
-   "note": ""
+   "note": "China own-stock reel of an automotive 3 A 40 V Schottky, SMA; the BOM's VSSAF3L45 HM3 at Digi-Key kept as reference"
   },
   "Diode 4": {
-   "base": 0.19711023622047244,
-   "brk": 10000,
-   "kind": "distributor",
+   "base": 0.06677165354330708,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "1SMA59xxBT3G family",
+     "maker": "onsemi",
+     "grade": "commercial twin of the SZ automotive part",
+     "seller": "onsemi.com (maker)",
+     "quote": "US$0.0848 reference price (basis not stated; taken at 1,000)",
+     "date": "26 Nov 2026",
+     "url": "https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59"
+    },
     {
      "mpn": "SZ1SMA5936BT3G",
      "maker": "onsemi",
@@ -488,13 +515,22 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G"
     }
    ],
-   "note": ""
+   "note": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium"
   },
   "Diode 5": {
-   "base": 0.19711023622047244,
-   "brk": 10000,
-   "kind": "distributor",
+   "base": 0.06677165354330708,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "1SMA59xxBT3G family",
+     "maker": "onsemi",
+     "grade": "commercial twin of the SZ automotive part",
+     "seller": "onsemi.com (maker)",
+     "quote": "US$0.0848 reference price (basis not stated; taken at 1,000)",
+     "date": "26 Nov 2026",
+     "url": "https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59"
+    },
     {
      "mpn": "SZ1SMA5934BT3G",
      "maker": "onsemi",
@@ -505,7 +541,7 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G"
     }
    ],
-   "note": ""
+   "note": "maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium"
   },
   "Diode 6": {
    "base": 0.1901732283464567,

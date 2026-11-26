@@ -112,6 +112,25 @@ for ref, pn in [('Integrated Circuit 11', 'UCC5880QDFCRQ1'), ('Integrated Circui
     t = TIS[pn]; old = L[ref]
     L[ref] = dict(base=t['price1k'] / USD, brk=1000, kind='maker', note='reel code of the BOM\'s tube code' if pn == 'AMC1211AQDWVRQ1' else '',
                   sources=[s(pn, 'Texas Instruments', 'AEC-Q100', 'TI.com (maker)', f"US${t['price1k']:.3f} at 1,000+ ({t['quote']})", '26 Nov 2026', t['url'])] + old['sources'])
+
+# ── China own-stock reels for the same function and grade, where lower than the BOM part's distributor price (the EDU
+# round's China semiconductor research, szlcsc, read 25 Nov 2026 — scripts/pcb-research/2026-11-25-v6/china-semis.json).
+def cn_first(ref, base, brk, src, note):
+    old = L[ref]
+    def at(v): return v['base'] * (max(v['brk'] or 1, 1) and 1)
+    L[ref] = dict(base=base, brk=brk, kind='china-reel', sources=[src] + old['sources'], note=note)
+cn_first('Diode 1', 0.485841 / CNY, 3200, sz('SMBJ33AHE3_A/I', 'Vishay', 0.485841, 3200, 'https://item.szlcsc.com/2072830.html', 'HE3, AEC-Q101'),
+         'China own-stock reel of the same Vishay SMBJ automotive (HE3) series; the BOM\'s SMBJ15A HE3 at Digi-Key kept as reference')
+cn_first('Diode 3', 0.725664 / CNY, 5000, sz('NRVBA340NT3G', 'onsemi', 0.725664, 5000, 'https://item.szlcsc.com/635924.html', 'NRVB, AEC-Q101'),
+         'China own-stock reel of an automotive 3 A 40 V Schottky, SMA; the BOM\'s VSSAF3L45 HM3 at Digi-Key kept as reference')
+
+# ── onsemi's own "Reference Price" for the 1SMA59xxBT3G Zener family (product list page, read in the browser 26 Nov 2026):
+# US$0.0848 on every row shown; the SZ (automotive) rows were not on the first page and the price's quantity basis is not
+# stated — taken at 1,000 and labelled. Digi-Key's SZ price stays on the line as a reference.
+for ref, pn in [('Diode 4', 'SZ1SMA5936BT3G'), ('Diode 5', 'SZ1SMA5934BT3G')]:
+    old = L[ref]
+    L[ref] = dict(base=0.0848 / USD, brk=1000, kind='maker', sources=[s('1SMA59xxBT3G family', 'onsemi', 'commercial twin of the SZ automotive part', 'onsemi.com (maker)', 'US$0.0848 reference price (basis not stated; taken at 1,000)', '26 Nov 2026', 'https://www.onsemi.com/products/discrete-power-modules/zener-diodes/1sma59')] + old['sources'],
+                  note='maker reference price of the commercial 1SMA59xxBT3G family; the automotive SZ part may carry a small premium')
 # A catalogue figure is the catalogue's 300k break: carried on from there to the parts bought a year.
 for v in L.values():
     if v['brk'] is None: v['brk'] = 300000

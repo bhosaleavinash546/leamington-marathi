@@ -7,7 +7,7 @@ size (280 × 220 mm, ±5 %) is measured off the photos against the TC389's 25 mm
 
 | Result (£ a board) | Ex-works China | Delivered UK |
 |---|---|---|
-| Manual should-cost | 96.14 | 99.80 |
+| Manual should-cost | 95.10 | 98.73 |
 | CostVision tool, China market components | 115.05 | 119.36 |
 | CostVision tool, global distributor components | 125.21 | 129.90 |
 
