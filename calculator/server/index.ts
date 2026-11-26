@@ -176,7 +176,7 @@ process.on('uncaughtException', (err) => {
 const server = app.listen(PORT, HOST, () => {
   console.log(`Should-Cost server running on http://localhost:${PORT} (listening on ${HOST})`);
   console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);
-  console.log(`API key:      ${hasUsableServerKey() ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env (run: make dev, or ./dev-start.sh)'}`);
+  console.log(`AI:           ${isAirGapped() ? 'off (AIR_GAPPED=1) — every costing works without it' : hasUsableServerKey() ? '✓ API key configured' : '✗ no API key — set ANTHROPIC_API_KEY in .env (run: make dev, or ./dev-start.sh)'}`);
   console.log(`JWT secret:   ${JWT_SECRET_CONFIGURED ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);
   console.log(`SMTP:         ${process.env.SMTP_HOST ? `✓ ${process.env.SMTP_HOST}` : 'not configured — OTPs logged to console'}`);
   console.log(`Team sync:    ${process.env.TEAM_API_KEY ? '✓ enabled' : 'disabled'}`);

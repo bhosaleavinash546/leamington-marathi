@@ -24,6 +24,9 @@ on:
       - 'calculator/scripts/real-parts-baseline.ts'
       - 'cad-audit/parts/**'
       - '.github/workflows/docker-cad.yml'
+      - 'deploy/jlr/**'
+      - 'calculator/e2e/jlr-offline-proof.ts'
+      - 'calculator/scripts/ops/**'
   pull_request:
     paths:
       - 'calculator/Dockerfile.cad'
@@ -37,6 +40,9 @@ on:
       - 'calculator/server/utils/cad-geometry-engine.py'
       - 'calculator/scripts/check-face-id-contract.py'
       - '.github/workflows/docker-cad.yml'
+      - 'deploy/jlr/**'
+      - 'calculator/e2e/jlr-offline-proof.ts'
+      - 'calculator/scripts/ops/**'
   workflow_dispatch:
 
 concurrency:
@@ -103,3 +109,58 @@ jobs:
         run: |
           docker run --rm costvision-cad:ci \
             python3 scripts/check-face-id-contract.py tests/fixtures/cad-parts/flange-6holes-boss.step
+
+  # The image JLR runs (Phase 1 readiness, docs/deployment/jlr-deployment-readiness-2026-11-26.md): the `jlr` stage —
+  # non-root, read-only, health check — proven offline INSIDE the image, the way deploy/jlr/docker-compose.yml runs it.
+  jlr-image:
+    name: JLR image — hardened, offline proof
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build the JLR image (Dockerfile.cad, target jlr)
+        uses: docker/build-push-action@v6
+        with:
+          context: calculator
+          file: calculator/Dockerfile.cad
+          target: jlr
+          tags: costvision-jlr:ci
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Runs as an unprivileged user (uid 10001), not root
+        run: |
+          uid=$(docker run --rm --entrypoint id costvision-jlr:ci -u)
+          echo "uid=$uid"; test "$uid" = "10001"
+
+      - name: Offline proof inside the image — no network, read-only, no capabilities
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp:size=2g,mode=1777 \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -v "$PWD/cad-audit:/cad-audit:ro" \
+            costvision-jlr:ci /app/node_modules/.bin/tsx e2e/jlr-offline-proof.ts /tmp/proof
+
+      - name: Health check goes healthy; the app files are read-only, the data volume is writable
+        run: |
+          docker volume create cv-ci-data
+          docker run -d --name cv-ci --network none --read-only --tmpfs /tmp:size=2g,mode=1777 \
+            --cap-drop ALL --security-opt no-new-privileges -v cv-ci-data:/app/data \
+            -e JWT_SECRET="$(openssl rand -hex 32)" -e AIR_GAPPED=1 costvision-jlr:ci
+          for i in $(seq 1 60); do
+            s=$(docker inspect -f '{{.State.Health.Status}}' cv-ci); echo "health: $s"
+            [ "$s" = "healthy" ] && break; sleep 5
+          done
+          test "$(docker inspect -f '{{.State.Health.Status}}' cv-ci)" = "healthy"
+          ! docker exec cv-ci sh -c 'touch /app/should-not-write' 2>/dev/null
+          docker exec cv-ci sh -c 'touch /app/data/ok && rm /app/data/ok'
+          docker exec cv-ci node scripts/ops/db-backup.mjs /app/data/backups/ci.db
+          docker rm -f cv-ci
+
+      - name: The JLR compose file is valid
+        run: |
+          cp deploy/jlr/settings.env.example deploy/jlr/settings.env
+          docker compose -f deploy/jlr/docker-compose.yml config --quiet

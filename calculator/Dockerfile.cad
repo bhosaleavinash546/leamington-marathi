@@ -8,7 +8,7 @@
 #
 # Verified: cadquery 2.8.0 + OCP measures real STEP files on this exact glibc
 # runtime (volume, bbox, B-rep faces, per-material weights).
-FROM node:22-bookworm-slim
+FROM node:22-bookworm-slim AS app
 
 # node-gyp build tools (better-sqlite3, bcrypt) + Python + the X/GL shared libs that
 # OpenCASCADE (OCP) links against at import time, even when run headless.
@@ -47,3 +47,28 @@ ENV CV_GEOMETRY_POOL=1
 ENV CV_GEOMETRY_QUEUE=20
 
 CMD ["npx", "tsx", "server/index.ts"]
+
+# ── JLR internal server (Phase 1 readiness, Nov 2026) ───────────────────────────────────────────────────────────────────
+# Build with `--target jlr` (deploy/jlr/docker-compose.yml does). Same app, plus:
+#   - runs as an unprivileged user (uid 10001), never root;
+#   - every file the app writes lives in the data volume (/app/data): database, drawing and CAD working files;
+#   - a health check Docker (and JLR monitoring) can read;
+#   - caches in /tmp, so the container's own file system can be mounted read-only.
+# AI stays off through the settings file (AIR_GAPPED=1) — see deploy/jlr/settings.env.example.
+FROM app AS jlr
+RUN useradd --system --uid 10001 --user-group --create-home --home-dir /home/costvision costvision \
+    && mkdir -p /app/data/drawing-files /app/data/geometry-files /app/data/backups \
+    && chown -R costvision:costvision /app/data
+ENV CV_DATA_DIR=/app/data \
+    CV_DRAWING_FILE_DIR=/app/data/drawing-files \
+    CV_GEOMETRY_FILE_DIR=/app/data/geometry-files \
+    HOME=/home/costvision \
+    XDG_CACHE_HOME=/tmp/.cache
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3002/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+USER 10001:10001
+# tsx directly (npx would want a writable npm cache in HOME).
+CMD ["/app/node_modules/.bin/tsx", "server/index.ts"]
+
+# ── The default build (Fly.io, CI, `docker compose up` in the repo root) — unchanged, so it stays the LAST stage. ────────
+FROM app AS default

@@ -1,0 +1,46 @@
+# CostVision on a JLR Linux server — Phase 1 (no AI). See docs/deployment/jlr-install-guide.md.
+#
+#   cd deploy/jlr
+#   cp settings.env.example settings.env      # then fill it in (JWT_SECRET, ADMIN_EMAILS, CV_SIGNUP_DOMAINS, SMTP_*)
+#   docker compose up -d --build
+#
+# The container runs as an unprivileged user on a read-only file system; everything it writes goes to the
+# `costvision-data` volume. Outbound internet must also be blocked at the server's firewall — AIR_GAPPED=1 in the
+# settings file is the app-level switch, the firewall is the second, independent guard.
+name: costvision
+services:
+  costvision:
+    build:
+      context: ../../calculator
+      dockerfile: Dockerfile.cad
+      target: jlr
+    image: costvision:jlr
+    container_name: costvision
+    env_file:
+      - ./settings.env
+    environment:
+      NODE_ENV: production
+    ports:
+      # Published on this server's loopback only: JLR's HTTPS gateway / reverse proxy on this host forwards to it.
+      # If the gateway runs on ANOTHER machine, change to "3002:3002" and allow only the gateway in the firewall.
+      - "127.0.0.1:3002:3002"
+    volumes:
+      - costvision-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=2g,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 6g
+    pids_limit: 512
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+volumes:
+  costvision-data:

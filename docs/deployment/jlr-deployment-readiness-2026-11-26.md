@@ -45,12 +45,13 @@ laptop), public cloud (confidential CAD / drawings would leave JLR).
 | # | Change | Status 26 Nov 2026 |
 |---|---|---|
 | 1 | Sign-up limited to JLR email domains | **Done** (`a1215b37`): `CV_SIGNUP_DOMAINS` or `ADMIN_EMAILS`; first account on an empty DB from the same machine (`server/utils/signup-policy.ts`) |
-| 2 | Harden the image: non-root user, health check, drawing temp folder on the data volume | **Not done.** `Dockerfile.cad` has no `USER` / `HEALTHCHECK`; `CV_DRAWING_FILE_DIR` exists but defaults to the system temp folder |
-| 3 | Sheet-metal blank development off the main thread (it blocks the server ~40 s for every user) | **Not done.** `developBlank` still runs synchronously in `server/services/blank-development.ts` |
-| 4 | Backup and restore scripts for the data volume | **Not done.** None exist |
-| 5 | Prove it in the image: build it, run with `AIR_GAPPED=1`, no key, network blocked, run the live tests inside it; write the JLR install guide from that run | **Not done.** CI (`docker-cad.yml`) builds the image and measures one STEP fixture inside it only |
+| 2 | Harden the image: non-root user, health check, drawing temp folder on the data volume | **Done (26 Nov, local commit).** `Dockerfile.cad` stage `jlr`: uid 10001, `HEALTHCHECK`, drawing / CAD working files and backups on `/app/data`; `deploy/jlr/docker-compose.yml`: read-only file system, `/tmp` tmpfs, all capabilities dropped, no-new-privileges, 6 GB memory, loopback-only port, log rotation. The default stage (Fly, CI) is unchanged |
+| 3 | Sheet-metal blank development off the main thread | **Done (26 Nov, `e82ba3ae`).** Worker thread; seat bracket: unfold 8.6 s, largest event-loop gap 38 ms; blank and DXF identical |
+| 4 | Backup and restore scripts for the data volume | **Done (26 Nov).** `deploy/jlr/backup.sh` (online SQLite backup, integrity check, sha256, keep N) and `restore.sh` (checks, keeps the old database, restores); `calculator/scripts/ops/db-backup.mjs`, `db-check.mjs` |
+| 5 | Prove it offline and in the image; write the JLR install guide | **Done here, image proof in CI.** `e2e/jlr-offline-proof.ts` 15 / 15 with no network; `e2e/full.ts` offline, all 22 commodities PASSED; `docker-cad.yml` job "JLR image" builds the `jlr` stage and runs the proof inside it (read-only, no network, no capabilities), health, write checks, backup, compose validation — **runs once pushed**. The image could not be built here (disk allowance). Guide: `docs/deployment/jlr-install-guide.md` |
 
-Items 2–5 do not depend on JLR IT's answers.
+Also fixed: the startup metal-price refresh now honours `AIR_GAPPED` (it would have called out had a price key been set);
+the startup log says "AI: off (AIR_GAPPED=1)" instead of "API key NOT SET".
 
 ## 3. Already in place
 

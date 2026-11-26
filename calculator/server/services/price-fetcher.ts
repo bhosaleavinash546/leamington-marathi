@@ -10,6 +10,7 @@
  */
 
 import type Database from 'better-sqlite3';
+import { isAirGapped } from '../utils/ai-client.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +103,13 @@ export async function fetchAndCachePrices(
 
   let liveRates: Record<string, number> | null = null;
 
-  if (!apiKey) {
+  // AIR_GAPPED=1 stops every outside call, this one included (JLR Phase 1 readiness: the server must not reach the internet
+  // even if a price key is left in the settings file). The table is display-only; no costing reads it.
+  if (isAirGapped()) {
+    const warning = 'AIR_GAPPED=1 — live metal prices not fetched; baseline prices used';
+    console.log(`[price-fetcher] ${warning}`);
+    errors.push(warning);
+  } else if (!apiKey) {
     const warning = 'METAL_PRICE_API_KEY not set — using baseline hardcoded prices';
     console.warn(`[price-fetcher] ${warning}`);
     errors.push(warning);
