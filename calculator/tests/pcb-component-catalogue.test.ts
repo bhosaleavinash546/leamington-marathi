@@ -87,10 +87,13 @@ describe('price at quantity', () => {
     expect(cataloguePriceAt('TJA1044GT', 10000)).toBeCloseTo(e.gbp.q10k, 4);
     expect(cataloguePriceAt('TJA1044GT', 100000)).toBeCloseTo(e.gbp.q100k, 4);
     // Annual programme volumes have their own breaks (Oct 2026 research): 200k and 300k,
-    // derived along the part's slope; flat above 300k.
+    // derived along the part's slope; beyond 300k carried on along it to the parts bought, capped at 10M (BMW inverter
+    // review, 26 Nov 2026 — it was flat above 300k).
     expect(cataloguePriceAt('TJA1044GT', 200000)).toBeCloseTo(e.gbp.q200k!, 4);
     expect(cataloguePriceAt('TJA1044GT', 300000)).toBeCloseTo(e.gbp.q300k!, 4);
-    expect(cataloguePriceAt('TJA1044GT', 1_000_000)).toBeCloseTo(e.gbp.q300k!, 4);
+    const b = e.volumeModel?.b ?? 0.0706;
+    expect(cataloguePriceAt('TJA1044GT', 1_000_000)).toBeCloseTo(e.gbp.q300k! * Math.pow(1_000_000 / 300_000, -b), 5);
+    expect(cataloguePriceAt('TJA1044GT', 50_000_000)).toBe(cataloguePriceAt('TJA1044GT', 10_000_000));
     const q250 = cataloguePriceAt('TJA1044GT', 250000)!;
     expect(q250).toBeLessThan(e.gbp.q200k!); expect(q250).toBeGreaterThan(e.gbp.q300k!);
     const mid = cataloguePriceAt('TJA1044GT', 3000)!;

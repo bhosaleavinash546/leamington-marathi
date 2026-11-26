@@ -20,6 +20,7 @@ import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
 import { pcbCostOverview } from './pcb/cost-overview.js';
+import { coatedShare } from '../engine/pcb-coating.js';
 import { buildCostDriverChart, buildNPISection, buildConfidenceRoadmap, buildSanityWarningsBanner, buildASILBadge, buildAutomotiveNRESection, buildSingleSourceWarnings, buildAutomotiveAssemblySection, buildAutomotiveFabSection, buildBOMCompletenessSection, buildProgramPricingSection, buildBenchmarkComparison, buildRevisionComparison, buildCountryBreakdownSection, buildVolumeCurveSection, otherPerBoard } from './pcb/panels.js';
 import './styles/calculator.css';
 // After calculator.css: the brand colours (generated from src/brand/brand.json) win.
@@ -5263,6 +5264,7 @@ function renderPCBFabForm(): string {
     <div class="section-title" style="margin-top:8px">Operations and component prices</div>
     <div class="field-row">
       <div class="field-group"><label>Conformal-coated sides</label><input type="number" id="pcbf-coat-sides" step="1" min="0" max="2" placeholder="auto" title="0, 1 or 2 — blank: one side when the board is coated"/></div>
+      <div class="field-group"><label>Coated area (% of a side)</label><input type="number" id="pcbf-coat-pct" step="1" min="1" max="100" placeholder="100" title="Partial (selective) coating: the share of a side that is coated — blank: the whole side"/></div>
       <div class="field-group"><label>Press-fit connectors</label><input type="number" id="pcbf-press-fit" step="1" min="0" placeholder="from the BOM" title="Connectors pressed in (TE: 3–5 s each) — blank: counted from the BOM's press-fit lines"/></div>
       <div class="field-group"><label>Programming time (s a board)</label><input type="number" id="pcbf-prog-sec" step="1" min="0" placeholder="from the MCU flash" title="Blank: each MCU's flash × 2 s/MB (write + erase, AURIX data sheet) + 10 s handling"/></div>
       <div class="field-group"><label>Through-hole soldering</label><select id="pcbf-tht-method" title="Selective drag: 0.71 s a joint + pallet (Vitronics test data); by hand: 3.5 s a joint lead-free — blank: the country table's rate a joint"><option value="">Country table rate</option><option value="selective">Selective solder</option><option value="hand">By hand</option></select></div>
@@ -10043,7 +10045,7 @@ function wireScenarioBuilder(r: PCBImageAnalysis): void {
       hdiStructure: b.hdiStructure, impedanceControlled: b.impedanceControlRequired,
       smtPlacements: a.smtPlacements, throughHoleJoints: a.throughHoleJoints, manualJoints: a.manualJoints,
       bgaCount: a.bgaCount, aoiRequired: a.aoiRequired, ictTimeSec: a.ictTimeSec,
-      conformalCoatAreaCm2: auto && (r._conformalCoatingCost ?? 0) > 0 ? (Number(b.widthMm) || 0) * (Number(b.heightMm) || 0) / 100 : 0,
+      conformalCoatAreaCm2: auto && (r._conformalCoatingCost ?? 0) > 0 ? (Number(b.widthMm) || 0) * (Number(b.heightMm) || 0) / 100 * coatedShare(b.coatedAreaPct) : 0,
       copperOzByLayer: Array.isArray(bs.copperOzByLayer) && (bs.copperOzByLayer as unknown[]).length ? bs.copperOzByLayer : undefined,
       weightKg: Number(bs.boardWeightG) > 0 ? Number(bs.boardWeightG) / 1000 : undefined,
       totalBOMCostGBP: r.costEstimates.totalBOMCostGBP, orderQuantity: qty, country,
@@ -10939,6 +10941,7 @@ function fillFabFormFromAnalysis(): void {
   setSelectSafe('pcbf-sampling', String(b.samplingCadence ?? 'panel'), 'panel');
   setSelectSafe('pcbf-asil', String(b.asilConfirmed ?? ''), '');
   setF('pcbf-coat-sides', b.conformalCoatSides !== undefined && b.conformalCoatSides !== '' ? Number(b.conformalCoatSides) : '');
+  setF('pcbf-coat-pct', b.coatedAreaPct !== undefined && b.coatedAreaPct !== '' ? Number(b.coatedAreaPct) : '');
   setF('pcbf-press-fit', b.pressFitConnectors !== undefined && b.pressFitConnectors !== '' ? Number(b.pressFitConnectors) : '');
   setF('pcbf-prog-sec', b.programmingSec !== undefined && b.programmingSec !== '' ? Number(b.programmingSec) : '');
   setF('pcbf-fct-sec', b.functionalTestSec !== undefined && b.functionalTestSec !== '' ? Number(b.functionalTestSec) : '');

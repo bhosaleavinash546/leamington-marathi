@@ -1,0 +1,198 @@
+{
+ "readOn": "2026-11-26",
+ "method": "ti.com part-details page rendered in Chromium; the \"Pricing Qty Price (USD)\" table; Digi-Key rows from the costing research batches",
+ "parts": [
+  {
+   "mpn": "UCC5880QDFCRQ1",
+   "family": "UCC5880-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated functional-safety SiC / IGBT gate driver, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SSOP-32",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 5.141,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/UCC5880-Q1/part-details/UCC5880QDFCRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    }
+   ]
+  },
+  {
+   "mpn": "UCC27282QDRCRQ1",
+   "family": "UCC27282-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "120 V half-bridge gate driver, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-10 (DRC)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.91,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/UCC27282-Q1/part-details/UCC27282QDRCRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.05462,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "TPS7B8401QWDRBRQ1",
+   "family": "TPS7B84-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40 V 150 mA LDO, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-8 (DRB)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.94,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TPS7B84-Q1/part-details/TPS7B8401QWDRBRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    }
+   ]
+  },
+  {
+   "mpn": "LM74202QPWPRQ1",
+   "family": "LM74202-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Ideal-diode / eFuse controller, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16 (PWP)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.277,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/LM74202-Q1/part-details/LM74202QPWPRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.77678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "TLV9004QPWRQ1",
+   "family": "TLV9004-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Quad 1 MHz RRIO op-amp, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14 (PW)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.514,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TLV9004-Q1/part-details/TLV9004QPWRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.54288,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "AMC1211AQDWVRQ1",
+   "family": "AMC1211-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 3.06,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/AMC1211-Q1/part-details/AMC1211AQDWVRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    }
+   ]
+  },
+  {
+   "mpn": "LM5155QDSSRQ1",
+   "family": "LM5155-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Boost / SEPIC / flyback controller, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "WSON-12 (DSS)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.189,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/LM5155-Q1/part-details/LM5155QDSSRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.63914,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "TCAN1057AVDRQ1",
+   "family": "TCAN1057A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD transceiver, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (D)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.462,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TCAN1057A-Q1/part-details/TCAN1057AVDRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read"
+    }
+   ]
+  }
+ ]
+}

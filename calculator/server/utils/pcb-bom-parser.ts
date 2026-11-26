@@ -81,12 +81,19 @@ function cleanPN(pn: string): string {
   return pn.replace(/\s+/g, '').trim();
 }
 
-/** Expand a comma/space separated refdes list into individual designators. */
+/** A real designator: letters then a number (U1, R12A, C_BULK1, TP-3). "Integrated", "11", "(0402)" are not. */
+const DESIGNATOR = /^[A-Za-z]{1,4}[_-]?[A-Za-z]*\d+[A-Za-z]?$/;
+
+/** Expand a comma/space separated refdes list into individual designators — only when EVERY token is one. A teardown
+ *  BOM's row name in the designator column ("Integrated Circuit 11", "Capacitor 3 (0402)" — A2Mac1) was split into
+ *  "Integrated", "Circuit", "11", each costed as one part, and the file's quantity (6, 220) was lost (BMW inverter review,
+ *  26 Nov 2026). Such a cell is a LABEL: one line, the quantity column's count. */
 function expandRefDes(refDes: string): string[] {
-  return refDes
+  const tokens = refDes
     .split(/[,\s]+/)
     .map(s => s.trim())
     .filter(Boolean);
+  return tokens.length > 1 && !tokens.every(t => DESIGNATOR.test(t)) ? [refDes.trim()] : tokens;
 }
 
 function emitLine(

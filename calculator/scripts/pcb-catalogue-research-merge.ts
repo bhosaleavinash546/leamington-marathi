@@ -48,6 +48,11 @@
  *     the 1k price stays rule 4 (it is what a 1,000-piece buyer pays). No break is ever dearer than a smaller one.
  *  8a. A row READ ON THE PAGE (round 6) replaces an earlier stored reading of the same distributor and break: the
  *     earlier ones were search summaries, which the pilot found 9–39 % below the live page on 10 of 17 parts.
+ *  10. A MAKER'S OWN STORE (BMW inverter review, 26 Nov 2026 — TI.com only so far; MAKER_STORES) sells at published
+ *     breaks anyone can buy at. Its 1,000+ price is a real buy price: when it is below the distributors' price at a break
+ *     (1k and above), the break takes the maker's price carried along the part's slope ("lowest sourced price"). Maker
+ *     rows never set the slope (their 1–999 steps are sampling prices) and never vote in rules 3–4. A maker page that
+ *     states a "reference price" with no quantity (onsemi) is not a buy price and is not used.
  *  9. Family keys (an estimate named by a family, "TC387", "LM74700") take the price of the
  *     catalogued member named in scripts/pcb-research/family-links.json — a reviewed list, never
  *     a guess. They stay labelled estimates (the BOM line does not say which variant) and say so.
@@ -64,12 +69,19 @@ type Researched = { mpn: string; family?: string; mfr: string; desc: string; cat
 type Gbp = { q1k: number; q10k: number; q100k: number; q200k?: number; q300k?: number };
 type Entry = { mpn: string; family: string; mfr: string; desc: string; category: string; pkg: string; aecq: boolean;
   aliases?: string[]; gbp: Gbp; confidence: 'distributor' | 'estimate'; source: string; asOf: string;
-  ecuRoles?: string[]; observations?: Array<Obs & { gbp: number }>; volumeModel?: { b: number; basis: string; derivedAbove: number } };
+  ecuRoles?: string[]; observations?: Array<Obs & { gbp: number }>; volumeModel?: { b: number; basis: string; derivedAbove: number };
+  /** Rule 10: the maker's own store set at least one break (a maker price, not a distributor price). */
+  makerPrice?: string };
 
 export const FRANCHISED = /^(digi-?key|mouser|arrow|avnet|farnell|newark|element ?14|rs( components)?|tme|rutronik|future( electronics)?|tti|lcsc|verical|heilind|allied|sager|master electronics)/i;
 /** Where a price may be read: the distributor's own site, or an aggregator that names the distributor and break.
  *  Broker storefronts that relist distributor rows (OEMsTrade, omo-ic), datasheet sites and maker pages are not. */
 export const PRICE_HOSTS = /(^|\.)(digikey\.[a-z.]+|mouser\.[a-z.]+|arrow\.com|avnet\.com|farnell\.com|newark\.com|element14\.com|rs-online\.com|rsdelivers\.com|tme\.(eu|com)|rutronik(24)?\.com|futureelectronics\.com|tti(inc)?\.com|lcsc\.com|verical\.com|heilind\.com|alliedelec\.com|sager\.com|masterelectronics\.com|findchips\.com|octopart\.com|digipart\.com|trustedparts\.com)$/i;
+/** Rule 10: a maker's own store — the seller name and the host must both say so. */
+export const MAKER_STORES: Array<{ seller: RegExp; host: RegExp; name: string }> = [
+  { seller: /^(ti\.com|texas instruments)/i, host: /(^|\.)ti\.com$/i, name: 'TI.com' },
+];
+export const makerOf = (o: { distributor: string; url: string }) => MAKER_STORES.find(m => m.seller.test(String(o.distributor).trim()) && m.host.test(hostOf(o.url)));
 /** Staging copies of a distributor's site: their prices are test data. */
 export const STAGING_HOSTS = /^fat\.lcsc\.com$/i;
 /** Digi-Key test storefronts: a last resort, labelled on the entry. */
@@ -83,10 +95,38 @@ const r4 = (v: number) => Math.round(v * 10000) / 10000;
 const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const norm = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-export interface Priced { gbp: Gbp; b: number; basis: string; obs: Array<Obs & { gbp: number }>; distributors: string[]; dropped: string[] }
+export interface Priced { gbp: Gbp; b: number; basis: string; obs: Array<Obs & { gbp: number }>; distributors: string[]; dropped: string[];
+  /** Rule 10: the maker's store whose price set at least one break. */
+  maker?: string }
 
-/** The volume model of one part from its observations (rules 1–6). Null when nothing valid is left. */
+/** The volume model of one part from its observations (rules 1–6, 10). Null when nothing valid is left. */
 export function priceFromObservations(raw: Obs[]): Priced | null {
+  const valid = (o: Obs) => Number(o.price) > 0 && Number(o.qty) >= 100 && FX_TO_GBP[String(o.currency).toUpperCase()] != null;
+  const makerObs = (raw ?? []).filter(o => makerOf(o) && valid(o))
+    .map(o => ({ ...o, qty: Number(o.qty), price: Number(o.price), gbp: Number(o.price) * FX_TO_GBP[String(o.currency).toUpperCase()] }));
+  const dist = priceFromDistributors((raw ?? []).filter(o => !makerOf(o)));
+  // Rule 10 — the maker's own 1,000+ price, where it is lower, carried along the distributors' slope (else the curve).
+  const m1k = makerObs.filter(o => o.qty >= 1000 && o.qty <= 2500);
+  if (!m1k.length) return dist && { ...dist, obs: [...dist.obs, ...makerObs] };
+  const pm = Math.min(...m1k.map(o => o.gbp * Math.pow(o.qty / 1000, dist?.b ?? DEFAULT_B)));
+  const b = dist?.b ?? DEFAULT_B;
+  const atM = (q: number) => r4(pm * Math.pow(q / 1000, -b));
+  const name = makerOf(m1k[0])!.name;
+  if (!dist) {
+    return { gbp: { q1k: r4(pm), q10k: atM(10_000), q100k: atM(100_000), q200k: atM(200_000), q300k: atM(300_000) }, b: Math.round(b * 10000) / 10000,
+      basis: `franchise curve (no distributor listing: 10k = 1k × 0.85) from ${name}, the maker's own store, 1,000+ price only`,
+      obs: makerObs, distributors: [name], dropped: [], maker: name };
+  }
+  const g = dist.gbp;
+  const pick = (d: number | undefined, q: number) => d == null ? undefined : Math.min(d, atM(q));
+  const gbp: Gbp = { q1k: Math.min(g.q1k, r4(pm)), q10k: pick(g.q10k, 10_000)!, q100k: pick(g.q100k, 100_000)!, q200k: pick(g.q200k, 200_000), q300k: pick(g.q300k, 300_000) };
+  const took = JSON.stringify(gbp) !== JSON.stringify(g);
+  return { ...dist, gbp, obs: [...dist.obs, ...makerObs], distributors: [...dist.distributors, name],
+    basis: dist.basis + (took ? `; ${name} (the maker's own store) sells at £${r4(pm)} 1,000+, below the distributors — the lower price taken at each break (rule 10)` : `; ${name} 1,000+ £${r4(pm)} read, not below the distributors`),
+    ...(took ? { maker: name } : {}) };
+}
+
+function priceFromDistributors(raw: Obs[]): Priced | null {
   const dropped: string[] = [];
   let obs = (raw ?? []).filter(o => {
     // A one-off price (1, 25, 30 units) says little about volume and runs 2–3× the 1k
@@ -211,7 +251,8 @@ function sourceText(p: Priced, sibling?: string): string {
   const sib = sibling ? `Priced on the sibling orderable code ${sibling} (the listed code was not found at a distributor). ` : '';
   const test = p.obs.length && p.obs.every(o => TEST_STOREFRONT.test(hostOf(o.url))) ? TEST_STOREFRONT_NOTE : '';
   const paged = p.obs.some(o => o.evidence === 'page-read');
-  const how = paged ? 'read on the distributor\'s product page' : 'search of distributor listings';
+  const how = (paged ? 'read on the distributor\'s product page' : 'search of distributor listings')
+    + (p.obs.some(o => makerOf(o)) ? `; ${[...new Set(p.obs.map(o => makerOf(o)?.name).filter(Boolean))].join(', ')} read on the maker's own store page` : '');
   if (/published reel/.test(p.basis)) return `${sib}${list} (${how}, ${p.obs[0]?.date ?? ''}). ${p.basis}: beyond it P × (Q/Qmax)^−${p.b}. Above the largest published break these are modelled, not quoted.${test}`;
   return `${sib}${list} (${how}, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.${test}`;
 }
@@ -250,6 +291,7 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
         // how the row is sold and how it was read (round 6) are part of the observation: the price is recomputed from them
         ...(o.packing ? { packing: String(o.packing).toLowerCase() } : {}), ...(o.evidence ? { evidence: o.evidence } : {}), gbp: r4(o.gbp) })),
       volumeModel: { b: priced.b, basis: priced.basis, derivedAbove: Math.max(...priced.obs.map(o => o.qty)) },
+      ...(priced.maker ? { makerPrice: priced.maker } : {}),
     };
     if (r.observedMpn && norm(r.observedMpn) !== norm(entry.mpn)) entry.aliases = [r.observedMpn];
     // A FAMILY match may only take over a family-key ESTIMATE ("TLS4120" -> TLS4120D0EPV33XUMA1). It must never merge into
@@ -276,7 +318,8 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
       if (priced.obs.some(o => !had.has(key(o))) || JSON.stringify(priced.gbp) !== JSON.stringify(old.gbp)) {
         const sib = /^Priced on the sibling orderable code (\S+) /.exec(old.source)?.[1];
         catalogue.parts[hit] = { ...old, gbp: priced.gbp, source: sourceText(priced, sib), asOf: date,
-          observations: entry.observations, volumeModel: entry.volumeModel, aliases: aliases.length ? aliases : undefined };
+          observations: entry.observations, volumeModel: entry.volumeModel, aliases: aliases.length ? aliases : undefined, makerPrice: priced.maker };
+        if (!priced.maker) delete catalogue.parts[hit].makerPrice;
         report.updated.push(`${entry.mpn} (cross-checked: ${priced.distributors.join(', ')})`);
       } else report.keptExisting.push(`${entry.mpn} (no new observation)`);
     } else {
@@ -296,8 +339,12 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     if (p.obs.length !== e.observations.length) report.repriced.push(`${e.mpn}: observations ${e.observations.length} → ${p.obs.length} (${p.dropped.join('; ')})`);
     const disputed = /( DISPUTED: .*)$/.exec(e.source)?.[1] ?? '';   // an audit's dispute stays until a quote settles it
     e.gbp = p.gbp; e.source = sourceText(p, sib) + disputed;
-    e.observations = p.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date, gbp: r4(o.gbp) }));
+    // How the row is sold and how it was read stay on the stored observation: the price is recomputed from them (rules
+    // 5b / 6a / 8a). This pass used to drop them, so a later merge re-priced round-6 parts without their packing.
+    e.observations = p.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date,
+      ...(o.packing ? { packing: String(o.packing).toLowerCase() } : {}), ...(o.evidence ? { evidence: o.evidence } : {}), gbp: r4(o.gbp) }));
     e.volumeModel = { b: p.b, basis: p.basis, derivedAbove: Math.max(...p.obs.map(o => o.qty)) };
+    if (p.maker) e.makerPrice = p.maker; else delete e.makerPrice;
   }
   // An entry left with no valid observation leaves the catalogue (no unsourced price).
   const gone = new Set(report.removed.map(x => x.split(':')[0]));

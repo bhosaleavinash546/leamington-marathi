@@ -98,6 +98,11 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'res_pwr', test: /\b(2010|2512|2816|3637)\b|\b[1-3]\s*W\b/i, row: R(0.015, 0.08, 'power chip resistor 2010 / 2512', [0.0457, 0.0782]) },
     { kind: 'res', test: RES_WORDS, row: R(0.003, 0.015, 'chip resistor 1206', [0.0049, 0.0109], 0.008) },   // EDU v5 — catalogue thick film AEC-Q200 at 10k: CRCW120612R0 £0.0049, CRCW120610R0 £0.0076, CRCW12061M00 £0.0080, CRCW120610K0 £0.0087, AC1206FR £0.0109; was [0.008, 0.04]
     { kind: 'ind', test: /inductor|choke/i, row: R(0.03, 0.8, 'power inductor 1206-class', [0.08, 1.8]) },
+    // BMW inverter review (26 Nov 2026): a 1210 MLCC (bulk 4.7–47 µF) took the 1206 row. Catalogue at 10k, AEC-Q X7R / X7S
+    // (8 parts): GCM32ER71H475KA55L £0.151, CL32B226KOJVPNE £0.220, CGA6M3X7S2A475K £0.308, CNA6P1X7R1H106K £0.323,
+    // CGA6P1X7R2A106K £0.413, CGA6P3X7R1E226M £0.445, CGA6P3X7S1H106K £0.461, GCM32ER71A476KE02L £0.479 (p10–p90 £0.199–0.467,
+    // median £0.368); commercial GRM32ER71H106KA12L £0.099, GRM32ER71A476KE15L £0.186.
+    { kind: 'cap1210', test: /\b(1210|3225)\b/, row: R(0.099, 0.19, 'MLCC 1210', [0.199, 0.467], 0.368) },
     { kind: 'cap', row: R(0.008, 0.25, 'MLCC 1206', [0.02, 0.3]) },
   ],
   crystal_osc: [
@@ -112,6 +117,12 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   transformer: [
     // Signal / coax-PoC CMCs are £0.15–0.30 (DLW21SH900 $0.29, TME $0.20 @1k); a CAN CMC £0.64 (ACT45B).
     { kind: 'cmc', test: /common[- ]?mode|choke/i, row: R(0.08, 0.9, 'common-mode choke', [0.12, 0.9]) },
+    // BMW inverter review (26 Nov 2026): an isolated gate-driver supply transformer took the generic signal row. Sourced
+    // SMD gate-drive / push-pull bias transformers, AEC-Q200, at 10k on the franchise curve: Würth 750319835 (Digi-Key
+    // US$1.856 @500) £1.17, Pulse PM2180.034NLT (Digi-Key US$1.638 @4,900) £1.22, Bourns HCTSM80201AAL-E £1.74 (catalogue),
+    // Bourns HCTSM8 (Digi-Key US$3.304 @2,500) £2.34, TDK B82802F0007A213 £2.63 (catalogue) — median £1.74. A customer-
+    // specific winding (a BOM naming the OEM) has no public price: this row is its equivalent, to be quoted.
+    { kind: 'gd', test: /gate[- ]?driv\w*|push[- ]?pull|isolat\w*\s+(dc-?dc\s+)?(supply|bias|power)\b|bias (supply|transformer)/i, row: R(1.17, 2.63, 'isolated gate-drive / bias transformer', [1.17, 2.63], 1.74) },
     { kind: 'pwr', test: /power/i, row: R(1, 7, 'SMD power transformer', [2, 12]) },
     { kind: 'sig', row: R(0.35, 2, 'signal transformer', [0.8, 4]) },
   ],
@@ -223,6 +234,10 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'film_dclink', test: /dc-?link/i, row: R(0.7, 6.8, 'DC-link film capacitor', [0.7, 6.8]) },
     { kind: 'film_safety', test: /\b(x1|x2|y1|y2)\b.*\b(cap|capacitor|film)\b|\b(cap|capacitor|film)\b.*\b(x1|x2|y1|y2)\b|suppression cap|safety.*film|film.*safety/i, row: R(0.08, 0.3, 'X / Y safety film capacitor', [0.1, 0.35]) },
     { kind: 'film', test: /film cap|film capacitor|\bmkp\b|\bmkt\b|polypropylene/i, row: R(0.1, 2, 'film capacitor', [0.15, 3]) },
+    // BMW inverter review (26 Nov 2026): a TO-220 power resistor was priced as a "power device". One price read: Bourns
+    // PWR221T-30 (Digi-Key US$3.035 @1,000, 26 Nov 2026) = £2.01 at 10k on the franchise curve — the upper bound. The lower
+    // bound (half of it) is a CostVision engineering heuristic, not sourced: no second power-resistor page could be read.
+    { kind: 'res_pwr', test: /resist\w*[^.]*\b(to-?220|to-?247|to-?263|to-?126|d2pak|dpak)\b|\b(to-?220|to-?247|to-?263|to-?126|d2pak|dpak)\b[^.]*resist/i, row: R(1.0, 2.01, 'TO-220 / TO-247 power resistor', [1.0, 2.01]) },
     { kind: 'to220', test: /to-?220|to-?247|to-?263/i, row: R(0.14, 2.8, 'TO-220 / D2PAK power device', [0.4, 5]) },
     { kind: 'pwr_conn', test: /power connector|automotive.*connector/i, row: R(0.4, 4.5, 'TH power connector', [2, 12]) },
     // A plain pin header / wire-to-board header took the TH connector row (£1.24 on the EDU board's 2 × 4 debug header).
@@ -250,7 +265,12 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
 
 /** Discrete semiconductors have no component type of their own in the prompt's
  *  list, so they arrive as fuse_tvs / ic_soic / passive. Description wins. */
-const DISCRETE: Array<{ test: RegExp; row: Row }> = [
+/** An IC that integrates a FET (eFuse, load / smart switch) is not a discrete MOSFET (BMW inverter review). */
+const FET_IC = /e-?fuse|load[- ]switch|self[- ]protected|smart (high|low)|high[- ]side switch|low[- ]side switch|integrated (power )?(fet|mosfet)|fet[- ]input/i;
+/** …and a through-hole part keeps the TO-220 / TO-247 row when its package is not one the catch-alls know. */
+const FET_IC_OR_TH = new RegExp(`${FET_IC.source}|to-?220|to-?247|to-?3p|through[- ]hole|\\btht\\b`, 'i');
+
+const DISCRETE: Array<{ test: RegExp; row: Row; not?: RegExp }> = [
   // Round 5 (13 Oct 2026): from the catalogue's own distributor prices at 10k (p10–p90). A 1200 V SiC MOSFET used to
   // fall to "power MOSFET DPAK-class" (£1.01 v £22.62 sourced) — SiC / GaN (24 parts, AEC-Q 17) and IGBTs (16 parts).
   { test: /\b(sic|silicon carbide|coolsic|elitesic|gan|gallium nitride|coolgan)\b.*\b(mosfet|fet|transistor|hemt|diode|schottky|switch)\b|\b(mosfet|fet|transistor|hemt|diode|schottky)\b.*\b(sic|silicon carbide|gan|gallium nitride)\b/i,
@@ -264,9 +284,22 @@ const DISCRETE: Array<{ test: RegExp; row: Row }> = [
     row: R(0.04, 0.3, 'ESD / TVS protection SOT-23', [0.048, 0.295], 0.075) },
   { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
     row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]) },   // BC847 $0.017–0.023, 2N7002 AEC $0.025–0.049, BSS138 $0.045–0.06 @3k (2026-10-01)
+  // BMW inverter review (26 Nov 2026): a power MOSFET in DFN3333 / DFN5060 / SO-8 fell to "QFN IC (unidentified)"
+  // (£1.64 v £0.05–0.08 China reel). Catalogue at 10k, AEC-Q (37 parts in DFN / SO-8FL / SSO8 / PowerFLAT / PowerPAK /
+  // LFPAK33 / LFPAK56 / TDSON, 40–100 V): p10 £0.360, median £0.626, p90 £1.002 (IAUC60N04S6L039 £0.260 … IAUCN08S7N013
+  // £1.374); commercial RQ3E130BNTB £0.138, IAUCN08S7N019 £0.971, IAUCN10S7N021 £1.323. The catalogue leans to high-current
+  // parts: a small dual MOSFET sits at the bottom of the range.
+  { test: /\b(dfn[\s-]?\d*|\w*son-?\d*|tdson\w*|sso-?8|so-?8(fl|l)?|soic-?8|sop-?8|powerflat\w*|powerpak\s*so-?8\w*|lfpak(33|56)\w*|hsmt\d*|pqfn\w*|vdfn\w*)\b[^.]*\b(mosfets?|fets?|transistors?)\b|\b(mosfets?|fets?|transistors?)\b[^.]*\b(dfn[\s-]?\d*|\w*son-?\d*|tdson\w*|sso-?8|so-?8(fl|l)?|soic-?8|sop-?8|powerflat\w*|powerpak\s*so-?8\w*|lfpak(33|56)\w*|hsmt\d*|pqfn\w*|vdfn\w*)\b/i,
+    row: R(0.14, 1.0, 'power MOSFET DFN / SO-8 class', [0.36, 1.0], 0.626), not: FET_IC },
   // "LFPAK56" / "TOLL" did not match \blfpak\b and fell to "SOIC IC (unidentified)" (round 5).
   { test: /\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak\d*|toll|tolt)\b.*(mosfet|fet|transistor)|(mosfet|fet|transistor).*\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak\d*|toll|tolt)\b/i,
     row: R(0.15, 1.5, 'power MOSFET DPAK-class', [0.35, 3]) },
+  // A transistor / MOSFET whose package is not stated: a power part by its words (mΩ, tens of amps, "power") takes the
+  // DFN / SO-8 power row, any other the small-signal row — never an IC range (BMW inverter review, 26 Nov 2026).
+  { test: /^(?=.*\b(mosfets?|transistors?|bjt|npn|pnp|fets?)\b)(?=.*(\bpower\b|\d+(\.\d+)?\s*m(Ω|ohm)|\b\d{2,}\s*A\b))/i,
+    row: R(0.14, 1.0, 'power MOSFET DFN / SO-8 class', [0.36, 1.0], 0.626), not: FET_IC_OR_TH },
+  { test: /\b(mosfets?|transistors?|bjt|npn|pnp|fets?)\b/i,
+    row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]), not: FET_IC_OR_TH },
 ];
 
 const CAP_WORDS = /\bcap\b|capacitor|mlcc|x7r|x5r|c0g|np0|\d+(\.\d+)?\s*[pnuµ]F\b/i;
@@ -293,7 +326,8 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
     const shunt = rows.find(x => x.kind === 'shunt' && x.test!.test(text));
     if (shunt && want !== 'cap' && want !== 'ind') return { key: `${ct}.shunt`, row: shunt.row };
     if (want) {
-      const r = rows.find(x => x.kind === want || (want === 'ind' && x.kind === 'fb') || (want === 'cap' && x.kind === 'cap_c0g' && /c0g|np0/i.test(text)))
+      const r = rows.find(x => x.kind === want || (want === 'ind' && x.kind === 'fb') || (want === 'cap' && x.kind === 'cap_c0g' && /c0g|np0/i.test(text))
+        || (want === 'cap' && x.kind === 'cap1210' && x.test!.test(text)))
         ?? rows.find(x => x.kind === want);
       if (r) return { key: `${ct}.${r.kind}`, row: r.row };
     }
@@ -379,7 +413,7 @@ export function classRange(line: { componentType?: unknown; description?: unknow
   // An IC whose description names a diode or transistor ("ideal diode controller, SOT-23-6") is
   // still an IC: it never takes the small-signal discrete range (LM74700-Q1 is £0.75, not £0.03–0.12).
   const isIC = /controller|driver|regulator|\bldo\b|monitor|amplifier|supervisor|converter|transceiver|\bic\b/i.test(text);
-  const d = isIC ? undefined : DISCRETE.find(x => x.test.test(text));
+  const d = isIC ? undefined : DISCRETE.find(x => x.test.test(text) && !(x.not && x.not.test(text)));
   if (d) { key = `discrete.${d.row.label}`; row = d.row; }
   else {
     const p = pick(ct, text, String((line as { refDes?: unknown }).refDes ?? '')) ?? pick('ic_soic', '')!;

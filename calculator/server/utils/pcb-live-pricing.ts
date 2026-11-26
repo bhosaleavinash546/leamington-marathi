@@ -10,6 +10,8 @@ import { FX_TO_GBP as ENGINE_FX_TO_GBP } from '../../src/engine/insights.js';
 export type LivePricingProvider = 'octopart' | 'rs' | 'farnell' | 'catalogue';
 
 export interface LivePriceResult {
+  /** The build market's measured factor applied to this global price (no market price of its own) — BMW inverter review. */
+  marketFactor?: import('../data/pcb-component-market.js').MarketFactor;
   /** Manufacturer part number queried */
   mpn: string;
   /** Description from distributor */

@@ -32,6 +32,9 @@ export const PCB_ANALYSIS_JSON_SCHEMA = {
         impedanceControlRequired: bool, copperWeightOz: num,
         copperOzByLayer: { type: 'array', items: num }, boardWeightG: num,
         qualityGrade: str, panelUtilisation: num, conformalCoating: bool,
+        // Optional: pixels only, so the tool can scale the board off a part whose body it knows (BMW inverter review).
+        scaleReference: { type: 'object', properties: { partRef: str, partPx: num, boardWidthPx: num, boardHeightPx: num },
+          required: ['partRef', 'partPx', 'boardWidthPx', 'boardHeightPx'], additionalProperties: false },
       },
       required: ['estimatedLayers', 'widthMm', 'heightMm', 'dimensionsSource', 'surfaceFinish', 'solderMaskColour', 'silkscreenSides',
         'throughVias', 'blindVias', 'buriedVias', 'microVias', 'bgaDetected', 'minTraceSpaceMm', 'technologyType', 'hdiStructure',

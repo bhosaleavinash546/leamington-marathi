@@ -1,0 +1,368 @@
+{
+ "readOn": "2026-11-26",
+ "method": "Digi-Key product / search pages read for the BMW inverter costing (research batches A and B)",
+ "parts": [
+  {
+   "mpn": "SAK-TC389QP-160F300S AE",
+   "family": "SAK-TC389QP-160F300S AE",
+   "mfr": "Infineon",
+   "desc": "AURIX TC389 32-bit TriCore lockstep MCU, AE step",
+   "category": "ic_bga",
+   "pkg": "LFBGA-516 (25 \u00d7 25 mm)",
+   "aecq": true,
+   "observedMpn": "TC389QP160F300SAEKXUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 30.30208,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 32.0159,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key China (digikey.cn)",
+     "qty": 500,
+     "price": 250.5962,
+     "currency": "CNY incl 13% VAT (221.766 ex VAT)",
+     "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 34.1518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAELXUMA2/20841847",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "74HC4075PW",
+   "family": "74HC4075PW",
+   "mfr": "Nexperia",
+   "desc": "Triple 3-input OR gate, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "observedMpn": "74HC4075PW-Q100J",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 25000,
+     "price": 0.23419,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW-Q100J",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.20347,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "PJQ4548P-AU",
+   "family": "PJQ4548P-AU",
+   "mfr": "PANJIT",
+   "desc": "Automotive N-channel MOSFET, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "DFN3333-8",
+   "aecq": true,
+   "observedMpn": "PJQ4548P-AU_R2_002A1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.18619,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "PJQ5948-AU",
+   "family": "PJQ5948-AU",
+   "mfr": "PANJIT",
+   "desc": "Automotive dual N-channel MOSFET, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "DFN5060B-8",
+   "aecq": true,
+   "observedMpn": "PJQ5948-AU_R2_002A1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.34019,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "A768KE107M1VLAS036",
+   "family": "A768KE107M1VLAS036",
+   "mfr": "KEMET",
+   "desc": "Polymer aluminium capacitor 100 uF 35 V, SMD can",
+   "category": "passive_1206",
+   "pkg": "SMD can 8 mm",
+   "aecq": false,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.19198,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "SMBJ15A",
+   "family": "SMBJ15A",
+   "mfr": "Vishay",
+   "desc": "TVS diode 600 W 15 V, automotive (HE3)",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "observedMpn": "SMBJ15AHE3_B/I",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9600,
+     "price": 0.17956,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.22401,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/H",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9600,
+     "price": 0.1077,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/5B",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.11603,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/52",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "TPSMC33A",
+   "family": "TPSMC33A",
+   "mfr": "Littelfuse",
+   "desc": "TVS diode 1500 W 33 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.27825,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 0.32248,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPSMC33AHE3",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "VSSAF3L45",
+   "family": "VSSAF3L45",
+   "mfr": "Vishay",
+   "desc": "Schottky rectifier 3 A 45 V, automotive (HM3)",
+   "category": "fuse_tvs",
+   "pkg": "DO-221AC SlimSMA",
+   "aecq": true,
+   "observedMpn": "VSSAF3L45HM3_A/I",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 42000,
+     "price": 0.15663,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 0.20468,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "SZ1SMA5936BT3G",
+   "family": "SZ1SMA5936BT3G",
+   "mfr": "onsemi",
+   "desc": "Zener diode 30 V 1.5 W, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AC (SMA)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.25033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "SZ1SMA5934BT3G",
+   "family": "SZ1SMA5934BT3G",
+   "mfr": "onsemi",
+   "desc": "Zener diode 24 V 1.5 W, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AC (SMA)",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.25033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "STTH112UFY",
+   "family": "STTH112UFY",
+   "mfr": "STMicroelectronics",
+   "desc": "Ultrafast rectifier 1 A 1200 V, automotive",
+   "category": "fuse_tvs",
+   "pkg": "DO-221AA SMBflat",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.24152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "IHLP4040DZER220M",
+   "family": "IHLP4040DZER220M",
+   "mfr": "Vishay Dale",
+   "desc": "Power inductor 22 uH, IHLP 4040, automotive",
+   "category": "passive_1206",
+   "pkg": "IHLP 4040 (10.8 x 10.2 mm)",
+   "aecq": true,
+   "observedMpn": "IHLP4040DZER220M1A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.64134,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.65749,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M5A",
+     "date": "2026-11-26"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.76908,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M8A",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "B82462G4332M000",
+   "family": "B82462G4332M000",
+   "mfr": "TDK",
+   "desc": "SMD power inductor 3.3 uH, 6.3 x 6.3 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD 6.3 x 6.3 mm",
+   "aecq": true,
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.64688,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000",
+     "date": "2026-11-26"
+    }
+   ]
+  },
+  {
+   "mpn": "PWR221T-30",
+   "family": "PWR221T-30",
+   "mfr": "Bourns",
+   "desc": "Power resistor 30 W, TO-220 full pack (100 ohm read)",
+   "category": "through_hole",
+   "pkg": "TO-220 full pack (through-hole)",
+   "aecq": false,
+   "observedMpn": "PWR221T-30-1000F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.03479,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F",
+     "date": "2026-11-26"
+    }
+   ]
+  }
+ ]
+}

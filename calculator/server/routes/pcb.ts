@@ -28,7 +28,7 @@ import { verifyList, customerSuppliedGBP, type VerifyLine } from '../utils/pcb-v
 import { normaliseCount, quantityBand, symmetryLines, type QuantityBand } from '../utils/pcb-counting.js';
 import { ocrTiles } from '../utils/pcb-ocr-tiles.js';
 import { operationsFromBom, programmingSecFor } from '../data/pcb-operations.js';
-import { componentMarketFor, hasComponentMarket, COMPONENT_MARKET_SOURCE } from '../data/pcb-component-market.js';
+import { componentMarketFor, hasComponentMarket, COMPONENT_MARKET_SOURCE, MARKET_FACTOR_SOURCE } from '../data/pcb-component-market.js';
 import { FX_TO_GBP_TABLE } from '../../src/engine/insights.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
@@ -37,12 +37,13 @@ import { parseOcrReply } from '../utils/pcb-ocr-parse.js';
 import { gateIdentities } from '../utils/pcb-identity.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
-import { isNotFitted, cataloguePriceAt } from '../utils/pcb-price-catalogue.js';
+import { isNotFitted, cataloguePriceAt, VOLUME_CAP_PARTS, TOP_STORED_BREAK, FRANCHISE_B, catalogueEntry as catalogueEntryForVolume } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
-import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec, gateBoardEvidence } from '../utils/pcb-boardspec-stabilise.js';
+import { coatedShare } from '../../src/engine/pcb-coating.js';
+import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec, gateBoardEvidence, scaleBoardFromReference } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -50,7 +51,7 @@ import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-as
 
 // ── Volume BOM price correction ────────────────────────────────────────────
 // The pricing tables are read as ~10k reel prices (TABLE_BASIS_QTY below — F6–F8). Multipliers scale cost up for
-// fewer parts bought and down for more, flat above 300k parts. History:
+// fewer parts bought and down for more, carried to the parts bought up to VOLUME_CAP_PARTS (flat above 300k until 26 Nov 2026). History:
 // Recalibrated (accuracy pass): the mid/high-volume steps were too steep — for
 // mainstream automotive silicon the real 10k-vs-100k distributor delta is ~10%,
 // not 35%. 10k is a production volume, not a prototype. Prototype steps (≤1k) stay
@@ -66,7 +67,9 @@ import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-as
 // catalogue lines are. Below 10k the prototype steps stay (re-based to 10k) and are interpolated, not stepped.
 export const TABLE_BASIS_QTY = 10_000;
 const TABLE_SLOPE_B = -Math.log(0.85) / Math.log(10);
-const TABLE_FLAT_ABOVE = 300_000;
+// Above 300k parts the tables carry on along the same curve to the parts bought, capped at VOLUME_CAP_PARTS (BMW inverter
+// review, 26 Nov 2026 — approved rule change; the flat-at-300k figure is reported as a sensitivity, `volumeRule`).
+const TABLE_FLAT_ABOVE = VOLUME_CAP_PARTS;
 const PROTOTYPE_STEPS: [number, number][] = [
   [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0], [2500, 1.55], [5000, 1.28], [10000, 1.12],
 ];
@@ -1634,6 +1637,8 @@ INSTRUCTIONS:
 - smtPlacements = total qty of all SMT components
 - throughHoleJoints = sum of qty x pins for through_hole components
 - Estimate board dimensions from component sizes, connector pitch, or visible rulers
+- scaleReference (optional): in the top-view photo, the board's width and height IN PIXELS and the longest body side IN PIXELS
+  of one large named part (a BGA, QFP or SOIC — give its refDes or partNumber as partRef). Pixels only; the tool knows the body
 - dimensionsSource: "measured" ONLY if width/height were READ from a label, drawing, board-data table, ruler or scale in the photos; otherwise "estimated"
 - copperOzByLayer: per-layer copper in oz (35 µm = 1 oz, 70 µm = 2 oz), top to bottom, ONLY when a board-data table or drawing states it; otherwise []
 - boardWeightG: board weight in grams ONLY if stated in the photos; otherwise 0
@@ -1766,7 +1771,11 @@ interface Stage4Output {
   /** How the quantities were counted and the range they can be defended in (pcb-counting.ts — EDU v6). */
   quantityBand: QuantityBand | null;
   /** The build country's component market when used (pcb-component-market.ts — EDU v6): components there v global. */
-  componentMarket: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
+  componentMarket: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number;
+    /** Lines priced at the global figure × the market's measured factor, its source and the components at the quartiles. */
+    linesAtFactor?: number; factorSource?: string; factorBand?: { lowGBP: number; highGBP: number } | null } | null;
+  /** Prices carried beyond 300k parts to the parts bought (cap 10M) and the components held flat at 300k (BMW inverter review). */
+  volumeRule?: VolumeRule | null;
   /** A typed contract US$ / £ and the factor it put on catalogue / class prices (EDU audit G-19). */
   contractFx: { usdPerGbp: number; factor: number } | null;
   failed: boolean;
@@ -1867,6 +1876,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     warnings.push(...derivePlacementsFromBOM(prepared.bom, assemblyData));
     // A board figure the model says it read stands only with evidence (fab data, the user, or OCR board text).
     for (const m of gateBoardEvidence(boardSpec, ocrResult.boardText ?? [])) warnings.push({ code: 'BOARD_FIGURE_NOT_EVIDENCED', severity: 'warn', message: m });
+    { const sc = scaleBoardFromReference(boardSpec, prepared.bom as Array<Record<string, unknown>>); if (sc) warnings.push({ code: 'BOARD_SIZE_SCALED', severity: 'warn', message: sc }); }
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     // What the cost model does NOT price, said on the result (pipeline review F14; cost-basis evidence of 9 Oct 2026 —
     // scripts/pcb-research/2026-10-09-ev/evidence/cost-basis-evidence.json — found only low-confidence fabricator figures).
@@ -2015,6 +2025,10 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
         for (const c of xc) warnings.push({ code: c.code, severity: 'warn', message: c.message });
       }
     }
+    for (const l of bom) {
+      const pc = l.packageConflict as { bom: string; catalogue: string } | undefined;
+      if (pc) warnings.push({ code: 'BOM_PACKAGE_CONFLICT', severity: 'warn', message: `${String(l.partNumber)}: your BOM says ${pc.bom}, the part number is ${pc.catalogue} — check the package (it decides placement, X-ray and pad count).` });
+    }
     a.bom = bom;
     const sum = (f: (l: Record<string, unknown>) => boolean) => Math.round(bom.filter(f).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100;
     const bomTotal = sum(() => true);
@@ -2023,8 +2037,18 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // The other basis's components (sourced both ways) for the conditional range — G-16.
     const altBomTotal = market ? globalBomTotal : marketAltLines ? Math.round(applyFx(marketAltLines).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100 : null;
     out.contractFx = fxFactor === 1 ? null : { usdPerGbp: contractUsd, factor: Math.round(fxFactor * 10000) / 10000 };
+    // The market factor's band (BMW inverter review): each factored line at its group's quartiles instead of its median.
+    const factored = bom.filter(l => l.marketFactor && typeof l.marketFactor === 'object');
+    const atQuartile = (k: 'q1' | 'q3') => Math.round(bom.reduce((t, l) => {
+      const mf = l.marketFactor as { median: number; q1: number; q3: number } | undefined;
+      const lt = Number(l.lineTotalGBP) || 0;
+      return t + (mf && mf.median > 0 ? lt * mf[k] / mf.median : lt);
+    }, 0) * 100) / 100;
     out.componentMarket = market ? { market, source: COMPONENT_MARKET_SOURCE, componentsGBP: bomTotal, globalComponentsGBP: globalBomTotal,
-      linesAtMarket: bom.filter(l => String(l.priceBasis ?? '').includes(`@${market}`) || /market: .* own-stock/.test(String(l.priceNote ?? ''))).length } : null;
+      linesAtMarket: bom.filter(l => String(l.priceBasis ?? '').includes(`@${market}`) || /market: .* own-stock/.test(String(l.priceNote ?? ''))).length,
+      linesAtFactor: factored.length, factorSource: MARKET_FACTOR_SOURCE,
+      factorBand: factored.length ? { lowGBP: atQuartile('q1'), highGBP: atQuartile('q3') } : null } : null;
+    out.volumeRule = volumeRuleOf(bom, bomTotal);
     costEst.totalBOMCostGBP = bomTotal;
     costEst.confirmedBOMCostGBP = sum(l => l.needsVerification !== true);
     // The remainder, so "priced" + "to verify" always equals the BOM total on screen
@@ -2058,7 +2082,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       impedanceControlled: Boolean(boardSpec.impedanceControlRequired), smtPlacements: Number(assemblyData.smtPlacements) || 0,
       throughHoleJoints: Number(assemblyData.throughHoleJoints) || 0, manualJoints: Number(assemblyData.manualJoints) || 0,
       bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
-      conformalCoatAreaCm2: out.conformalCoatingCost > 0 ? widthMm * heightMm / 100 : 0,
+      conformalCoatAreaCm2: out.conformalCoatingCost > 0 ? widthMm * heightMm / 100 * coatedShare(boardSpec.coatedAreaPct) : 0,
       // The BOM is the BOM: it used to fall back to the fab estimate, costing the board twice.
       totalBOMCostGBP: bomTotal, orderQuantity: orderQty,
       copperOzByLayer: copperLayersFromSpec(boardSpec), weightKg: weightKgFromSpec(boardSpec),
@@ -2133,6 +2157,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       const fmt = (v: number) => `£${(Number(v) || 0).toFixed(2)}`;
       const est: string[] = [];
       if (!m('dimensionsSource')) est.push(`size ${widthMm} × ${heightMm} mm`);
+      else if (boardSpec.dimensionsEvidence === 'photo-scale') est.push(`size ${widthMm} × ${heightMm} mm (${String(boardSpec.dimensionsBasis)})`);
       if (!m('layersSource')) est.push(`${layers} layers (${fmt(b.pcbLayers)} a board)`);
       if (!m('viasSource') && throughVias > 0) est.push(`${throughVias} through-vias (${fmt(b.pcbVias)})`);
       if (String(boardSpec.hdiStructure ?? 'none') !== 'none') est.push(`HDI ${String(boardSpec.hdiStructure)} (${fmt(b.pcbHDI)})`);
@@ -2239,6 +2264,25 @@ export function pcbCacheKey(req: import('express').Request, files: Record<string
   ]);
 }
 
+/** The approved volume rule's statement for one costing: how many lines are carried past 300k parts, and the
+ *  components had every line been held flat at 300k (the CostVision rule until 26 Nov 2026). */
+export interface VolumeRule { capParts: number; linesBeyond300k: number; componentsGBP: number; componentsFlat300kGBP: number; basis: string }
+export function volumeRuleOf(lines: Array<Record<string, unknown>>, componentsGBP: number): VolumeRule {
+  let beyond = 0;
+  const flat = lines.reduce((t, l) => {
+    const lt = Number(l.lineTotalGBP) || 0;
+    const parts = Number(l.partsBought) || 0;
+    if (l.userCorrected === true || l.priceSource === 'user' || !(parts > TOP_STORED_BREAK)) return t + lt;
+    beyond++;
+    // Every price beyond 300k is the 300k figure × (parts / 300k)^−b — the catalogue part's own slope, else the curve.
+    const e = l.priceSource === 'catalogue' && l.catalogueMpn ? catalogueEntryForVolume(String(l.catalogueMpn)) : null;
+    const b = e?.volumeModel?.b ?? FRANCHISE_B;
+    return t + lt * Math.pow(Math.min(parts, VOLUME_CAP_PARTS) / TOP_STORED_BREAK, b);
+  }, 0);
+  return { capParts: VOLUME_CAP_PARTS, linesBeyond300k: beyond, componentsGBP, componentsFlat300kGBP: Math.round(flat * 100) / 100,
+    basis: `Each line is priced at the parts bought (quantity a board × boards), carried beyond the largest stored break (300,000) along its own slope (else the franchise curve, 10k = 1k × 0.85) up to ${VOLUME_CAP_PARTS.toLocaleString('en-GB')} — derived, not quoted. Held flat at 300,000 parts the components would be the second figure.` };
+}
+
 /**
  * The BOM total at another board quantity: each line's price moves by the volume
  * table at its own parts-bought quantity; lines the engineer typed stay as typed.
@@ -2271,7 +2315,7 @@ function stage4Payload(s4: Stage4Output) {
     automotiveNRE: s4.automotiveNRE, automotiveGradeEnforcedCount: s4.automotiveGradeEnforcedCount,
     singleSourceWarnings: s4.singleSourceWarnings, conformalCoatingCost: s4.conformalCoatingCost,
     automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
-    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing, verifyList: s4.verifyList, quantityBand: s4.quantityBand, componentMarket: s4.componentMarket, contractFx: s4.contractFx,
+    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing, verifyList: s4.verifyList, quantityBand: s4.quantityBand, componentMarket: s4.componentMarket, volumeRule: s4.volumeRule ?? null, contractFx: s4.contractFx,
     orderQty: s4.orderQty, costingFailed: s4.failed, boardDomain: s4.domain,
     // The ASIL the costing used (the guard's), what the classifier claimed, and why they differ.
     ...(s4.asil ? { asilLevel: s4.asil.costed, asilClaimed: s4.asil.claimed, asilRationale: s4.asil.rationale,

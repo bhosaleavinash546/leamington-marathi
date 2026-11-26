@@ -10,6 +10,8 @@ size (280 × 220 mm, ±5 %) is measured off the photos against the TC389's 25 mm
 | Manual should-cost | 74.48 | 77.34 |
 | CostVision tool, China market components | 108.86 | 112.97 |
 | CostVision tool, global distributor components | 119.05 | 123.51 |
+| CostVision tool after the review fixes (26 Nov 2026), China market, no typed price | 76.30 | 79.18 |
+| CostVision tool after the review fixes, global distributor prices | 110.35 | 114.49 |
 
 Files
 - `reading.py` → `reading.json`, `bom.csv` (the BOM uploaded to the tool — no designator column: the BOM's row names are
@@ -31,6 +33,10 @@ python3 -I report.py <global-run-dir> <china-run-dir> <out-dir>
 node report-pdf.mjs <out-dir>/report.html <out-dir>/bmw-rear-inverter-pcb-should-cost.pdf
 ```
 The photos (`photos/`) are the user's and are not committed.
+
+`bom-a2mac1.csv` is the same BOM with the A2Mac1 row names in a RefDes column — the file the tool now reads at its own
+quantities (it used to split the row names into one-off parts). What the costing changed in the tool, and the effect:
+`docs/pcb/bmw-inverter-review-2026-11-26.md`.
 
 Tool fix made with this costing: a BOM file's transistor / MOSFET (SOT-23, SOT-363, DFN) and transformer rows were typed as
 ICs by `inferComponentType` and priced on the IC range; description words now decide (`tests/pcb-bom-postprocess.test.ts`).

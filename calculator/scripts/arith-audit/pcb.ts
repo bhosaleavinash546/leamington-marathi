@@ -46,11 +46,12 @@ function checkTrue(name: string, cond: boolean, detail = '') {
 }
 
 // ── The volume factors, re-derived from their stated definitions (CLAUDE.md "PCB Image→BOM") ────────────────────
-// Class / named ranges: ~10k reel prices; franchise curve 10k = 1k × 0.85 on the parts bought, flat above 300k;
+// Class / named ranges: ~10k reel prices; franchise curve 10k = 1k × 0.85 on the parts bought, carried to 10M parts (flat
+// above 300k until 26 Nov 2026 — BMW inverter review);
 // below 10k the prototype steps, re-based to 10k, interpolated in log q.
 function tableFactor(partsBought: number): number {
   const q = Math.max(1, partsBought);
-  if (q >= 10_000) return Math.round(Math.pow(Math.min(q, 300_000) / 10_000, Math.log10(0.85)) * 1e5) / 1e5;
+  if (q >= 10_000) return Math.round(Math.pow(Math.min(q, 10_000_000) / 10_000, Math.log10(0.85)) * 1e5) / 1e5;
   const steps: [number, number][] = [[50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0], [2500, 1.55], [5000, 1.28], [10000, 1.12]];
   if (q <= 50) return Math.round(8.0 / 1.12 * 1e5) / 1e5;
   for (let i = 1; i < steps.length; i++) {
@@ -59,8 +60,9 @@ function tableFactor(partsBought: number): number {
   }
   return 1;
 }
-// Catalogue: log-linear between the entry's own 1k / 10k / 100k / 200k / 300k breaks, flat above the last.
-type Cat = { mpn: string; aliases?: string[]; gbp: { q1k: number; q10k: number; q100k: number; q200k?: number; q300k?: number } };
+// Catalogue: log-linear between the entry's own 1k / 10k / 100k / 200k / 300k breaks; above the last, carried along the
+// entry's own slope b (else 0.0706) to the parts bought, capped at 10M.
+type Cat = { mpn: string; aliases?: string[]; gbp: { q1k: number; q10k: number; q100k: number; q200k?: number; q300k?: number }; volumeModel?: { b: number } };
 const CAT: Cat[] = JSON.parse(readFileSync(new URL('../../server/data/pcb-component-catalogue.json', import.meta.url), 'utf8')).parts;
 function catalogueAt(mpn: string, q: number): number | null {
   const e = CAT.find(p => p.mpn === mpn) ?? CAT.find(p => (p.aliases ?? []).includes(mpn));
@@ -68,7 +70,9 @@ function catalogueAt(mpn: string, q: number): number | null {
   const pts: [number, number][] = [[1e3, e.gbp.q1k], [1e4, e.gbp.q10k], [1e5, e.gbp.q100k]];
   if (e.gbp.q200k != null) pts.push([2e5, e.gbp.q200k]);
   if (e.gbp.q300k != null) pts.push([3e5, e.gbp.q300k]);
-  if (q >= pts[pts.length - 1][0]) return Math.round(pts[pts.length - 1][1] * 1e4) / 1e4;
+  const [qMax, pMax] = pts[pts.length - 1];
+  if (q > 300_000 && q > qMax) return Math.round(pMax * Math.pow(Math.min(q, 1e7) / qMax, -(e.volumeModel?.b ?? -Math.log10(0.85))) * 1e6) / 1e6;
+  if (q >= qMax) return Math.round(pMax * 1e4) / 1e4;
   if (q < 1000) return null;   // prototype region of the catalogue: not exercised here
   for (let i = 1; i < pts.length; i++) if (q <= pts[i][0]) {
     const [qa, pa] = pts[i - 1], [qb, pb] = pts[i];

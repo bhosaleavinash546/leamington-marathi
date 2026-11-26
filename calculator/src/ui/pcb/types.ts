@@ -134,7 +134,7 @@ export interface PCBImageAnalysis {
     /** The engineer's production and safety inputs (PCB form; EDU audit, Nov 2026). */
     lotSize?: number; programmeYears?: number; samplingCadence?: string; asilConfirmed?: string;
     /** Operations and component market typed on the PCB form (EDU v6); '' = the tool's own figure. */
-    conformalCoatSides?: number | ''; pressFitConnectors?: number | ''; programmingSec?: number | ''; functionalTestSec?: number | ''; componentMarket?: string;
+    conformalCoatSides?: number | ''; coatedAreaPct?: number | ''; pressFitConnectors?: number | ''; programmingSec?: number | ''; functionalTestSec?: number | ''; componentMarket?: string;
     /** EDU audit quick closes: delivery terms, first-pass yield, contract US$ / £. */
     deliveryTerms?: string; firstPassYield?: number | ''; contractUsdPerGbp?: number | '';
     // EDU audit G-17 (fab specification) and G-07 (soldering method, staking, potting) — the engineer's entries.
@@ -205,7 +205,10 @@ export interface PCBImageAnalysis {
   /** The build country's component market, when the engineer chose it (EDU v6). */
   /** A typed contract US$ / £ and its factor (EDU audit G-19). */
   _contractFx?: { usdPerGbp: number; factor: number } | null;
-  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number } | null;
+  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtMarket: number;
+    linesAtFactor?: number; factorSource?: string; factorBand?: { lowGBP: number; highGBP: number } | null } | null;
+  /** The approved volume rule (BMW inverter review): components carried past 300k parts, and held flat at 300k. */
+  _volumeRule?: { capParts: number; linesBeyond300k: number; componentsGBP: number; componentsFlat300kGBP: number; basis: string } | null;
   _quantityBand?: { parts: number; partsLow: number; partsHigh: number; gbpLow: number; gbpHigh: number; emptyFootprints: number; note: string };
   /** The order quantity the server costed at (the page field can change afterwards). */
   _orderQty?: number;

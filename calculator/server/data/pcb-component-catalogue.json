@@ -1,5 +1,5 @@
 {
- "asOf": "2026-11-23",
+ "asOf": "2026-11-26",
  "fxUsdToGbp": 0.78,
  "currency": "GBP",
  "basis": "unit price, GBP, AEC-Q grade where automotive. Researched entries: 1k = median of franchised-distributor prices near 1,000; 10k/100k/200k/300k derived along the part's own break slope (else the franchise curve 10k = 1k × 0.85). Estimates are labelled.",
@@ -14139,15 +14139,15 @@
    "pkg": "SSOP-32",
    "aecq": true,
    "gbp": {
-    "q1k": 4.759,
-    "q10k": 4.0452,
-    "q100k": 3.4384,
-    "q200k": 3.2742,
-    "q300k": 3.1819
+    "q1k": 3.883,
+    "q10k": 3.3004,
+    "q100k": 2.8052,
+    "q200k": 2.6712,
+    "q300k": 2.5959
    },
    "confidence": "distributor",
-   "source": "Digi-Key $6 @2,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
+   "source": "Digi-Key $6 @2,000; TI.com $5.141 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £3.883 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
    "ecuRoles": [
     "traction_inverter"
    ],
@@ -14160,13 +14160,24 @@
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588",
      "date": "2026-10-06",
      "gbp": 4.5318
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 5.141,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/UCC5880-Q1/part-details/UCC5880QDFCRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 3.883
     }
    ],
    "volumeModel": {
     "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £3.883 1,000+, below the distributors — the lower price taken at each break (rule 10)",
     "derivedAbove": 2000
-   }
+   },
+   "makerPrice": "TI.com"
   },
   {
    "mpn": "UCC21520AQDWRQ1",
@@ -14832,15 +14843,15 @@
    "pkg": "SOIC-8",
    "aecq": true,
    "gbp": {
-    "q1k": 0.3652,
-    "q10k": 0.3104,
-    "q100k": 0.2639,
-    "q200k": 0.2513,
-    "q300k": 0.2442
+    "q1k": 0.3489,
+    "q10k": 0.2966,
+    "q100k": 0.2521,
+    "q200k": 0.2401,
+    "q300k": 0.2333
    },
    "confidence": "distributor",
-   "source": "Digi-Key $0.4316 @5,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
+   "source": "Digi-Key $0.4316 @5,000; TI.com $0.462 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.3489 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
    "ecuRoles": [
     "BCM",
     "gateway",
@@ -14856,13 +14867,24 @@
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088",
      "date": "2026-10-06",
      "gbp": 0.326
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.462,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TCAN1057A-Q1/part-details/TCAN1057AVDRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 0.3489
     }
    ],
    "volumeModel": {
     "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.3489 1,000+, below the distributors — the lower price taken at each break (rule 10)",
     "derivedAbove": 5000
-   }
+   },
+   "makerPrice": "TI.com"
   },
   {
    "mpn": "MCP2518FDT-E/SL",
@@ -84429,6 +84451,868 @@
     "basis": "slope from the part's own breaks (1 pair of the same full packaging); 10k–300k follow the published reel / tray / tube ladder, derived beyond its largest row",
     "derivedAbove": 4000
    }
+  },
+  {
+   "mpn": "SAK-TC389QP-160F300S AE",
+   "family": "SAK-TC389QP-160F300S AE",
+   "mfr": "Infineon",
+   "desc": "AURIX TC389 32-bit TriCore lockstep MCU, AE step",
+   "category": "ic_bga",
+   "pkg": "LFBGA-516 (25 × 25 mm)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 23.771,
+    "q10k": 21.9718,
+    "q100k": 20.3087,
+    "q200k": 19.8331,
+    "q300k": 19.5601
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code TC389QP160F300SAEKXUMA2 (the listed code was not found at a distributor). Digi-Key $30.30208 @500; Digi-Key $32.0159 @100; Digi-Key $34.1518 @500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0342, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 30.30208,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832",
+     "date": "2026-11-26",
+     "gbp": 22.8872
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 32.0159,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832",
+     "date": "2026-11-26",
+     "gbp": 24.1816
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 34.1518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC389QP160F300SAELXUMA2/20841847",
+     "date": "2026-11-26",
+     "gbp": 25.7949
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0342,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 500
+   },
+   "aliases": [
+    "TC389QP160F300SAEKXUMA2"
+   ]
+  },
+  {
+   "mpn": "74HC4075PW",
+   "family": "74HC4075PW",
+   "mfr": "Nexperia",
+   "desc": "Triple 3-input OR gate, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1639,
+    "q10k": 0.1394,
+    "q100k": 0.1185,
+    "q200k": 0.1128,
+    "q300k": 0.1096
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code 74HC4075PW-Q100J (the listed code was not found at a distributor). Digi-Key $0.23419 @25,000; Digi-Key $0.20347 @2,500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 25000,
+     "price": 0.23419,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW-Q100J",
+     "date": "2026-11-26",
+     "gbp": 0.1769
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.20347,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW",
+     "date": "2026-11-26",
+     "gbp": 0.1537
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 25000
+   },
+   "aliases": [
+    "74HC4075PW-Q100J"
+   ]
+  },
+  {
+   "mpn": "PJQ4548P-AU",
+   "family": "PJQ4548P-AU",
+   "mfr": "PANJIT",
+   "desc": "Automotive N-channel MOSFET, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "DFN3333-8",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1702,
+    "q10k": 0.1447,
+    "q100k": 0.123,
+    "q200k": 0.1171,
+    "q300k": 0.1138
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code PJQ4548P-AU_R2_002A1 (the listed code was not found at a distributor). Digi-Key $0.18619 @15,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.18619,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU",
+     "date": "2026-11-26",
+     "gbp": 0.1406
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 15000
+   },
+   "aliases": [
+    "PJQ4548P-AU_R2_002A1"
+   ]
+  },
+  {
+   "mpn": "PJQ5948-AU",
+   "family": "PJQ5948-AU",
+   "mfr": "PANJIT",
+   "desc": "Automotive dual N-channel MOSFET, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "DFN5060B-8",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.2916,
+    "q10k": 0.2478,
+    "q100k": 0.2107,
+    "q200k": 0.2006,
+    "q300k": 0.195
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code PJQ5948-AU_R2_002A1 (the listed code was not found at a distributor). Digi-Key $0.34019 @6,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.34019,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU",
+     "date": "2026-11-26",
+     "gbp": 0.2569
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 6000
+   },
+   "aliases": [
+    "PJQ5948-AU_R2_002A1"
+   ]
+  },
+  {
+   "mpn": "A768KE107M1VLAS036",
+   "family": "A768KE107M1VLAS036",
+   "mfr": "KEMET",
+   "desc": "Polymer aluminium capacitor 100 uF 35 V, SMD can",
+   "category": "passive_1206",
+   "pkg": "SMD can 8 mm",
+   "aecq": false,
+   "gbp": {
+    "q1k": 0.1706,
+    "q10k": 0.145,
+    "q100k": 0.1233,
+    "q200k": 0.1174,
+    "q300k": 0.1141
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.19198 @10,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.19198,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036",
+     "date": "2026-11-26",
+     "gbp": 0.145
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
+   }
+  },
+  {
+   "mpn": "SMBJ15A",
+   "family": "SMBJ15A",
+   "mfr": "Vishay",
+   "desc": "TVS diode 600 W 15 V, automotive (HE3)",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1453,
+    "q10k": 0.1023,
+    "q100k": 0.072,
+    "q200k": 0.0648,
+    "q300k": 0.0609
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code SMBJ15AHE3_B/I (the listed code was not found at a distributor). Digi-Key $0.17956 @9,600; Digi-Key $0.22401 @2,250; Digi-Key $0.1077 @9,600; Digi-Key $0.11603 @2,250 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1525, slope from the part's own breaks (3 pairs). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9600,
+     "price": 0.17956,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I",
+     "date": "2026-11-26",
+     "gbp": 0.1356
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.22401,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/H",
+     "date": "2026-11-26",
+     "gbp": 0.1692
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9600,
+     "price": 0.1077,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/5B",
+     "date": "2026-11-26",
+     "gbp": 0.0813
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.11603,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15A-E3/52",
+     "date": "2026-11-26",
+     "gbp": 0.0876
+    }
+   ],
+   "volumeModel": {
+    "b": 0.1525,
+    "basis": "slope from the part's own breaks (3 pairs)",
+    "derivedAbove": 9600
+   },
+   "aliases": [
+    "SMBJ15AHE3_B/I"
+   ]
+  },
+  {
+   "mpn": "TPSMC33A",
+   "family": "TPSMC33A",
+   "mfr": "Littelfuse",
+   "desc": "TVS diode 1500 W 33 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AB (SMC)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.2962,
+    "q10k": 0.2067,
+    "q100k": 0.1443,
+    "q200k": 0.1295,
+    "q300k": 0.1215
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.27825 @9,000; Digi-Key $0.32248 @3,500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1562, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.27825,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A",
+     "date": "2026-11-26",
+     "gbp": 0.2102
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 0.32248,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TPSMC33AHE3",
+     "date": "2026-11-26",
+     "gbp": 0.2436
+    }
+   ],
+   "volumeModel": {
+    "b": 0.1562,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 9000
+   }
+  },
+  {
+   "mpn": "VSSAF3L45",
+   "family": "VSSAF3L45",
+   "mfr": "Vishay",
+   "desc": "Schottky rectifier 3 A 45 V, automotive (HM3)",
+   "category": "fuse_tvs",
+   "pkg": "DO-221AC SlimSMA",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1769,
+    "q10k": 0.1381,
+    "q100k": 0.1078,
+    "q200k": 0.1,
+    "q300k": 0.0957
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code VSSAF3L45HM3_A/I (the listed code was not found at a distributor). Digi-Key $0.15663 @42,000; Digi-Key $0.20468 @3,500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1077, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 42000,
+     "price": 0.15663,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I",
+     "date": "2026-11-26",
+     "gbp": 0.1183
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3500,
+     "price": 0.20468,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45",
+     "date": "2026-11-26",
+     "gbp": 0.1546
+    }
+   ],
+   "volumeModel": {
+    "b": 0.1077,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 42000
+   },
+   "aliases": [
+    "VSSAF3L45HM3_A/I"
+   ]
+  },
+  {
+   "mpn": "SZ1SMA5936BT3G",
+   "family": "SZ1SMA5936BT3G",
+   "mfr": "onsemi",
+   "desc": "Zener diode 30 V 1.5 W, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AC (SMA)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.2224,
+    "q10k": 0.1891,
+    "q100k": 0.1607,
+    "q200k": 0.153,
+    "q300k": 0.1487
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.25033 @10,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.25033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G",
+     "date": "2026-11-26",
+     "gbp": 0.1891
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
+   }
+  },
+  {
+   "mpn": "SZ1SMA5934BT3G",
+   "family": "SZ1SMA5934BT3G",
+   "mfr": "onsemi",
+   "desc": "Zener diode 24 V 1.5 W, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AC (SMA)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.2224,
+    "q10k": 0.1891,
+    "q100k": 0.1607,
+    "q200k": 0.153,
+    "q300k": 0.1487
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.25033 @10,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.25033,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G",
+     "date": "2026-11-26",
+     "gbp": 0.1891
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
+   }
+  },
+  {
+   "mpn": "STTH112UFY",
+   "family": "STTH112UFY",
+   "mfr": "STMicroelectronics",
+   "desc": "Ultrafast rectifier 1 A 1200 V, automotive",
+   "category": "fuse_tvs",
+   "pkg": "DO-221AA SMBflat",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.2208,
+    "q10k": 0.1877,
+    "q100k": 0.1596,
+    "q200k": 0.1519,
+    "q300k": 0.1477
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.24152 @15,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.24152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY",
+     "date": "2026-11-26",
+     "gbp": 0.1824
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 15000
+   }
+  },
+  {
+   "mpn": "IHLP4040DZER220M",
+   "family": "IHLP4040DZER220M",
+   "mfr": "Vishay Dale",
+   "desc": "Power inductor 22 uH, IHLP 4040, automotive",
+   "category": "passive_1206",
+   "pkg": "IHLP 4040 (10.8 x 10.2 mm)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.685,
+    "q10k": 0.4526,
+    "q100k": 0.299,
+    "q200k": 0.264,
+    "q300k": 0.2454
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code IHLP4040DZER220M1A (the listed code was not found at a distributor). Digi-Key $0.64134 @5,000; Digi-Key $0.65749 @5,000; Digi-Key $0.76908 @2,500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (2 pairs). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.64134,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A",
+     "date": "2026-11-26",
+     "gbp": 0.4844
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.65749,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M5A",
+     "date": "2026-11-26",
+     "gbp": 0.4966
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 0.76908,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M8A",
+     "date": "2026-11-26",
+     "gbp": 0.5809
+    }
+   ],
+   "volumeModel": {
+    "b": 0.18,
+    "basis": "slope from the part's own breaks (2 pairs)",
+    "derivedAbove": 5000
+   },
+   "aliases": [
+    "IHLP4040DZER220M1A"
+   ]
+  },
+  {
+   "mpn": "B82462G4332M000",
+   "family": "B82462G4332M000",
+   "mfr": "TDK",
+   "desc": "SMD power inductor 3.3 uH, 6.3 x 6.3 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD 6.3 x 6.3 mm",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.5839,
+    "q10k": 0.4963,
+    "q100k": 0.4219,
+    "q200k": 0.4017,
+    "q300k": 0.3904
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.64688 @12,500 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.64688,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000",
+     "date": "2026-11-26",
+     "gbp": 0.4886
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 12500
+   }
+  },
+  {
+   "mpn": "PWR221T-30",
+   "family": "PWR221T-30",
+   "mfr": "Bourns",
+   "desc": "Power resistor 30 W, TO-220 full pack (100 ohm read)",
+   "category": "through_hole",
+   "pkg": "TO-220 full pack (through-hole)",
+   "aecq": false,
+   "gbp": {
+    "q1k": 2.2922,
+    "q10k": 1.9484,
+    "q100k": 1.6561,
+    "q200k": 1.577,
+    "q300k": 1.5325
+   },
+   "confidence": "distributor",
+   "source": "Priced on the sibling orderable code PWR221T-30-1000F (the listed code was not found at a distributor). Digi-Key $3.03479 @1,000 (search of distributor listings, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.03479,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F",
+     "date": "2026-11-26",
+     "gbp": 2.2922
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   },
+   "aliases": [
+    "PWR221T-30-1000F"
+   ]
+  },
+  {
+   "mpn": "UCC27282QDRCRQ1",
+   "family": "UCC27282-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "120 V half-bridge gate driver, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-10 (DRC)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 1.4426,
+    "q10k": 1.2262,
+    "q100k": 1.0422,
+    "q200k": 0.9924,
+    "q300k": 0.9644
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $2.05462 @3,000; TI.com $1.91 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £1.4426 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.05462,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1",
+     "date": "2026-11-26",
+     "gbp": 1.5519
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.91,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/UCC27282-Q1/part-details/UCC27282QDRCRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 1.4426
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £1.4426 1,000+, below the distributors — the lower price taken at each break (rule 10)",
+    "derivedAbove": 3000
+   },
+   "makerPrice": "TI.com"
+  },
+  {
+   "mpn": "TPS7B8401QWDRBRQ1",
+   "family": "TPS7B84-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40 V 150 mA LDO, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-8 (DRB)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.71,
+    "q10k": 0.6035,
+    "q100k": 0.513,
+    "q200k": 0.4885,
+    "q300k": 0.4747
+   },
+   "confidence": "distributor",
+   "source": "TI.com $0.94 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no distributor listing: 10k = 1k × 0.85) from TI.com, the maker's own store, 1,000+ price only. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.94,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TPS7B84-Q1/part-details/TPS7B8401QWDRBRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 0.71
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no distributor listing: 10k = 1k × 0.85) from TI.com, the maker's own store, 1,000+ price only",
+    "derivedAbove": 1000
+   },
+   "makerPrice": "TI.com"
+  },
+  {
+   "mpn": "LM74202QPWPRQ1",
+   "family": "LM74202-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Ideal-diode / eFuse controller, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16 (PWP)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.9645,
+    "q10k": 0.8198,
+    "q100k": 0.6968,
+    "q200k": 0.6635,
+    "q300k": 0.6448
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $1.77678 @4,000; TI.com $1.277 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.9645 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.77678,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541",
+     "date": "2026-11-26",
+     "gbp": 1.342
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.277,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/LM74202-Q1/part-details/LM74202QPWPRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 0.9645
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.9645 1,000+, below the distributors — the lower price taken at each break (rule 10)",
+    "derivedAbove": 4000
+   },
+   "makerPrice": "TI.com"
+  },
+  {
+   "mpn": "TLV9004QPWRQ1",
+   "family": "TLV9004-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Quad 1 MHz RRIO op-amp, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14 (PW)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.3882,
+    "q10k": 0.33,
+    "q100k": 0.2805,
+    "q200k": 0.2671,
+    "q300k": 0.2595
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.54288 @15,000; TI.com $0.514 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.3882 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 15000,
+     "price": 0.54288,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1",
+     "date": "2026-11-26",
+     "gbp": 0.41
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 0.514,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/TLV9004-Q1/part-details/TLV9004QPWRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 0.3882
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.3882 1,000+, below the distributors — the lower price taken at each break (rule 10)",
+    "derivedAbove": 15000
+   },
+   "makerPrice": "TI.com"
+  },
+  {
+   "mpn": "AMC1211AQDWVRQ1",
+   "family": "AMC1211-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 2.3112,
+    "q10k": 1.9645,
+    "q100k": 1.6699,
+    "q200k": 1.5901,
+    "q300k": 1.5453
+   },
+   "confidence": "distributor",
+   "source": "TI.com $3.06 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no distributor listing: 10k = 1k × 0.85) from TI.com, the maker's own store, 1,000+ price only. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 3.06,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/AMC1211-Q1/part-details/AMC1211AQDWVRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 2.3112
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no distributor listing: 10k = 1k × 0.85) from TI.com, the maker's own store, 1,000+ price only",
+    "derivedAbove": 1000
+   },
+   "makerPrice": "TI.com"
+  },
+  {
+   "mpn": "LM5155QDSSRQ1",
+   "family": "LM5155-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Boost / SEPIC / flyback controller, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "WSON-12 (DSS)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.8981,
+    "q10k": 0.7633,
+    "q100k": 0.6488,
+    "q200k": 0.6178,
+    "q300k": 0.6004
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $1.63914 @6,000; TI.com $1.189 @1,000 (read on the distributor's product page; TI.com read on the maker's own store page, 2026-11-26). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.8981 1,000+, below the distributors — the lower price taken at each break (rule 10). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-11-26",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.63914,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1",
+     "date": "2026-11-26",
+     "gbp": 1.238
+    },
+    {
+     "distributor": "TI.com",
+     "qty": 1000,
+     "price": 1.189,
+     "currency": "USD",
+     "url": "https://www.ti.com/product/LM5155-Q1/part-details/LM5155QDSSRQ1",
+     "date": "2026-11-26",
+     "evidence": "page-read",
+     "gbp": 0.8981
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; TI.com (the maker's own store) sells at £0.8981 1,000+, below the distributors — the lower price taken at each break (rule 10)",
+    "derivedAbove": 6000
+   },
+   "makerPrice": "TI.com"
   }
  ]
 }

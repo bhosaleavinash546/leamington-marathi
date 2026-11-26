@@ -50,7 +50,8 @@ export interface PcbaAnalysisLike {
   _automotiveNRE?: { ppapCost: number; fmeaCost: number; dvprCost: number; asilAuditCost: number; totalNRE: number; asilLevel: string };
   _orderQty?: number;
   /** Stage 4's ranked dearest lines (server/utils/pcb-verify-list.ts — EDU v6). */
-  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number } | null;
+  _componentMarket?: { market: string; source: string; componentsGBP: number; globalComponentsGBP: number; linesAtFactor?: number; factorBand?: { lowGBP: number; highGBP: number } | null } | null;
+  _volumeRule?: { linesBeyond300k: number; componentsGBP: number; componentsFlat300kGBP: number } | null;
   _quantityBand?: { parts: number; partsLow: number; partsHigh: number; note: string };
   _contractFx?: { usdPerGbp: number; factor: number } | null;
   _verifyList?: Array<{ rank: number; refDes: string; description: string; partNumber: string; qty: number; lineTotalGBP: number; share: number; status: string; why: string; customerSupplied: boolean }>;
@@ -102,7 +103,9 @@ export interface PcbaReport {
   /** Fab options set but not priced (G-17): inside the board price, or with no published price. */
   fabOptionNotes: { included: string[]; notCosted: string[] } | null;
   /** Components at the build country's market, when chosen (EDU v6). */
-  componentMarket: { market: string; source: string; components: number; global: number } | null;
+  componentMarket: { market: string; source: string; components: number; global: number; factorLines: number; factorBand: { low: number; high: number } | null } | null;
+  /** Components carried past 300k parts v held flat at 300k (BMW inverter review). */
+  volumeRule: { lines: number; components: number; flat300k: number } | null;
   /** The board with the automotive programme NRE spread over the programme (EDU v6). */
   fullEconomic: { amount: number; nrePerBoard: number } | null;
   /** Operations beyond placement and inspection, inside assembly (EDU v6), £ a board. */
@@ -268,7 +271,10 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const fullEconomic = num(fe.fullEconomicPerBoard) > 0 ? { amount: num(fe.fullEconomicPerBoard), nrePerBoard: num(fe.nrePerBoard) } : null;
   const operations = num((b as Record<string, unknown>).operations);
   const cm = a._componentMarket;
-  const componentMarket = cm ? { market: cm.market === 'cn' ? 'China' : cm.market, source: cm.source, components: cm.componentsGBP, global: cm.globalComponentsGBP } : null;
+  const componentMarket = cm ? { market: cm.market === 'cn' ? 'China' : cm.market, source: cm.source, components: cm.componentsGBP, global: cm.globalComponentsGBP,
+    factorLines: num(cm.linesAtFactor), factorBand: cm.factorBand ? { low: cm.factorBand.lowGBP, high: cm.factorBand.highGBP } : null } : null;
+  const vr = a._volumeRule;
+  const volumeRule = vr && vr.linesBeyond300k > 0 ? { lines: vr.linesBeyond300k, components: vr.componentsGBP, flat300k: vr.componentsFlat300kGBP } : null;
   const exw = (bd as { deliveryTerms?: string }).deliveryTerms === 'EXW';
   const termsLabel = exw ? 'ex-works at the factory gate (no freight, no UK duty)' : 'delivered UK, duty paid';
   const cbx = a._confidenceBand;
@@ -334,7 +340,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       { label: 'Freight & duty', amount: bd.logisticsPerBoard, pct: bd.logisticsPerBoard / bd.totalPerBoard * 100 },
     ],
     stack, bom, bomPieces, bomTotal, componentsAtCost, sourcingFactor, bomReconciliation, sourceKey,
-    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, termsLabel, ranges, infoRequest, contractFx, fabOptionNotes, safety, nre, nreTotal: n?.totalNRE ?? 0,
+    boardRows, countries, confidence, verifyFirst, emsInvoice, quantity, fullEconomic, operations, componentMarket, volumeRule, termsLabel, ranges, infoRequest, contractFx, fabOptionNotes, safety, nre, nreTotal: n?.totalNRE ?? 0,
     drivers, warnings,
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
     // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM

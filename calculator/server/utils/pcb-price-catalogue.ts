@@ -23,6 +23,8 @@ export interface CatalogueEntry {
   observations?: Array<{ distributor: string; qty: number; price: number; currency: string; url: string; date: string; gbp: number }>;
   /** How the volume breaks were derived. */
   volumeModel?: { b: number; basis: string; derivedAbove: number };
+  /** The maker's own store (TI.com) set at least one break: a maker price, not a distributor price (merge rule 10). */
+  makerPrice?: string;
 }
 interface CatalogueFile { asOf: string; fxUsdToGbp: number; currency: string; basis: string; parts: CatalogueEntry[] }
 
@@ -148,8 +150,25 @@ export function cataloguePrice(mpn: string): number | null {
   return catalogueEntry(mpn)?.gbp.q10k ?? null;
 }
 
+/** The franchise curve the catalogue derives along when a part has no slope of its own (10k = 1k × 0.85). */
+export const FRANCHISE_B = -Math.log(0.85) / Math.log(10);
+/** The largest break the catalogue stores. */
+export const TOP_STORED_BREAK = 300_000;
+/**
+ * Parts bought a year beyond which no price moves (BMW inverter review, 26 Nov 2026 — approved rule change). A line is
+ * carried to the parts bought along its own slope up to this cap: at 400,000 boards a part used six times a board is a
+ * 2.4 M buy. Everything above 300k is DERIVED, never a quote; the flat-at-300k figure is reported beside it.
+ */
+export const VOLUME_CAP_PARTS = 10_000_000;
+/** Multiplier for a price at `from` parts carried to `q` parts along slope b (1 at or below `from`; capped at VOLUME_CAP_PARTS). */
+export function carryBeyond(q: number, b: number = FRANCHISE_B, from: number = TOP_STORED_BREAK): number {
+  if (!(q > from)) return 1;
+  return Math.pow(Math.min(q, VOLUME_CAP_PARTS) / from, -b);
+}
+
 /** Catalogue unit price at an order quantity: log-linear between the 1k / 10k /
- *  100k breaks, the 1k price below 1k scaled by the prototype curve, flat above 100k. */
+ *  100k / 200k / 300k breaks, the 1k price below 1k scaled by the prototype curve, and above the largest stored break
+ *  carried along the part's own slope to the parts bought (capped at VOLUME_CAP_PARTS — derived, not quoted). */
 export function cataloguePriceAt(mpn: string, qty: number): number | null {
   const e = catalogueEntry(mpn);
   if (!e) return null;
@@ -163,14 +182,16 @@ export function cataloguePriceAt(mpn: string, qty: number): number | null {
   let p: number;
   // Annual programme volumes 100k–300k have their own breaks (derived along the part's
   // slope); flat above the last break rather than extrapolated further.
-  if (q300k != null && q >= 300000) p = q300k;
+  const b = e.volumeModel?.b ?? FRANCHISE_B;
+  if (q300k != null && q >= 300000) p = q300k * carryBeyond(q, b);
   else if (q200k != null && q300k != null && q >= 200000) p = lerp(200000, q200k, 300000, q300k);
-  else if (q200k != null && q >= 100000) p = lerp(100000, q100k, 200000, q200k);
-  else if (q >= 100000) p = q100k;
+  else if (q200k != null && q >= 100000) p = lerp(100000, q100k, 200000, q200k) * carryBeyond(q, b, 200000);
+  else if (q >= 100000) p = q100k * carryBeyond(q, b, 100000);
   else if (q >= 10000) p = lerp(10000, q10k, 100000, q100k);
   else if (q >= 1000) p = lerp(1000, q1k, 10000, q10k);
   else p = q1k * volumeScaleFrom10k(q) / volumeScaleFrom10k(1000);
-  return Math.round(p * 10000) / 10000;
+  // Beyond 300k a chip resistor is a few hundredths of a penny: four decimals would round it away.
+  return q > 300000 ? Math.round(p * 1e6) / 1e6 : Math.round(p * 10000) / 10000;
 }
 
 /**

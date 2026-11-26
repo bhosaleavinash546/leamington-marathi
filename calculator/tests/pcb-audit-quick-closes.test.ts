@@ -63,7 +63,9 @@ describe('G-16 / M-06 the two ranges, G-19 contract FX (Stage 4 on the EDU board
     expect(cg.high).toBe(g.s4.selectedCountryBreakdown!.totalPerBoard);
     expect(cl.items[0].label).toMatch(/global distributor/);
     expect(cl.high).toBeGreaterThan(l.s4.selectedCountryBreakdown!.totalPerBoard);
-    expect(g.s4.confidenceBand!.totalLow).toBeLessThan(cg.low);   // the judgement corridor is the wider one
+    // With the China-market factor on lines with no China price (BMW inverter review, 26 Nov 2026) the China market sits
+    // below the judgement corridor's low on this board: the corridor is no longer the wider range.
+    expect(cg.low).toBeLessThan(g.s4.confidenceBand!.totalLow);
   }, 90_000);
   it('a contract US$ / £ re-prices catalogue and class lines; the engineer\'s line keeps its price', async () => {
     const g = await run(), f = await run({ contractUsdPerGbp: 1.25 });

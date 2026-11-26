@@ -41,6 +41,7 @@ export function attachPcbPayload(target: PCBImageAnalysis, data: Payload, fallba
   set('_verifyList', d.verifyList);
   set('_quantityBand', d.quantityBand);
   set('_componentMarket', d.componentMarket);
+  set('_volumeRule', d.volumeRule);
   set('_contractFx', d.contractFx);
   set('_orderQty', d.orderQty);
   target._costingFailed = d.costingFailed === true;

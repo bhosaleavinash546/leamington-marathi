@@ -25,6 +25,8 @@ export const FAB_FIELDS: Array<{ id: string; key: string; kind: 'num' | 'text' |
   { id: 'pcbf-asil', key: 'asilConfirmed', kind: 'text' },
   // Operations and the component market (EDU v6): blank = the tool's own figure (read off the BOM, or its estimate).
   { id: 'pcbf-coat-sides', key: 'conformalCoatSides', kind: 'num' },
+  // BMW inverter review (26 Nov 2026): a partly (selectively) coated board pays for the coated share of a side.
+  { id: 'pcbf-coat-pct', key: 'coatedAreaPct', kind: 'num' },
   { id: 'pcbf-press-fit', key: 'pressFitConnectors', kind: 'num' },
   { id: 'pcbf-prog-sec', key: 'programmingSec', kind: 'num' },
   { id: 'pcbf-fct-sec', key: 'functionalTestSec', kind: 'num' },
@@ -84,7 +86,7 @@ export function editedFields(snapshot: Record<string, string>, doc: Document = d
  * A quality grade picks the costing: an automotive grade costs the board as automotive.
  */
 /** Number fields whose blank means "the tool's own figure", not 0 (EDU v6 operations). */
-const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'pressFitConnectors', 'programmingSec', 'functionalTestSec', 'firstPassYield', 'contractUsdPerGbp',
+const AUTO_WHEN_BLANK = new Set(['conformalCoatSides', 'coatedAreaPct', 'pressFitConnectors', 'programmingSec', 'functionalTestSec', 'firstPassYield', 'contractUsdPerGbp',
   'boardThicknessMm', 'enigGoldUin', 'impedanceTolPct', 'stakingDots', 'pottingGrams']);
 
 export function boardSpecPatch(edited: string[], doc: Document = document): { spec: Record<string, unknown>; domain?: string; notes: string[] } {

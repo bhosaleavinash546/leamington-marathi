@@ -161,11 +161,12 @@ describe('F6 / F7 / F8 — volume is continuous and the curve agrees with a re-r
     expect(Math.abs(a.total - b.total) / a.total).toBeLessThan(0.001);   // was −4.2 %
     for (const q of [9_999, 99_999]) expect(Math.abs(materialBurdenFor(q) - materialBurdenFor(q + 2))).toBeLessThan(0.0005);
   });
-  it('table prices fall continuously with parts bought, flat above 300k, 1.00 at the 10k basis', () => {
+  it('table prices fall continuously with parts bought up to 10M (flat above 300k until 26 Nov 2026), 1.00 at the 10k basis', () => {
     expect(getVolumeMultiplier(10_000)).toBe(1);
     expect(getVolumeMultiplier(100_000)).toBeCloseTo(0.85, 3);              // the catalogue's franchise curve
     expect(getVolumeMultiplier(300_000)).toBeLessThan(getVolumeMultiplier(200_000));
-    expect(getVolumeMultiplier(3_000_000)).toBe(getVolumeMultiplier(300_000));
+    expect(getVolumeMultiplier(3_000_000)).toBeCloseTo(getVolumeMultiplier(300_000) * Math.pow(10, -0.0706), 4);
+    expect(getVolumeMultiplier(50_000_000)).toBe(getVolumeMultiplier(10_000_000));
     expect(getVolumeMultiplier(1_000)).toBeGreaterThan(getVolumeMultiplier(5_000));
   });
   it('the volume curve point at 100k equals a run at 100k, whatever volume was analysed', async () => {

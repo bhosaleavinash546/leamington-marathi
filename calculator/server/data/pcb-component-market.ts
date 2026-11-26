@@ -46,3 +46,30 @@ export function componentMarketFor(boardSpec: Record<string, unknown>, country: 
   return DATA?.markets[country] ? country : undefined;
 }
 export const hasComponentMarket = (country: string) => Boolean(DATA?.markets[country]);
+
+// ── Market factor (BMW inverter review, 26 Nov 2026 — approved rule change) ──────────────────────────────────────────
+// A line on a build in a sourced market with NO price of its own there (no market part, no market class row) is priced at
+// the global figure × the measured ratio of that market's own-stock price to the catalogue's price, for parts priced both
+// ways — by group, with the interquartile range as the line's band. Written by scripts/pcb-market-factors.mts from the
+// market file and the catalogue (never by hand): server/data/pcb-market-factors.json.
+export type MarketFactorGroup = 'ic-TI' | 'ic-other' | 'discrete-magnetic-passive';
+export interface MarketFactor { group: MarketFactorGroup; n: number; median: number; q1: number; q3: number }
+const FACTORS_FILE = resolve(dirname(fileURLToPath(import.meta.url)), 'pcb-market-factors.json');
+const FACTORS: { asOf: string; method: string; markets: Record<string, Record<MarketFactorGroup, MarketFactor>> } | null =
+  (() => { try { return JSON.parse(readFileSync(FACTORS_FILE, 'utf8')); } catch { return null; } })();
+export const MARKET_FACTOR_SOURCE = FACTORS ? `${FACTORS.method}, ${FACTORS.asOf}` : '';
+
+/** The factor group of a part: an IC (by its table class) — TI apart, as TI sells at much the same price in China — or a
+ *  discrete / magnetic / passive. */
+export function marketFactorGroup(tableClass: string, maker = '', _mpn = ''): MarketFactorGroup {
+  const ic = /^ic_|^power_module/.test(tableClass);
+  if (!ic) return 'discrete-magnetic-passive';
+  return /texas instruments|\bti\b/i.test(maker) ? 'ic-TI' : 'ic-other';
+}
+
+/** The market's measured factor for a group, or null (no market, or the group has under 5 parts priced both ways). */
+export function marketFactor(market: string | undefined, group: MarketFactorGroup): MarketFactor | null {
+  if (!market || !FACTORS) return null;
+  const f = FACTORS.markets[market]?.[group];
+  return f && f.n >= 5 ? f : null;
+}

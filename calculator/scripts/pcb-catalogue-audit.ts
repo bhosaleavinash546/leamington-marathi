@@ -13,7 +13,7 @@
  *   from a break under 500 units; disputed or non-AEC-Q entries.
  */
 import { readFileSync } from 'node:fs';
-import { priceFromObservations, FRANCHISED, PRICE_HOSTS } from './pcb-catalogue-research-merge.js';
+import { priceFromObservations, FRANCHISED, PRICE_HOSTS, makerOf } from './pcb-catalogue-research-merge.js';
 import { catalogueEntry } from '../server/utils/pcb-price-catalogue.js';
 import { classRange } from '../server/utils/pcb-class-pricing.js';
 import { FX_TO_GBP_TABLE as FX_TO_GBP } from '../src/engine/insights.js'; // the snapshot the catalogue was priced at
@@ -36,8 +36,10 @@ for (const e of cat.parts) {
   const g = e.gbp;
   if (!(g.q1k >= g.q10k && g.q10k >= g.q100k && g.q100k >= (g.q200k ?? 0) && (g.q200k ?? 0) >= (g.q300k ?? 0) && (g.q300k ?? 0) > 0)) errors.push(`${e.mpn}: breaks not monotone ${JSON.stringify(g)}`);
   for (const o of e.observations ?? []) {
-    if (!FRANCHISED.test(o.distributor)) errors.push(`${e.mpn}: non-franchised ${o.distributor}`);
-    if (!PRICE_HOSTS.test(host(o.url))) errors.push(`${e.mpn}: refused host ${host(o.url)}`);
+    // A maker's own store (merge rule 10: seller and host both the maker's) is a source in its own right.
+    const maker = makerOf(o);
+    if (!maker && !FRANCHISED.test(o.distributor)) errors.push(`${e.mpn}: non-franchised ${o.distributor}`);
+    if (!maker && !PRICE_HOSTS.test(host(o.url))) errors.push(`${e.mpn}: refused host ${host(o.url)}`);
     if (o.qty < 100) errors.push(`${e.mpn}: break ${o.qty} < 100`);
     if (FX_TO_GBP[o.currency] == null) errors.push(`${e.mpn}: currency ${o.currency}`);
   }

@@ -14,9 +14,9 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch, packagePinsConflict } from './pcb-price-catalogue.js';
-import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
-import { marketPart } from '../data/pcb-component-market.js';
+import { VOLUME_CAP_PARTS, FRANCHISE_B, carryBeyond, catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch, packagePinsConflict } from './pcb-price-catalogue.js';
+import { tableTypeOf, classRange, classDefaultPrice } from './pcb-class-pricing.js';
+import { marketPart, marketFactor, marketFactorGroup, type MarketFactor } from '../data/pcb-component-market.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -68,6 +68,13 @@ export function reconcileBomWithCatalogue(
       (line as Record<string, unknown>).packageMismatchNote = `Catalogue family entry ${hitEntry.mpn} is a ${hitEntry.pkg} part and this line is ${String(line.pkg)} — not used. `;
       hit = undefined; hitEntry = null;
     }
+    // An EXACT code whose catalogued package states another pin count than the BOM: the code is the part and prices the
+    // line, but the BOM's package is said to be wrong, to check (BMW inverter review: the BOM's "LFBGA-292" on a TC389QP,
+    // every orderable code of which is 516-ball). A package decides placement, X-ray and pad count, so it is listed.
+    if (hit && hitEntry && isExactCatalogueMatch(pn, hitEntry) && packagePinsConflict(String(line.pkg ?? ''), String(hitEntry.pkg ?? ''))) {
+      (line as Record<string, unknown>).packageConflict = { bom: String(line.pkg), catalogue: String(hitEntry.pkg) };
+      (line as Record<string, unknown>).packageMismatchNote = `Your BOM says ${String(line.pkg)}; ${hitEntry.mpn} is catalogued as ${hitEntry.pkg} — check the package (the part number is priced). `;
+    }
     if (hit && IMAGER_RE.test(`${hitEntry?.desc ?? ''} ${hit.description ?? ''}`)) {
       // An imager: the listing is a reference; capUnconfirmedPrices prices the line by the imager volume rule.
       return {
@@ -96,7 +103,7 @@ export function reconcileBomWithCatalogue(
         const e = catalogueEntry(pn);
         const cat = e?.confidence === 'distributor' ? cataloguePriceAt(pn, parts) : null;
         const b = -Math.log(0.85) / Math.log(10);
-        const derived = hit.unitPriceGBP * Math.pow(Math.min(parts, 300_000) / brk, -b);
+        const derived = hit.unitPriceGBP * Math.pow(Math.min(parts, VOLUME_CAP_PARTS) / brk, -b);
         const unit = cat ?? derived;
         hit = { ...hit, unitPriceGBP: unit, priceBreakQty: parts,
           sourceNote: cat != null
@@ -133,6 +140,7 @@ export function reconcileBomWithCatalogue(
         catalogueAsOf: entry?.asOf,
         // The catalogue matched a FAMILY entry, not this exact part — say which part priced it.
         catalogueExact: exact,
+        ...(hit.marketFactor ? { marketFactor: hit.marketFactor } : {}),
         stockQty: hit.stockQty,
         leadTimeWeeks: hit.leadTimeWeeks,
         automotiveGrade: hit.automotiveGrade,
@@ -145,7 +153,7 @@ export function reconcileBomWithCatalogue(
         needsVerification: (!exact && hit.unitPriceGBP * qty >= 0.1) || hit.unitPriceGBP * qty >= 1 && (
           (hit.provider === 'catalogue' && /engineering estimate/.test(hit.sourceNote ?? ''))
           || (hit.provider !== 'catalogue' && (hit.priceBreakQty ?? 0) <= 1 && num(line.partsBought) > 100)),
-        priceNote: `${exact ? '' : `Family price: ${pn} is not catalogued itself — priced as ${hitEntry?.mpn ?? hit.mpn}; confirm the variant. `}${hit.sourceNote ?? (line.priceNote as string | undefined) ?? ''}`,
+        priceNote: `${exact ? String((line as Record<string, unknown>).packageMismatchNote ?? '') : `Family price: ${pn} is not catalogued itself — priced as ${hitEntry?.mpn ?? hit.mpn}; confirm the variant. `}${hit.sourceNote ?? (line.priceNote as string | undefined) ?? ''}`,
       };
     }
 
@@ -199,12 +207,30 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number, marke
     // A named part on a build in a sourced market (EDU v6): its own reel price there, when lower — flat at the reel price
     // (no volume discount is derived beyond it). The franchised figure stays in the note.
     const mp = marketPart(market, e.mpn) ?? marketPart(market, pn);
-    if (mp && mp.gbp < price0) {
+    // The reel price is carried to the parts bought along the franchise curve, capped (BMW inverter review — approved
+    // rule change; it was held flat at the reel price).
+    const mpAt = mp ? mp.gbp * carryBeyond(qty, FRANCHISE_B, mp.reelQty) : Infinity;
+    const mName = market === 'cn' ? 'China' : market;
+    if (mp && mpAt < price0) {
       out.push({
         mpn: pn, description: e.desc, manufacturer: e.mfr,
-        unitPriceGBP: Math.round(mp.gbp * 100000) / 100000, priceBreakQty: mp.reelQty, stockQty: 0, leadTimeWeeks: null,
+        unitPriceGBP: Math.round(mpAt * 1e6) / 1e6, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
         provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn, rawCurrency: 'GBP', rawUnitPrice: mp.gbp,
-        sourceNote: `${market === 'cn' ? 'China' : market} market: ${mp.part} own-stock whole reel (${mp.reelQty.toLocaleString('en-GB')}) £${mp.gbp.toFixed(4)} ex-VAT, read ${mp.date} (${mp.url}) — below the catalogue's £${price0.toFixed(4)} at ${qty.toLocaleString('en-GB')}; held flat at the reel price`,
+        sourceNote: `${mName} market: ${mp.part} own-stock whole reel (${mp.reelQty.toLocaleString('en-GB')}) £${mp.gbp.toFixed(4)} ex-VAT, read ${mp.date} (${mp.url}) — below the catalogue's £${price0.toFixed(4)} at ${qty.toLocaleString('en-GB')}`
+          + (qty > mp.reelQty ? `; DERIVED to ${Math.min(qty, VOLUME_CAP_PARTS).toLocaleString('en-GB')} parts along the franchise curve (10k = 1k × 0.85), not a quote` : ''),
+      });
+      continue;
+    }
+    // No price of its own in the build market: the global price × that market's measured factor for its group, unless the
+    // price is the maker's own store price (a maker sells at one price everywhere) — BMW inverter review, approved rule.
+    const mf = market && !mp && !e.makerPrice && e.confidence === 'distributor' ? marketFactor(market, marketFactorGroup(e.category, e.mfr, e.mpn)) : null;
+    if (mf) {
+      const p = Math.round(price0 * mf.median * 1e6) / 1e6;
+      out.push({
+        mpn: pn, description: e.desc, manufacturer: e.mfr,
+        unitPriceGBP: p, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
+        provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn, rawCurrency: 'GBP', rawUnitPrice: price0, marketFactor: mf,
+        sourceNote: `Catalogue ${e.mpn} £${price0.toFixed(4)} at ${qty.toLocaleString('en-GB')} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}) × ${mf.median} ${mName}-market factor (median ${mName} own-stock ÷ catalogue price of ${mf.n} ${MARKET_FACTOR_LABEL[mf.group]} priced both ways; quartiles ${mf.q1}–${mf.q3}) — no ${mName} price of its own`,
       });
       continue;
     }
@@ -236,6 +262,21 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number, marke
 // FPGA) escapes every confidence-based check. Any unmatched line above this
 // unit price is treated as unverified — capped to its class median AND flagged.
 const HIGH_VALUE_UNMATCHED_GBP = 10;
+
+/** How a market-factor group is named on a price note. */
+export const MARKET_FACTOR_LABEL: Record<string, string> = {
+  'ic-TI': 'automotive TI ICs', 'ic-other': 'automotive ICs (not TI)', 'discrete-magnetic-passive': 'automotive discretes, magnetics and passives',
+};
+/** A tool-priced line (known / class range) on a build in a market with no row of its own: × the market's factor. */
+function withMarketFactor<T extends Record<string, unknown>>(l: T, market: string | undefined, tableClass: string): T {
+  if (!market) return l;
+  const mf = marketFactor(market, marketFactorGroup(tableClass, String(l.manufacturer ?? ''), String(l.partNumber ?? '')));
+  if (!mf) return l;
+  const u = round(num(l.unitPriceGBP) * mf.median, 6);
+  const mName = market === 'cn' ? 'China' : market;
+  return { ...l, unitPriceGBP: u, lineTotalGBP: round(u * num(l.qty, 1), 4), marketFactor: mf as MarketFactor,
+    priceNote: `${String(l.priceNote ?? '')} · × ${mf.median} ${mName}-market factor (median ${mName} own-stock ÷ catalogue price of ${mf.n} ${MARKET_FACTOR_LABEL[mf.group]} priced both ways; quartiles ${mf.q1}–${mf.q3}) — no ${mName} row for this class` };
+}
 
 /** The tool's own stated price range for a part it can name (e.g. an OCR-read
  *  NXP S32R294 → £22–48, ~10k basis). Supplied by the route, which owns the ranges. */
@@ -294,7 +335,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       // model's number alone). The estimate is kept for audit only.
       const inRange = round(range.lo + (range.hi - range.lo) * 0.25, 4);
       if (Math.abs(inRange - unit) > 1e-6) capped++;
-      return {
+      return withMarketFactor({
         ...line,
         aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
         unitPriceGBP: round(inRange, 4),
@@ -305,7 +346,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
         priceNote: `${String(line.packageMismatchNote ?? '')}${range.generic ? 'Part not read; ' : line.bomSource === 'file' || line.bomSource === 'image' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume, priced at its lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''} — confirm with a quote`
           + (line.priceNote ? ` · ${String(line.priceNote)}` : ''),
         needsVerification: true,
-      };
+      }, opts.market, tableTypeOf(String(line.componentType ?? ''), String(line.pkg ?? ''), String(line.description ?? '')));
     }
     // EVERY line without a catalogue or live hit is priced from the tool's own
     // table — the model's estimate never reaches the total on its own. A line
@@ -345,7 +386,9 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     // £0.001 over its ceiling is a rounding, not a caught misread).
     if (lowered && (unit - priced) / unit > 0.10) capped++;
     const lineTotal = round(priced * qty, 4);
-    return {
+    const fromMarketRow = cls.key.includes('@');
+    const done = (l: Record<string, unknown>) => fromMarketRow ? l : withMarketFactor(l, opts.market, cls.key.split('.')[0]);
+    return done({
       ...line,
       aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? (unit > 0 ? round(unit, 4) : undefined),
       unitPriceGBP: round(priced, 5),
@@ -363,7 +406,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       // the table are the best anyone can do without an order, and stay in the
       // priced total instead of flooding "to verify" with £0.37 lines.
       needsVerification: lineTotal >= 1 || unit > HIGH_VALUE_UNMATCHED_GBP,
-    };
+    });
   });
   return { bom: out, capped };
 }

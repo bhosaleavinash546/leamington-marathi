@@ -135,6 +135,46 @@ export function gateBoardEvidence(spec: Record<string, unknown>, boardText: stri
   return out;
 }
 
+/** Body length (mm) of a package named on a BOM line: a body stated in mm ("LFBGA-516 (25 × 25 mm)", "SMD 6x6") wins;
+ *  else the JEDEC body of a common package (SOIC-8 4.9 mm, LQFP-144 20 mm …). Null when the package says neither. */
+const BODY_MM: Array<[RegExp, number]> = [
+  [/\bsoic-?8\b|\bso-?8\b(?!fl)/i, 4.9], [/\bsoic-?14\b/i, 8.65], [/\bsoic-?16\b(?!.*wide)/i, 9.9], [/\bsoic-?16\b.*wide|\bsoic-?16w\b/i, 10.3],
+  [/\btssop-?14\b|\btssop-?16\b|\bhtssop-?16\b/i, 5.0], [/\btssop-?20\b/i, 6.5], [/\blqfp-?100\b|\btqfp-?100\b/i, 14], [/\blqfp-?144\b/i, 20],
+  [/\blqfp-?176\b/i, 24], [/\blqfp-?64\b|\btqfp-?64\b/i, 10],
+];
+export function packageBodyMm(pkg: string): number | null {
+  const p = String(pkg || '');
+  const m = /(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)\s*mm/i.exec(p);
+  if (m) return Math.max(Number(m[1]), Number(m[2]));
+  for (const [re, mm] of BODY_MM) if (re.test(p)) return mm;
+  return null;
+}
+
+/**
+ * Board size scaled off a part in the same photo (BMW inverter review, 26 Nov 2026): the model gives PIXELS only — the
+ * board's width and height and the longest body side of one named part — and the tool takes that part's body in mm from
+ * the BOM / package table (never the model's mm). A measured size (fab data, user, board text) is never replaced.
+ * Returns the warning text, or null when no scale applies. Mutates `spec`.
+ */
+export function scaleBoardFromReference(spec: Record<string, unknown>, bom: Array<Record<string, unknown>>): string | null {
+  const ref = spec.scaleReference as { partRef?: unknown; partPx?: unknown; boardWidthPx?: unknown; boardHeightPx?: unknown } | undefined;
+  if (!ref || String(spec.dimensionsSource ?? '') === 'measured' || spec.dimensionsEvidence) return null;
+  const key = String(ref.partRef ?? '').trim().toUpperCase();
+  const pp = n(ref.partPx), bw = n(ref.boardWidthPx), bh = n(ref.boardHeightPx);
+  if (!key || !(pp > 5) || !(bw > pp) || !(bh > pp)) return null;
+  const line = bom.find(l => String(l.refDes ?? '').trim().toUpperCase() === key || String(l.partNumber ?? '').replace(/\s+/g, '').toUpperCase() === key.replace(/\s+/g, ''));
+  const body = line ? packageBodyMm(`${String(line.pkg ?? '')} ${String(line.description ?? '')}`) : null;
+  if (!line || !body) return null;
+  const w = Math.round(bw / pp * body), h = Math.round(bh / pp * body);
+  const area = w * h / 100;
+  if (area < AREA_MIN_CM2 || area > MEASURED_AREA_MAX_CM2) return null;
+  spec.aiWidthMm = spec.widthMm; spec.aiHeightMm = spec.heightMm;
+  spec.widthMm = w; spec.heightMm = h;
+  spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'photo-scale';
+  spec.dimensionsBasis = `scaled off ${String(line.partNumber || line.refDes)} (${body} mm body, ${Math.round(pp)} px) in the photo: ${Math.round(bw)} × ${Math.round(bh)} px`;
+  return `Board size ${w} × ${h} mm ${String(spec.dimensionsBasis)} — a photo measurement (±5 % or so), not the fab drawing; attach the fab data or type the size to replace it.`;
+}
+
 /**
  * Stabilise the fab-driving fields of a board spec IN PLACE. Returns the same
  * object for convenience. `domain === 'automotive_adas'` nudges laminate to high-Tg.
