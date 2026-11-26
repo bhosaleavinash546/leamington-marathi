@@ -34,3 +34,19 @@ figure img{width:100%;height:auto;display:block;border:1px solid #c9d4df;border-
 figcaption{font-size:7.6pt;color:#4a5868;margin-top:3px;line-height:1.35}
 .figs{grid-template-columns:repeat(4,1fr)}
 a{color:#1a5fa8;text-decoration:none}
+.donuts{display:flex;gap:18px;margin:6px 0 10px;break-inside:avoid}
+.donuts>div{flex:1;min-width:0;border:1px solid #dde3ea;border-radius:6px;padding:8px 10px 6px}
+.donuts h3{margin:0 0 6px}
+.donut{display:flex;align-items:center;gap:12px}
+.donut svg{flex:0 0 auto}
+table.dleg{font-size:8.2pt;margin:0}
+table.dleg td{border-bottom:1px solid #eef1f4;padding:3px 4px}
+table.dleg tr.tot td{font-weight:600;border-top:1px solid #12324f;background:none}
+i.sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.donut{gap:10px}
+table.dleg{width:auto;flex:1}
+table.dleg td{white-space:nowrap;font-size:7.9pt;padding:3px 3px}
+.donuts{gap:10px}
+.donuts>div{padding:8px 8px 6px}
+.donut{gap:8px}
+table.dleg td{font-size:7.4pt;padding:3px 2px}

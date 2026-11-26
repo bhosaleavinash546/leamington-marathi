@@ -70,9 +70,47 @@ def row(cells, cls=''):
     return f"<tr class='{cls}'>{tds}</tr>"
 n_parts = sum(l['qty'] for l in L)
 ELEM = [('Components', comp, '#12324f'), ('EMS material burden (5 %)', burden, '#4f7aa3'), ('Bare board', fab, '#7fa7c9'),
-        ('Assembly, test and coating', assembly, '#c58b2b'), ('Cost of quality', quality, '#a85b4b'), ('Tooling and fixtures ÷ programme', nre_pb, '#7d7d7d')]
+        ('Assembly, test, coating', assembly, '#c58b2b'), ('Cost of quality', quality, '#a85b4b'), ('Tooling and fixtures ÷ programme', nre_pb, '#7d7d7d')]
 bar = ''.join(f"<span style='width:{v / exw * 100:.2f}%;background:{c}' title='{e(k)}'></span>" for k, v, c in ELEM)
 legend = ''.join(f"<span><i style='background:{c}'></i>{e(k)} {v / exw * 100:.1f} %</span>" for k, v, c in ELEM)
+
+# ── Donut charts (inline SVG). Palette: CostVision dataviz default slots blue / aqua / yellow / red — the 4-colour set that
+# passes every check on ALL pairs (worst colour-blind ΔE 10.2); aqua and yellow are below 3:1 on white, so every slice has a
+# legend row with its £ and %. The components donut drills into the blue slice: one blue ramp, darkest = largest.
+import math
+def donut(segs, total, centre, sub, size=132, ring=25):
+    cx = cy = size / 2; r_out = size / 2 - 2; r_in = r_out - ring; a = -math.pi / 2; parts = []
+    for name, v, col, ink in segs:
+        f = v / total; a2 = a + f * 2 * math.pi
+        large = 1 if a2 - a > math.pi else 0
+        p0 = (cx + r_out * math.cos(a), cy + r_out * math.sin(a)); p1 = (cx + r_out * math.cos(a2), cy + r_out * math.sin(a2))
+        p2 = (cx + r_in * math.cos(a2), cy + r_in * math.sin(a2)); p3 = (cx + r_in * math.cos(a), cy + r_in * math.sin(a))
+        d = (f"M{p0[0]:.2f},{p0[1]:.2f} A{r_out},{r_out} 0 {large} 1 {p1[0]:.2f},{p1[1]:.2f} L{p2[0]:.2f},{p2[1]:.2f} "
+             f"A{r_in},{r_in} 0 {large} 0 {p3[0]:.2f},{p3[1]:.2f} Z")
+        parts.append(f"<path d='{d}' fill='{col}' stroke='#ffffff' stroke-width='2' stroke-linejoin='round'><title>{e(name)}: {gbp(v)} ({f * 100:.1f} %)</title></path>")
+        if f >= 0.06:   # direct share label on the slices wide enough to hold it
+            am = (a + a2) / 2; rm = (r_out + r_in) / 2
+            parts.append(f"<text x='{cx + rm * math.cos(am):.1f}' y='{cy + rm * math.sin(am) + 3.5:.1f}' text-anchor='middle' font-size='10' font-weight='600' fill='{ink}'>{f * 100:.0f}%</text>")
+        a = a2
+    parts.append(f"<text x='{cx}' y='{cy - 2}' text-anchor='middle' font-size='14' font-weight='700' fill='#12324f'>{e(centre)}</text>")
+    parts.append(f"<text x='{cx}' y='{cy + 15}' text-anchor='middle' font-size='9' fill='#4a5868'>{e(sub)}</text>")
+    svg = f"<svg viewBox='0 0 {size} {size}' width='{size}' height='{size}' role='img' aria-label='{e(sub)} {e(centre)}'>{''.join(parts)}</svg>"
+    leg = ''.join(f"<tr><td><i class=sw style='background:{col}'></i>{e(name)}</td><td class=n>{gbp(v)}</td><td class=n>{v / total * 100:.1f}%</td></tr>" for name, v, col, _ in segs)
+    return f"<div class=donut>{svg}<table class=dleg>{leg}<tr class=tot><td>Total</td><td class=n>{gbp(total)}</td><td class=n>100%</td></tr></table></div>"
+COST_SEGS = [('Components + EMS burden', comp + burden, '#257de0', '#ffffff'), ('Assembly, test, coating', assembly, '#00b894', '#0b0b0b'),
+             ('Bare board', fab, '#f2a600', '#0b0b0b'), ('Quality and tooling', quality + nre_pb, '#ec4647', '#ffffff')]
+def grp(refs): return sum(l['lineGBP'] for l in L if l['refDes'] in refs)
+ICS = {'U2', 'U3', 'U4, U5', 'U6', 'U7, U8', 'Q1', 'Q small-signal group', 'D small-signal group', 'Zener group', 'D rectifier group', 'TVS SMB group'}
+g_ctrl, g_t1, g_ics = grp({'U1'}), grp({'T1'}), grp(ICS)
+COMP_SEGS = [('Controller (NXP)', g_ctrl, '#0e3d7e', '#ffffff'), ('Passives and magnetics', comp - g_ctrl - g_t1 - g_ics, '#2370cd', '#ffffff'),
+             ('Other ICs, discretes', g_ics, '#6aabf1', '#0b0b0b'), ('Transformer T1', g_t1, '#b6d5f8', '#0b0b0b')]
+COMP_SEGS.sort(key=lambda x: -x[1])
+for (n, v, _, _), (c, ink) in zip(list(COMP_SEGS), [('#0e3d7e', '#ffffff'), ('#2370cd', '#ffffff'), ('#6aabf1', '#0b0b0b'), ('#b6d5f8', '#0b0b0b')]):
+    pass
+COMP_SEGS = [(n, v, c, ink) for (n, v, _, _), (c, ink) in zip(COMP_SEGS, [('#0e3d7e', '#ffffff'), ('#2370cd', '#ffffff'), ('#6aabf1', '#0b0b0b'), ('#b6d5f8', '#0b0b0b')])]
+assert abs(sum(v for _, v, _, _ in COST_SEGS) - exw) < 1e-9 and abs(sum(v for _, v, _, _ in COMP_SEGS) - comp) < 1e-9
+DONUTS = (f"<div class=donuts><div><h3>Ex-works cost — {gbp(exw)} a board</h3>{donut(COST_SEGS, exw, gbp(exw), 'a board')}</div>"
+          f"<div><h3>Components — {gbp(comp)} a board</h3>{donut(COMP_SEGS, comp, gbp(comp), 'a board')}</div></div>")
 summ = ''.join(row([e(k), (gbp(v), 'n'), (cny(v), 'n'), (f"{v / exw * 100:.1f} %", 'n')]) for k, v, _ in ELEM)
 summ += row(['<b>Ex-works China (built, tested, coated, packed)</b>', (f"<b>{gbp(exw)}</b>", 'n'), (f"<b>{cny(exw)}</b>", 'n'), ('100.0 %', 'n')], 'tot')
 summ += row(['Sea freight to the UK', (gbp(freight), 'n'), (cny(freight), 'n'), ('', 'n')]) + row(['UK import duty (3.7 %, HS line to confirm)', (gbp(duty), 'n'), (cny(duty), 'n'), ('', 'n')])
@@ -155,7 +193,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 </div>
 
 <h2>1. Summary</h2>
-<div class=bar>{bar}</div><div class=legend>{legend}</div>
+{DONUTS}
 <table><tr><th>Cost element</th><th class=n>£ a board</th><th class=n>¥ a board</th><th class=n>Share of ex-works</th></tr>{summ}</table>
 <div class=box><b>What drives the cost.</b><ul>
 <li><b>Components are {(comp + burden) / exw * 100:.0f} % of the ex-works cost</b> ({gbp(comp + burden)} with the EMS burden): {len(L)} lines, {n_parts} parts a board.</li>
