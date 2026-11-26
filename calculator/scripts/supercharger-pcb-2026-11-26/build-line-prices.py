@@ -12,11 +12,14 @@ DK = 'Digi-Key UK, read 26 Nov 2026'
 L = {}
 def put(ref, unit, basis, url, lo=None, hi=None):
     L[ref] = dict(unitGBP=round(unit, 5), kind='distributor + curve', basis=basis, url=url, rangeLow=lo, rangeHigh=hi)
-mcu = curve(8.72738, 480, 100000)
-put('U1', mcu, f'SC667506WKK = NXP customer build ("SC") of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP. '
-    f'Standard twin S912ZVMC25F1WKK GBP 8.72738 at 480 (tray), {DK}, {CURVE} = GBP {mcu:.4f}. Range GBP {curve(8.74/1.27, 1000, 100000):.2f} (Future Electronics US$8.74 at 1k reel, search extract, unverified, same curve) '
-    'to GBP 8.73 (the list at 480). Not a contract price.', 'https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971',
-    lo=round(curve(8.74 / 1.27, 1000, 100000), 4), hi=8.7274)
+mcu_curve = curve(8.72738, 480, 100000)
+put('U1', 3.55, 'Given by the engineer (26 Nov 2026): GBP 3.55 at 100,000 a year for S912ZVMC25F1WKK, the standard twin of SC667506WKK '
+    '(NXP customer build of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP), with reference to '
+    'Mouser UK and Digi-Key. For comparison: Digi-Key UK GBP 8.72738 at 480 (tray), carried to 100,000 on the catalogue curve = GBP '
+    f'{mcu_curve:.2f}. Not Valeo\'s contract price.',
+    'https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D ; https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971',
+    lo=3.55, hi=round(mcu_curve, 4))
+L['U1']['kind'] = 'given'
 t1 = curve(4.24294 / EUR, 1960, 100000)
 put('T1', t1, f'TDK/EPCOS ordering code B78xxxA2363A003 is in no public listing (customer part). Stand-in B78307A2338A003, TDK E10 EM SMD flyback transformer, AEC-Q200: '
     f'EUR 4.24294 at 1,960 (Digi-Key Finland, 26 Nov 2026) at EUR {EUR}/GBP, {CURVE} = GBP {t1:.4f}', 'https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824', lo=1.36, hi=round(4.24294 / EUR, 4))
@@ -32,5 +35,6 @@ put('U7, U8', ldo, f'De-marked SOT-223 regulator. Analogue TPS7B6933QDCYRQ1 TI 4
 q1 = curve(0.56662, 4500, 100000)
 put('Q1', q1, f'De-marked LFPAK56 MOSFET on a 48 V board. Analogue BUK7Y4R8-60EX Nexperia 60 V, AEC-Q101: GBP 0.56662 at 4,500, {DK}, {CURVE}',
     'https://www.digikey.co.uk/en/products/result?keywords=BUK7Y4R8-60EX', lo=0.2368, hi=0.56662)
+L = {k: v for k, v in L.items() if v.get('kind') == 'given'}   # the stand-in prices above are kept as reference in research/parts.json
 json.dump(dict(readOn='2026-11-26', slope=B, eurPerGbp=EUR, lines=L), open(os.path.join(H, 'research', 'line-prices.json'), 'w'), indent=1)
 for k, x in L.items(): print(f"{k:20} £{x['unitGBP']:.4f}")

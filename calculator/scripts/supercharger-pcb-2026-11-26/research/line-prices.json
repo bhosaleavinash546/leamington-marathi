@@ -4,52 +4,12 @@
  "eurPerGbp": 1.1965,
  "lines": {
   "U1": {
-   "unitGBP": 5.98659,
-   "kind": "distributor + curve",
-   "basis": "SC667506WKK = NXP customer build (\"SC\") of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP. Standard twin S912ZVMC25F1WKK GBP 8.72738 at 480 (tray), Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73) = GBP 5.9866. Range GBP 4.97 (Future Electronics US$8.74 at 1k reel, search extract, unverified, same curve) to GBP 8.73 (the list at 480). Not a contract price.",
-   "url": "https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
-   "rangeLow": 4.9717,
-   "rangeHigh": 8.7274
-  },
-  "T1": {
-   "unitGBP": 2.6865,
-   "kind": "distributor + curve",
-   "basis": "TDK/EPCOS ordering code B78xxxA2363A003 is in no public listing (customer part). Stand-in B78307A2338A003, TDK E10 EM SMD flyback transformer, AEC-Q200: EUR 4.24294 at 1,960 (Digi-Key Finland, 26 Nov 2026) at EUR 1.1965/GBP, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73) = GBP 2.6865",
-   "url": "https://www.digikey.fi/en/products/detail/tdk/B78307A2338A003/13531824",
-   "rangeLow": 1.36,
-   "rangeHigh": 3.5461
-  },
-  "C bulk 100 uF": {
-   "unitGBP": 0.19634,
-   "kind": "distributor + curve",
-   "basis": "Marking \"hJ 100 VHJ\" not decoded. Stand-in EEH-ZC1V101P Panasonic 100 uF 35 V hybrid, 8 mm, AEC-Q200: GBP 0.24258 at 5,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73)",
-   "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V101P/10292389",
-   "rangeLow": 0.10666,
-   "rangeHigh": 0.2807
-  },
-  "C bulk 22 uF pair": {
-   "unitGBP": 0.12604,
-   "kind": "distributor + curve",
-   "basis": "Marking \"22 JZC 6X6\" not decoded (\"ZC\" matches Panasonic EEH-ZC). Stand-in EEH-ZC1V220R 22 uF 35 V hybrid, AEC-Q200: GBP 0.15573 at 10,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73)",
-   "url": "https://www.digikey.co.uk/en/products/detail/panasonic-industry/EEH-ZC1V220R/3088094",
-   "rangeLow": null,
-   "rangeHigh": 0.19314
-  },
-  "U7, U8": {
-   "unitGBP": 0.55233,
-   "kind": "distributor + curve",
-   "basis": "De-marked SOT-223 regulator. Analogue TPS7B6933QDCYRQ1 TI 40 V 150 mA LDO, AEC-Q100: GBP 0.71664 at 5,000, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73)",
-   "url": "https://www.digikey.co.uk/en/products/result?keywords=TPS7B6933QDCYRQ1",
-   "rangeLow": 0.2807,
-   "rangeHigh": 0.71664
-  },
-  "Q1": {
-   "unitGBP": 0.45521,
-   "kind": "distributor + curve",
-   "basis": "De-marked LFPAK56 MOSFET on a 48 V board. Analogue BUK7Y4R8-60EX Nexperia 60 V, AEC-Q101: GBP 0.56662 at 4,500, Digi-Key UK, read 26 Nov 2026, carried to the parts bought a year on the catalogue franchise curve (slope 0.0706, see \u00a73)",
-   "url": "https://www.digikey.co.uk/en/products/result?keywords=BUK7Y4R8-60EX",
-   "rangeLow": 0.2368,
-   "rangeHigh": 0.56662
+   "unitGBP": 3.55,
+   "kind": "given",
+   "basis": "Given by the engineer (26 Nov 2026): GBP 3.55 at 100,000 a year for S912ZVMC25F1WKK, the standard twin of SC667506WKK (NXP customer build of the S12ZVMC256: errata S12ZVMC256_1N00R names mask 1N00R; WKK = -40 to 150 C, 80 LQFP-EP), with reference to Mouser UK and Digi-Key. For comparison: Digi-Key UK GBP 8.72738 at 480 (tray), carried to 100,000 on the catalogue curve = GBP 5.99. Not Valeo's contract price.",
+   "url": "https://www.mouser.co.uk/en/ProductDetail/NXP-Semiconductors/S912ZVMC25F1WKK?qs=xIeDRCTlTgFilfDw8lumtw%3D%3D ; https://www.digikey.com/en/products/detail/nxp-usa-inc/S912ZVMC25F1WKK/6556971",
+   "rangeLow": 3.55,
+   "rangeHigh": 5.9866
   }
  }
 }

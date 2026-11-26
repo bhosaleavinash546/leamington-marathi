@@ -78,7 +78,7 @@ summ += row(['<b>Ex-works China (built, tested, coated, packed)</b>', (f"<b>{gbp
 summ += row(['Sea freight to the UK', (gbp(freight), 'n'), (cny(freight), 'n'), ('', 'n')]) + row(['UK import duty (3.7 %, HS line to confirm)', (gbp(duty), 'n'), (cny(duty), 'n'), ('', 'n')])
 summ += row(['<b>Delivered UK, duty paid</b>', (f"<b>{gbp(delivered)}</b>", 'n'), (f"<b>{cny(delivered)}</b>", 'n'), ('', 'n')], 'tot')
 
-KIND = {'china-reel': 'China distributor reel price', 'distributor': 'Distributor price (analogue)', 'distributor + curve': 'Distributor price carried to volume',
+KIND = {'given': 'Given by the engineer', 'catalogue': 'Catalogue price at volume (analogue)', 'mix': 'Value mix of catalogue / reel prices', 'china-reel': 'China reel price carried to volume', 'distributor': 'Distributor price (analogue)', 'distributor + curve': 'Distributor price carried to volume',
         'class-point': 'Class price (part not identified)'}
 top = sorted(L, key=lambda l: -l['lineGBP'])
 top_rows = ''.join(row([(i + 1, 'n'), e(l['refDes']), f"{e(l['description'])}<br><span class=sm>{e(l['basis'])}</span>", (l['qty'], 'n'), (gbp(l['unitGBP'], 4), 'n'),
@@ -143,7 +143,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 <div class=kpis>
 <div class='kpi main'><span>Should-cost, ex-works China</span><b>{gbp(exw)}</b><span>{cny(exw)} a board</span></div>
 <div class=kpi><span>Delivered UK, duty paid</span><b>{gbp(delivered)}</b><span>{cny(delivered)} a board</span></div>
-<div class=kpi><span>Range, ex-works</span><b>{gbp(min(mcu_lo, q_lo))} – {gbp(max(mcu_hi, q_hi))}</b><span>controller price and part count</span></div>
+<div class=kpi><span>Range, ex-works</span><b>{gbp(q_lo)} – {gbp(q_hi)}</b><span>part count; controller as given</span></div>
 <div class=kpi><span>Programme value, ex-works</span><b>£{exw * prog / 1e6:,.2f} m</b><span>{prog:,} boards</span></div>
 </div>
 
@@ -152,8 +152,9 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 <table><tr><th>Cost element</th><th class=n>£ a board</th><th class=n>¥ a board</th><th class=n>Share of ex-works</th></tr>{summ}</table>
 <div class=box><b>What drives the cost.</b><ul>
 <li><b>Components are {(comp + burden) / exw * 100:.0f} % of the ex-works cost</b> ({gbp(comp + burden)} with the EMS burden): {len(L)} lines, {n_parts} parts a board.</li>
-<li><b>The controller is the largest line: {gbp(u1['lineGBP'])}, {u1['lineGBP'] / comp * 100:.0f} % of the components.</b> SC667506WKK is NXP's customer build of the S12ZVMC256 — an S12 MagniV motor-control MCU with its own gate-drive unit and CAN physical layer (§2). Priced from the standard part's distributor price, carried to 100,000 a year; its price alone moves the board between {gbp(mcu_lo)} and {gbp(mcu_hi)} ex-works.</li>
-<li><b>Transformer T1 is second ({gbp(next(l['lineGBP'] for l in L if l['refDes'] == 'T1'))})</b>: a TDK/EPCOS customer part, priced from the nearest catalogued AEC-Q200 TDK SMD transformer.</li>
+<li><b>The controller is the largest line: {gbp(u1['lineGBP'])}, {u1['lineGBP'] / comp * 100:.0f} % of the components.</b> SC667506WKK is NXP's customer build of the S12ZVMC256 — an S12 MagniV motor-control MCU with its own gate-drive unit and CAN physical layer (§2). Priced at £3.55, the 100,000-a-year price given by the engineer (Mouser UK, Digi-Key); at the distributor's 480-unit price carried to volume (£{hi:.2f}) the board would be {gbp(mcu_hi)} ex-works.</li>
+<li><b>Transformer T1 is second ({gbp(next(l['lineGBP'] for l in L if l['refDes'] == 'T1'))})</b>: a TDK/EPCOS customer part (not listed), priced at the median of its class; catalogued TDK transformers put it between £1.02 and £2.69.</li>
+<li><b>The other {len(L) - 2} lines are {gbp(comp - sum(l['lineGBP'] for l in L if l['refDes'] in ('U1', 'T1')))}</b>: China reel prices carried to the parts bought a year, catalogue prices at volume for the analogues, MLCC groups priced as a value mix.</li>
 <li><b>Assembly, test and coating are {gbp(assembly)}</b>; the bare board is {gbp(fab)} at the China automotive market price a m².</li></ul></div>
 <div class=box><b>The CostVision tool on the same photos and inputs</b> (live run, real server and browser): <b>{gbp(TC['exw'])} ex-works / {gbp(TC['delivered'])} delivered</b> with components at China market prices, {gbp(TG['exw'])} / {gbp(TG['delivered'])} at global distributor prices — {(TC['exw'] / exw - 1) * 100:+.1f} % and {(TG['exw'] / exw - 1) * 100:+.1f} % against this should-cost (§6).</div>
 <p class=sm><b>Basis.</b> Populated board, built, tested and coated in China, ex-works; delivered adds sea freight and UK import duty. Prices read 25–26 Nov 2026, ex-VAT. List prices carry the seller's margin; rate-book operations carry {I['unquotedOH'] * 100:.0f} % overhead. No BOM, drawing, Gerber or supplier quote was supplied: part identities other than the controller, the layer count and the via count are readings and estimates (§7).</p>
@@ -182,7 +183,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 <table><tr><th>Price basis</th><th class=n>Lines</th><th class=n>Parts</th><th class=n>£ a board</th><th class=n>Share</th></tr>{kind_rows}</table>
 <h3>The eight largest lines ({sum(l['lineGBP'] for l in top[:8]) / comp * 100:.0f} % of the components)</h3>
 <table><tr><th class=n>#</th><th>Ref</th><th>Part and price basis</th><th class=n>Qty</th><th class=n>Unit</th><th class=n>A board</th><th class=n>Share</th></tr>{top_rows}</table>
-<p class=sm>Volume rule: a distributor price at a stated break is carried to the parts bought a year on the franchise curve P(Q) = P(break) × (Q/break)^−0.0706 — the CostVision component catalogue's default slope. China reel prices (szlcsc own stock, whole reel, ex-VAT) are used as read, without a further volume step.</p>
+<p class=sm>Volume rule: a distributor price at a stated break is carried to the parts bought a year on the franchise curve P(Q) = P(break) × (Q/break)^−0.0706 — the CostVision component catalogue's default slope. China reel prices (szlcsc own stock, whole reel, ex-VAT) are carried the same way from their reel quantity; catalogue prices are read at the 100k / 200k / 300k break matching the parts bought. Flat above 300,000 parts a year (the tool's rule). MLCC groups are a value mix (judgement): 0805 and 1206 half 100 nF, half 1 µF / 4.7 µF; 1210 all 10 µF bulk.</p>
 
 <h2>4. Bare board — {gbp(fab)}</h2>
 <table><tr><th>Step</th><th>Figure</th></tr>{board_rows}</table>
@@ -195,20 +196,21 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>Supercharger co
 <p class=sm>Estimates; spread over the programme. The automotive programme NRE (PPAP, FMEA, validation) is not in the unit cost.</p></div></div>
 
 <h2 class=pb>6. Cross-check: the CostVision tool, live</h2>
-<p>The same photos went through CostVision's PCB screen on a real server and browser, with the inputs typed in as an engineer would: China, 100,000 a year, 6 years, 120 × 100 mm, 40 g, coating on both sides, first-pass yield 0.97, a lot a month, and the controller's researched price. Two runs: components at China market prices (the tool's China component market) and at global distributor prices. 0 page errors on both.</p>
+<p>The same photos went through CostVision's PCB screen on a real server and browser, with the inputs typed in as an engineer would: China, 100,000 a year, 6 years, 120 × 100 mm, 40 g, coating on both sides, first-pass yield 0.97, a lot a month, and the controller at the given £3.55. Two runs: components at China market prices (the tool's China component market) and at global distributor prices. 0 page errors on both.</p>
 <table><tr><th>£ a board</th><th class=n>This should-cost</th><th class=n>Tool, China market</th><th class=n>Tool, global distributors</th></tr>{xc_rows}</table>
 <ul class=sm>
 <li><b>Components.</b> The tool prices every unread part inside its class range (lower-half midpoint). Its China-market run takes reel prices for the passives and discretes as this should-cost does; at global distributor prices the MLCCs, LDOs and transformer sit higher. The tool's likely range: {TC['band']} (China market), {TG['band']} (global).</li>
-<li><b>Transformer.</b> The tool's class point (signal transformer) is £1.36; this should-cost uses the nearest catalogued AEC-Q200 TDK SMD transformer carried to volume (£{next(l['unitGBP'] for l in L if l['refDes'] == 'T1'):.2f}).</li>
+<li><b>Volume.</b> This should-cost carries every price to the parts bought a year and prices MLCC groups as a value mix; the tool prices unread parts at the lower-half midpoint of their class at this volume and every MLCC of a size at one class point.</li>
 <li><b>Assembly.</b> The tool costs placements at the China line rate, AOI / ICT as station time, coating on the full side area, plus an automotive assembly grade; this should-cost uses the Chinese per-joint list price, selective coating on the component areas only, and named test times.</li>
 </ul>
 
 <h2>7. What is not yet confirmed</h2>
 <table><tr><th>Item</th><th>Status</th><th>Effect, ex-works</th></tr>
-{row(['Controller price', f"Standard part's distributor price carried to volume, not Valeo's contract price", (f"{gbp(mcu_lo)} – {gbp(mcu_hi)}", 'n')])}
+{row(['Controller price', f"£3.55 at 100,000 a year, given (Mouser UK, Digi-Key) — not Valeo's contract price; at the 480-unit list carried to volume (£{hi:.2f})", (f"{gbp(mcu_lo)} – {gbp(mcu_hi)}", 'n')])}
 {row(['Passive count', 'Resistors and MLCCs estimated from the zooms (range per line, §8)', (f"{gbp(q_lo)} – {gbp(q_hi)}", 'n')])}
 {row(['De-marked ICs', 'SO-16 driver, SO-8 × 3, MSOP-10, SOT-223 × 2: priced as analogues / class', ('', 'n')])}
-{row(['Transformer T1, electrolytics', 'Customer / undecoded parts: priced from catalogued stand-ins', ('', 'n')])}
+{row(['Transformer T1, electrolytics', 'Customer / undecoded parts: class price and catalogued analogues', (f"{gbp(exw - 0.34 * (1 + I['burden']))} – {gbp(exw + 1.33 * (1 + I['burden']))}", 'n')])}
+{row(['MLCC value mix', 'Half 100 nF / half 1–4.7 µF in the 0805 and 1206 groups (judgement)', ('', 'n')])}
 {row(['Layers, vias, copper', '4 layers, ~700 vias, 1 oz — not visible in a photo', ('', 'n')])}
 {row(['Test plan', 'ICT 25 s, programming 30 s, functional test 45 s — estimates', ('', 'n')])}
 {row(['Import duty', '3.7 % assumed; HS line not confirmed', ('', 'n')])}

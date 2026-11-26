@@ -22,47 +22,56 @@ H = os.path.dirname(os.path.abspath(__file__))
 rd = json.load(open(os.path.join(H, 'reading.json')))
 RES = json.load(open(os.path.join(H, 'research', 'line-prices.json')))   # build-line-prices.py, from research/parts.json
 
-# ── Line prices (£ a part at volume). kind: china-reel | distributor | research | class-point | estimate
+# ── Line prices (£ a part at volume). Each line: a sourced BASE price at a stated BREAK quantity, carried to the parts bought a
+# year (qty a board × 100,000) on the CostVision catalogue franchise curve P(Q) = P(break) × (Q / break)^−0.0706, flat above
+# 300,000 parts (the tool's own rule) — `brk=None` = already at the parts-a-year break (catalogue q100k / q200k / q300k).
 SZ = 'szlcsc own stock, whole reel, ex-VAT, read 25 Nov 2026'
-P = {
- 'R 0603 group': (0.00075, 'china-reel', f'AC0603FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/117931.html'),
- 'R 0805 group': (0.00185, 'china-reel', f'AC0805FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/152196.html'),
- 'R 1206 group': (0.00484, 'china-reel', f'AC1206FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/155852.html'),
- 'R 2512 group': (0.06194, 'china-reel', f'AC2512FK-0710RL YAGEO — {SZ}', 'https://item.szlcsc.com/476216.html'),
- 'C 0603 group': (0.00287, 'china-reel', f'GCM188R71H104KA57D Murata 100 nF 50 V X7R — {SZ}', 'https://item.szlcsc.com/87040.html'),
- 'C 0805 group': (0.02140, 'distributor', 'GCM21BR71H105KA03L Murata 1 µF 50 V X7R, distributor 6 Oct 2026 (the China reel £0.0302 is dearer)', ''),
- 'C 1206 group': (0.06766, 'china-reel', f'CGA5L1X7R1H475KT0Y0N TDK 4.7 µF 50 V X7R — {SZ}', 'https://item.szlcsc.com/370048.html'),
- 'C 1210 group': (0.09857, 'china-reel', f'GCM32EC71H106KA03L Murata 10 µF 50 V X7S — {SZ}', 'https://item.szlcsc.com/137892.html'),
- 'Q small-signal group': (0.00445, 'china-reel', f'mean of 2N7002,215 and BC847C,215 Nexperia — {SZ}', 'https://item.szlcsc.com/66260.html'),
- 'D small-signal group': (0.00329, 'china-reel', f'BAV99,215 Nexperia — {SZ}', 'https://item.szlcsc.com/2877.html'),
- 'Zener group': (0.01881, 'china-reel', f'BZT52C5V1Q-7-F Diodes — {SZ}', 'https://item.szlcsc.com/709518.html'),
- 'D rectifier group': (0.10309, 'china-reel', f'PMEG6030ELPX Nexperia 60 V 3 A Schottky (SMA-class) — {SZ}', 'https://item.szlcsc.com/3184868.html'),
- 'TVS SMB group': (0.04339, 'china-reel', f'SMBJ24CA Littelfuse 600 W — {SZ}', 'https://item.szlcsc.com/84432.html'),
- 'U3': (0.11322, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp (analogue: de-marked SO-8; the MCU has its own CAN physical layer) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
- 'U4, U5': (0.11322, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp (analogue) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
- 'L1': (0.15148, 'china-reel', f'CLF6045NIT-4R7N-D TDK 6x6 shielded (analogue) — {SZ}', 'https://item.szlcsc.com/335482.html'),
- 'L2': (0.07649, 'china-reel', f'DLW43SH510XK2L Murata CAN CMC (analogue) — {SZ}', 'https://item.szlcsc.com/92784.html'),
- 'Y1': (0.16643, 'china-reel', f'NX3225SA-25.000MHz NDK automotive crystal (analogue; the board part is ~5x3.2) — {SZ}', ''),
- 'Q1': (0.2368, 'distributor', 'IAUC60N04S6L039ATMA1 Infineon 40 V automotive MOSFET (analogue), distributor 6 Oct 2026', ''),
- # unidentified ICs: the tool's sourced China class point (catalogue p10–p90, lower-half midpoint) — no better basis without a marking
- 'U2': (1.113, 'class-point', 'de-marked SO-16 driver IC: CostVision class range "driver IC SOIC, AEC-Q" (114 catalogue parts), lower-half midpoint', ''),
- 'U6': (0.119, 'class-point', 'MSOP-10 signal IC: CostVision class range "op-amp / comparator", lower-half midpoint', ''),
- 'U7, U8': (0.2807, 'distributor', 'NCV8730ASNADJT1G onsemi automotive LDO (analogue), distributor 6 Oct 2026', ''),
- 'T1': (1.36, 'class-point', 'CostVision class range "signal transformer, AEC-Q" lower-half midpoint', ''),
- 'C bulk 100 uF': (0.159, 'class-point', 'CostVision China class point, SMD aluminium electrolytic', ''),
- 'C bulk 22 uF pair': (0.151, 'class-point', 'CostVision China class point, SMD aluminium electrolytic', ''),
- 'U1': (3.24, 'class-point', 'CostVision class range "MCU TQFP, AEC-Q" lower-half midpoint (no research yet)', ''),
+CAT = 'CostVision component catalogue (distributor, sourced)'
+SLOPE, FLAT = 0.0706, 300000
+P = {   # refDes: (base £, break qty or None, kind, basis, url)
+ 'R 0603 group': (0.00075, 5000, 'china-reel', f'AC0603FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/117931.html'),
+ 'R 0805 group': (0.00185, 5000, 'china-reel', f'AC0805FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/152196.html'),
+ 'R 1206 group': (0.00484, 5000, 'china-reel', f'AC1206FR-0710KL YAGEO — {SZ}', 'https://item.szlcsc.com/155852.html'),
+ 'R 2512 group': (0.06194, 4000, 'china-reel', f'AC2512FK-0710RL YAGEO — {SZ}', 'https://item.szlcsc.com/476216.html'),
+ 'C 0603 group': (0.00287, 4000, 'china-reel', f'GCM188R71H104KA57D Murata 100 nF 50 V X7R — {SZ}', 'https://item.szlcsc.com/87040.html'),
+ 'C 0805 group': ((0.0152 + 0.0214) / 2, None, 'mix', f'value mix (judgement: half 100 nF, half 1 µF): KAM21BR71H104KT 100 nF 50 V X7R AEC-Q200 £0.0152 at 300k ({CAT}) and GCM21BR71H105KA03L 1 µF 50 V £0.0214 at 500k a year (distributor, 6 Oct 2026)', ''),
+ 'C 1206 group': ((0.0197 + 0.06766 * (FLAT / 2000) ** -SLOPE) / 2, None, 'mix', f'value mix (judgement: half 100 nF, half 4.7 µF): C1206C104K5RACAUTO 100 nF 50 V AEC-Q200 £0.0197 at 300k ({CAT}) and CGA5L1X7R1H475KT0Y0N TDK 4.7 µF 50 V £0.06766 at a 2,000 reel ({SZ}) carried to 300k = £{0.06766 * (FLAT / 2000) ** -SLOPE:.4f}', 'https://item.szlcsc.com/370048.html'),
+ 'C 1210 group': (0.09857, 1000, 'china-reel', f'GCM32EC71H106KA03L Murata 10 µF 50 V X7S (bulk) — {SZ}', 'https://item.szlcsc.com/137892.html'),
+ 'Q small-signal group': (0.00445, 3000, 'china-reel', f'mean of 2N7002,215 and BC847C,215 Nexperia — {SZ}', 'https://item.szlcsc.com/66260.html'),
+ 'D small-signal group': (0.00329, 3000, 'china-reel', f'BAV99,215 Nexperia — {SZ}', 'https://item.szlcsc.com/2877.html'),
+ 'Zener group': (0.00531, 3000, 'china-reel', f'BZT52C5V1Q (AEC-Q101) — {SZ} (the Diodes -7-F listing £0.0188 is dearer)', ''),
+ 'D rectifier group': (0.0645, None, 'catalogue', f'STPS2H100AY ST 100 V 2 A Schottky, SMA, AEC-Q101 — £0.0645 at 300k ({CAT})', ''),
+ 'TVS SMB group': (0.04339, 3000, 'china-reel', f'SMBJ24CA Littelfuse 600 W SMB (a 58 V part of the same family is the same price class) — {SZ}', 'https://item.szlcsc.com/84432.html'),
+ 'U3': (0.11322, 2500, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue: de-marked SO-8; the MCU has its own CAN physical layer) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
+ 'U4, U5': (0.11322, 2500, 'china-reel', f'LM2904BQDRQ1 TI dual op-amp AEC-Q100 (analogue) — {SZ}', 'https://item.szlcsc.com/1946598.html'),
+ 'U6': (0.119, None, 'class-point', 'MSOP-10 signal IC, not identified: CostVision class range "op-amp / comparator" at this volume, lower-half midpoint', ''),
+ 'U2': (0.7679, None, 'catalogue', f'de-marked SO-16 beside T1 (transformer / gate-drive supply driver). Analogue UCC21222QDRQ1 TI dual-channel isolated gate driver, SOIC-16, AEC-Q100 — £0.7679 at 100k ({CAT})', ''),
+ 'U7, U8': (0.3013, None, 'catalogue', f'de-marked SOT-223 regulator. Analogue L5150BNTR ST 40 V 150 mA LDO, AEC-Q100 — £0.3013 at 200k ({CAT})', ''),
+ 'Q1': (0.2984, None, 'catalogue', f'de-marked 5×5 power MOSFET. Analogue SQJ844AEP Vishay automotive MOSFET, PowerPAK SO-8L — £0.2984 at 100k ({CAT})', ''),
+ 'L1': (0.15148, 1000, 'china-reel', f'CLF6045NIT-4R7N-D TDK 6×6 shielded, AEC-Q200 (analogue) — {SZ}', 'https://item.szlcsc.com/335482.html'),
+ 'L2': (0.07649, 500, 'china-reel', f'DLW43SH510XK2L Murata CAN CMC (analogue) — {SZ}', 'https://item.szlcsc.com/92784.html'),
+ 'Y1': (0.0702, None, 'catalogue', f'NX3225GA-25.000M NDK automotive crystal, AEC-Q200 — £0.0702 at 100k ({CAT})', ''),
+ 'C bulk 100 uF': (0.103, None, 'catalogue', f'aluminium electrolytic (marking "hJ 100 VHJ" not decoded). Analogue UCM1V101MCL1GS Nichicon 100 µF 35 V, 6.3 × 5.8 mm, AEC-Q200 — £0.1030 at 100k ({CAT})', ''),
+ 'C bulk 22 uF pair': (0.0662, None, 'catalogue', f'aluminium electrolytic (marking "22 JZC 6X6" not decoded). Analogue EEE-FK Panasonic FK, 6.3 mm can, AEC-Q200 (10 µF 50 V listing) — £0.0662 at 200k ({CAT})', ''),
+ 'T1': (1.36, None, 'class-point', 'TDK/EPCOS customer transformer (ordering code B78xxxA2363A003 not listed): CostVision class range "signal transformer, AEC-Q" at this volume, lower-half midpoint. Range £1.02 (TDK EP6 automotive SMD transformer B78416A2360A003, US$1.80 at 1k, unverified, carried to 100k) to £2.69 (TDK E10 EM B78307A2338A003, €4.24 at 1,960, carried to 100k)', ''),
+ 'U1': (3.55, None, 'given', 'given', ''),
 }
-# research overlay: {"lines": {refDes: {"unitGBP", "basis", "url"}}}
+# the engineer's given figures (research/line-prices.json, kind "given")
 for ref, r in RES.get('lines', {}).items():
-    if ref in P and r.get('unitGBP'):
-        P[ref] = (float(r['unitGBP']), r.get('kind', 'research'), r['basis'], r.get('url', ''))
+    if r.get('kind') == 'given':
+        P[ref] = (float(r['unitGBP']), None, 'given', r['basis'], r.get('url', ''))
 
+def at_volume(base, brk, parts_a_year):
+    if brk is None: return base
+    return base * (min(parts_a_year, FLAT) / brk) ** -SLOPE if parts_a_year > brk else base
 lines = []
 for l in rd['lines']:
-    u, kind, basis, url = P[l['refDes']]
+    base, brk, kind, basis, url = P[l['refDes']]
+    pa = l['qty'] * 100000
+    u = at_volume(base, brk, pa)
+    if brk: basis += f' — £{base:.5f} at {brk:,}, carried to {min(pa, FLAT):,} parts a year: £{u:.5f}'
     lines.append(dict(refDes=l['refDes'], description=l['description'], pkg=l['pkg'], qty=l['qty'], qtyLow=l['qtyLow'], qtyHigh=l['qtyHigh'],
-                      countMethod=l['countMethod'], unitGBP=u, kind=kind, basis=basis, url=url, lineGBP=round(l['qty'] * u, 6)))
+                      countMethod=l['countMethod'], unitGBP=round(u, 6), base=base, brk=brk, kind=kind, basis=basis, url=url, lineGBP=round(l['qty'] * round(u, 6), 6)))
 
 # ── Inputs
 I = {}

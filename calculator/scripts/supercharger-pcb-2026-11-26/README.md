@@ -6,9 +6,9 @@ NXP SC667506WKK / 1N00R / ZRAA2635A — one chip: NXP's customer build of the S1
 
 | Result (£ a board) | Ex-works China | Delivered UK |
 |---|---|---|
-| Manual should-cost | 22.07 | 22.92 |
-| CostVision tool, China market components | 19.71 | 20.45 |
-| CostVision tool, global distributor components | 26.07 | 27.04 |
+| Manual should-cost | 15.04 | 15.63 |
+| CostVision tool, China market components | 17.15 | 17.79 |
+| CostVision tool, global distributor components | 23.50 | 24.38 |
 
 Files
 - `reading.py` → `reading.json`, `replies.json`: the board read off 15 photos (26 lines, 322 SMT parts, count method and range
@@ -24,7 +24,7 @@ Re-run
 python3 -I reading.py && python3 -I build-line-prices.py && python3 -I manual.py
 # live tool runs (needs a build): scripts/edu-ctrl-2026-11-25/live-run.ts with CV_REPLIES=../supercharger-pcb-2026-11-26/replies.json,
 # CV_QTY=100000, CV_EDITS (120 × 100 mm, 40 g, lot 8333, 6 years, coat sides 2, FPY 0.97, component market global | local),
-# CV_BOM_EDITS U1 = £5.99 (the researched controller price)
+# CV_BOM_EDITS U1 = £3.55 (the controller price at 100k a year, given)
 python3 -I report.py <global-run-dir> <china-run-dir> <out-dir>
 node report-pdf.mjs <out-dir>/report.html <out-dir>/supercharger-pcb-should-cost.pdf
 ```
