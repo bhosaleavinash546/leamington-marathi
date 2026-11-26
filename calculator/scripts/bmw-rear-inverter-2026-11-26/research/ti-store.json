@@ -1,0 +1,54 @@
+{
+ "readOn": "2026-11-26",
+ "method": "ti.com part-details page rendered in Chromium; the \"Pricing Qty Price (USD)\" table",
+ "items": [
+  {
+   "found": "UCC5880QDFCRQ1",
+   "price1k": 5.141,
+   "url": "https://www.ti.com/product/UCC5880-Q1/part-details/UCC5880QDFCRQ1",
+   "quote": "1\u201399 $8.534 \u00b7 100\u2013249 $7.454 \u00b7 250\u2013999 $5.748 \u00b7 1,000+ $5.141"
+  },
+  {
+   "found": "UCC27282QDRCRQ1",
+   "price1k": 1.91,
+   "url": "https://www.ti.com/product/UCC27282-Q1/part-details/UCC27282QDRCRQ1",
+   "quote": "1\u201399 $4.278 \u00b7 100\u2013249 $3.533 \u00b7 250\u2013999 $2.538 \u00b7 1,000+ $1.910"
+  },
+  {
+   "found": "TPS7B8401QWDRBRQ1",
+   "price1k": 0.94,
+   "url": "https://www.ti.com/product/TPS7B84-Q1/part-details/TPS7B8401QWDRBRQ1",
+   "quote": "1\u201399 $2.105 \u00b7 100\u2013249 $1.739 \u00b7 250\u2013999 $1.248 \u00b7 1,000+ $0.940"
+  },
+  {
+   "found": "LM74202QPWPRQ1",
+   "price1k": 1.277,
+   "url": "https://www.ti.com/product/LM74202-Q1/part-details/LM74202QPWPRQ1",
+   "quote": "1\u201399 $2.860 \u00b7 100\u2013249 $2.362 \u00b7 250\u2013999 $1.697 \u00b7 1,000+ $1.277"
+  },
+  {
+   "found": "TLV9004QPWRQ1",
+   "price1k": 0.514,
+   "url": "https://www.ti.com/product/TLV9004-Q1/part-details/TLV9004QPWRQ1",
+   "quote": "1\u201399 $1.474 \u00b7 100\u2013249 $1.001 \u00b7 250\u2013999 $0.773 \u00b7 1,000+ $0.514"
+  },
+  {
+   "found": "AMC1211AQDWVRQ1",
+   "price1k": 3.06,
+   "url": "https://www.ti.com/product/AMC1211-Q1/part-details/AMC1211AQDWVRQ1",
+   "quote": "1\u201399 $5.630 \u00b7 100\u2013249 $4.590 \u00b7 250\u2013999 $3.608 \u00b7 1,000+ $3.060"
+  },
+  {
+   "found": "LM5155QDSSRQ1",
+   "price1k": 1.189,
+   "url": "https://www.ti.com/product/LM5155-Q1/part-details/LM5155QDSSRQ1",
+   "quote": "1\u201399 $2.663 \u00b7 100\u2013249 $2.200 \u00b7 250\u2013999 $1.580 \u00b7 1,000+ $1.189"
+  },
+  {
+   "found": "TCAN1057AVDRQ1",
+   "price1k": 0.462,
+   "url": "https://www.ti.com/product/TCAN1057A-Q1/part-details/TCAN1057AVDRQ1",
+   "quote": "1\u201399 $1.140 \u00b7 100\u2013249 $0.877 \u00b7 250\u2013999 $0.646 \u00b7 1,000+ $0.462"
+  }
+ ]
+}

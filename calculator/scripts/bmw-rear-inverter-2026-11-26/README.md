@@ -7,9 +7,9 @@ size (280 × 220 mm, ±5 %) is measured off the photos against the TC389's 25 mm
 
 | Result (£ a board) | Ex-works China | Delivered UK |
 |---|---|---|
-| Manual should-cost | 111.75 | 115.99 |
-| CostVision tool, China market components | 115.38 | 119.70 |
-| CostVision tool, global distributor components | 125.54 | 130.24 |
+| Manual should-cost | 96.14 | 99.80 |
+| CostVision tool, China market components | 115.05 | 119.36 |
+| CostVision tool, global distributor components | 125.21 | 129.90 |
 
 Files
 - `reading.py` → `reading.json`, `bom.csv` (the BOM uploaded to the tool — no designator column: the BOM's row names are
@@ -26,7 +26,7 @@ python3 -I reading.py && python3 -I build-sources.py && python3 -I manual.py
 # live tool runs (needs a build): scripts/edu-ctrl-2026-11-25/live-run.ts with CV_REPLIES=../bmw-rear-inverter-2026-11-26/replies.json,
 # CV_BOM_FILE=<this dir>/bom.csv, CV_QTY=400000, CV_EDITS (6 layers, 2 oz outer / 1 oz inner, 1.6 mm, finish imag, 210 g,
 # lot 33333, 6 years, coat sides 1, FPY 0.97, staking 24, programming 60 s, FCT 90 s, component market global | local),
-# CV_BOM_EDITS {"SAK-TC389QP-160F300SAE": {"unitPriceGBP": 15.19}}
+# CV_BOM_EDITS {"SAK-TC389QP-160F300SAE": {"unitPriceGBP": 14.88}}
 python3 -I report.py <global-run-dir> <china-run-dir> <out-dir>
 node report-pdf.mjs <out-dir>/report.html <out-dir>/bmw-rear-inverter-pcb-should-cost.pdf
 ```

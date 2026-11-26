@@ -29,7 +29,7 @@
   },
   "Integrated Circuit 2": {
    "base": 2.0483,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -45,10 +45,20 @@
    "note": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue)"
   },
   "Integrated Circuit 3": {
-   "base": 1.3990393700787402,
-   "brk": 4000,
-   "kind": "distributor",
+   "base": 1.0055118110236219,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "LM74202QPWPRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.277 at 1,000+ (1–99 $2.860 · 100–249 $2.362 · 250–999 $1.697 · 1,000+ $1.277)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/LM74202-Q1/part-details/LM74202QPWPRQ1"
+    },
     {
      "mpn": "LM74202QPWPRQ1",
      "maker": "Texas Instruments",
@@ -58,14 +68,23 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541"
     }
-   ],
-   "note": ""
+   ]
   },
   "Integrated Circuit 5": {
-   "base": 0.8930393700787402,
-   "brk": 6000,
-   "kind": "distributor",
+   "base": 0.7401574803149605,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "TPS7B8401QWDRBRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.940 at 1,000+ (1–99 $2.105 · 100–249 $1.739 · 250–999 $1.248 · 1,000+ $0.940)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TPS7B84-Q1/part-details/TPS7B8401QWDRBRQ1"
+    },
     {
      "mpn": "TPS7B8401QWDRBRQ1",
      "maker": "Texas Instruments",
@@ -75,14 +94,23 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8401QWDRBRQ1"
     }
-   ],
-   "note": ""
+   ]
   },
   "Integrated Circuit 6": {
-   "base": 1.617811023622047,
-   "brk": 3000,
-   "kind": "distributor",
+   "base": 1.5039370078740157,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "UCC27282QDRCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.910 at 1,000+ (1–99 $4.278 · 100–249 $3.533 · 250–999 $2.538 · 1,000+ $1.910)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/UCC27282-Q1/part-details/UCC27282QDRCRQ1"
+    },
     {
      "mpn": "UCC27282QDRCRQ1",
      "maker": "Texas Instruments",
@@ -92,14 +120,23 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1"
     }
-   ],
-   "note": ""
+   ]
   },
   "Integrated Circuit 7": {
-   "base": 0.42746456692913387,
-   "brk": 15000,
-   "kind": "distributor",
+   "base": 0.4047244094488189,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "TLV9004QPWRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.514 at 1,000+ (1–99 $1.474 · 100–249 $1.001 · 250–999 $0.773 · 1,000+ $0.514)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TLV9004-Q1/part-details/TLV9004QPWRQ1"
+    },
     {
      "mpn": "TLV9004QPWRQ1",
      "maker": "Texas Instruments",
@@ -109,14 +146,23 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1"
     }
-   ],
-   "note": ""
+   ]
   },
   "Integrated Circuit 9": {
-   "base": 3.3584881889763776,
-   "brk": 2000,
-   "kind": "distributor",
+   "base": 2.409448818897638,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "reel code of the BOM's tube code",
    "sources": [
+    {
+     "mpn": "AMC1211AQDWVRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$3.060 at 1,000+ (1–99 $5.630 · 100–249 $4.590 · 250–999 $3.608 · 1,000+ $3.060)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/AMC1211-Q1/part-details/AMC1211AQDWVRQ1"
+    },
     {
      "mpn": "AMC1211AQDWVRQ1",
      "maker": "Texas Instruments",
@@ -126,14 +172,23 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVRQ1"
     }
-   ],
-   "note": "reel code of the BOM's tube code"
+   ]
   },
   "Integrated Circuit 13": {
-   "base": 1.2906614173228346,
-   "brk": 6000,
-   "kind": "distributor",
+   "base": 0.9362204724409449,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "LM5155QDSSRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.189 at 1,000+ (1–99 $2.663 · 100–249 $2.200 · 250–999 $1.580 · 1,000+ $1.189)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/LM5155-Q1/part-details/LM5155QDSSRQ1"
+    },
     {
      "mpn": "LM5155QDSSRQ1",
      "maker": "Texas Instruments",
@@ -143,8 +198,7 @@
      "date": "26 Nov 2026",
      "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1"
     }
-   ],
-   "note": ""
+   ]
   },
   "Transistor 1": {
    "base": 0.1466062992125984,
@@ -198,10 +252,20 @@
    "note": ""
   },
   "Integrated Circuit 4": {
-   "base": 0.2442,
-   "brk": null,
-   "kind": "catalogue",
+   "base": 0.3637795275590551,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.462 at 1,000+ (1–99 $1.140 · 100–249 $0.877 · 250–999 $0.646 · 1,000+ $0.462)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TCAN1057A-Q1/part-details/TCAN1057AVDRQ1"
+    },
     {
      "mpn": "TCAN1057AVDRQ1",
      "maker": "Texas Instruments",
@@ -211,12 +275,11 @@
      "date": "6 Oct 2026",
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088"
     }
-   ],
-   "note": "£0.2442 at 300k (catalogue)"
+   ]
   },
   "Integrated Circuit 10": {
    "base": 2.541,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -232,10 +295,20 @@
    "note": "£2.541 at 300k (catalogue)"
   },
   "Integrated Circuit 11": {
-   "base": 3.1819,
-   "brk": null,
-   "kind": "catalogue",
+   "base": 4.048031496062992,
+   "brk": 1000,
+   "kind": "maker",
+   "note": "",
    "sources": [
+    {
+     "mpn": "UCC5880QDFCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$5.141 at 1,000+ (1–99 $8.534 · 100–249 $7.454 · 250–999 $5.748 · 1,000+ $5.141)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/UCC5880-Q1/part-details/UCC5880QDFCRQ1"
+    },
     {
      "mpn": "UCC5880QDFCRQ1",
      "maker": "Texas Instruments",
@@ -245,8 +318,7 @@
      "date": "6 Oct 2026",
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588"
     }
-   ],
-   "note": "£3.1819 at 300k (catalogue)"
+   ]
   },
   "Integrated Circuit 12": {
    "base": 0.11959,
@@ -267,7 +339,7 @@
   },
   "Sensor 1": {
    "base": 1.7749,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -284,7 +356,7 @@
   },
   "Sensor 2": {
    "base": 1.2983,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -301,7 +373,7 @@
   },
   "Crystal 1": {
    "base": 0.0642,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -488,7 +560,7 @@
   },
   "Inductor 4": {
    "base": 0.5504,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -822,7 +894,7 @@
   },
   "Inductor 5": {
    "base": 0.0664,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {

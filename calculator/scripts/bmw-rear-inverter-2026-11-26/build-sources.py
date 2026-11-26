@@ -102,5 +102,18 @@ put('Discretes (4+ pins)', 2 * 0.00445, 3000, 'estimate', [sz('2N7002,215', 'Nex
 put('Ferrite 1', 0.01953, 4000, 'china-reel', [sz('BLM18KG601SH1D', 'Murata', 0.17345, 4000, 'https://item.szlcsc.com/748751.html', 'automotive (SH1)')])
 put('Inductor 5', 0.0664, None, 'catalogue', [s('VLS252012HBX-1R0M-1', 'TDK', 'AEC-Q200', 'Digi-Key', 'US$0.10906 at 14,000', '9 Oct 2026', 'https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063')],
     'small SMD power inductor, 2520; £0.0664 at 300k (catalogue)')
+
+# ── Texas Instruments' own store price at 1,000+ (research/ti-store.json, read 26 Nov 2026) — the maker's price, below the
+# distributors' at their largest breaks; the distributor figure stays on the line as a reference.
+TIS = {i['found']: i for i in json.load(open(os.path.join(H, 'research', 'ti-store.json')))['items']}
+for ref, pn in [('Integrated Circuit 11', 'UCC5880QDFCRQ1'), ('Integrated Circuit 6', 'UCC27282QDRCRQ1'), ('Integrated Circuit 5', 'TPS7B8401QWDRBRQ1'),
+                ('Integrated Circuit 3', 'LM74202QPWPRQ1'), ('Integrated Circuit 7', 'TLV9004QPWRQ1'), ('Integrated Circuit 9', 'AMC1211AQDWVRQ1'),
+                ('Integrated Circuit 13', 'LM5155QDSSRQ1'), ('Integrated Circuit 4', 'TCAN1057AVDRQ1')]:
+    t = TIS[pn]; old = L[ref]
+    L[ref] = dict(base=t['price1k'] / USD, brk=1000, kind='maker', note='reel code of the BOM\'s tube code' if pn == 'AMC1211AQDWVRQ1' else '',
+                  sources=[s(pn, 'Texas Instruments', 'AEC-Q100', 'TI.com (maker)', f"US${t['price1k']:.3f} at 1,000+ ({t['quote']})", '26 Nov 2026', t['url'])] + old['sources'])
+# A catalogue figure is the catalogue's 300k break: carried on from there to the parts bought a year.
+for v in L.values():
+    if v['brk'] is None: v['brk'] = 300000
 json.dump(dict(readOn='2026-11-26', lines=L), open(os.path.join(H, 'research', 'line-sources.json'), 'w'), indent=1, ensure_ascii=False)
 print(len(L), 'lines;', 'batch B', 'present' if B else 'NOT YET', '; estimates:', [k for k, v in L.items() if v['kind'] == 'estimate'])

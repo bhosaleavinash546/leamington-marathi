@@ -25,7 +25,7 @@ Diode 3: Schottky rectifier 3 A 45 V,Vishay,VSSAF3L45,SMPA (DO-221BC),1
 "Diode 6: Ultrafast rectifier 1 A 1200 V, automotive (gate-driver bootstrap / desat)",STMicroelectronics,STTH112UFY,SMBflat,16
 "Inductor 1: Power inductor 22 µH, 10 × 10 mm",Vishay,IHLP4040DZER220M,SMD 10x10 (larger than 1210 case),1
 "Inductor 2: Isolated gate-driver supply transformer, 8 pins (customer part, marking read)",XFMRS,XFMRS 2539 BMW-8-15T,SMD 8-pin ~12x10,8
-"Inductor 3: SMD inductor 3.3 mH, 6.3 × 6 mm",TDK,B82462G4332M000,SMD 6x6 (larger than 1210 case),1
+"Inductor 3: SMD power inductor 3.3 µH, 6.3 × 6.3 mm",TDK,B82462G4332M000,SMD 6x6 (larger than 1210 case),1
 "Inductor 4: Power inductor 4.7 µH, automotive",Coilcraft,XEL4030V-472ME,SMD 4x4 (larger than 1210 case),1
 Capacitor 1: Polymer aluminium capacitor 100 µF 35 V (marking K 768 35Y06 100 read),KEMET,A768KE107M1VLAS036,SMD can 8 mm,1
 "Capacitor 2: MKP film safety capacitor 2.2 nF Y1 440 VAC (marking MKP 222K 440~ read), silicone-staked",Xiamen Faratronic,C47S1222K60,"THT box 17.5×12 mm, 15 mm pitch",4

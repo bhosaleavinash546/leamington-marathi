@@ -30,18 +30,19 @@ ASM = OrderedDict([
  ('Through-hole soldering', (I['thtJoints'] * I['thtUsdJ'] / USD, f"{I['thtJoints']} joints (ACS37601 × 2, film capacitors × 4, power resistors × 2) × US${I['thtUsdJ']} ÷ {USD} (JLCPCB list)", 'listed')),
  ('Line changeover', (2 * I['changeH'] * (I['smtHS'] + 2 * op) / I['lot'], f"2 sides × {I['changeH']} h × (£{I['smtHS']:.2f} line + 2 × £{op:.2f} operators)/h ÷ {I['lot']:,} boards a lot", 'rate')),
  ('X-ray of the TC389 BGA', (I['xraySec'] / 3600 * (I['xray'] + op), f"{I['xraySec']} s × (£{I['xray']:.2f} X-ray cell + £{op:.2f} operator)/h", 'rate')),
- ('Conformal coating, selective (top side)', (I['coatCm2'] * I['coatRate'], f"{I['coatCm2']} cm² × £{I['coatRate']}/cm²", 'rate')),
+ ('Conformal coating: material', (I['coatCm2'] * I['coatDryUm'] / 1e4 / I['coatSolids'] / 1000 * I['coatGBPperL'], f"{I['coatCm2']} cm² × {I['coatDryUm']} µm dry ÷ {I['coatSolids']:.0%} solids = {I['coatCm2'] * I['coatDryUm'] / 1e4 / I['coatSolids']:.1f} mL × £{I['coatGBPperL']:.2f}/L (HumiSeal 1B31, 5 L can, Digi-Key)", 'rate')),
+ ('Conformal coating: selective coater', (I['coaterSec'] / 3600 * (I['smtStd'] + op), f"{I['coaterSec']} s × (£{I['smtStd']:.2f} coating cell + £{op:.2f} operator)/h", 'rate')),
  ('Coating UV inspection', (I['uvSec'] / 3600 * op, f"{I['uvSec']} s × £{op:.2f}/h", 'rate')),
  ('Silicone staking', (I['stakeDots'] * (I['stakeSec'] / 3600 * op + sil), f"{I['stakeDots']} dots × ({I['stakeSec']} s × £{op:.2f}/h + {I['stakeG']} g × £{I['siliconeGBPg']:.4f}/g silicone)", 'rate')),
- ('In-circuit test (ICT)', (I['ictSec'] / 3600 * (I['ict'] + op), f"{I['ictSec']} s × (£{I['ict']:.2f} tester + £{op:.2f} operator)/h", 'rate')),
+ ('In-circuit test (ICT)', (I['ictSec'] / 3600 * I['ict'], f"{I['ictSec']} s × £{I['ict']:.2f}/h tester (its rate-book build-up holds operator and overhead)", 'station')),
  ('TC389 programming', (I['progSec'] / 3600 * (I['progRate'] + op), f"{I['progSec']} s × (£{I['progRate']} station + £{op:.2f} operator)/h", 'rate')),
- ('Functional and isolation test', (I['fctSec'] / 3600 * (I['ict'] + tech), f"{I['fctSec']} s × (£{I['ict']:.2f} tester + £{tech:.2f} technician)/h", 'rate')),
+ ('Functional and isolation test', (I['fctSec'] / 3600 * I['ict'], f"{I['fctSec']} s × £{I['ict']:.2f}/h tester (operator and overhead inside its rate)", 'station')),
  ('Depanel', (I['depanelGBP'], f"¥0.50 a board ÷ {FX} (Huaqiu list)", 'listed')),
  ('Final inspection', (I['finalSec'] / 3600 * op, f"{I['finalSec']} s × £{op:.2f}/h", 'rate')),
  ('Packaging (ESD bag + divider)', (I['packCny'] / FX, f"¥1 bag + ¥0.002/cm² × {area_cm2:.0f} cm² = ¥{I['packCny']:.2f} ÷ {FX} (JLC list)", 'listed')),
 ])
-listed = sum(v[0] for v in ASM.values() if v[2] == 'listed'); rated = sum(v[0] for v in ASM.values() if v[2] == 'rate')
-oh = rated * I['unquotedOH']; assembly = listed + rated + oh
+listed = sum(v[0] for v in ASM.values() if v[2] == 'listed'); rated = sum(v[0] for v in ASM.values() if v[2] == 'rate'); station = sum(v[0] for v in ASM.values() if v[2] == 'station')
+oh = rated * I['unquotedOH']; assembly = listed + rated + station + oh
 rework = I['fpyRework'] * (I['reworkMin'] / 60 * tech + (I['ictSec'] + I['fctSec']) / 3600 * (I['ict'] + tech))
 scrap = I['scrap'] * (comp + burden + fab + assembly); quality = rework + scrap
 prog = I['boards'] * I['years']; nre_pb = I['nre'] / prog
@@ -110,7 +111,7 @@ summ += row(['<b>Ex-works China (built, tested, coated, packed)</b>', (f"<b>{gbp
 summ += row(['Sea freight to the UK', (gbp(freight), 'n'), (cny(freight), 'n'), ('', 'n')]) + row(['UK import duty (3.7 %, HS line to confirm)', (gbp(duty), 'n'), (cny(duty), 'n'), ('', 'n')])
 summ += row(['<b>Delivered UK, duty paid</b>', (f"<b>{gbp(delivered)}</b>", 'n'), (f"<b>{cny(delivered)}</b>", 'n'), ('', 'n')], 'tot')
 
-KIND = {'distributor': 'BOM part, distributor price carried to volume', 'catalogue': 'BOM part or family member, distributor price at volume',
+KIND = {'maker': 'BOM part, maker\'s price (TI.com) carried to volume', 'distributor': 'BOM part, distributor price carried to volume', 'catalogue': 'BOM part or family member, catalogue price carried to volume',
         'china-reel': 'Named part, China distributor reel carried to volume', 'mix': 'Value mix of named automotive parts', 'estimate': 'Estimate (stated)'}
 def src_html(l):
     out = []
@@ -128,7 +129,7 @@ kind_rows = ''.join(row([e(k), (a, 'n'), (b, 'n'), (gbp(c), 'n'), (f"{c / comp *
 all_rows = ''.join(row([e(l['bomRow']), f"{e(l['description'])}<br><span class=sm>{e(l['manufacturer'])} {e(l['partNumber'])}{' · ' if l['partNumber'] else ''}{e(l['pkg'])}</span>", (l['qty'], 'n'),
                         f"{src_html(l)}<br><span class=sm><i>{e(KIND.get(l['kind'], l['kind']))}{('. ' + e(l['basis'])) if l['basis'] else ''}</i></span>",
                         (f"{l['unitGBP']:.4f}", 'n'), (f"{l['lineGBP']:.2f}", 'n')]) for l in top)
-asm_rows = ''.join(row([e(k), (f"<span class=sm>{e(f)}</span>", ''), ('Price list' if t == 'listed' else 'Rate book × time', 'sm'), (gbp(v, 3), 'n')]) for k, (v, f, t) in ASM.items())
+asm_rows = ''.join(row([e(k), (f"<span class=sm>{e(f)}</span>", ''), ({'listed': 'Price list', 'rate': 'Rate book × time', 'station': 'Test station × time'}[t], 'sm'), (gbp(v, 3), 'n')]) for k, (v, f, t) in ASM.items())
 asm_rows += row(['Overhead on the rate-book operations', (f"<span class=sm>{I['unquotedOH'] * 100:.0f} % × {gbp(rated, 3)}</span>", ''), ('', ''), (gbp(oh, 3), 'n')])
 asm_rows += row(['<b>Assembly, test and coating</b>', ('', ''), ('', ''), (f"<b>{gbp(assembly)}</b>", 'n')], 'tot')
 NRE = [('Stencils (2 sides)', 600), ('ICT fixture', 12000), ('Functional / isolation test fixture', 25000), ('Coating program', 1500), ('Staking program', 1000),
@@ -156,7 +157,7 @@ def at(dcomp=0.0, dfab=0.0, dasm=0.0):
 tc = next(l for l in L if l['refDes'] == 'Integrated Circuit 1'); tc_list = tc['base']
 s_tc = at(dcomp=tc_list - tc['unitGBP'])
 xf = next(l for l in L if l['refDes'] == 'Inductor 2'); s_xf_lo, s_xf_hi = at(dcomp=8 * (0.931 - xf['unitGBP'])), at(dcomp=8 * (1.855 - xf['unitGBP']))
-s_sz_lo, s_sz_hi = at(dfab=fab * (0.95 ** 2 - 1), dasm=-I['coatCm2'] * I['coatRate'] * (1 - 0.95 ** 2)), at(dfab=fab * (1.05 ** 2 - 1), dasm=I['coatCm2'] * I['coatRate'] * (1.05 ** 2 - 1))
+s_sz_lo, s_sz_hi = at(dfab=fab * (0.95 ** 2 - 1), dasm=-ASM['Conformal coating: material'][0] * (1 - 0.95 ** 2)), at(dfab=fab * (1.05 ** 2 - 1), dasm=ASM['Conformal coating: material'][0] * (1.05 ** 2 - 1))
 
 def tool_rows(t): return [t['components'] + t['burden'], t['fab'] + t['fabAuto'], t['smt'] + t['test'] + t['asmAuto'], t['other'], t['exw'], t['freight'] + t['duty'], t['delivered']]
 mine = [comp + burden, fab, assembly, quality + nre_pb, exw, freight + duty, delivered]
@@ -191,7 +192,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <div class=box><b>What drives the cost.</b><ul>
 <li><b>Components are {(comp + burden) / exw * 100:.0f} % of the ex-works cost</b>: {len(L)} BOM lines, {n_parts:,} parts a board, every identity and quantity from the bill of materials.</li>
 <li><b>The six-channel gate drive is the largest group ({gbp(g_gate)})</b>: six UCC5880-Q1 functional-safety isolated drivers ({gbp(grp({'Integrated Circuit 11'}))}), three ADuM4135 ({gbp(grp({'Integrated Circuit 10'}))}), eight isolated-supply transformers ({gbp(grp({'Inductor 2'}))}), eleven TPS7B84-Q1 LDOs ({gbp(grp({'Integrated Circuit 5'}))}).</li>
-<li><b>The AURIX TC389 is the largest single part: {gbp(tc['unitGBP'])}</b> — Digi-Key's US$30.30 at 500 carried to 400,000 a year; with the TLF35584 safety supply the controller block is {gbp(g_ctrl)}.</li>
+<li><b>The AURIX TC389 is the largest single part: {gbp(tc['unitGBP'])}</b> — Digi-Key's US$30.30 at 500 carried to 400,000 a year (Infineon's own page shows no price); with the TLF35584 safety supply the controller block is {gbp(g_ctrl)}.</li>
 <li><b>The bare board is {gbp(fab)}</b>: {I['w']} × {I['h']} mm, 6 layers with 2 oz outer copper, at the China automotive market price a m².</li>
 <li><b>Assembly, test and coating are {gbp(assembly)}</b>; the 3,510 SMT joints at the Chinese list price are {gbp(ASM['SMT assembly, paste, reflow and AOI (both sides)'][0])}.</li></ul></div>
 <div class=box><b>The CostVision tool on the same BOM and photos</b> (live run, real server and browser): <b>{gbp(TC['exw'])} ex-works / {gbp(TC['delivered'])} delivered</b> with components at China market prices, {gbp(TG['exw'])} / {gbp(TG['delivered'])} at global distributor prices — {(TC['exw'] / exw - 1) * 100:+.1f} % and {(TG['exw'] / exw - 1) * 100:+.1f} % against this should-cost (§6).</div>
@@ -225,8 +226,8 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <table><tr><th class=n>#</th><th>BOM row</th><th>Part</th><th>Part number</th><th class=n>Qty</th><th class=n>Unit</th><th class=n>A board</th><th class=n>Share</th></tr>{top_rows}</table>
 <h3>How the part prices are set</h3><ul class=sm>
 <li><b>Every BOM part with a part number is priced as itself</b> (or its orderable reel / family code where the exact code is not listed, stated on the line). Each line's seller, price, quantity break, date and source page are in §8.</li>
-<li><b>Volume:</b> a price at a smaller break is carried to the parts bought a year (quantity a board × {I['boards']:,}) on P(Q) = P(break) × (Q / break)<sup>−0.0706</sup> (the CostVision catalogue's slope), flat above 300,000 parts a year for ICs, discretes and magnetics.</li>
-<li><b>Resistors and capacitors at the millions break (given):</b> carried on the same curve to 10,000,000 parts a year — each group is bought in tens of millions.</li>
+<li><b>Maker's price first:</b> the eight Texas Instruments parts take TI's own store price at 1,000+ (TI.com), below the distributors' at their largest breaks; the distributor figure stays on the line.</li>
+<li><b>Volume:</b> every price is carried from its break to the parts bought a year (quantity a board × {I['boards']:,}) on P(Q) = P(break) × (Q / break)<sup>−0.0706</sup> (the CostVision catalogue's slope), up to 10,000,000 a year — as given for resistors and capacitors, and at 400,000 boards most other lines are bought in millions too. Holding every non-passive line flat above 300,000 a year (the CostVision catalogue rule) puts components at {gbp(C['componentsFlat300k'])} (+{gbp(C['componentsFlat300k'] - comp)}).</li>
 <li><b>China reel prices</b> are szlcsc's own-stock whole-reel prices, ex-VAT (page price ÷ 1.13). <b>Capacitor groups</b> 0805 / 1206 are a value mix (judgement): half 100 nF, half 1 µF / 4.7 µF.</li></ul>
 
 <h2>4. Bare board — {gbp(fab)}</h2>
@@ -239,11 +240,11 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <div><h3>One-off tooling and fixtures</h3><table><tr><th>Item</th><th class=n>£</th></tr>{nre_rows}</table>
 <p class=sm>Estimates; spread over the programme. The automotive programme NRE (PPAP, FMEA, validation) is not in the unit cost.</p></div></div>
 
-<h2 class=pb>6. Cross-check: the CostVision tool, live</h2>
+<h2>6. Cross-check: the CostVision tool, live</h2>
 <p>The bill of materials (as a file) and eight photos went through CostVision's PCB screen on a real server and browser, with the board data typed in as an engineer would: China, 400,000 a year, 6 years, 6 layers, 2 oz outer / 1 oz inner copper, 1.6 mm, 210 g, coating on one side, 24 staking dots, programming 60 s, functional test 90 s, first-pass yield 0.97, a lot a month, and the TC389 at £{tc['unitGBP']:.2f}. Two runs: components at China market prices and at global distributor prices; 0 page errors.</p>
 <table><tr><th>£ a board</th><th class=n>This should-cost</th><th class=n>Tool, China market</th><th class=n>Tool, global distributors</th></tr>{xc_rows}</table>
 <ul class=sm>
-<li><b>Components.</b> The tool prices the BOM's catalogued part numbers (UCC5880-Q1, ADuM4135, TLF35584, TCAN1057, ACS37002) from its catalogue and every other line inside its class range; this should-cost prices every BOM part number from a distributor page read for this costing, and carries resistors and capacitors to the millions break. The tool's likely range: {TC['band']} (China market), {TG['band']} (global).</li>
+<li><b>Components — the main difference.</b> The tool holds every price flat above 300,000 parts a year and prices from distributor listings (its catalogue) or class ranges; this should-cost takes the maker's own price where it is published (the eight TI parts, TI.com 1,000+) and carries every line to the parts bought a year — at 400,000 boards most lines are bought in millions. The tool's likely range: {TC['band']} (China market), {TG['band']} (global).</li>
 <li><b>Where the tool's class prices differ most:</b> the two PWR221T power resistors and the film capacitors (priced by the tool as chip parts), the PANJIT MOSFETs and TI parts not in its catalogue (priced on IC class ranges) and 1210 capacitors (priced on its 1206 row).</li>
 <li><b>Assembly.</b> The tool costs placements at the China line rate, test as station time, coating on the full side and an automotive assembly grade; this should-cost uses the Chinese per-joint list prices and named operation times. The tool has no immersion-tin finish; immersion silver was entered (the market board price does not depend on the finish).</li></ul>
 
@@ -251,6 +252,7 @@ HTML = f"""<!doctype html><html><head><meta charset=utf-8><title>BMW rear invert
 <table><tr><th>Item</th><th>Status</th><th>Ex-works if</th></tr>
 {row(['TC389 price', f"Digi-Key US$30.30 at 500 carried to volume — BMW's contract price may differ; at the 500 price itself (£{tc_list:.2f})", (gbp(s_tc), 'n')])}
 {row(['Gate-drive transformers', 'Customer part (XFMRS BMW-8-15T), no public price: three catalogued equivalents give £0.93 – £1.86', (f"{gbp(s_xf_lo)} – {gbp(s_xf_hi)}", 'n')])}
+{row(['Volume rule', 'Non-passive lines held flat above 300,000 a year (CostVision catalogue rule) instead of carried to the parts bought', (gbp(at(dcomp=C['componentsFlat300k'] - comp)), 'n')])}
 {row(['Board size', 'Measured off a photo (±5 %): board and coating', (f"{gbp(s_sz_lo)} – {gbp(s_sz_hi)}", 'n')])}
 {row(['Unnamed BOM groups', '437 capacitors, 551 resistors, 69 diodes, 37 transistors: case sizes read off the photos, values not in the BOM', ('', 'n')])}
 {row(['Parts without a page price', 'ACS37601 (sample-only: priced as ACS37612), XEL4030V (as XEL4030), Faratronic film capacitor (LCSC snapshot)', ('', 'n')])}

@@ -25,8 +25,10 @@ SLOPE, FLAT, PASSIVE_Q = 0.0706, 300000, 10_000_000
 BOARDS = 400000
 PASSIVE = re.compile(r'^(Capacitor 3|Resistor 2|Resistor 3)')
 
-def at_volume(base, brk, pa, passive):
-    cap = PASSIVE_Q if passive else FLAT
+# Every line is carried to the parts bought a year, capped at 10,000,000 (given for resistors and capacitors: suppliers buy
+# them in millions; at 400,000 boards most other lines are bought in millions too). The CostVision catalogue rule holds prices
+# flat above 300,000 a year — reported as a sensitivity (componentsFlat300k).
+def at_volume(base, brk, pa, passive, cap=PASSIVE_Q):
     if brk is None or pa <= brk: return base
     return base * (min(pa, cap) / brk) ** -SLOPE
 lines = []
@@ -35,7 +37,7 @@ for l in rd['lines']:
     passive = bool(PASSIVE.match(l['refDes']))
     pa = l['qty'] * BOARDS
     u = round(at_volume(s['base'], s['brk'], pa, passive), 6)
-    cap = PASSIVE_Q if passive else FLAT
+    cap = PASSIVE_Q
     step = f"£{s['base']:.5f} at {s['brk']:,} → {min(pa, cap):,} parts a year = £{u:.5f}" if s['brk'] and pa > s['brk'] else ''
     lines.append(dict(refDes=l['refDes'], bomRow=l['bomRow'], manufacturer=l['manufacturer'], partNumber=l['partNumber'], description=l['description'],
                       pkg=l['pkg'], qty=l['qty'], padsEach=l['padsEach'], unitGBP=u, base=s['base'], brk=s['brk'], kind=s['kind'], sources=s['sources'],
@@ -72,7 +74,11 @@ inp('xray', 45.8755, '£ / h', 'rate book', 'CostVision rate book, China: X-ray 
 inp('ict', 54.9548, '£ / h', 'rate book', 'CostVision rate book, China: ICT bed-of-nails test system (also the functional-tester proxy)')
 inp('progRate', 8, '£ / h', 'estimate', 'Programming station')
 inp('xraySec', 15, 's', 'estimate', '100 % X-ray of the TC389 BGA (one device), in line')
-inp('coatRate', 0.002635, '£ / cm²', 'table', 'CostVision PCB country table, China: conformal coating (material + machine)')
+inp('coatGBPperL', 372.63 / 5 / 1.27, '£ / litre', 'market', 'HumiSeal 1B31 acrylic, 5 L can (51313) US$372.63, Digi-Key, read 26 Nov 2026 — https://www.digikey.com/en/products/result?keywords=humiseal%201B31')
+inp('coatDryUm', 50, 'µm dry film', 'estimate', 'IPC-CC-830 acrylic dry film 25–75 µm: mid')
+inp('coatSolids', 0.26, 'fraction', 'estimate', 'Solids of a solvent-borne acrylic (1B31 data-sheet class, to confirm)')
+inp('coaterSec', 30, 's', 'estimate', 'Selective coating robot, top side, ~430 cm² of component area')
+inp('smtStd', 29.6453, '£ / h', 'rate book', 'CostVision rate book, China: SMT pick & place + reflow line, used as the selective-coating cell proxy')
 inp('coatCm2', 431, 'cm²', 'estimate', 'Partial coating (A2Mac1): the top side\'s component areas, ≈ 70 % of 280 × 220 mm (UV photo shows the top coated)')
 inp('uvSec', 15, 's', 'estimate', 'UV inspection of the coating')
 inp('stakeDots', 24, 'dots', 'reading', 'Silicone staking seen on the 8 gate-drive transformers and the 4 film capacitors: 2 dots a part')
@@ -99,6 +105,7 @@ v = {k: d['v'] for k, d in I.items()}
 C = {}
 C['programme'] = v['boards'] * v['years']
 C['components'] = round(sum(l['lineGBP'] for l in lines), 6)
+C['componentsFlat300k'] = sum(l['qty'] * at_volume(l['base'], l['brk'], l['qty'] * BOARDS, False, cap=FLAT) for l in lines)
 C['burdenGBP'] = C['components'] * v['burden']
 m2 = v['w'] * v['h'] / 1e6
 C['aspShape'] = (v['base2L'] + v['layerAdd'] * (v['layers'] - 2)) / (v['base2L'] + v['layerAdd'] * (v['aspAnchor'] - 2))
@@ -110,20 +117,22 @@ A['SMT assembly incl. paste, reflow and AOI (per joint, both sides)'] = ('listed
 A['Through-hole soldering (20 joints)'] = ('listed', v['thtJoints'] * v['thtUsdJ'] / v['usd'])
 A['Line changeover (2 sides, per lot)'] = ('rate', 2 * v['changeH'] * (v['smtHS'] + 2 * op) / v['lot'])
 A['X-ray of the BGA'] = ('rate', v['xraySec'] / 3600 * (v['xray'] + op))
-A['Conformal coating, selective (top side)'] = ('rate', v['coatCm2'] * v['coatRate'])
+A['Conformal coating, selective (top side): material'] = ('rate', v['coatCm2'] * v['coatDryUm'] / 1e4 / v['coatSolids'] / 1000 * v['coatGBPperL'])
+A['Conformal coating, selective (top side): coater'] = ('rate', v['coaterSec'] / 3600 * (v['smtStd'] + op))
 A['Coating UV inspection'] = ('rate', v['uvSec'] / 3600 * op)
 A['Silicone staking (transformers, film capacitors)'] = ('rate', v['stakeDots'] * (v['stakeSec'] / 3600 * op + v['stakeG'] * v['siliconeGBPg']))
-A['ICT'] = ('rate', v['ictSec'] / 3600 * (v['ict'] + op))
+A['ICT'] = ('station', v['ictSec'] / 3600 * v['ict'])
 A['MCU programming'] = ('rate', v['progSec'] / 3600 * (v['progRate'] + op))
-A['Functional and isolation test'] = ('rate', v['fctSec'] / 3600 * (v['ict'] + tech))
+A['Functional and isolation test'] = ('station', v['fctSec'] / 3600 * v['ict'])
 A['Depanel'] = ('listed', v['depanelGBP'])
 A['Final inspection'] = ('rate', v['finalSec'] / 3600 * op)
 A['Packaging (ESD bag + divider)'] = ('listed', v['packCny'] / v['fx'])
 C['assemblyItems'] = {k: x for k, (_, x) in A.items()}
 C['listedGBP'] = sum(x for t, x in A.values() if t == 'listed')
 C['rateGBP'] = sum(x for t, x in A.values() if t == 'rate')
+C['stationGBP'] = sum(x for t, x in A.values() if t == 'station')   # rate-book test stations: their build-up already holds operator and overhead
 C['ohGBP'] = C['rateGBP'] * v['unquotedOH']
-C['assembly'] = C['listedGBP'] + C['rateGBP'] + C['ohGBP']
+C['assembly'] = C['listedGBP'] + C['rateGBP'] + C['stationGBP'] + C['ohGBP']
 C['rework'] = v['fpyRework'] * (v['reworkMin'] / 60 * tech + (v['ictSec'] + v['fctSec']) / 3600 * (v['ict'] + tech))
 C['scrapGBP'] = v['scrap'] * (C['components'] + C['burdenGBP'] + C['fab'] + C['assembly'])
 C['quality'] = C['rework'] + C['scrapGBP']
@@ -164,12 +173,13 @@ AF = [
  ('Through-hole soldering (20 joints)', f"={ref['thtJoints']}*{ref['thtUsdJ']}/{ref['usd']}", 'listed'),
  ('Line changeover (2 sides, per lot)', f"=2*{ref['changeH']}*({ref['smtHS']}+2*{ref['opRate']})/{ref['lot']}", 'rate'),
  ('X-ray of the BGA', f"={ref['xraySec']}/3600*({ref['xray']}+{ref['opRate']})", 'rate'),
- ('Conformal coating, selective (top side)', f"={ref['coatCm2']}*{ref['coatRate']}", 'rate'),
+ ('Conformal coating, selective (top side): material', f"={ref['coatCm2']}*{ref['coatDryUm']}/10000/{ref['coatSolids']}/1000*{ref['coatGBPperL']}", 'rate'),
+ ('Conformal coating, selective (top side): coater', f"={ref['coaterSec']}/3600*({ref['smtStd']}+{ref['opRate']})", 'rate'),
  ('Coating UV inspection', f"={ref['uvSec']}/3600*{ref['opRate']}", 'rate'),
  ('Silicone staking (transformers, film capacitors)', f"={ref['stakeDots']}*({ref['stakeSec']}/3600*{ref['opRate']}+{ref['stakeG']}*{ref['siliconeGBPg']})", 'rate'),
- ('ICT', f"={ref['ictSec']}/3600*({ref['ict']}+{ref['opRate']})", 'rate'),
+ ('ICT', f"={ref['ictSec']}/3600*{ref['ict']}", 'station'),
  ('MCU programming', f"={ref['progSec']}/3600*({ref['progRate']}+{ref['opRate']})", 'rate'),
- ('Functional and isolation test', f"={ref['fctSec']}/3600*({ref['ict']}+{ref['techRate']})", 'rate'),
+ ('Functional and isolation test', f"={ref['fctSec']}/3600*{ref['ict']}", 'station'),
  ('Depanel', f"={ref['depanelGBP']}", 'listed'),
  ('Final inspection', f"={ref['finalSec']}/3600*{ref['opRate']}", 'rate'),
  ('Packaging (ESD bag + divider)', f"={ref['packCny']}/{ref['fx']}", 'listed')]

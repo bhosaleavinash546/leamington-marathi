@@ -41,7 +41,7 @@ add('Diode 5', 'diode_zener', 'onsemi', 'SZ1SMA5934BT3G', 3, 'Zener diode 24 V 1
 add('Diode 6', 'diode', 'STMicroelectronics', 'STTH112UFY', 16, 'Ultrafast rectifier 1 A 1200 V, automotive (gate-driver bootstrap / desat)', 'SMBflat', 2)
 add('Inductor 1', 'inductor_power', 'Vishay', 'IHLP4040DZER220M', 1, 'Power inductor 22 µH, 10 × 10 mm', 'SMD 10x10 (larger than 1210 case)', 2)
 add('Inductor 2', 'transformer', 'XFMRS', 'XFMRS 2539 BMW-8-15T', 8, 'Isolated gate-driver supply transformer, 8 pins (customer part, marking read)', 'SMD 8-pin ~12x10', 8)
-add('Inductor 3', 'inductor', 'TDK', 'B82462G4332M000', 1, 'SMD inductor 3.3 mH, 6.3 × 6 mm', 'SMD 6x6 (larger than 1210 case)', 2)
+add('Inductor 3', 'inductor', 'TDK', 'B82462G4332M000', 1, 'SMD power inductor 3.3 µH, 6.3 × 6.3 mm', 'SMD 6x6 (larger than 1210 case)', 2)
 add('Inductor 4', 'inductor_power', 'Coilcraft', 'XEL4030V-472ME', 1, 'Power inductor 4.7 µH, automotive', 'SMD 4x4 (larger than 1210 case)', 2)
 add('Capacitor 1', 'capacitor', 'KEMET', 'A768KE107M1VLAS036', 1, 'Polymer aluminium capacitor 100 µF 35 V (marking K 768 35Y06 100 read)', 'SMD can 8 mm', 2)
 add('Capacitor 2', 'capacitor', 'Xiamen Faratronic', 'C47S1222K60', 4, 'MKP film safety capacitor 2.2 nF Y1 440 VAC (marking MKP 222K 440~ read), silicone-staked', 'THT box 17.5×12 mm, 15 mm pitch', 0)

@@ -174,11 +174,35 @@
    "cls": "estimate",
    "basis": "100 % X-ray of the TC389 BGA (one device), in line"
   },
-  "coatRate": {
-   "v": 0.002635,
-   "unit": "£ / cm²",
-   "cls": "table",
-   "basis": "CostVision PCB country table, China: conformal coating (material + machine)"
+  "coatGBPperL": {
+   "v": 58.68188976377952,
+   "unit": "£ / litre",
+   "cls": "market",
+   "basis": "HumiSeal 1B31 acrylic, 5 L can (51313) US$372.63, Digi-Key, read 26 Nov 2026 — https://www.digikey.com/en/products/result?keywords=humiseal%201B31"
+  },
+  "coatDryUm": {
+   "v": 50,
+   "unit": "µm dry film",
+   "cls": "estimate",
+   "basis": "IPC-CC-830 acrylic dry film 25–75 µm: mid"
+  },
+  "coatSolids": {
+   "v": 0.26,
+   "unit": "fraction",
+   "cls": "estimate",
+   "basis": "Solids of a solvent-borne acrylic (1B31 data-sheet class, to confirm)"
+  },
+  "coaterSec": {
+   "v": 30,
+   "unit": "s",
+   "cls": "estimate",
+   "basis": "Selective coating robot, top side, ~430 cm² of component area"
+  },
+  "smtStd": {
+   "v": 29.6453,
+   "unit": "£ / h",
+   "cls": "rate book",
+   "basis": "CostVision rate book, China: SMT pick & place + reflow line, used as the selective-coating cell proxy"
   },
   "coatCm2": {
    "v": 431,
@@ -317,7 +341,7 @@
    "pkg": "LFBGA-516 (25 × 25 mm)",
    "qty": 1,
    "padsEach": 516,
-   "unitGBP": 15.189072,
+   "unitGBP": 14.883688,
    "base": 23.859905511811025,
    "brk": 500,
    "kind": "distributor",
@@ -341,9 +365,9 @@
      "url": "https://www.digikey.cn/en/products/detail/infineon-technologies/TC389QP160F300SAEKXUMA2/20841832"
     }
    ],
-   "basis": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; £23.85991 at 500 → 300,000 parts a year = £15.18907",
+   "basis": "package LFBGA-516 (every TC389QP orderable); not BMW's contract price; £23.85991 at 500 → 400,000 parts a year = £14.88369",
    "passive": false,
-   "lineGBP": 15.189072
+   "lineGBP": 14.883688
   },
   {
    "refDes": "Integrated Circuit 2",
@@ -354,9 +378,9 @@
    "pkg": "VQFN-48",
    "qty": 1,
    "padsEach": 49,
-   "unitGBP": 2.0483,
+   "unitGBP": 2.007118,
    "base": 2.0483,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -369,9 +393,9 @@
      "url": "https://www.mouser.com/c/?q=TLF35584QVVS2"
     }
    ],
-   "basis": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue)",
+   "basis": "sibling orderable of the BOM's TLF35584QVVS1; £2.0483 at 300k (catalogue); £2.04830 at 300,000 → 400,000 parts a year = £2.00712",
    "passive": false,
-   "lineGBP": 2.0483
+   "lineGBP": 2.007118
   },
   {
    "refDes": "Integrated Circuit 3",
@@ -382,11 +406,20 @@
    "pkg": "HTSSOP-16",
    "qty": 1,
    "padsEach": 17,
-   "unitGBP": 1.031456,
-   "base": 1.3990393700787402,
-   "brk": 4000,
-   "kind": "distributor",
+   "unitGBP": 0.658691,
+   "base": 1.0055118110236219,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "LM74202QPWPRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.277 at 1,000+ (1–99 $2.860 · 100–249 $2.362 · 250–999 $1.697 · 1,000+ $1.277)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/LM74202-Q1/part-details/LM74202QPWPRQ1"
+    },
     {
      "mpn": "LM74202QPWPRQ1",
      "maker": "Texas Instruments",
@@ -397,9 +430,9 @@
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74202QPWPRQ1/10715541"
     }
    ],
-   "basis": "£1.39904 at 4,000 → 300,000 parts a year = £1.03146",
+   "basis": "£1.00551 at 1,000 → 400,000 parts a year = £0.65869",
    "passive": false,
-   "lineGBP": 1.031456
+   "lineGBP": 0.658691
   },
   {
    "refDes": "Integrated Circuit 4",
@@ -410,11 +443,20 @@
    "pkg": "SOIC-8",
    "qty": 3,
    "padsEach": 8,
-   "unitGBP": 0.2442,
-   "base": 0.2442,
-   "brk": null,
-   "kind": "catalogue",
+   "unitGBP": 0.22052,
+   "base": 0.3637795275590551,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "TCAN1057AVDRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.462 at 1,000+ (1–99 $1.140 · 100–249 $0.877 · 250–999 $0.646 · 1,000+ $0.462)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TCAN1057A-Q1/part-details/TCAN1057AVDRQ1"
+    },
     {
      "mpn": "TCAN1057AVDRQ1",
      "maker": "Texas Instruments",
@@ -425,9 +467,9 @@
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1057AVDRQ1/15857088"
     }
    ],
-   "basis": "£0.2442 at 300k (catalogue)",
+   "basis": "£0.36378 at 1,000 → 1,200,000 parts a year = £0.22052",
    "passive": false,
-   "lineGBP": 0.7326
+   "lineGBP": 0.66156
   },
   {
    "refDes": "Integrated Circuit 5",
@@ -438,11 +480,20 @@
    "pkg": "VSON-8 (DRB)",
    "qty": 11,
    "padsEach": 9,
-   "unitGBP": 0.677522,
-   "base": 0.8930393700787402,
-   "brk": 6000,
-   "kind": "distributor",
+   "unitGBP": 0.409351,
+   "base": 0.7401574803149605,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "TPS7B8401QWDRBRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.940 at 1,000+ (1–99 $2.105 · 100–249 $1.739 · 250–999 $1.248 · 1,000+ $0.940)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TPS7B84-Q1/part-details/TPS7B8401QWDRBRQ1"
+    },
     {
      "mpn": "TPS7B8401QWDRBRQ1",
      "maker": "Texas Instruments",
@@ -453,9 +504,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=TPS7B8401QWDRBRQ1"
     }
    ],
-   "basis": "£0.89304 at 6,000 → 300,000 parts a year = £0.67752",
+   "basis": "£0.74016 at 1,000 → 4,400,000 parts a year = £0.40935",
    "passive": false,
-   "lineGBP": 7.452742
+   "lineGBP": 4.502861
   },
   {
    "refDes": "Integrated Circuit 6",
@@ -466,11 +517,20 @@
    "pkg": "VSON-10 (DRC)",
    "qty": 2,
    "padsEach": 11,
-   "unitGBP": 1.168767,
-   "base": 1.617811023622047,
-   "brk": 3000,
-   "kind": "distributor",
+   "unitGBP": 0.938148,
+   "base": 1.5039370078740157,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "UCC27282QDRCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.910 at 1,000+ (1–99 $4.278 · 100–249 $3.533 · 250–999 $2.538 · 1,000+ $1.910)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/UCC27282-Q1/part-details/UCC27282QDRCRQ1"
+    },
     {
      "mpn": "UCC27282QDRCRQ1",
      "maker": "Texas Instruments",
@@ -481,9 +541,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=UCC27282QDRCRQ1"
     }
    ],
-   "basis": "£1.61781 at 3,000 → 300,000 parts a year = £1.16877",
+   "basis": "£1.50394 at 1,000 → 800,000 parts a year = £0.93815",
    "passive": false,
-   "lineGBP": 2.337534
+   "lineGBP": 1.876296
   },
   {
    "refDes": "Integrated Circuit 7",
@@ -494,11 +554,20 @@
    "pkg": "TSSOP-14",
    "qty": 3,
    "padsEach": 14,
-   "unitGBP": 0.345977,
-   "base": 0.42746456692913387,
-   "brk": 15000,
-   "kind": "distributor",
+   "unitGBP": 0.24534,
+   "base": 0.4047244094488189,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "TLV9004QPWRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$0.514 at 1,000+ (1–99 $1.474 · 100–249 $1.001 · 250–999 $0.773 · 1,000+ $0.514)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/TLV9004-Q1/part-details/TLV9004QPWRQ1"
+    },
     {
      "mpn": "TLV9004QPWRQ1",
      "maker": "Texas Instruments",
@@ -509,9 +578,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=TLV9004QPWRQ1"
     }
    ],
-   "basis": "£0.42746 at 15,000 → 300,000 parts a year = £0.34598",
+   "basis": "£0.40472 at 1,000 → 1,200,000 parts a year = £0.24534",
    "passive": false,
-   "lineGBP": 1.037931
+   "lineGBP": 0.73602
   },
   {
    "refDes": "Integrated Circuit 8",
@@ -522,7 +591,7 @@
    "pkg": "TSSOP-14",
    "qty": 2,
    "padsEach": 14,
-   "unitGBP": 0.114263,
+   "unitGBP": 0.106619,
    "base": 0.16021259842519686,
    "brk": 2500,
    "kind": "distributor",
@@ -537,9 +606,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=74HC4075PW"
     }
    ],
-   "basis": "£0.16021 at 2,500 → 300,000 parts a year = £0.11426",
+   "basis": "£0.16021 at 2,500 → 800,000 parts a year = £0.10662",
    "passive": false,
-   "lineGBP": 0.228526
+   "lineGBP": 0.213238
   },
   {
    "refDes": "Integrated Circuit 9",
@@ -550,11 +619,20 @@
    "pkg": "SOIC-8 wide",
    "qty": 1,
    "padsEach": 8,
-   "unitGBP": 2.357826,
-   "base": 3.3584881889763776,
-   "brk": 2000,
-   "kind": "distributor",
+   "unitGBP": 1.578383,
+   "base": 2.409448818897638,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "AMC1211AQDWVRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$3.060 at 1,000+ (1–99 $5.630 · 100–249 $4.590 · 250–999 $3.608 · 1,000+ $3.060)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/AMC1211-Q1/part-details/AMC1211AQDWVRQ1"
+    },
     {
      "mpn": "AMC1211AQDWVRQ1",
      "maker": "Texas Instruments",
@@ -565,9 +643,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=AMC1211AQDWVRQ1"
     }
    ],
-   "basis": "reel code of the BOM's tube code; £3.35849 at 2,000 → 300,000 parts a year = £2.35783",
+   "basis": "reel code of the BOM's tube code; £2.40945 at 1,000 → 400,000 parts a year = £1.57838",
    "passive": false,
-   "lineGBP": 2.357826
+   "lineGBP": 1.578383
   },
   {
    "refDes": "Integrated Circuit 10",
@@ -578,9 +656,9 @@
    "pkg": "SOIC-16 wide",
    "qty": 3,
    "padsEach": 16,
-   "unitGBP": 2.541,
+   "unitGBP": 2.304089,
    "base": 2.541,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -593,9 +671,9 @@
      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084"
     }
    ],
-   "basis": "£2.541 at 300k (catalogue)",
+   "basis": "£2.541 at 300k (catalogue); £2.54100 at 300,000 → 1,200,000 parts a year = £2.30409",
    "passive": false,
-   "lineGBP": 7.623
+   "lineGBP": 6.912267
   },
   {
    "refDes": "Integrated Circuit 11",
@@ -606,11 +684,20 @@
    "pkg": "SSOP-32",
    "qty": 6,
    "padsEach": 32,
-   "unitGBP": 3.1819,
-   "base": 3.1819,
-   "brk": null,
-   "kind": "catalogue",
+   "unitGBP": 2.336689,
+   "base": 4.048031496062992,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "UCC5880QDFCRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$5.141 at 1,000+ (1–99 $8.534 · 100–249 $7.454 · 250–999 $5.748 · 1,000+ $5.141)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/UCC5880-Q1/part-details/UCC5880QDFCRQ1"
+    },
     {
      "mpn": "UCC5880QDFCRQ1",
      "maker": "Texas Instruments",
@@ -621,9 +708,9 @@
      "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588"
     }
    ],
-   "basis": "£3.1819 at 300k (catalogue)",
+   "basis": "£4.04803 at 1,000 → 2,400,000 parts a year = £2.33669",
    "passive": false,
-   "lineGBP": 19.0914
+   "lineGBP": 14.020134
   },
   {
    "refDes": "Integrated Circuit 12",
@@ -634,7 +721,7 @@
    "pkg": "SO-8",
    "qty": 1,
    "padsEach": 8,
-   "unitGBP": 0.085291,
+   "unitGBP": 0.083576,
    "base": 0.11959,
    "brk": 2500,
    "kind": "china-reel",
@@ -649,9 +736,9 @@
      "url": "https://item.szlcsc.com/4226854.html"
     }
    ],
-   "basis": "the -Q1 dual comparator; £0.11959 at 2,500 → 300,000 parts a year = £0.08529",
+   "basis": "the -Q1 dual comparator; £0.11959 at 2,500 → 400,000 parts a year = £0.08358",
    "passive": false,
-   "lineGBP": 0.085291
+   "lineGBP": 0.083576
   },
   {
    "refDes": "Integrated Circuit 13",
@@ -662,11 +749,20 @@
    "pkg": "WSON-12",
    "qty": 1,
    "padsEach": 13,
-   "unitGBP": 0.979186,
-   "base": 1.2906614173228346,
-   "brk": 6000,
-   "kind": "distributor",
+   "unitGBP": 0.6133,
+   "base": 0.9362204724409449,
+   "brk": 1000,
+   "kind": "maker",
    "sources": [
+    {
+     "mpn": "LM5155QDSSRQ1",
+     "maker": "Texas Instruments",
+     "grade": "AEC-Q100",
+     "seller": "TI.com (maker)",
+     "quote": "US$1.189 at 1,000+ (1–99 $2.663 · 100–249 $2.200 · 250–999 $1.580 · 1,000+ $1.189)",
+     "date": "26 Nov 2026",
+     "url": "https://www.ti.com/product/LM5155-Q1/part-details/LM5155QDSSRQ1"
+    },
     {
      "mpn": "LM5155QDSSRQ1",
      "maker": "Texas Instruments",
@@ -677,9 +773,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=LM5155QDSSRQ1"
     }
    ],
-   "basis": "£1.29066 at 6,000 → 300,000 parts a year = £0.97919",
+   "basis": "£0.93622 at 1,000 → 400,000 parts a year = £0.61330",
    "passive": false,
-   "lineGBP": 0.979186
+   "lineGBP": 0.6133
   },
   {
    "refDes": "Sensor 1",
@@ -690,9 +786,9 @@
    "pkg": "SOIC-16 wide",
    "qty": 2,
    "padsEach": 16,
-   "unitGBP": 1.7749,
+   "unitGBP": 1.656153,
    "base": 1.7749,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -705,9 +801,9 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511"
     }
    ],
-   "basis": "£1.7749 at 300k (catalogue)",
+   "basis": "£1.7749 at 300k (catalogue); £1.77490 at 300,000 → 800,000 parts a year = £1.65615",
    "passive": false,
-   "lineGBP": 3.5498
+   "lineGBP": 3.312306
   },
   {
    "refDes": "Sensor 2",
@@ -718,9 +814,9 @@
    "pkg": "SIP-4 (through-hole)",
    "qty": 2,
    "padsEach": 0,
-   "unitGBP": 1.2983,
+   "unitGBP": 1.211439,
    "base": 1.2983,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -733,9 +829,9 @@
      "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37612LLUATR-015B5/12093264"
     }
    ],
-   "basis": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue)",
+   "basis": "ACS37601 (4-pin SIP) is sample-only on Allegro's page, no distributor price: priced as its family member ACS37612, £1.2983 at 300k (catalogue); £1.29830 at 300,000 → 800,000 parts a year = £1.21144",
    "passive": false,
-   "lineGBP": 2.5966
+   "lineGBP": 2.422878
   },
   {
    "refDes": "Transistor 1",
@@ -746,7 +842,7 @@
    "pkg": "DFN3333-8",
    "qty": 1,
    "padsEach": 8,
-   "unitGBP": 0.118659,
+   "unitGBP": 0.116273,
    "base": 0.1466062992125984,
    "brk": 15000,
    "kind": "distributor",
@@ -761,9 +857,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ4548P-AU"
     }
    ],
-   "basis": "£0.14661 at 15,000 → 300,000 parts a year = £0.11866",
+   "basis": "£0.14661 at 15,000 → 400,000 parts a year = £0.11627",
    "passive": false,
-   "lineGBP": 0.118659
+   "lineGBP": 0.116273
   },
   {
    "refDes": "Transistor 2",
@@ -774,7 +870,7 @@
    "pkg": "DFN5060-8",
    "qty": 2,
    "padsEach": 8,
-   "unitGBP": 0.203222,
+   "unitGBP": 0.189626,
    "base": 0.26786614173228346,
    "brk": 6000,
    "kind": "distributor",
@@ -789,9 +885,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PJQ5948-AU"
     }
    ],
-   "basis": "£0.26787 at 6,000 → 300,000 parts a year = £0.20322",
+   "basis": "£0.26787 at 6,000 → 800,000 parts a year = £0.18963",
    "passive": false,
-   "lineGBP": 0.406444
+   "lineGBP": 0.379252
   },
   {
    "refDes": "Crystal 1",
@@ -802,9 +898,9 @@
    "pkg": "SMD 3225",
    "qty": 1,
    "padsEach": 4,
-   "unitGBP": 0.0642,
+   "unitGBP": 0.062909,
    "base": 0.0642,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -817,9 +913,9 @@
      "url": "https://www.lcsc.com/product-image/C438901.html"
     }
    ],
-   "basis": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue)",
+   "basis": "the 25 MHz sibling of the BOM's 20 MHz part; £0.0642 at 300k (catalogue); £0.06420 at 300,000 → 400,000 parts a year = £0.06291",
    "passive": false,
-   "lineGBP": 0.0642
+   "lineGBP": 0.062909
   },
   {
    "refDes": "Diode 1",
@@ -830,7 +926,7 @@
    "pkg": "SMB",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.110884,
+   "unitGBP": 0.108655,
    "base": 0.14138582677165354,
    "brk": 9600,
    "kind": "distributor",
@@ -845,9 +941,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SMBJ15AHE3_B/I"
     }
    ],
-   "basis": "£0.14139 at 9,600 → 300,000 parts a year = £0.11088",
+   "basis": "£0.14139 at 9,600 → 400,000 parts a year = £0.10866",
    "passive": false,
-   "lineGBP": 0.110884
+   "lineGBP": 0.108655
   },
   {
    "refDes": "Diode 2",
@@ -858,7 +954,7 @@
    "pkg": "SMC",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.171047,
+   "unitGBP": 0.167608,
    "base": 0.21909448818897637,
    "brk": 9000,
    "kind": "distributor",
@@ -873,9 +969,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=littelfuse%20TPSMC33A"
     }
    ],
-   "basis": "£0.21909 at 9,000 → 300,000 parts a year = £0.17105",
+   "basis": "£0.21909 at 9,000 → 400,000 parts a year = £0.16761",
    "passive": false,
-   "lineGBP": 0.171047
+   "lineGBP": 0.167608
   },
   {
    "refDes": "Diode 3",
@@ -886,7 +982,7 @@
    "pkg": "SMPA (DO-221BC)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.107346,
+   "unitGBP": 0.105188,
    "base": 0.12333070866141732,
    "brk": 42000,
    "kind": "distributor",
@@ -901,9 +997,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=VSSAF3L45HM3_A/I"
     }
    ],
-   "basis": "£0.12333 at 42,000 → 300,000 parts a year = £0.10735",
+   "basis": "£0.12333 at 42,000 → 400,000 parts a year = £0.10519",
    "passive": false,
-   "lineGBP": 0.107346
+   "lineGBP": 0.105188
   },
   {
    "refDes": "Diode 4",
@@ -914,7 +1010,7 @@
    "pkg": "SMA",
    "qty": 6,
    "padsEach": 2,
-   "unitGBP": 0.155033,
+   "unitGBP": 0.133865,
    "base": 0.19711023622047244,
    "brk": 10000,
    "kind": "distributor",
@@ -929,9 +1025,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5936BT3G"
     }
    ],
-   "basis": "£0.19711 at 10,000 → 300,000 parts a year = £0.15503",
+   "basis": "£0.19711 at 10,000 → 2,400,000 parts a year = £0.13387",
    "passive": false,
-   "lineGBP": 0.930198
+   "lineGBP": 0.80319
   },
   {
    "refDes": "Diode 5",
@@ -942,7 +1038,7 @@
    "pkg": "SMA",
    "qty": 3,
    "padsEach": 2,
-   "unitGBP": 0.155033,
+   "unitGBP": 0.140579,
    "base": 0.19711023622047244,
    "brk": 10000,
    "kind": "distributor",
@@ -957,9 +1053,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=SZ1SMA5934BT3G"
     }
    ],
-   "basis": "£0.19711 at 10,000 → 300,000 parts a year = £0.15503",
+   "basis": "£0.19711 at 10,000 → 1,200,000 parts a year = £0.14058",
    "passive": false,
-   "lineGBP": 0.465099
+   "lineGBP": 0.421737
   },
   {
    "refDes": "Diode 6",
@@ -970,7 +1066,7 @@
    "pkg": "SMBflat",
    "qty": 16,
    "padsEach": 2,
-   "unitGBP": 0.153921,
+   "unitGBP": 0.124012,
    "base": 0.1901732283464567,
    "brk": 15000,
    "kind": "distributor",
@@ -985,9 +1081,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=STTH112UFY"
     }
    ],
-   "basis": "£0.19017 at 15,000 → 300,000 parts a year = £0.15392",
+   "basis": "£0.19017 at 15,000 → 6,400,000 parts a year = £0.12401",
    "passive": false,
-   "lineGBP": 2.462736
+   "lineGBP": 1.984192
   },
   {
    "refDes": "Inductor 1",
@@ -998,7 +1094,7 @@
    "pkg": "SMD 10x10 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.378222,
+   "unitGBP": 0.370618,
    "base": 0.504992125984252,
    "brk": 5000,
    "kind": "distributor",
@@ -1013,9 +1109,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=IHLP4040DZER220M1A"
     }
    ],
-   "basis": "£0.50499 at 5,000 → 300,000 parts a year = £0.37822",
+   "basis": "£0.50499 at 5,000 → 400,000 parts a year = £0.37062",
    "passive": false,
-   "lineGBP": 0.378222
+   "lineGBP": 0.370618
   },
   {
    "refDes": "Inductor 2",
@@ -1026,7 +1122,7 @@
    "pkg": "SMD 8-pin ~12x10",
    "qty": 8,
    "padsEach": 8,
-   "unitGBP": 0.964725,
+   "unitGBP": 0.816253,
    "base": 1.2899133858267717,
    "brk": 4900,
    "kind": "distributor",
@@ -1059,20 +1155,20 @@
      "url": "https://www.digikey.com/en/products/result?keywords=HCTSM8"
     }
    ],
-   "basis": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); £1.28991 at 4,900 → 300,000 parts a year = £0.96473",
+   "basis": "XFMRS customer part (BMW-8-15T), no public price: the middle of three catalogued SMD gate-drive transformers carried to volume (Würth £0.93, Pulse £0.97, Bourns £1.86); £1.28991 at 4,900 → 3,200,000 parts a year = £0.81625",
    "passive": false,
-   "lineGBP": 7.7178
+   "lineGBP": 6.530024
   },
   {
    "refDes": "Inductor 3",
    "bomRow": "Inductor 3",
    "manufacturer": "TDK",
    "partNumber": "B82462G4332M000",
-   "description": "SMD inductor 3.3 mH, 6.3 × 6 mm",
+   "description": "SMD power inductor 3.3 µH, 6.3 × 6.3 mm",
    "pkg": "SMD 6x6 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.406984,
+   "unitGBP": 0.398801,
    "base": 0.5093543307086614,
    "brk": 12500,
    "kind": "distributor",
@@ -1087,9 +1183,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=B82462G4332M000"
     }
    ],
-   "basis": "£0.50935 at 12,500 → 300,000 parts a year = £0.40698",
+   "basis": "£0.50935 at 12,500 → 400,000 parts a year = £0.39880",
    "passive": false,
-   "lineGBP": 0.406984
+   "lineGBP": 0.398801
   },
   {
    "refDes": "Inductor 4",
@@ -1100,9 +1196,9 @@
    "pkg": "SMD 4x4 (larger than 1210 case)",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.5504,
+   "unitGBP": 0.539334,
    "base": 0.5504,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -1115,9 +1211,9 @@
      "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC"
     }
    ],
-   "basis": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue)",
+   "basis": "XEL4030V-472ME (the automotive V version) not listed by any page that opened: priced as its catalogued family member, £0.5504 at 300k (catalogue); £0.55040 at 300,000 → 400,000 parts a year = £0.53933",
    "passive": false,
-   "lineGBP": 0.5504
+   "lineGBP": 0.539334
   },
   {
    "refDes": "Capacitor 1",
@@ -1128,7 +1224,7 @@
    "pkg": "SMD can 8 mm",
    "qty": 1,
    "padsEach": 2,
-   "unitGBP": 0.118896,
+   "unitGBP": 0.116506,
    "base": 0.15116535433070866,
    "brk": 10000,
    "kind": "distributor",
@@ -1143,9 +1239,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=A768KE107M1VLAS036"
     }
    ],
-   "basis": "£0.15117 at 10,000 → 300,000 parts a year = £0.11890",
+   "basis": "£0.15117 at 10,000 → 400,000 parts a year = £0.11651",
    "passive": false,
-   "lineGBP": 0.118896
+   "lineGBP": 0.116506
   },
   {
    "refDes": "Capacitor 2",
@@ -1156,7 +1252,7 @@
    "pkg": "THT box 17.5×12 mm, 15 mm pitch",
    "qty": 4,
    "padsEach": 0,
-   "unitGBP": 0.047179,
+   "unitGBP": 0.04192,
    "base": 0.06299212598425197,
    "brk": 5000,
    "kind": "estimate",
@@ -1171,9 +1267,9 @@
      "url": "https://www.lcsc.com/product-detail/C5452141.html"
     }
    ],
-   "basis": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified; £0.06299 at 5,000 → 300,000 parts a year = £0.04718",
+   "basis": "through-hole film capacitor, 15 mm pitch, 17.5 × 12 × 6 mm; price from LCSC's search snapshot, unverified; £0.06299 at 5,000 → 1,600,000 parts a year = £0.04192",
    "passive": false,
-   "lineGBP": 0.188716
+   "lineGBP": 0.16768
   },
   {
    "refDes": "Resistor 1",
@@ -1184,7 +1280,7 @@
    "pkg": "TO-220 full pack (through-hole)",
    "qty": 2,
    "padsEach": 0,
-   "unitGBP": 1.597497,
+   "unitGBP": 1.490619,
    "base": 2.3895984251968505,
    "brk": 1000,
    "kind": "distributor",
@@ -1199,9 +1295,9 @@
      "url": "https://www.digikey.com/en/products/result?keywords=PWR221T-30-1000F"
     }
    ],
-   "basis": "£2.38960 at 1,000 → 300,000 parts a year = £1.59750",
+   "basis": "£2.38960 at 1,000 → 800,000 parts a year = £1.49062",
    "passive": false,
-   "lineGBP": 3.194994
+   "lineGBP": 2.981238
   },
   {
    "refDes": "Capacitor 3 (0402)",
@@ -1510,7 +1606,7 @@
    "pkg": "SOD-323",
    "qty": 69,
    "padsEach": 2,
-   "unitGBP": 0.002377,
+   "unitGBP": 0.001856,
    "base": 0.00329,
    "brk": 3000,
    "kind": "china-reel",
@@ -1525,9 +1621,9 @@
      "url": "https://item.szlcsc.com/2877.html"
     }
    ],
-   "basis": "£0.00329 at 3,000 → 300,000 parts a year = £0.00238",
+   "basis": "£0.00329 at 3,000 → 10,000,000 parts a year = £0.00186",
    "passive": false,
-   "lineGBP": 0.164013
+   "lineGBP": 0.128064
   },
   {
    "refDes": "Discrete 3 Pins",
@@ -1538,7 +1634,7 @@
    "pkg": "SOT-23",
    "qty": 30,
    "padsEach": 3,
-   "unitGBP": 0.003215,
+   "unitGBP": 0.00251,
    "base": 0.00445,
    "brk": 3000,
    "kind": "china-reel",
@@ -1562,9 +1658,9 @@
      "url": "https://item.szlcsc.com/9163.html"
     }
    ],
-   "basis": "mean of the MOSFET and the BJT; £0.00445 at 3,000 → 300,000 parts a year = £0.00321",
+   "basis": "mean of the MOSFET and the BJT; £0.00445 at 3,000 → 10,000,000 parts a year = £0.00251",
    "passive": false,
-   "lineGBP": 0.09645
+   "lineGBP": 0.0753
   },
   {
    "refDes": "Discretes (4+ pins)",
@@ -1575,7 +1671,7 @@
    "pkg": "SOT-363",
    "qty": 7,
    "padsEach": 6,
-   "unitGBP": 0.00643,
+   "unitGBP": 0.005492,
    "base": 0.0089,
    "brk": 3000,
    "kind": "estimate",
@@ -1590,9 +1686,9 @@
      "url": "https://item.szlcsc.com/66260.html"
     }
    ],
-   "basis": "dual transistor in SOT-363: two small-signal dies (2 × the SOT-23 mean) — estimate; £0.00890 at 3,000 → 300,000 parts a year = £0.00643",
+   "basis": "dual transistor in SOT-363: two small-signal dies (2 × the SOT-23 mean) — estimate; £0.00890 at 3,000 → 2,800,000 parts a year = £0.00549",
    "passive": false,
-   "lineGBP": 0.04501
+   "lineGBP": 0.038444
   },
   {
    "refDes": "Ferrite 1",
@@ -1603,7 +1699,7 @@
    "pkg": "0603",
    "qty": 2,
    "padsEach": 2,
-   "unitGBP": 0.014399,
+   "unitGBP": 0.013435,
    "base": 0.01953,
    "brk": 4000,
    "kind": "china-reel",
@@ -1618,9 +1714,9 @@
      "url": "https://item.szlcsc.com/748751.html"
     }
    ],
-   "basis": "£0.01953 at 4,000 → 300,000 parts a year = £0.01440",
+   "basis": "£0.01953 at 4,000 → 800,000 parts a year = £0.01344",
    "passive": false,
-   "lineGBP": 0.028798
+   "lineGBP": 0.02687
   },
   {
    "refDes": "Inductor 5",
@@ -1631,9 +1727,9 @@
    "pkg": "SMD 1210",
    "qty": 3,
    "padsEach": 2,
-   "unitGBP": 0.0664,
+   "unitGBP": 0.060209,
    "base": 0.0664,
-   "brk": null,
+   "brk": 300000,
    "kind": "catalogue",
    "sources": [
     {
@@ -1646,15 +1742,16 @@
      "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063"
     }
    ],
-   "basis": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue)",
+   "basis": "small SMD power inductor, 2520; £0.0664 at 300k (catalogue); £0.06640 at 300,000 → 1,200,000 parts a year = £0.06021",
    "passive": false,
-   "lineGBP": 0.1992
+   "lineGBP": 0.180627
   }
  ],
  "C": {
   "programme": 2400000,
-  "components": 87.498341,
-  "burdenGBP": 4.37491705,
+  "components": 73.415807,
+  "componentsFlat300k": 81.44461559354814,
+  "burdenGBP": 3.6707903500000003,
   "aspShape": 1.2187212852357945,
   "boardCnyM2": 1593.8912773572042,
   "fab": 11.056723275360785,
@@ -1663,28 +1760,30 @@
    "Through-hole soldering (20 joints)": 0.1889763779527559,
    "Line changeover (2 sides, per lot)": 0.0050814388143881435,
    "X-ray of the BGA": 0.2067825,
-   "Conformal coating, selective (top side)": 1.135685,
+   "Conformal coating, selective (top side): material": 0.4863825863113263,
+   "Conformal coating, selective (top side): coater": 0.2783133333333333,
    "Coating UV inspection": 0.015634583333333334,
    "Silicone staking (transformers, film capacitors)": 0.42154711893908003,
-   "ICT": 0.6523011111111111,
+   "ICT": 0.6106088888888889,
    "MCU programming": 0.19587166666666667,
-   "Functional and isolation test": 1.4853275000000001,
+   "Functional and isolation test": 1.3738700000000001,
    "Depanel": 0.0563,
    "Final inspection": 0.02084611111111111,
    "Packaging (ESD bag + divider)": 0.25135135135135134
   },
   "listedGBP": 3.813163162374973,
-  "rateGBP": 4.139077029975691,
-  "ohGBP": 0.41390770299756907,
-  "assembly": 8.366147895348233,
+  "rateGBP": 1.630459338509239,
+  "stationGBP": 1.984478888888889,
+  "ohGBP": 0.16304593385092392,
+  "assembly": 7.591147323624025,
   "rework": 0.09780144166666666,
-  "scrapGBP": 0.33388838766212703,
-  "quality": 0.4316898293287937,
+  "scrapGBP": 0.2872034038469545,
+  "quality": 0.38500484551362113,
   "nrePerBoard": 0.019166666666666665,
-  "exWorks": 111.74698571670446,
+  "exWorks": 96.1386394611651,
   "freight": 0.10400000000000001,
-  "dutyGBP": 4.138486471518065,
-  "delivered": 115.98947218822252
+  "dutyGBP": 3.5609776600631085,
+  "delivered": 99.8036171212282
  },
  "generated": "26 Nov 2026"
 }

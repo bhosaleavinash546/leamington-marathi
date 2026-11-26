@@ -543,7 +543,7 @@
    {
     "refDes": "Inductor 3",
     "componentType": "inductor",
-    "description": "SMD inductor 3.3 mH, 6.3 × 6 mm",
+    "description": "SMD power inductor 3.3 µH, 6.3 × 6.3 mm",
     "pkg": "SMD 6x6 (larger than 1210 case)",
     "value": "",
     "voltage": "",
